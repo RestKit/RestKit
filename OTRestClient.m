@@ -18,7 +18,7 @@ static OTRestClient* sharedClient = nil;
 
 @implementation OTRestClient
 
-@synthesize baseURL = _baseURL, username = _username, password = _password, HTTPHeaders = _HTTPHeaders;
+@synthesize baseURL = _baseURL, username = _username, password = _password, HTTPHeaders = _HTTPHeaders, mapper = _mapper;
 
 + (OTRestClient*)client {
 	return sharedClient;
@@ -116,9 +116,18 @@ static OTRestClient* sharedClient = nil;
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
-	return [self get:resourcePath delegate:loader callback:loader.mapperCallback];
+	return [self get:resourcePath delegate:loader callback:loader.memberCallback];
 }
 
-// Add a collection oriented accessor
+/**
+ * Load a collection of models from a restful resource and invoke the callback
+ */
+- (OTRestRequest*)getModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
+	loader.delegate = delegate;
+	loader.callback = callback;
+	
+	return [self get:resourcePath delegate:loader callback:loader.collectionCallback];
+}
 
 @end

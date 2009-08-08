@@ -33,7 +33,12 @@
 /**
  * The method to invoke to trigger model mappings. Used as the callback for a restful model mapping request
  */
-@property (nonatomic, readonly) SEL mapperCallback;
+@property (nonatomic, readonly) SEL memberCallback;
+
+/**
+ * The method to invoke to trigger model mappings. Used as the callback for a restful model mapping request
+ */
+@property (nonatomic, readonly) SEL collectionCallback;
 
 
 /**

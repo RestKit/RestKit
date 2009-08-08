@@ -20,13 +20,27 @@
 	return self;
 }
 
-- (SEL)mapperCallback {
+- (SEL)memberCallback {
 	return @selector(loadModelFromXML:);
+}
+
+- (SEL)collectionCallback {
+	return @selector(loadModelsFromXML:);
 }
 
 - (void)loadModelFromXML:(Element*)XML {
 	id model = [_mapper buildModelFromXML:XML];
 	[_delegate performSelector:self.callback withObject:model];
+}
+
+- (void)loadModelsFromXML:(Element*)XML {
+	NSMutableArray* models = [[[NSMutableArray alloc] init] autorelease];
+	NSArray* elements = [XML syblingElements];
+	for (Element* element in elements) {
+		id model = [_mapper buildModelFromXML:element];
+		[models addObject:model];
+	}	
+	[_delegate performSelector:self.callback withObject:models];
 }
 
 @end

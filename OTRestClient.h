@@ -94,7 +94,12 @@
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
-- (OTRestRequest*)getAndMap:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (OTRestRequest*)getModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+
+/**
+ * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
+ */
+- (OTRestRequest*)getModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
 
 /**
  * Register a model mapping from a domain model class to an XML element name
