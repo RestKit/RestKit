@@ -1,4 +1,4 @@
-OTRestFramework is a library for interacting with Restfull web services in Objective C. It uses ElementParser to return xml documents that can be easily worked with. It is under active development and is not complete.
+OTRestFramework is a library for interacting with Restfull web services in Objective C. It lets you specify your own callbacks and calls you back with a parsed document. It uses ElementParser to return a DocumentRoot that can be easily parsed. It is under active development and is not complete.
 
 To add OTRestFramework to your project (you're using git, right?):
 git submodule add git://github.com/Objective3/ElementParser.git ElementParser
