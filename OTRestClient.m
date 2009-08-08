@@ -7,6 +7,7 @@
 //
 
 #import "OTRestClient.h"
+#import "OTRestModelLoader.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // global
@@ -49,6 +50,7 @@ static OTRestClient* sharedClient = nil;
 - (id)init {
 	if (self = [super init]) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
+		_mapper = [[OTRestModelMapper alloc] init];
 	}
 	
 	return self;
@@ -58,7 +60,8 @@ static OTRestClient* sharedClient = nil;
 	[_baseURL release];
 	[_username release];
 	[_password release];
-	[_HTTPHeaders release];	
+	[_HTTPHeaders release];
+	[_mapper release];
 	[super dealloc];
 }
 
@@ -98,5 +101,24 @@ static OTRestClient* sharedClient = nil;
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header {
 	[_HTTPHeaders setValue:value forKey:header];
 }
+
+#pragma mark Model Methods
+
+- (void)registerModel:(Class)class forElementNamed:(NSString*)elementName {
+	[_mapper registerModel:class forElementNamed:elementName];
+}
+
+/**
+ * Load a model from a restful resource and invoke the callback
+ */
+- (OTRestRequest*)getModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
+	loader.delegate = delegate;
+	loader.callback = callback;
+	
+	return [self get:resourcePath delegate:loader callback:loader.mapperCallback];
+}
+
+// Add a collection oriented accessor
 
 @end

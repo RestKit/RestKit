@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2580B060102E0D2B00832D07 /* OTRestModelMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B05E102E0D2B00832D07 /* OTRestModelMapper.h */; };
+		2580B061102E0D2B00832D07 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B05F102E0D2B00832D07 /* OTRestModelMapper.m */; };
+		2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B066102E0F1000832D07 /* OTRestModelLoader.h */; };
+		2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
+		2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
 		3F4E18F2102DD38800320118 /* OTRestClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E18E3102DD38700320118 /* OTRestClient.h */; };
 		3F4E18F3102DD38800320118 /* OTRestClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18E4102DD38700320118 /* OTRestClient.m */; };
 		3F4E18F4102DD38800320118 /* OTRestParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E18E5102DD38700320118 /* OTRestParams.h */; };
@@ -52,19 +57,23 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D /* libElementParser.a */;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = ElementParser;
 		};
 		3F4E18DC102DD32A00320118 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* ElementParser */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = ElementParser;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2580B05E102E0D2B00832D07 /* OTRestModelMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelMapper.h; sourceTree = "<group>"; };
+		2580B05F102E0D2B00832D07 /* OTRestModelMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelMapper.m; sourceTree = "<group>"; };
+		2580B066102E0F1000832D07 /* OTRestModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelLoader.h; sourceTree = "<group>"; };
+		2580B067102E0F1000832D07 /* OTRestModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelLoader.m; sourceTree = "<group>"; };
 		3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ElementParser.xcodeproj; path = ../ElementParser/ElementParser.xcodeproj; sourceTree = SOURCE_ROOT; };
 		3F4E18E3102DD38700320118 /* OTRestClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestClient.h; sourceTree = "<group>"; };
 		3F4E18E4102DD38700320118 /* OTRestClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestClient.m; sourceTree = SOURCE_ROOT; };
@@ -113,6 +122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
+				2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +147,10 @@
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				2580B05E102E0D2B00832D07 /* OTRestModelMapper.h */,
+				2580B05F102E0D2B00832D07 /* OTRestModelMapper.m */,
+				2580B066102E0F1000832D07 /* OTRestModelLoader.h */,
+				2580B067102E0F1000832D07 /* OTRestModelLoader.m */,
 			);
 			name = OTRestFramework;
 			sourceTree = "<group>";
@@ -257,6 +271,8 @@
 				3F4E1945102DD4B300320118 /* TxtChunk.h in Headers */,
 				3F4E1946102DD4B300320118 /* URLParser.h in Headers */,
 				3F4E1976102DD8CA00320118 /* Element+OTRestAdditions.h in Headers */,
+				2580B060102E0D2B00832D07 /* OTRestModelMapper.h in Headers */,
+				2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,6 +345,8 @@
 				3F4E1900102DD38800320118 /* OTRestResponse.m in Sources */,
 				3F4E191B102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m in Sources */,
 				3F4E1977102DD8CA00320118 /* Element+OTRestAdditions.m in Sources */,
+				2580B061102E0D2B00832D07 /* OTRestModelMapper.m in Sources */,
+				2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

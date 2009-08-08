@@ -11,12 +11,14 @@
 #import "OTRestResponse.h"
 #import "NSDictionary+OTRestRequestSerialization.h"
 #import "Element+OTRestAdditions.h"
+#import "OTRestModelMapper.h"
 
 @interface OTRestClient : NSObject {
 	NSString* _baseURL;
 	NSString* _username;
 	NSString* _password;
 	NSMutableDictionary* _HTTPHeaders;
+	OTRestModelMapper* _mapper;
 }
 
 /**
@@ -38,6 +40,11 @@
  * A dictionary of headers to be sent with each request
  */
 @property(nonatomic, readonly) NSDictionary* HTTPHeaders;
+
+/**
+ * The model mapper for this client
+ */
+@property(nonatomic, readonly) OTRestModelMapper* mapper;
 
 /**
  * Return the configured singleton instance of the Rest client
@@ -83,5 +90,15 @@
  * Adds an HTTP header to each request dispatched through the Rest client
  */
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
+
+/**
+ * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
+ */
+- (OTRestRequest*)getAndMap:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+
+/**
+ * Register a model mapping from a domain model class to an XML element name
+ */
+- (void)registerModel:(Class)class forElementNamed:(NSString*)elementName;
 
 @end
