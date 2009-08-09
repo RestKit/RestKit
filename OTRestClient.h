@@ -10,7 +10,7 @@
 #import "OTRestParams.h"
 #import "OTRestResponse.h"
 #import "NSDictionary+OTRestRequestSerialization.h"
-#import "Element+OTRestAdditions.h"
+#import "ElementParser.h"
 #import "OTRestModelMapper.h"
 
 @interface OTRestClient : NSObject {

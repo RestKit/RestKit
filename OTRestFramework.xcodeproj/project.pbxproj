@@ -46,8 +46,8 @@
 		3F4E1944102DD4B300320118 /* TagChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1933102DD4B300320118 /* TagChunk.h */; };
 		3F4E1945102DD4B300320118 /* TxtChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1934102DD4B300320118 /* TxtChunk.h */; };
 		3F4E1946102DD4B300320118 /* URLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1935102DD4B300320118 /* URLParser.h */; };
-		3F4E1976102DD8CA00320118 /* Element+OTRestAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1974102DD8CA00320118 /* Element+OTRestAdditions.h */; };
-		3F4E1977102DD8CA00320118 /* Element+OTRestAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E1975102DD8CA00320118 /* Element+OTRestAdditions.m */; };
+		3F51DCF3102F3F1700C8FA0A /* OTRestModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F51DCF2102F3F1700C8FA0A /* OTRestModel.h */; };
+		3F51DD18102F3FF400C8FA0A /* OTRestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F51DD17102F3FF400C8FA0A /* OTRestModel.m */; };
 		AA747D9F0F9514B9006C5449 /* OTRestFramework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* OTRestFramework_Prefix.pch */; };
 		AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -109,8 +109,8 @@
 		3F4E1933102DD4B300320118 /* TagChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagChunk.h; path = ../ElementParser/Classes/TagChunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1934102DD4B300320118 /* TxtChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TxtChunk.h; path = ../ElementParser/Classes/TxtChunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1935102DD4B300320118 /* URLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URLParser.h; path = ../ElementParser/Classes/URLParser.h; sourceTree = SOURCE_ROOT; };
-		3F4E1974102DD8CA00320118 /* Element+OTRestAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Element+OTRestAdditions.h"; sourceTree = "<group>"; };
-		3F4E1975102DD8CA00320118 /* Element+OTRestAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Element+OTRestAdditions.m"; sourceTree = "<group>"; };
+		3F51DCF2102F3F1700C8FA0A /* OTRestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModel.h; sourceTree = "<group>"; };
+		3F51DD17102F3FF400C8FA0A /* OTRestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModel.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* OTRestFramework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestFramework_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libOTRestFramework.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libOTRestFramework.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -166,7 +166,6 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				3F4E1975102DD8CA00320118 /* Element+OTRestAdditions.m */,
 				3F4E1919102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m */,
 				3F4E18E4102DD38700320118 /* OTRestClient.m */,
 				3F4E18E6102DD38700320118 /* OTRestParams.m */,
@@ -175,6 +174,7 @@
 				3F4E18EC102DD38700320118 /* OTRestParamsFileAttachment.m */,
 				3F4E18EE102DD38700320118 /* OTRestRequest.m */,
 				3F4E18F1102DD38800320118 /* OTRestResponse.m */,
+				3F51DD17102F3FF400C8FA0A /* OTRestModel.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -222,7 +222,6 @@
 		3F4E1958102DD60000320118 /* OTRestHeaders */ = {
 			isa = PBXGroup;
 			children = (
-				3F4E1974102DD8CA00320118 /* Element+OTRestAdditions.h */,
 				3F4E1918102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.h */,
 				3F4E18E3102DD38700320118 /* OTRestClient.h */,
 				3F4E18E5102DD38700320118 /* OTRestParams.h */,
@@ -232,6 +231,7 @@
 				3F4E18ED102DD38700320118 /* OTRestRequest.h */,
 				3F4E18EF102DD38700320118 /* OTRestRequestSerializable.h */,
 				3F4E18F0102DD38700320118 /* OTRestResponse.h */,
+				3F51DCF2102F3F1700C8FA0A /* OTRestModel.h */,
 			);
 			name = OTRestHeaders;
 			sourceTree = "<group>";
@@ -270,9 +270,9 @@
 				3F4E1944102DD4B300320118 /* TagChunk.h in Headers */,
 				3F4E1945102DD4B300320118 /* TxtChunk.h in Headers */,
 				3F4E1946102DD4B300320118 /* URLParser.h in Headers */,
-				3F4E1976102DD8CA00320118 /* Element+OTRestAdditions.h in Headers */,
 				2580B060102E0D2B00832D07 /* OTRestModelMapper.h in Headers */,
 				2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */,
+				3F51DCF3102F3F1700C8FA0A /* OTRestModel.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,9 +344,9 @@
 				3F4E18FD102DD38800320118 /* OTRestRequest.m in Sources */,
 				3F4E1900102DD38800320118 /* OTRestResponse.m in Sources */,
 				3F4E191B102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m in Sources */,
-				3F4E1977102DD8CA00320118 /* Element+OTRestAdditions.m in Sources */,
 				2580B061102E0D2B00832D07 /* OTRestModelMapper.m in Sources */,
 				2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */,
+				3F51DD18102F3FF400C8FA0A /* OTRestModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
