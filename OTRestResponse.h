@@ -49,7 +49,7 @@
 /**
  * Initialize a new response object for a REST request
  */
-- (OTRestResponse*)initWithRestRequest:(OTRestRequest*)request;
+- (id)initWithRestRequest:(OTRestRequest*)request;
 
 /**
  * Return the localized human readable representation of the HTTP Status Code returned
