@@ -21,16 +21,6 @@
 	return nil;
 }
 
-- (NSDictionary*)propertyMappings {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
-- (NSDictionary*)relationshipMappings {
-	//Not required, you might not have any relationships
-	return nil;
-}
-
 + (NSEntityDescription*)entity {
 	return [NSEntityDescription entityForName:[self entityName] inManagedObjectContext:context];
 }
@@ -95,6 +85,16 @@
 + (id)createNewObjectFromElement:(Element*)element {
 	id project = [self createNewObject];
 	return [project updateObjectWithElement:element];
+}
+
+- (NSDictionary*)propertyMappings {
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
+
+- (NSDictionary*)relationshipMappings {
+	//Not required, you might not have any relationships
+	return nil;
 }
 
 - (id)updateObjectWithElement:(Element*)element {
