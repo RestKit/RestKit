@@ -19,7 +19,6 @@
 	
 	return self;
 }
-
 - (id)initWithRestRequest:(OTRestRequest*)request {
 	if (self = [self init]) {
 		_request = [request retain];

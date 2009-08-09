@@ -31,8 +31,7 @@
 - (id)buildModelFromXML:(Element*)XML {
 	NSString* elementName = [XML key];
 	Class class = [_elementToClassMappings objectForKey:elementName];
-	id object = [[class alloc] init];
-	[object setAttributesFromXML:XML];	
+	id object = [class createOrUpdateAttributesFromXML:XML];
 	return object;
 }
 

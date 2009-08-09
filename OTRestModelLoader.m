@@ -7,6 +7,7 @@
 //
 
 #import "OTRestModelLoader.h"
+#import "OTRestResponse.h"
 
 @implementation OTRestModelLoader
 
@@ -28,14 +29,14 @@
 	return @selector(loadModelsFromXML:);
 }
 
-- (void)loadModelFromXML:(Element*)XML {
-	id model = [_mapper buildModelFromXML:XML];
+- (void)loadModelFromXML:(OTRestResponse*)response {
+	id model = [_mapper buildModelFromXML:[[response payloadXMLDocument] firstChild]];
 	[_delegate performSelector:self.callback withObject:model];
 }
 
-- (void)loadModelsFromXML:(Element*)XML {
+- (void)loadModelsFromXML:(OTRestResponse*)response {
 	NSMutableArray* models = [[[NSMutableArray alloc] init] autorelease];
-	NSArray* elements = [XML syblingElements];
+	NSArray* elements = [[[response payloadXMLDocument] firstChild] childElements];
 	for (Element* element in elements) {
 		id model = [_mapper buildModelFromXML:element];
 		[models addObject:model];
