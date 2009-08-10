@@ -376,6 +376,7 @@
 				GCC_PREFIX_HEADER = OTRestFramework_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = OTRestFramework;
+				SDKROOT = macosx10.5;
 			};
 			name = Debug;
 		};

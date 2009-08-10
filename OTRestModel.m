@@ -9,24 +9,34 @@
 #import "OTRestModel.h"
 #import "OTRestClient.h"
 
+#import <objc/runtime.h>
+
 @implementation OTRestModel
 
 + (NSString*)restId {
+	// TODO: there has to be a better way to do this
+	for (NSString* key in [[[self class] propertyMappings] allKeys]) {
+		NSString* obj = (NSString*)[[[self class] propertyMappings] objectForKey:key];
+		if ([obj isEqualToString:@"id"]) {
+			return key;
+		}
+	}
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
 }
 
 + (NSString*)entityName {
+	const char* name = class_getName([self class]);
+	NSString* className = [NSString stringWithCString:name];
+	return className;
+}
+
++ (NSDictionary*)propertyMappings {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
 }
 
-- (NSDictionary*)propertyMappings {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
-- (NSDictionary*)relationshipMappings {
++ (NSDictionary*)relationshipMappings {
 	//Not required, you might not have any relationships
 	return nil;
 }
@@ -45,7 +55,7 @@
 
 + (NSArray*)collectionWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
-	NSLog(@"Context: %@", context);
+	//NSLog(@"Context: %@", context);
 	NSArray* collection = [context executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
@@ -97,56 +107,62 @@
 	return [project updateObjectWithElement:element];
 }
 
-- (id)updateObjectWithElement:(Element*)element {
-	NSLog(@"Element: %@", element);
+- (void)updateAttributeForKey:(NSString*)key withElement:(Element*)element {
+	NSAttributeDescription* attributeDescription = [[[self entity] attributesByName] objectForKey:key];
+	NSString* elementName = [[[self class] propertyMappings] objectForKey:key];
+	id originalValue = [self valueForKey:key];
 	
-	for (NSString* key in [[self propertyMappings] allKeys]) {
-		NSAttributeDescription* attributeDescription = [[[self entity] attributesByName] objectForKey:key];
-		NSString* elementName = [[self propertyMappings] objectForKey:key];
-		id originalValue = [self valueForKey:key];
-		
-		if ([[attributeDescription attributeValueClassName] isEqualToString:@"NSNumber"]) {
-			NSNumber* value = [element contentsNumberOfChildElement:elementName];
-			if (originalValue == nil || ![value isEqualToNumber:originalValue]) {
-				[self setValue:value forKey:key];
-			}
-		} else if ([[attributeDescription attributeValueClassName] isEqualToString:@"NSString"]) {
-			NSString* value = [element contentsTextOfChildElement:elementName];
-			if (originalValue == nil || ![value isEqualToString:originalValue]) {
-				[self setValue:value forKey:key];
-			}
-		} else if ([[attributeDescription attributeValueClassName] isEqualToString:@"NSDate"]) {
-			NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-			[formatter setDateFormat:kRailsToXMLDateFormatterString];
-			NSLog(@"Old Date String: %@", [formatter stringFromDate:originalValue]);
-			NSLog(@"New Date String: %@", [element contentsTextOfChildElement:elementName]);
-			NSDate* value = [formatter dateFromString:[element contentsTextOfChildElement:elementName]];
-			if (originalValue == nil || ![value isEqualToDate:originalValue]) {
-				[self setValue:value forKey:key];
-			}
-			[formatter release];
-		} else {
-			[NSException raise:@"Property Type Not Handled" format:@"The Attribute Type %d has not yet been handled.", [attributeDescription attributeType]];
+	if ([[attributeDescription attributeValueClassName] isEqualToString:@"NSNumber"]) {
+		NSNumber* value = [element contentsNumberOfChildElement:elementName];
+		if (originalValue == nil || ![value isEqualToNumber:originalValue]) {
+			[self setValue:value forKey:key];
 		}
+	} else if ([[attributeDescription attributeValueClassName] isEqualToString:@"NSString"]) {
+		NSString* value = [element contentsTextOfChildElement:elementName];
+		if (originalValue == nil || ![value isEqualToString:originalValue]) {
+			[self setValue:value forKey:key];
+		}
+	} else if ([[attributeDescription attributeValueClassName] isEqualToString:@"NSDate"]) {
+		NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+		[formatter setDateFormat:kRailsToXMLDateFormatterString];
+		NSDate* value = [formatter dateFromString:[element contentsTextOfChildElement:elementName]];
+		if (originalValue == nil || ![value isEqualToDate:originalValue]) {
+			[self setValue:value forKey:key];
+		}
+		[formatter release];
+	} else {
+		[NSException raise:@"Property Type Not Handled" format:@"The Attribute Type %d has not yet been handled.", [attributeDescription attributeType]];
+	}
+}
+
+- (void)updateAssociationForKey:(NSString*)key withElement:(Element*)element {
+	NSRelationshipDescription* relationshipDescription = [[[self entity] relationshipsByName] objectForKey:key];
+	if ([relationshipDescription isToMany]) {
+		NSArray* associationElements = [element selectElements:[[[self class] relationshipMappings] objectForKey:key]];
+		NSMutableSet* associationObjects = [NSMutableSet set];
+		for (Element* associationElement in associationElements) {
+			id associationObject = [[[OTRestClient client] mapper] buildModelFromXML:associationElement];
+			[associationObjects addObject:associationObject];
+		}
+		[self setValue:associationObjects forKey:key];
+	} else {
+		// Not actually tested up to this point...
+		Element* associationElement = [element selectElement:[[[self class] relationshipMappings] objectForKey:key]];
+		id associatedObject = [[[OTRestClient client] mapper] buildModelFromXML:associationElement];
+		[self setValue:associatedObject forKey:key];
+	}
+}
+
+- (id)updateObjectWithElement:(Element*)element {
+	//NSLog(@"Element: %@", element);
+	
+	for (NSString* key in [[[self class] propertyMappings] allKeys]) {
+		[self updateAttributeForKey:key withElement:element];
 	}
 	
-	// TODO: handle relationshipMappings
-	
-	for (NSString* key in [[self relationshipMappings] allKeys]) {
-		NSRelationshipDescription* relationshipDescription = [[[self entity] relationshipsByName] objectForKey:key];
-		if ([relationshipDescription isToMany]) {
-			NSArray* associationElements = [element selectElements:[[self relationshipMappings] objectForKey:key]];
-			NSMutableSet* associationObjects = [NSMutableSet set];
-			for (Element* associationElement in associationElements) {
-				id associationObject = [[[OTRestClient client] mapper] buildModelFromXML:associationElement];
-				[associationObjects addObject:associationObject];
-			}
-			[self setValue:associationObjects forKey:key];
-		} else {
-			Element* associationElement = [element selectElement:[[self relationshipMappings] objectForKey:key]];
-			id associatedObject = [[[OTRestClient client] mapper] buildModelFromXML:associationElement];
-			[self setValue:associatedObject forKey:key];
-		}
+	for (NSString* key in [[[self class] relationshipMappings] allKeys]) {
+		[self updateAssociationForKey:key withElement:element];
+		
 	}
 	
 	return self;

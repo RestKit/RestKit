@@ -9,19 +9,12 @@
 #import <CoreData/CoreData.h>
 #import "ElementParser.h"
 
-
-#ifdef __APPLE__
-	#include <TargetConditionals.h>
-#endif
-
-#ifdef TARGET_OS_MAC
-	#ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-		#import <UIKit/UIKit.h>
-		#define context [[[UIApplication sharedApplication] delegate] managedObjectContext]
-	#else
-		#import <AppKit/AppKit.h>
-		#define context [[[NSApplication sharedApplication] delegate] managedObjectContext]
-	#endif
+#ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+	#import <UIKit/UIKit.h>
+	#define context [[[UIApplication sharedApplication] delegate] managedObjectContext]
+#else
+	#import <AppKit/AppKit.h>
+	#define context [[[NSApplication sharedApplication] delegate] managedObjectContext]
 #endif
 
 
@@ -35,11 +28,11 @@
 }
 
 // Subclasses Must Implement:
-- (NSDictionary*)propertyMappings;
-+ (NSString*) entityName;
-+ (NSString*) restId;
++ (NSDictionary*)propertyMappings;
+//+ (NSString*) entityName;
+//+ (NSString*) restId;
 // Not Required
-- (NSDictionary*)relationshipMappings;
++ (NSDictionary*)relationshipMappings;
 
 // finders
 + (NSArray*)allObjects;
