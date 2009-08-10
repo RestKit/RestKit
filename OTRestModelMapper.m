@@ -31,8 +31,9 @@
 - (id)buildModelFromXML:(Element*)XML {
 	NSString* elementName = [XML key];
 	Class class = [_elementToClassMappings objectForKey:elementName];
-	if (class == nil)
+	if (class == nil) {
 		[NSException raise:@"NoClassMappingForModel" format:@"No Class Mapping for Element name '%@'", elementName];
+	}
 	id object = [class createOrUpdateAttributesFromXML:XML];
 	return object;
 }

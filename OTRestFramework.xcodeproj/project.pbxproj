@@ -76,22 +76,22 @@
 		2580B067102E0F1000832D07 /* OTRestModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelLoader.m; sourceTree = "<group>"; };
 		3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ElementParser.xcodeproj; path = ../ElementParser/ElementParser.xcodeproj; sourceTree = SOURCE_ROOT; };
 		3F4E18E3102DD38700320118 /* OTRestClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestClient.h; sourceTree = "<group>"; };
-		3F4E18E4102DD38700320118 /* OTRestClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestClient.m; sourceTree = SOURCE_ROOT; };
+		3F4E18E4102DD38700320118 /* OTRestClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestClient.m; sourceTree = "<group>"; };
 		3F4E18E5102DD38700320118 /* OTRestParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestParams.h; sourceTree = "<group>"; };
-		3F4E18E6102DD38700320118 /* OTRestParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParams.m; sourceTree = SOURCE_ROOT; };
+		3F4E18E6102DD38700320118 /* OTRestParams.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParams.m; sourceTree = "<group>"; };
 		3F4E18E7102DD38700320118 /* OTRestParamsAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestParamsAttachment.h; sourceTree = "<group>"; };
-		3F4E18E8102DD38700320118 /* OTRestParamsAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParamsAttachment.m; sourceTree = SOURCE_ROOT; };
+		3F4E18E8102DD38700320118 /* OTRestParamsAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParamsAttachment.m; sourceTree = "<group>"; };
 		3F4E18E9102DD38700320118 /* OTRestParamsDataAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestParamsDataAttachment.h; sourceTree = "<group>"; };
-		3F4E18EA102DD38700320118 /* OTRestParamsDataAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParamsDataAttachment.m; sourceTree = SOURCE_ROOT; };
+		3F4E18EA102DD38700320118 /* OTRestParamsDataAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParamsDataAttachment.m; sourceTree = "<group>"; };
 		3F4E18EB102DD38700320118 /* OTRestParamsFileAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestParamsFileAttachment.h; sourceTree = "<group>"; };
-		3F4E18EC102DD38700320118 /* OTRestParamsFileAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParamsFileAttachment.m; sourceTree = SOURCE_ROOT; };
+		3F4E18EC102DD38700320118 /* OTRestParamsFileAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestParamsFileAttachment.m; sourceTree = "<group>"; };
 		3F4E18ED102DD38700320118 /* OTRestRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestRequest.h; sourceTree = "<group>"; };
-		3F4E18EE102DD38700320118 /* OTRestRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestRequest.m; sourceTree = SOURCE_ROOT; };
+		3F4E18EE102DD38700320118 /* OTRestRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestRequest.m; sourceTree = "<group>"; };
 		3F4E18EF102DD38700320118 /* OTRestRequestSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestRequestSerializable.h; sourceTree = "<group>"; };
 		3F4E18F0102DD38700320118 /* OTRestResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestResponse.h; sourceTree = "<group>"; };
-		3F4E18F1102DD38800320118 /* OTRestResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestResponse.m; sourceTree = SOURCE_ROOT; };
+		3F4E18F1102DD38800320118 /* OTRestResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestResponse.m; sourceTree = "<group>"; };
 		3F4E1918102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+OTRestRequestSerialization.h"; sourceTree = "<group>"; };
-		3F4E1919102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OTRestRequestSerialization.m"; sourceTree = SOURCE_ROOT; };
+		3F4E1919102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OTRestRequestSerialization.m"; sourceTree = "<group>"; };
 		3F4E1925102DD4B300320118 /* CDataChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDataChunk.h; path = ../ElementParser/Classes/CDataChunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1926102DD4B300320118 /* Chunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Chunk.h; path = ../ElementParser/Classes/Chunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1927102DD4B300320118 /* CommentChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CommentChunk.h; path = ../ElementParser/Classes/CommentChunk.h; sourceTree = SOURCE_ROOT; };
@@ -140,17 +140,12 @@
 		0867D691FE84028FC02AAC07 /* OTRestFramework */ = {
 			isa = PBXGroup;
 			children = (
-				3F4E1958102DD60000320118 /* OTRestHeaders */,
-				3F4E1924102DD4B300320118 /* ElementParserHeaders */,
-				3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */,
-				08FB77AEFE84172EC02AAC07 /* Classes */,
+				2580B1AE102F72FC00832D07 /* Core */,
+				2580B1AF102F730600832D07 /* Modeling */,
+				2580B1AA102F72D700832D07 /* Dependencies */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
-				2580B05E102E0D2B00832D07 /* OTRestModelMapper.h */,
-				2580B05F102E0D2B00832D07 /* OTRestModelMapper.m */,
-				2580B066102E0F1000832D07 /* OTRestModelLoader.h */,
-				2580B067102E0F1000832D07 /* OTRestModelLoader.m */,
 			);
 			name = OTRestFramework;
 			sourceTree = "<group>";
@@ -163,7 +158,16 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+		2580B1AA102F72D700832D07 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				3F4E1924102DD4B300320118 /* ElementParserHeaders */,
+				3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		2580B1AE102F72FC00832D07 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				3F4E1919102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m */,
@@ -174,9 +178,30 @@
 				3F4E18EC102DD38700320118 /* OTRestParamsFileAttachment.m */,
 				3F4E18EE102DD38700320118 /* OTRestRequest.m */,
 				3F4E18F1102DD38800320118 /* OTRestResponse.m */,
-				3F51DD17102F3FF400C8FA0A /* OTRestModel.m */,
+				3F4E1918102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.h */,
+				3F4E18E3102DD38700320118 /* OTRestClient.h */,
+				3F4E18E5102DD38700320118 /* OTRestParams.h */,
+				3F4E18E7102DD38700320118 /* OTRestParamsAttachment.h */,
+				3F4E18E9102DD38700320118 /* OTRestParamsDataAttachment.h */,
+				3F4E18EB102DD38700320118 /* OTRestParamsFileAttachment.h */,
+				3F4E18ED102DD38700320118 /* OTRestRequest.h */,
+				3F4E18EF102DD38700320118 /* OTRestRequestSerializable.h */,
+				3F4E18F0102DD38700320118 /* OTRestResponse.h */,
 			);
-			name = Classes;
+			name = Core;
+			sourceTree = "<group>";
+		};
+		2580B1AF102F730600832D07 /* Modeling */ = {
+			isa = PBXGroup;
+			children = (
+				2580B05E102E0D2B00832D07 /* OTRestModelMapper.h */,
+				2580B05F102E0D2B00832D07 /* OTRestModelMapper.m */,
+				2580B066102E0F1000832D07 /* OTRestModelLoader.h */,
+				2580B067102E0F1000832D07 /* OTRestModelLoader.m */,
+				3F51DD17102F3FF400C8FA0A /* OTRestModel.m */,
+				3F51DCF2102F3F1700C8FA0A /* OTRestModel.h */,
+			);
+			name = Modeling;
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
@@ -217,23 +242,6 @@
 				3F4E1935102DD4B300320118 /* URLParser.h */,
 			);
 			name = ElementParserHeaders;
-			sourceTree = SOURCE_ROOT;
-		};
-		3F4E1958102DD60000320118 /* OTRestHeaders */ = {
-			isa = PBXGroup;
-			children = (
-				3F4E1918102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.h */,
-				3F4E18E3102DD38700320118 /* OTRestClient.h */,
-				3F4E18E5102DD38700320118 /* OTRestParams.h */,
-				3F4E18E7102DD38700320118 /* OTRestParamsAttachment.h */,
-				3F4E18E9102DD38700320118 /* OTRestParamsDataAttachment.h */,
-				3F4E18EB102DD38700320118 /* OTRestParamsFileAttachment.h */,
-				3F4E18ED102DD38700320118 /* OTRestRequest.h */,
-				3F4E18EF102DD38700320118 /* OTRestRequestSerializable.h */,
-				3F4E18F0102DD38700320118 /* OTRestResponse.h */,
-				3F51DCF2102F3F1700C8FA0A /* OTRestModel.h */,
-			);
-			name = OTRestHeaders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
