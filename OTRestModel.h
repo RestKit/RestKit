@@ -29,10 +29,11 @@
 
 // Subclasses Must Implement:
 + (NSDictionary*)propertyMappings;
-//+ (NSString*) entityName;
-//+ (NSString*) restId;
 // Not Required
 + (NSDictionary*)relationshipMappings;
+
++ (NSString*) entityName;
++ (NSString*) restId;
 
 // finders
 + (NSArray*)allObjects;
