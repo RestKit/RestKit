@@ -7,7 +7,7 @@
 //
 
 #import "OTRestModelMapper.h"
-
+#import "OTRestModel.h"
 
 @implementation OTRestModelMapper
 
@@ -37,7 +37,7 @@
 	if (class == nil) {
 		[NSException raise:@"NoClassMappingForModel" format:@"No Class Mapping for Element name '%@'", elementName];
 	}
-	id object = [class createOrUpdateAttributesFromXML:XML];
+	OTRestModel* object = [class createOrUpdateAttributesFromXML:XML];
 	return object;
 }
 

@@ -116,8 +116,8 @@
 }
 
 + (id)createNewObjectFromElement:(Element*)element {
-	id project = [self createNewObject];
-	return [project updateObjectWithElement:element];
+	id object = [self createNewObject];
+	return [object updateObjectWithElement:element];
 }
 
 - (void)updateAttributeForKey:(NSString*)key withElement:(Element*)element {

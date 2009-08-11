@@ -46,7 +46,6 @@ static NSString* kOTRestStringBoundary = @"0xKhTmLbOuNdArY";
 	return self;
 }
 
-
 - (void)setValue:(id <NSObject>)value forParam:(NSString*)param {
 	[_valueData setObject:value forKey:param];
 }
