@@ -71,7 +71,11 @@
 	if (_error != nil) {
 		desc = [_error localizedDescription];
 	} else {
-		desc = [[(Element*)[self payloadXMLDocument] selectElement:@"error"] contentsText];
+		NSString* contentsText = [[(Element*)[self payloadXMLDocument] selectElement:@"error"] contentsText];
+		if (contentsText == nil) {
+			contentsText = @"";
+		}
+		desc = [NSString stringWithFormat:@"#%d  %@", [self statusCode], contentsText];
 	}
 	return desc;
 }
