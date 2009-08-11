@@ -29,6 +29,9 @@
 }
 
 - (id)buildModelFromXML:(Element*)XML {
+	if (XML == nil) {
+		return nil;
+	}
 	NSString* elementName = [XML key];
 	Class class = [_elementToClassMappings objectForKey:elementName];
 	if (class == nil) {

@@ -10,11 +10,12 @@
 
 @implementation OTRestResponse
 
-@synthesize payload = _payload, request = _request;
+@synthesize payload = _payload, request = _request, error = _error;
 
 - (id)init {
 	if (self = [super init]) {
 		_payload = [[NSMutableData alloc] init];
+		_error = nil;
 	}
 	
 	return self;
@@ -31,6 +32,7 @@
 	[_httpURLResponse release];
 	[_payload release];
 	[_request release];
+	[_error release];
 	[super dealloc];
 }
 
@@ -47,6 +49,11 @@
 	[[_request delegate] performSelector:[_request callback] withObject:self];	
 }
 
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+	_error = [error retain];
+	[[_request delegate] performSelector:[_request callback] withObject:self];
+}
+
 - (NSString*)localizedStatusCodeString {
 	return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];
 }
@@ -57,6 +64,16 @@
 
 - (DocumentRoot*)payloadXMLDocument {
 	return [DocumentRoot parseXML:[self payloadString]];
+}
+
+- (NSString*)errorDescription {
+	NSString* desc;
+	if (_error != nil) {
+		desc = [_error localizedDescription];
+	} else {
+		desc = [[(Element*)[self payloadXMLDocument] selectElement:@"error"] contentsText];
+	}
+	return desc;
 }
 
 - (NSURL*)URL {

@@ -14,6 +14,7 @@
 	OTRestRequest* _request;
 	NSHTTPURLResponse* _httpURLResponse;
 	NSMutableData* _payload;
+	NSError* _error;
 }
 
 /**
@@ -47,6 +48,12 @@
 @property(nonatomic, readonly) NSData* payload;
 
 /**
+ * The error returned if the url connection fails
+ */
+@property(nonatomic, readonly) NSError* error;
+
+
+/**
  * Initialize a new response object for a REST request
  */
 - (id)initWithRestRequest:(OTRestRequest*)request;
@@ -65,5 +72,12 @@
  * Parse the response payload into an XML Document via ElementParser
  */
 - (DocumentRoot*)payloadXMLDocument;
+
+/**
+ * Will determine if there is an error object and use it's localized message
+ * or
+ * take the first <error> element out of the returned document.
+ */
+- (NSString*)errorDescription;
 
 @end

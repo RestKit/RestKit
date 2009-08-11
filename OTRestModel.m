@@ -84,6 +84,19 @@
 	return [self collectionWithRequest:[self request]];
 }
 
++ (NSArray*)allObjectsOrderedBy:(NSString*)key {
+	NSFetchRequest* request = [self request];
+	
+	NSSortDescriptor* sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:key 
+																	ascending:YES
+																	 selector:@selector(caseInsensitiveCompare:)] 
+										autorelease];
+	NSArray* sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+	[request setSortDescriptors:sortDescriptors];
+	
+	return [self collectionWithRequest:request];
+}
+
 + (id)createOrUpdateAttributesFromXML:(Element*)XML {
 	NSNumber* objectId = [XML contentsNumberOfChildElement:@"id"];
 	id object = [self objectWithRestId:objectId];

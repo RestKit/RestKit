@@ -73,7 +73,7 @@ static OTRestClient* sharedClient = nil;
 - (OTRestRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
 	request.additionalHTTPHeaders = _HTTPHeaders;
-	[request get];	
+	[request get];
 	return request;
 }
 
