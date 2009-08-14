@@ -53,7 +53,8 @@
 	id object = nil;
 	// Find by PK, if it responds to it
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
-		NSString* pk = [XML contentsTextOfChildElement:[class primaryKey]];
+		// TODO: factor to class method? incase it is not a number
+		NSNumber* pk = [XML contentsNumberOfChildElement:[class primaryKey]];
 		object = [class findByPrimaryKey:pk];
 	}
 	// instantiate if object is nil

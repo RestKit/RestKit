@@ -73,8 +73,9 @@
 }
 
 + (id)findByPrimaryKey:(id)value {
-	NSString* pk = [[self elementToPropertyMappings] objectForKey:[self primaryKey]];
+	NSString* pk = [[[self elementToPropertyMappings] objectForKey:[self primaryKey]] retain];
 	NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K = %@", pk, value];
+	[pk release];
 	return [self objectWithPredicate:predicate];
 }
 
