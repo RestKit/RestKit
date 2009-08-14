@@ -54,6 +54,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		25FCE0A310360373005418A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25FCE09E10360372005418A7 /* Tests.octest */;
+			remoteInfo = Tests;
+		};
 		3F4E18DA102DD31E00320118 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
@@ -219,6 +226,7 @@
 			isa = PBXGroup;
 			children = (
 				3F4E18DB102DD31E00320118 /* libElementParser.a */,
+				25FCE0A410360373005418A7 /* Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -334,6 +342,14 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		25FCE0A410360373005418A7 /* Tests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			name = Tests.octest;
+			path = build/Debug/Tests.octest;
+			remoteRef = 25FCE0A310360373005418A7 /* PBXContainerItemProxy */;
+			sourceTree = "<group>";
+		};
 		3F4E18DB102DD31E00320118 /* libElementParser.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;

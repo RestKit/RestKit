@@ -78,7 +78,7 @@
 	NSString* typeHint = [propertyElement attribute:@"type"];
 	id propertyValue = nil;
 	if ([typeHint isEqualToString:@"string"] ||
-		typeHint == nil) {
+		typeHint == nil) {		
 		propertyValue = [propertyElement contentsText];
 	} else if ([typeHint isEqualToString:@"integer"] ||
 			   [typeHint isEqualToString:@"float"]) {
@@ -86,13 +86,12 @@
 	} else if ([typeHint isEqualToString:@"boolean"]) {
 		propertyValue = [NSNumber numberWithBool:[[propertyElement contentsText] isEqualToString:@"true"]];
 	} else if ([typeHint isEqualToString:@"datetime"]) {
-		NSDate* date;
 		NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 		// Times coming back are in utc. we should convert them to the local timezone
 		// TODO: Make sure this is working correctly
 		[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 		[formatter setDateFormat:kRailsToXMLDateFormatterString];
-		date = [formatter dateFromString:[propertyElement contentsText]];
+		propertyValue = [formatter dateFromString:[propertyElement contentsText]];
 		[formatter release];
 	} else if ([typeHint isEqualToString:@"nil"]) {
 		propertyValue = nil;
@@ -127,7 +126,8 @@
 			// If the parent element doesn't appear, we will not set the collection to nil.
 			NSString* containingElementName = [self containingElementNameForSelector:selector];
 			if ([XML selectElement:containingElementName] != nil) {
-				for (Element* childElement in [XML selectElements:selector]) {
+				NSArray* childrenElements = [XML selectElements:selector];
+				for (Element* childElement in childrenElements) {
 					[children addObject:[self buildModelFromXML:childElement]];
 				}
 				[model setValue:(NSSet*)children forKey:propertyName];
