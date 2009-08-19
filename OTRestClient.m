@@ -78,6 +78,14 @@ static OTRestClient* sharedClient = nil;
 	return request;
 }
 
+- (OTRestRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
+	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
+	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePathWithQueryString] delegate:delegate callback:callback];
+	request.additionalHTTPHeaders = _HTTPHeaders;
+	[request get];
+	return request;
+}
+
 - (OTRestRequest*)post:(NSString*)resourcePath params:(NSObject<OTRestRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
 	request.additionalHTTPHeaders = _HTTPHeaders;
