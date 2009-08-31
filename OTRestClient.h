@@ -60,6 +60,11 @@
 + (OTRestClient*)clientWithBaseURL:(NSString*)baseURL username:(NSString*)username password:(NSString*)password;
 
 /**
+ *  Will check for network connectivity (to google.com)
+ */
+- (BOOL)isNetworkAvailable;
+
+/**
  * Fetch a resource via an HTTP GET and invoke a callback with the resulting payload
  */
 - (OTRestRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;

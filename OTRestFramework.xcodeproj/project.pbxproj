@@ -49,6 +49,7 @@
 		3F4E1944102DD4B300320118 /* TagChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1933102DD4B300320118 /* TagChunk.h */; };
 		3F4E1945102DD4B300320118 /* TxtChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1934102DD4B300320118 /* TxtChunk.h */; };
 		3F4E1946102DD4B300320118 /* URLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1935102DD4B300320118 /* URLParser.h */; };
+		3F95E9EC104C60BA0041F71A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F95E9EB104C60BA0041F71A /* SystemConfiguration.framework */; };
 		3FBF1D39103614E500E307AC /* OTRestModelManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3FBF1D37103614E500E307AC /* OTRestModelManager.h */; };
 		3FBF1D3A103614E500E307AC /* OTRestModelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FBF1D38103614E500E307AC /* OTRestModelManager.m */; };
 		AA747D9F0F9514B9006C5449 /* OTRestFramework_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = AA747D9E0F9514B9006C5449 /* OTRestFramework_Prefix.pch */; };
@@ -115,6 +116,7 @@
 		3F4E1933102DD4B300320118 /* TagChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagChunk.h; path = ../ElementParser/Classes/TagChunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1934102DD4B300320118 /* TxtChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TxtChunk.h; path = ../ElementParser/Classes/TxtChunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1935102DD4B300320118 /* URLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URLParser.h; path = ../ElementParser/Classes/URLParser.h; sourceTree = SOURCE_ROOT; };
+		3F95E9EB104C60BA0041F71A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		3FBF1D37103614E500E307AC /* OTRestModelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelManager.h; sourceTree = "<group>"; };
 		3FBF1D38103614E500E307AC /* OTRestModelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelManager.m; sourceTree = "<group>"; };
 		AA747D9E0F9514B9006C5449 /* OTRestFramework_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestFramework_Prefix.pch; sourceTree = SOURCE_ROOT; };
@@ -129,6 +131,7 @@
 			files = (
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 				2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */,
+				3F95E9EC104C60BA0041F71A /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +155,7 @@
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				3F95E9EB104C60BA0041F71A /* SystemConfiguration.framework */,
 			);
 			name = OTRestFramework;
 			sourceTree = "<group>";

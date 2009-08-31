@@ -8,6 +8,7 @@
 
 #import "OTRestClient.h"
 #import "OTRestModelLoader.h"
+#import <SystemConfiguration/SCNetworkReachability.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // global
@@ -64,6 +65,25 @@ static OTRestClient* sharedClient = nil;
 	[_password release];
 	[_HTTPHeaders release];
 	[super dealloc];
+}
+
+- (BOOL)isNetworkAvailable {
+	Boolean success;    
+	
+	const char *host_name = "google.com"; // your data source host name
+	
+	SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(NULL, host_name);
+#ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+	SCNetworkReachabilityFlags flags;
+#else
+	SCNetworkConnectionFlags flags;
+#endif
+	success = SCNetworkReachabilityGetFlags(reachability, &flags);
+	BOOL isNetworkAvailable = success && (flags & kSCNetworkFlagsReachable) && !(flags & kSCNetworkFlagsConnectionRequired);
+	CFRelease(reachability);
+	
+	return isNetworkAvailable;
+	
 }
 
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath {
