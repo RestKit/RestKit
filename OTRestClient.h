@@ -60,9 +60,22 @@
 + (OTRestClient*)clientWithBaseURL:(NSString*)baseURL username:(NSString*)username password:(NSString*)password;
 
 /**
+ *  Will check for network connectivity (to google.com)
+ */
+- (BOOL)isNetworkAvailable;
+
+/**
  * Fetch a resource via an HTTP GET and invoke a callback with the resulting payload
  */
 - (OTRestRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+
+/**
+ * Fetch a resource via an HTTP GET with a dictionary of params and invoke a callback with the resulting payload
+ *
+ * Note that this request _only_ allows NSDictionary objects as the params. The dictionary will be coerced into a URL encoded
+ * string and then appended to the resourcePath as the query string of the request.
+ */
+- (OTRestRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback;
 
 /**
  * Create a resource via an HTTP POST with a set of form parameters and invoke a callback with the resulting payload

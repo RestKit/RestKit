@@ -7,7 +7,7 @@
 //
 
 #import "OTRestManagedModel.h"
-
+#import <objc/runtime.h>
 
 @implementation OTRestManagedModel
 
@@ -15,7 +15,8 @@
 #pragma mark NSManagedObject helper methods
 
 + (NSEntityDescription*)entity {
-	return [NSEntityDescription entityForName:[[self class] className] inManagedObjectContext:myContext];
+	NSString* className = [NSString stringWithCString:class_getName([self class])];
+	return [NSEntityDescription entityForName:className inManagedObjectContext:myContext];
 }
 
 + (NSFetchRequest*)request {

@@ -8,6 +8,7 @@
 
 #import "OTRestClient.h"
 #import "OTRestModelLoader.h"
+#import <SystemConfiguration/SCNetworkReachability.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // global
@@ -66,6 +67,25 @@ static OTRestClient* sharedClient = nil;
 	[super dealloc];
 }
 
+- (BOOL)isNetworkAvailable {
+	Boolean success;    
+	
+	const char *host_name = "google.com"; // your data source host name
+	
+	SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(NULL, host_name);
+#ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+	SCNetworkReachabilityFlags flags;
+#else
+	SCNetworkConnectionFlags flags;
+#endif
+	success = SCNetworkReachabilityGetFlags(reachability, &flags);
+	BOOL isNetworkAvailable = success && (flags & kSCNetworkFlagsReachable) && !(flags & kSCNetworkFlagsConnectionRequired);
+	CFRelease(reachability);
+	
+	return isNetworkAvailable;
+	
+}
+
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath {
 	NSString* urlString = [NSString stringWithFormat:@"%@%@", self.baseURL, resourcePath];
 	return [NSURL URLWithString:urlString];
@@ -73,6 +93,14 @@ static OTRestClient* sharedClient = nil;
 
 - (OTRestRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
+	request.additionalHTTPHeaders = _HTTPHeaders;
+	[request get];
+	return request;
+}
+
+- (OTRestRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
+	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
+	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePathWithQueryString] delegate:delegate callback:callback];
 	request.additionalHTTPHeaders = _HTTPHeaders;
 	[request get];
 	return request;
