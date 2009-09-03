@@ -12,10 +12,10 @@
 
 #ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 	#import <UIKit/UIKit.h>
-	#define context [[[UIApplication sharedApplication] delegate] managedObjectContext]
+	#define myContext [[[UIApplication sharedApplication] delegate] managedObjectContext]
 #else
 	#import <AppKit/AppKit.h>
-	#define context [[[NSApplication sharedApplication] delegate] managedObjectContext]
+	#define myContext [[[NSApplication sharedApplication] delegate] managedObjectContext]
 #endif
 
 @interface OTRestManagedModel : NSManagedObject <OTRestModelMappable> {

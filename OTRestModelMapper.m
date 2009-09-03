@@ -7,15 +7,12 @@
 //
 
 #import "OTRestModelMapper.h"
+#import "OTRestModelMapper_Private.h"
+#import "ElementParser.h"
+#import "JSON.h"
 
-@interface OTRestModelMapper (Private)
-
-- (id)createOrUpdateInstanceOf:(Class)class fromXML:(Element*)XML;
-- (void)setAttributes:(id)object fromXML:(Element*)XML;
-- (void)setPropertiesOfModel:(id)model fromXML:(Element*)XML;
-- (void)setRelationshipsOfModel:(id)model fromXML:(Element*)XML;
-
-@end
+// Used for detecting property types at runtime
+#import <objc/runtime.h>
 
 
 @implementation OTRestModelMapper
@@ -27,14 +24,190 @@
 	return self;
 }
 
+- (id)initWithParsingStyle:(OTRestParsingStyle)style {
+	if (self = [self init]) {
+		_style = style;
+	}
+	return self;
+}
+
 - (void)dealloc {
 	[_elementToClassMappings release];
 	[super dealloc];
 }
 
-- (void)registerModel:(Class<OTRestModelMappable>)class forElementNamed:(NSString*)elementName {
-	[_elementToClassMappings setObject:class forKey:elementName];
+- (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName {
+	[_elementToClassMappings setObject:aClass forKey:elementName];
 }
+
+- (id)buildModelFromString:(NSString*)string {
+	id object = nil;
+	if (_style == OTRestParsingStyleJSON) {
+		object = [self buildModelFromJSON:string];
+	} else if (_style == OTRestParsingStyleXML) {
+		Element* e = [[[[[ElementParser alloc] init] autorelease] parseXML:string] firstChild];
+		object = [self buildModelFromXML:e];
+	} else {
+		[NSException raise:@"No Parsing Style Set" format:@"you must init your Mapper with a valid mapping style %d == %d", _style, OTRestParsingStyleJSON];
+	}
+	return object;
+}
+
+- (NSArray*)buildModelsFromString:(NSString*)string {
+	NSMutableArray* objects = [NSMutableArray array];
+	if (_style == OTRestParsingStyleJSON) {
+		//object = [self buildModelFromJSON:string];
+		NSArray* collectionDicts = [[[[SBJSON alloc] init] autorelease] objectWithString:string];
+		for (NSDictionary* dict in collectionDicts) {
+			id object = [self buildModelFromJSONDict:dict];
+			[objects addObject:object];
+		}
+		
+	} else if (_style == OTRestParsingStyleXML) {
+		Element* collectionElement = [[[[[ElementParser alloc] init] autorelease] parseXML:string] firstChild];
+		for (Element* e in [collectionElement childElements]) {
+			id object = [self buildModelFromXML:e];
+			[objects addObject:object];
+		}
+	} else {
+		[NSException raise:@"No Parsing Style Set" format:@"you must init your Mapper with a valid mapping style %d == %d", _style, OTRestParsingStyleJSON];
+	}
+	return (NSArray*)objects;
+}
+
+#pragma mark -
+#pragma mark shared parsing behavior
+
+- (void)updateObject:(id)model ifNewPropertyPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {
+	id currentValue = [model valueForKey:propertyName];
+	/*
+	 * The logic below is so that we don't trigger KVO observers 
+	 * when we aren't actually changing values
+	 */
+	if (currentValue == nil &&
+		propertyValue == nil) {
+	} else if (currentValue == nil) {
+		[model setValue:propertyValue forKey:propertyName];
+	} else {
+		SEL comparisonSelector;
+		if ([propertyValue isKindOfClass:[NSString class]]) {
+			comparisonSelector = @selector(isEqualToString:);
+		} else if ([propertyValue isKindOfClass:[NSNumber class]]) {
+			comparisonSelector = @selector(isEqualToNumber:);
+		} else if ([propertyValue isKindOfClass:[NSDate class]]) {
+			comparisonSelector = @selector(isEqualToDate:);
+		} else {
+			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@", [propertyValue class]];
+		}
+		if (![currentValue
+			  performSelector:comparisonSelector 
+			  withObject:propertyValue]) {
+			[model setValue:propertyValue forKey:propertyName];
+		}
+	}
+}
+
+#pragma mark -
+#pragma mark JSON Parsing
+
+- (id)buildModelFromJSON:(NSString*)JSON {
+	SBJsonParser* parser = [[[SBJsonParser alloc] init] autorelease];
+	NSDictionary* jsonDict = [parser objectWithString:JSON];
+	if (jsonDict == nil) {
+		return nil;
+	}
+	return [self buildModelFromJSONDict:jsonDict];
+}
+
+- (id)buildModelFromJSONDict:(NSDictionary*)dict {
+	assert([[dict allKeys] count] == 1);
+	NSString* keyName = [[dict allKeys] objectAtIndex:0];
+	Class class = [_elementToClassMappings objectForKey:keyName];
+	
+	return [self createOrUpdateInstanceOf:class fromJSONDict:[dict objectForKey:keyName]];
+}
+
+- (id)createOrUpdateInstanceOf:(Class)class fromJSONDict:(NSDictionary*)dict {
+	id object = nil;
+	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
+		// TODO: factor to class method? incase it is not a number
+		NSNumber* pk = [dict objectForKey:[class primaryKey]];
+		object = [class findByPrimaryKey:pk];
+	}
+	// instantiate if object is nil
+	if (object == nil) {
+		if ([class respondsToSelector:@selector(newObject)]) {
+			object = [class newObject];
+		} else {
+			object = [[[class alloc] init] autorelease];
+		}
+	}
+	// check to see if we should hand the object the xml to set it's own properties
+	// (custom implementation)
+	if ([object respondsToSelector:@selector(digestJSONDict:)]) {
+		[object digestJSONDict:dict];
+	}  else {
+		// update attributes
+		[self setAttributes:object fromJSONDict:dict];
+	}
+	return object;
+}
+
+- (void)setAttributes:(id)object fromJSONDict:(NSDictionary*)dict {
+	[self setPropertiesOfModel:object fromJSONDict:dict];
+	[self setRelationshipsOfModel:object fromJSONDict:dict];
+}
+
+- (void)setPropertiesOfModel:(id)model fromJSONDict:(NSDictionary*)dict {
+	for (NSString* selector in [[model class] elementToPropertyMappings]) {
+		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
+		
+		NSString* propertyType = [self nameForProperty:propertyName ofClass:[model class]];
+		id propertyValue = [dict objectForKey:selector];
+		
+		//Types of objects SBJSON does not handle:
+		if ([propertyType isEqualToString:@"NSDate"]) {
+			NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+			// Times coming back are in utc. we should convert them to the local timezone
+			// TODO: Make sure this is working correctly
+			[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+			[formatter setDateFormat:kRailsToXMLDateFormatterString];
+			propertyValue = [formatter dateFromString:propertyValue];
+			[formatter release];			
+		}
+		
+		[self updateObject:model ifNewPropertyPropertyValue:propertyValue forPropertyNamed:propertyName];
+	}
+}
+
+- (void)setRelationshipsOfModel:(id)model fromJSONDict:(NSDictionary*)dict {
+	for (NSString* selector in [[model class] elementToRelationshipMappings]) {
+		NSString* propertyName = [[[model class] elementToRelationshipMappings] objectForKey:selector];
+		if ([self isParentSelector:selector]) {
+			NSMutableSet* children = [NSMutableSet set];
+			// If the collection key doesn't appear, we will not set the collection to nil.
+			NSString* collectionKey = [self containingElementNameForSelector:selector];
+			// Used to figure out what class to map to, since we don't have element names for the dictionaries in the array
+			NSString* objectKey = [self childElementNameForSelelctor:selector];
+			NSArray* objects = [dict objectForKey:collectionKey];
+			if (objects != nil) {
+				for (NSDictionary* childDict in objects) {
+					Class class = [_elementToClassMappings objectForKey:objectKey];
+					[children addObject:[self createOrUpdateInstanceOf:class fromJSONDict:childDict]];
+				}
+				[model setValue:(NSSet*)children forKey:propertyName];
+			}
+		} else {
+			NSDictionary* objectDict = [dict objectForKey:selector];
+			Class class = [_elementToClassMappings objectForKey:selector];
+			id child = [self createOrUpdateInstanceOf:class fromJSONDict:objectDict];
+			[model setValue:child forKey:propertyName];
+		}
+	}
+}
+
+#pragma mark -
+#pragma mark XML Parsing
 
 - (id)buildModelFromXML:(Element*)XML {
 	if (XML == nil) {
@@ -65,8 +238,14 @@
 			object = [[[class alloc] init] autorelease];
 		}
 	}
-	// update attributes
-	[self setAttributes:object fromXML:XML];
+	// check to see if we should hand the object the xml to set it's own properties
+	// (custom implementation)
+	if ([object respondsToSelector:@selector(digestXML:)]) {
+		[object digestXML:XML];
+	}  else {
+		// update attributes
+		[self setAttributes:object fromXML:XML];
+	}
 	return object;
 }
 
@@ -75,18 +254,14 @@
 	[self setRelationshipsOfModel:object fromXML:XML];
 }
 
-- (id)propertyValueForElement:(Element*)propertyElement{
-	NSString* typeHint = [propertyElement attribute:@"type"];
+- (id)propertyValueForElement:(Element*)propertyElement type:(NSString*)type{
+	//NSString* typeHint = [propertyElement attribute:@"type"];
 	id propertyValue = nil;
-	if ([typeHint isEqualToString:@"string"] ||
-		typeHint == nil) {		
+	if ([type isEqualToString:@"NSString"]) {		
 		propertyValue = [propertyElement contentsText];
-	} else if ([typeHint isEqualToString:@"integer"] ||
-			   [typeHint isEqualToString:@"float"]) {
+	} else if ([type isEqualToString:@"NSNumber"]) {
 		propertyValue = [propertyElement contentsNumber];
-	} else if ([typeHint isEqualToString:@"boolean"]) {
-		propertyValue = [NSNumber numberWithBool:[[propertyElement contentsText] isEqualToString:@"true"]];
-	} else if ([typeHint isEqualToString:@"datetime"]) {
+	} else if ([type isEqualToString:@"NSDate"]) {
 		NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 		// Times coming back are in utc. we should convert them to the local timezone
 		// TODO: Make sure this is working correctly
@@ -94,29 +269,22 @@
 		[formatter setDateFormat:kRailsToXMLDateFormatterString];
 		propertyValue = [formatter dateFromString:[propertyElement contentsText]];
 		[formatter release];
-	} else if ([typeHint isEqualToString:@"nil"]) {
-		propertyValue = nil;
-	} else {
-		[NSException raise:@"PropertyTypeError" format:@"Don't know how to handle property type '%@'", typeHint];
+	} else if ([type isEqualToString:@"nil"]) {
+		[NSException raise:@"PropertyTypeError" format:@"Don't know how to handle property type '%@'", type];
 	}
 	return propertyValue;
 }
 
 - (void)setPropertiesOfModel:(id)model fromXML:(Element*)XML {
-	for (NSString* selector in [[[model class] elementToPropertyMappings] allKeys]) {
+	for (NSString* selector in [[model class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
 		Element* propertyElement = [XML selectElement:selector];
-		id propertyValue = [self propertyValueForElement:propertyElement];
-		[model setValue:propertyValue forKey:propertyName];
+		
+		NSString* propertyType = [self nameForProperty:propertyName ofClass:[model class]];
+		id propertyValue = [self propertyValueForElement:propertyElement type:propertyType];
+
+		[self updateObject:model ifNewPropertyPropertyValue:propertyValue forPropertyNamed:propertyName];
 	}
-}
-
-- (BOOL)isParentSelector:(NSString*)key {
-	return !NSEqualRanges([key rangeOfString:@" > "], NSMakeRange(NSNotFound, 0));
-}
-
-- (NSString*)containingElementNameForSelector:(NSString*)selector {
-	return [[selector componentsSeparatedByString:@" > "] objectAtIndex:0];
 }
 
 - (void)setRelationshipsOfModel:(id)model fromXML:(Element*)XML {
@@ -139,6 +307,72 @@
 			[model setValue:child forKey:propertyName];
 		}
 	}
+}
+
+#pragma mark -
+#pragma mark selector methods
+
+- (BOOL)isParentSelector:(NSString*)key {
+	return !NSEqualRanges([key rangeOfString:@" > "], NSMakeRange(NSNotFound, 0));
+}
+
+- (NSString*)containingElementNameForSelector:(NSString*)selector {
+	return [[selector componentsSeparatedByString:@" > "] objectAtIndex:0];
+}
+
+- (NSString*)childElementNameForSelelctor:(NSString*)selector {
+	return [[selector componentsSeparatedByString:@" > "] objectAtIndex:1];
+}
+
+#pragma mark -
+#pragma mark Property Type Methods
+
+- (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
+	NSString *type = [NSString string];
+	NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
+	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
+	
+	// we are not dealing with an object
+	if([typeScanner isAtEnd]) {
+		return @"NULL";
+	}
+	[typeScanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\"@"] intoString:NULL];
+	// this gets the actual object type
+	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\""] intoString:&type];
+	return type;
+}
+
+- (NSDictionary *)propertyNamesAndTypesForClass:(Class)class {
+	NSMutableDictionary *propertyNames = [NSMutableDictionary dictionary];
+	
+	//include superclass properties
+	Class currentClass = class;
+	while (currentClass != nil) {
+		// Get the raw list of properties
+		unsigned int outCount;
+		objc_property_t *propList = class_copyPropertyList(currentClass, &outCount);
+		
+		// Collect the property names
+		int i;
+		NSString *propName;
+		for (i = 0; i < outCount; i++)
+		{
+			objc_property_t * prop = propList + i;
+			NSString *type = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
+			propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
+			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
+				[propertyNames setObject:[self propertyTypeFromAttributeString:type] forKey:propName];
+			}
+		}
+		
+		free(propList);
+		currentClass = [currentClass superclass];
+	}
+	return propertyNames;
+}
+
+- (NSString*)nameForProperty:(NSString*)property ofClass:(Class)class {
+	return [[self propertyNamesAndTypesForClass:class] objectForKey:property];
 }
 
 @end

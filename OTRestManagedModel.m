@@ -15,7 +15,7 @@
 #pragma mark NSManagedObject helper methods
 
 + (NSEntityDescription*)entity {
-	return [NSEntityDescription entityForName:[[self class] className] inManagedObjectContext:context];
+	return [NSEntityDescription entityForName:[[self class] className] inManagedObjectContext:myContext];
 }
 
 + (NSFetchRequest*)request {
@@ -29,7 +29,7 @@
 + (NSArray*)collectionWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
 	//NSLog(@"Context: %@", context);
-	NSArray* collection = [context executeFetchRequest:request error:&error];
+	NSArray* collection = [myContext executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
 	}
@@ -61,10 +61,15 @@
 }
 
 #pragma mark -
-#pragma mark OTModelMapper informal protocol
+#pragma mark OTRestModelMappable
+
+- (NSString*)resourcePath {
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
 
 + (id)newObject {
-	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:context];
+	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:myContext];
 	return [model autorelease];
 }
 

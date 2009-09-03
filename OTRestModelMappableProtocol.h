@@ -7,6 +7,8 @@
  *
  */
 
+@class Element;
+
 /**
  * Must be implemented by all classes utilizing the OTRestModelMapper to map REST
  * responses to domain model classes
@@ -38,6 +40,18 @@
 @optional
 
 /**
+ * Must return the path to the resource on the server
+ * used for get/put/post/delete
+ * required if you intend to do get/put/post/delete requests
+ */
+- (NSString*)resourcePath;
+
+/**
+ * Must return the put/post params for the instance
+ */
+- (NSDictionary*)resourceParams;
+
+/**
  * Must return a new instance of the model class ready for mapping. Used to initialize the model
  * via any method other than alloc & init.
  */
@@ -54,5 +68,13 @@
  * instantiate a new instance.
  */
 + (id)findByPrimaryKey:(id)value;
+
+/**
+ * If implemented, the model mapper will hand the xml to the object instead of mapping it using
+ * elementToRelationshipMappings and elementToPropertyMappings
+ */
+- (void)digestXML:(Element*)e;
+
+- (void)digestJSONDict:(NSDictionary*)dict;
 
 @end

@@ -17,11 +17,17 @@
 + (OTRestModelManager*)manager;
 + (void)setManager:(OTRestModelManager*)manager;
 + (OTRestModelManager*)managerWithBaseURL:(NSString*)baseURL;
+- (id)initWithBaseURL:(NSString*)baseURL;
 
 /**
  * The rest client for this manager
  */
 @property (nonatomic, readonly) OTRestClient* client;
+
+/**
+ * Register a model mapping from a domain model class to an XML element name
+ */
+- (void)registerModel:(Class<OTRestModelMappable>)class forElementNamed:(NSString*)elementName;
 
 /**
  * The model mapper for this manager
@@ -31,16 +37,17 @@
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
-- (OTRestRequest*)getModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (OTRestRequest*)loadModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
 
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
-- (OTRestRequest*)getModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (OTRestRequest*)loadModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
 
-/**
- * Register a model mapping from a domain model class to an XML element name
- */
-- (void)registerModel:(Class)class forElementNamed:(NSString*)elementName;
+- (OTRestRequest*)getModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
+- (OTRestRequest*)postModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
+- (OTRestRequest*)putModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
+- (OTRestRequest*)deleteModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
+
 
 @end

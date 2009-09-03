@@ -61,7 +61,7 @@
 	NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
 	NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 	[body release];
-	OTRestResponse* response = [[OTRestResponse alloc] initWithRestRequest:self];
+	OTRestResponse* response = [[[OTRestResponse alloc] initWithRestRequest:self] autorelease];
 	[[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
 }
 

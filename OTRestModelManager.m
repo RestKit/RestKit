@@ -55,14 +55,14 @@ static OTRestModelManager* sharedManager = nil;
 
 #pragma mark Model Methods
 
-- (void)registerModel:(Class)class forElementNamed:(NSString*)elementName {
+- (void)registerModel:(Class<OTRestModelMappable>)class forElementNamed:(NSString*)elementName {
 	[_mapper registerModel:class forElementNamed:elementName];
 }
 
 /**
  * Load a model from a restful resource and invoke the callback
  */
-- (OTRestRequest*)getModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+- (OTRestRequest*)loadModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -73,7 +73,7 @@ static OTRestModelManager* sharedManager = nil;
 /**
  * Load a collection of models from a restful resource and invoke the callback
  */
-- (OTRestRequest*)getModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+- (OTRestRequest*)loadModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -81,5 +81,36 @@ static OTRestModelManager* sharedManager = nil;
 	return [_client get:resourcePath delegate:loader callback:loader.collectionCallback];
 }
 
+- (OTRestRequest*)getModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
+	loader.delegate = delegate;
+	loader.callback = callback;
+	
+	return [_client get:[model resourcePath] delegate:loader callback:loader.memberCallback];
+}
+
+- (OTRestRequest*)postModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
+	loader.delegate = delegate;
+	loader.callback = callback;
+	
+	OTRestParams* params = [OTRestParams paramsWithDictionary:[model resourceParams]];
+	return [_client post:[model resourcePath] params:params delegate:loader callback:loader.memberCallback];
+}
+
+- (OTRestRequest*)putModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
+	loader.delegate = delegate;
+	loader.callback = callback;
+	
+	OTRestParams* params = [OTRestParams paramsWithDictionary:[model resourceParams]];
+	return [_client put:[model resourcePath] params:params delegate:loader callback:loader.memberCallback];
+}
+
+- (OTRestRequest*)deleteModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	// TODO: are we responsible for deleting the object too,
+	//		or are we to assume that the caller has/will delete it?
+	return [_client delete:[model resourcePath] delegate:delegate callback:callback];
+}
 
 @end
