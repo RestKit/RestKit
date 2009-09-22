@@ -19,7 +19,7 @@
 }
 
 + (NSEntityDescription*)entity {
-	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSUnicodeStringEncoding];
+	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
 	return [NSEntityDescription entityForName:className inManagedObjectContext:[self managedObjectContext]];
 }
 
