@@ -9,18 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "OTRestModelMappableProtocol.h"
-
-#ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-	#import <UIKit/UIKit.h>
-	#define myContext [[[UIApplication sharedApplication] delegate] managedObjectContext]
-#else
-	#import <AppKit/AppKit.h>
-	#define myContext [[[NSApplication sharedApplication] delegate] managedObjectContext]
-#endif
+#import "OTRestModelManager.h"
 
 @interface OTRestManagedModel : NSManagedObject <OTRestModelMappable> {
-
+	
 }
+
+/**
+ * The Core Data managed object context from the OTRestModelManager's objectStore
+ * that is managing this model
+ */
++ (NSManagedObjectContext*)managedObjectContext;
 
 /**
  *	The NSEntityDescription for the Subclass 

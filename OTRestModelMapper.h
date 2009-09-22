@@ -13,16 +13,16 @@
 #define kRailsToXMLDateFormatterString @"yyyy-MM-dd'T'HH:mm:ss'Z'" // 2009-08-08T17:23:59Z
 
 typedef enum {
-	OTRestParsingStyleXML = 0,
-	OTRestParsingStyleJSON
-} OTRestParsingStyle;
+	OTRestMappingFormatXML = 0,
+	OTRestMappingFormatJSON
+} OTRestMappingFormat;
 
 @interface OTRestModelMapper : NSObject {
 	NSMutableDictionary* _elementToClassMappings;
-	OTRestParsingStyle _style;
+	OTRestMappingFormat _format;
 }
 
-- (id)initWithParsingStyle:(OTRestParsingStyle)style;
+@property(nonatomic, assign) OTRestMappingFormat format;
 
 /**
  * Register a mapping for a given class for an XML element with the given tag name
@@ -31,16 +31,23 @@ typedef enum {
 - (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName;
 
 /**
- * Digest an XML payload and return the an instance of the model class registered for the element
+ * Digest an XML/JSON payload and return the an instance of the model class registered for the element
  */
 - (id)buildModelFromString:(NSString*)payload;
+
+/**
+ * Digest an XML/JSON payload and return the resulting collection of model instances
+ */
 - (NSArray*)buildModelsFromString:(NSString*)payload;
 
 /**
- *	Digests an XML payload and updates the object with its properties and relationships
+ * Digests an XML payload and updates the object with its properties and relationships
  */
 - (void)setAttributes:(id)object fromXML:(Element*)XML;
 
+/**
+ * Digests a JSON payload and updates the object with its properties and relationships
+ */
 - (void)setAttributes:(id)object fromJSONDict:(NSDictionary*)dict;
 
 @end

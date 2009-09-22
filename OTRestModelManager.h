@@ -8,10 +8,12 @@
 
 #import "OTRestModelMapper.h"
 #import "OTRestClient.h"
+#import "OTRestManagedObjectStore.h"
 
 @interface OTRestModelManager : NSObject {
 	OTRestClient* _client;
 	OTRestModelMapper* _mapper;
+	OTRestManagedObjectStore* _objectStore;
 }
 
 + (OTRestModelManager*)manager;
@@ -20,7 +22,7 @@
 - (id)initWithBaseURL:(NSString*)baseURL;
 
 /**
- * The rest client for this manager
+ * The REST client for this manager
  */
 @property (nonatomic, readonly) OTRestClient* client;
 
@@ -33,6 +35,11 @@
  * The model mapper for this manager
  */
 @property(nonatomic, readonly) OTRestModelMapper* mapper;
+
+/**
+ * A Core Data backed object store for persisting objects that have been fetched from the Web
+ */
+@property(nonatomic, retain) OTRestManagedObjectStore* objectStore;
 
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
@@ -48,6 +55,5 @@
 - (OTRestRequest*)postModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
 - (OTRestRequest*)putModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
 - (OTRestRequest*)deleteModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
-
 
 @end

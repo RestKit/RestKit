@@ -46,7 +46,8 @@
 }
 
 - (void)testJSONMapping {
-	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] initWithParsingStyle:OTRestParsingStyleJSON];
+	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] init];
+	mapper.format = OTRestMappingFormatJSON;
 	[mapper registerModel:[TestSerialization class] forElementNamed:@"test_serialization_class"];
 	[mapper registerModel:[TestSerialization class] forElementNamed:@"test_serialization_class"];
 	[mapper registerModel:[TestSerializationAssociation class] forElementNamed:@"has_many"];
@@ -66,7 +67,8 @@
 }
 
 - (void)testJSONCollectionMapping {
-	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] initWithParsingStyle:OTRestParsingStyleJSON];
+	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] init];
+	mapper.format = OTRestMappingFormatJSON;
 	[mapper registerModel:[TestSerialization class] forElementNamed:@"test_serialization_class"];
 	[mapper registerModel:[TestSerialization class] forElementNamed:@"test_serialization_class"];
 	[mapper registerModel:[TestSerializationAssociation class] forElementNamed:@"has_many"];
@@ -87,7 +89,8 @@
 }
 
 - (void)testXMLMapping {
-	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] initWithParsingStyle:OTRestParsingStyleXML];
+	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] init];
+	mapper.format = OTRestMappingFormatXML;
 	[mapper registerModel:[TestSerialization class] forElementNamed:@"test_serialization_class"];
 	[mapper registerModel:[TestSerializationAssociation class] forElementNamed:@"has_many"];
 	[mapper registerModel:[TestSerializationAssociation class] forElementNamed:@"has_one"];
@@ -106,7 +109,8 @@
 }
 
 - (void)testXMLCollectionMapping {
-	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] initWithParsingStyle:OTRestParsingStyleXML];
+	OTRestModelMapper* mapper = [[OTRestModelMapper alloc] init];
+	mapper.format = OTRestMappingFormatXML;
 	[mapper registerModel:[TestSerialization class] forElementNamed:@"test_serialization_class"];
 	[mapper registerModel:[TestSerializationAssociation class] forElementNamed:@"has_many"];
 	[mapper registerModel:[TestSerializationAssociation class] forElementNamed:@"has_one"];

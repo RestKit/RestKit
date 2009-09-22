@@ -14,19 +14,14 @@
 // Used for detecting property types at runtime
 #import <objc/runtime.h>
 
-
 @implementation OTRestModelMapper
+
+@synthesize format = _format;
 
 - (id)init {
 	if (self = [super init]) {
 		_elementToClassMappings = [[NSMutableDictionary alloc] init];
-	}
-	return self;
-}
-
-- (id)initWithParsingStyle:(OTRestParsingStyle)style {
-	if (self = [self init]) {
-		_style = style;
+		_format = OTRestMappingFormatXML;
 	}
 	return self;
 }
@@ -36,41 +31,47 @@
 	[super dealloc];
 }
 
+- (BOOL)mappingFromJSON {
+	return _format == OTRestMappingFormatJSON;
+}
+
+- (BOOL)mappingFromXML {
+	return _format == OTRestMappingFormatXML;
+}
+
 - (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName {
 	[_elementToClassMappings setObject:aClass forKey:elementName];
 }
 
 - (id)buildModelFromString:(NSString*)string {
 	id object = nil;
-	if (_style == OTRestParsingStyleJSON) {
+	if ([self mappingFromJSON]) {
 		object = [self buildModelFromJSON:string];
-	} else if (_style == OTRestParsingStyleXML) {
+	} else if ([self mappingFromXML]) {
 		Element* e = [[[[[ElementParser alloc] init] autorelease] parseXML:string] firstChild];
 		object = [self buildModelFromXML:e];
 	} else {
-		[NSException raise:@"No Parsing Style Set" format:@"you must init your Mapper with a valid mapping style %d == %d", _style, OTRestParsingStyleJSON];
+		[NSException raise:@"No Parsing Style Set" format:@"you must specify a valid mapping format"];
 	}
 	return object;
 }
 
 - (NSArray*)buildModelsFromString:(NSString*)string {
 	NSMutableArray* objects = [NSMutableArray array];
-	if (_style == OTRestParsingStyleJSON) {
-		//object = [self buildModelFromJSON:string];
+	if ([self mappingFromJSON]) {
 		NSArray* collectionDicts = [[[[SBJSON alloc] init] autorelease] objectWithString:string];
 		for (NSDictionary* dict in collectionDicts) {
 			id object = [self buildModelFromJSONDict:dict];
 			[objects addObject:object];
-		}
-		
-	} else if (_style == OTRestParsingStyleXML) {
+		}		
+	} else if ([self mappingFromXML]) {
 		Element* collectionElement = [[[[[ElementParser alloc] init] autorelease] parseXML:string] firstChild];
 		for (Element* e in [collectionElement childElements]) {
 			id object = [self buildModelFromXML:e];
 			[objects addObject:object];
 		}
 	} else {
-		[NSException raise:@"No Parsing Style Set" format:@"you must init your Mapper with a valid mapping style %d == %d", _style, OTRestParsingStyleJSON];
+		[NSException raise:@"No Parsing Style Set" format:@"you must specify a valid mapping format"];
 	}
 	return (NSArray*)objects;
 }
@@ -142,7 +143,7 @@
 			object = [[[class alloc] init] autorelease];
 		}
 	}
-	// check to see if we should hand the object the xml to set it's own properties
+	// check to see if we should hand the object the JSON to set it's own properties
 	// (custom implementation)
 	if ([object respondsToSelector:@selector(digestJSONDict:)]) {
 		[object digestJSONDict:dict];

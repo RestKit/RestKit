@@ -20,6 +20,7 @@ static OTRestModelManager* sharedManager = nil;
 
 @synthesize mapper = _mapper;
 @synthesize client = _client;
+@synthesize objectStore = _objectStore;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
 	if (self = [super init]) {

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2525EBEB106961DD0069EBED /* OTRestManagedObjectStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525EBE9106961DD0069EBED /* OTRestManagedObjectStore.h */; };
+		2525EBEC106961DD0069EBED /* OTRestManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* OTRestManagedObjectStore.m */; };
 		2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B066102E0F1000832D07 /* OTRestModelLoader.h */; };
 		2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
 		2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
@@ -98,6 +100,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2525EBE9106961DD0069EBED /* OTRestManagedObjectStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedObjectStore.h; sourceTree = "<group>"; };
+		2525EBEA106961DD0069EBED /* OTRestManagedObjectStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestManagedObjectStore.m; sourceTree = "<group>"; };
 		2580B066102E0F1000832D07 /* OTRestModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelLoader.h; sourceTree = "<group>"; };
 		2580B067102E0F1000832D07 /* OTRestModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* OTRestManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedModel.h; sourceTree = "<group>"; };
@@ -269,6 +273,8 @@
 				25FCDE9B1035E901005418A7 /* OTRestModelMappableProtocol.h */,
 				3FBF1D37103614E500E307AC /* OTRestModelManager.h */,
 				3FBF1D38103614E500E307AC /* OTRestModelManager.m */,
+				2525EBE9106961DD0069EBED /* OTRestManagedObjectStore.h */,
+				2525EBEA106961DD0069EBED /* OTRestManagedObjectStore.m */,
 			);
 			name = Modeling;
 			sourceTree = "<group>";
@@ -401,6 +407,7 @@
 				3FCDFB69103A51B600D7CD66 /* SBJsonParser.h in Headers */,
 				3FCDFB6B103A51B600D7CD66 /* SBJsonWriter.h in Headers */,
 				3F0150FF103B148300BE3E24 /* OTRestModelMapper_Private.h in Headers */,
+				2525EBEB106961DD0069EBED /* OTRestManagedObjectStore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -544,6 +551,7 @@
 				3FCDFB68103A51B600D7CD66 /* SBJsonBase.m in Sources */,
 				3FCDFB6A103A51B600D7CD66 /* SBJsonParser.m in Sources */,
 				3FCDFB6C103A51B600D7CD66 /* SBJsonWriter.m in Sources */,
+				2525EBEC106961DD0069EBED /* OTRestManagedObjectStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -583,6 +591,7 @@
 		1DEB922008733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ADDITIONAL_SDKS = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/OTRestFramework.dst;
@@ -590,6 +599,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OTRestFramework_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = OTRestFramework;
 			};
 			name = Release;

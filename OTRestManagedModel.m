@@ -14,9 +14,13 @@
 #pragma mark -
 #pragma mark NSManagedObject helper methods
 
++ (NSManagedObjectContext*)managedObjectContext {
+	return [[[OTRestModelManager manager] objectStore] managedObjectContext];
+}
+
 + (NSEntityDescription*)entity {
-	NSString* className = [NSString stringWithCString:class_getName([self class])];
-	return [NSEntityDescription entityForName:className inManagedObjectContext:myContext];
+	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSUnicodeStringEncoding];
+	return [NSEntityDescription entityForName:className inManagedObjectContext:[self managedObjectContext]];
 }
 
 + (NSFetchRequest*)request {
@@ -29,10 +33,10 @@
 
 + (NSArray*)collectionWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
-	//NSLog(@"Context: %@", context);
-	NSArray* collection = [myContext executeFetchRequest:request error:&error];
+	NSArray* collection = [[self managedObjectContext] executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
+		// TODO: Error handling
 	}
 	return collection;
 }
@@ -40,9 +44,11 @@
 + (id)objectWithRequest:(NSFetchRequest*)request {
 	[request setFetchLimit:1];
 	NSArray* collection = [self collectionWithRequest:request];
-	if ([collection count] == 0)
+	if ([collection count] == 0) {
 		return nil;
-	return [collection objectAtIndex:0];
+	} else {
+		return [collection objectAtIndex:0];
+	}	
 }
 
 + (NSArray*)collectionWithPredicate:(NSPredicate*)predicate {
@@ -70,7 +76,7 @@
 }
 
 + (id)newObject {
-	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:myContext];
+	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[self managedObjectContext]];
 	return [model autorelease];
 }
 
