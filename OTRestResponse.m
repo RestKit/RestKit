@@ -7,6 +7,7 @@
 //
 
 #import "OTRestResponse.h"
+#import "OTRestNotifications.h"
 
 @implementation OTRestResponse
 
@@ -45,7 +46,10 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	[connection release];	
+	[connection release];
+	NSDate* receivedAt = [NSDate date];
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", [_request URL], @"URL", receivedAt, @"receivedAt", nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kOTRestResponseReceivedNotification object:self userInfo:userInfo];
 	[[_request delegate] performSelector:[_request callback] withObject:self];	
 }
 

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2525EBEB106961DD0069EBED /* OTRestManagedObjectStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525EBE9106961DD0069EBED /* OTRestManagedObjectStore.h */; };
 		2525EBEC106961DD0069EBED /* OTRestManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* OTRestManagedObjectStore.m */; };
+		2525F9A0106C0FF40069EBED /* OTRestNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525F99E106C0FF40069EBED /* OTRestNotifications.h */; };
+		2525F9A1106C0FF40069EBED /* OTRestNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525F99F106C0FF40069EBED /* OTRestNotifications.m */; };
 		2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B066102E0F1000832D07 /* OTRestModelLoader.h */; };
 		2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
 		2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
@@ -102,6 +104,8 @@
 /* Begin PBXFileReference section */
 		2525EBE9106961DD0069EBED /* OTRestManagedObjectStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedObjectStore.h; sourceTree = "<group>"; };
 		2525EBEA106961DD0069EBED /* OTRestManagedObjectStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestManagedObjectStore.m; sourceTree = "<group>"; };
+		2525F99E106C0FF40069EBED /* OTRestNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestNotifications.h; sourceTree = "<group>"; };
+		2525F99F106C0FF40069EBED /* OTRestNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestNotifications.m; sourceTree = "<group>"; };
 		2580B066102E0F1000832D07 /* OTRestModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelLoader.h; sourceTree = "<group>"; };
 		2580B067102E0F1000832D07 /* OTRestModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* OTRestManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedModel.h; sourceTree = "<group>"; };
@@ -206,10 +210,9 @@
 		0867D691FE84028FC02AAC07 /* OTRestFramework */ = {
 			isa = PBXGroup;
 			children = (
-				3FCDFB4C103A51B600D7CD66 /* JSON */,
-				3F262081103A0AF500B75C94 /* Tests */,
 				2580B1AE102F72FC00832D07 /* Core */,
 				2580B1AF102F730600832D07 /* Modeling */,
+				3F262081103A0AF500B75C94 /* Tests */,
 				2580B1AA102F72D700832D07 /* Dependencies */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
@@ -230,6 +233,7 @@
 		2580B1AA102F72D700832D07 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				3FCDFB4C103A51B600D7CD66 /* JSON */,
 				3F4E1924102DD4B300320118 /* ElementParserHeaders */,
 				3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */,
 			);
@@ -256,6 +260,8 @@
 				3F4E18ED102DD38700320118 /* OTRestRequest.h */,
 				3F4E18EF102DD38700320118 /* OTRestRequestSerializable.h */,
 				3F4E18F0102DD38700320118 /* OTRestResponse.h */,
+				2525F99E106C0FF40069EBED /* OTRestNotifications.h */,
+				2525F99F106C0FF40069EBED /* OTRestNotifications.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -408,6 +414,7 @@
 				3FCDFB6B103A51B600D7CD66 /* SBJsonWriter.h in Headers */,
 				3F0150FF103B148300BE3E24 /* OTRestModelMapper_Private.h in Headers */,
 				2525EBEB106961DD0069EBED /* OTRestManagedObjectStore.h in Headers */,
+				2525F9A0106C0FF40069EBED /* OTRestNotifications.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -552,6 +559,7 @@
 				3FCDFB6A103A51B600D7CD66 /* SBJsonParser.m in Sources */,
 				3FCDFB6C103A51B600D7CD66 /* SBJsonWriter.m in Sources */,
 				2525EBEC106961DD0069EBED /* OTRestManagedObjectStore.m in Sources */,
+				2525F9A1106C0FF40069EBED /* OTRestNotifications.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

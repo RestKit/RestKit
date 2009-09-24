@@ -12,6 +12,11 @@
 #import "NSDictionary+OTRestRequestSerialization.h"
 #import "ElementParser.h"
 
+/**
+ * OTRestClient exposes the low level client interface for working
+ * with HTTP servers and RESTful services. It wraps the request/response
+ * cycle with a clean, simple interface.
+ */
 @interface OTRestClient : NSObject {
 	NSString* _baseURL;
 	NSString* _username;
