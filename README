@@ -11,3 +11,5 @@ Next add OTRestFramework as a direct dependency to your target.
 Add 'OTRestFramework' and 'ElementParser/Classes' to your target's header search paths.
 
 Add libOTRestFramework.a to your target (checkbox)
+
+Be sure to enable the -ObjC in your Target settings under "Build" > "Other Linker Flags"
