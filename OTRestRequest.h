@@ -1,6 +1,6 @@
 //
 //  OTRestRequest.h
-//  gateguru
+//  OTRestFramework
 //
 //  Created by Jeremy Ellison on 7/27/09.
 //  Copyright 2009 Objective3. All rights reserved.

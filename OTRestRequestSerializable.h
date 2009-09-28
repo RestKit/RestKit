@@ -1,6 +1,6 @@
 //
 //  OTRestRequestSerializable.h
-//  gateguru
+//  OTRestFramework
 //
 //  Created by Blake Watters on 8/3/09.
 //  Copyright 2009 Objective 3. All rights reserved.

@@ -31,19 +31,11 @@
 
 - (void)loadModelFromResponse:(OTRestResponse*)response {
 	id model = [_mapper buildModelFromString:[response payloadString]];
-//	id model = [_mapper buildModelFromXML:[[response payloadXMLDocument] firstChild]];
 	[_delegate performSelector:self.callback withObject:model];
 }
 
 - (void)loadModelsFromResponse:(OTRestResponse*)response {
 	NSArray* models = [_mapper buildModelsFromString:[response payloadString]];
-	
-//	NSMutableArray* models = [[[NSMutableArray alloc] init] autorelease];
-//	NSArray* elements = [[[response payloadXMLDocument] firstChild] childElements];
-//	for (Element* element in elements) {
-//		id model = [_mapper buildModelFromXML:element];
-//		[models addObject:model];
-//	}	
 	[_delegate performSelector:self.callback withObject:models];
 }
 
