@@ -25,10 +25,18 @@ static NSString *urlEncode(id object) {
 - (NSString*)URLEncodedString {
 	NSMutableArray *parts = [NSMutableArray array];
 	for (id key in self) {
-		id value = [self objectForKey: key];
-		NSString *part = [NSString stringWithFormat: @"%@=%@", 
-						  urlEncode(key), urlEncode(value)];
-		[parts addObject: part];
+		id value = [self objectForKey:key];
+		if ([value isKindOfClass:[NSArray class]]) {
+			for (id item in value) {
+				NSString *part = [NSString stringWithFormat: @"%@[]=%@", 
+								  urlEncode(key), urlEncode(item)];
+				[parts addObject:part];
+			}
+		} else {
+			NSString *part = [NSString stringWithFormat: @"%@=%@", 
+							  urlEncode(key), urlEncode(value)];
+			[parts addObject:part];
+		}		
 	}
 	
 	return [parts componentsJoinedByString: @"&"];
