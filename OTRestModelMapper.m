@@ -104,6 +104,7 @@
 		
 		// Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
 		// Original code courtesy of Greg Parker
+		// This is necessary because isEqualToNumber will return negative integer values that aren't coercable directly to BOOL's without help [sbw]
 		BOOL (*ComparisonSender)(id, SEL, id) = (BOOL (*)(id, SEL, id)) objc_msgSend;		
 		BOOL areEqual = ComparisonSender(currentValue, comparisonSelector, propertyValue);
 				
