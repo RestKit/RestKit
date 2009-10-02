@@ -7,6 +7,7 @@
 //
 
 #import "OTRestManagedModel.h"
+#import "NSString+InflectionSupport.h"
 #import <objc/runtime.h>
 
 @implementation OTRestManagedModel
@@ -100,11 +101,54 @@
 	return [NSDictionary dictionary];
 }
 
++ (NSArray*)elementNames {
+	return [[self elementToPropertyMappings] allKeys];
+}
+
++ (NSArray*)propertyNames {
+	return [[self elementToPropertyMappings] allValues];
+}
+
++ (NSString*)modelName {
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
+
 #pragma mark Helpers
+
+- (NSDictionary*)elementNamesAndPropertyValues {
+	NSDictionary* mappings = [[self class] elementToPropertyMappings];
+	NSMutableDictionary* elementsAndPropertyValues = [NSMutableDictionary dictionaryWithCapacity:[mappings count]];
+	// Return all the properties of this model in a dictionary under their element names
+	for (NSString* elementName in mappings) {
+		NSString* propertyName = [mappings valueForKey:elementName];
+		id propertyValue = [self valueForKey:propertyName];
+		[elementsAndPropertyValues setValue:propertyValue forKey:elementName];
+	}
+	
+	return (NSDictionary*) elementsAndPropertyValues;
+}
+
+- (NSDictionary*)resourceParams {
+	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValues];
+	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];	
+	NSString* underscoredModelName = [[[self class] modelName] underscore];
+	for (NSString* elementName in [elementsAndProperties allKeys]) {
+		id value = [elementsAndProperties valueForKey:elementName];
+		NSString* attributeName = [elementName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+		NSString* keyName = [NSString stringWithFormat:@"%@[%@]", underscoredModelName, attributeName];
+		[resourceParams setValue:value forKey:keyName];
+	}
+	
+	return resourceParams;
+}
 
 - (NSError*)save {
 	NSError* error = nil;
 	[[self managedObjectContext] save:&error];
+	if (nil != error) {
+		NSLog(@"Error saving persistent store: %@", error);
+	}
 	return error;
 }
 

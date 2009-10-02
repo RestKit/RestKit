@@ -69,6 +69,21 @@
 + (NSDictionary*)elementToRelationshipMappings;
 
 /**
+ * Returns all the XML/JSON element names for the properties of this model
+ */
++ (NSArray*)elementNames;
+
+/**
+ * Returns all the Managed Model property names of this model
+ */
++ (NSArray*)elementNames;
+
+// The server side name of the model?
++ (NSString*)modelName;
+
+- (NSDictionary*)elementNamesAndPropertyValues;
+
+/**
  * Save the object into the managed object context
  */
 - (NSError*)save;
