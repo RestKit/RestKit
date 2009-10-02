@@ -6,6 +6,7 @@
 //  Copyright 2009 Objective 3. All rights reserved.
 //
 
+#import <objc/objc-runtime.h>
 #import "OTRestModelMapper.h"
 #import "OTRestModelMapper_Private.h"
 #import "ElementParser.h"
@@ -100,9 +101,13 @@
 		} else {
 			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@", [propertyValue class]];
 		}
-		if (![currentValue
-			  performSelector:comparisonSelector 
-			  withObject:propertyValue]) {
+		
+		// Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
+		// Original code courtesy of Greg Parker
+		BOOL (*ComparisonSender)(id, SEL, id) = (BOOL (*)(id, SEL, id)) objc_msgSend;		
+		BOOL areEqual = ComparisonSender(currentValue, comparisonSelector, propertyValue);
+				
+		if (NO == areEqual) {
 			[model setValue:propertyValue forKey:propertyName];
 		}
 	}
@@ -166,7 +171,7 @@
 		NSString* propertyType = [self nameForProperty:propertyName ofClass:[model class]];
 		id propertyValue = [dict objectForKey:selector];
 		
-		//Types of objects SBJSON does not handle:
+		// Types of objects SBJSON does not handle:
 		if ([propertyType isEqualToString:@"NSDate"]) {
 			NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 			// Times coming back are in utc. we should convert them to the local timezone
@@ -263,13 +268,16 @@
 	} else if ([type isEqualToString:@"NSNumber"]) {
 		propertyValue = [propertyElement contentsNumber];
 	} else if ([type isEqualToString:@"NSDate"]) {
-		NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-		// Times coming back are in utc. we should convert them to the local timezone
-		// TODO: Make sure this is working correctly
-		[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-		[formatter setDateFormat:kRailsToXMLDateFormatterString];
-		propertyValue = [formatter dateFromString:[propertyElement contentsText]];
-		[formatter release];
+		NSString* dateString = [propertyElement contentsText];
+		if (nil != dateString) {
+			NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+			// Times coming back are in utc. we should convert them to the local timezone
+			// TODO: Need a way to handle date/time formats. Maybe part of the mapper?
+			[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+			[formatter setDateFormat:kRailsToXMLDateFormatterString];
+			propertyValue = [formatter dateFromString:dateString];
+			[formatter release];
+		}
 	} else if ([type isEqualToString:@"nil"]) {
 		[NSException raise:@"PropertyTypeError" format:@"Don't know how to handle property type '%@'", type];
 	}

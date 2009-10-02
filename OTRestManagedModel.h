@@ -45,7 +45,7 @@
 + (id)newObject;
 
 /**
- *	The primaryKey property mapping, defaults to @"id" for rails generated XML
+ *	The primaryKey property mapping, defaults to @"id" for Rails generated XML
  */
 + (NSString*)primaryKey;
 
@@ -67,5 +67,22 @@
  *				to an NSSet* property named @"users"
  */
 + (NSDictionary*)elementToRelationshipMappings;
+
+/**
+ * Save the object into the managed object context
+ */
+- (NSError*)save;
+
+/**
+ * Deletes the object from the managed object context
+ */
+- (void)destroy;
+
+/**
+ * Sets attributes on the model from the XML document according to the element to property/relationship mappings
+ */
+- (void)setAttributesFromXML:(Element*)XML;
+
+// TODO: Need helper method on superclass for this... setAttributesFromXML:/setAttributesFromJSON:/setAttributesFromPayload?
 
 @end

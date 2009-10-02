@@ -100,4 +100,20 @@
 	return [NSDictionary dictionary];
 }
 
+#pragma mark Helpers
+
+- (NSError*)save {
+	NSError* error = nil;
+	[[self managedObjectContext] save:&error];
+	return error;
+}
+
+- (void)destroy {
+	[[self managedObjectContext] deleteObject:self];
+}
+
+- (void)setAttributesFromXML:(Element*)XML {
+	[[[OTRestModelManager manager] mapper] setAttributes:self fromXML:XML];
+}
+
 @end
