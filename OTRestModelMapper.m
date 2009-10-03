@@ -109,6 +109,7 @@
 		BOOL areEqual = ComparisonSender(currentValue, comparisonSelector, propertyValue);
 				
 		if (NO == areEqual) {
+			NSLog(@"Setting property %@ to new value %@", propertyName, propertyValue);
 			[model setValue:propertyValue forKey:propertyName];
 		}
 	}
@@ -169,7 +170,7 @@
 	for (NSString* selector in [[model class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
 		
-		NSString* propertyType = [self nameForProperty:propertyName ofClass:[model class]];
+		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:nil];
 		id propertyValue = [dict objectForKey:selector];
 		
 		// Types of objects SBJSON does not handle:
@@ -289,10 +290,20 @@
 	for (NSString* selector in [[model class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
 		Element* propertyElement = [XML selectElement:selector];
-		
-		NSString* propertyType = [self nameForProperty:propertyName ofClass:[model class]];
-		id propertyValue = [self propertyValueForElement:propertyElement type:propertyType];
-
+		NSString* typeHint = [propertyElement attribute:@"type"];
+		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:typeHint];
+		NSLog(@"The propertyType is %@", propertyType);
+		id propertyValue = [self propertyValueForElement:propertyElement type:propertyType]; // valueForElement instead???
+		if (typeHint) {
+			NSLog(@"TypeHint is %@", typeHint);
+			if ([typeHint isEqualToString:@"boolean"]) {
+				// Booleans must be cast to NSNumber...
+				NSLog(@"Boolean value before cast: %@", propertyValue);
+				propertyValue = [NSNumber numberWithBool:[propertyValue boolValue]];
+				NSLog(@"Boolean value after cast: %@", propertyValue);
+			}
+		}
+		NSLog(@"Trying potential update to %@ with value %@", propertyName, propertyValue);
 		[self updateObject:model ifNewPropertyPropertyValue:propertyValue forPropertyNamed:propertyName];
 	}
 }
@@ -383,8 +394,12 @@
 	return propertyNames;
 }
 
-- (NSString*)nameForProperty:(NSString*)property ofClass:(Class)class {
-	return [[self propertyNamesAndTypesForClass:class] objectForKey:property];
+- (NSString*)typeNameForProperty:(NSString*)property ofClass:(Class)class typeHint:(NSString*)typeHint {
+	if ([typeHint isEqualToString:@"boolean"]) {
+		return @"NSString";
+	} else {
+		return [[self propertyNamesAndTypesForClass:class] objectForKey:property];
+	}	
 }
 
 @end
