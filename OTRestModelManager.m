@@ -87,7 +87,7 @@ static OTRestModelManager* sharedManager = nil;
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
-	return [_client get:[model resourcePath] delegate:loader callback:loader.memberCallback];
+	return [_client get:[model memberPath] delegate:loader callback:loader.memberCallback];
 }
 
 - (OTRestRequest*)postModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
@@ -96,7 +96,7 @@ static OTRestModelManager* sharedManager = nil;
 	loader.callback = callback;
 	
 	OTRestParams* params = [OTRestParams paramsWithDictionary:[model resourceParams]];
-	return [_client post:[model resourcePath] params:params delegate:loader callback:loader.memberCallback];
+	return [_client post:[model collectionPath] params:params delegate:loader callback:loader.memberCallback];
 }
 
 - (OTRestRequest*)putModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
@@ -105,13 +105,13 @@ static OTRestModelManager* sharedManager = nil;
 	loader.callback = callback;
 	
 	OTRestParams* params = [OTRestParams paramsWithDictionary:[model resourceParams]];
-	return [_client put:[model resourcePath] params:params delegate:loader callback:loader.memberCallback];
+	return [_client put:[model memberPath] params:params delegate:loader callback:loader.memberCallback];
 }
 
 - (OTRestRequest*)deleteModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
 	// TODO: are we responsible for deleting the object too,
 	//		or are we to assume that the caller has/will delete it?
-	return [_client delete:[model resourcePath] delegate:delegate callback:callback];
+	return [_client delete:[model memberPath] delegate:delegate callback:callback];
 }
 
 @end

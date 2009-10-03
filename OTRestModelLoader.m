@@ -30,7 +30,9 @@
 }
 
 - (void)loadModelFromResponse:(OTRestResponse*)response {
-	id model = [_mapper buildModelFromString:[response payloadString]];
+	NSLog(@"Attempting to build model from response: %@", [response payloadString]);
+	// TODO: This needs to handle errors!!!
+	id model = [_mapper buildModelFromString:[response payloadString]];	
 	[_delegate performSelector:self.callback withObject:model];
 }
 

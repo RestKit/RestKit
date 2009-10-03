@@ -34,6 +34,7 @@
 
 + (NSArray*)collectionWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
+	NSLog(@"About to perform a collection request: %@", request);
 	NSArray* collection = [[self managedObjectContext] executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
@@ -71,9 +72,20 @@
 #pragma mark -
 #pragma mark OTRestModelMappable
 
+// TODO: All this path shit needs cleaning up...
 - (NSString*)resourcePath {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
+}
+
+// TODO: The .xml format should NOT be specified here!
+- (NSString*)collectionPath {
+	return [NSString stringWithFormat:@"%@.xml", [self resourcePath]];
+}
+
+- (NSString*)memberPath {
+	NSLog(@"Was asked for memberPath. primaryKeyValue is %@. self = %@", [self valueForKey:[[self class] primaryKey]], self);
+	return [NSString stringWithFormat:@"%@/%@.xml", [self resourcePath], [self valueForKey:[[self class] primaryKey]]];
 }
 
 + (id)newObject {
@@ -82,13 +94,15 @@
 }
 
 + (NSString*)primaryKey {
+	return @"ID";
+}
+
++ (NSString*)primaryKeyElement {
 	return @"id";
 }
 
 + (id)findByPrimaryKey:(id)value {
-	NSString* pk = [[[self elementToPropertyMappings] objectForKey:[self primaryKey]] retain];
-	NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K = %@", pk, value];
-	[pk release];
+	NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K = %@", [self primaryKey], value];
 	return [self objectWithPredicate:predicate];
 }
 
@@ -129,6 +143,7 @@
 	return (NSDictionary*) elementsAndPropertyValues;
 }
 
+// TODO: This implementation is Rails specific. Consider using an adapter approach.
 - (NSDictionary*)resourceParams {
 	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValues];
 	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];	
@@ -143,6 +158,7 @@
 	return resourceParams;
 }
 
+// TODO: Should this handle persistence to the web also? Should the model manager do it instead? How do we handle deletes? creation? need flags?
 - (NSError*)save {
 	NSError* error = nil;
 	[[self managedObjectContext] save:&error];
@@ -152,7 +168,8 @@
 	return error;
 }
 
-- (void)destroy {
+// TODO: Delete on the server also? See above.
+- (void)destroy {	
 	[[self managedObjectContext] deleteObject:self];
 }
 

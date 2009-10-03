@@ -45,9 +45,14 @@
 + (id)newObject;
 
 /**
- *	The primaryKey property mapping, defaults to @"id" for Rails generated XML
+ *	The primaryKey property mapping, defaults to @"ID"
  */
 + (NSString*)primaryKey;
+
+/**
+ * The name of the primary key in the server-side data payload. Defaults to @"id" for Rails generated XML/JSON
+ */
++ (NSString*)primaryKeyElement;
 
 /**
  *	Will find the existing object with the primary key of 'value' and return it

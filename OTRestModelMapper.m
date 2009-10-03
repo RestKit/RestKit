@@ -6,7 +6,8 @@
 //  Copyright 2009 Objective 3. All rights reserved.
 //
 
-#import <objc/objc-runtime.h>
+// #import <objc/objc-runtime.h>
+#import <objc/message.h>
 #import "OTRestModelMapper.h"
 #import "OTRestModelMapper_Private.h"
 #import "ElementParser.h"
@@ -86,8 +87,7 @@
 	 * The logic below is so that we don't trigger KVO observers 
 	 * when we aren't actually changing values
 	 */
-	if (currentValue == nil &&
-		propertyValue == nil) {
+	if (currentValue == nil && propertyValue == nil) {
 	} else if (currentValue == nil) {
 		[model setValue:propertyValue forKey:propertyName];
 	} else {
@@ -99,7 +99,7 @@
 		} else if ([propertyValue isKindOfClass:[NSDate class]]) {
 			comparisonSelector = @selector(isEqualToDate:);
 		} else {
-			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@", [propertyValue class]];
+			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@ (%@)", propertyName, [propertyValue class]];
 		}
 		
 		// Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
@@ -224,6 +224,7 @@
 	NSString* elementName = [XML key];
 	Class class = [_elementToClassMappings objectForKey:elementName];
 	if (class == nil) {
+		NSLog(@"Encountered an unmapped class while processing XML Element: %@", XML);
 		[NSException raise:@"NoClassMappingForModel" format:@"No Class Mapping for Element name '%@'", elementName];
 	}
 	id object = [self createOrUpdateInstanceOf:class fromXML:XML];
@@ -235,7 +236,8 @@
 	// Find by PK, if it responds to it
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
 		// TODO: factor to class method? incase it is not a number
-		NSNumber* pk = [XML contentsNumberOfChildElement:[class primaryKey]];
+		NSNumber* pk = [XML contentsNumberOfChildElement:[class primaryKeyElement]];
+		NSLog(@"Attempting to find object by primary key %@ via primaryKeyElement %@", pk, [class primaryKeyElement]);
 		object = [class findByPrimaryKey:pk];
 	}
 	// instantiate if object is nil
