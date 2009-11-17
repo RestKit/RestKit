@@ -34,7 +34,7 @@
 
 + (NSArray*)collectionWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
-	NSLog(@"About to perform a collection request: %@", request);
+//	NSLog(@"About to perform a collection request: %@", request);
 	NSArray* collection = [[self managedObjectContext] executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
