@@ -87,8 +87,9 @@
 	 * The logic below is so that we don't trigger KVO observers 
 	 * when we aren't actually changing values
 	 */
-	if (currentValue == nil && propertyValue == nil) {
-	} else if (currentValue == nil) {
+	if ((currentValue == nil && propertyValue == nil ) ||
+		[propertyValue isKindOfClass:[NSNull class]]) {
+	} else if (currentValue == nil || [currentValue isKindOfClass:[NSNull class]]) {
 		[model setValue:propertyValue forKey:propertyName];
 	} else {
 		SEL comparisonSelector;
