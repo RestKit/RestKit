@@ -151,8 +151,10 @@
 	for (NSString* elementName in [elementsAndProperties allKeys]) {
 		id value = [elementsAndProperties valueForKey:elementName];
 		NSString* attributeName = [elementName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-		NSString* keyName = [NSString stringWithFormat:@"%@[%@]", underscoredModelName, attributeName];
-		[resourceParams setValue:value forKey:keyName];
+		if (![attributeName isEqualToString:@"id"]) {
+			NSString* keyName = [NSString stringWithFormat:@"%@[%@]", underscoredModelName, attributeName];
+			[resourceParams setValue:value forKey:keyName];
+		}
 	}
 	
 	return resourceParams;
