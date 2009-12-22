@@ -83,13 +83,13 @@
 
 - (void)updateObject:(id)model ifNewPropertyPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {
 	id currentValue = [model valueForKey:propertyName];
-	/*
-	 * The logic below is so that we don't trigger KVO observers 
-	 * when we aren't actually changing values
-	 */
-	if ((currentValue == nil && propertyValue == nil ) ||
-		[propertyValue isKindOfClass:[NSNull class]]) {
+	if (nil == currentValue && nil == propertyValue) {
+		// Don't set the property, both are nil
+	} else if (nil == propertyValue || [propertyValue isKindOfClass:[NSNull class]]) {
+		// Clear out the value to reset it
+		[model setNilValueForKey:propertyName];
 	} else if (currentValue == nil || [currentValue isKindOfClass:[NSNull class]]) {
+		// Existing value was nil, just set the property and be happy
 		[model setValue:propertyValue forKey:propertyName];
 	} else {
 		SEL comparisonSelector;
