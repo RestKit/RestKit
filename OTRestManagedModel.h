@@ -45,7 +45,7 @@
 + (id)newObject;
 
 /**
- *	The primaryKey property mapping, defaults to @"ID"
+ *	The primaryKey property mapping, defaults to @"railsID"
  */
 + (NSString*)primaryKey;
 
