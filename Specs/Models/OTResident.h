@@ -6,11 +6,12 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import <CoreData/CoreData.h>
+#import "OTRestManagedModel.h"
+
 
 @class OTHouse;
 
-@interface OTResident :  NSManagedObject  
+@interface OTResident :  OTRestManagedModel  
 {
 }
 

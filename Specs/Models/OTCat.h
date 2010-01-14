@@ -6,11 +6,12 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "OTRestManagedModel.h"
+
 
 @class OTHuman;
 
-@interface OTCat : NSObject {
+@interface OTCat : OTRestManagedModel {
 
 }
 
