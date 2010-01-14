@@ -1,0 +1,38 @@
+= Rails Money
+
+Note! This is NOT compatible with the 'money' gem!
+
+A handler for storing money in ActiveRecord objects as integers (as cents), but dealing
+with them as Money Objects.
+
+
+Note: Dividing a money object will return an array of Money objects. This ensures cents 
+do not go missing.
+
+For example:
+
+  >> money = Money.new(10.00)
+  => #<Money:0xb76b3e14 @cents=1000> 
+  >> money / 3
+  => [#<Money:0xb76b3e14 @cents=433>, #<Money:0xb76b3f2c @cents=333>, #<Money:0xb76b3f04 @cents=333>]
+
+All other operations (+, -, *, and Comparable stuff) will work without any surprises or magic. 
+
+== Usage
+
+Create your tables with fields named FIELDNAME_in_cents and you will be able to access them as
+FIELDNAME. ActiveRecord will return Money objects instead of Fixnums.
+
+  add_column :products, :price_in_cents, :integer
+ 
+  product = Product.find_first
+  product.price = 100.00
+  product.price >> #<Money @cents=10000>
+
+
+Creating a Money can be done from a Fixnum (dollars) or a Float (dollars.cents). To create a money
+object from just cents, do Money.create_from_cents(100) 
+
+== Feedback
+
+Any suggestions, fixes, or improvements - lemme know, jerrett at gmail

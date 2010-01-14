@@ -1,0 +1,11 @@
+== Welcome to OTRestSpecs
+A Two Toasters joint. http://www.twotoasters.com/
+
+This project provides a simple data model for functionally testing the OTRestFramework. There are a simple
+set of models constructed that the specs on the OTRestFramework suite run against.
+
+To run the OTRestFramework specs against this app:
+1) Run `rake db:create db:schema:load db:seed_fu`
+2) Launch the server: `./script/server`
+
+For support, contact the Two Toasters crew at team@twotoasters.com.

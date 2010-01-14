@@ -1,0 +1,421 @@
+= Introduction
+
+The default_value_for plugin allows one to define default values for ActiveRecord
+models in a declarative manner. For example:
+
+  class User < ActiveRecord::Base
+    default_value_for :name, "(no name)"
+    default_value_for :last_seen do
+      Time.now
+    end
+  end
+  
+  u = User.new
+  u.name       # => "(no name)"
+  u.last_seen  # => Mon Sep 22 17:28:38 +0200 2008
+
+*Note*: critics might be interested in the "When (not) to use default_value_for?"
+section. Please read on.
+
+
+== Installation
+
+Install with:
+
+  ./script/plugin install git://github.com/FooBarWidget/default_value_for.git
+
+
+== The default_value_for method
+
+The +default_value_for+ method is available in all ActiveRecord model classes.
+
+The first argument is the name of the attribute for which a default value should
+be set. This may either be a Symbol or a String.
+
+The default value itself may either be passed as the second argument:
+
+  default_value_for :age, 20
+
+...or it may be passed as the return value of a block:
+
+  default_value_for :age do
+    if today_is_sunday?
+      20
+    else
+      30
+    end
+  end
+
+If you pass a value argument, then the default value is static and never
+changes. However, if you pass a block, then the default value is retrieved by
+calling the block. This block is called not once, but every time a new record is
+instantiated and default values need to be filled in.
+
+The latter form is especially useful if your model has a UUID column. One can
+generate a new, random UUID for every newly instantiated record:
+
+  class User < ActiveRecord::Base
+    default_value_for :uuid do
+      UuidGenerator.new.generate_uuid
+    end
+  end
+  
+  User.new.uuid  # => "51d6d6846f1d1b5c9a...."
+  User.new.uuid  # => "ede292289e3484cb88...."
+
+Note that record is passed to the block as an argument, in case you need it for
+whatever reason:
+
+  class User < ActiveRecord::Base
+    default_value_for :uuid do |x|
+      x   # <--- a User object
+      UuidGenerator.new.generate_uuid
+    end
+  end
+
+== The default_values method
+
+As a shortcut, you can use +default_values+ to set multiple default values at once.
+
+  default_values :age  => 20
+                 :uuid => lambda { UuidGenerator.new.generate_uuid }
+
+The difference is purely aesthetic.  If you have lots of default values which are constants or constructed with one-line blocks, +default_values+ may look nicer.  If you have default values constructed by longer blocks, +default_value_for+ suit you better.  Feel free to mix and match.
+
+As a side note, due to specifics of Ruby's parser, you cannot say,
+
+  default_value :uuid { UuidGenerator.new.generate_uuid }
+
+because it will not parse.  This is in part the inspiration for the +default_values+ syntax.
+
+== Rules
+
+=== Instantiation of new record
+
+Upon instantiating a new record, the declared default values are filled into
+the record. You've already seen this in the above examples.
+
+=== Retrieval of existing record
+
+Upon retrieving an existing record, the declared default values are _not_
+filled into the record. Consider the example with the UUID:
+
+  user = User.create
+  user.uuid   # => "529c91b8bbd3e..."
+  
+  user = User.find(user.id)
+  # UUID remains unchanged because it's retrieved from the database!
+  user.uuid   # => "529c91b8bbd3e..."
+
+=== Mass-assignment
+
+If a certain attribute is being assigned via the model constructor's
+mass-assignment argument, that the default value for that attribute will _not_
+be filled in:
+
+  user = User.new(:uuid => "hello")
+  user.uuid   # => "hello"
+
+However, if that attribute is protected by +attr_protected+ or +attr_accessible+,
+then it will be filled in:
+
+  class User < ActiveRecord::Base
+    default_value_for :name, 'Joe'
+    attr_protected :name
+  end
+  
+  user = User.new(:name => "Jane")
+  user.name   # => "Joe"
+
+=== Inheritance
+
+Inheritance works as expected. All default values are inherited by the child
+class:
+
+  class User < ActiveRecord::Base
+    default_value_for :name, 'Joe'
+  end
+  
+  class SuperUser < User
+  end
+  
+  SuperUser.new.name   # => "Joe"
+
+=== Attributes that aren't database columns
+
++default_value_for+ also works with attributes that aren't database columns.
+It works with anything for which there's an assignment method:
+
+  # Suppose that your 'users' table only has a 'name' column.
+  class User < ActiveRecord::Base
+    default_value_for :name, 'Joe'
+    default_value_for :age, 20
+    default_value_for :registering, true
+    
+    attr_accessor :age
+    
+    def registering=(value)
+      @registering = true
+    end
+  end
+  
+  user = User.new
+  user.age    # => 20
+  user.instance_variable_get('@registering')    # => true
+
+=== Default values are *not* duplicated
+
+The given default values are *not* duplicated when they are filled in, so if
+you mutate a value that was filled in with a default value, then it will affect
+all subsequent default values:
+
+  class Author < ActiveRecord::Base
+    # This model only has a 'name' attribute.
+  end
+  
+  class Book < ActiveRecord::Base
+    belongs_to :author
+    
+    # By default, a Book belongs to a new, unsaved author.
+    default_value_for :author, Author.new
+  end
+  
+  book1 = Book.new
+  book1.author.name  # => nil
+  # This mutates the default value:
+  book1.author.name = "John"
+  
+  book2 = Book.new
+  book2.author.name  # => "John"
+
+You can prevent this from happening by passing a block to +default_value_for+,
+which returns a new object instance every time:
+
+  class Book < ActiveRecord::Base
+    belongs_to :author
+    
+    default_value_for :author do
+      Author.new
+    end
+  end
+  
+  book1 = Book.new
+  book1.author.name  # => nil
+  book1.author.name = "John"
+  
+  book2 = Book.new
+  book2.author.name  # => nil
+
+The main reason why default values are not duplicated is because not all
+objects can be duplicated. For example, +Fixnum+ responds to +dup+, but calling
++dup+ on a Fixnum will raise an exception.
+
+=== Caveats
+
+A conflict can occur if your model class overrides the 'initialize' method,
+because this plugin overrides 'initialize' as well to do its job.
+
+  class User < ActiveRecord::Base
+    def initialize  # <-- this constructor causes problems
+      super(:name => 'Name cannot be changed in constructor')
+    end
+  end
+
+We recommend you to alias chain your initialize method in models where you use
++default_value_for+:
+
+  class User < ActiveRecord::Base
+    default_value_for :age, 20
+    
+    def initialize_with_my_app
+      initialize_without_my_app(:name => 'Name cannot be changed in constructor')
+    end
+    
+    alias_method_chain :initialize, :my_app
+  end
+
+Also, stick with the following rules:
+- There is no need to +alias_method_chain+ your initialize method in models that
+  don't use +default_value_for+.
+- Make sure that +alias_method_chain+ is called *after* the last
+  +default_value_for+ occurance.
+
+
+== When (not) to use default_value_for?
+
+You can also specify default values in the database schema. For example, you
+can specify a default value in a migration as follows:
+
+  create_table :users do |t|
+    t.string    :username,  :null => false, :default => 'default username'
+    t.integer   :age,       :null => false, :default => 20
+    t.timestamp :last_seen, :null => false, :default => Time.now
+  end
+
+This has the same effect as passing the default value as the second argument to
++default_value_for+:
+
+  user = User.new
+  user.username   # => 'default username'
+  user.age        # => 20
+  user.timestamp  # => Mon Sep 22 18:31:47 +0200 2008
+
+It's recommended that you use this over +default_value_for+ whenever possible.
+
+However, it's not possible to specify a schema default for serialized columns.
+With +default_value_for+, you can:
+
+  class User < ActiveRecord::Base
+    serialize :color
+    default_value_for :color, [255, 0, 0]
+  end
+
+And if schema defaults don't provide the flexibility that you need, then
++default_value_for+ is the perfect choice. For example, with +default_value_for+
+you could specify a per-environment default:
+
+  class User < ActiveRecord::Base
+    if RAILS_ENV == "development"
+      default_value_for :is_admin, true
+    end
+  end
+
+Or, as you've seen in an earlier example, you can use +default_value_for+ to
+generate a default random UUID:
+
+  class User < ActiveRecord::Base
+    default_value_for :uuid do
+      UuidGenerator.new.generate_uuid
+    end
+  end
+
+Or you could use it to generate a timestamp that's relative to the time at which
+the record is instantiated:
+
+  class User < ActiveRecord::Base
+    default_value_for :account_expires_at do
+      3.years.from_now
+    end
+  end
+  
+  User.new.account_expires_at   # => Mon Sep 22 18:43:42 +0200 2008
+  sleep(2)
+  User.new.account_expires_at   # => Mon Sep 22 18:43:44 +0200 2008
+
+Finally, it's also possible to specify a default via an association:
+
+  # Has columns: 'name' and 'default_price'
+  class SuperMarket < ActiveRecord::Base
+    has_many :products
+  end
+  
+  # Has columns: 'name' and 'price'
+  class Product < ActiveRecord::Base
+    belongs_to :super_market
+    
+    default_value_for :price do |product|
+      product.super_market.default_price
+    end
+  end
+  
+  super_market = SuperMarket.create(:name => 'Albert Zwijn', :default_price => 100)
+  soap = super_market.products.create(:name => 'Soap')
+  soap.price   # => 100
+
+=== What about before_validate/before_save?
+
+True, +before_validate+ and +before_save+ does what we want if we're only
+interested in filling in a default before saving. However, if one wants to be
+able to access the default value even before saving, then be prepared to write
+a lot of code. Suppose that we want to be able to access a new record's UUID,
+even before it's saved. We could end up with the following code:
+
+  # In the controller
+  def create
+    @user = User.new(params[:user])
+    @user.generate_uuid
+    email_report_to_admin("#{@user.username} with UUID #{@user.uuid} created.")
+    @user.save!
+  end
+  
+  # Model
+  class User < ActiveRecord::Base
+    before_save :generate_uuid_if_necessary
+    
+    def generate_uuid
+      self.uuid = ...
+    end
+    
+    private
+      def generate_uuid_if_necessary
+        if uuid.blank?
+          generate_uuid
+        end
+      end
+  end
+
+The need to manually call +generate_uuid+ here is ugly, and one can easily forget
+to do that. Can we do better? Let's see:
+
+  # Controller
+  def create
+    @user = User.new(params[:user])
+    email_report_to_admin("#{@user.username} with UUID #{@user.uuid} created.")
+    @user.save!
+  end
+  
+  # Model
+  class User < ActiveRecord::Base
+    before_save :generate_uuid_if_necessary
+    
+    def uuid
+      value = read_attribute('uuid')
+      if !value
+        value = generate_uuid
+        write_attribute('uuid', value)
+      end
+      value
+    end
+    
+    # We need to override this too, otherwise User.new.attributes won't return
+    # a default UUID value. I've never tested with User.create() so maybe we
+    # need to override even more things.
+    def attributes
+      uuid
+      super
+    end
+    
+    private
+      def generate_uuid_if_necessary
+        uuid  # Reader method automatically generates UUID if it doesn't exist
+      end
+  end
+
+That's an awful lot of code. Using +default_value_for+ is easier, don't you think?
+
+=== What about other plugins?
+
+I've only been able to find 2 similar plugins:
+
+- Default Value: http://agilewebdevelopment.com/plugins/default_value
+- ActiveRecord Defaults: http://agilewebdevelopment.com/plugins/activerecord_defaults
+
+'Default Value' appears to be unmaintained; its SVN link is broken. This leaves
+only 'ActiveRecord Defaults'. However, it is semantically dubious, which leaves
+it wide open for corner cases. For example, it is not clearly specified what
+ActiveRecord Defaults will do when attributes are protected by +attr_protected+
+or +attr_accessible+. It is also not clearly specified what one is supposed to
+do if one needs a custom +initialize+ method in the model.
+
+I've taken my time to thoroughly document default_value_for's behavior.
+
+
+== Credits
+
+I've wanted such functionality for a while now and it baffled me that ActiveRecord
+doesn't provide a clean way for me to specify default values. After reading
+http://groups.google.com/group/rubyonrails-core/browse_thread/thread/b509a2fe2b62ac5/3e8243fa1954a935,
+it became clear that someone needs to write a plugin. This is the result.
+
+Thanks to Pratik Naik for providing the initial code snippet on which this plugin
+is based on: http://m.onkey.org/2007/7/24/how-to-set-default-values-in-your-model
