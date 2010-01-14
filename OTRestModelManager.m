@@ -21,11 +21,13 @@ static OTRestModelManager* sharedManager = nil;
 @synthesize mapper = _mapper;
 @synthesize client = _client;
 @synthesize objectStore = _objectStore;
+@synthesize format = _format;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
 	if (self = [super init]) {
 		_mapper = [[OTRestModelMapper alloc] init];
 		_client = [[OTRestClient clientWithBaseURL:baseURL] retain];
+		self.format = OTRestMappingFormatXML;
 	}
 	return self;
 }
@@ -53,6 +55,14 @@ static OTRestModelManager* sharedManager = nil;
 	[super dealloc];
 }
 
+- (void)setFormat:(OTRestMappingFormat)format {
+	_format = format;
+	if (OTRestMappingFormatXML == _format) {
+		[_client setValue:@"application/xml" forHTTPHeaderField:@"Accept"];
+	} else if (OTRestMappingFormatJSON == _format) {
+		[_client setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+	}
+}
 
 #pragma mark Model Methods
 

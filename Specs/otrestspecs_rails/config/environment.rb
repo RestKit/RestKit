@@ -11,7 +11,6 @@ Rails::Initializer.run do |config|
   config.gem 'paperclip', :lib => 'paperclip', :source => 'http://gemcutter.org', :version => '2.3.1.1'
   config.gem 'nokogiri', :version => '1.4.1'
   config.gem 'alexdunae-validates_email_format_of', :lib => 'validates_email_format_of', :version => '1.4'
-  config.gem 'haml', :version => '2.2.16'
   config.gem 'will_paginate', :lib => 'will_paginate', :source => 'http://gemcutter.org', :version => '2.3.11'
   config.gem 'configatron', :version => '2.5.1'
   config.gem 'bcrypt-ruby', :lib => 'bcrypt', :version => '2.1.2'

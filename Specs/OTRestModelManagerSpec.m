@@ -36,7 +36,7 @@
 - (void)itShouldLoadAHuman {
 	NSLog(@"Model Manager: %@", _modelManager);
 	NSLog(@"Response Loader: %@", _responseLoader);
-	OTRestRequest* request = [_modelManager loadModel:@"/humans/1.xml" delegate:_responseLoader callback:@selector(loadResponse:)];
+	OTRestRequest* request = [_modelManager loadModel:@"/humans/1" delegate:_responseLoader callback:@selector(loadResponse:)];
 	NSLog(@"Request: %@", request);
 	[_responseLoader waitForResponse];
 	OTHuman* blake = (OTHuman*) _responseLoader.response;
@@ -44,7 +44,7 @@
 }
 
 - (void)itShouldLoadAllHumans {
-	OTRestRequest* request = [_modelManager loadModels:@"/humans.xml" delegate:_responseLoader callback:@selector(loadResponse:)];
+	OTRestRequest* request = [_modelManager loadModels:@"/humans" delegate:_responseLoader callback:@selector(loadResponse:)];
 	NSLog(@"Request: %@", request);
 	[_responseLoader waitForResponse];
 	NSArray* humans = (NSArray*) _responseLoader.response;
@@ -56,6 +56,17 @@
 }
 
 - (void)itShouldHandleConnectionFailures {
+}
+
+- (void)itShouldDefaultToAnXMLMappingFormat {	
+	[expectThat(_modelManager.format) should:be(OTRestMappingFormatXML)];
+}
+
+- (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
+	_modelManager.format = OTRestMappingFormatXML;
+	[expectThat([_modelManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/xml")];
+	_modelManager.format = OTRestMappingFormatJSON;
+	[expectThat([_modelManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
 }
 
 @end

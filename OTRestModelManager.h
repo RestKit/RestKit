@@ -14,12 +14,20 @@
 	OTRestClient* _client;
 	OTRestModelMapper* _mapper;
 	OTRestManagedObjectStore* _objectStore;
+	OTRestMappingFormat _format;
 }
 
 + (OTRestModelManager*)manager;
 + (void)setManager:(OTRestModelManager*)manager;
 + (OTRestModelManager*)managerWithBaseURL:(NSString*)baseURL;
 - (id)initWithBaseURL:(NSString*)baseURL;
+
+/**
+ * The wire format to use for communications. Either OTRestMappingFormatXML or OTRestMappingFormatJSON.
+ *
+ * Defaults to OTRestMappingFormatXML
+ */
+@property(nonatomic, assign) OTRestMappingFormat format;
 
 /**
  * The REST client for this manager

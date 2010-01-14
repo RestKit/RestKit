@@ -34,6 +34,7 @@
 		255DE0F010FFABE500A85891 /* NSDictionary+OTRestRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E1919102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m */; };
 		255DE0F410FFAC0A00A85891 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */; };
 		255DE1B110FFB16800A85891 /* OTRestSpecResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */; };
+		255DE37810FFC26900A85891 /* OTRestClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE37710FFC26900A85891 /* OTRestClientSpec.m */; };
 		2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B066102E0F1000832D07 /* OTRestModelLoader.h */; };
 		2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
 		2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
@@ -200,6 +201,7 @@
 		255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		255DE1AF10FFB16800A85891 /* OTRestSpecResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestSpecResponseLoader.h; sourceTree = "<group>"; };
 		255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestSpecResponseLoader.m; sourceTree = "<group>"; };
+		255DE37710FFC26900A85891 /* OTRestClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestClientSpec.m; sourceTree = "<group>"; };
 		2580B066102E0F1000832D07 /* OTRestModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelLoader.h; sourceTree = "<group>"; };
 		2580B067102E0F1000832D07 /* OTRestModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* OTRestManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedModel.h; sourceTree = "<group>"; };
@@ -511,6 +513,7 @@
 				255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */,
 				3F6C3A9310FE7519008F47C5 /* main.m */,
 				255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */,
+				255DE37710FFC26900A85891 /* OTRestClientSpec.m */,
 			);
 			path = Specs;
 			sourceTree = "<group>";
@@ -826,6 +829,7 @@
 				3F032A7910FFB89100F35142 /* OTCat.m in Sources */,
 				3F032AA810FFBBCD00F35142 /* OTHouse.m in Sources */,
 				3F032AAB10FFBC1F00F35142 /* OTResident.m in Sources */,
+				255DE37810FFC26900A85891 /* OTRestClientSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
