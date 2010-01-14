@@ -15,7 +15,7 @@
 		253BBE971076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
 		253BBE981076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
 		255DE05A10FF9DA500A85891 /* OTRestModelManagerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */; };
-		255DE05E10FFA05800A85891 /* Human.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05D10FFA05800A85891 /* Human.m */; };
+		255DE05E10FFA05800A85891 /* OTHuman.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05D10FFA05800A85891 /* OTHuman.m */; };
 		255DE0B710FFA52E00A85891 /* Data Model.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */; };
 		255DE0DB10FFAB7700A85891 /* OTRestModelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FBF1D38103614E500E307AC /* OTRestModelManager.m */; };
 		255DE0DC10FFAB7B00A85891 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
@@ -43,6 +43,9 @@
 		25FCDDE11035C201005418A7 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
 		25FCDE9C1035E901005418A7 /* OTRestModelMappableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FCDE9B1035E901005418A7 /* OTRestModelMappableProtocol.h */; };
 		3F0150FF103B148300BE3E24 /* OTRestModelMapper_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F0150FE103B148300BE3E24 /* OTRestModelMapper_Private.h */; };
+		3F032A7910FFB89100F35142 /* OTCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* OTCat.m */; };
+		3F032AA810FFBBCD00F35142 /* OTHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* OTHouse.m */; };
+		3F032AAB10FFBC1F00F35142 /* OTResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* OTResident.m */; };
 		3F035C7C10FE7F0100C469B4 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
 		3F035C8110FE7F1A00C469B4 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB59103A51B600D7CD66 /* SBJsonWriter.m */; };
 		3F035C8210FE7F1B00C469B4 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB57103A51B600D7CD66 /* SBJsonParser.m */; };
@@ -123,13 +126,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		255DDF9410FF99F600A85891 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25FCE09E10360372005418A7 /* Tests.octest */;
-			remoteInfo = Tests;
-		};
 		3F4E18DA102DD31E00320118 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
@@ -190,8 +186,8 @@
 		253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+InflectionSupport.m"; sourceTree = "<group>"; };
 		255DE03010FF9BDF00A85891 /* OTRestManagedModelSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestManagedModelSpec.m; sourceTree = "<group>"; };
 		255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelManagerSpec.m; sourceTree = "<group>"; };
-		255DE05C10FFA05800A85891 /* Human.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Human.h; sourceTree = "<group>"; };
-		255DE05D10FFA05800A85891 /* Human.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Human.m; sourceTree = "<group>"; };
+		255DE05C10FFA05800A85891 /* OTHuman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTHuman.h; sourceTree = "<group>"; };
+		255DE05D10FFA05800A85891 /* OTHuman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTHuman.m; sourceTree = "<group>"; };
 		255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = "Data Model.xcdatamodel"; path = "Models/Data Model.xcdatamodel"; sourceTree = "<group>"; };
 		255DE0E110FFABA500A85891 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -205,6 +201,12 @@
 		25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelMapper.m; sourceTree = "<group>"; };
 		25FCDE9B1035E901005418A7 /* OTRestModelMappableProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelMappableProtocol.h; sourceTree = "<group>"; };
 		3F0150FE103B148300BE3E24 /* OTRestModelMapper_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelMapper_Private.h; sourceTree = "<group>"; };
+		3F032A7710FFB89100F35142 /* OTCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTCat.h; sourceTree = "<group>"; };
+		3F032A7810FFB89100F35142 /* OTCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTCat.m; sourceTree = "<group>"; };
+		3F032AA610FFBBCD00F35142 /* OTHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTHouse.h; sourceTree = "<group>"; };
+		3F032AA710FFBBCD00F35142 /* OTHouse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTHouse.m; sourceTree = "<group>"; };
+		3F032AA910FFBC1F00F35142 /* OTResident.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTResident.h; sourceTree = "<group>"; };
+		3F032AAA10FFBC1F00F35142 /* OTResident.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTResident.m; sourceTree = "<group>"; };
 		3F262087103A0AFF00B75C94 /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F262088103A0AFF00B75C94 /* Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
 		3F26208C103A0B1F00B75C94 /* OTRestModelMapperTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelMapperTest.h; sourceTree = "<group>"; };
@@ -352,8 +354,14 @@
 		255DE05B10FFA04200A85891 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				255DE05C10FFA05800A85891 /* Human.h */,
-				255DE05D10FFA05800A85891 /* Human.m */,
+				255DE05C10FFA05800A85891 /* OTHuman.h */,
+				255DE05D10FFA05800A85891 /* OTHuman.m */,
+				3F032A7710FFB89100F35142 /* OTCat.h */,
+				3F032A7810FFB89100F35142 /* OTCat.m */,
+				3F032AA610FFBBCD00F35142 /* OTHouse.h */,
+				3F032AA710FFBBCD00F35142 /* OTHouse.m */,
+				3F032AA910FFBC1F00F35142 /* OTResident.h */,
+				3F032AAA10FFBC1F00F35142 /* OTResident.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -447,7 +455,6 @@
 			isa = PBXGroup;
 			children = (
 				3F4E18DB102DD31E00320118 /* libElementParser.a */,
-				255DDF9510FF99F600A85891 /* Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -673,13 +680,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		255DDF9510FF99F600A85891 /* Tests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = Tests.octest;
-			remoteRef = 255DDF9410FF99F600A85891 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		3F4E18DB102DD31E00320118 /* libElementParser.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -777,7 +777,7 @@
 				3F035D0A10FE829B00C469B4 /* TestSerializationAssociation.m in Sources */,
 				3F035D0B10FE82A000C469B4 /* TestSerialization.m in Sources */,
 				255DE05A10FF9DA500A85891 /* OTRestModelManagerSpec.m in Sources */,
-				255DE05E10FFA05800A85891 /* Human.m in Sources */,
+				255DE05E10FFA05800A85891 /* OTHuman.m in Sources */,
 				255DE0B710FFA52E00A85891 /* Data Model.xcdatamodel in Sources */,
 				255DE0DB10FFAB7700A85891 /* OTRestModelManager.m in Sources */,
 				255DE0DC10FFAB7B00A85891 /* OTRestModelLoader.m in Sources */,
@@ -794,6 +794,9 @@
 				255DE0EF10FFABE300A85891 /* NSString+InflectionSupport.m in Sources */,
 				255DE0F010FFABE500A85891 /* NSDictionary+OTRestRequestSerialization.m in Sources */,
 				255DE1B110FFB16800A85891 /* OTRestSpecResponseLoader.m in Sources */,
+				3F032A7910FFB89100F35142 /* OTCat.m in Sources */,
+				3F032AA810FFBBCD00F35142 /* OTHouse.m in Sources */,
+				3F032AAB10FFBC1F00F35142 /* OTResident.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

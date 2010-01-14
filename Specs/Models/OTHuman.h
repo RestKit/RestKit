@@ -9,7 +9,7 @@
 #import "OTRestManagedModel.h"
 
 
-@interface Human : OTRestManagedModel {	
+@interface OTHuman : OTRestManagedModel {	
 }
 
 @property (nonatomic, retain) NSNumber* railsID;

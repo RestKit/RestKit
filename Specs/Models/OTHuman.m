@@ -6,9 +6,9 @@
 //  Copyright 2010 Objective 3. All rights reserved.
 //
 
-#import "Human.h"
+#import "OTHuman.h"
 
-@implementation Human
+@implementation OTHuman
 
 @dynamic railsID;
 @dynamic name;

@@ -11,7 +11,7 @@
 
 #import "OTRestModelManager.h"
 #import "OTRestSpecResponseLoader.h"
-#import "Human.h"
+#import "OTHuman.h"
 
 
 @interface OTRestModelManagerSpec : NSObject <UISpec> {
@@ -24,9 +24,10 @@
 @implementation OTRestModelManagerSpec
 
 - (void)beforeAll {
-	_modelManager = [OTRestModelManager managerWithBaseURL:@"http://10.4.5.213:3000"];
+	NSString* ip = @"10.4.5.208";
+	_modelManager = [OTRestModelManager managerWithBaseURL:[NSString stringWithFormat:@"http://%@:3000", ip]];
 	_modelManager.objectStore = [[OTRestManagedObjectStore alloc] initWithStoreFilename:@"OTRest_Specs.sqlite"];
-	[_modelManager registerModel:[Human class] forElementNamed:@"human"];
+	[_modelManager registerModel:[OTHuman class] forElementNamed:@"human"];
 	// TODO: Set the accept header...
 	
 	_responseLoader	= [[OTRestSpecResponseLoader alloc] init];
@@ -38,11 +39,17 @@
 	OTRestRequest* request = [_modelManager loadModel:@"/humans/1.xml" delegate:_responseLoader callback:@selector(loadResponse:)];
 	NSLog(@"Request: %@", request);
 	[_responseLoader waitForResponse];
-	Human* blake = (Human*) _responseLoader.response;
+	OTHuman* blake = (OTHuman*) _responseLoader.response;
 	[expectThat(blake.name) should:be(@"Blake Watters")];
 }
 
 - (void)itShouldLoadAllHumans {
+	OTRestRequest* request = [_modelManager loadModels:@"/humans.xml" delegate:_responseLoader callback:@selector(loadResponse:)];
+	NSLog(@"Request: %@", request);
+	[_responseLoader waitForResponse];
+	NSArray* humans = (NSArray*) _responseLoader.response;
+	[expectThat([humans count]) should:be(4)];
+	[expectThat([[humans objectAtIndex:0] class]) should:be([OTHuman class])];
 }
 
 - (void)itShouldLoadHumansInPages {

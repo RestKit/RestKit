@@ -13,6 +13,8 @@ class Human < ActiveRecord::Base
   
   validates_inclusion_of :sex, :in => %w{male female}
   
+  has_many :cats
+  
   private
     def calculate_age_from_birthday
       if birthday
