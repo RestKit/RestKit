@@ -24,8 +24,8 @@
 @implementation OTRestModelManagerSpec
 
 - (void)beforeAll {
-	NSString* ip = @"10.4.5.208";
-	_modelManager = [OTRestModelManager managerWithBaseURL:[NSString stringWithFormat:@"http://%@:3000", ip]];
+	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3000", getenv("OTREST_IP_ADDRESS")];
+	_modelManager = [OTRestModelManager managerWithBaseURL:localBaseURL];
 	_modelManager.objectStore = [[OTRestManagedObjectStore alloc] initWithStoreFilename:@"OTRest_Specs.sqlite"];
 	[_modelManager registerModel:[OTHuman class] forElementNamed:@"human"];
 	// TODO: Set the accept header...
