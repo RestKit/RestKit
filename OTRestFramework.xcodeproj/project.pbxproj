@@ -23,6 +23,15 @@
 		25FCDDE11035C201005418A7 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
 		25FCDE9C1035E901005418A7 /* OTRestModelMappableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FCDE9B1035E901005418A7 /* OTRestModelMappableProtocol.h */; };
 		3F0150FF103B148300BE3E24 /* OTRestModelMapper_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F0150FE103B148300BE3E24 /* OTRestModelMapper_Private.h */; };
+		3F035C7C10FE7F0100C469B4 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
+		3F035C8110FE7F1A00C469B4 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB59103A51B600D7CD66 /* SBJsonWriter.m */; };
+		3F035C8210FE7F1B00C469B4 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB57103A51B600D7CD66 /* SBJsonParser.m */; };
+		3F035C8310FE7F1C00C469B4 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB55103A51B600D7CD66 /* SBJsonBase.m */; };
+		3F035C8410FE7F1D00C469B4 /* SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB53103A51B600D7CD66 /* SBJSON.m */; };
+		3F035C8510FE7F1D00C469B4 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB51103A51B600D7CD66 /* NSString+SBJSON.m */; };
+		3F035C8610FE7F1E00C469B4 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB4F103A51B600D7CD66 /* NSObject+SBJSON.m */; };
+		3F035D0A10FE829B00C469B4 /* TestSerializationAssociation.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFAAE103A461D00D7CD66 /* TestSerializationAssociation.m */; };
+		3F035D0B10FE82A000C469B4 /* TestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFAB1103A465200D7CD66 /* TestSerialization.m */; };
 		3F26208E103A0B1F00B75C94 /* OTRestModelMapperTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F26208D103A0B1F00B75C94 /* OTRestModelMapperTest.m */; };
 		3F4E18F2102DD38800320118 /* OTRestClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E18E3102DD38700320118 /* OTRestClient.h */; };
 		3F4E18F3102DD38800320118 /* OTRestClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18E4102DD38700320118 /* OTRestClient.m */; };
@@ -58,6 +67,13 @@
 		3F4E1944102DD4B300320118 /* TagChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1933102DD4B300320118 /* TagChunk.h */; };
 		3F4E1945102DD4B300320118 /* TxtChunk.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1934102DD4B300320118 /* TxtChunk.h */; };
 		3F4E1946102DD4B300320118 /* URLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E1935102DD4B300320118 /* URLParser.h */; };
+		3F6C39C010FE738E008F47C5 /* UISpec_Simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C39BD10FE738A008F47C5 /* UISpec_Simulator.a */; };
+		3F6C39C510FE73B3008F47C5 /* UISpec_Simulator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C39BD10FE738A008F47C5 /* UISpec_Simulator.a */; };
+		3F6C39DB10FE73FD008F47C5 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
+		3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A2D10FE749C008F47C5 /* Foundation.framework */; };
+		3F6C3A9410FE7519008F47C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3A9310FE7519008F47C5 /* main.m */; };
+		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		3F6C3AD410FE76C1008F47C5 /* OTRestModelMapperSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3AD010FE76C1008F47C5 /* OTRestModelMapperSpec.m */; };
 		3FBF1D39103614E500E307AC /* OTRestModelManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3FBF1D37103614E500E307AC /* OTRestModelManager.h */; };
 		3FBF1D3A103614E500E307AC /* OTRestModelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FBF1D38103614E500E307AC /* OTRestModelManager.m */; };
 		3FCDFA96103A298E00D7CD66 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
@@ -95,12 +111,47 @@
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = ElementParser;
 		};
-		3F4E18DC102DD32A00320118 /* PBXContainerItemProxy */ = {
+		3F6C399C10FE5C80008F47C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = ElementParser;
+		};
+		3F6C39BC10FE738A008F47C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
+			remoteInfo = UISpec_Simulator;
+		};
+		3F6C39BE10FE738A008F47C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C76EB5DA0F7458C100EF8398;
+			remoteInfo = UISpec_Device;
+		};
+		3F6C39CA10FE73C1008F47C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = ElementParser;
+		};
+		3F6C3A9B10FE753B008F47C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
+			remoteInfo = UISpec_Simulator;
+		};
+		3FF0DF4410FE7CEA008901F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C7D4F29310BDA39C00B00019;
+			remoteInfo = Specs;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -158,6 +209,13 @@
 		3F4E1933102DD4B300320118 /* TagChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TagChunk.h; path = ../ElementParser/Classes/TagChunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1934102DD4B300320118 /* TxtChunk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TxtChunk.h; path = ../ElementParser/Classes/TxtChunk.h; sourceTree = SOURCE_ROOT; };
 		3F4E1935102DD4B300320118 /* URLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = URLParser.h; path = ../ElementParser/Classes/URLParser.h; sourceTree = SOURCE_ROOT; };
+		3F6C39A510FE5C95008F47C5 /* UI Spec.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "UI Spec.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F6C39A710FE5C95008F47C5 /* UI Spec-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "UI Spec-Info.plist"; sourceTree = "<group>"; };
+		3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = ../UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = SOURCE_ROOT; };
+		3F6C3A2D10FE749C008F47C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		3F6C3A9310FE7519008F47C5 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		3F6C3A9510FE7524008F47C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		3F6C3AD010FE76C1008F47C5 /* OTRestModelMapperSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelMapperSpec.m; sourceTree = "<group>"; };
 		3FBF1D37103614E500E307AC /* OTRestModelManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelManager.h; sourceTree = "<group>"; };
 		3FBF1D38103614E500E307AC /* OTRestModelManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelManager.m; sourceTree = "<group>"; };
 		3FCDFAAD103A461D00D7CD66 /* TestSerializationAssociation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestSerializationAssociation.h; sourceTree = "<group>"; };
@@ -191,12 +249,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3F6C39A310FE5C95008F47C5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F6C39C510FE73B3008F47C5 /* UISpec_Simulator.a in Frameworks */,
+				3F6C39DB10FE73FD008F47C5 /* libElementParser.a in Frameworks */,
+				3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */,
+				3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07C0554694100DB518D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				AACBBE4A0F95108600F1A2B1 /* Foundation.framework in Frameworks */,
 				2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */,
+				3F6C39C010FE738E008F47C5 /* UISpec_Simulator.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,6 +278,7 @@
 			children = (
 				D2AAC07E0554694100DB518D /* libOTRestFramework.a */,
 				3F262087103A0AFF00B75C94 /* Tests.octest */,
+				3F6C39A510FE5C95008F47C5 /* UI Spec.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -215,6 +286,7 @@
 		0867D691FE84028FC02AAC07 /* OTRestFramework */ = {
 			isa = PBXGroup;
 			children = (
+				3F6C3A9210FE750E008F47C5 /* Specs */,
 				2580B1AE102F72FC00832D07 /* Core */,
 				2580B1AF102F730600832D07 /* Modeling */,
 				3F262081103A0AF500B75C94 /* Tests */,
@@ -223,6 +295,9 @@
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
 				3F262088103A0AFF00B75C94 /* Tests-Info.plist */,
+				3F6C39A710FE5C95008F47C5 /* UI Spec-Info.plist */,
+				3F6C3A2D10FE749C008F47C5 /* Foundation.framework */,
+				3F6C3A9510FE7524008F47C5 /* UIKit.framework */,
 			);
 			name = OTRestFramework;
 			sourceTree = "<group>";
@@ -241,6 +316,7 @@
 				3FCDFB4C103A51B600D7CD66 /* JSON */,
 				3F4E1924102DD4B300320118 /* ElementParserHeaders */,
 				3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */,
+				3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */,
 			);
 			name = Dependencies;
 			sourceTree = "<group>";
@@ -340,6 +416,33 @@
 				3F4E1935102DD4B300320118 /* URLParser.h */,
 			);
 			name = ElementParserHeaders;
+			sourceTree = "<group>";
+		};
+		3F6C39B710FE738A008F47C5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3F6C39BD10FE738A008F47C5 /* UISpec_Simulator.a */,
+				3F6C39BF10FE738A008F47C5 /* UISpec_Device.a */,
+				3FF0DF4510FE7CEA008901F7 /* Specs.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3F6C3A9210FE750E008F47C5 /* Specs */ = {
+			isa = PBXGroup;
+			children = (
+				3F6C3ACC10FE76C1008F47C5 /* Models */,
+				3F6C3A9310FE7519008F47C5 /* main.m */,
+			);
+			name = Specs;
+			sourceTree = "<group>";
+		};
+		3F6C3ACC10FE76C1008F47C5 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3F6C3AD010FE76C1008F47C5 /* OTRestModelMapperSpec.m */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		3FCDFAAC103A460100D7CD66 /* Test Classes */ = {
@@ -447,6 +550,25 @@
 			productReference = 3F262087103A0AFF00B75C94 /* Tests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
+		3F6C39A410FE5C95008F47C5 /* UI Spec */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3F6C39AA10FE5C95008F47C5 /* Build configuration list for PBXNativeTarget "UI Spec" */;
+			buildPhases = (
+				3F6C39A110FE5C95008F47C5 /* Resources */,
+				3F6C39A210FE5C95008F47C5 /* Sources */,
+				3F6C39A310FE5C95008F47C5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3F6C39CB10FE73C1008F47C5 /* PBXTargetDependency */,
+				3F6C3A9C10FE753B008F47C5 /* PBXTargetDependency */,
+			);
+			name = "UI Spec";
+			productName = "UI Spec";
+			productReference = 3F6C39A510FE5C95008F47C5 /* UI Spec.app */;
+			productType = "com.apple.product-type.application";
+		};
 		D2AAC07D0554694100DB518D /* OTRestFramework */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "OTRestFramework" */;
@@ -458,7 +580,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				3F4E18DD102DD32A00320118 /* PBXTargetDependency */,
+				3F6C399D10FE5C80008F47C5 /* PBXTargetDependency */,
 			);
 			name = OTRestFramework;
 			productName = OTRestFramework;
@@ -481,11 +603,16 @@
 					ProductGroup = 3F4E18D7102DD31E00320118 /* Products */;
 					ProjectRef = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
 				},
+				{
+					ProductGroup = 3F6C39B710FE738A008F47C5 /* Products */;
+					ProjectRef = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* OTRestFramework */,
 				3F262086103A0AFF00B75C94 /* Tests */,
+				3F6C39A410FE5C95008F47C5 /* UI Spec */,
 			);
 		};
 /* End PBXProject section */
@@ -498,10 +625,38 @@
 			remoteRef = 3F4E18DA102DD31E00320118 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		3F6C39BD10FE738A008F47C5 /* UISpec_Simulator.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = UISpec_Simulator.a;
+			remoteRef = 3F6C39BC10FE738A008F47C5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3F6C39BF10FE738A008F47C5 /* UISpec_Device.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = UISpec_Device.a;
+			remoteRef = 3F6C39BE10FE738A008F47C5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3FF0DF4510FE7CEA008901F7 /* Specs.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Specs.app;
+			remoteRef = 3FF0DF4410FE7CEA008901F7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		3F262082103A0AFF00B75C94 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3F6C39A110FE5C95008F47C5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -545,6 +700,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3F6C39A210FE5C95008F47C5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F6C3A9410FE7519008F47C5 /* main.m in Sources */,
+				3F6C3AD410FE76C1008F47C5 /* OTRestModelMapperSpec.m in Sources */,
+				3F035C7C10FE7F0100C469B4 /* OTRestModelMapper.m in Sources */,
+				3F035C8110FE7F1A00C469B4 /* SBJsonWriter.m in Sources */,
+				3F035C8210FE7F1B00C469B4 /* SBJsonParser.m in Sources */,
+				3F035C8310FE7F1C00C469B4 /* SBJsonBase.m in Sources */,
+				3F035C8410FE7F1D00C469B4 /* SBJSON.m in Sources */,
+				3F035C8510FE7F1D00C469B4 /* NSString+SBJSON.m in Sources */,
+				3F035C8610FE7F1E00C469B4 /* NSObject+SBJSON.m in Sources */,
+				3F035D0A10FE829B00C469B4 /* TestSerializationAssociation.m in Sources */,
+				3F035D0B10FE82A000C469B4 /* TestSerialization.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07B0554694100DB518D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -576,10 +749,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		3F4E18DD102DD32A00320118 /* PBXTargetDependency */ = {
+		3F6C399D10FE5C80008F47C5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ElementParser;
-			targetProxy = 3F4E18DC102DD32A00320118 /* PBXContainerItemProxy */;
+			targetProxy = 3F6C399C10FE5C80008F47C5 /* PBXContainerItemProxy */;
+		};
+		3F6C39CB10FE73C1008F47C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ElementParser;
+			targetProxy = 3F6C39CA10FE73C1008F47C5 /* PBXContainerItemProxy */;
+		};
+		3F6C3A9C10FE753B008F47C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UISpec_Simulator;
+			targetProxy = 3F6C3A9B10FE753B008F47C5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -711,6 +894,57 @@
 			};
 			name = Release;
 		};
+		3F6C39A810FE5C95008F47C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ADDITIONAL_SDKS = "";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				INFOPLIST_FILE = "UI Spec-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					UIKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "UI Spec";
+				SDKROOT = iphoneos3.1.2;
+				USER_HEADER_SEARCH_PATHS = "../UISpec/src ../ElementParser/Classes";
+			};
+			name = Debug;
+		};
+		3F6C39A910FE5C95008F47C5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				INFOPLIST_FILE = "UI Spec-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					UIKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "UI Spec";
+				SDKROOT = iphoneos3.1.2;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -737,6 +971,15 @@
 			buildConfigurations = (
 				3F262089103A0B0000B75C94 /* Debug */,
 				3F26208A103A0B0000B75C94 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3F6C39AA10FE5C95008F47C5 /* Build configuration list for PBXNativeTarget "UI Spec" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3F6C39A810FE5C95008F47C5 /* Debug */,
+				3F6C39A910FE5C95008F47C5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
