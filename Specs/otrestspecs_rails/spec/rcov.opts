@@ -1,0 +1,5 @@
+--exclude "spec/*,gems/*,spec/support/*"
+--rails
+--sort coverage
+--only-uncovered
+

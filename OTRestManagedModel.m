@@ -94,7 +94,7 @@
 }
 
 + (NSString*)primaryKey {
-	return @"ID";
+	return @"railsID";
 }
 
 + (NSString*)primaryKeyElement {

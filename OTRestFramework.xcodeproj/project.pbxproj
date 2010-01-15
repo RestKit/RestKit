@@ -14,6 +14,26 @@
 		253BBE961076AB1C00C804B2 /* NSString+InflectionSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */; };
 		253BBE971076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
 		253BBE981076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
+		255DE05A10FF9DA500A85891 /* OTRestModelManagerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */; };
+		255DE05E10FFA05800A85891 /* OTHuman.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05D10FFA05800A85891 /* OTHuman.m */; };
+		255DE0B710FFA52E00A85891 /* Data Model.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */; };
+		255DE0DB10FFAB7700A85891 /* OTRestModelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FBF1D38103614E500E307AC /* OTRestModelManager.m */; };
+		255DE0DC10FFAB7B00A85891 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
+		255DE0DD10FFAB7E00A85891 /* OTRestManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* OTRestManagedObjectStore.m */; };
+		255DE0DE10FFAB7F00A85891 /* OTRestManagedModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDA1035BC85005418A7 /* OTRestManagedModel.m */; };
+		255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0E110FFABA500A85891 /* CoreData.framework */; };
+		255DE0E510FFABBB00A85891 /* OTRestResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18F1102DD38800320118 /* OTRestResponse.m */; };
+		255DE0E610FFABBC00A85891 /* OTRestRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18EE102DD38700320118 /* OTRestRequest.m */; };
+		255DE0E710FFABBD00A85891 /* OTRestParamsFileAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18EC102DD38700320118 /* OTRestParamsFileAttachment.m */; };
+		255DE0E810FFABBE00A85891 /* OTRestParamsDataAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18EA102DD38700320118 /* OTRestParamsDataAttachment.m */; };
+		255DE0E910FFABC100A85891 /* OTRestParamsAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18E8102DD38700320118 /* OTRestParamsAttachment.m */; };
+		255DE0EA10FFABC300A85891 /* OTRestParams.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18E6102DD38700320118 /* OTRestParams.m */; };
+		255DE0EB10FFABC600A85891 /* OTRestNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525F99F106C0FF40069EBED /* OTRestNotifications.m */; };
+		255DE0EE10FFABDD00A85891 /* OTRestClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18E4102DD38700320118 /* OTRestClient.m */; };
+		255DE0EF10FFABE300A85891 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
+		255DE0F010FFABE500A85891 /* NSDictionary+OTRestRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E1919102DD42F00320118 /* NSDictionary+OTRestRequestSerialization.m */; };
+		255DE0F410FFAC0A00A85891 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */; };
+		255DE1B110FFB16800A85891 /* OTRestSpecResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */; };
 		2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B066102E0F1000832D07 /* OTRestModelLoader.h */; };
 		2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
 		2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
@@ -23,6 +43,9 @@
 		25FCDDE11035C201005418A7 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
 		25FCDE9C1035E901005418A7 /* OTRestModelMappableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FCDE9B1035E901005418A7 /* OTRestModelMappableProtocol.h */; };
 		3F0150FF103B148300BE3E24 /* OTRestModelMapper_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F0150FE103B148300BE3E24 /* OTRestModelMapper_Private.h */; };
+		3F032A7910FFB89100F35142 /* OTCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* OTCat.m */; };
+		3F032AA810FFBBCD00F35142 /* OTHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* OTHouse.m */; };
+		3F032AAB10FFBC1F00F35142 /* OTResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* OTResident.m */; };
 		3F035C7C10FE7F0100C469B4 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
 		3F035C8110FE7F1A00C469B4 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB59103A51B600D7CD66 /* SBJsonWriter.m */; };
 		3F035C8210FE7F1B00C469B4 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDFB57103A51B600D7CD66 /* SBJsonParser.m */; };
@@ -73,7 +96,6 @@
 		3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A2D10FE749C008F47C5 /* Foundation.framework */; };
 		3F6C3A9410FE7519008F47C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3A9310FE7519008F47C5 /* main.m */; };
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
-		3F6C3AD410FE76C1008F47C5 /* OTRestModelMapperSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3AD010FE76C1008F47C5 /* OTRestModelMapperSpec.m */; };
 		3FBF1D39103614E500E307AC /* OTRestModelManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 3FBF1D37103614E500E307AC /* OTRestModelManager.h */; };
 		3FBF1D3A103614E500E307AC /* OTRestModelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FBF1D38103614E500E307AC /* OTRestModelManager.m */; };
 		3FCDFA96103A298E00D7CD66 /* OTRestModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */; };
@@ -162,6 +184,15 @@
 		2525F99F106C0FF40069EBED /* OTRestNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestNotifications.m; sourceTree = "<group>"; };
 		253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+InflectionSupport.h"; sourceTree = "<group>"; };
 		253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+InflectionSupport.m"; sourceTree = "<group>"; };
+		255DE03010FF9BDF00A85891 /* OTRestManagedModelSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestManagedModelSpec.m; sourceTree = "<group>"; };
+		255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelManagerSpec.m; sourceTree = "<group>"; };
+		255DE05C10FFA05800A85891 /* OTHuman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTHuman.h; sourceTree = "<group>"; };
+		255DE05D10FFA05800A85891 /* OTHuman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTHuman.m; sourceTree = "<group>"; };
+		255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = "Data Model.xcdatamodel"; path = "Models/Data Model.xcdatamodel"; sourceTree = "<group>"; };
+		255DE0E110FFABA500A85891 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		255DE1AF10FFB16800A85891 /* OTRestSpecResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestSpecResponseLoader.h; sourceTree = "<group>"; };
+		255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestSpecResponseLoader.m; sourceTree = "<group>"; };
 		2580B066102E0F1000832D07 /* OTRestModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelLoader.h; sourceTree = "<group>"; };
 		2580B067102E0F1000832D07 /* OTRestModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* OTRestManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedModel.h; sourceTree = "<group>"; };
@@ -170,6 +201,12 @@
 		25FCDDDF1035C201005418A7 /* OTRestModelMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelMapper.m; sourceTree = "<group>"; };
 		25FCDE9B1035E901005418A7 /* OTRestModelMappableProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelMappableProtocol.h; sourceTree = "<group>"; };
 		3F0150FE103B148300BE3E24 /* OTRestModelMapper_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelMapper_Private.h; sourceTree = "<group>"; };
+		3F032A7710FFB89100F35142 /* OTCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTCat.h; sourceTree = "<group>"; };
+		3F032A7810FFB89100F35142 /* OTCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTCat.m; sourceTree = "<group>"; };
+		3F032AA610FFBBCD00F35142 /* OTHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTHouse.h; sourceTree = "<group>"; };
+		3F032AA710FFBBCD00F35142 /* OTHouse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTHouse.m; sourceTree = "<group>"; };
+		3F032AA910FFBC1F00F35142 /* OTResident.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTResident.h; sourceTree = "<group>"; };
+		3F032AAA10FFBC1F00F35142 /* OTResident.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTResident.m; sourceTree = "<group>"; };
 		3F262087103A0AFF00B75C94 /* Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F262088103A0AFF00B75C94 /* Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
 		3F26208C103A0B1F00B75C94 /* OTRestModelMapperTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelMapperTest.h; sourceTree = "<group>"; };
@@ -257,6 +294,8 @@
 				3F6C39DB10FE73FD008F47C5 /* libElementParser.a in Frameworks */,
 				3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */,
 				3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */,
+				255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */,
+				255DE0F410FFAC0A00A85891 /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,8 +335,6 @@
 				034768DFFF38A50411DB9C8B /* Products */,
 				3F262088103A0AFF00B75C94 /* Tests-Info.plist */,
 				3F6C39A710FE5C95008F47C5 /* UI Spec-Info.plist */,
-				3F6C3A2D10FE749C008F47C5 /* Foundation.framework */,
-				3F6C3A9510FE7524008F47C5 /* UIKit.framework */,
 			);
 			name = OTRestFramework;
 			sourceTree = "<group>";
@@ -305,9 +342,37 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3F6C3A9510FE7524008F47C5 /* UIKit.framework */,
+				3F6C3A2D10FE749C008F47C5 /* Foundation.framework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				255DE0E110FFABA500A85891 /* CoreData.framework */,
+				255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		255DE05B10FFA04200A85891 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				255DE05C10FFA05800A85891 /* OTHuman.h */,
+				255DE05D10FFA05800A85891 /* OTHuman.m */,
+				3F032A7710FFB89100F35142 /* OTCat.h */,
+				3F032A7810FFB89100F35142 /* OTCat.m */,
+				3F032AA610FFBBCD00F35142 /* OTHouse.h */,
+				3F032AA710FFBBCD00F35142 /* OTHouse.m */,
+				3F032AA910FFBC1F00F35142 /* OTResident.h */,
+				3F032AAA10FFBC1F00F35142 /* OTResident.m */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		255DE0A110FFA43A00A85891 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				255DE1AF10FFB16800A85891 /* OTRestSpecResponseLoader.h */,
+				255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 		2580B1AA102F72D700832D07 /* Dependencies */ = {
@@ -431,18 +496,15 @@
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
-				3F6C3ACC10FE76C1008F47C5 /* Models */,
-				3F6C3A9310FE7519008F47C5 /* main.m */,
-			);
-			name = Specs;
-			sourceTree = "<group>";
-		};
-		3F6C3ACC10FE76C1008F47C5 /* Models */ = {
-			isa = PBXGroup;
-			children = (
+				255DE0A110FFA43A00A85891 /* Support */,
+				255DE05B10FFA04200A85891 /* Models */,
 				3F6C3AD010FE76C1008F47C5 /* OTRestModelMapperSpec.m */,
+				255DE03010FF9BDF00A85891 /* OTRestManagedModelSpec.m */,
+				255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */,
+				3F6C3A9310FE7519008F47C5 /* main.m */,
+				255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */,
 			);
-			path = Models;
+			path = Specs;
 			sourceTree = "<group>";
 		};
 		3FCDFAAC103A460100D7CD66 /* Test Classes */ = {
@@ -557,6 +619,7 @@
 				3F6C39A110FE5C95008F47C5 /* Resources */,
 				3F6C39A210FE5C95008F47C5 /* Sources */,
 				3F6C39A310FE5C95008F47C5 /* Frameworks */,
+				255DE2B810FFBFBF00A85891 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -666,6 +729,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		255DE2B810FFBFBF00A85891 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "osascript Specs/Support/set_ip_address.scpt";
+		};
 		3F262085103A0AFF00B75C94 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -705,7 +781,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F6C3A9410FE7519008F47C5 /* main.m in Sources */,
-				3F6C3AD410FE76C1008F47C5 /* OTRestModelMapperSpec.m in Sources */,
 				3F035C7C10FE7F0100C469B4 /* OTRestModelMapper.m in Sources */,
 				3F035C8110FE7F1A00C469B4 /* SBJsonWriter.m in Sources */,
 				3F035C8210FE7F1B00C469B4 /* SBJsonParser.m in Sources */,
@@ -715,6 +790,27 @@
 				3F035C8610FE7F1E00C469B4 /* NSObject+SBJSON.m in Sources */,
 				3F035D0A10FE829B00C469B4 /* TestSerializationAssociation.m in Sources */,
 				3F035D0B10FE82A000C469B4 /* TestSerialization.m in Sources */,
+				255DE05A10FF9DA500A85891 /* OTRestModelManagerSpec.m in Sources */,
+				255DE05E10FFA05800A85891 /* OTHuman.m in Sources */,
+				255DE0B710FFA52E00A85891 /* Data Model.xcdatamodel in Sources */,
+				255DE0DB10FFAB7700A85891 /* OTRestModelManager.m in Sources */,
+				255DE0DC10FFAB7B00A85891 /* OTRestModelLoader.m in Sources */,
+				255DE0DD10FFAB7E00A85891 /* OTRestManagedObjectStore.m in Sources */,
+				255DE0DE10FFAB7F00A85891 /* OTRestManagedModel.m in Sources */,
+				255DE0E510FFABBB00A85891 /* OTRestResponse.m in Sources */,
+				255DE0E610FFABBC00A85891 /* OTRestRequest.m in Sources */,
+				255DE0E710FFABBD00A85891 /* OTRestParamsFileAttachment.m in Sources */,
+				255DE0E810FFABBE00A85891 /* OTRestParamsDataAttachment.m in Sources */,
+				255DE0E910FFABC100A85891 /* OTRestParamsAttachment.m in Sources */,
+				255DE0EA10FFABC300A85891 /* OTRestParams.m in Sources */,
+				255DE0EB10FFABC600A85891 /* OTRestNotifications.m in Sources */,
+				255DE0EE10FFABDD00A85891 /* OTRestClient.m in Sources */,
+				255DE0EF10FFABE300A85891 /* NSString+InflectionSupport.m in Sources */,
+				255DE0F010FFABE500A85891 /* NSDictionary+OTRestRequestSerialization.m in Sources */,
+				255DE1B110FFB16800A85891 /* OTRestSpecResponseLoader.m in Sources */,
+				3F032A7910FFB89100F35142 /* OTCat.m in Sources */,
+				3F032AA810FFBBCD00F35142 /* OTHouse.m in Sources */,
+				3F032AAB10FFBC1F00F35142 /* OTResident.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -773,6 +869,7 @@
 				ADDITIONAL_SDKS = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				BUILD_STYLE = Debug;
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = /tmp/OTRestFramework.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -795,6 +892,7 @@
 				ADDITIONAL_SDKS = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				BUILD_STYLE = Release;
 				DSTROOT = /tmp/OTRestFramework.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -810,6 +908,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "$HOME/Library/SDKs/JSON/${PLATFORM_NAME}.sdk";
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				BUILD_STYLE = Debug;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -829,6 +928,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "$HOME/Library/SDKs/JSON/${PLATFORM_NAME}.sdk";
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				BUILD_STYLE = Release;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -846,6 +946,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Debug;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -873,6 +974,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
@@ -899,6 +1001,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Debug;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -924,6 +1027,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

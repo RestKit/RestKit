@@ -1,0 +1,65 @@
+ActsAsUrlParam
+==============
+
+This plugin allows restful resources to be automatically exposed with human readable urls
+based on another method on the resource.
+
+The URL parameter value that is computed will be unique within the model. If the model is
+using inheritance, it's recommended to define acts_as_url_param on the base class.
+
+Defines one public class methods on your model:
+MyResource.url_param_available?(candidate,id=nil)
+# => true
+# if the candidate value does not exist for the model
+
+Defines one public instance method on your model:
+my_resource.compute_url_param
+# => "unique-url-parameter-2"
+
+Contributors
+============
+"Chris Eppstein"<chris@eppsteins.net>
+"Joshua Bates"<joshuabates@gmail.com>
+
+Example
+=======
+
+# use the url_param column as the model's url. It will be set and/or modified whenever the default method changes.
+# The default methods, in order of precedence, are: :name, :label, :title
+class MyResource < ActiveRecord::Base
+  acts_as_url_param
+end
+
+# use the url_name column as the model's url. It will be set and/or modified whenever title changes
+class MyResource < ActiveRecord::Base
+  acts_as_url_param :url_name, :from => :title
+end
+
+# use the url_param column as the model's url. It will be set and/or modified whenever title changes
+class MyResource < ActiveRecord::Base
+  acts_as_url_param :from => :title
+end
+
+# use the url_param column as the model's url. It will be set and/or modified whenever the :on event occurs.
+# Allowed events are: :create, :save, :update. Default is :create so that your permalinks stay permanent.
+# May also be a Proc that accepts the model instance and returns true if url_param should change.
+class MyResource < ActiveRecord::Base
+  acts_as_url_param :from => :title, :on => :create
+end
+
+# use the url_name column as the model's url. It will be set and/or modified whenever the :on event(s) occur.
+class MyResource < ActiveRecord::Base
+  acts_as_url_param :url_name, :from => :title, :on => :create
+end
+
+# Passing a block allows you to approve candidate url parameters.
+# This enables definition of a url space across that spans several models. This is easiest if all
+# models are acts_as_url_param.
+class MyResource < ActiveRecord::Base
+  acts_as_url_param :url_name, :from => :title do |candidate|
+    MyResource.url_param_available?(candidate,self.id) &&
+    MyOtherResource.url_param_available?(candidate)
+  end
+end
+
+Copyright (c) 2007 Chris Eppstein, released under the MIT license

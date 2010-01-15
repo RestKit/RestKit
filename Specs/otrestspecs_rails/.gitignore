@@ -1,0 +1,15 @@
+.DS_Store
+tmp/*
+vendor/rails*
+log/*
+*.tmproj
+coverage
+design
+config/*.sphinx.conf
+db/sphinx
+doc/api
+doc/app
+doc/*(Autosaved)
+db/*.sqlite3
+public/attachments/*
+public/system

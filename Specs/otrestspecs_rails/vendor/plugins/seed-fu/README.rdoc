@@ -1,0 +1,149 @@
+= Seed Fu
+
+Seed Fu is an attempt to once and for all solve the problem of inserting and
+maintaining seed data in a database. It uses a variety of techniques gathered
+from various places around the web and combines them to create what is 
+hopefully the most robust seed data system around.
+
+
+== Simple Usage
+
+Seed data is taken from the <tt>db/fixtures</tt> directory. Simply make descriptive .rb
+files in that directory (they can be named anything, but users.rb for the User
+model seed data makes sense, etc.). These scripts will be run whenever the
+db:seed rake task is called, and in order (you can use <tt>00_first.rb</tt>,
+<tt>00_second.rb</tt>, etc). You can put arbitrary Ruby code in these files,
+but remember that it will be executed every time the rake task is called, so
+it needs to be runnable multiple times on the same database.
+
+You can also have environment-specific seed data placed in 
+<tt>db/fixtures/ENVIRONMENT</tt> that will only be loaded if that is the current
+environment.
+
+Let's say we want to populate a few default users. In <tt>db/fixtures/users.rb</tt> we
+write the following code:
+
+    User.seed(:login, :email) do |s|
+      s.login = "bob"
+      s.email = "bob@bobson.com"
+      s.first_name = "Bob"
+      s.last_name = "Bobson"
+    end
+    
+    User.seed(:login, :email) do |s|
+      s.login = "bob"
+      s.email = "bob@stevenson.com"
+      s.first_name = "Bob"
+      s.last_name = "Stevenson"
+    end
+
+That's all you have to do! You will now have two users created in the system
+and you can change their first and last names in the users.rb file and it will
+be updated as such.
+
+The arguments passed to the <tt><ActiveRecord>.seed</tt> method are the constraining
+attributes: these must remain unchanged between db:seed calls to avoid data
+duplication. By default, seed data will constrain to the id like so:
+
+    Category.seed do |s|
+      s.id = 1
+      s.name = "Buttons"
+    end
+    
+    Category.seed do |s|
+      s.id = 2
+      s.name = "Bobbins"
+      s.parent_id = 1
+    end
+    
+Note that any constraints that are passed in must be present in the subsequent
+seed data setting.
+
+== Seed-many Usage
+
+The default <tt>.seed` syntax is very verbose.  An alternative is the `.seed_many</tt> syntax.
+Look at this refactoring of the first seed usage example above:
+
+    User.seed_many(:login, :email, [
+      { :login => "bob", :email => "bob@bobson.com",    :first_name => "Bob", :last_name = "Bobson" },
+      { :login => "bob", :email => "bob@stevenson.com", :first_name => "Bob", :last_name = "Stevenson" }
+    ])
+
+Not as pretty, but much more concise.
+
+== Handling Large SeedFu Files
+
+Seed files can be huge.  To handle large files (over a million rows), try these tricks:
+
+* Gzip your fixtures.  Seed Fu will read .rb.gz files happily.  <tt>gzip -9</tt> gives the
+  best compression, and with Seed Fu's repetitive syntax, a 160M file can shrink to 16M.
+* Add lines reading <tt># BREAK EVAL</tt> in your big fixtures, and Seed Fu will avoid loading
+  the whole file into memory.  If you use SeedFu::Writer, these breaks are built into
+  your generated fixtures.
+* Load a single fixture with the <tt>SEED</tt> environment varialble:
+  <tt>SEED=cities,states rake db:seed > seed_log`.  Each argument to `SEED</tt> is used as a
+  regex to filter fixtures by filename.
+
+== Generating SeedFu Files
+
+Say you have a CSV you need to massage and store as seed files.  You can create
+an import script using SeedFu::Writer.
+
+    #!/usr/bin/env ruby
+    #
+    # This is: script/generate_cities_seed_from_csv
+    #
+    require 'rubygems'
+    require 'fastercsv'
+    require File.join( File.dirname(__FILE__), '..', 'vendor/plugins/seed-fu/lib/seed-fu/writer' )
+
+    # Maybe SEEF_FILE could be $stdout, hm.
+    #
+    CITY_CSV  = File.join( File.dirname(__FILE__), '..', 'city.csv' )
+    SEED_FILE = File.join( File.dirname(__FILE__), '..', 'db', 'fixtures', 'cities.rb' )
+
+    # Create a seed_writer, walk the CSV, add to the file.
+    #
+
+    seed_writer = SeedFu::Writer::SeedMany.new(
+      :seed_file  => SEED_FILE,
+      :seed_model => 'City',
+      :seed_by    => [ :city, :state ]
+    )
+
+    FasterCSV.foreach( CITY_CSV,
+      :return_headers => false,
+      :headers => :first_row
+    ) do |row|
+
+      # Skip all but the US
+      #
+      next unless row['country_code'] == 'US'
+
+      unless us_state
+        puts "No State Match for #{row['region_name']}"
+        next
+      end
+
+      # Write the seed
+      #
+      seed_writer.add_seed({
+        :zip => row['zipcode'],
+        :state => row['state'],
+        :city => row['city'],
+        :latitude => row['latitude'],
+        :longitude => row['longitude']
+      })
+
+    end
+
+    seed_writer.finish
+
+There is also a SeedFu::Writer::Seed in case you prefere the seed()
+syntax over the seen_many() syntax.  Easy-peasy.
+
+== Contributors
+
+* Thanks to Matthew Beale for his great work in adding the writer, making it faster and better.
+
+Copyright (c) 2008-2009 Michael Bleigh released under the MIT license
