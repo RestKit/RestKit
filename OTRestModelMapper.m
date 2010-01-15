@@ -279,8 +279,12 @@
 			// Times coming back are in utc. we should convert them to the local timezone
 			// TODO: Need a way to handle date/time formats. Maybe part of the mapper?
 			[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-			[formatter setDateFormat:kRailsToXMLDateFormatterString];
+			[formatter setDateFormat:kRailsToXMLDateTimeFormatterString];
 			propertyValue = [formatter dateFromString:dateString];
+			if (nil == propertyValue) {
+				[formatter setDateFormat:kRailsToXMLDateFormatterString];
+				propertyValue = [formatter dateFromString:dateString];
+			}
 			[formatter release];
 		}
 	} else if ([type isEqualToString:@"nil"]) {
