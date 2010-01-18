@@ -3,7 +3,7 @@
 //  OTRestFramework
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 Objective3. All rights reserved.
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -17,6 +17,7 @@
 	NSObject<OTRestRequestSerializable>* _params;
 	id _delegate;
 	SEL _callback;
+	id _userData;
 }
 
 @property(nonatomic, readonly) NSURL* URL;
@@ -40,6 +41,11 @@
  * The selector to invoke when the request is completed
  */
 @property(nonatomic, assign) SEL callback;
+
+/**
+ * An opaque pointer to associate user defined data with the request.
+ */
+@property(nonatomic, assign) id userData;
 
 /**
  * A Dictionary of additional HTTP Headers to send with the request

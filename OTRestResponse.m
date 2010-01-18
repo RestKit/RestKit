@@ -3,20 +3,21 @@
 //  OTRestFramework
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 Objective 3. All rights reserved.
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import "OTRestResponse.h"
 #import "OTRestNotifications.h"
+#import "SBJSON.h"
 
 @implementation OTRestResponse
 
-@synthesize payload = _payload, request = _request, error = _error;
+@synthesize payload = _payload, request = _request, failureError = _failureError;
 
 - (id)init {
 	if (self = [super init]) {
 		_payload = [[NSMutableData alloc] init];
-		_error = nil;
+		_failureError = nil;
 	}
 	
 	return self;
@@ -33,7 +34,7 @@
 	[_httpURLResponse release];
 	[_payload release];
 	[_request release];
-	[_error release];
+	[_failureError release];
 	[super dealloc];
 }
 
@@ -54,7 +55,7 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	_error = [error retain];
+	_failureError = [error retain];
 	[[_request delegate] performSelector:[_request callback] withObject:self];
 }
 
@@ -70,18 +71,16 @@
 	return [DocumentRoot parseXML:[self payloadString]];
 }
 
-- (NSString*)errorDescription {
-	NSString* desc;
-	if (_error != nil) {
-		desc = [_error localizedDescription];
+- (NSDictionary*)payloadJSONDictionary {
+	return [[[[SBJSON alloc] init] autorelease] objectWithString:[self payloadString]];
+}
+
+- (NSString*)failureErrorDescription {
+	if ([self isFailure]) {
+		return [_failureError localizedDescription];
 	} else {
-		NSString* contentsText = [[(Element*)[self payloadXMLDocument] selectElement:@"error"] contentsText];
-		if (contentsText == nil) {
-			contentsText = @"";
-		}
-		desc = [NSString stringWithFormat:@"#%d  %@", [self statusCode], contentsText];
+		return nil;				
 	}
-	return desc;
 }
 
 - (NSURL*)URL {
@@ -98,6 +97,82 @@
 
 - (NSDictionary*)allHeaderFields {
 	return [_httpURLResponse allHeaderFields];
+}
+
+- (BOOL)isFailure {
+	return (nil != _failureError);
+}
+
+- (BOOL)isInvalid {
+	return ([self statusCode] < 100 || [self statusCode] > 600);
+}
+
+- (BOOL)isInformational {
+	return ([self statusCode] >= 100 && [self statusCode] < 200);
+}
+
+- (BOOL)isSuccessful {
+	return ([self statusCode] >= 200 && [self statusCode] < 300);
+}
+
+- (BOOL)isRedirection {
+	return ([self statusCode] >= 300 && [self statusCode] < 400);
+}
+
+- (BOOL)isClientError {
+	return ([self statusCode] >= 400 && [self statusCode] < 500);
+}
+
+- (BOOL)isServerError {
+	return ([self statusCode] >= 500 && [self statusCode] < 600);
+}
+
+- (BOOL)isError {
+	return ([self isClientError] || [self isServerError]);
+}
+
+- (BOOL)isOK {
+	return ([self statusCode] == 200);
+}
+
+- (BOOL)isCreated {
+	return ([self statusCode] == 201);
+}
+
+- (BOOL)isForbidden {
+	return ([self statusCode] == 403);
+}
+
+- (BOOL)isNotFound {
+	return ([self statusCode] == 404);
+}
+
+- (BOOL)isRedirect {
+	return ([self statusCode] == 301 || [self statusCode] == 302 || [self statusCode] == 303 || [self statusCode] == 307);
+}
+
+- (BOOL)isEmpty {
+	return ([self statusCode] == 201 || [self statusCode] == 204 || [self statusCode] == 304);
+}
+
+- (NSString*)contentType {
+	return ([[self allHeaderFields] objectForKey:@"Content-Type"]);
+}
+
+- (NSString*)contentLength {
+	return ([[self allHeaderFields] objectForKey:@"Content-Length"]);
+}
+
+- (NSString*)location {
+	return ([[self allHeaderFields] objectForKey:@"Location"]);
+}
+
+- (BOOL)isXML {
+	return [[self contentType] isEqualToString:@"application/xml"];
+}
+
+- (BOOL)isJSON {
+	return [[self contentType] isEqualToString:@"application/json"];
 }
 
 @end

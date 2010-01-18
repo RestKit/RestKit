@@ -35,6 +35,12 @@
 		255DE0F410FFAC0A00A85891 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */; };
 		255DE1B110FFB16800A85891 /* OTRestSpecResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */; };
 		255DE37810FFC26900A85891 /* OTRestClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE37710FFC26900A85891 /* OTRestClientSpec.m */; };
+		255DE43211010EE700A85891 /* OTRestRequestSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE43111010EE700A85891 /* OTRestRequestSpec.m */; };
+		255DE43B11010F8400A85891 /* OTRestResponseSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE43A11010F8400A85891 /* OTRestResponseSpec.m */; };
+		255DE453110112DB00A85891 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE449110112DB00A85891 /* OCMock.framework */; };
+		255DE4931101134300A85891 /* OCMock.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 255DE449110112DB00A85891 /* OCMock.framework */; };
+		255DE62B1104BA2B00A85891 /* OTRestModelMapperSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3AD010FE76C1008F47C5 /* OTRestModelMapperSpec.m */; };
+		255DE62C1104BA2D00A85891 /* OTRestManagedModelSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE03010FF9BDF00A85891 /* OTRestManagedModelSpec.m */; };
 		2580B068102E0F1000832D07 /* OTRestModelLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B066102E0F1000832D07 /* OTRestModelLoader.h */; };
 		2580B069102E0F1000832D07 /* OTRestModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* OTRestModelLoader.m */; };
 		2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
@@ -127,6 +133,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		255DE3C210FFC86D00A85891 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25FCE09E10360372005418A7;
+			remoteInfo = Tests;
+		};
 		3F4E18DA102DD31E00320118 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
@@ -178,6 +191,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		255DE48A110112F500A85891 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(BUILT_PRODUCTS_DIR)";
+			dstSubfolderSpec = 0;
+			files = (
+				255DE4931101134300A85891 /* OCMock.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		2525EBE9106961DD0069EBED /* OTRestManagedObjectStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedObjectStore.h; sourceTree = "<group>"; };
 		2525EBEA106961DD0069EBED /* OTRestManagedObjectStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestManagedObjectStore.m; sourceTree = "<group>"; };
@@ -189,12 +215,16 @@
 		255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelManagerSpec.m; sourceTree = "<group>"; };
 		255DE05C10FFA05800A85891 /* OTHuman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTHuman.h; sourceTree = "<group>"; };
 		255DE05D10FFA05800A85891 /* OTHuman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTHuman.m; sourceTree = "<group>"; };
-		255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = "Data Model.xcdatamodel"; path = "Models/Data Model.xcdatamodel"; sourceTree = "<group>"; };
+		255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; path = "Data Model.xcdatamodel"; sourceTree = "<group>"; };
 		255DE0E110FFABA500A85891 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		255DE1AF10FFB16800A85891 /* OTRestSpecResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestSpecResponseLoader.h; sourceTree = "<group>"; };
 		255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestSpecResponseLoader.m; sourceTree = "<group>"; };
 		255DE37710FFC26900A85891 /* OTRestClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestClientSpec.m; sourceTree = "<group>"; };
+		255DE43111010EE700A85891 /* OTRestRequestSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestRequestSpec.m; sourceTree = "<group>"; };
+		255DE43A11010F8400A85891 /* OTRestResponseSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestResponseSpec.m; sourceTree = "<group>"; };
+		255DE449110112DB00A85891 /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OCMock.framework; path = Support/OCMock.framework; sourceTree = "<group>"; };
+		255DE4A4110113B700A85891 /* OTRestSpecEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestSpecEnvironment.h; sourceTree = "<group>"; };
 		2580B066102E0F1000832D07 /* OTRestModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestModelLoader.h; sourceTree = "<group>"; };
 		2580B067102E0F1000832D07 /* OTRestModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OTRestModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* OTRestManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTRestManagedModel.h; sourceTree = "<group>"; };
@@ -298,6 +328,7 @@
 				3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */,
 				255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */,
 				255DE0F410FFAC0A00A85891 /* SystemConfiguration.framework in Frameworks */,
+				255DE453110112DB00A85891 /* OCMock.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,6 +387,7 @@
 		255DE05B10FFA04200A85891 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */,
 				255DE05C10FFA05800A85891 /* OTHuman.h */,
 				255DE05D10FFA05800A85891 /* OTHuman.m */,
 				3F032A7710FFB89100F35142 /* OTCat.h */,
@@ -373,8 +405,18 @@
 			children = (
 				255DE1AF10FFB16800A85891 /* OTRestSpecResponseLoader.h */,
 				255DE1B010FFB16800A85891 /* OTRestSpecResponseLoader.m */,
+				255DE4A4110113B700A85891 /* OTRestSpecEnvironment.h */,
 			);
 			path = Support;
+			sourceTree = "<group>";
+		};
+		255DE43011010ED400A85891 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				255DE43111010EE700A85891 /* OTRestRequestSpec.m */,
+				255DE43A11010F8400A85891 /* OTRestResponseSpec.m */,
+			);
+			name = Core;
 			sourceTree = "<group>";
 		};
 		2580B1AA102F72D700832D07 /* Dependencies */ = {
@@ -457,6 +499,7 @@
 			isa = PBXGroup;
 			children = (
 				3F4E18DB102DD31E00320118 /* libElementParser.a */,
+				255DE3C310FFC86D00A85891 /* Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -498,14 +541,15 @@
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				255DE43011010ED400A85891 /* Core */,
 				255DE0A110FFA43A00A85891 /* Support */,
 				255DE05B10FFA04200A85891 /* Models */,
 				3F6C3AD010FE76C1008F47C5 /* OTRestModelMapperSpec.m */,
 				255DE03010FF9BDF00A85891 /* OTRestManagedModelSpec.m */,
 				255DE05910FF9DA500A85891 /* OTRestModelManagerSpec.m */,
 				3F6C3A9310FE7519008F47C5 /* main.m */,
-				255DE0B610FFA52E00A85891 /* Data Model.xcdatamodel */,
 				255DE37710FFC26900A85891 /* OTRestClientSpec.m */,
+				255DE449110112DB00A85891 /* OCMock.framework */,
 			);
 			path = Specs;
 			sourceTree = "<group>";
@@ -623,6 +667,7 @@
 				3F6C39A210FE5C95008F47C5 /* Sources */,
 				3F6C39A310FE5C95008F47C5 /* Frameworks */,
 				255DE2B810FFBFBF00A85891 /* ShellScript */,
+				255DE48A110112F500A85891 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -684,6 +729,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		255DE3C310FFC86D00A85891 /* Tests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = Tests.octest;
+			remoteRef = 255DE3C210FFC86D00A85891 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		3F4E18DB102DD31E00320118 /* libElementParser.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -815,6 +867,10 @@
 				3F032AA810FFBBCD00F35142 /* OTHouse.m in Sources */,
 				3F032AAB10FFBC1F00F35142 /* OTResident.m in Sources */,
 				255DE37810FFC26900A85891 /* OTRestClientSpec.m in Sources */,
+				255DE43211010EE700A85891 /* OTRestRequestSpec.m in Sources */,
+				255DE43B11010F8400A85891 /* OTRestResponseSpec.m in Sources */,
+				255DE62B1104BA2B00A85891 /* OTRestModelMapperSpec.m in Sources */,
+				255DE62C1104BA2D00A85891 /* OTRestManagedModelSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1008,6 +1064,10 @@
 				BUILD_STYLE = Debug;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Specs/Support\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1035,6 +1095,10 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Specs/Support\"",
+				);
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";

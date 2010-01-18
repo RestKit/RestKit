@@ -3,7 +3,7 @@
 //  Cash Register
 //
 //  Created by Jeremy Ellison on 12/7/09.
-//  Copyright Objective3 2009. All rights reserved.
+//  Copyright Two Toasters 2009. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

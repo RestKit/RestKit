@@ -3,7 +3,7 @@
 //  OTRestFramework
 //
 //  Created by Blake Watters on 1/14/10.
-//  Copyright 2010 Objective 3. All rights reserved.
+//  Copyright 2010 Two Toasters. All rights reserved.
 //
 
 #import "UISpec.h"
@@ -28,34 +28,7 @@
 	_modelManager = [OTRestModelManager managerWithBaseURL:localBaseURL];
 	_modelManager.objectStore = [[OTRestManagedObjectStore alloc] initWithStoreFilename:@"OTRest_Specs.sqlite"];
 	[_modelManager registerModel:[OTHuman class] forElementNamed:@"human"];
-	// TODO: Set the accept header...
-	
 	_responseLoader	= [[OTRestSpecResponseLoader alloc] init];
-}
-
-- (void)itShouldLoadAHuman {
-	NSLog(@"Model Manager: %@", _modelManager);
-	NSLog(@"Response Loader: %@", _responseLoader);
-	OTRestRequest* request = [_modelManager loadModel:@"/humans/1" delegate:_responseLoader callback:@selector(loadResponse:)];
-	NSLog(@"Request: %@", request);
-	[_responseLoader waitForResponse];
-	OTHuman* blake = (OTHuman*) _responseLoader.response;
-	[expectThat(blake.name) should:be(@"Blake Watters")];
-}
-
-- (void)itShouldLoadAllHumans {
-	OTRestRequest* request = [_modelManager loadModels:@"/humans" delegate:_responseLoader callback:@selector(loadResponse:)];
-	NSLog(@"Request: %@", request);
-	[_responseLoader waitForResponse];
-	NSArray* humans = (NSArray*) _responseLoader.response;
-	[expectThat([humans count]) should:be(4)];
-	[expectThat([[humans objectAtIndex:0] class]) should:be([OTHuman class])];
-}
-
-- (void)itShouldLoadHumansInPages {
-}
-
-- (void)itShouldHandleConnectionFailures {
 }
 
 - (void)itShouldDefaultToAnXMLMappingFormat {	
@@ -67,6 +40,32 @@
 	[expectThat([_modelManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/xml")];
 	_modelManager.format = OTRestMappingFormatJSON;
 	[expectThat([_modelManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
+}
+
+- (void)itShouldHandleConnectionFailures {
+	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3001", getenv("OTREST_IP_ADDRESS")];
+	OTRestModelManager* modelManager = [OTRestModelManager managerWithBaseURL:localBaseURL];
+	[modelManager loadModel:@"/humans/1" delegate:_responseLoader callback:@selector(loadResponse:)];
+	[_responseLoader waitForResponse];
+	[expectThat(_responseLoader.success) should:be(NO)];
+}
+
+- (void)itShouldLoadAHuman {
+	[_modelManager loadModel:@"/humans/1" delegate:_responseLoader callback:@selector(loadResponse:)];
+	[_responseLoader waitForResponse];
+	OTHuman* blake = (OTHuman*) _responseLoader.response;
+	[expectThat(blake.name) should:be(@"Blake Watters")];
+}
+
+- (void)itShouldLoadAllHumans {
+	[_modelManager loadModels:@"/humans" delegate:_responseLoader callback:@selector(loadResponse:)];
+	[_responseLoader waitForResponse];
+	NSArray* humans = (NSArray*) _responseLoader.response;
+	[expectThat([humans count]) should:be(4)];
+	[expectThat([[humans objectAtIndex:0] class]) should:be([OTHuman class])];
+}
+
+- (void)itShouldLoadHumansInPages {
 }
 
 @end

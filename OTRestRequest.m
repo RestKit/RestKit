@@ -3,7 +3,7 @@
 //  OTRestFramework
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 Objective3. All rights reserved.
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import "OTRestRequest.h"
@@ -14,7 +14,7 @@
 @implementation OTRestRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, callback = _callback, additionalHTTPHeaders = _additionalHTTPHeaders,
-			params = _params;
+			params = _params, userData = _userData;
 
 + (OTRestRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:URL delegate:delegate callback:callback];

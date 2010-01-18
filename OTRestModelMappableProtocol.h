@@ -3,7 +3,7 @@
  *  OTRestFramework
  *
  *  Created by Blake Watters on 8/14/09.
- *  Copyright 2009 Objective 3. All rights reserved.
+ *  Copyright 2009 Two Toasters. All rights reserved.
  *
  */
 
@@ -45,6 +45,16 @@
  * required if you intend to do get/put/post/delete requests
  */
 - (NSString*)resourcePath;
+
+/**
+ * The path to the RESTful resource collection this object belongs to. i.e. /books
+ */
+- (NSString*)collectionPath;
+
+/**
+ * The path to the RESTful resource this object represents. i.e. /books/1
+ */
+- (NSString*)memberPath;
 
 /**
  * Must return the put/post params for the instance

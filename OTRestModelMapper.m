@@ -3,7 +3,7 @@
 //  OTRestFramework
 //
 //  Created by Blake Watters on 8/14/09.
-//  Copyright 2009 Objective 3. All rights reserved.
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 // #import <objc/objc-runtime.h>

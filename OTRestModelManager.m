@@ -3,7 +3,7 @@
 //  OTRestFramework
 //
 //  Created by Jeremy Ellison on 8/14/09.
-//  Copyright 2009 Objective3. All rights reserved.
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import "OTRestModelManager.h"
@@ -69,7 +69,7 @@ static OTRestModelManager* sharedManager = nil;
 - (void)registerModel:(Class<OTRestModelMappable>)class forElementNamed:(NSString*)elementName {
 	[_mapper registerModel:class forElementNamed:elementName];
 }
-
+ 
 /**
  * Load a model from a restful resource and invoke the callback
  */

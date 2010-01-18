@@ -3,15 +3,33 @@
 //  OTRestFramework
 //
 //  Created by Blake Watters on 8/8/09.
-//  Copyright 2009 Objective 3. All rights reserved.
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import "OTRestModelMapper.h"
 
+@class OTRestRequest;
+@class OTRestResponse;
+
+@protocol OTRestModelLoaderDelegate
+
+/**
+ * Invoked when a request sent through the model manager encounters an error. The model will be nil if the request was
+ * not dispatched with a model object instance
+ */
+- (void)modelLoaderRequest:(OTRestRequest*)request didFailWithError:(NSError*)error response:(OTRestResponse*)response model:(id<OTRestModelMappable>)model;
+
+/**
+ * Invoked when a request sent through the model manager returns an error message from the server. 
+ */
+- (void)modelLoaderRequest:(OTRestRequest*)request didReturnErrorMessage:(NSString*)errorMessage response:(OTRestResponse*)response model:(id<OTRestModelMappable>)model;
+
+@end
+
 @interface OTRestModelLoader : NSObject {
 	OTRestModelMapper* _mapper;
-	id _delegate;
+	NSObject<OTRestModelLoaderDelegate>* _delegate;
 	SEL _callback;
 }
 

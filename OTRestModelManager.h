@@ -3,7 +3,7 @@
 //  OTRestFramework
 //
 //  Created by Jeremy Ellison on 8/14/09.
-//  Copyright 2009 Objective3. All rights reserved.
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import "OTRestModelMapper.h"
