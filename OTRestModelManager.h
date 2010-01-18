@@ -58,6 +58,7 @@
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
 - (OTRestRequest*)loadModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (OTRestRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback;
 
 - (OTRestRequest*)getModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
 - (OTRestRequest*)postModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback;

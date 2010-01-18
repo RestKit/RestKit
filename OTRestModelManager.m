@@ -92,6 +92,14 @@ static OTRestModelManager* sharedManager = nil;
 	return [_client get:resourcePath delegate:loader callback:loader.collectionCallback];
 }
 
+- (OTRestRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
+	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
+	loader.delegate = delegate;
+	loader.callback = callback;
+	
+	return [_client get:resourcePath params:params delegate:loader callback:loader.collectionCallback];
+}
+
 - (OTRestRequest*)getModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
