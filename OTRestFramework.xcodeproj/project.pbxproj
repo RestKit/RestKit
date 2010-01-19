@@ -175,6 +175,13 @@
 			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
 			remoteInfo = UISpec_Simulator;
 		};
+		3FACF562110638D70003AF0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
+			remoteInfo = UISpec_Simulator;
+		};
 		3FF0DF4410FE7CEA008901F7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
@@ -684,6 +691,7 @@
 			);
 			dependencies = (
 				3F6C399D10FE5C80008F47C5 /* PBXTargetDependency */,
+				3FACF563110638D70003AF0D /* PBXTargetDependency */,
 			);
 			name = OTRestFramework;
 			productName = OTRestFramework;
@@ -904,6 +912,11 @@
 			isa = PBXTargetDependency;
 			name = UISpec_Simulator;
 			targetProxy = 3F6C3A9B10FE753B008F47C5 /* PBXContainerItemProxy */;
+		};
+		3FACF563110638D70003AF0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UISpec_Simulator;
+			targetProxy = 3FACF562110638D70003AF0D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

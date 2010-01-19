@@ -14,7 +14,7 @@
 @implementation OTRestRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, callback = _callback, additionalHTTPHeaders = _additionalHTTPHeaders,
-			params = _params, userData = _userData;
+			params = _params, userData = _userData, username = _username, password = _password;
 
 + (OTRestRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:URL delegate:delegate callback:callback];
@@ -40,6 +40,8 @@
 	[_delegate release];
 	[_params release];
 	[_additionalHTTPHeaders release];
+	[_username release];
+	[_password release];
 	[super dealloc];
 }
 

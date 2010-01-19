@@ -109,7 +109,7 @@
 		BOOL areEqual = ComparisonSender(currentValue, comparisonSelector, propertyValue);
 				
 		if (NO == areEqual) {
-			NSLog(@"Setting property %@ to new value %@", propertyName, propertyValue);
+			//NSLog(@"Setting property %@ to new value %@", propertyName, propertyValue);
 			[model setValue:propertyValue forKey:propertyName];
 		}
 	}

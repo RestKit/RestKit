@@ -18,7 +18,15 @@
 	id _delegate;
 	SEL _callback;
 	id _userData;
+	NSString* _username;
+	NSString* _password;
 }
+
+/**
+ * used for http auth chalange
+ */
+@property(nonatomic, retain) NSString* username;
+@property(nonatomic, retain) NSString* password;
 
 @property(nonatomic, readonly) NSURL* URL;
 

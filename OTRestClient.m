@@ -91,9 +91,15 @@ static OTRestClient* sharedClient = nil;
 	return [NSURL URLWithString:urlString];
 }
 
+- (void)setupRequest:(OTRestRequest*)request {
+	request.additionalHTTPHeaders = _HTTPHeaders;
+	request.username = self.username;
+	request.password = self.password;
+}
+
 - (OTRestRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	request.additionalHTTPHeaders = _HTTPHeaders;
+	[self setupRequest:request];
 	[request get];
 	return request;
 }
@@ -101,28 +107,28 @@ static OTRestClient* sharedClient = nil;
 - (OTRestRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
 	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePathWithQueryString] delegate:delegate callback:callback];
-	request.additionalHTTPHeaders = _HTTPHeaders;
+	[self setupRequest:request];
 	[request get];
 	return request;
 }
 
 - (OTRestRequest*)post:(NSString*)resourcePath params:(NSObject<OTRestRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	request.additionalHTTPHeaders = _HTTPHeaders;
+	[self setupRequest:request];
 	[request postParams:params];
 	return request;
 }
 
 - (OTRestRequest*)put:(NSString*)resourcePath params:(NSObject<OTRestRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	request.additionalHTTPHeaders = _HTTPHeaders;
+	[self setupRequest:request];
 	[request putParams:params];	
 	return request;
 }
 
 - (OTRestRequest*)delete:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
 	OTRestRequest* request = [[OTRestRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	request.additionalHTTPHeaders = _HTTPHeaders;
+	[self setupRequest:request];
 	[request delete];
 	return request;
 }
