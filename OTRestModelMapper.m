@@ -237,7 +237,7 @@
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
 		// TODO: factor to class method? incase it is not a number
 		NSNumber* pk = [XML contentsNumberOfChildElement:[class primaryKeyElement]];
-		NSLog(@"Attempting to find object by primary key %@ via primaryKeyElement %@", pk, [class primaryKeyElement]);
+		//NSLog(@"Attempting to find object by primary key %@ via primaryKeyElement %@", pk, [class primaryKeyElement]);
 		object = [class findByPrimaryKey:pk];
 	}
 	// instantiate if object is nil
@@ -298,10 +298,10 @@
 		Element* propertyElement = [XML selectElement:selector];
 		NSString* typeHint = [propertyElement attribute:@"type"];
 		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:typeHint];
-		NSLog(@"The propertyType is %@", propertyType);
+		//NSLog(@"The propertyType is %@", propertyType);
 		id propertyValue = [self propertyValueForElement:propertyElement type:propertyType]; // valueForElement instead???
 		if (typeHint) {
-			NSLog(@"TypeHint is %@", typeHint);
+			//NSLog(@"TypeHint is %@", typeHint);
 			if ([typeHint isEqualToString:@"boolean"]) {
 				// Booleans must be cast to NSNumber...
 				NSLog(@"Boolean value before cast: %@", propertyValue);
@@ -309,7 +309,7 @@
 				NSLog(@"Boolean value after cast: %@", propertyValue);
 			}
 		}
-		NSLog(@"Trying potential update to %@ with value %@", propertyName, propertyValue);
+		//NSLog(@"Trying potential update to %@ with value %@", propertyName, propertyValue);
 		[self updateObject:model ifNewPropertyPropertyValue:propertyValue forPropertyNamed:propertyName];
 	}
 }
