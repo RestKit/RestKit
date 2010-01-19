@@ -49,6 +49,6 @@ typedef enum {
 /**
  * Digests a JSON payload and updates the object with its properties and relationships
  */
-- (void)setAttributes:(id)object fromJSONDict:(NSDictionary*)dict;
+- (void)setAttributes:(id)object fromJSONDictionary:(NSDictionary*)dict;
 
 @end

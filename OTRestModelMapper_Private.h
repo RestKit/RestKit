@@ -10,11 +10,11 @@
 @interface OTRestModelMapper (Private)
 
 - (id)buildModelFromJSON:(NSString*)JSON;
-- (id)buildModelFromJSONDict:(NSDictionary*)dict;
-- (void)setPropertiesOfModel:(id)model fromJSONDict:(NSDictionary*)dict;
-- (void)setRelationshipsOfModel:(id)model fromJSONDict:(NSDictionary*)dict;
-- (id)createOrUpdateInstanceOf:(Class)class fromJSONDict:(NSDictionary*)dict;
-- (void)setAttributes:(id)object fromJSONDict:(NSDictionary*)dict;
+- (id)buildModelFromJSONDictionary:(NSDictionary*)dict;
+- (void)setPropertiesOfModel:(id)model fromJSONDictionary:(NSDictionary*)dict;
+- (void)setRelationshipsOfModel:(id)model fromJSONDictionary:(NSDictionary*)dict;
+- (id)createOrUpdateInstanceOf:(Class)class fromJSONDictionary:(NSDictionary*)dict;
+- (void)setAttributes:(id)object fromJSONDictionary:(NSDictionary*)dict;
 - (id)buildModelFromXML:(Element*)XML;
 - (id)createOrUpdateInstanceOf:(Class)class fromXML:(Element*)XML;
 - (void)setAttributes:(id)object fromXML:(Element*)XML;

@@ -85,6 +85,6 @@
  */
 - (void)digestXML:(Element*)e;
 
-- (void)digestJSONDict:(NSDictionary*)dict;
+- (void)digestJSONDictionary:(NSDictionary*)dict;
 
 @end

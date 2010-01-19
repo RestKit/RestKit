@@ -6,7 +6,6 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-// #import <objc/objc-runtime.h>
 #import <objc/message.h>
 #import "OTRestModelMapper.h"
 #import "OTRestModelMapper_Private.h"
@@ -63,7 +62,7 @@
 	if ([self mappingFromJSON]) {
 		NSArray* collectionDicts = [[[[SBJSON alloc] init] autorelease] objectWithString:string];
 		for (NSDictionary* dict in collectionDicts) {
-			id object = [self buildModelFromJSONDict:dict];
+			id object = [self buildModelFromJSONDictionary:dict];
 			[objects addObject:object];
 		}		
 	} else if ([self mappingFromXML]) {
@@ -125,18 +124,18 @@
 	if (jsonDict == nil) {
 		return nil;
 	}
-	return [self buildModelFromJSONDict:jsonDict];
+	return [self buildModelFromJSONDictionary:jsonDict];
 }
 
-- (id)buildModelFromJSONDict:(NSDictionary*)dict {
+- (id)buildModelFromJSONDictionary:(NSDictionary*)dict {
 	assert([[dict allKeys] count] == 1);
 	NSString* keyName = [[dict allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:keyName];
 	
-	return [self createOrUpdateInstanceOf:class fromJSONDict:[dict objectForKey:keyName]];
+	return [self createOrUpdateInstanceOf:class fromJSONDictionary:[dict objectForKey:keyName]];
 }
 
-- (id)createOrUpdateInstanceOf:(Class)class fromJSONDict:(NSDictionary*)dict {
+- (id)createOrUpdateInstanceOf:(Class)class fromJSONDictionary:(NSDictionary*)dict {
 	id object = nil;
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
 		// TODO: factor to class method? incase it is not a number
@@ -153,21 +152,21 @@
 	}
 	// check to see if we should hand the object the JSON to set it's own properties
 	// (custom implementation)
-	if ([object respondsToSelector:@selector(digestJSONDict:)]) {
-		[object digestJSONDict:dict];
+	if ([object respondsToSelector:@selector(digestJSONDictionary:)]) {
+		[object digestJSONDictionary:dict];
 	}  else {
 		// update attributes
-		[self setAttributes:object fromJSONDict:dict];
+		[self setAttributes:object fromJSONDictionary:dict];
 	}
 	return object;
 }
 
-- (void)setAttributes:(id)object fromJSONDict:(NSDictionary*)dict {
-	[self setPropertiesOfModel:object fromJSONDict:dict];
-	[self setRelationshipsOfModel:object fromJSONDict:dict];
+- (void)setAttributes:(id)object fromJSONDictionary:(NSDictionary*)dict {
+	[self setPropertiesOfModel:object fromJSONDictionary:dict];
+	[self setRelationshipsOfModel:object fromJSONDictionary:dict];
 }
 
-- (void)setPropertiesOfModel:(id)model fromJSONDict:(NSDictionary*)dict {
+- (void)setPropertiesOfModel:(id)model fromJSONDictionary:(NSDictionary*)dict {
 	for (NSString* selector in [[model class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
 		
@@ -189,7 +188,7 @@
 	}
 }
 
-- (void)setRelationshipsOfModel:(id)model fromJSONDict:(NSDictionary*)dict {
+- (void)setRelationshipsOfModel:(id)model fromJSONDictionary:(NSDictionary*)dict {
 	for (NSString* selector in [[model class] elementToRelationshipMappings]) {
 		NSString* propertyName = [[[model class] elementToRelationshipMappings] objectForKey:selector];
 		if ([self isParentSelector:selector]) {
@@ -202,14 +201,14 @@
 			if (objects != nil) {
 				for (NSDictionary* childDict in objects) {
 					Class class = [_elementToClassMappings objectForKey:objectKey];
-					[children addObject:[self createOrUpdateInstanceOf:class fromJSONDict:childDict]];
+					[children addObject:[self createOrUpdateInstanceOf:class fromJSONDictionary:childDict]];
 				}
 				[model setValue:(NSSet*)children forKey:propertyName];
 			}
 		} else {
 			NSDictionary* objectDict = [dict objectForKey:selector];
 			Class class = [_elementToClassMappings objectForKey:selector];
-			id child = [self createOrUpdateInstanceOf:class fromJSONDict:objectDict];
+			id child = [self createOrUpdateInstanceOf:class fromJSONDictionary:objectDict];
 			[model setValue:child forKey:propertyName];
 		}
 	}
