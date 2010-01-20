@@ -69,6 +69,24 @@
     }
 }
 
+- (void)deletePersistantStore {
+	NSURL* storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent:_storeFilename]];
+	NSError* error = nil;
+	NSLog(@"Error removing persistant store: %@", [error localizedDescription]);
+	if (error) {
+		//Handle error
+	}
+	error = nil;
+	[[NSFileManager defaultManager] removeItemAtPath:storeUrl.path error:&error];
+	if (error) {
+		//Handle error
+	}
+	[_persistentStoreCoordinator release];
+	[_managedObjectContext release];
+	[self createPersistentStoreCoordinator];
+	_managedObjectContext = [[NSManagedObjectContext alloc] init];
+	_managedObjectContext.persistentStoreCoordinator = _persistentStoreCoordinator;
+}
 
 #pragma mark -
 #pragma mark Helpers

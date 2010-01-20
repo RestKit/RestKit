@@ -15,6 +15,7 @@
 	OTRestModelMapper* _mapper;
 	OTRestManagedObjectStore* _objectStore;
 	OTRestMappingFormat _format;
+	NSString* _baseURL;
 }
 
 + (OTRestModelManager*)manager;
@@ -32,7 +33,27 @@
 /**
  * The REST client for this manager
  */
-@property (nonatomic, readonly) OTRestClient* client;
+@property (nonatomic, retain) OTRestClient* client;
+
+/**
+ * the base url the manager was setup with
+ */
+@property (nonatomic, readonly) NSString* baseURL;
+
+/**
+ * gets rid of the client, effectively making online connection impossible
+ */
+- (void)goOffline;
+
+/**
+ * recreates the client with the original base url
+ */
+- (void)goOnline;
+
+/**
+ * returns true if the _client exists (does not detect network connectivity)
+ */
+- (BOOL)isOnline;
 
 /**
  * Register a model mapping from a domain model class to an XML element name

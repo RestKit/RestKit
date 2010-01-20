@@ -22,10 +22,11 @@ static OTRestModelManager* sharedManager = nil;
 @synthesize client = _client;
 @synthesize objectStore = _objectStore;
 @synthesize format = _format;
-
+@synthesize baseURL = _baseURL;
 - (id)initWithBaseURL:(NSString*)baseURL {
 	if (self = [super init]) {
 		_mapper = [[OTRestModelMapper alloc] init];
+		_baseURL = [baseURL retain];
 		_client = [[OTRestClient clientWithBaseURL:baseURL] retain];
 		self.format = OTRestMappingFormatXML;
 	}
@@ -52,7 +53,22 @@ static OTRestModelManager* sharedManager = nil;
 - (void)dealloc {
 	[_mapper release];
 	[_client release];
+	[_baseURL release];
 	[super dealloc];
+}
+
+- (void)goOffline {
+	[_client release];
+	_client = nil;
+}
+
+- (void)goOnline {
+	[_client release];
+	_client = [[OTRestClient clientWithBaseURL:_baseURL] retain];
+}
+
+- (BOOL)isOnline {
+	return (nil != _client);
 }
 
 - (void)setFormat:(OTRestMappingFormat)format {
