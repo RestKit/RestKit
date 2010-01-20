@@ -271,6 +271,8 @@
 		propertyValue = [propertyElement contentsText];
 	} else if ([type isEqualToString:@"NSNumber"]) {
 		propertyValue = [propertyElement contentsNumber];
+	} else if ([type isEqualToString:@"NSDecimalNumber"]) {
+		propertyValue = [NSDecimalNumber decimalNumberWithString:[propertyElement contentsText]];
 	} else if ([type isEqualToString:@"NSDate"]) {
 		NSString* dateString = [propertyElement contentsText];
 		if (nil != dateString) {
