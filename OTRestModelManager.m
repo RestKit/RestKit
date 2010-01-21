@@ -22,13 +22,13 @@ static OTRestModelManager* sharedManager = nil;
 @synthesize client = _client;
 @synthesize objectStore = _objectStore;
 @synthesize format = _format;
-@synthesize baseURL = _baseURL;
+
 - (id)initWithBaseURL:(NSString*)baseURL {
 	if (self = [super init]) {
 		_mapper = [[OTRestModelMapper alloc] init];
-		_baseURL = [baseURL retain];
 		_client = [[OTRestClient clientWithBaseURL:baseURL] retain];
 		self.format = OTRestMappingFormatXML;
+		_isOnline = YES;
 	}
 	return self;
 }
@@ -53,22 +53,23 @@ static OTRestModelManager* sharedManager = nil;
 - (void)dealloc {
 	[_mapper release];
 	[_client release];
-	[_baseURL release];
 	[super dealloc];
 }
 
 - (void)goOffline {
-	[_client release];
-	_client = nil;
+	_isOnline = NO;
 }
 
 - (void)goOnline {
-	[_client release];
-	_client = [[OTRestClient clientWithBaseURL:_baseURL] retain];
+	_isOnline = YES;
 }
 
 - (BOOL)isOnline {
-	return (nil != _client);
+	return _isOnline;
+}
+
+- (BOOL)isOffline {
+	return ![self isOnline];
 }
 
 - (void)setFormat:(OTRestMappingFormat)format {
@@ -90,6 +91,9 @@ static OTRestModelManager* sharedManager = nil;
  * Load a model from a restful resource and invoke the callback
  */
 - (OTRestRequest*)loadModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+	if ([self isOffline]) {
+		return nil;
+	}
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -101,6 +105,9 @@ static OTRestModelManager* sharedManager = nil;
  * Load a collection of models from a restful resource and invoke the callback
  */
 - (OTRestRequest*)loadModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+	if ([self isOffline]) {
+		return nil;
+	}
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -109,6 +116,9 @@ static OTRestModelManager* sharedManager = nil;
 }
 
 - (OTRestRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
+	if ([self isOffline]) {
+		return nil;
+	}
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -117,6 +127,9 @@ static OTRestModelManager* sharedManager = nil;
 }
 
 - (OTRestRequest*)getModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	if ([self isOffline]) {
+		return nil;
+	}
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -127,6 +140,9 @@ static OTRestModelManager* sharedManager = nil;
 }
 
 - (OTRestRequest*)postModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	if ([self isOffline]) {
+		return nil;
+	}
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -138,6 +154,9 @@ static OTRestModelManager* sharedManager = nil;
 }
 
 - (OTRestRequest*)putModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	if ([self isOffline]) {
+		return nil;
+	}
 	OTRestModelLoader* loader = [[OTRestModelLoader alloc] initWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
@@ -149,6 +168,9 @@ static OTRestModelManager* sharedManager = nil;
 }
 
 - (OTRestRequest*)deleteModel:(id<OTRestModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+	if ([self isOffline]) {
+		return nil;
+	}
 	// TODO: are we responsible for deleting the object too,
 	//		or are we to assume that the caller has/will delete it?
 	OTRestRequest* request = [_client delete:[model memberPath] delegate:delegate callback:callback];

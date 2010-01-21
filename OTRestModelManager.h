@@ -15,7 +15,7 @@
 	OTRestModelMapper* _mapper;
 	OTRestManagedObjectStore* _objectStore;
 	OTRestMappingFormat _format;
-	NSString* _baseURL;
+	BOOL _isOnline;
 }
 
 + (OTRestModelManager*)manager;
@@ -33,12 +33,7 @@
 /**
  * The REST client for this manager
  */
-@property (nonatomic, retain) OTRestClient* client;
-
-/**
- * the base url the manager was setup with
- */
-@property (nonatomic, readonly) NSString* baseURL;
+@property (nonatomic, readonly) OTRestClient* client;
 
 /**
  * gets rid of the client, effectively making online connection impossible
