@@ -9,6 +9,9 @@
 #import "OTRestModelManager.h"
 #import "OTRestModelLoader.h"
 
+extern NSString* const kOTRestDidEnterOfflineMode = @"kOTRestDidEnterOfflineMode";
+extern NSString* const kOTRestDidEnterOnlineMode = @"kOTRestDidEnterOnlineMode";
+
 //////////////////////////////////
 // Global Instance
 
@@ -58,10 +61,12 @@ static OTRestModelManager* sharedManager = nil;
 
 - (void)goOffline {
 	_isOnline = NO;
+	[[NSNotificationCenter defaultCenter] postNotificationName:kOTRestDidEnterOfflineMode object:[OTRestModelManager manager]];
 }
 
 - (void)goOnline {
 	_isOnline = YES;
+	[[NSNotificationCenter defaultCenter] postNotificationName:kOTRestDidEnterOnlineMode object:[OTRestModelManager manager]];
 }
 
 - (BOOL)isOnline {

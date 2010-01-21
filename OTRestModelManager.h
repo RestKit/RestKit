@@ -10,6 +10,9 @@
 #import "OTRestClient.h"
 #import "OTRestManagedObjectStore.h"
 
+extern NSString* const kOTRestDidEnterOfflineMode;
+extern NSString* const kOTRestDidEnterOnlineMode;
+
 @interface OTRestModelManager : NSObject {
 	OTRestClient* _client;
 	OTRestModelMapper* _mapper;
