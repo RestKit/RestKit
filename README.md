@@ -32,7 +32,8 @@ Be sure to enable the -ObjC in your Target settings under "Build" > "Other Linke
 Contributing
 -------------------------
 
-Forks, patches and other feedback are always welcome. A Google Group for development and 
-usage of library is available at: http://groups.google.com/group/restkit
+Forks, patches and other feedback are always welcome. 
+
+A Google Group for development and usage of library is available at: [http://groups.google.com/group/restkit](http://groups.google.com/group/restkit)
 
 ### RestKit is brought to you by [Two Toasters](http://www.twotoasters.com/). ###
