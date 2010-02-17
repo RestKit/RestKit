@@ -1,6 +1,6 @@
 //
 //  main.m
-//  Cash Register
+//  OTRestFramework
 //
 //  Created by Jeremy Ellison on 12/7/09.
 //  Copyright Two Toasters 2009. All rights reserved.

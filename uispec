@@ -1,4 +1,6 @@
 #!/bin/zsh
+# UISpec CLI Runner
+# By Blake Watters <blake@twotoasters.com>
 # Base code taken from: http://stackoverflow.com/questions/1514302/build-and-run-an-xcode-project-via-applescript
 
 BUILD_PATH=$(dirname $0)
