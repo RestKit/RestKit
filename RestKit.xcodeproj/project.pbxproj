@@ -103,60 +103,53 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		255DEAE81107F12A00A85891 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3F4E18D6102DD31E00320118 /* ElementParser.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25FCE09E10360372005418A7;
-			remoteInfo = Tests;
-		};
 		256FD62C112C79750077F340 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 256FD622112C79750077F340 /* JSON.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 53D229810C96121600276605 /* JSON.framework */;
+			remoteGlobalIDString = 53D229810C96121600276605;
 			remoteInfo = JSON;
 		};
 		256FD62E112C79750077F340 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 256FD622112C79750077F340 /* JSON.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 53D2298D0C96122A00276605 /* Tests.octest */;
+			remoteGlobalIDString = 53D2298D0C96122A00276605;
 			remoteInfo = Tests;
 		};
 		256FD630112C79750077F340 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 256FD622112C79750077F340 /* JSON.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = FE2BBD800D8B0D3900184787 /* libjson.a */;
+			remoteGlobalIDString = FE2BBD800D8B0D3900184787;
 			remoteInfo = libjson;
 		};
 		256FD632112C79750077F340 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 256FD622112C79750077F340 /* JSON.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = FE2BBDAB0D8B0EE000184787 /* libjsontests.octest */;
+			remoteGlobalIDString = FE2BBDAB0D8B0EE000184787;
 			remoteInfo = libjsontests;
 		};
 		256FD634112C79750077F340 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 256FD622112C79750077F340 /* JSON.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 53EF4D400DC247B3005F5E6D /* bench */;
+			remoteGlobalIDString = 53EF4D400DC247B3005F5E6D;
 			remoteInfo = bench;
 		};
 		256FD63D112C79ED0077F340 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 256FD622112C79750077F340 /* JSON.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = FE2BBD7F0D8B0D3900184787 /* libjson */;
+			remoteGlobalIDString = FE2BBD7F0D8B0D3900184787;
 			remoteInfo = libjson;
 		};
 		256FD65B112C7C660077F340 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 256FD622112C79750077F340 /* JSON.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = FE2BBD7F0D8B0D3900184787 /* libjson */;
+			remoteGlobalIDString = FE2BBD7F0D8B0D3900184787;
 			remoteInfo = libjson;
 		};
 		3F4E18DA102DD31E00320118 /* PBXContainerItemProxy */ = {
@@ -520,7 +513,6 @@
 			isa = PBXGroup;
 			children = (
 				3F4E18DB102DD31E00320118 /* libElementParser.a */,
-				255DEAE91107F12A00A85891 /* Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -695,13 +687,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		255DEAE91107F12A00A85891 /* Tests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = Tests.octest;
-			remoteRef = 255DEAE81107F12A00A85891 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		256FD62D112C79750077F340 /* JSON.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
@@ -900,10 +885,15 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RestKit_Prefix.pch;
 				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = (
+					../ElementParser/Classes,
+					"../json-framework/Source",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = RestKit;
 				SDKROOT = "";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -918,6 +908,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RestKit_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../ElementParser/Classes,
+					"../json-framework/Source",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RestKit;
