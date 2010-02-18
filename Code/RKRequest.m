@@ -23,10 +23,17 @@
 	return request;
 }
 
-- (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
+- (id)initWithURL:(NSURL*)URL {
 	if (self = [self init]) {
 		_URL = [URL retain];
 		_URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
+	}
+	
+	return self;
+}
+
+- (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
+	if (self = [self initWithURL:URL]) {
 		_delegate = [delegate retain];
 		_callback = callback;		
 	}
@@ -71,6 +78,19 @@
 	[[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
 }
 
+- (RKResponse*)sendSynchronous {
+	NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
+	NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+	[body release];
+	NSDate* sentAt = [NSDate date];
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];	
+	NSURLResponse *URLResponse;
+	NSError *error;
+	NSData* payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
+	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse payload:payload error:error] autorelease];
+}
+
 - (void)get {
 	[_URLRequest setHTTPMethod:@"GET"];
 	[self addHeadersToRequest];
@@ -97,6 +117,34 @@
 	[_URLRequest setHTTPMethod:@"DELETE"];
 	[self addHeadersToRequest];
 	[self send];
+}
+
+- (RKResponse*)putParamsSynchronously:(NSObject<RKRequestSerializable>*)params {
+	[_URLRequest setHTTPMethod:@"PUT"];
+	_params = [params retain];
+	[_URLRequest setHTTPBody:[_params HTTPBody]];
+	[self addHeadersToRequest];	
+	return [self sendSynchronous];
+}
+
+- (RKResponse*)getSynchronously {
+	[_URLRequest setHTTPMethod:@"GET"];
+	[self addHeadersToRequest];
+	return [self sendSynchronous];
+}
+
+- (RKResponse*)postParamsSynchronously:(NSObject<RKRequestSerializable>*)params {	
+	[_URLRequest setHTTPMethod:@"POST"];
+	_params = [params retain];
+	[_URLRequest setHTTPBody:[_params HTTPBody]];
+	[self addHeadersToRequest];	
+	return [self sendSynchronous];
+}
+
+- (RKResponse*)deleteSynchronously {
+	[_URLRequest setHTTPMethod:@"DELETE"];
+	[self addHeadersToRequest];
+	return [self sendSynchronous];
 }
 
 @end

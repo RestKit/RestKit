@@ -70,7 +70,16 @@
 - (BOOL)isNetworkAvailable;
 
 /**
- * Fetch a resource via an HTTP GET and invoke a callback with the resulting payload
+ * Adds an HTTP header to each request dispatched through the Rest client
+ */
+- (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Asynchronous Requests
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Fetch a resource via an HTTP GET and invoke a callback with the result
  */
 - (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
 
@@ -97,9 +106,36 @@
  */
 - (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Synchronous Requests
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
- * Adds an HTTP header to each request dispatched through the Rest client
+ * Fetch a resource synchronously via an HTTP GET and return the response
  */
-- (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
+- (RKResponse*)getSynchronously:(NSString*)resourcePath;
+
+/**
+ * Fetch a resource synchronously via an HTTP GET with a dictionary of params and return the response
+ *
+ * Note that this request _only_ allows NSDictionary objects as the params. The dictionary will be coerced into a URL encoded
+ * string and then appended to the resourcePath as the query string of the request.
+ */
+- (RKResponse*)getSynchronously:(NSString*)resourcePath params:(NSDictionary*)params;
+
+/**
+ * Create a resource via an HTTP POST with a set of form parameters and return the response
+ */
+- (RKResponse*)postSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params;
+
+/**
+ * Update a resource via an HTTP PUT and return the response
+ */
+- (RKResponse*)putSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params;
+
+/**
+ * Destroy a resource via an HTTP DELETE and return the response
+ */
+- (RKResponse*)deleteSynchronously:(NSString*)resourcePath;
 
 @end

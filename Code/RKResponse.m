@@ -23,9 +23,23 @@
 	
 	return self;
 }
+
 - (id)initWithRestRequest:(RKRequest*)request {
 	if (self = [self init]) {
 		_request = [request retain];
+	}
+	
+	return self;
+}
+
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse payload:(NSData*)payload error:(NSError*)error {
+	if (self = [super init]) {
+		_request = [request retain];		
+		_httpURLResponse = [URLResponse retain];
+		_failureError = [error retain];
+		_payload = [payload retain];
+		_failureError = [error retain];
+		_loading = NO;
 	}
 	
 	return self;
@@ -176,6 +190,10 @@
 
 - (BOOL)isNotFound {
 	return ([self statusCode] == 404);
+}
+
+- (BOOL)isUnprocessableEntity {
+	return ([self statusCode] == 422);
 }
 
 - (BOOL)isRedirect {

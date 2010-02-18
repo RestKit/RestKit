@@ -60,6 +60,11 @@
 - (id)initWithRestRequest:(RKRequest*)request;
 
 /**
+ * Initializes a response object from the results of a synchronous request
+ */
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse payload:(NSData*)payload error:(NSError*)error;
+
+/**
  * Return the localized human readable representation of the HTTP Status Code returned
  */
 - (NSString*)localizedStatusCodeString;
@@ -144,6 +149,11 @@
  * Indicates an HTTP response code of 404
  */
 - (BOOL)isNotFound;
+
+/**
+ * Indicates an HTTP response code of 422
+ */
+- (BOOL)isUnprocessableEntity;
 
 /**
  * Indicates an HTTP response code of 301, 302, 303 or 307

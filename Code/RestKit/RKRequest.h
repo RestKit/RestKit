@@ -10,6 +10,8 @@
 #import "DocumentRoot.h"
 #import "RKRequestSerializable.h"
 
+@class RKResponse;
+
 @interface RKRequest : NSObject {
 	NSURL* _URL;
 	NSMutableURLRequest* _URLRequest;
@@ -75,6 +77,11 @@
 + (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback;
 
 /**
+ * Initialize a synchronous request
+ */
+- (id)initWithURL:(NSURL*)URL;
+
+/**
  * Initialize a REST request and prepare it for dispatching
  */
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback;
@@ -98,6 +105,30 @@
  * DELETE the resource and invoke the callback with the response payload
  */
 - (void)delete;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Synchronous Requests
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * GET the resource and invoke the callback with the response payload
+ */
+- (RKResponse*)getSynchronously;
+
+/**
+ * POST a collection of params to the resource and invoke the callback with the response payload
+ */
+- (RKResponse*)postParamsSynchronously:(NSObject<RKRequestSerializable>*)params;
+
+/**
+ * PUT a collection of params to the resource and invoke the callback with the response payload
+ */
+- (RKResponse*)putParamsSynchronously:(NSObject<RKRequestSerializable>*)params;
+
+/**
+ * DELETE the resource and invoke the callback with the response payload
+ */
+- (RKResponse*)deleteSynchronously;
 
 @end
 
