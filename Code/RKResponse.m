@@ -217,11 +217,11 @@
 }
 
 - (BOOL)isXML {
-	return [[self contentType] isEqualToString:@"application/xml"];
+	return [[self contentType] rangeOfString:@"application/xml" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
 }
 
 - (BOOL)isJSON {
-	return [[self contentType] isEqualToString:@"application/json"];
+	return [[self contentType] rangeOfString:@"application/json" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
 }
 
 @end
