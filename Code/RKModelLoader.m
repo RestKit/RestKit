@@ -30,7 +30,7 @@
 }
 
 - (BOOL)processResponse:(RKResponse*)response {
-	NSString* errorMessage;
+	NSString* errorMessage = nil;
 	RKRequest* request = response.request;
 	if ([response isFailure]) {
 		[_delegate modelLoaderRequest:response.request didFailWithError:response.failureError response:response model:(id<RKModelMappable>)request.userData];

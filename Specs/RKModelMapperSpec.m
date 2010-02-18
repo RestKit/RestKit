@@ -128,6 +128,58 @@
 	[expectThat([[result hasMany] count]) should:be(2)];
 }
 
+- (void)itShouldNotUpdateNilPropertyToNil {
+	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
+	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	[mapper updateObject:model ifNewPropertyPropertyValue:nil forPropertyNamed:@"name"];
+	
+	[expectThat(model.name) should:be(nil)];
+}
+
+- (void)itShouldBeAbleToSetNonNilPropertiesToNil {
+	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
+	model.age = [NSNumber numberWithInt:0];
+	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	[mapper updateObject:model ifNewPropertyPropertyValue:nil forPropertyNamed:@"age"];
+	
+	[expectThat(model.age) should:be(nil)];
+}
+
+- (void)itShouldBeAbleToSetNilPropertiesToNonNil {
+	RKModelMapperSpecModel* model = [[OTRestModelMapperTestModel alloc] autorelease];
+	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	[mapper updateObject:model ifNewPropertyPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
+	
+	[expectThat(model.age) should:be([NSNumber numberWithInt:0])];
+}
+
+- (void)itShouldBeAbleToSetNonNilNSStringPropertiesToNonNil {
+	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
+	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	
+	model.name = @"Bob";
+	[mapper updateObject:model ifNewPropertyPropertyValue:@"Will" forPropertyNamed:@"name"];
+	[expectThat(model.name) should:be(@"Will")];	
+}
+
+- (void)itShouldBeAbleToSetNonNilNSNumberPropertiesToNonNil {
+	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
+	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	
+	model.age = [NSNumber numberWithInt:16];
+	[mapper updateObject:model ifNewPropertyPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
+	[expectThat(model.age) should:be([NSNumber numberWithInt:17])];	
+}
+
+- (void)itShouldBeAbleToSetNonNilNSDatePropertiesToNonNil {
+	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
+	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	
+	model.createdAt = [NSDate date];
+	[mapper updateObject:model ifNewPropertyPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
+	[expectThat(model.createdAt) should:be([NSDate dateWithTimeIntervalSince1970:0])];	
+}
+
 @end
 
 @implementation RKModelMapperSpec (Private)

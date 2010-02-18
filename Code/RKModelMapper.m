@@ -86,7 +86,7 @@
 		// Don't set the property, both are nil
 	} else if (nil == propertyValue || [propertyValue isKindOfClass:[NSNull class]]) {
 		// Clear out the value to reset it
-		[model setNilValueForKey:propertyName];
+		[model setValue:nil forKey:propertyName];
 	} else if (currentValue == nil || [currentValue isKindOfClass:[NSNull class]]) {
 		// Existing value was nil, just set the property and be happy
 		[model setValue:propertyValue forKey:propertyName];

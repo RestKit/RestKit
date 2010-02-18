@@ -1,6 +1,6 @@
 //
 //  RKResponse.m
-//  RestKit
+//  RKFramework
 //
 //  Created by Blake Watters on 7/28/09.
 //  Copyright 2009 Two Toasters. All rights reserved.
@@ -18,6 +18,7 @@
 	if (self = [super init]) {
 		_payload = [[NSMutableData alloc] init];
 		_failureError = nil;
+		_loading = NO;
 	}
 	
 	return self;
@@ -53,7 +54,14 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-	[_payload appendData:data];
+	if (NO == _loading) {
+		_loading = YES;
+		if ([[_request delegate] respondsToSelector:@selector(requestDidStartLoad:)]) {
+			[[_request delegate] requestDidStartLoad:_request];
+		}
+	}
+	
+	[_payload appendData:data];		
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
@@ -62,15 +70,24 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
 	[connection release];
-	NSDate* receivedAt = [NSDate date];
+	NSDate* receivedAt = [NSDate date]; // TODO - Carry around this timestamp on the response or request?
 	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", [_request URL], @"URL", receivedAt, @"receivedAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:self userInfo:userInfo];
-	[[_request delegate] performSelector:[_request callback] withObject:self];	
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:self userInfo:userInfo];	
+	
+	[[_request delegate] performSelector:[_request callback] withObject:self];
+	
+	if ([[_request delegate] respondsToSelector:@selector(requestDidFinishLoad:)]) {
+		[[_request delegate] requestDidFinishLoad:_request];
+	}
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
 	[[_request delegate] performSelector:[_request callback] withObject:self];
+	
+	if ([[_request delegate] respondsToSelector:@selector(request:didFailLoadWithError:)]) {
+		[[_request delegate] request:_request didFailLoadWithError:error];
+	}
 }
 
 - (NSString*)localizedStatusCodeString {

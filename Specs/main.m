@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UISpec.h"
+#import <UISpec.h>
 
 int main(int argc, char *argv[]) {
     

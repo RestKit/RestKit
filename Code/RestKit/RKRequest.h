@@ -100,3 +100,16 @@
 - (void)delete;
 
 @end
+
+/**
+ * Lifecycle events for RKRequests
+ *
+ * Modeled off of TTURLRequest
+ */
+@protocol RKRequestDelegate 
+@optional
+- (void)requestDidStartLoad:(RKRequest*)request;
+- (void)requestDidFinishLoad:(RKRequest*)request;
+- (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error;
+- (void)requestDidCancelLoad:(RKRequest*)request; // not yet implemented
+@end
