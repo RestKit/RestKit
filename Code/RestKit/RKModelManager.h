@@ -9,6 +9,7 @@
 #import "RKModelMapper.h"
 #import "RKClient.h"
 #import "RKManagedObjectStore.h"
+#import "RKModelLoader.h"
 
 extern NSString* const kRKDidEnterOfflineMode;
 extern NSString* const kRKDidEnterOnlineMode;
@@ -71,17 +72,17 @@ extern NSString* const kRKDidEnterOnlineMode;
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
-- (RKRequest*)loadModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)loadModel:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
 
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
-- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
-- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
 
-- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
-- (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
-- (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
-- (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
 
 @end

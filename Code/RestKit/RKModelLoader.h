@@ -41,7 +41,7 @@
 /**
  * The object to be invoked with the loaded models
  */
-@property (nonatomic, retain) id delegate;
+@property (nonatomic, retain) NSObject<RKModelLoaderDelegate>* delegate;
 
 /**
  * The method to invoke after loading the models

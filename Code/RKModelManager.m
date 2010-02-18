@@ -7,7 +7,6 @@
 //
 
 #import "RKModelManager.h"
-#import "RKModelLoader.h"
 
 NSString* const kRKDidEnterOfflineMode = @"kRKDidEnterOfflineMode";
 NSString* const kRKDidEnterOnlineMode = @"kRKDidEnterOnlineMode";
@@ -95,7 +94,7 @@ static RKModelManager* sharedManager = nil;
 /**
  * Load a model from a restful resource and invoke the callback
  */
-- (RKRequest*)loadModel:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)loadModel:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
 	if ([self isOffline]) {
 		return nil;
 	}
@@ -109,7 +108,7 @@ static RKModelManager* sharedManager = nil;
 /**
  * Load a collection of models from a restful resource and invoke the callback
  */
-- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
 	if ([self isOffline]) {
 		return nil;
 	}
@@ -120,7 +119,7 @@ static RKModelManager* sharedManager = nil;
 	return [_client get:resourcePath delegate:loader callback:loader.collectionCallback];
 }
 
-- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
 	if ([self isOffline]) {
 		return nil;
 	}
@@ -131,7 +130,7 @@ static RKModelManager* sharedManager = nil;
 	return [_client get:resourcePath params:params delegate:loader callback:loader.collectionCallback];
 }
 
-- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
 	if ([self isOffline]) {
 		return nil;
 	}
@@ -144,7 +143,7 @@ static RKModelManager* sharedManager = nil;
 	return request;
 }
 
-- (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
 	if ([self isOffline]) {
 		return nil;
 	}
@@ -158,7 +157,7 @@ static RKModelManager* sharedManager = nil;
 	return request;
 }
 
-- (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
 	if ([self isOffline]) {
 		return nil;
 	}
@@ -172,7 +171,7 @@ static RKModelManager* sharedManager = nil;
 	return request;
 }
 
-- (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
 	if ([self isOffline]) {
 		return nil;
 	}
