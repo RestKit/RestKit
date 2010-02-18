@@ -6,10 +6,10 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-#import "RKRequest.h"
-#import "RKResponse.h"
-#import "NSDictionary+RKRequestSerialization.h"
-#import "RKNotifications.h"
+#import "RestKit/RKRequest.h"
+#import "RestKit/RKResponse.h"
+#import "RestKit/NSDictionary+RKRequestSerialization.h"
+#import "RestKit/RKNotifications.h"
 
 @implementation RKRequest
 
