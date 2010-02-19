@@ -228,6 +228,7 @@
 		256FD650112C7B780077F340 /* RKMappableAssociation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappableAssociation.m; sourceTree = "<group>"; };
 		256FDE53112DB0B90077F340 /* RKModelMapperSpecModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKModelMapperSpecModel.h; sourceTree = "<group>"; };
 		256FDE54112DB0B90077F340 /* RKModelMapperSpecModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKModelMapperSpecModel.m; sourceTree = "<group>"; };
+		256FE8D6112EE5310077F340 /* RestKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RestKit.h; path = RestKit/RestKit.h; sourceTree = "<group>"; };
 		2580B066102E0F1000832D07 /* RKModelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelLoader.h; path = RestKit/RKModelLoader.h; sourceTree = "<group>"; };
 		2580B067102E0F1000832D07 /* RKModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* RKManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKManagedModel.h; path = RestKit/RKManagedModel.h; sourceTree = "<group>"; };
@@ -446,6 +447,7 @@
 				3F4E18EF102DD38700320118 /* RKRequestSerializable.h */,
 				3F4E1918102DD42F00320118 /* NSDictionary+RKRequestSerialization.h */,
 				3F4E1919102DD42F00320118 /* NSDictionary+RKRequestSerialization.m */,
+				256FE8D6112EE5310077F340 /* RestKit.h */,
 			);
 			name = Core;
 			path = Code;

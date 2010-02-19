@@ -11,8 +11,8 @@
 #import "RKManagedObjectStore.h"
 #import "RKModelLoader.h"
 
-extern NSString* const kRKDidEnterOfflineMode;
-extern NSString* const kRKDidEnterOnlineMode;
+extern NSString* const RKDidEnterOfflineModeNotification;
+extern NSString* const RKDidEnterOnlineModeNotification;
 
 @interface RKModelManager : NSObject {
 	RKClient* _client;

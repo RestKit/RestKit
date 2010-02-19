@@ -8,8 +8,8 @@
 
 #import "RKModelManager.h"
 
-NSString* const kRKDidEnterOfflineMode = @"kRKDidEnterOfflineMode";
-NSString* const kRKDidEnterOnlineMode = @"kRKDidEnterOnlineMode";
+NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
+NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
 
 //////////////////////////////////
 // Global Instance
@@ -60,12 +60,12 @@ static RKModelManager* sharedManager = nil;
 
 - (void)goOffline {
 	_isOnline = NO;
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKDidEnterOfflineMode object:[RKModelManager manager]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:[RKModelManager manager]];
 }
 
 - (void)goOnline {
 	_isOnline = YES;
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKDidEnterOnlineMode object:[RKModelManager manager]];
+	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:[RKModelManager manager]];
 }
 
 - (BOOL)isOnline {
