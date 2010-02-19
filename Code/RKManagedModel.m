@@ -1,5 +1,5 @@
 //
-//  OTManagedModel.m
+//  RKManagedModel.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/09.
@@ -67,6 +67,17 @@
 
 + (NSArray*)allObjects {
 	return [self collectionWithPredicate:nil];
+}
+
+#pragma mark -
+#pragma mark Object Cacheing
+
++ (NSArray*)objectsForResourcePath:(NSString*)resourcePath {
+	return nil;
+}
+
++ (RKManagedModel*)objectForResourcePath:(NSString*)resourcePath {
+	return nil;
 }
 
 #pragma mark -

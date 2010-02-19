@@ -1,5 +1,5 @@
 //
-//  OTModelMapper.m
+// RKModelMapper.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/09.

@@ -1,5 +1,5 @@
 //
-//  OTModelMapper.h
+// RKModelMapper.h
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/09.

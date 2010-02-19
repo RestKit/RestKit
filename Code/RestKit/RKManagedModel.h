@@ -1,5 +1,5 @@
 //
-//  OTManagedModel.h
+// RKManagedModel.h
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/09.
@@ -11,7 +11,33 @@
 #import "RKModelMappableProtocol.h"
 #import "RKModelManager.h"
 
-@interface RKManagedModel : NSManagedObject <RKModelMappable> {
+@class RKManagedModel;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// Object Cacheing Support
+
+@protocol RKManagedModelObjectCache
+
+/**
+ * Return a set of objects locally cached in the Core Data store for a given
+ * resource path. The default implementation does nothing, subclasses are responsible
+ * for parsing the object path and querying the managed object context.
+ */
++ (NSArray*)objectsForResourcePath:(NSString*)resourcePath;
+
+/**
+ * Return a locally cached object in the Core Data store for a given
+ * resource path. The default implementation does nothing, subclasses are responsible
+ * for parsing the object path and querying the managed object context.
+ */
++ (RKManagedModel*)objectForResourcePath:(NSString*)resourcePath;
+
+@end
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// RestKit managed models
+
+@interface RKManagedModel : NSManagedObject <RKModelMappable, RKManagedModelObjectCache> {
 	
 }
 
@@ -87,6 +113,9 @@
 + (NSString*)modelName;
 
 - (NSDictionary*)elementNamesAndPropertyValues;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// Instance Methods
 
 /**
  * Save the object into the managed object context
