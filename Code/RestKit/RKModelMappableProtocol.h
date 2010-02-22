@@ -9,6 +9,11 @@
 
 @class Element;
 
+typedef enum {
+	RKMappingFormatXML = 0,
+	RKMappingFormatJSON
+} RKMappingFormat;
+
 /**
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes
@@ -78,6 +83,13 @@
  * instantiate a new instance.
  */
 + (id)findByPrimaryKey:(id)value;
+
+/**
+ * Callback used to allow transformation of element name formatting before model mapping
+ * occurs. This can be used to change the formatting of elements. For example, Ruby on Rails
+ * formats XML element names hyphenated (my-attribute) and JSON element names underscored (my_attribute).
+ */
++ (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
 
 /**
  * If implemented, the model mapper will hand the xml to the object instead of mapping it using

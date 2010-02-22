@@ -169,9 +169,9 @@
 - (void)setPropertiesOfModel:(id)model fromJSONDictionary:(NSDictionary*)dict {
 	for (NSString* selector in [[model class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
-		
-		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:nil];
-		id propertyValue = [dict objectForKey:selector];
+		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:nil];		
+		NSString* elementName = [[model class] formatElementName:selector forMappingFormat:RKMappingFormatJSON];
+		id propertyValue = [dict objectForKey:elementName];
 		
 		// Types of objects SBJSON does not handle:
 		if ([propertyType isEqualToString:@"NSDate"]) {

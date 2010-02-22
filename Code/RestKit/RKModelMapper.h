@@ -13,11 +13,6 @@
 #define kRailsToXMLDateTimeFormatterString @"yyyy-MM-dd'T'HH:mm:ss'Z'" // 2009-08-08T17:23:59Z
 #define kRailsToXMLDateFormatterString @"MM/dd/yyyy"
 
-typedef enum {
-	RKMappingFormatXML = 0,
-	RKMappingFormatJSON
-} RKMappingFormat;
-
 @interface RKModelMapper : NSObject {
 	NSMutableDictionary* _elementToClassMappings;
 	RKMappingFormat _format;

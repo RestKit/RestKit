@@ -112,6 +112,12 @@
 // The server side name of the model?
 + (NSString*)modelName;
 
+/**
+ * Formats an element name to match the encoding format of a mapping request. By default, assumes
+ * that the element name should be dasherized for XML and underscored for JSON
+ */
++ (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
+
 - (NSDictionary*)elementNamesAndPropertyValues;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////

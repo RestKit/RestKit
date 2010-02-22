@@ -150,6 +150,16 @@
 	return [[self elementToPropertyMappings] allValues];
 }
 
++ (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format {
+	if (RKMappingFormatXML == format) {
+		return [[elementName camelize] dasherize];
+	} else if (RKMappingFormatJSON == format) {
+		return [[elementName camelize] underscore];
+	}
+	
+	return elementName;
+}
+
 + (NSString*)modelName {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
