@@ -270,7 +270,14 @@
 	if ([type isEqualToString:@"NSString"]) {		
 		propertyValue = [propertyElement contentsText];
 	} else if ([type isEqualToString:@"NSNumber"]) {
-		propertyValue = [propertyElement contentsNumber];
+		NSString* string = [propertyElement contentsText];
+		if (nil != string) {
+			NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+			[formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+			[formatter setNumberStyle:NSNumberFormatterDecimalStyle];		
+			propertyValue = [formatter numberFromString:string];
+			[formatter release];
+		}
 	} else if ([type isEqualToString:@"NSDecimalNumber"]) {
 		propertyValue = [NSDecimalNumber decimalNumberWithString:[propertyElement contentsText]];
 	} else if ([type isEqualToString:@"NSDate"]) {
@@ -306,9 +313,7 @@
 			//NSLog(@"TypeHint is %@", typeHint);
 			if ([typeHint isEqualToString:@"boolean"]) {
 				// Booleans must be cast to NSNumber...
-				NSLog(@"Boolean value before cast: %@", propertyValue);
 				propertyValue = [NSNumber numberWithBool:[propertyValue boolValue]];
-				NSLog(@"Boolean value after cast: %@", propertyValue);
 			}
 		}
 		//NSLog(@"Trying potential update to %@ with value %@", propertyName, propertyValue);
