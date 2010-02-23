@@ -6,13 +6,11 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "RKRequest.h"
+#import "RKResponse.h"
 #import "RKModelMapper.h"
 
-@class RKRequest;
-@class RKResponse;
-
-@protocol RKModelLoaderDelegate
+@protocol RKModelLoaderDelegate <RKRequestDelegate>
 
 /**
  * Invoked when a request sent through the model manager encounters an error. The model will be nil if the request was
@@ -27,7 +25,7 @@
 
 @end
 
-@interface RKModelLoader : NSObject {
+@interface RKModelLoader : NSObject <RKRequestDelegate> {
 	RKModelMapper* _mapper;
 	NSObject<RKModelLoaderDelegate>* _delegate;
 	SEL _callback;
@@ -40,6 +38,9 @@
 
 /**
  * The object to be invoked with the loaded models
+ *
+ * If this object implements life-cycle methods from the RKRequestDelegate protocol, 
+ * events from the request will be forwarded back.
  */
 @property (nonatomic, retain) NSObject<RKModelLoaderDelegate>* delegate;
 

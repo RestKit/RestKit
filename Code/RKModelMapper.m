@@ -40,8 +40,17 @@
 	return _format == RKMappingFormatXML;
 }
 
+// TODO: This is fragile. Prevents you from changing parsing styles on the fly.
 - (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName {
-	[_elementToClassMappings setObject:aClass forKey:elementName];
+	NSString* formattedElementName = nil;
+	if ([aClass respondsToSelector:@selector(formatElementName:forMappingFormat:)]) {
+		formattedElementName = [aClass formatElementName:elementName forMappingFormat:_format];
+		NSLog(@"**** Transformed elementName %@ to %@ for mapping format %d", elementName, formattedElementName, _format);
+	} else {
+		formattedElementName = elementName;
+	}
+	NSLog(@"Registering mapping for element name %@", formattedElementName);
+	[_elementToClassMappings setObject:aClass forKey:formattedElementName];
 }
 
 - (id)buildModelFromString:(NSString*)string {
@@ -122,6 +131,9 @@
 	SBJsonParser* parser = [[[SBJsonParser alloc] init] autorelease];
 	NSDictionary* jsonDict = [parser objectWithString:JSON];
 	if (jsonDict == nil) {
+		// TODO: We do not handle parsing error worth a damn!
+		NSLog(@"Unable to parse JSON fragment: %@", JSON);
+		[NSException raise:@"UnableToParseJSON" format:@"An error occurred while processing the JSON"];
 		return nil;
 	}
 	return [self buildModelFromJSONDictionary:jsonDict];
@@ -169,8 +181,13 @@
 - (void)setPropertiesOfModel:(id)model fromJSONDictionary:(NSDictionary*)dict {
 	for (NSString* selector in [[model class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
-		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:nil];		
-		NSString* elementName = [[model class] formatElementName:selector forMappingFormat:RKMappingFormatJSON];
+		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:nil];
+		NSString* elementName = nil;
+		if ([[model class] respondsToSelector:@selector(formatElementName:forMappingFormat:)]) {
+			elementName = [[model class] formatElementName:selector forMappingFormat:RKMappingFormatJSON];
+		} else {
+			elementName = selector;
+		}		
 		id propertyValue = [dict objectForKey:elementName];
 		
 		// Types of objects SBJSON does not handle:

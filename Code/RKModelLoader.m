@@ -82,4 +82,34 @@
 	}	
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// RKRequestDelegate
+//
+// If our delegate responds to the messages, forward them back...
+
+- (void)requestDidStartLoad:(RKRequest*)request {
+	if ([_delegate respondsToSelector:@selector(requestDidStartLoad:)]) {
+		[_delegate requestDidStartLoad:request];
+	}
+}
+
+- (void)requestDidFinishLoad:(RKRequest*)request {
+	if ([_delegate respondsToSelector:@selector(requestDidFinishLoad:)]) {
+		[(NSObject<RKRequestDelegate>*)_delegate requestDidFinishLoad:request];
+	}
+}
+
+- (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error {
+	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
+		[(NSObject<RKRequestDelegate>*)_delegate request:request didFailLoadWithError:error];
+	}
+}
+
+// TODO - Implement
+- (void)requestDidCancelLoad:(RKRequest*)request {
+	if ([_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
+		[(NSObject<RKRequestDelegate>*)_delegate requestDidCancelLoad:request];
+	}
+}
+
 @end
