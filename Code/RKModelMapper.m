@@ -107,6 +107,8 @@
 			comparisonSelector = @selector(isEqualToNumber:);
 		} else if ([propertyValue isKindOfClass:[NSDate class]]) {
 			comparisonSelector = @selector(isEqualToDate:);
+		} else if ([propertyValue isKindOfClass:[NSArray class]]) {
+			comparisonSelector = @selector(isEqualToArray:);
 		} else {
 			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@ (%@)", propertyName, [propertyValue class]];
 		}
@@ -281,9 +283,9 @@
 	[self setRelationshipsOfModel:object fromXML:XML];
 }
 
-- (id)propertyValueForElement:(Element*)propertyElement type:(NSString*)type{
-	//NSString* typeHint = [propertyElement attribute:@"type"];
+- (id)propertyValueForElement:(Element*)propertyElement type:(NSString*)type {
 	id propertyValue = nil;
+	SEL valueSelector = nil;
 	if ([type isEqualToString:@"NSString"]) {		
 		propertyValue = [propertyElement contentsText];
 	} else if ([type isEqualToString:@"NSNumber"]) {
@@ -315,17 +317,47 @@
 	} else if ([type isEqualToString:@"nil"]) {
 		[NSException raise:@"PropertyTypeError" format:@"Don't know how to handle property type '%@'", type];
 	}
+	NSLog(@"Returning propertyValue %@ for element %@ and type %@", propertyValue, propertyElement, type);
 	return propertyValue;
+}
+
+- (id)propertyValueForElements:(NSArray*)elements type:(NSString*)type {
+	NSMutableArray* values = [NSMutableArray arrayWithCapacity:[elements count]];
+	for (Element* element in elements) {
+		[values addObject:[self propertyValueForElement:element type:type]];
+	}
+	
+	return values;
 }
 
 - (void)setPropertiesOfModel:(id)model fromXML:(Element*)XML {
 	for (NSString* selector in [[model class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
-		Element* propertyElement = [XML selectElement:selector];
-		NSString* typeHint = [propertyElement attribute:@"type"];
+		NSString* typeHint;
+		
+		// TODO: Figure out subselectors here...
+		Element* propertyElement = nil;
+		if ([self isSelectorGrouped:selector]) {
+			NSLog(@"Initial selector is %@", selector);
+			selector = [selector stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]];
+			NSLog(@"Selector is now %@", selector);
+			propertyElement = [XML selectElements:selector];
+			NSLog(@"FOUND GROUPED SELECTOR -> %@. Elements: %@", selector, propertyElement);
+			typeHint = [[(NSArray*)propertyElement objectAtIndex:0] attribute:@"type"];
+		} else {
+			propertyElement = [XML selectElement:selector];
+			typeHint = [propertyElement attribute:@"type"];
+		}
+		
 		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:typeHint];
-		//NSLog(@"The propertyType is %@", propertyType);
-		id propertyValue = [self propertyValueForElement:propertyElement type:propertyType]; // valueForElement instead???
+		id propertyValue = nil;
+		if ([propertyElement isKindOfClass:[NSArray class]]) {
+			propertyValue = [self propertyValueForElements:propertyElement type:propertyType];
+		} else {
+			propertyValue = [self propertyValueForElement:propertyElement type:propertyType];
+		}
+		
+		// TODO: typeHint shit needs better factoring...
 		if (typeHint) {
 			//NSLog(@"TypeHint is %@", typeHint);
 			if ([typeHint isEqualToString:@"boolean"]) {
@@ -362,6 +394,10 @@
 
 #pragma mark -
 #pragma mark selector methods
+
+- (BOOL)isSelectorGrouped:(NSString*)key {
+	return ([key hasPrefix:@"["] && [key hasSuffix:@"]"]);
+}
 
 - (BOOL)isParentSelector:(NSString*)key {
 	return !NSEqualRanges([key rangeOfString:@" > "], NSMakeRange(NSNotFound, 0));
