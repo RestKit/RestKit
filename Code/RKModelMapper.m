@@ -45,11 +45,9 @@
 	NSString* formattedElementName = nil;
 	if ([aClass respondsToSelector:@selector(formatElementName:forMappingFormat:)]) {
 		formattedElementName = [aClass formatElementName:elementName forMappingFormat:_format];
-		NSLog(@"**** Transformed elementName %@ to %@ for mapping format %d", elementName, formattedElementName, _format);
 	} else {
 		formattedElementName = elementName;
 	}
-	NSLog(@"Registering mapping for element name %@", formattedElementName);
 	[_elementToClassMappings setObject:aClass forKey:formattedElementName];
 }
 
@@ -317,7 +315,6 @@
 	} else if ([type isEqualToString:@"nil"]) {
 		[NSException raise:@"PropertyTypeError" format:@"Don't know how to handle property type '%@'", type];
 	}
-	NSLog(@"Returning propertyValue %@ for element %@ and type %@", propertyValue, propertyElement, type);
 	return propertyValue;
 }
 
@@ -338,11 +335,8 @@
 		// TODO: Figure out subselectors here...
 		Element* propertyElement = nil;
 		if ([self isSelectorGrouped:selector]) {
-			NSLog(@"Initial selector is %@", selector);
 			selector = [selector stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]];
-			NSLog(@"Selector is now %@", selector);
 			propertyElement = [XML selectElements:selector];
-			NSLog(@"FOUND GROUPED SELECTOR -> %@. Elements: %@", selector, propertyElement);
 			typeHint = [[(NSArray*)propertyElement objectAtIndex:0] attribute:@"type"];
 		} else {
 			propertyElement = [XML selectElement:selector];
