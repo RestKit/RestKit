@@ -14,6 +14,7 @@
 
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
+#import "RKModelMapperSpecModel.h"
 
 @interface RKModelMapperSpec : NSObject <UISpec>
 
@@ -146,7 +147,7 @@
 }
 
 - (void)itShouldBeAbleToSetNilPropertiesToNonNil {
-	RKModelMapperSpecModel* model = [[OTRestModelMapperTestModel alloc] autorelease];
+	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
 	[mapper updateObject:model ifNewPropertyPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
 	

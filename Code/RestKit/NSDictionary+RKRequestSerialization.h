@@ -11,6 +11,8 @@
 
 @interface NSDictionary (RKRequestSerialization) <RKRequestSerializable>
 
++ (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
+
 - (NSString*)URLEncodedString;
 - (NSString*)ContentTypeHTTPHeader;
 - (NSData*)HTTPBody;

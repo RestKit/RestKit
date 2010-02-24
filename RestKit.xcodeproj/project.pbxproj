@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2520776E113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */; };
 		2525EBEB106961DD0069EBED /* RKManagedObjectStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525EBE9106961DD0069EBED /* RKManagedObjectStore.h */; };
 		2525EBEC106961DD0069EBED /* RKManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */; };
 		2525F9A0106C0FF40069EBED /* RKNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525F99E106C0FF40069EBED /* RKNotifications.h */; };
@@ -201,6 +202,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+RKRequestSerializationSpec.m"; sourceTree = "<group>"; };
 		2525EBE9106961DD0069EBED /* RKManagedObjectStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKManagedObjectStore.h; path = Code/RestKit/RKManagedObjectStore.h; sourceTree = "<group>"; };
 		2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKManagedObjectStore.m; path = Code/RKManagedObjectStore.m; sourceTree = "<group>"; };
 		2525F99E106C0FF40069EBED /* RKNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKNotifications.h; path = Code/RestKit/RKNotifications.h; sourceTree = "<group>"; };
@@ -379,6 +381,7 @@
 				255DE37710FFC26900A85891 /* RKClientSpec.m */,
 				255DE43111010EE700A85891 /* RKRequestSpec.m */,
 				255DE43A11010F8400A85891 /* RKResponseSpec.m */,
+				2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -743,6 +746,7 @@
 				256FD651112C7B780077F340 /* RKMappableObject.m in Sources */,
 				256FD652112C7B780077F340 /* RKMappableAssociation.m in Sources */,
 				256FDE55112DB0B90077F340 /* RKModelMapperSpecModel.m in Sources */,
+				2520776E113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -902,6 +906,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				HEADER_SEARCH_PATHS = (
+					"../json-framework/Source/",
+					../ElementParser/Classes,
+					../UISpec/src,
+				);
 				INFOPLIST_FILE = "Resources/UISpec-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
@@ -913,7 +922,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = "UI Spec";
 				SDKROOT = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.sdk;
-				USER_HEADER_SEARCH_PATHS = "../UISpec/src ../ElementParser/Classes";
+				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
 		};
@@ -932,6 +941,11 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				HEADER_SEARCH_PATHS = (
+					../UISpec/src,
+					../ElementParser/Classes,
+					"../json-framework/Source",
+				);
 				INFOPLIST_FILE = "Resources/UISpec-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
