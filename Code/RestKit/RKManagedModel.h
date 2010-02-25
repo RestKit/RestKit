@@ -64,6 +64,8 @@
 + (id)objectWithPredicate:(NSPredicate*)predicate;
 + (NSArray*)allObjects;
 
+// Count the objects of this class in the store...
++ (NSUInteger)count;
 
 /**
  *	Creates a new OTManagedModel and inserts it into the managedObjectContext.

@@ -253,8 +253,16 @@
 				[model setValue:(NSSet*)children forKey:propertyName];
 			}
 		} else {
-			NSDictionary* objectDict = [dict objectForKey:selector];
-			Class class = [_elementToClassMappings objectForKey:selector];
+			// TODO: This shit needs to go...
+			NSString* elementName = nil;
+			if ([[model class] respondsToSelector:@selector(formatElementName:forMappingFormat:)]) {
+				elementName = [[model class] formatElementName:selector forMappingFormat:RKMappingFormatJSON];
+			} else {
+				elementName = selector;
+			}
+			
+			NSDictionary* objectDict = [dict objectForKey:elementName];
+			Class class = [_elementToClassMappings objectForKey:elementName];
 			id child = [self createOrUpdateInstanceOf:class fromJSONDictionary:objectDict];
 			[model setValue:child forKey:propertyName];
 		}

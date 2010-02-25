@@ -69,6 +69,14 @@
 	return [self collectionWithPredicate:nil];
 }
 
++ (NSUInteger)count {
+	NSFetchRequest *request = [self request];	
+	NSError *error = nil;
+	NSUInteger count = [[self managedObjectContext] countForFetchRequest:request error:&error];
+	// TODO: Error handling...
+	return count;
+}
+
 #pragma mark -
 #pragma mark Object Cacheing
 

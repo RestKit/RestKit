@@ -71,7 +71,9 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	NSLog(@"Processing response %@", [response payloadString]);
 	NSArray* models = [_mapper buildModelsFromString:[response payloadString]];
+	NSLog(@"Loaded models %@", models);
 	[_delegate performSelectorOnMainThread:self.callback withObject:models waitUntilDone:NO];
 	[pool release];
 }
