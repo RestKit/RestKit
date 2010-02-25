@@ -178,17 +178,41 @@
 	[self setRelationshipsOfModel:object fromJSONDictionary:dict];
 }
 
+- (NSString*)selectorFromMapping:(id)mapping forMappingFormat:(RKMappingFormat)format {
+	if ([mapping isKindOfClass:[NSArray class]]) {
+		if (RKMappingFormatXML == format) {
+			return [(NSArray*)mapping objectAtIndex:0];
+		} else if (RKMappingFormatJSON == format) {
+			return [(NSArray*)mapping objectAtIndex:1];
+		}
+	} else {
+		return mapping;
+	}
+}
+
 - (void)setPropertiesOfModel:(id)model fromJSONDictionary:(NSDictionary*)dict {
-	for (NSString* selector in [[model class] elementToPropertyMappings]) {
-		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
+	for (id mapping in [[model class] elementToPropertyMappings]) {		
+		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:mapping];
+		NSString* selector = [self selectorFromMapping:mapping forMappingFormat:RKMappingFormatJSON];
 		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[model class] typeHint:nil];
 		NSString* elementName = nil;
-		if ([[model class] respondsToSelector:@selector(formatElementName:forMappingFormat:)]) {
+		
+		// TODO: This shit needs to go...
+		if ([mapping isKindOfClass:[NSString class]] && [[model class] respondsToSelector:@selector(formatElementName:forMappingFormat:)]) {
 			elementName = [[model class] formatElementName:selector forMappingFormat:RKMappingFormatJSON];
 		} else {
 			elementName = selector;
-		}		
-		id propertyValue = [dict objectForKey:elementName];
+		}
+		
+//		id propertyValue = [dict objectForKey:elementName];
+		id propertyValue = nil;
+		@try {
+			propertyValue = [dict valueForKeyPath:elementName];
+		}
+		@catch (NSException * e) {
+			NSLog(@"Encountered exception %@ when asking %@ for valueForKeyPath %@", e, dict, elementName);
+		}
+		//NSLog(@"Asked JSON dictionary %@ for object with key %@. Got %@", dict, elementName, propertyValue);
 		
 		// Types of objects SBJSON does not handle:
 		if ([propertyType isEqualToString:@"NSDate"]) {
@@ -213,7 +237,7 @@
 			// If the collection key doesn't appear, we will not set the collection to nil.
 			NSString* collectionKey = [self containingElementNameForSelector:selector];
 			// Used to figure out what class to map to, since we don't have element names for the dictionaries in the array
-			NSString* objectKey = [self childElementNameForSelelctor:selector];
+			NSString* objectKey = [self childElementNameForSelector:selector];
 			NSArray* objects = [dict objectForKey:collectionKey];
 			if (objects != nil) {
 				for (NSDictionary* childDict in objects) {
@@ -328,11 +352,11 @@
 }
 
 - (void)setPropertiesOfModel:(id)model fromXML:(Element*)XML {
-	for (NSString* selector in [[model class] elementToPropertyMappings]) {
-		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:selector];
+	for (id mapping in [[model class] elementToPropertyMappings]) {
+		NSString* selector = [self selectorFromMapping:mapping forMappingFormat:RKMappingFormatXML];
+		NSString* propertyName = [[[model class] elementToPropertyMappings] objectForKey:mapping];
 		NSString* typeHint;
 		
-		// TODO: Figure out subselectors here...
 		Element* propertyElement = nil;
 		if ([self isSelectorGrouped:selector]) {
 			selector = [selector stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]];
@@ -401,7 +425,7 @@
 	return [[selector componentsSeparatedByString:@" > "] objectAtIndex:0];
 }
 
-- (NSString*)childElementNameForSelelctor:(NSString*)selector {
+- (NSString*)childElementNameForSelector:(NSString*)selector {
 	return [[selector componentsSeparatedByString:@" > "] objectAtIndex:1];
 }
 
