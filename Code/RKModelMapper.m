@@ -151,7 +151,13 @@
 	id object = nil;
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
 		// TODO: factor to class method? incase it is not a number
-		NSNumber* pk = [dict objectForKey:[class primaryKey]];
+		NSString* primaryKey = nil;
+		if ([class respondsToSelector:@selector(formatElementName:forMappingFormat:)]) {
+			primaryKey = [class formatElementName:[class primaryKeyElement] forMappingFormat:RKMappingFormatJSON];
+		} else {
+			primaryKey = [class primaryKeyElement];
+		}
+		NSNumber* pk = [dict objectForKey:primaryKey];
 		object = [class findByPrimaryKey:pk];
 	}
 	// instantiate if object is nil
