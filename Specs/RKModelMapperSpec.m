@@ -181,6 +181,7 @@
 	[expectThat(model.createdAt) should:be([NSDate dateWithTimeIntervalSince1970:0])];	
 }
 
+
 @end
 
 @implementation RKModelMapperSpec (Private)

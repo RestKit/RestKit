@@ -221,7 +221,7 @@
 		//NSLog(@"Asked JSON dictionary %@ for object with key %@. Got %@", dict, elementName, propertyValue);
 		
 		// Types of objects SBJSON does not handle:
-		if ([propertyType isEqualToString:@"NSDate"]) {
+		if ([propertyType isEqualToString:@"NSDate"] && propertyValue != kCFNull) {
 			NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 			// Times coming back are in utc. we should convert them to the local timezone
 			// TODO: Make sure this is working correctly

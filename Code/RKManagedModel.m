@@ -77,6 +77,11 @@
 	return count;
 }
 
++ (id)newObject {
+	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[self managedObjectContext]];
+	return [model autorelease];
+}
+
 #pragma mark -
 #pragma mark Object Cacheing
 
@@ -97,25 +102,21 @@
 	return nil;
 }
 
-// TODO: The .xml format should NOT be specified here!
 - (NSString*)collectionPath {
-	return [NSString stringWithFormat:@"%@.xml", [self resourcePath]];
+	return [NSString stringWithFormat:@"%@", [self resourcePath]];
 }
 
 - (NSString*)memberPath {
 	NSLog(@"Was asked for memberPath. primaryKeyValue is %@. self = %@", [self valueForKey:[[self class] primaryKey]], self);
-	return [NSString stringWithFormat:@"%@/%@.xml", [self resourcePath], [self valueForKey:[[self class] primaryKey]]];
+	return [NSString stringWithFormat:@"%@/%@", [self resourcePath], [self valueForKey:[[self class] primaryKey]]];
 }
 
-+ (id)newObject {
-	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[self managedObjectContext]];
-	return [model autorelease];
-}
-
+// TODO: Would be nice to specify this via an annotation in the mappings definition...
 + (NSString*)primaryKey {
 	return @"railsID";
 }
 
+// TODO: Would be nice to specify this via an annotation in the mappings definition...
 + (NSString*)primaryKeyElement {
 	return @"id";
 }
@@ -168,6 +169,7 @@
 	return elementName;
 }
 
+// TODO: I get eliminated...
 + (NSString*)modelName {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
@@ -189,6 +191,7 @@
 }
 
 // TODO: This implementation is Rails specific. Consider using an adapter approach.
+// TODO: Gets handled in a Rails adapter, moved completely off the model itself...
 - (NSDictionary*)resourceParams {
 	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValues];
 	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];	
@@ -206,6 +209,7 @@
 }
 
 // TODO: Should this handle persistence to the web also? Should the model manager do it instead? How do we handle deletes? creation? need flags?
+// TODO: Gets moved off of the model itself.
 - (NSError*)save {
 	NSError* error = nil;
 	[[self managedObjectContext] save:&error];
@@ -216,12 +220,18 @@
 }
 
 // TODO: Delete on the server also? See above.
+// TODO: Gets moved off of the model itself...
 - (void)destroy {	
 	[[self managedObjectContext] deleteObject:self];
 }
 
+// TODO: Gets removed. Model mapper should handle transparently.
 - (void)setAttributesFromXML:(Element*)XML {
 	[[[RKModelManager manager] mapper] setAttributes:self fromXML:XML];
+}
+
+- (void)setAttributesFromJSONDictionary:(NSDictionary*)jsonDictionary {
+	[[[RKModelManager manager] mapper] setAttributes:self fromJSONDictionary:jsonDictionary];
 }
 
 @end

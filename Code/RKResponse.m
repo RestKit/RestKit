@@ -109,7 +109,7 @@
 }
 
 - (NSString*)payloadString {
-	return [[[NSString alloc] initWithData:_payload encoding:NSUTF8StringEncoding] autorelease];
+	return [[[NSString alloc] initWithData:self.payload encoding:NSUTF8StringEncoding] autorelease];
 }
 
 - (DocumentRoot*)payloadXMLDocument {
