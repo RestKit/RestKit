@@ -40,7 +40,7 @@
 		if ([response isXML]) {
 			errorMessage = [[(Element*)[response payloadXMLDocument] selectElement:@"error"] contentsText];
 		} else if ([response isJSON]) {
-			errorMessage = [[response payloadJSONDictionary] objectForKey:@"error"];
+			errorMessage = [[[response payloadJSONDictionary] valueForKey:@"errors"] componentsJoinedByString:@", "];
 		}
 		if (nil == errorMessage) {
 			errorMessage = [response payloadString];
@@ -71,9 +71,9 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	NSLog(@"Processing response %@", [response payloadString]);
+	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Processing response %@", [response payloadString]);
 	NSArray* models = [_mapper buildModelsFromString:[response payloadString]];
-	NSLog(@"Loaded models %@", models);
+	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Loaded models %@", models);
 	[_delegate performSelectorOnMainThread:self.callback withObject:models waitUntilDone:NO];
 	[pool release];
 }
