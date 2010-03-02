@@ -224,9 +224,9 @@
 		if ([propertyType isEqualToString:@"NSDate"] && propertyValue != kCFNull) {
 			NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
 			// Times coming back are in utc. we should convert them to the local timezone
-			// TODO: Make sure this is working correctly
+			// TODO: Note that this currently only handles times and not stand-alone date's! needs to be cleaned up!
 			[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-			[formatter setDateFormat:kRailsToXMLDateFormatterString];
+			[formatter setDateFormat:kRailsToXMLDateTimeFormatterString];
 			propertyValue = [formatter dateFromString:propertyValue];
 			[formatter release];			
 		}
