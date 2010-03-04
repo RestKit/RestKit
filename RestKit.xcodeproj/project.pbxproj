@@ -15,12 +15,18 @@
 		252F4CC0114021B5003C6F42 /* RKModelSeeder.h in Headers */ = {isa = PBXBuildFile; fileRef = 252F4CBE114021B5003C6F42 /* RKModelSeeder.h */; };
 		252F4CC1114021B5003C6F42 /* RKModelSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4CBF114021B5003C6F42 /* RKModelSeeder.m */; };
 		252F4CC2114021B5003C6F42 /* RKModelSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4CBF114021B5003C6F42 /* RKModelSeeder.m */; };
+		252F4F9D11404322003C6F42 /* RKModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* RKModelLoader.m */; };
+		252F4FA01140433D003C6F42 /* RKModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4F9F1140433D003C6F42 /* RKModelMapper.m */; };
+		252F4FA11140433D003C6F42 /* RKModelMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 252F4F9E1140433D003C6F42 /* RKModelMapper.h */; };
+		252F4FA21140433D003C6F42 /* RKModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4F9F1140433D003C6F42 /* RKModelMapper.m */; };
+		252F4FA9114046C9003C6F42 /* RKMappingFormatJSONParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 252F4FA7114046C9003C6F42 /* RKMappingFormatJSONParser.h */; };
+		252F4FAA114046C9003C6F42 /* RKMappingFormatJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4FA8114046C9003C6F42 /* RKMappingFormatJSONParser.m */; };
+		252F4FAB114046C9003C6F42 /* RKMappingFormatJSONParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4FA8114046C9003C6F42 /* RKMappingFormatJSONParser.m */; };
 		253BBE961076AB1C00C804B2 /* NSString+InflectionSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */; };
 		253BBE971076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
 		255DE05A10FF9DA500A85891 /* RKModelManagerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05910FF9DA500A85891 /* RKModelManagerSpec.m */; };
 		255DE05E10FFA05800A85891 /* RKHuman.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05D10FFA05800A85891 /* RKHuman.m */; };
 		255DE0DB10FFAB7700A85891 /* RKModelManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FBF1D38103614E500E307AC /* RKModelManager.m */; };
-		255DE0DC10FFAB7B00A85891 /* RKModelLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* RKModelLoader.m */; };
 		255DE0DD10FFAB7E00A85891 /* RKManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */; };
 		255DE0DE10FFAB7F00A85891 /* RKManagedModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDA1035BC85005418A7 /* RKManagedModel.m */; };
 		255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0E110FFABA500A85891 /* CoreData.framework */; };
@@ -54,14 +60,13 @@
 		2580B0C7102E1EBC00832D07 /* libElementParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4E18DB102DD31E00320118 /* libElementParser.a */; };
 		25FCDDDB1035BC85005418A7 /* RKManagedModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FCDDD91035BC85005418A7 /* RKManagedModel.h */; };
 		25FCDDDC1035BC85005418A7 /* RKManagedModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDA1035BC85005418A7 /* RKManagedModel.m */; };
-		25FCDDE01035C201005418A7 /* RKModelMapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FCDDDE1035C201005418A7 /* RKModelMapper.h */; };
-		25FCDDE11035C201005418A7 /* RKModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* RKModelMapper.m */; };
+		25FCDDE01035C201005418A7 /* RKModelMapper_Old.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FCDDDE1035C201005418A7 /* RKModelMapper_Old.h */; };
+		25FCDDE11035C201005418A7 /* RKModelMapper_Old.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* RKModelMapper_Old.m */; };
 		25FCDE9C1035E901005418A7 /* RKModelMappableProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FCDE9B1035E901005418A7 /* RKModelMappableProtocol.h */; };
 		3F0150FF103B148300BE3E24 /* RKModelMapper_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F0150FE103B148300BE3E24 /* RKModelMapper_Private.h */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
-		3F035C7C10FE7F0100C469B4 /* RKModelMapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FCDDDF1035C201005418A7 /* RKModelMapper.m */; };
 		3F4E18F2102DD38800320118 /* RKClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E18E3102DD38700320118 /* RKClient.h */; };
 		3F4E18F3102DD38800320118 /* RKClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4E18E4102DD38700320118 /* RKClient.m */; };
 		3F4E18F4102DD38800320118 /* RKParams.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F4E18E5102DD38700320118 /* RKParams.h */; };
@@ -212,6 +217,10 @@
 		2525F99F106C0FF40069EBED /* RKNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKNotifications.m; path = Code/RKNotifications.m; sourceTree = "<group>"; };
 		252F4CBE114021B5003C6F42 /* RKModelSeeder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelSeeder.h; path = Code/RestKit/RKModelSeeder.h; sourceTree = "<group>"; };
 		252F4CBF114021B5003C6F42 /* RKModelSeeder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelSeeder.m; path = Code/RKModelSeeder.m; sourceTree = "<group>"; };
+		252F4F9E1140433D003C6F42 /* RKModelMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMapper.h; path = Code/RestKit/RKModelMapper.h; sourceTree = "<group>"; };
+		252F4F9F1140433D003C6F42 /* RKModelMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelMapper.m; path = Code/RKModelMapper.m; sourceTree = "<group>"; };
+		252F4FA7114046C9003C6F42 /* RKMappingFormatJSONParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingFormatJSONParser.h; path = Code/RKMappingFormatJSONParser.h; sourceTree = "<group>"; };
+		252F4FA8114046C9003C6F42 /* RKMappingFormatJSONParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingFormatJSONParser.m; path = Code/RKMappingFormatJSONParser.m; sourceTree = "<group>"; };
 		253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+InflectionSupport.h"; path = "Code/RestKit/NSString+InflectionSupport.h"; sourceTree = "<group>"; };
 		253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+InflectionSupport.m"; path = "Code/NSString+InflectionSupport.m"; sourceTree = "<group>"; };
 		255DE03010FF9BDF00A85891 /* RKManagedModelSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedModelSpec.m; sourceTree = "<group>"; };
@@ -240,8 +249,8 @@
 		2580B067102E0F1000832D07 /* RKModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelLoader.m; path = Code/RKModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* RKManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKManagedModel.h; path = Code/RestKit/RKManagedModel.h; sourceTree = "<group>"; };
 		25FCDDDA1035BC85005418A7 /* RKManagedModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKManagedModel.m; path = Code/RKManagedModel.m; sourceTree = "<group>"; };
-		25FCDDDE1035C201005418A7 /* RKModelMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMapper.h; path = Code/RestKit/RKModelMapper.h; sourceTree = "<group>"; };
-		25FCDDDF1035C201005418A7 /* RKModelMapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelMapper.m; path = Code/RKModelMapper.m; sourceTree = "<group>"; };
+		25FCDDDE1035C201005418A7 /* RKModelMapper_Old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMapper_Old.h; path = Code/RestKit/RKModelMapper_Old.h; sourceTree = "<group>"; };
+		25FCDDDF1035C201005418A7 /* RKModelMapper_Old.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelMapper_Old.m; path = Code/RKModelMapper_Old.m; sourceTree = "<group>"; };
 		25FCDE9B1035E901005418A7 /* RKModelMappableProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMappableProtocol.h; path = Code/RestKit/RKModelMappableProtocol.h; sourceTree = "<group>"; };
 		3F0150FE103B148300BE3E24 /* RKModelMapper_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMapper_Private.h; path = Code/RKModelMapper_Private.h; sourceTree = "<group>"; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
@@ -456,8 +465,8 @@
 				25FCDDD91035BC85005418A7 /* RKManagedModel.h */,
 				25FCDDDA1035BC85005418A7 /* RKManagedModel.m */,
 				3F0150FE103B148300BE3E24 /* RKModelMapper_Private.h */,
-				25FCDDDE1035C201005418A7 /* RKModelMapper.h */,
-				25FCDDDF1035C201005418A7 /* RKModelMapper.m */,
+				25FCDDDE1035C201005418A7 /* RKModelMapper_Old.h */,
+				25FCDDDF1035C201005418A7 /* RKModelMapper_Old.m */,
 				2580B066102E0F1000832D07 /* RKModelLoader.h */,
 				2580B067102E0F1000832D07 /* RKModelLoader.m */,
 				25FCDE9B1035E901005418A7 /* RKModelMappableProtocol.h */,
@@ -467,6 +476,10 @@
 				2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */,
 				252F4CBE114021B5003C6F42 /* RKModelSeeder.h */,
 				252F4CBF114021B5003C6F42 /* RKModelSeeder.m */,
+				252F4F9E1140433D003C6F42 /* RKModelMapper.h */,
+				252F4F9F1140433D003C6F42 /* RKModelMapper.m */,
+				252F4FA7114046C9003C6F42 /* RKMappingFormatJSONParser.h */,
+				252F4FA8114046C9003C6F42 /* RKMappingFormatJSONParser.m */,
 			);
 			name = Modeling;
 			sourceTree = "<group>";
@@ -538,7 +551,7 @@
 				3F4E191A102DD42F00320118 /* NSDictionary+RKRequestSerialization.h in Headers */,
 				2580B068102E0F1000832D07 /* RKModelLoader.h in Headers */,
 				25FCDDDB1035BC85005418A7 /* RKManagedModel.h in Headers */,
-				25FCDDE01035C201005418A7 /* RKModelMapper.h in Headers */,
+				25FCDDE01035C201005418A7 /* RKModelMapper_Old.h in Headers */,
 				25FCDE9C1035E901005418A7 /* RKModelMappableProtocol.h in Headers */,
 				3FBF1D39103614E500E307AC /* RKModelManager.h in Headers */,
 				3F0150FF103B148300BE3E24 /* RKModelMapper_Private.h in Headers */,
@@ -546,6 +559,8 @@
 				2525F9A0106C0FF40069EBED /* RKNotifications.h in Headers */,
 				253BBE961076AB1C00C804B2 /* NSString+InflectionSupport.h in Headers */,
 				252F4CC0114021B5003C6F42 /* RKModelSeeder.h in Headers */,
+				252F4FA11140433D003C6F42 /* RKModelMapper.h in Headers */,
+				252F4FA9114046C9003C6F42 /* RKMappingFormatJSONParser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -724,11 +739,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3F6C3A9410FE7519008F47C5 /* main.m in Sources */,
-				3F035C7C10FE7F0100C469B4 /* RKModelMapper.m in Sources */,
 				255DE05A10FF9DA500A85891 /* RKModelManagerSpec.m in Sources */,
 				255DE05E10FFA05800A85891 /* RKHuman.m in Sources */,
 				255DE0DB10FFAB7700A85891 /* RKModelManager.m in Sources */,
-				255DE0DC10FFAB7B00A85891 /* RKModelLoader.m in Sources */,
 				255DE0DD10FFAB7E00A85891 /* RKManagedObjectStore.m in Sources */,
 				255DE0DE10FFAB7F00A85891 /* RKManagedModel.m in Sources */,
 				255DE0E510FFABBB00A85891 /* RKResponse.m in Sources */,
@@ -756,6 +769,9 @@
 				256FDE55112DB0B90077F340 /* RKModelMapperSpecModel.m in Sources */,
 				2520776E113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m in Sources */,
 				252F4CC2114021B5003C6F42 /* RKModelSeeder.m in Sources */,
+				252F4F9D11404322003C6F42 /* RKModelLoader.m in Sources */,
+				252F4FA01140433D003C6F42 /* RKModelMapper.m in Sources */,
+				252F4FAB114046C9003C6F42 /* RKMappingFormatJSONParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -773,12 +789,14 @@
 				3F4E191B102DD42F00320118 /* NSDictionary+RKRequestSerialization.m in Sources */,
 				2580B069102E0F1000832D07 /* RKModelLoader.m in Sources */,
 				25FCDDDC1035BC85005418A7 /* RKManagedModel.m in Sources */,
-				25FCDDE11035C201005418A7 /* RKModelMapper.m in Sources */,
+				25FCDDE11035C201005418A7 /* RKModelMapper_Old.m in Sources */,
 				3FBF1D3A103614E500E307AC /* RKModelManager.m in Sources */,
 				2525EBEC106961DD0069EBED /* RKManagedObjectStore.m in Sources */,
 				2525F9A1106C0FF40069EBED /* RKNotifications.m in Sources */,
 				253BBE971076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */,
 				252F4CC1114021B5003C6F42 /* RKModelSeeder.m in Sources */,
+				252F4FA21140433D003C6F42 /* RKModelMapper.m in Sources */,
+				252F4FAA114046C9003C6F42 /* RKMappingFormatJSONParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

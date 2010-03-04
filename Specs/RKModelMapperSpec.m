@@ -22,25 +22,6 @@
 
 @implementation RKModelMapperSpec
 
-- (void)itShouldKnowIfASelectorIsAParentSelector {
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
-	[expectThat((BOOL)[mapper isParentSelector:@"blah > blah"]) should:be(YES)];
-	[expectThat((BOOL)[mapper isParentSelector:@"blah"]) should:be(NO)];
-	[mapper release];
-}
-
-- (void)itShouldKnowTheContainingElementNameForASelector {
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
-	[expectThat([mapper containingElementNameForSelector:@"blahs > blah"]) should:be(@"blahs")];
-	[mapper release];
-}
-
-- (void)itShouldKnowTheChildElementNameForASelector {
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
-	[expectThat([mapper childElementNameForSelelctor:@"blahs > blah"]) should:be(@"blah")];
-	[mapper release];
-}
-
 - (void)itShouldMapFromJSON {
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
@@ -132,7 +113,7 @@
 - (void)itShouldNotUpdateNilPropertyToNil {
 	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
-	[mapper updateObject:model ifNewPropertyPropertyValue:nil forPropertyNamed:@"name"];
+	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"name"];
 	
 	[expectThat(model.name) should:be(nil)];
 }
@@ -141,7 +122,7 @@
 	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
 	model.age = [NSNumber numberWithInt:0];
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
-	[mapper updateObject:model ifNewPropertyPropertyValue:nil forPropertyNamed:@"age"];
+	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be(nil)];
 }
@@ -149,7 +130,7 @@
 - (void)itShouldBeAbleToSetNilPropertiesToNonNil {
 	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
-	[mapper updateObject:model ifNewPropertyPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
+	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be([NSNumber numberWithInt:0])];
 }
@@ -159,7 +140,7 @@
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
 	
 	model.name = @"Bob";
-	[mapper updateObject:model ifNewPropertyPropertyValue:@"Will" forPropertyNamed:@"name"];
+	[mapper updateObject:model ifNewPropertyValue:@"Will" forPropertyNamed:@"name"];
 	[expectThat(model.name) should:be(@"Will")];	
 }
 
@@ -168,7 +149,7 @@
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
 	
 	model.age = [NSNumber numberWithInt:16];
-	[mapper updateObject:model ifNewPropertyPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
+	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
 	[expectThat(model.age) should:be([NSNumber numberWithInt:17])];	
 }
 
@@ -177,7 +158,7 @@
 	RKModelMapper* mapper = [[RKModelMapper alloc] init];
 	
 	model.createdAt = [NSDate date];
-	[mapper updateObject:model ifNewPropertyPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
+	[mapper updateObject:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
 	[expectThat(model.createdAt) should:be([NSDate dateWithTimeIntervalSince1970:0])];	
 }
 
@@ -279,6 +260,5 @@
 	@"</test_serialization_classes>";
 	return xml;
 }
-
 
 @end

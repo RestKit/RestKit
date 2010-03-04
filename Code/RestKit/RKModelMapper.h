@@ -1,24 +1,47 @@
 //
-// RKModelMapper.h
+//  RKModelMapper.h
 //  RestKit
 //
-//  Created by Blake Watters on 8/14/09.
-//  Copyright 2009 Two Toasters. All rights reserved.
+//  Created by Blake Watters on 3/4/10.
+//  Copyright 2010 Two Toasters. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "ElementParser.h"
 #import "RKModelMappableProtocol.h"
 
-#define kRailsToXMLDateTimeFormatterString @"yyyy-MM-dd'T'HH:mm:ss'Z'" // 2009-08-08T17:23:59Z
-#define kRailsToXMLDateFormatterString @"MM/dd/yyyy"
+// TODO: The below goes away
+#import "ElementParser.h"
+
+/**
+ * The format parser is responsible for transforming a string
+ * of data into a dictionary. This allows the model mapper to
+ * map properties using key-value coding
+ */
+@protocol RKMappingFormatParser
+
+/**
+ * Return a dictionary from a string of encoded data (i.e. XML or JSON)
+ */
+- (NSDictionary*)dictionaryFromString:(NSString*)string;
+
+@end
 
 @interface RKModelMapper : NSObject {
 	NSMutableDictionary* _elementToClassMappings;
 	RKMappingFormat _format;
+	NSObject<RKMappingFormatParser>* _parser;
 }
 
+/**
+ * The format the mapper is using
+ */
 @property(nonatomic, assign) RKMappingFormat format;
+
+/**
+ * The object responsible for parsing string data into a mappable
+ * dictionary
+ */
+@property(nonatomic, retain) NSObject<RKMappingFormatParser>* parser;
 
 /**
  * Register a mapping for a given class for an XML element with the given tag name
@@ -29,12 +52,23 @@
 /**
  * Digest an XML/JSON payload and return the an instance of the model class registered for the element
  */
-- (id)buildModelFromString:(NSString*)payload;
+// TODO: Becomes mapModelFromString
+- (id)buildModelFromString:(NSString*)string;
 
 /**
  * Digest an XML/JSON payload and return the resulting collection of model instances
  */
-- (NSArray*)buildModelsFromString:(NSString*)payload;
+// TODO: Becomes mapModelsFromString
+- (NSArray*)buildModelsFromString:(NSString*)string;
+
+/**
+ * Sets the properties on a particular object from a payload
+ */
+// TODO: To support remote creation of model objects
+- (void)mapModel:(id)model fromString:(NSString*)string;
+
+//////////////////////////////////////////////
+// TODO: The methods below go away!!!!
 
 /**
  * Digests an XML payload and updates the object with its properties and relationships
