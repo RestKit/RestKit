@@ -194,7 +194,8 @@
 // TODO: Gets handled in a Rails adapter, moved completely off the model itself...
 - (NSDictionary*)resourceParams {
 	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValues];
-	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];	
+	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];
+	// TODO: Eliminate modelName somehow... should be using the name of the element this class was registered for!
 	NSString* underscoredModelName = [[[self class] modelName] underscore];
 	for (NSString* elementName in [elementsAndProperties allKeys]) {
 		id value = [elementsAndProperties valueForKey:elementName];
@@ -208,7 +209,6 @@
 	return resourceParams;
 }
 
-// TODO: Should this handle persistence to the web also? Should the model manager do it instead? How do we handle deletes? creation? need flags?
 // TODO: Gets moved off of the model itself.
 - (NSError*)save {
 	NSError* error = nil;

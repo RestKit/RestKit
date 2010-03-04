@@ -12,6 +12,9 @@
 		2525EBEC106961DD0069EBED /* RKManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */; };
 		2525F9A0106C0FF40069EBED /* RKNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525F99E106C0FF40069EBED /* RKNotifications.h */; };
 		2525F9A1106C0FF40069EBED /* RKNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525F99F106C0FF40069EBED /* RKNotifications.m */; };
+		252F4CC0114021B5003C6F42 /* RKModelSeeder.h in Headers */ = {isa = PBXBuildFile; fileRef = 252F4CBE114021B5003C6F42 /* RKModelSeeder.h */; };
+		252F4CC1114021B5003C6F42 /* RKModelSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4CBF114021B5003C6F42 /* RKModelSeeder.m */; };
+		252F4CC2114021B5003C6F42 /* RKModelSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F4CBF114021B5003C6F42 /* RKModelSeeder.m */; };
 		253BBE961076AB1C00C804B2 /* NSString+InflectionSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */; };
 		253BBE971076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
 		255DE05A10FF9DA500A85891 /* RKModelManagerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05910FF9DA500A85891 /* RKModelManagerSpec.m */; };
@@ -207,6 +210,8 @@
 		2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKManagedObjectStore.m; path = Code/RKManagedObjectStore.m; sourceTree = "<group>"; };
 		2525F99E106C0FF40069EBED /* RKNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKNotifications.h; path = Code/RestKit/RKNotifications.h; sourceTree = "<group>"; };
 		2525F99F106C0FF40069EBED /* RKNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKNotifications.m; path = Code/RKNotifications.m; sourceTree = "<group>"; };
+		252F4CBE114021B5003C6F42 /* RKModelSeeder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelSeeder.h; path = Code/RestKit/RKModelSeeder.h; sourceTree = "<group>"; };
+		252F4CBF114021B5003C6F42 /* RKModelSeeder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelSeeder.m; path = Code/RKModelSeeder.m; sourceTree = "<group>"; };
 		253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+InflectionSupport.h"; path = "Code/RestKit/NSString+InflectionSupport.h"; sourceTree = "<group>"; };
 		253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+InflectionSupport.m"; path = "Code/NSString+InflectionSupport.m"; sourceTree = "<group>"; };
 		255DE03010FF9BDF00A85891 /* RKManagedModelSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedModelSpec.m; sourceTree = "<group>"; };
@@ -460,6 +465,8 @@
 				3FBF1D38103614E500E307AC /* RKModelManager.m */,
 				2525EBE9106961DD0069EBED /* RKManagedObjectStore.h */,
 				2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */,
+				252F4CBE114021B5003C6F42 /* RKModelSeeder.h */,
+				252F4CBF114021B5003C6F42 /* RKModelSeeder.m */,
 			);
 			name = Modeling;
 			sourceTree = "<group>";
@@ -538,6 +545,7 @@
 				2525EBEB106961DD0069EBED /* RKManagedObjectStore.h in Headers */,
 				2525F9A0106C0FF40069EBED /* RKNotifications.h in Headers */,
 				253BBE961076AB1C00C804B2 /* NSString+InflectionSupport.h in Headers */,
+				252F4CC0114021B5003C6F42 /* RKModelSeeder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -747,6 +755,7 @@
 				256FD652112C7B780077F340 /* RKMappableAssociation.m in Sources */,
 				256FDE55112DB0B90077F340 /* RKModelMapperSpecModel.m in Sources */,
 				2520776E113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m in Sources */,
+				252F4CC2114021B5003C6F42 /* RKModelSeeder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -769,6 +778,7 @@
 				2525EBEC106961DD0069EBED /* RKManagedObjectStore.m in Sources */,
 				2525F9A1106C0FF40069EBED /* RKNotifications.m in Sources */,
 				253BBE971076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */,
+				252F4CC1114021B5003C6F42 /* RKModelSeeder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

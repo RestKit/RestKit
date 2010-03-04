@@ -112,6 +112,7 @@
 + (NSArray*)elementNames;
 
 // The server side name of the model?
+// TODO: Should be registered on the model manager somehow...
 + (NSString*)modelName;
 
 /**
@@ -125,9 +126,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // Instance Methods
 
-/**
- * Save the object into the managed object context
- */
+// saves the managed object context
 - (NSError*)save;
 
 /**
