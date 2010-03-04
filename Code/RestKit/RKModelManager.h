@@ -53,7 +53,7 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * The REST client for this manager
  */
-@property (nonatomic, readonly) RKClient* client;
+@property (nonatomic, retain) RKClient* client;
 
 /**
  * Puts the manager into offline mode. Requests will not be sent.
