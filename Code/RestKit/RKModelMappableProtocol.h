@@ -77,6 +77,8 @@ typedef enum {
  */
 + (NSString*)primaryKey;
 
++ (NSString*)primaryKeyElement;
+
 /**
  * Must return the model instance corresponding to the given primary key value.
  * Expected to return nil if the model instance does not exist and hence we should

@@ -14,14 +14,16 @@
 hasOne = _hasOne, hasMany = _hasMany;
 
 + (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithObjectsAndKeys:@"dateTest", @"date_test",
-			@"numberTest", @"number_test",
-			@"stringTest", @"string_test", nil];
+	return [NSDictionary dictionaryWithKeysAndObjects:@"date_test", @"dateTest", 
+					@"number_test", @"numberTest", 
+					@"string_test", @"stringTest", nil];
 }
 
 + (NSDictionary*)elementToRelationshipMappings {
-	return [NSDictionary dictionaryWithObjectsAndKeys:@"hasOne", @"has_one",
-			@"hasMany", @"has_manys > has_many", nil];
+	return [NSDictionary dictionaryWithKeysAndObjects:
+			@"has_one", @"hasOne",
+			@"has_manys.@unionOfObjects.has_many", @"hasMany", 
+			nil];
 }
 
 @end
