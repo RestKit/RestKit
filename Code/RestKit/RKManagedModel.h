@@ -134,15 +134,4 @@
  */
 - (void)destroy;
 
-// TODO: The methods below should be moved out and the mapper interacted with directly.
-
-/**
- * Sets attributes on the model from the XML document according to the element to property/relationship mappings
- */
-- (void)setAttributesFromXML:(Element*)XML;
-
-- (void)setAttributesFromJSONDictionary:(NSDictionary*)jsonDictionary;
-
-// TODO: Need helper method on superclass for this... setAttributesFromXML:/setAttributesFromJSON:/setAttributesFromPayload?
-
 @end

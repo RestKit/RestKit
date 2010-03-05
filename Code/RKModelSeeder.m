@@ -28,7 +28,7 @@
 	NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:type];
 	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
 	if (nil == error) {
-		return [[_manager mapper] buildModelsFromString:payload];
+		return [[_manager mapper] mapFromString:payload];
 	}
 	
 	return nil;

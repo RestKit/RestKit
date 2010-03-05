@@ -72,6 +72,30 @@
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// Mapping from a string
+
+- (id)mapFromString:(NSString*)string {
+	id object = [_parser objectFromString:string];
+	if ([object isKindOfClass:[NSDictionary class]]) {
+		return [self mapModelFromDictionary:(NSDictionary*)object];
+	} else if ([object isKindOfClass:[NSArray class]]) {
+		return [self mapModelsFromArrayOfDictionaries:(NSArray*)object];
+	} else {
+		// TODO: Throw error here!
+		return nil;
+	}
+}
+
+- (void)mapModel:(id)model fromString:(NSString*)string {
+	id object = [_parser objectFromString:string];
+	if ([object isKindOfClass:[NSDictionary class]]) {
+		[self mapModel:object fromDictionary:object];
+	} else {
+		// TODO: Handle error here!
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // Mapping from objects
 
 - (void)mapModel:(id)model fromDictionary:(NSDictionary*)dictionary {
@@ -103,30 +127,6 @@
 	}
 	
 	return (NSArray*)objects;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Mapping from a string
-
-- (id)mapFromString:(NSString*)string {
-	id object = [_parser objectFromString:string];
-	if ([object isKindOfClass:[NSDictionary class]]) {
-		return [self mapModelFromDictionary:(NSDictionary*)object];
-	} else if ([object isKindOfClass:[NSArray class]]) {
-		return [self mapModelsFromArrayOfDictionaries:(NSArray*)object];
-	} else {
-		// TODO: Throw error here!
-		return nil;
-	}
-}
-
-- (void)mapModel:(id)model fromString:(NSString*)string {
-	id object = [_parser objectFromString:string];
-	if ([object isKindOfClass:[NSDictionary class]]) {
-		[self mapModel:object fromDictionary:object];
-	} else {
-		// TODO: Handle error here!
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -276,25 +276,6 @@
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements {
 	[self setPropertiesOfModel:model fromElements:elements];
 	[self setRelationshipsOfModel:model fromElements:elements];
-}
-
-///////////////////////////////////////////////
-// deprecated method names -- to be replaced
-
-- (id)buildModelFromString:(NSString*)string {
-	return [self mapFromString:string];
-}
-
-- (NSArray*)buildModelsFromString:(NSString*)string {
-	return [self mapFromString:string];
-}
-
-- (void)setAttributes:(id)object fromXML:(Element*)XML {
-	// TODO: Do nothing for now...
-}
-
-- (void)setAttributes:(id)object fromJSONDictionary:(NSDictionary*)dict {
-	// TODO: Do nothing for now...
 }
 
 @end

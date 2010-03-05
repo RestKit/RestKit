@@ -225,13 +225,4 @@
 	[[self managedObjectContext] deleteObject:self];
 }
 
-// TODO: Gets removed. Model mapper should handle transparently.
-- (void)setAttributesFromXML:(Element*)XML {
-	[[[RKModelManager manager] mapper] setAttributes:self fromXML:XML];
-}
-
-- (void)setAttributesFromJSONDictionary:(NSDictionary*)jsonDictionary {
-	[[[RKModelManager manager] mapper] setAttributes:self fromJSONDictionary:jsonDictionary];
-}
-
 @end

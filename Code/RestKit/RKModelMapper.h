@@ -10,9 +10,6 @@
 #import "RKModelMappableProtocol.h"
 #import "RKObjectPropertyInspector.h"
 
-// TODO: The below goes away
-#import "ElementParser.h"
-
 /**
  * The format parser is responsible for transforming a string
  * of data into a dictionary. This allows the model mapper to
@@ -53,35 +50,40 @@
  */
 - (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName;
 
-/**
- * Digest an XML/JSON payload and return the an instance of the model class registered for the element
- */
-// TODO: Becomes mapModelFromString
-- (id)buildModelFromString:(NSString*)string;
+///////////////////////////////////////////////////////////////////////////////
+// Core Mapping API
 
 /**
- * Digest an XML/JSON payload and return the resulting collection of model instances
+ * Digests a string into an object graph and returns mapped model objects from the objects
+ * serialized in the string
  */
-// TODO: Becomes mapModelsFromString
-- (NSArray*)buildModelsFromString:(NSString*)string;
+- (id)mapFromString:(NSString*)string;
 
 /**
- * Sets the properties on a particular object from a payload
+ * Sets the properties and relationships serialized in the string into the model instance
+ * provided
  */
-// TODO: To support remote creation of model objects
 - (void)mapModel:(id)model fromString:(NSString*)string;
 
-//////////////////////////////////////////////
-// TODO: The methods below go away!!!!
+///////////////////////////////////////////////////////////////////////////////
+// Object Mapping API
 
 /**
- * Digests an XML payload and updates the object with its properties and relationships
+ * Sets the properties and relationships serialized in the dictionary into the model instance
+ * provided
  */
-- (void)setAttributes:(id)object fromXML:(Element*)XML;
+- (void)mapModel:(id)model fromDictionary:(NSDictionary*)dictionary;
 
 /**
- * Digests a JSON payload and updates the object with its properties and relationships
+ * Returns mapped model(s) from the data serialized in the dictionary into the model instance
+ * provided
  */
-- (void)setAttributes:(id)object fromJSONDictionary:(NSDictionary*)dict;
+- (id)mapModelFromDictionary:(NSDictionary*)dictionary;
+
+/**
+ * Constructs an array of mapped model objects from an array of dictionaries
+ * containing serialized objects
+ */
+- (NSArray*)mapModelsFromArrayOfDictionaries:(NSArray*)array;
 
 @end
