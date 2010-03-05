@@ -11,7 +11,9 @@
 
 @interface NSDictionary (RKRequestSerialization) <RKRequestSerializable>
 
+// TODO: Move to new file or rename...
 + (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
+- (id)keyForObject:(id)object;
 
 - (NSString*)URLEncodedString;
 - (NSString*)ContentTypeHTTPHeader;

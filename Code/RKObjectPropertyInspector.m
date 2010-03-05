@@ -51,7 +51,10 @@
 			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
 				const char* className = [[self propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
 				Class class = objc_getClass(className);
-				[propertyNames setObject:class forKey:propName];
+				// TODO: Use an id type if unable to get the class??
+				if (class) {
+					[propertyNames setObject:class forKey:propName];
+				}
 			}
 		}
 		

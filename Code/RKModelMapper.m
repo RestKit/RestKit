@@ -89,7 +89,7 @@
 - (void)mapModel:(id)model fromString:(NSString*)string {
 	id object = [_parser objectFromString:string];
 	if ([object isKindOfClass:[NSDictionary class]]) {
-		[self mapModel:object fromDictionary:object];
+		[self mapModel:model fromDictionary:object];
 	} else {
 		// TODO: Handle error here!
 	}
@@ -100,10 +100,13 @@
 
 - (void)mapModel:(id)model fromDictionary:(NSDictionary*)dictionary {
 	Class class = [model class];
-	NSString* elementName = [[_elementToClassMappings allKeysForObject:class] objectAtIndex:0];
-	NSDictionary* elements = [dictionary objectForKey:elementName];
-	
-	[self updateModel:model fromElements:elements];
+	NSString* elementName = [_elementToClassMappings keyForObject:class];
+	if (elementName) {
+		NSDictionary* elements = [dictionary objectForKey:elementName];	
+		[self updateModel:model fromElements:elements];
+	} else {
+		// TODO: Do we ignore or throw an exception?
+	}
 }
 
 - (id)mapModelFromDictionary:(NSDictionary*)dictionary {
@@ -227,7 +230,7 @@
 		}
 		
 		id propertyValue = elementValue;
-		if (nil != elementValue) { // kCFNull??
+		if (kCFNull != elementValue) {
 			if ([class isEqual:[NSDate class]]) {
 				// TODO: This date parsing needs to be factored out...
 				NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
