@@ -178,6 +178,7 @@ static RKModelManager* sharedManager = nil;
 	}
 	// TODO: are we responsible for deleting the object too,
 	//		or are we to assume that the caller has/will delete it?
+	// TODO: Right now we are sending back the response object for deletes. Wrong thing to do???
 	RKRequest* request = [_client delete:[model memberPath] delegate:delegate callback:callback];
 	request.userData = model;
 	return request;
