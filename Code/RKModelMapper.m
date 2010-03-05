@@ -97,6 +97,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	} else {
 		[NSException raise:@"Unable to map from requested string" 
 					format:@"The object was deserialized into a %@. A dictionary or array of dictionaries was expected.", [object class]];
+		return nil;
 	}
 }
 
@@ -106,7 +107,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		[self mapModel:model fromDictionary:object];
 	} else if (nil == object) {
 		NSLog(@"[RestKit] RKModelMapper: mapModel:fromString: attempted to map from a nil payload. Skipping...");
-		return nil;
+		return;
 	} else {
 		[NSException raise:@"Unable to map from requested string"
 					format:@"The object was serialized into a %@. A dictionary of elements was expected.", [object class]];
