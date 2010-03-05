@@ -230,7 +230,7 @@
 		}
 		
 		id propertyValue = elementValue;
-		if (kCFNull != elementValue) {
+		if (elementValue != (id)kCFNull) {
 			if ([class isEqual:[NSDate class]]) {
 				// TODO: This date parsing needs to be factored out...
 				NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
