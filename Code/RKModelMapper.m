@@ -32,6 +32,13 @@
 
 @end
 
+// TODO: Defined in external file but was creating symbol errors... figure out
+@interface NSMutableDictionary (External)
+
+- (id)keyForObject:(id)object;
+
+@end
+
 @implementation RKModelMapper
 
 @synthesize format = _format;
