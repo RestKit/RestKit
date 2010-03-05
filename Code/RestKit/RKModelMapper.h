@@ -31,6 +31,9 @@
 	RKMappingFormat _format;
 	NSObject<RKMappingFormatParser>* _parser;
 	RKObjectPropertyInspector* _inspector;
+	NSArray* _dateFormats;
+	NSTimeZone* _remoteTimeZone;
+	NSTimeZone* _localTimeZone;
 }
 
 /**
@@ -43,6 +46,17 @@
  * dictionary
  */
 @property(nonatomic, retain) NSObject<RKMappingFormatParser>* parser;
+
+/**
+ * An array of date format strings to attempt to parse mapped date properties with
+ *
+ * Initialized with a default pair of timestamp and date strings suitable for
+ * parseing time and date objects returned from Rails applications
+ */
+@property(nonatomic, retain) NSArray* dateFormats;
+
+@property(nonatomic, retain) NSTimeZone* remoteTimeZone;
+@property(nonatomic, retain) NSTimeZone* localTimeZone;
 
 /**
  * Register a mapping for a given class for an XML element with the given tag name

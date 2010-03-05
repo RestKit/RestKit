@@ -9,11 +9,12 @@
 #import <objc/message.h>
 
 #import "RKModelMapper.h"
+#import "NSDictionary+RKRequestSerialization.h"
 #import "RKMappingFormatJSONParser.h"
 
-// TODO: Factor me out...
-#define kRailsToXMLDateTimeFormatterString @"yyyy-MM-dd'T'HH:mm:ss'Z'" // 2009-08-08T17:23:59Z
-#define kRailsToXMLDateFormatterString @"MM/dd/yyyy"
+// Default format string for date and time objects from Rails
+static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'HH:mm:ss'Z'"; // 2009-08-08T17:23:59Z
+static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 
 @interface RKModelMapper (Private)
 
@@ -30,12 +31,8 @@
 - (void)setRelationshipsOfModel:(id)object fromElements:(NSDictionary*)elements;
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 
-@end
-
-// TODO: Defined in external file but was creating symbol errors... figure out
-@interface NSMutableDictionary (External)
-
-- (id)keyForObject:(id)object;
+- (NSDate*)parseDateFromString:(NSString*)string;
+- (NSDate*)dateInLocalTime:(NSDate*)date;
 
 @end
 
@@ -43,6 +40,9 @@
 
 @synthesize format = _format;
 @synthesize parser = _parser;
+@synthesize dateFormats = _dateFormats;
+@synthesize remoteTimeZone = _remoteTimeZone;
+@synthesize localTimeZone = _localTimeZone;
 
 ///////////////////////////////////////////////////////////////////////////////
 // public
@@ -50,8 +50,11 @@
 - (id)init {
 	if (self = [super init]) {
 		_elementToClassMappings = [[NSMutableDictionary alloc] init];
-		_format = RKMappingFormatXML;
+		_format = RKMappingFormatJSON;
 		_inspector = [[RKObjectPropertyInspector alloc] init];
+		self.dateFormats = [NSArray arrayWithObjects:kRKModelMapperRailsDateTimeFormatString, kRKModelMapperRailsDateFormatString, nil];
+		self.remoteTimeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+		self.localTimeZone = [NSTimeZone localTimeZone];
 	}
 	return self;
 }
@@ -60,6 +63,7 @@
 	[_elementToClassMappings release];
 	[_parser release];
 	[_inspector release];
+	[_dateFormats release];
 	[super dealloc];
 }
 
@@ -224,8 +228,7 @@
 - (void)setPropertiesOfModel:(id)model fromElements:(NSDictionary*)elements {
 	NSDictionary* elementToPropertyMappings = [self elementToPropertyMappingsForModel:model];
 	for (NSString* elementKeyPath in elementToPropertyMappings) {
-		NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];
-		Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
+		NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];		
 		id elementValue = nil;		
 		
 		@try {
@@ -237,20 +240,11 @@
 		}
 		
 		id propertyValue = elementValue;
+		Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
 		if (elementValue != (id)kCFNull) {
 			if ([class isEqual:[NSDate class]]) {
-				// TODO: This date parsing needs to be factored out...
-				NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-				// Times coming back are in utc. we should convert them to the local timezone
-				// TODO: Note that this currently only handles times and not stand-alone date's! needs to be cleaned up!
-				[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-				[formatter setDateFormat:kRailsToXMLDateTimeFormatterString];
-				propertyValue = [formatter dateFromString:propertyValue];
-				if (nil == propertyValue) {
-					[formatter setDateFormat:kRailsToXMLDateFormatterString];
-					propertyValue = [formatter dateFromString:propertyValue];
-				}
-				[formatter release];
+				NSDate* date = [self parseDateFromString:(propertyValue)];
+				propertyValue = [self dateInLocalTime:date];
 			}
 		}
 		
@@ -286,6 +280,36 @@
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements {
 	[self setPropertiesOfModel:model fromElements:elements];
 	[self setRelationshipsOfModel:model fromElements:elements];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Date & Time Helpers
+
+- (NSDate*)parseDateFromString:(NSString*)string {
+	NSDate* date = nil;
+	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];	
+	[formatter setTimeZone:self.remoteTimeZone];
+	for (NSString* formatString in self.dateFormats) {
+		[formatter setDateFormat:formatString];
+		date = [formatter dateFromString:string];
+		if (date) {
+			break;
+		}
+	}
+	
+	[formatter release];
+	return date;
+}
+
+- (NSDate*)dateInLocalTime:(NSDate*)date {
+	NSDate* destinationDate = nil;
+	if (date) {
+		NSInteger remoteGMTOffset = [self.remoteTimeZone secondsFromGMTForDate:date];
+		NSInteger localGMTOffset = [self.localTimeZone secondsFromGMTForDate:date];
+		NSTimeInterval interval = localGMTOffset - remoteGMTOffset;		
+		destinationDate = [[[NSDate alloc] initWithTimeInterval:interval sinceDate:date] autorelease];
+	}	
+	return destinationDate;
 }
 
 @end
