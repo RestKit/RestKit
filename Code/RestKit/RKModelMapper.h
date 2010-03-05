@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RKModelMappableProtocol.h"
+#import "RKObjectPropertyInspector.h"
 
 // TODO: The below goes away
 #import "ElementParser.h"
@@ -20,9 +21,11 @@
 @protocol RKMappingFormatParser
 
 /**
- * Return a dictionary from a string of encoded data (i.e. XML or JSON)
+ * Return a key-value coding compliant representation of a payload.
+ * Object attributes are encoded as a dictionary and collections
+ * of objects are returned as arrays.
  */
-- (NSDictionary*)dictionaryFromString:(NSString*)string;
+- (id)objectFromString:(NSString*)string;
 
 @end
 
@@ -30,6 +33,7 @@
 	NSMutableDictionary* _elementToClassMappings;
 	RKMappingFormat _format;
 	NSObject<RKMappingFormatParser>* _parser;
+	RKObjectPropertyInspector* _inspector;
 }
 
 /**

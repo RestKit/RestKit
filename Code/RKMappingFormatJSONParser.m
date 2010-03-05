@@ -11,7 +11,7 @@
 
 @implementation RKMappingFormatJSONParser
 
-- (NSDictionary*)dictionaryFromString:(NSString*)string {
+- (NSDictionary*)objectFromString:(NSString*)string {
 	return [[[[SBJSON alloc] init] autorelease] objectWithString:string];
 }
 

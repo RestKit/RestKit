@@ -55,7 +55,7 @@ static NSString *urlEncode(id object) {
     va_start(args, firstKey);
 	NSMutableArray* keys = [NSMutableArray array];
 	NSMutableArray* values = [NSMutableArray array];
-    for (id *key = firstKey; key != nil; key = va_arg(args, id)) {
+    for (id key = firstKey; key != nil; key = va_arg(args, id)) {
 		id value = va_arg(args, id);
         [keys addObject:key];
 		[values addObject:value];		

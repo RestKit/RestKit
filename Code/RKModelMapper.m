@@ -11,14 +11,139 @@
 #import "RKModelMapper.h"
 #import "RKMappingFormatJSONParser.h"
 
+// TODO: Factor me out...
+#define kRailsToXMLDateTimeFormatterString @"yyyy-MM-dd'T'HH:mm:ss'Z'" // 2009-08-08T17:23:59Z
+#define kRailsToXMLDateFormatterString @"MM/dd/yyyy"
+
+@interface RKModelMapper (Private)
+
+- (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
+
+- (Class)typeClassForProperty:(NSString*)property ofClass:(Class)class;
+- (NSDictionary*)elementToPropertyMappingsForModel:(id)model;
+
+- (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
+- (id)createOrUpdateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
+
+- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName; // Rename!
+- (void)setPropertiesOfModel:(id)model fromElements:(NSDictionary*)elements;
+- (void)setRelationshipsOfModel:(id)object fromElements:(NSDictionary*)elements;
+- (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
+
+@end
+
 @implementation RKModelMapper
 
 @synthesize format = _format;
 @synthesize parser = _parser;
 
-// private
+///////////////////////////////////////////////////////////////////////////////
+// public
 
-- (id)findOrCreateMappableInstanceOf:(Class)class fromElements:(NSDictionary*)elements {
+- (id)init {
+	if (self = [super init]) {
+		_elementToClassMappings = [[NSMutableDictionary alloc] init];
+		_format = RKMappingFormatXML;
+		_inspector = [[RKObjectPropertyInspector alloc] init];
+	}
+	return self;
+}
+
+- (void)dealloc {
+	[_elementToClassMappings release];
+	[_parser release];
+	[_inspector release];
+	[super dealloc];
+}
+
+- (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName {
+	[_elementToClassMappings setObject:aClass forKey:elementName];
+}
+
+- (void)setFormat:(RKMappingFormat)format {
+	_format = format;
+	if (nil == self.parser) {
+		if (RKMappingFormatJSON == _format) {
+			self.parser = [[[RKMappingFormatJSONParser alloc] init] autorelease];
+		} else if (RKMappingFormatXML == _format) {
+			// TODO: Implement in the future...
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Mapping from objects
+
+- (void)mapModel:(id)model fromDictionary:(NSDictionary*)dictionary {
+	Class class = [model class];
+	NSString* elementName = [[_elementToClassMappings allKeysForObject:class] objectAtIndex:0];
+	NSDictionary* elements = [dictionary objectForKey:elementName];
+	
+	[self updateModel:model fromElements:elements];
+}
+
+- (id)mapModelFromDictionary:(NSDictionary*)dictionary {
+	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
+	Class class = [_elementToClassMappings objectForKey:elementName];
+	NSDictionary* elements = [dictionary objectForKey:elementName];
+	
+	id model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
+	[self updateModel:model fromElements:elements];
+	return model;
+}
+
+- (NSArray*)mapModelsFromArrayOfDictionaries:(NSArray*)array {
+	NSMutableArray* objects = [NSMutableArray array];
+	for (NSDictionary* dictionary in array) {
+		NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
+		Class class = [_elementToClassMappings objectForKey:elementName];
+		NSDictionary* elements = [dictionary objectForKey:elementName];
+		id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
+		[objects addObject:object];
+	}
+	
+	return (NSArray*)objects;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Mapping from a string
+
+- (id)mapFromString:(NSString*)string {
+	id object = [_parser objectFromString:string];
+	if ([object isKindOfClass:[NSDictionary class]]) {
+		return [self mapModelFromDictionary:(NSDictionary*)object];
+	} else if ([object isKindOfClass:[NSArray class]]) {
+		return [self mapModelsFromArrayOfDictionaries:(NSArray*)object];
+	} else {
+		// TODO: Throw error here!
+		return nil;
+	}
+}
+
+- (void)mapModel:(id)model fromString:(NSString*)string {
+	id object = [_parser objectFromString:string];
+	if ([object isKindOfClass:[NSDictionary class]]) {
+		[self mapModel:object fromDictionary:object];
+	} else {
+		// TODO: Handle error here!
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Utility Methods
+
+- (Class)typeClassForProperty:(NSString*)property ofClass:(Class)class {
+	return [[_inspector propertyNamesAndTypesForClass:class] objectForKey:property];
+}
+
+- (NSDictionary*)elementToPropertyMappingsForModel:(id)model {
+	return [[model class] elementToPropertyMappings];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Persistent Instance Finders
+
+- (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
 	id object = nil;
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
 		NSString* primaryKeyElement = [class primaryKeyElement];
@@ -38,74 +163,18 @@
 	return object;
 }
 
-- (id)createOrUpdateInstanceOf:(Class)class withPropertiesForElements:(NSDictionary*)elements {	
-	id mappedObject = [self findOrCreateMappableInstanceOf:class fromElements:elements];
-	[self setPropertiesOfObject:mappedObject fromElements:elements];
-	[self setRelationshipsOfObject:mappedObject fromElements:elements];
-	
-	return mappedObject;
+- (id)createOrUpdateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
+	id model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
+	[self updateModel:model fromElements:elements];
+	return model;
 }
 
-- (NSDictionary*)elementToPropertyMappingsForObject:(id<RKModelMappable>)object {
-	return [[object class] elementToPropertyMappings];
-}
-
-#pragma mark -
-#pragma mark Property Type Methods
-// TODO: Move these out into another class???
-
-- (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
-	NSString *type = [NSString string];
-	NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
-	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
-	
-	// we are not dealing with an object
-	if([typeScanner isAtEnd]) {
-		return @"NULL";
-	}
-	[typeScanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\"@"] intoString:NULL];
-	// this gets the actual object type
-	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\""] intoString:&type];
-	return type;
-}
-
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)class {
-	NSMutableDictionary *propertyNames = [NSMutableDictionary dictionary];
-	
-	//include superclass properties
-	Class currentClass = class;
-	while (currentClass != nil) {
-		// Get the raw list of properties
-		unsigned int outCount;
-		objc_property_t *propList = class_copyPropertyList(currentClass, &outCount);
-		
-		// Collect the property names
-		int i;
-		NSString *propName;
-		for (i = 0; i < outCount; i++) {
-			// TODO: Add support for custom getter and setter methods
-			// property_getAttributes() returns everything we need to implement this...
-			// See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
-			objc_property_t * prop = propList + i;
-			NSString *type = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
-			propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
-			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-				[propertyNames setObject:[self propertyTypeFromAttributeString:type] forKey:propName];
-			}
-		}
-		
-		free(propList);
-		currentClass = [currentClass superclass];
-	}
-	return propertyNames;
-}
-
-- (NSString*)typeNameForProperty:(NSString*)property ofClass:(Class)class {
-	return [[self propertyNamesAndTypesForClass:class] objectForKey:property];
-}
+///////////////////////////////////////////////////////////////////////////////
+// Property & Relationship Manipulation
 
 // TODO: Clean up the method below...
-- (void)updateObject:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {
+// Better name?
+- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {
 	id currentValue = [model valueForKey:propertyName];
 	if (nil == currentValue && nil == propertyValue) {
 		// Don't set the property, both are nil
@@ -142,12 +211,11 @@
 	}
 }
 
-- (void)setPropertiesOfObject:(id)object fromElements:(NSDictionary*)elements {
-	NSDictionary* elementToPropertyMappings = [self elementToPropertyMappingsForObject:object];
+- (void)setPropertiesOfModel:(id)model fromElements:(NSDictionary*)elements {
+	NSDictionary* elementToPropertyMappings = [self elementToPropertyMappingsForModel:model];
 	for (NSString* elementKeyPath in elementToPropertyMappings) {
 		NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];
-//		NSString* propertyType = [self typeNameForProperty:propertyName ofClass:[object class]];
-//		NSLog(@"propertyType is %@", propertyType);
+		Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
 		id elementValue = nil;		
 		
 		@try {
@@ -158,13 +226,29 @@
 			NSLog(@"Encountered exception %@ when asking %@ for valueForKeyPath %@", e, elements, elementKeyPath);
 		}
 		
-		// TODO: Need to parse date's and shit here...
-		id propertyValue = elementValue;		
-		[self updateObject:object ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
+		id propertyValue = elementValue;
+		if (nil != elementValue) { // kCFNull??
+			if ([class isEqual:[NSDate class]]) {
+				// TODO: This date parsing needs to be factored out...
+				NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+				// Times coming back are in utc. we should convert them to the local timezone
+				// TODO: Note that this currently only handles times and not stand-alone date's! needs to be cleaned up!
+				[formatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+				[formatter setDateFormat:kRailsToXMLDateTimeFormatterString];
+				propertyValue = [formatter dateFromString:propertyValue];
+				if (nil == propertyValue) {
+					[formatter setDateFormat:kRailsToXMLDateFormatterString];
+					propertyValue = [formatter dateFromString:propertyValue];
+				}
+				[formatter release];
+			}
+		}
+		
+		[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
 	}
 }
 
-- (void)setRelationshipsOfObject:(id)object fromElements:(NSDictionary*)elements {
+- (void)setRelationshipsOfModel:(id)object fromElements:(NSDictionary*)elements {
 	NSDictionary* elementToRelationshipMappings = [[object class] elementToRelationshipMappings];
 	for (NSString* elementKeyPath in elementToRelationshipMappings) {
 		NSString* propertyName = [elementToRelationshipMappings objectForKey:elementKeyPath];
@@ -176,76 +260,33 @@
 			Class class = [_elementToClassMappings objectForKey:[componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1]];
 			NSMutableArray* children = [NSMutableArray arrayWithCapacity:[relationshipElements count]];
 			for (NSDictionary* childElements in relationshipElements) {
-				id child = [self createOrUpdateInstanceOf:class withPropertiesForElements:childElements];		
+				id child = [self createOrUpdateInstanceOfModelClass:class fromElements:childElements];		
 				[children addObject:child];
 			}
 			
 			[object setValue:children forKey:propertyName];
 		} else {
 			Class class = [_elementToClassMappings objectForKey:elementKeyPath];
-			id child = [self createOrUpdateInstanceOf:class withPropertiesForElements:relationshipElements];		
+			id child = [self createOrUpdateInstanceOfModelClass:class fromElements:relationshipElements];		
 			[object setValue:child forKey:propertyName];
 		}
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// public
-
-- (id)init {
-	if (self = [super init]) {
-		_elementToClassMappings = [[NSMutableDictionary alloc] init];
-		_format = RKMappingFormatXML;
-	}
-	return self;
+- (void)updateModel:(id)model fromElements:(NSDictionary*)elements {
+	[self setPropertiesOfModel:model fromElements:elements];
+	[self setRelationshipsOfModel:model fromElements:elements];
 }
 
-- (void)dealloc {
-	[_elementToClassMappings release];
-	[_parser release];
-	[super dealloc];
-}
-
-- (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName {
-	[_elementToClassMappings setObject:aClass forKey:elementName];
-}
-
-- (void)setFormat:(RKMappingFormat)format {
-	_format = format;
-	if (nil == self.parser) {
-		if (RKMappingFormatJSON == _format) {
-			self.parser = [[[RKMappingFormatJSONParser alloc] init] autorelease];
-		} else if (RKMappingFormatXML == _format) {
-			// TODO: Implement in the future...
-		}
-	}	
-}
+///////////////////////////////////////////////
+// deprecated method names -- to be replaced
 
 - (id)buildModelFromString:(NSString*)string {
-	NSDictionary* dictionary = [_parser dictionaryFromString:string];
-	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
-	Class class = [_elementToClassMappings objectForKey:elementName];
-	NSDictionary* elements = [dictionary objectForKey:elementName];
-	return [self createOrUpdateInstanceOf:class withPropertiesForElements:elements];
+	return [self mapFromString:string];
 }
 
 - (NSArray*)buildModelsFromString:(NSString*)string {
-	NSDictionary* collectionDictionary = [_parser dictionaryFromString:string];
-	NSMutableArray* objects = [NSMutableArray array];
-	NSString* collectionKey = [[collectionDictionary allKeys] objectAtIndex:0];
-	for (NSDictionary* dictionary in [collectionDictionary objectForKey:collectionKey]) {
-		NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
-		Class class = [_elementToClassMappings objectForKey:elementName];
-		NSDictionary* elements = [dictionary objectForKey:elementName];
-		id object = [self createOrUpdateInstanceOf:class withPropertiesForElements:elements];
-		[objects addObject:object];
-	}
-	
-	return (NSArray*)objects;
-}
-
-- (void)mapModel:(id)model fromString:(NSString*)string {
-	// TODO
+	return [self mapFromString:string];
 }
 
 - (void)setAttributes:(id)object fromXML:(Element*)XML {
