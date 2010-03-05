@@ -252,8 +252,6 @@
 		2580B067102E0F1000832D07 /* RKModelLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelLoader.m; path = Code/RKModelLoader.m; sourceTree = "<group>"; };
 		25FCDDD91035BC85005418A7 /* RKManagedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKManagedModel.h; path = Code/RestKit/RKManagedModel.h; sourceTree = "<group>"; };
 		25FCDDDA1035BC85005418A7 /* RKManagedModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKManagedModel.m; path = Code/RKManagedModel.m; sourceTree = "<group>"; };
-		25FCDDDE1035C201005418A7 /* RKModelMapper_Old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMapper_Old.h; path = Code/RestKit/RKModelMapper_Old.h; sourceTree = "<group>"; };
-		25FCDDDF1035C201005418A7 /* RKModelMapper_Old.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKModelMapper_Old.m; path = Code/RKModelMapper_Old.m; sourceTree = "<group>"; };
 		25FCDE9B1035E901005418A7 /* RKModelMappableProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMappableProtocol.h; path = Code/RestKit/RKModelMappableProtocol.h; sourceTree = "<group>"; };
 		3F0150FE103B148300BE3E24 /* RKModelMapper_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKModelMapper_Private.h; path = Code/RKModelMapper_Private.h; sourceTree = "<group>"; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
@@ -468,8 +466,6 @@
 				25FCDDD91035BC85005418A7 /* RKManagedModel.h */,
 				25FCDDDA1035BC85005418A7 /* RKManagedModel.m */,
 				3F0150FE103B148300BE3E24 /* RKModelMapper_Private.h */,
-				25FCDDDE1035C201005418A7 /* RKModelMapper_Old.h */,
-				25FCDDDF1035C201005418A7 /* RKModelMapper_Old.m */,
 				2580B066102E0F1000832D07 /* RKModelLoader.h */,
 				2580B067102E0F1000832D07 /* RKModelLoader.m */,
 				25FCDE9B1035E901005418A7 /* RKModelMappableProtocol.h */,

@@ -29,7 +29,7 @@ static RKModelManager* sharedManager = nil;
 	if (self = [super init]) {
 		_mapper = [[RKModelMapper alloc] init];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
-		self.format = RKMappingFormatXML;
+		self.format = RKMappingFormatJSON;
 		_isOnline = YES;
 	}
 	return self;

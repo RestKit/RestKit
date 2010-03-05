@@ -77,7 +77,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		if (RKMappingFormatJSON == _format) {
 			self.parser = [[[RKMappingFormatJSONParser alloc] init] autorelease];
 		} else if (RKMappingFormatXML == _format) {
-			// TODO: Implement in the future...
+			[NSException raise:@"No XML parser is available" format:@"RestKit does not currently have XML support. Use JSON."];
 		}
 	}
 }
@@ -92,7 +92,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	} else if ([object isKindOfClass:[NSArray class]]) {
 		return [self mapModelsFromArrayOfDictionaries:(NSArray*)object];
 	} else {
-		// TODO: Throw error here!
+		[NSException raise:@"Unable to map from requested string" 
+					format:@"The object was deserialized into a %@. A dictionary or array of dictionaries was expected.", [object class]];
 		return nil;
 	}
 }
@@ -102,7 +103,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		[self mapModel:model fromDictionary:object];
 	} else {
-		// TODO: Handle error here!
+		[NSException raise:@"Unable to map from requested string"
+					format:@"The object was serialized into a %@. A dictionary of elements was expected.", [object class]];
 	}
 }
 
@@ -116,7 +118,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		NSDictionary* elements = [dictionary objectForKey:elementName];	
 		[self updateModel:model fromElements:elements];
 	} else {
-		// TODO: Do we ignore or throw an exception?
+		[NSException raise:@"Unable to map from requested dictionary"
+					format:@"There was no mappable element found for objects of type %@", class];
 	}
 }
 
@@ -186,8 +189,6 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 ///////////////////////////////////////////////////////////////////////////////
 // Property & Relationship Manipulation
 
-// TODO: Clean up the method below...
-// Better name?
 - (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {
 	id currentValue = [model valueForKey:propertyName];
 	if (nil == currentValue && nil == propertyValue) {
@@ -219,7 +220,6 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		BOOL areEqual = ComparisonSender(currentValue, comparisonSelector, propertyValue);
 		
 		if (NO == areEqual) {
-			//NSLog(@"Setting property %@ to new value %@", propertyName, propertyValue);
 			[model setValue:propertyValue forKey:propertyName];
 		}
 	}
@@ -227,28 +227,31 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 
 - (void)setPropertiesOfModel:(id)model fromElements:(NSDictionary*)elements {
 	NSDictionary* elementToPropertyMappings = [self elementToPropertyMappingsForModel:model];
-	for (NSString* elementKeyPath in elementToPropertyMappings) {
-		NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];		
+	for (NSString* elementKeyPath in elementToPropertyMappings) {		
 		id elementValue = nil;		
+		BOOL setValue = YES;
 		
 		@try {
 			elementValue = [elements valueForKeyPath:elementKeyPath];
 		}
 		@catch (NSException * e) {
-			// TODO: Need error handling!
-			NSLog(@"Encountered exception %@ when asking %@ for valueForKeyPath %@", e, elements, elementKeyPath);
+			NSLog(@"[RestKit] RKModelMapper: Unable to find element at keyPath %@ in elements dictionary for %@. Skipping...", elementKeyPath, [model class]);
+			setValue = NO;
 		}
 		
-		id propertyValue = elementValue;
-		Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
-		if (elementValue != (id)kCFNull) {
-			if ([class isEqual:[NSDate class]]) {
-				NSDate* date = [self parseDateFromString:(propertyValue)];
-				propertyValue = [self dateInLocalTime:date];
+		if (setValue) {
+			id propertyValue = elementValue;
+			NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];
+			Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
+			if (elementValue != (id)kCFNull) {
+				if ([class isEqual:[NSDate class]]) {
+					NSDate* date = [self parseDateFromString:(propertyValue)];
+					propertyValue = [self dateInLocalTime:date];
+				}
 			}
+			
+			[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
 		}
-		
-		[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
 	}
 }
 
