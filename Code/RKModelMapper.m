@@ -249,7 +249,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 			id propertyValue = elementValue;
 			NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];
 			Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
-			if (elementValue != (id)kCFNull) {
+			if (elementValue != (id)kCFNull && nil != elementValue) {
 				if ([class isEqual:[NSDate class]]) {
 					NSDate* date = [self parseDateFromString:(propertyValue)];
 					propertyValue = [self dateInLocalTime:date];
@@ -271,7 +271,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 			// NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
 			NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
 			Class class = [_elementToClassMappings objectForKey:[componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1]];
-			NSMutableArray* children = [NSMutableArray arrayWithCapacity:[relationshipElements count]];
+			NSMutableSet* children = [NSMutableSet setWithCapacity:[relationshipElements count]];
 			for (NSDictionary* childElements in relationshipElements) {
 				id child = [self createOrUpdateInstanceOfModelClass:class fromElements:childElements];		
 				[children addObject:child];
