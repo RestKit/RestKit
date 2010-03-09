@@ -55,7 +55,7 @@
 /**
  * An opaque pointer to associate user defined data with the request.
  */
-@property(nonatomic, assign) id userData;
+@property(nonatomic, retain) id userData;
 
 /**
  * A Dictionary of additional HTTP Headers to send with the request

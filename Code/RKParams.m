@@ -94,14 +94,33 @@ static NSString* kRKStringBoundary = @"0xKhTmLbOuNdArY";
 	int i = 0;
 	for (id key in _valueData) {
 		id value = [_valueData valueForKey:key];
-		NSLog(@"Attempting to add HTTP param named %@ with type %@ and value %@", key, [value class], value);
-		[HTTPBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
-		// TODO: Can get _PFCachedNumber objects back from valueForKey: from Core Data. Need to figure this out...
-		if ([value respondsToSelector:@selector(dataUsingEncoding:)]) {
-			[HTTPBody appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
+		if ([value isKindOfClass:[NSArray class]]) {
+			int j = 0;
+			for (id object in (NSArray*)value) {
+				NSString* arrayKey = [NSString stringWithFormat:@"%@[]", key];
+				NSLog(@"Attempting to add HTTP param named %@ with type %@ and value %@", arrayKey, [object class], object);
+				[HTTPBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", arrayKey] dataUsingEncoding:NSUTF8StringEncoding]];
+				// TODO: Can get _PFCachedNumber objects back from valueForKey: from Core Data. Need to figure this out...
+				if ([object respondsToSelector:@selector(dataUsingEncoding:)]) {
+					[HTTPBody appendData:[object dataUsingEncoding:NSUTF8StringEncoding]];
+				} else {
+					[HTTPBody appendData:[[NSString stringWithFormat:@"%@", object] dataUsingEncoding:NSUTF8StringEncoding]];
+				}
+				j++;
+				if (j != [value count]) {
+					[HTTPBody appendData:[self endItemBoundary]];
+				}
+			}
 		} else {
-			[HTTPBody appendData:[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding]];
-		}		
+			NSLog(@"Attempting to add HTTP param named %@ with type %@ and value %@", key, [value class], value);
+			[HTTPBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+			// TODO: Can get _PFCachedNumber objects back from valueForKey: from Core Data. Need to figure this out...
+			if ([value respondsToSelector:@selector(dataUsingEncoding:)]) {
+				[HTTPBody appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
+			} else {
+				[HTTPBody appendData:[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding]];
+			}
+		}
 		i++;
 		
 		// Only add the boundary if this is not the last item in the post body
