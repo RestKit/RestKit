@@ -59,7 +59,11 @@
 - (void)processLoadModelInBackground:(RKResponse*)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	id model = response.request.userData;
-	[_mapper mapModel:model fromString:[response payloadString]];
+	if (model) {
+		[_mapper mapModel:model fromString:[response payloadString]];
+	} else {
+		model = [_mapper mapFromString:[response payloadString]];
+	}
 	[_delegate performSelectorOnMainThread:self.callback withObject:model waitUntilDone:NO];
 	[pool release];
 }

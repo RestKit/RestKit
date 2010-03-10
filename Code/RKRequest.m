@@ -42,6 +42,7 @@
 }
 
 - (void)dealloc {
+	[_userData release];
 	[_URL release];
 	[_URLRequest release];
 	[_delegate release];
