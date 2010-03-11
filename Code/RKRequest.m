@@ -51,7 +51,6 @@
 	[_additionalHTTPHeaders release];
 	[_username release];
 	[_password release];
-	[self cancel];
 	[super dealloc];
 }
 
