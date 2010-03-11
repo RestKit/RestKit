@@ -274,12 +274,15 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 			NSMutableSet* children = [NSMutableSet setWithCapacity:[relationshipElements count]];
 			for (NSDictionary* childElements in relationshipElements) {
 				id child = [self createOrUpdateInstanceOfModelClass:class fromElements:childElements];		
-				[children addObject:child];
+				if (child) {
+					[children addObject:child];
+				}
 			}
 			
 			[object setValue:children forKey:propertyName];
-		} else {
-			Class class = [_elementToClassMappings objectForKey:elementKeyPath];
+		} else if ([relationshipElements isKindOfClass:[NSDictionary class]]) {
+			NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
+			Class class = [_elementToClassMappings objectForKey:[componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1]];
 			id child = [self createOrUpdateInstanceOfModelClass:class fromElements:relationshipElements];		
 			[object setValue:child forKey:propertyName];
 		}

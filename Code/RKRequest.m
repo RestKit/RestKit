@@ -43,6 +43,7 @@
 }
 
 - (void)dealloc {
+	[_userData release];
 	[_URL release];
 	[_URLRequest release];
 	[_delegate release];
@@ -153,7 +154,9 @@
 	[_connection cancel];
 	[_connection release];
 	_connection = nil;
-	
+	if ([_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
+		[_delegate requestDidCancelLoad:self];
+	}
 }
 
 @end
