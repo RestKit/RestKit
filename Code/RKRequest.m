@@ -27,6 +27,7 @@
 	if (self = [self init]) {
 		_URL = [URL retain];
 		_URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
+		_connection = nil;
 	}
 	
 	return self;
@@ -49,6 +50,7 @@
 	[_additionalHTTPHeaders release];
 	[_username release];
 	[_password release];
+	[self cancel];
 	[super dealloc];
 }
 
@@ -75,7 +77,7 @@
 	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
 	RKResponse* response = [[[RKResponse alloc] initWithRestRequest:self] autorelease];
-	[[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+	_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
 }
 
 - (RKResponse*)sendSynchronous {
@@ -145,6 +147,13 @@
 	[_URLRequest setHTTPMethod:@"DELETE"];
 	[self addHeadersToRequest];
 	return [self sendSynchronous];
+}
+
+- (void)cancel {
+	[_connection cancel];
+	[_connection release];
+	_connection = nil;
+	
 }
 
 @end

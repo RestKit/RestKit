@@ -58,8 +58,10 @@
  */
 + (NSFetchRequest*)request;
 
+// TODO: objectsWithRequest
 + (NSArray*)collectionWithRequest:(NSFetchRequest*)request;
 + (id)objectWithRequest:(NSFetchRequest*)request;
+// TODO: objectsWithPredicate
 + (NSArray*)collectionWithPredicate:(NSPredicate*)predicate;
 + (id)objectWithPredicate:(NSPredicate*)predicate;
 + (NSArray*)allObjects;
@@ -113,6 +115,7 @@
 
 // The server side name of the model?
 // TODO: Should be registered on the model manager somehow...
+// TODO: Use entity name on managed model?
 + (NSString*)modelName;
 
 /**
@@ -127,11 +130,13 @@
 // Instance Methods
 
 // saves the managed object context
+// TODO: Gets moved off
 - (NSError*)save;
 
 /**
  * Deletes the object from the managed object context
  */
+// TODO: Gets moved off
 - (void)destroy;
 
 @end

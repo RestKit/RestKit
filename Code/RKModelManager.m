@@ -99,7 +99,7 @@ static RKModelManager* sharedManager = nil;
 	if ([self isOffline]) {
 		return nil;
 	}
-	RKModelLoader* loader = [[RKModelLoader alloc] initWithMapper:self.mapper];
+	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
@@ -113,7 +113,7 @@ static RKModelManager* sharedManager = nil;
 	if ([self isOffline]) {
 		return nil;
 	}
-	RKModelLoader* loader = [[RKModelLoader alloc] initWithMapper:self.mapper];
+	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
@@ -124,7 +124,7 @@ static RKModelManager* sharedManager = nil;
 	if ([self isOffline]) {
 		return nil;
 	}
-	RKModelLoader* loader = [[RKModelLoader alloc] initWithMapper:self.mapper];
+	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
@@ -135,7 +135,7 @@ static RKModelManager* sharedManager = nil;
 	if ([self isOffline]) {
 		return nil;
 	}
-	RKModelLoader* loader = [[RKModelLoader alloc] initWithMapper:self.mapper];
+	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
@@ -148,7 +148,7 @@ static RKModelManager* sharedManager = nil;
 	if ([self isOffline]) {
 		return nil;
 	}
-	RKModelLoader* loader = [[RKModelLoader alloc] initWithMapper:self.mapper];
+	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
@@ -162,7 +162,7 @@ static RKModelManager* sharedManager = nil;
 	if ([self isOffline]) {
 		return nil;
 	}
-	RKModelLoader* loader = [[RKModelLoader alloc] initWithMapper:self.mapper];
+	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
 	loader.delegate = delegate;
 	loader.callback = callback;
 	

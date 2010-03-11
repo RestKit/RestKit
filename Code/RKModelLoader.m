@@ -13,12 +13,21 @@
 
 @synthesize mapper = _mapper, delegate = _delegate, callback = _callback;
 
++ (id)loaderWithMapper:(RKModelMapper*)mapper {
+	return [[[self alloc] initWithMapper:mapper] autorelease];
+}
+
 - (id)initWithMapper:(RKModelMapper*)mapper {
 	if (self = [self init]) {
 		_mapper = [mapper retain];
 	}
 	
 	return self;
+}
+
+- (void)dealloc {
+	[_mapper release];
+	[super dealloc];
 }
 
 - (SEL)memberCallback {
@@ -72,9 +81,9 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Processing response %@", [response payloadString]);
+//	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Processing response %@", [response payloadString]);
 	NSArray* models = [_mapper mapFromString:[response payloadString]];
-	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Loaded models %@", models);
+//	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Loaded models %@", models);
 	[_delegate performSelectorOnMainThread:self.callback withObject:models waitUntilDone:NO];
 	[pool release];
 }

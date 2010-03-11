@@ -15,6 +15,7 @@
 @interface RKRequest : NSObject {
 	NSURL* _URL;
 	NSMutableURLRequest* _URLRequest;
+	NSURLConnection* _connection;
 	NSDictionary* _additionalHTTPHeaders;
 	NSObject<RKRequestSerializable>* _params;
 	id _delegate;
@@ -129,6 +130,11 @@
  * DELETE the resource and invoke the callback with the response payload
  */
 - (RKResponse*)deleteSynchronously;
+
+/**
+ * Cancels the underlying URL connection
+ */
+- (void)cancel;
 
 @end
 
