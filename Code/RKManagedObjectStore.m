@@ -45,11 +45,23 @@
  message to the application's managed object context.
  */
 - (NSError*)save {
-    NSError *error;
-    if (NO == [[self managedObjectContext] save:&error]) {
+    NSError *error = nil;
+	@try {
+		[[self managedObjectContext] save:&error];
+	}
+	@catch (NSException* e) {
+		// TODO: This needs to be reworked into a delegation pattern
+		NSString* errorMessage = [NSString stringWithFormat:@"An unrecoverable error was encountered while trying to save the database: %@", [e reason]];
+		UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ruh roh.", nil) 
+														message:errorMessage
+													   delegate:nil 
+											  cancelButtonTitle:NSLocalizedString(@"OK", nil) 
+											  otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+	} 
+	@finally {
 		return error;
-    } else {
-		return nil;
 	}
 }
 
@@ -65,7 +77,7 @@
 							 [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
 	
 	if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:options error:&error]) {
-        // Handle the error.
+		// TODO: Needs to be handled with delegation... Allow the application to handle migration.
     }
 }
 
@@ -94,8 +106,7 @@
 /**
  Returns the path to the application's documents directory.
  */
-- (NSString *)applicationDocumentsDirectory {
-	
+- (NSString *)applicationDocumentsDirectory {	
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     return basePath;
