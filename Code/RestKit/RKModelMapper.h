@@ -34,6 +34,7 @@
 	NSArray* _dateFormats;
 	NSTimeZone* _remoteTimeZone;
 	NSTimeZone* _localTimeZone;
+	SEL _comparisonProperty;
 }
 
 /**
@@ -55,7 +56,19 @@
  */
 @property(nonatomic, retain) NSArray* dateFormats;
 
+/**
+ * The time zone of the remote system. Date strings pulled from the remote source
+ * will be considered to be local to this time zone when mapping.
+ *
+ * Defaults to UTC
+ */
 @property(nonatomic, retain) NSTimeZone* remoteTimeZone;
+
+/**
+ * The target time zone to map dates to.
+ *
+ * Defaults to the local time zone
+ */
 @property(nonatomic, retain) NSTimeZone* localTimeZone;
 
 /**
