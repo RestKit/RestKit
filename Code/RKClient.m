@@ -153,25 +153,25 @@ static RKClient* sharedClient = nil;
 
 - (RKResponse*)getSynchronously:(NSString*)resourcePath params:(NSDictionary*)params {
 	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePathWithQueryString]];
+	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePathWithQueryString]] autorelease];
 	[self setupRequest:request];
 	return [request getSynchronously];
 }
 
 - (RKResponse*)postSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]];
+	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
 	[self setupRequest:request];	
 	return [request postParamsSynchronously:params];
 }
 
 - (RKResponse*)putSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]];
+	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
 	[self setupRequest:request];
 	return [request putParamsSynchronously:params];
 }
 
 - (RKResponse*)deleteSynchronously:(NSString*)resourcePath {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]];
+	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
 	[self setupRequest:request];
 	return [request deleteSynchronously];
 }

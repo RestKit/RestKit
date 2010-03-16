@@ -10,7 +10,7 @@
 
 
 @interface RKObjectPropertyInspector : NSObject {
-
+	NSMutableDictionary* _cachedPropertyNamesAndTypes;
 }
 
 /**

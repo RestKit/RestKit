@@ -42,6 +42,8 @@ typedef enum {
  */
 + (NSDictionary*)elementToRelationshipMappings;
 
+// TODO: Add an errors property. This will be populated when there are errors in the mapping.
+
 @optional
 
 /**
