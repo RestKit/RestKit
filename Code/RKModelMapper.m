@@ -267,8 +267,9 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		NSString* propertyName = [elementToRelationshipMappings objectForKey:elementKeyPath];
 		
 		id relationshipElements = nil;
-		@try
+		@try {
 			relationshipElements = [elements valueForKeyPath:elementKeyPath];
+		}
 		@catch (NSException* e) {
 			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
 		}
