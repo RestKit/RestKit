@@ -266,7 +266,14 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	for (NSString* elementKeyPath in elementToRelationshipMappings) {
 		NSString* propertyName = [elementToRelationshipMappings objectForKey:elementKeyPath];
 		
-		id relationshipElements = [elements valueForKeyPath:elementKeyPath];
+		id relationshipElements = nil;
+		@try {
+			relationshipElements = [elements valueForKeyPath:elementKeyPath];
+		}
+		@catch (NSException* e) {
+			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
+		}
+		
 		if ([relationshipElements isKindOfClass:[NSArray class]]) {
 			// NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
 			NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
@@ -299,8 +306,9 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 
 - (NSDate*)parseDateFromString:(NSString*)string {
 	NSDate* date = nil;
-	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];	
-	[formatter setTimeZone:self.remoteTimeZone];
+	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+	// TODO: I changed this to local time and it fixes my date issues. wtf?
+	[formatter setTimeZone:self.localTimeZone];
 	for (NSString* formatString in self.dateFormats) {
 		[formatter setDateFormat:formatString];
 		date = [formatter dateFromString:string];
