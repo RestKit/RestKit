@@ -7,9 +7,10 @@
 //
 
 #import "RKModelMapper.h"
+#import "JSON.h"
 
 @interface RKMappingFormatJSONParser : NSObject <RKMappingFormatParser> {
-
+	SBJSON* _parser;
 }
 
 @end

@@ -34,7 +34,6 @@
 	NSArray* _dateFormats;
 	NSTimeZone* _remoteTimeZone;
 	NSTimeZone* _localTimeZone;
-	SEL _comparisonProperty;
 }
 
 /**

@@ -7,6 +7,9 @@
 //
 
 #import "RKManagedObjectStore.h"
+#import <UIKit/UIKit.h>
+
+NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 
 @interface RKManagedObjectStore (Private)
 - (void)createPersistentStoreCoordinator;
@@ -61,6 +64,10 @@
 		[alert release];
 	} 
 	@finally {
+		if (error) {
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:@"error"];
+			[[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
+		}
 		return error;
 	}
 }
