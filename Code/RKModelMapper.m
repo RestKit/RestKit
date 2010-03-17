@@ -299,8 +299,9 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 
 - (NSDate*)parseDateFromString:(NSString*)string {
 	NSDate* date = nil;
-	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];	
-	[formatter setTimeZone:self.remoteTimeZone];
+	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+	// TODO: I changed this to local time and it fixes my date issues. wtf?
+	[formatter setTimeZone:self.localTimeZone];
 	for (NSString* formatString in self.dateFormats) {
 		[formatter setDateFormat:formatString];
 		date = [formatter dateFromString:string];
