@@ -15,6 +15,7 @@
 @interface RKRequest : NSObject {
 	NSURL* _URL;
 	NSMutableURLRequest* _URLRequest;
+	NSURLConnection* _connection;
 	NSDictionary* _additionalHTTPHeaders;
 	NSObject<RKRequestSerializable>* _params;
 	id _delegate;
@@ -130,6 +131,11 @@
  */
 - (RKResponse*)deleteSynchronously;
 
+/**
+ * Cancels the underlying URL connection
+ */
+- (void)cancel;
+
 @end
 
 /**
@@ -142,5 +148,5 @@
 - (void)requestDidStartLoad:(RKRequest*)request;
 - (void)requestDidFinishLoad:(RKRequest*)request;
 - (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error;
-- (void)requestDidCancelLoad:(RKRequest*)request; // not yet implemented
+- (void)requestDidCancelLoad:(RKRequest*)request;
 @end

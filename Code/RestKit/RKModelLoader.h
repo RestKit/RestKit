@@ -12,6 +12,8 @@
 
 @protocol RKModelLoaderDelegate <RKRequestDelegate>
 
+// TODO: didLoadModel: modelDidLoad: modelLoaderDidLoad:
+
 /**
  * Invoked when a request sent through the model manager encounters an error. The model will be nil if the request was
  * not dispatched with a model object instance
@@ -59,6 +61,7 @@
  */
 @property (nonatomic, readonly) SEL collectionCallback;
 
++ (id)loaderWithMapper:(RKModelMapper*)mapper;
 
 /**
  * Initialize a new model loader with a model mapper

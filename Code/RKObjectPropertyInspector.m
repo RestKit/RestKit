@@ -12,6 +12,19 @@
 
 @implementation RKObjectPropertyInspector
 
+- (id)init {
+	if (self = [super init]) {
+		_cachedPropertyNamesAndTypes = [[NSMutableDictionary alloc] init];
+	}
+	
+	return self;
+}
+
+- (void)dealloc {
+	[_cachedPropertyNamesAndTypes release];
+	[super dealloc];
+}
+
 - (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
 	NSString *type = [NSString string];
 	NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
@@ -28,7 +41,11 @@
 }
 
 - (NSDictionary *)propertyNamesAndTypesForClass:(Class)class {
-	NSMutableDictionary *propertyNames = [NSMutableDictionary dictionary];
+	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:class];
+	if (propertyNames) {
+		return propertyNames;
+	}
+	propertyNames = [NSMutableDictionary dictionary];
 	
 	//include superclass properties
 	Class currentClass = class;
@@ -61,6 +78,8 @@
 		free(propList);
 		currentClass = [currentClass superclass];
 	}
+	
+	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:class];	
 	return propertyNames;
 }
 
