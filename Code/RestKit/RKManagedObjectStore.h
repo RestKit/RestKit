@@ -8,6 +8,13 @@
 
 #import <CoreData/CoreData.h>
 
+/**
+ * Notifications
+ */
+extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
+
+///////////////////////////////////////////////////////////////////
+
 @interface RKManagedObjectStore : NSObject {
 	NSString* _storeFilename;	
     NSManagedObjectModel* _managedObjectModel;

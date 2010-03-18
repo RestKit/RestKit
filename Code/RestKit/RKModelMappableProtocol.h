@@ -64,8 +64,9 @@ typedef enum {
 - (NSString*)memberPath;
 
 /**
- * Must return the put/post params for the instance
+ * Must return the put/post params for the instance 
  */
+// TODO: Gets eliminated...
 - (NSDictionary*)resourceParams;
 
 /**
@@ -87,20 +88,5 @@ typedef enum {
  * instantiate a new instance.
  */
 + (id)findByPrimaryKey:(id)value;
-
-/**
- * Callback used to allow transformation of element name formatting before model mapping
- * occurs. This can be used to change the formatting of elements. For example, Ruby on Rails
- * formats XML element names hyphenated (my-attribute) and JSON element names underscored (my_attribute).
- */
-+ (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
-
-/**
- * If implemented, the model mapper will hand the xml to the object instead of mapping it using
- * elementToRelationshipMappings and elementToPropertyMappings
- */
-- (void)digestXML:(Element*)e;
-
-- (void)digestJSONDictionary:(NSDictionary*)dict;
 
 @end

@@ -128,7 +128,7 @@ static RKModelManager* sharedManager = nil;
 	loader.delegate = delegate;
 	loader.callback = callback;
 	
-	return [_client post:resourcePath params:params delegate:loader callback:loader.collectionCallback];
+	return [_client get:resourcePath params:params delegate:loader callback:loader.collectionCallback];
 }
 
 - (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback {
