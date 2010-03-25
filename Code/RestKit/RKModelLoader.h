@@ -12,7 +12,11 @@
 
 @protocol RKModelLoaderDelegate <RKRequestDelegate>
 
-// TODO: didLoadModel: modelDidLoad: modelLoaderDidLoad:
+/**
+ * Invoked when a request sent through the model manager loads a collection of models. The model will be nil if the request was
+ * not dispatched with a model object instance
+ */
+- (void)modelLoaderRequest:(RKRequest*)request didLoadModels:(NSArray*)models response:(RKResponse*)response model:(id<RKModelMappable>)model;
 
 /**
  * Invoked when a request sent through the model manager encounters an error. The model will be nil if the request was
@@ -23,6 +27,7 @@
 /**
  * Invoked when a request sent through the model manager returns an error message from the server. 
  */
+// TODO: Gets eliminated
 - (void)modelLoaderRequest:(RKRequest*)request didReturnErrorMessage:(NSString*)errorMessage response:(RKResponse*)response model:(id<RKModelMappable>)model;
 
 @end
@@ -47,19 +52,9 @@
 @property (nonatomic, retain) NSObject<RKModelLoaderDelegate>* delegate;
 
 /**
- * The method to invoke after loading the models
- */
-@property (nonatomic, assign) SEL callback;
-
-/**
  * The method to invoke to trigger model mappings. Used as the callback for a restful model mapping request
  */
-@property (nonatomic, readonly) SEL memberCallback;
-
-/**
- * The method to invoke to trigger model mappings. Used as the callback for a restful model mapping request
- */
-@property (nonatomic, readonly) SEL collectionCallback;
+@property (nonatomic, readonly) SEL callback;
 
 + (id)loaderWithMapper:(RKModelMapper*)mapper;
 

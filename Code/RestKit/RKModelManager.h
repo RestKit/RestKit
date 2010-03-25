@@ -11,6 +11,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKModelLoader.h"
 
+// Notifications
 extern NSString* const RKDidEnterOfflineModeNotification;
 extern NSString* const RKDidEnterOnlineModeNotification;
 
@@ -88,40 +89,42 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
-- (RKRequest*)loadModel:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
+
+// Load via a method...
+- (RKRequest*)loadModels:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 /**
- * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
+ * Fetch a resource via a specified HTTP method
  */
-- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)loadModels:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 /**
  * Fetch a resource via an HTTP POST with a dictionary of parameters and invoke a callback with the models mapped from the payload
- *
- * TODO: This may not be right... may want to allow specification of the HTTP verb. The use case is to support
- * loading a remote resource where the amount of data exceeds what is encodeable in URL parameters. This comes up
- * in GateGuru when loading HighFlyer's from Facebook friends, as the payload gets big fast.
  */
-- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
+
+////////////////////////////////////////////////////////
+// Model Mappable object helpers
 
 /**
  * Update a mappable model by loading its attributes from the web
  */
-- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 /**
  * Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting model from the payload
  */
-- (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 /**
  * Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting model from the payload
  */
-- (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 /**
  * Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
  */
-- (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate callback:(SEL)callback;
+- (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 @end

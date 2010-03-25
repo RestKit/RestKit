@@ -83,7 +83,6 @@ static RKClient* sharedClient = nil;
 	CFRelease(reachability);
 	
 	return isNetworkAvailable;
-	
 }
 
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath {
@@ -105,75 +104,78 @@ static RKClient* sharedClient = nil;
 // Asynchronous Requests
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(id)delegate callback:(SEL)callback {
 	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
 	[self setupRequest:request];
-	[request get];
+	[request sendWithMethod:method];
 	return request;
+}
+
+- (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
+	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
+	[self setupRequest:request];
+	request.params = params;
+	[request sendWithMethod:method];
+	return request;
+}
+
+- (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+	return [self load:resourcePath method:RKRequestMethodGET delegate:delegate callback:callback];
 }
 
 - (RKRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
 	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePathWithQueryString] delegate:delegate callback:callback];
-	[self setupRequest:request];
-	[request get];
-	return request;
+	return [self load:resourcePathWithQueryString method:RKRequestMethodGET delegate:delegate callback:callback];
 }
 
 - (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	[self setupRequest:request];
-	[request postParams:params];
-	return request;
+	return [self load:resourcePath method:RKRequestMethodPOST params:params delegate:delegate callback:callback];
 }
 
 - (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	[self setupRequest:request];
-	[request putParams:params];	
-	return request;
+	return [self load:resourcePath method:RKRequestMethodPUT params:params delegate:delegate callback:callback];
 }
 
 - (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	[self setupRequest:request];
-	[request delete];
-	return request;
+	return [self load:resourcePath method:RKRequestMethodDELETE delegate:delegate callback:callback];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Synchronous Requests
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (RKResponse*)getSynchronously:(NSString*)resourcePath {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]];
+- (RKResponse*)loadSynchronously:(NSString*)resourcePath method:(RKRequestMethod)method {
+	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
+	[self setupRequest:request];	
+	return [request sendSynchronouslyWithMethod:method];;
+}
+
+- (RKResponse*)loadSynchronously:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params {
+	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
 	[self setupRequest:request];
-	return [request getSynchronously];
+	request.params = params;	
+	return [request sendSynchronouslyWithMethod:method];;
+}
+
+- (RKResponse*)getSynchronously:(NSString*)resourcePath {
+	return [self loadSynchronously:resourcePath method:RKRequestMethodGET];
 }
 
 - (RKResponse*)getSynchronously:(NSString*)resourcePath params:(NSDictionary*)params {
 	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
-	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePathWithQueryString]] autorelease];
-	[self setupRequest:request];
-	return [request getSynchronously];
+	return [self loadSynchronously:resourcePathWithQueryString method:RKRequestMethodGET];
 }
 
 - (RKResponse*)postSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params {
-	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
-	[self setupRequest:request];	
-	return [request postParamsSynchronously:params];
+	return [self loadSynchronously:resourcePath method:RKRequestMethodPOST params:params];
 }
 
 - (RKResponse*)putSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params {
-	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
-	[self setupRequest:request];
-	return [request putParamsSynchronously:params];
+	return [self loadSynchronously:resourcePath method:RKRequestMethodPUT params:params];
 }
 
 - (RKResponse*)deleteSynchronously:(NSString*)resourcePath {
-	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
-	[self setupRequest:request];
-	return [request deleteSynchronously];
+	return [self loadSynchronously:resourcePath method:RKRequestMethodDELETE];
 }
 
 @end

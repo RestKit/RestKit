@@ -23,9 +23,9 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 }
 
 @property (nonatomic, readonly) NSString* storeFilename;
-@property (nonatomic, readonly) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, readonly) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, readonly) NSManagedObjectModel* managedObjectModel;
+@property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
+@property (nonatomic, readonly) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified

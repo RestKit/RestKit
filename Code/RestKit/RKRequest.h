@@ -10,6 +10,13 @@
 #import "DocumentRoot.h"
 #import "RKRequestSerializable.h"
 
+typedef enum RKRequestMethod {
+	RKRequestMethodGET = 0,
+	RKRequestMethodPOST,
+	RKRequestMethodPUT,
+	RKRequestMethodDELETE
+} RKRequestMethod;
+
 @class RKResponse;
 
 @interface RKRequest : NSObject {
@@ -23,6 +30,7 @@
 	id _userData;
 	NSString* _username;
 	NSString* _password;
+	RKRequestMethod _method;
 }
 
 /**
@@ -66,7 +74,13 @@
 /**
  * A serializable collection of parameters sent as the HTTP Body of the request
  */
-@property(nonatomic, readonly) NSObject<RKRequestSerializable>* params;
+// TODO: Should I be copy?
+@property(nonatomic, retain) NSObject<RKRequestSerializable>* params;
+
+/**
+ * The HTTP verb the request is sent via
+ */
+@property(nonatomic, assign) RKRequestMethod method;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,48 +102,24 @@
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback;
 
 /**
- * GET the resource and invoke the callback with the response payload
+ * Send the request asynchronously
  */
-- (void)get;
+- (void)send;
 
 /**
- * POST a collection of params to the resource and invoke the callback with the response payload
+ * Send the request synchronously and return a hydrated response object
  */
-- (void)postParams:(NSObject<RKRequestSerializable>*)params;
+- (RKResponse*)sendSynchronously;
 
 /**
- * PUT a collection of params to the resource and invoke the callback with the response payload
+ * Utility method for setting the request HTTP method and then sending the method asynchronously
  */
-- (void)putParams:(NSObject<RKRequestSerializable>*)params;
+- (void)sendWithMethod:(RKRequestMethod)method;
 
 /**
- * DELETE the resource and invoke the callback with the response payload
+ * Utility method for setting the request HTTP method and then sending the method synchronously
  */
-- (void)delete;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Synchronous Requests
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * GET the resource and invoke the callback with the response payload
- */
-- (RKResponse*)getSynchronously;
-
-/**
- * POST a collection of params to the resource and invoke the callback with the response payload
- */
-- (RKResponse*)postParamsSynchronously:(NSObject<RKRequestSerializable>*)params;
-
-/**
- * PUT a collection of params to the resource and invoke the callback with the response payload
- */
-- (RKResponse*)putParamsSynchronously:(NSObject<RKRequestSerializable>*)params;
-
-/**
- * DELETE the resource and invoke the callback with the response payload
- */
-- (RKResponse*)deleteSynchronously;
+- (RKResponse*)sendSynchronouslyWithMethod:(RKRequestMethod)method;
 
 /**
  * Cancels the underlying URL connection

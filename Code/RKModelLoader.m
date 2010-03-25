@@ -6,8 +6,10 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
+#import <CoreData/CoreData.h>
 #import "RKModelLoader.h"
 #import "RKResponse.h"
+#import "RKModelManager.h"
 
 @implementation RKModelLoader
 
@@ -30,11 +32,7 @@
 	[super dealloc];
 }
 
-- (SEL)memberCallback {
-	return @selector(loadModelFromResponse:);
-}
-
-- (SEL)collectionCallback {
+- (SEL)callback {
 	return @selector(loadModelsFromResponse:);
 }
 
@@ -54,6 +52,7 @@
 		if (nil == errorMessage) {
 			errorMessage = [response payloadString];
 		}
+		// TODO: Eliminate this method in favor of a single error dispatch
 		[_delegate modelLoaderRequest:response.request didReturnErrorMessage:errorMessage response:response model:(id<RKModelMappable>)request.userData];
 		return YES;
 	} else if ([response isServerError]) {
@@ -65,35 +64,52 @@
 	return NO;
 }
 
-- (void)processLoadModelInBackground:(RKResponse*)response {
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	id model = response.request.userData;
-	if (model) {
-		[_mapper mapModel:model fromString:[response payloadString]];
-	} else {
-		model = [_mapper mapFromString:[response payloadString]];
-	}
-	[_delegate performSelectorOnMainThread:self.callback withObject:model waitUntilDone:NO];
-	[pool release];
+// TODO: This locking implementation needs to be further cleaned up...
+- (void)lockManagedObjectContext {
+	NSManagedObjectContext* managedObjectContext = [[[RKModelManager manager] objectStore] managedObjectContext];
+	[managedObjectContext retain];
+	[managedObjectContext lock];
 }
 
-- (void)loadModelFromResponse:(RKResponse*)response {
-	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {		
-		[self performSelectorInBackground:@selector(processLoadModelInBackground:) withObject:response];
-	}	
+- (void)unlockManagedObjectContext {
+	NSManagedObjectContext* managedObjectContext = [[[RKModelManager manager] objectStore] managedObjectContext];
+	[managedObjectContext unlock];
+	[managedObjectContext release];
+}
+
+- (void)informDelegateOfModelLoadWithInfoDictionary:(NSDictionary*)dictionary {
+	RKResponse* response = [dictionary objectForKey:@"response"];
+	NSArray* models = [dictionary objectForKey:@"models"];
+	[dictionary release];
+	RKRequest* request = response.request;
+	[_delegate modelLoaderRequest:request didLoadModels:models response:response model:(id<RKModelMappable>)request.userData];
+	// Release the response now that we have finished all our processing
+	[response release];
 }
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-//	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Processing response %@", [response payloadString]);
-	NSArray* models = [_mapper mapFromString:[response payloadString]];
-//	NSLog(@"RKModelLoader -> processLoadModelsInBackground: Loaded models %@", models);
-	[_delegate performSelectorOnMainThread:self.callback withObject:models waitUntilDone:NO];
+	[self lockManagedObjectContext];
+	
+	id mapperResult = [_mapper mapFromString:[response payloadString]];
+	NSArray* models = nil;
+	if ([mapperResult isKindOfClass:[NSArray class]]) {
+		models = mapperResult;
+	} else if ([mapperResult conformsToProtocol:@protocol(RKModelMappable)]) {
+		models = [NSArray arrayWithObject:mapperResult];
+	}
+			   
+	[self unlockManagedObjectContext];
+			   
+	NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", models, @"models", nil] retain];
+	[self performSelectorOnMainThread:@selector(informDelegateOfModelLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];
 	[pool release];
 }
 
 - (void)loadModelsFromResponse:(RKResponse*)response {
-	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {		
+	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {
+		// Retain the response to prevent this thread from dealloc'ing before we have finished processing
+		[response retain];
 		[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 	}	
 }
@@ -121,7 +137,6 @@
 	}
 }
 
-// TODO: Implement
 - (void)requestDidCancelLoad:(RKRequest*)request {
 	if ([_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
 		[(NSObject<RKRequestDelegate>*)_delegate requestDidCancelLoad:request];
