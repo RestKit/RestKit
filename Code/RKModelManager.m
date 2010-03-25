@@ -92,10 +92,10 @@ static RKModelManager* sharedManager = nil;
 	[_mapper registerModel:class forElementNamed:elementName];
 }
 
-/**
- * Load a collection of models from a restful resource
- */
-- (RKRequest*)loadModels:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+/////////////////////////////////////////////////////////////
+// Model Collection Loaders
+
+- (RKRequest*)loadModels:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
 	if ([self isOffline]) {
 		return nil;
 	}
@@ -106,89 +106,42 @@ static RKModelManager* sharedManager = nil;
 }
 
 - (RKRequest*)loadModels:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	// return [self loadModels:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
-	
-	if ([self isOffline]) {
-		return nil;
-	}
-	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
-	loader.delegate = delegate;
-	
-	return [_client get:resourcePath delegate:loader callback:loader.callback];
+	return [self loadModels:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
 }
 
 - (RKRequest*)loadModels:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	if ([self isOffline]) {
-		return nil;
-	}
-	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
-	loader.delegate = delegate;
-	
-	return [_client load:resourcePath method:method delegate:loader callback:loader.callback];
+	return [self loadModels:resourcePath method:method params:nil delegate:delegate];
 }
 
 - (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	if ([self isOffline]) {
-		return nil;
-	}
-	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
-	loader.delegate = delegate;
-	
-	return [_client get:resourcePath params:params delegate:loader callback:loader.callback];
+	return [self loadModels:resourcePath method:RKRequestMethodGET params:params delegate:delegate];
 }
 
-/////
+/////////////////////////////////////////////////////////////
+// Model Instance Loaders
 
-- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	if ([self isOffline]) {
-		return nil;
-	}
-	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
-	loader.delegate = delegate;
-	
-	RKRequest* request = [_client get:[model memberPath] delegate:loader callback:loader.callback];
+- (RKRequest*)modelLoaderRequest:(id<RKModelMappable>)model resourcePath:(NSString*)resourcePath method:(RKRequestMethod)method params:(RKParams*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	RKRequest* request = [self loadModels:resourcePath method:method params:params delegate:delegate];
 	request.userData = model;
 	return request;
+}
+
+- (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	return [self modelLoaderRequest:model resourcePath:[model memberPath] method:RKRequestMethodGET params:nil delegate:delegate];
 }
 
 - (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	if ([self isOffline]) {
-		return nil;
-	}
-	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
-	loader.delegate = delegate;
-	
 	RKParams* params = [RKParams paramsWithDictionary:[model resourceParams]];
-	RKRequest* request = [_client post:[model collectionPath] params:params delegate:loader callback:loader.callback];
-	request.userData = model;
-	return request;
+	return [self modelLoaderRequest:model resourcePath:[model collectionPath] method:RKRequestMethodPOST params:params delegate:delegate];
 }
 
 - (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	if ([self isOffline]) {
-		return nil;
-	}
-	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
-	loader.delegate = delegate;
-	
 	RKParams* params = [RKParams paramsWithDictionary:[model resourceParams]];
-	RKRequest* request = [_client put:[model memberPath] params:params delegate:loader callback:loader.callback];
-	request.userData = model;
-	return request;
+	return [self modelLoaderRequest:model resourcePath:[model memberPath] method:RKRequestMethodPUT params:params delegate:delegate];
 }
 
 - (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	if ([self isOffline]) {
-		return nil;
-	}
-	// TODO: are we responsible for deleting the object too,
-	//		or are we to assume that the caller has/will delete it?
-	// TODO: Right now we are sending back the response object for deletes. Wrong thing to do???
-	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
-	loader.delegate = delegate;
-	RKRequest* request = [_client delete:[model memberPath] delegate:delegate callback:loader.callback];
-	request.userData = model;
-	return request;
+	return [self modelLoaderRequest:model resourcePath:[model memberPath] method:RKRequestMethodDELETE params:nil delegate:delegate];
 }
 
 @end
