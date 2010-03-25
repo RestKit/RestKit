@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "DocumentRoot.h"
 #import "RKRequestSerializable.h"
 
 typedef enum RKRequestMethod {

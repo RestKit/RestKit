@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "RKRequest.h"
-#import "DocumentRoot.h"
 
 @interface RKResponse : NSObject {
 	RKRequest* _request;
