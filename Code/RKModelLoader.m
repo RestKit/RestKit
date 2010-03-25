@@ -10,6 +10,7 @@
 #import "RKModelLoader.h"
 #import "RKResponse.h"
 #import "RKModelManager.h"
+#import "Errors.h"
 
 @implementation RKModelLoader
 
@@ -37,27 +38,25 @@
 }
 
 - (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
-	NSString* errorMessage = nil;
 	RKRequest* request = response.request;
 	if ([response isFailure]) {
 		[_delegate modelLoaderRequest:response.request didFailWithError:response.failureError response:response model:(id<RKModelMappable>)request.userData];
 		return YES;
-	} else if ([response isClientError]) {
-		// TODO: These assumptions are around how Rails serializes error into a payload. Factor out into an adapter...
-		if ([response isXML]) {
-			errorMessage = [[(Element*)[response payloadXMLDocument] selectElement:@"error"] contentsText];
-		} else if ([response isJSON]) {
-			errorMessage = [[[response payloadJSONDictionary] valueForKey:@"errors"] componentsJoinedByString:@", "];
+	} else if ([response isError]) {
+		NSString* errorMessage = nil;
+		if ([response isJSON]) {
+			// TODO: Should be using single error objects in an array!
+			errorMessage = [[[response bodyAsJSON] valueForKey:@"errors"] componentsJoinedByString:@", "];
 		}
 		if (nil == errorMessage) {
-			errorMessage = [response payloadString];
+			errorMessage = [response bodyAsString];
 		}
-		// TODO: Eliminate this method in favor of a single error dispatch
-		[_delegate modelLoaderRequest:response.request didReturnErrorMessage:errorMessage response:response model:(id<RKModelMappable>)request.userData];
-		return YES;
-	} else if ([response isServerError]) {
-		errorMessage = [response payloadString];
-		[_delegate modelLoaderRequest:response.request didReturnErrorMessage:errorMessage response:response model:(id<RKModelMappable>)request.userData];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+								  errorMessage, NSLocalizedDescriptionKey,
+								  nil];		
+		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
+		
+		[_delegate modelLoaderRequest:response.request didFailWithError:error response:response model:(id<RKModelMappable>)request.userData];
 		return YES;
 	}
 	
@@ -91,7 +90,7 @@
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	[self lockManagedObjectContext];
 	
-	id mapperResult = [_mapper mapFromString:[response payloadString]];
+	id mapperResult = [_mapper mapFromString:[response bodyAsString]];
 	NSArray* models = nil;
 	if ([mapperResult isKindOfClass:[NSArray class]]) {
 		models = mapperResult;

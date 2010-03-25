@@ -24,12 +24,6 @@
  */
 - (void)modelLoaderRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response model:(id<RKModelMappable>)model;
 
-/**
- * Invoked when a request sent through the model manager returns an error message from the server. 
- */
-// TODO: Gets eliminated
-- (void)modelLoaderRequest:(RKRequest*)request didReturnErrorMessage:(NSString*)errorMessage response:(RKResponse*)response model:(id<RKModelMappable>)model;
-
 @end
 
 @interface RKModelLoader : NSObject <RKRequestDelegate> {

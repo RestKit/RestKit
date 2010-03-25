@@ -44,10 +44,4 @@
 	_failureError = [error retain];
 }
 
-- (void)modelLoaderRequest:(RKRequest*)request didReturnErrorMessage:(NSString*)errorMessage response:(RKResponse*)response model:(id<RKModelMappable>)model {
-	_awaitingResponse = NO;
-	_success = NO;
-	_errorMessage = [errorMessage retain];
-}
-
 @end

@@ -12,11 +12,11 @@
 
 @implementation RKResponse
 
-@synthesize payload = _payload, request = _request, failureError = _failureError;
+@synthesize body = _body, request = _request, failureError = _failureError;
 
 - (id)init {
 	if (self = [super init]) {
-		_payload = [[NSMutableData alloc] init];
+		_body = [[NSMutableData alloc] init];
 		_failureError = nil;
 		_loading = NO;
 	}
@@ -32,12 +32,12 @@
 	return self;
 }
 
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse payload:(NSData*)payload error:(NSError*)error {
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
 	if (self = [super init]) {
 		_request = [request retain];		
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
-		_payload = [payload retain];
+		_body = [body retain];
 		_failureError = [error retain];
 		_loading = NO;
 	}
@@ -47,7 +47,7 @@
 
 - (void)dealloc {
 	[_httpURLResponse release];
-	[_payload release];
+	[_body release];
 	[_request release];
 	[_failureError release];
 	[super dealloc];
@@ -75,7 +75,7 @@
 		}
 	}
 	
-	[_payload appendData:data];		
+	[_body appendData:data];		
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
@@ -107,16 +107,12 @@
 	return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];
 }
 
-- (NSString*)payloadString {
-	return [[[NSString alloc] initWithData:self.payload encoding:NSUTF8StringEncoding] autorelease];
+- (NSString*)bodyAsString {
+	return [[[NSString alloc] initWithData:self.body encoding:NSUTF8StringEncoding] autorelease];
 }
 
-- (DocumentRoot*)payloadXMLDocument {
-	return [DocumentRoot parseXML:[self payloadString]];
-}
-
-- (NSDictionary*)payloadJSONDictionary {
-	return [[[[SBJSON alloc] init] autorelease] objectWithString:[self payloadString]];
+- (id)bodyAsJSON {
+	return [[[[SBJSON alloc] init] autorelease] objectWithString:[self bodyAsString]];
 }
 
 - (NSString*)failureErrorDescription {

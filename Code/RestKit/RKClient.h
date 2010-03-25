@@ -10,7 +10,6 @@
 #import "RKParams.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
-#import "ElementParser.h"
 
 /**
  * RKClient exposes the low level client interface for working

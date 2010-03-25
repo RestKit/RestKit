@@ -118,7 +118,7 @@
 	NSURLResponse *URLResponse;
 	NSError *error;
 	NSData* payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
-	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse payload:payload error:error] autorelease];
+	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
 }
 
 - (void)sendWithMethod:(RKRequestMethod)method {

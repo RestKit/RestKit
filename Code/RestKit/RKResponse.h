@@ -13,7 +13,7 @@
 @interface RKResponse : NSObject {
 	RKRequest* _request;
 	NSHTTPURLResponse* _httpURLResponse;
-	NSMutableData* _payload;
+	NSMutableData* _body;
 	NSError* _failureError;
 	BOOL _loading;
 }
@@ -29,7 +29,7 @@
 @property(nonatomic, readonly) NSURL* URL;
 
 /**
- * The MIME Type of the response payload
+ * The MIME Type of the response body
  */
 @property(nonatomic, readonly) NSString* MIMEType;
 
@@ -44,9 +44,9 @@
 @property(nonatomic, readonly) NSDictionary* allHeaderFields;
 
 /**
- * The data returned as the response payload
+ * The data returned as the response body
  */
-@property(nonatomic, readonly) NSData* payload;
+@property(nonatomic, readonly) NSData* body;
 
 /**
  * The error returned if the URL connection fails
@@ -62,7 +62,7 @@
 /**
  * Initializes a response object from the results of a synchronous request
  */
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse payload:(NSData*)payload error:(NSError*)error;
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error;
 
 /**
  * Return the localized human readable representation of the HTTP Status Code returned
@@ -70,19 +70,14 @@
 - (NSString*)localizedStatusCodeString;
 
 /**
- * Return the response payload as an NSString
+ * Return the response body as an NSString
  */
-- (NSString*)payloadString;
+- (NSString*)bodyAsString;
 
 /**
- * Parse the response payload into an XML Document via ElementParser
+ * Return the response body parsed as JSON into an object
  */
-- (DocumentRoot*)payloadXMLDocument;
-
-/**
- * Parse the response into a dictionary from JSON
- */
-- (NSDictionary*)payloadJSONDictionary;
+- (id)bodyAsJSON;
 
 /**
  * Will determine if there is an error object and use it's localized message

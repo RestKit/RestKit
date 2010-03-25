@@ -7,8 +7,6 @@
  *
  */
 
-@class Element;
-
 typedef enum {
 	RKMappingFormatXML = 0,
 	RKMappingFormatJSON
