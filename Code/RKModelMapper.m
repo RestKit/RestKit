@@ -142,11 +142,13 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 - (NSArray*)mapModelsFromArrayOfDictionaries:(NSArray*)array {
 	NSMutableArray* objects = [NSMutableArray array];
 	for (NSDictionary* dictionary in array) {
-		NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
-		Class class = [_elementToClassMappings objectForKey:elementName];
-		NSDictionary* elements = [dictionary objectForKey:elementName];
-		id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
-		[objects addObject:object];
+		if (![dictionary isKindOfClass:[NSNull class]]) {
+			NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
+			Class class = [_elementToClassMappings objectForKey:elementName];
+			NSDictionary* elements = [dictionary objectForKey:elementName];
+			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
+			[objects addObject:object];
+		}
 	}
 	
 	return (NSArray*)objects;
