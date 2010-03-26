@@ -175,6 +175,16 @@
 - (NSString*)location;
 
 /**
+ * True when the server turned an HTML response (MIME type is text/html)
+ */
+- (BOOL)isHTML;
+
+/**
+ * True when the server turned an XHTML response (MIME type is application/xhtml+xml)
+ */
+- (BOOL)isXHTML;
+
+/**
  * True when the server turned an XML response (MIME type is application/xml)
  */
 - (BOOL)isXML;

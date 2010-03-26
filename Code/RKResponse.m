@@ -211,6 +211,15 @@
 	return ([[self allHeaderFields] objectForKey:@"Location"]);
 }
 
+- (BOOL)isHTML {
+	return [[self contentType] rangeOfString:@"text/html" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 ||
+			[self isXHTML];
+}
+
+- (BOOL)isXHTML {
+	return [[self contentType] rangeOfString:@"application/xhtml+xml" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+}
+
 - (BOOL)isXML {
 	return [[self contentType] rangeOfString:@"application/xml" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
 }
