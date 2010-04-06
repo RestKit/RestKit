@@ -1,12 +1,14 @@
 Introduction
 =========================
 
-RestKit is a library for interacting with Restful web services in Objective C. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from XML/JSON payloads back into domain objects. Model mapping functions with normal NSObject derived classes with properties. There is also a model mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
+RestKit is a library for interacting with Restful web services in Objective C. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from JSON payloads back into domain objects. Model mapping functions with normal NSObject derived classes with properties. There is also a model mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
+
+http://twotoasters.com/index.php/2010/04/06/introducing-restkit/
 
 Dependencies
 -------------------------
 
-RestKit currently utilizes ElementParser for parsing XML payloads and JSON framework for parsing JSON payloads.
+RestKit currently utilizes ElementParser for JSON framework for parsing JSON payloads.
 
 Additional parsing backend support is expected in future versions.
 
@@ -15,7 +17,6 @@ Installation
 
 To add RestKit to your project (you're using git, right?):
 
-* git submodule add git://github.com/twotoasters/ElementParser.git ElementParser
 * git submodule add git://github.com/stig/json-framework.git json-framework
 * git submodule add git://github.com/twotoasters/RestKit.git RestKit
 
@@ -23,7 +24,7 @@ Open RestKit.xcodeproj and drag the RestKit project file into your XCode project
 
 Next add RestKit as a direct dependency to your target.
 
-Add 'RestKit' and 'ElementParser/Classes' to your target's header search paths.
+Add 'RestKit' to your target's header search paths.
 
 Add libRestKit.a to your target (checkbox)
 
