@@ -140,4 +140,20 @@
 	}
 }
 
+- (BOOL)isGET {
+	return _method == RKRequestMethodGET;
+}
+
+- (BOOL)isPOST {
+	return _method == RKRequestMethodPOST;
+}
+
+- (BOOL)isPUT {
+	return _method == RKRequestMethodPUT;
+}
+
+- (BOOL)isDELETE {
+	return _method == RKRequestMethodDELETE;
+}
+
 @end

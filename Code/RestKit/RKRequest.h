@@ -125,6 +125,26 @@ typedef enum RKRequestMethod {
  */
 - (void)cancel;
 
+/**
+ * Returns YES when this is a GET request
+ */
+- (BOOL)isGET;
+
+/**
+ * Returns YES when this is a POST request
+ */
+- (BOOL)isPOST;
+
+/**
+ * Returns YES when this is a PUT request
+ */
+- (BOOL)isPUT;
+
+/**
+ * Returns YES when this is a DELETE request
+ */
+- (BOOL)isDELETE;
+
 @end
 
 /**

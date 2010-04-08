@@ -90,7 +90,19 @@
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	[self lockManagedObjectContext];
 	
-	id mapperResult = [_mapper mapFromString:[response bodyAsString]];
+	// If the request was sent through a model, we map the results back into that object
+	// TODO: Note that this assumption may not work in all cases, other approaches?
+	// The issue is that not specifying the object results in new objects being created
+	// rather than mapping back into the original. This is a problem for create (POST) operations.
+	id mapperResult = nil;
+	id model = response.request.userData;	
+	if (model) {
+		[_mapper mapModel:model fromString:[response bodyAsString]];
+		mapperResult = model;
+	} else {
+		mapperResult = [_mapper mapFromString:[response bodyAsString]];
+	}
+		
 	NSArray* models = nil;
 	if ([mapperResult isKindOfClass:[NSArray class]]) {
 		models = mapperResult;
