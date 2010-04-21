@@ -8,7 +8,7 @@
 
 #import "RKResponse.h"
 #import "RKNotifications.h"
-#import "SBJSON.h"
+#import "JSON.h"
 
 @implementation RKResponse
 
