@@ -8,7 +8,8 @@ http://twotoasters.com/index.php/2010/04/06/introducing-restkit/
 Dependencies
 -------------------------
 
-RestKit currently utilizes ElementParser for JSON framework for parsing JSON payloads.
+RestKit currently utilizes json-framework for parsing JSON payloads. The source code is directly included in the distribution.
+If you currently link against or include json-framework in your project, please remove it and utilize the bundled version (currently 2.2.3).
 
 Additional parsing backend support is expected in future versions.
 
@@ -17,7 +18,6 @@ Installation
 
 To add RestKit to your project (you're using git, right?):
 
-* git submodule add git://github.com/stig/json-framework.git json-framework
 * git submodule add git://github.com/twotoasters/RestKit.git RestKit
 
 Open RestKit.xcodeproj and drag the RestKit project file into your XCode project.
