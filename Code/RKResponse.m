@@ -38,7 +38,6 @@
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
 		_body = [body retain];
-		_failureError = [error retain];
 		_loading = NO;
 	}
 	
