@@ -115,8 +115,8 @@
 	NSDate* sentAt = [NSDate date];
 	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];	
-	NSURLResponse *URLResponse;
-	NSError *error;
+	NSURLResponse* URLResponse = nil;
+	NSError* error = nil;
 	NSData* payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
 	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
 }
