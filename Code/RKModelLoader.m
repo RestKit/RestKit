@@ -63,19 +63,6 @@
 	return NO;
 }
 
-// TODO: This locking implementation needs to be further cleaned up...
-- (void)lockManagedObjectContext {
-	NSManagedObjectContext* managedObjectContext = [[[RKModelManager manager] objectStore] managedObjectContext];
-	[managedObjectContext retain];
-	[managedObjectContext lock];
-}
-
-- (void)unlockManagedObjectContext {
-	NSManagedObjectContext* managedObjectContext = [[[RKModelManager manager] objectStore] managedObjectContext];
-	[managedObjectContext unlock];
-	[managedObjectContext release];
-}
-
 - (void)informDelegateOfModelLoadWithInfoDictionary:(NSDictionary*)dictionary {
 	RKResponse* response = [dictionary objectForKey:@"response"];
 	NSArray* models = [dictionary objectForKey:@"models"];
@@ -88,7 +75,9 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	[self lockManagedObjectContext];
+	NSManagedObjectContext* managedObjectContext = [[[RKModelManager manager] objectStore] managedObjectContext];
+	
+	[managedObjectContext lock];
 	
 	// If the request was sent through a model, we map the results back into that object
 	// TODO: Note that this assumption may not work in all cases, other approaches?
@@ -109,8 +98,8 @@
 	} else if ([mapperResult conformsToProtocol:@protocol(RKModelMappable)]) {
 		models = [NSArray arrayWithObject:mapperResult];
 	}
-			   
-	[self unlockManagedObjectContext];
+	
+	[managedObjectContext unlock];
 			   
 	NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", models, @"models", nil] retain];
 	[self performSelectorOnMainThread:@selector(informDelegateOfModelLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];
