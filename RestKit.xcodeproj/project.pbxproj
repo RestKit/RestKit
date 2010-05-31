@@ -744,7 +744,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RestKit;
-				SDKROOT = "";
+				SDKROOT = iphoneos3.0;
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
@@ -765,6 +765,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RestKit;
+				SDKROOT = iphoneos3.0;
 			};
 			name = Release;
 		};

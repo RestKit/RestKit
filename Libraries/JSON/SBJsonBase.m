@@ -38,13 +38,16 @@ NSString * SBJSONErrorDomain = @"org.brautaset.JSON.ErrorDomain";
 
 - (id)init {
     self = [super init];
-    if (self)
+    if (self) {
         self.maxDepth = 512;
+		errorTrace = nil;
+	}
     return self;
 }
 
 - (void)dealloc {
     [errorTrace release];
+	errorTrace = nil;
     [super dealloc];
 }
 
