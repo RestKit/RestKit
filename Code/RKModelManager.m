@@ -95,32 +95,48 @@ static RKModelManager* sharedManager = nil;
 /////////////////////////////////////////////////////////////
 // Model Collection Loaders
 
-- (RKRequest*)loadModels:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+- (RKRequest*)loadModels:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	return [self loadModels:resourcePath fetchRequest:nil method:method params:params delegate:delegate];
+}
+
+- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	return [self loadModels:resourcePath fetchRequest:nil method:RKRequestMethodGET params:nil delegate:delegate];
+}
+
+- (RKRequest*)loadModels:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	return [self loadModels:resourcePath fetchRequest:nil method:method params:nil delegate:delegate];
+}
+
+- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	return [self loadModels:resourcePath fetchRequest:nil method:RKRequestMethodGET params:params delegate:delegate];
+}
+
+- (RKRequest*)loadModels:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	return [self loadModels:resourcePath fetchRequest:fetchRequest method:method params:nil delegate:delegate];
+}
+
+- (RKRequest*)loadModels:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
 	if ([self isOffline]) {
 		return nil;
 	}
 	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
 	loader.delegate = delegate;
 	
-	return [_client load:resourcePath method:method params:params delegate:loader callback:loader.callback];
+	return [_client load:resourcePath fetchRequest:fetchRequest method:method params:params delegate:loader callback:loader.callback];	
 }
 
-- (RKRequest*)loadModels:(NSString*)resourcePath delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	return [self loadModels:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
-}
-
-- (RKRequest*)loadModels:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	return [self loadModels:resourcePath method:method params:nil delegate:delegate];
-}
-
-- (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	return [self loadModels:resourcePath method:RKRequestMethodGET params:params delegate:delegate];
-}
 
 /////////////////////////////////////////////////////////////
 // Model Instance Loaders
 
 - (RKRequest*)modelLoaderRequest:(id<RKModelMappable>)model resourcePath:(NSString*)resourcePath method:(RKRequestMethod)method params:(RKParams*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
+	if (method != RKRequestMethodGET) {
+		NSError* error = [[[RKModelManager manager] objectStore] save];
+		if (error != nil) {
+			NSLog(@"[RestKit] RKModelManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
+		}
+	}
+	
 	RKRequest* request = [self loadModels:resourcePath method:method params:params delegate:delegate];
 	request.userData = model;
 	return request;

@@ -119,6 +119,15 @@ static RKClient* sharedClient = nil;
 	return request;
 }
 
+- (RKRequest*)load:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
+	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
+	[self setupRequest:request];
+	request.params = params;
+	request.fetchRequest = fetchRequest;
+	[request sendWithMethod:method];
+	return request;
+}
+
 - (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
 	return [self load:resourcePath method:RKRequestMethodGET delegate:delegate callback:callback];
 }
