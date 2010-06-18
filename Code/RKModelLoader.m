@@ -45,7 +45,6 @@
 	} else if ([response isError]) {
 		NSString* errorMessage = nil;
 		if ([response isJSON]) {
-			// TODO: Should be using single error objects in an array!
 			errorMessage = [[[response bodyAsJSON] valueForKey:@"errors"] componentsJoinedByString:@", "];
 		}
 		if (nil == errorMessage) {
