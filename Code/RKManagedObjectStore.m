@@ -32,6 +32,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		_managedObjectContext = [[NSManagedObjectContext alloc] init];
 		[_managedObjectContext setPersistentStoreCoordinator:_persistentStoreCoordinator];
 		[_managedObjectContext setUndoManager:nil];
+		[_managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
 	}
 	
 	return self;
@@ -125,6 +126,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 			backgroundThreadContext = [[NSManagedObjectContext alloc] init];
 			[backgroundThreadContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 			[backgroundThreadContext setUndoManager:nil];
+			[backgroundThreadContext setMergePolicy:NSOverwriteMergePolicy];
 			
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mergeChanges:)
 														 name:NSManagedObjectContextDidSaveNotification
