@@ -6,6 +6,7 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
+#import <CoreData/CoreData.h>
 #import "RKRequest.h"
 #import "RKResponse.h"
 #import "RKModelMapper.h"
@@ -30,6 +31,7 @@
 	RKModelMapper* _mapper;
 	NSObject<RKModelLoaderDelegate>* _delegate;
 	SEL _callback;
+	NSFetchRequest* _fetchRequest;
 }
 
 /**
@@ -49,6 +51,14 @@
  * The method to invoke to trigger model mappings. Used as the callback for a restful model mapping request
  */
 @property (nonatomic, readonly) SEL callback;
+
+/**
+ * Fetch request for loading cached objects. This is used to remove objects from the local persistent store
+ * when model mapping operations are completed.
+ *
+ * TODO: May belong in an inherited subclass to isolate persistent/non-persistent mapping in the future.
+ */
+@property (nonatomic, retain) NSFetchRequest* fetchRequest;
 
 + (id)loaderWithMapper:(RKModelMapper*)mapper;
 

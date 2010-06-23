@@ -15,6 +15,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 @interface RKManagedObjectStore (Private)
 - (void)createPersistentStoreCoordinator;
 - (NSString *)applicationDocumentsDirectory;
+- (NSManagedObjectContext*)createManagedObjectContext;
 @end
 
 @implementation RKManagedObjectStore
@@ -29,16 +30,14 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		_storeFilename = [storeFilename retain];
 		_managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];
 		[self createPersistentStoreCoordinator];
-		_managedObjectContext = [[NSManagedObjectContext alloc] init];
-		[_managedObjectContext setPersistentStoreCoordinator:_persistentStoreCoordinator];
-		[_managedObjectContext setUndoManager:nil];
-		[_managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
+		_managedObjectContext = [self createManagedObjectContext];
 	}
 	
 	return self;
 }
 
 - (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[_storeFilename release];
 	[_managedObjectContext release];
     [_managedObjectModel release];
@@ -75,6 +74,15 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	}
 }
 
+- (NSManagedObjectContext*)createManagedObjectContext {
+	NSManagedObjectContext* managedObjectContext = [[NSManagedObjectContext alloc] init];
+	[managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
+	[managedObjectContext setUndoManager:nil];
+	[managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
+	
+	return managedObjectContext;
+}
+
 - (void)createPersistentStoreCoordinator {
 	NSURL *storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent:_storeFilename]];
 	
@@ -103,13 +111,12 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	if (error) {
 		//Handle error
 	}
+	
 	[_persistentStoreCoordinator release];
 	[_managedObjectContext release];
+	
 	[self createPersistentStoreCoordinator];
-	_managedObjectContext = [[NSManagedObjectContext alloc] init];
-	[_managedObjectContext setPersistentStoreCoordinator:_persistentStoreCoordinator];
-	[_managedObjectContext setUndoManager:nil];
-	[_managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
+	_managedObjectContext = [self createManagedObjectContext];
 }
 
 /**
@@ -125,18 +132,13 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
 		NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:kRKManagedObjectContextKey];
 		if (!backgroundThreadContext) {
-			backgroundThreadContext = [[NSManagedObjectContext alloc] init];
-			[backgroundThreadContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
-			[backgroundThreadContext setUndoManager:nil];
-			[backgroundThreadContext setMergePolicy:NSOverwriteMergePolicy];
+			backgroundThreadContext = [self createManagedObjectContext];					
+			[threadDictionary setObject:backgroundThreadContext forKey:kRKManagedObjectContextKey];			
+			[backgroundThreadContext release];
 			
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mergeChanges:)
 														 name:NSManagedObjectContextDidSaveNotification
 													   object:backgroundThreadContext];
-		
-			[threadDictionary setObject:backgroundThreadContext forKey:kRKManagedObjectContextKey];
-			
-			[backgroundThreadContext release];
 		}
 		return backgroundThreadContext;
 	}
@@ -159,6 +161,21 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     return basePath;
+}
+
+- (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
+	return [self.managedObjectContext objectWithID:objectID];
+}
+
+- (NSArray*)objectsWithIDs:(NSArray*)objectIDs {
+	NSMutableArray* objects = [[NSMutableArray alloc] init];
+	for (NSManagedObjectID* objectID in objectIDs) {
+		[objects addObject:[self.managedObjectContext objectWithID:objectID]];
+	}
+	NSArray* objectArray = [NSArray arrayWithArray:objects];
+	[objects release];
+	
+	return objectArray;
 }
 
 @end

@@ -119,12 +119,13 @@ static RKModelManager* sharedManager = nil;
 	if ([self isOffline]) {
 		return nil;
 	}
+	
 	RKModelLoader* loader = [RKModelLoader loaderWithMapper:self.mapper];
+	loader.fetchRequest = fetchRequest;
 	loader.delegate = delegate;
 	
-	return [_client load:resourcePath fetchRequest:fetchRequest method:method params:params delegate:loader callback:loader.callback];	
+	return [_client load:resourcePath method:method params:params delegate:loader callback:loader.callback];	
 }
-
 
 /////////////////////////////////////////////////////////////
 // Model Instance Loaders
