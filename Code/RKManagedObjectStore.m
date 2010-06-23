@@ -108,6 +108,8 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	[self createPersistentStoreCoordinator];
 	_managedObjectContext = [[NSManagedObjectContext alloc] init];
 	[_managedObjectContext setPersistentStoreCoordinator:_persistentStoreCoordinator];
+	[_managedObjectContext setUndoManager:nil];
+	[_managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
 }
 
 /**
