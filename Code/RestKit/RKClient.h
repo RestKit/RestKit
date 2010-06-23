@@ -88,6 +88,11 @@
 - (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback;
 
 /**
+ * Load a locally-cached resource via the specified HTTP method and invoke a callback with the resulting payload
+ */
+- (RKRequest*)load:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback;
+
+/**
  * Fetch a resource via an HTTP GET and invoke a callback with the result
  */
 - (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;

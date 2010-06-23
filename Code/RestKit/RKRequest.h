@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 #import "RKRequestSerializable.h"
 
 typedef enum RKRequestMethod {
@@ -30,6 +31,7 @@ typedef enum RKRequestMethod {
 	NSString* _username;
 	NSString* _password;
 	RKRequestMethod _method;
+	NSFetchRequest* _fetchRequest;
 }
 
 /**
@@ -80,6 +82,11 @@ typedef enum RKRequestMethod {
  * The HTTP verb the request is sent via
  */
 @property(nonatomic, assign) RKRequestMethod method;
+
+/**
+ * NSFetchRequest used to obtain locally cached objects
+ */
+@property(nonatomic, retain) NSFetchRequest* fetchRequest;
 
 
 ////////////////////////////////////////////////////////////////////////////////

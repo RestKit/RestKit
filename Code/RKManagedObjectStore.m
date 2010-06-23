@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
+static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 
 @interface RKManagedObjectStore (Private)
 - (void)createPersistentStoreCoordinator;
@@ -29,7 +30,9 @@ NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectS
 		_managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];
 		[self createPersistentStoreCoordinator];
 		_managedObjectContext = [[NSManagedObjectContext alloc] init];
-		_managedObjectContext.persistentStoreCoordinator = _persistentStoreCoordinator;
+		[_managedObjectContext setPersistentStoreCoordinator:_persistentStoreCoordinator];
+		[_managedObjectContext setUndoManager:nil];
+		[_managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
 	}
 	
 	return self;
@@ -104,7 +107,46 @@ NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectS
 	[_managedObjectContext release];
 	[self createPersistentStoreCoordinator];
 	_managedObjectContext = [[NSManagedObjectContext alloc] init];
-	_managedObjectContext.persistentStoreCoordinator = _persistentStoreCoordinator;
+	[_managedObjectContext setPersistentStoreCoordinator:_persistentStoreCoordinator];
+	[_managedObjectContext setUndoManager:nil];
+	[_managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
+}
+
+/**
+ *
+ *	Override managedObjectContext getter to ensure we return a separate context
+ *	for each NSThread.
+ *
+ */
+-(NSManagedObjectContext*)managedObjectContext {
+	if ([NSThread isMainThread]) {
+		return _managedObjectContext;
+	} else {
+		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+		NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:kRKManagedObjectContextKey];
+		if (!backgroundThreadContext) {
+			backgroundThreadContext = [[NSManagedObjectContext alloc] init];
+			[backgroundThreadContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
+			[backgroundThreadContext setUndoManager:nil];
+			[backgroundThreadContext setMergePolicy:NSOverwriteMergePolicy];
+			
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mergeChanges:)
+														 name:NSManagedObjectContextDidSaveNotification
+													   object:backgroundThreadContext];
+		
+			[threadDictionary setObject:backgroundThreadContext forKey:kRKManagedObjectContextKey];
+			
+			[backgroundThreadContext release];
+		}
+		return backgroundThreadContext;
+	}
+}
+
+- (void)mergeChanges:(NSNotification *)notification {	
+	// Merge changes into the main context on the main thread
+	[_managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
+											withObject:notification
+										 waitUntilDone:YES];  
 }
 
 #pragma mark -

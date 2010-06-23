@@ -14,30 +14,9 @@
 @class RKManagedModel;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// Object Cacheing Support
-
-@protocol RKManagedModelObjectCache
-
-/**
- * Return a set of objects locally cached in the Core Data store for a given
- * resource path. The default implementation does nothing, subclasses are responsible
- * for parsing the object path and querying the managed object context.
- */
-+ (NSArray*)objectsForResourcePath:(NSString*)resourcePath;
-
-/**
- * Return a locally cached object in the Core Data store for a given
- * resource path. The default implementation does nothing, subclasses are responsible
- * for parsing the object path and querying the managed object context.
- */
-+ (RKManagedModel*)objectForResourcePath:(NSString*)resourcePath;
-
-@end
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
 // RestKit managed models
 
-@interface RKManagedModel : NSManagedObject <RKModelMappable, RKManagedModelObjectCache> {
+@interface RKManagedModel : NSManagedObject <RKModelMappable> {
 	
 }
 
@@ -58,11 +37,9 @@
  */
 + (NSFetchRequest*)request;
 
-// TODO: objectsWithRequest
-+ (NSArray*)collectionWithRequest:(NSFetchRequest*)request;
++ (NSArray*)objectsWithRequest:(NSFetchRequest*)request;
 + (id)objectWithRequest:(NSFetchRequest*)request;
-// TODO: objectsWithPredicate
-+ (NSArray*)collectionWithPredicate:(NSPredicate*)predicate;
++ (NSArray*)objectsWithPredicate:(NSPredicate*)predicate;
 + (id)objectWithPredicate:(NSPredicate*)predicate;
 + (NSArray*)allObjects;
 
@@ -73,6 +50,17 @@
  *	Creates a new OTManagedModel and inserts it into the managedObjectContext.
  */
 + (id)newObject;
+
+/**
+ *	Retrieves a model object from the appropriate context using the objectId
+ */
++ (NSManagedObject*)objectWithId:(NSManagedObjectID*)objectId;
+
+/**
+ *	Retrieves a array of model objects from the appropriate context using
+ *	an array of NSManagedObjectIDs
+ */
++ (NSArray*)objectsWithIds:(NSArray*)objectIds;
 
 /**
  *	The primaryKey property mapping, defaults to @"railsID"
@@ -124,19 +112,13 @@
  */
 + (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
 
-- (NSDictionary*)elementNamesAndPropertyValues;
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// Instance Methods
-
-// saves the managed object context
-// TODO: Gets moved off
-- (NSError*)save;
-
 /**
- * Deletes the object from the managed object context
+ * Return a fetch request used for querying locally cached objects in the Core Data
+ * store for a given resource path. The default implementation does nothing, so subclasses
+ * are responsible for parsing the object path and building a valid fetch request.
  */
-// TODO: Gets moved off
-- (void)destroy;
++ (NSFetchRequest*)fetchRequestForResourcePath:(NSString*)resourcePath;
+
+- (NSDictionary*)elementNamesAndPropertyValues;
 
 @end

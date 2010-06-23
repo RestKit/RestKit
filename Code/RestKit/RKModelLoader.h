@@ -16,13 +16,13 @@
  * Invoked when a request sent through the model manager loads a collection of models. The model will be nil if the request was
  * not dispatched with a model object instance
  */
-- (void)modelLoaderRequest:(RKRequest*)request didLoadModels:(NSArray*)models response:(RKResponse*)response model:(id<RKModelMappable>)model;
+- (void)modelLoaderRequest:(RKRequest*)request didLoadModels:(NSArray*)models response:(RKResponse*)response modelObject:(id<RKModelMappable>)modelObject;
 
 /**
  * Invoked when a request sent through the model manager encounters an error. The model will be nil if the request was
  * not dispatched with a model object instance
  */
-- (void)modelLoaderRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response model:(id<RKModelMappable>)model;
+- (void)modelLoaderRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response modelObject:(id<RKModelMappable>)modelObject;
 
 @end
 

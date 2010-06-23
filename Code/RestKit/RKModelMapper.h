@@ -29,7 +29,6 @@
 @interface RKModelMapper : NSObject {
 	NSMutableDictionary* _elementToClassMappings;
 	RKMappingFormat _format;
-	NSObject<RKMappingFormatParser>* _parser;
 	RKObjectPropertyInspector* _inspector;
 	NSArray* _dateFormats;
 	NSTimeZone* _remoteTimeZone;
@@ -40,12 +39,6 @@
  * The format the mapper is using
  */
 @property(nonatomic, assign) RKMappingFormat format;
-
-/**
- * The object responsible for parsing string data into a mappable
- * dictionary
- */
-@property(nonatomic, retain) NSObject<RKMappingFormatParser>* parser;
 
 /**
  * An array of date format strings to attempt to parse mapped date properties with

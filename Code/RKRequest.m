@@ -14,7 +14,8 @@
 @implementation RKRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, callback = _callback, additionalHTTPHeaders = _additionalHTTPHeaders,
-			params = _params, userData = _userData, username = _username, password = _password, method = _method;
+			params = _params, userData = _userData, username = _username, password = _password, method = _method,
+			fetchRequest = _fetchRequest;
 
 + (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL delegate:delegate callback:callback];
@@ -51,6 +52,7 @@
 	[_additionalHTTPHeaders release];
 	[_username release];
 	[_password release];
+	[_fetchRequest release];
 	[super dealloc];
 }
 

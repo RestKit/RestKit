@@ -15,6 +15,7 @@
 // Default format string for date and time objects from Rails
 static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'HH:mm:ss'Z'"; // 2009-08-08T17:23:59Z
 static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
+static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatParser";
 
 @interface RKModelMapper (Private)
 
@@ -39,7 +40,6 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 @implementation RKModelMapper
 
 @synthesize format = _format;
-@synthesize parser = _parser;
 @synthesize dateFormats = _dateFormats;
 @synthesize remoteTimeZone = _remoteTimeZone;
 @synthesize localTimeZone = _localTimeZone;
@@ -61,7 +61,6 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 
 - (void)dealloc {
 	[_elementToClassMappings release];
-	[_parser release];
 	[_inspector release];
 	[_dateFormats release];
 	[super dealloc];
@@ -72,21 +71,30 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 }
 
 - (void)setFormat:(RKMappingFormat)format {
-	_format = format;
-	if (nil == self.parser) {
-		if (RKMappingFormatJSON == _format) {
-			self.parser = [[[RKMappingFormatJSONParser alloc] init] autorelease];
-		} else if (RKMappingFormatXML == _format) {
-			[NSException raise:@"No XML parser is available" format:@"RestKit does not currently have XML support. Use JSON."];
-		}
+	if (format == RKMappingFormatXML) {
+		[NSException raise:@"No XML parser is available" format:@"RestKit does not currently have XML support. Use JSON."];
 	}
+	_format = format;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Mapping from a string
 
+- (id)parseObjectFromString:(NSString*)string {
+	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+	NSObject<RKMappingFormatParser>* parser = [threadDictionary objectForKey:kRKModelMapperMappingFormatParserKey];
+	if (!parser) {
+		if (_format == RKMappingFormatJSON) {
+			parser = [[RKMappingFormatJSONParser alloc] init];
+			[threadDictionary setObject:parser forKey:kRKModelMapperMappingFormatParserKey];
+			[parser release];
+		}
+	}
+	return [parser objectFromString:string];
+}
+
 - (id)mapFromString:(NSString*)string {
-	id object = [_parser objectFromString:string];
+	id object = [self parseObjectFromString:string];
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		return [self mapModelFromDictionary:(NSDictionary*)object];
 	} else if ([object isKindOfClass:[NSArray class]]) {
@@ -102,7 +110,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 }
 
 - (void)mapModel:(id)model fromString:(NSString*)string {
-	id object = [_parser objectFromString:string];
+	id object = [self parseObjectFromString:string];
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		[self mapModel:model fromDictionary:object];
 	} else if (nil == object) {

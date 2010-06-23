@@ -19,6 +19,21 @@
 	return [[[RKModelManager manager] objectStore] managedObjectContext];
 }
 
++ (NSManagedObject*)objectWithId:(NSManagedObjectID*)objectId {
+	return [[self managedObjectContext] objectWithID:objectId];
+}
+
++ (NSArray*)objectsWithIds:(NSArray*)objectIds {
+	NSMutableArray* objects = [[NSMutableArray alloc] init];
+	for (NSManagedObjectID* objectId in objectIds) {
+		[objects addObject:[[self managedObjectContext] objectWithID:objectId]];
+	}
+	NSArray* objectArray = [NSArray arrayWithArray:objects];
+	[objects release];
+	
+	return objectArray;
+}
+
 + (NSEntityDescription*)entity {
 	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
 	return [NSEntityDescription entityForName:className inManagedObjectContext:[self managedObjectContext]];
@@ -32,31 +47,31 @@
 	return request;
 }
 
-+ (NSArray*)collectionWithRequest:(NSFetchRequest*)request {
++ (NSArray*)objectsWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
 //	NSLog(@"About to perform a collection request: %@", request);
-	NSArray* collection = [[self managedObjectContext] executeFetchRequest:request error:&error];
+	NSArray* objects = [[self managedObjectContext] executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
 		// TODO: Error handling
 	}
-	return collection;
+	return objects;
 }
 
 + (id)objectWithRequest:(NSFetchRequest*)request {
 	[request setFetchLimit:1];
-	NSArray* collection = [self collectionWithRequest:request];
-	if ([collection count] == 0) {
+	NSArray* objects = [self objectsWithRequest:request];
+	if ([objects count] == 0) {
 		return nil;
 	} else {
-		return [collection objectAtIndex:0];
+		return [objects objectAtIndex:0];
 	}	
 }
 
-+ (NSArray*)collectionWithPredicate:(NSPredicate*)predicate {
++ (NSArray*)objectsWithPredicate:(NSPredicate*)predicate {
 	NSFetchRequest* request = [self request];
 	[request setPredicate:predicate];
-	return [self collectionWithRequest:request];
+	return [self objectsWithRequest:request];
 }
 
 + (id)objectWithPredicate:(NSPredicate*)predicate {
@@ -66,7 +81,7 @@
 }
 
 + (NSArray*)allObjects {
-	return [self collectionWithPredicate:nil];
+	return [self objectsWithPredicate:nil];
 }
 
 + (NSUInteger)count {
@@ -85,11 +100,7 @@
 #pragma mark -
 #pragma mark Object Cacheing
 
-+ (NSArray*)objectsForResourcePath:(NSString*)resourcePath {
-	return nil;
-}
-
-+ (RKManagedModel*)objectForResourcePath:(NSString*)resourcePath {
++ (NSFetchRequest*)fetchRequestForResourcePath:(NSString*)resourcePath {
 	return nil;
 }
 
@@ -209,22 +220,6 @@
 	}
 	
 	return resourceParams;
-}
-
-// TODO: Gets moved off of the model itself.
-- (NSError*)save {
-	NSError* error = nil;
-	[[self managedObjectContext] save:&error];
-	if (nil != error) {
-		NSLog(@"Error saving persistent store: %@", error);
-	}
-	return error;
-}
-
-// TODO: Delete on the server also? See above.
-// TODO: Gets moved off of the model itself...
-- (void)destroy {	
-	[[self managedObjectContext] deleteObject:self];
 }
 
 @end

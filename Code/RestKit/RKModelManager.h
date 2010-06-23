@@ -97,12 +97,19 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * Fetch a resource via a specified HTTP method
  */
-- (RKRequest*)loadModels:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
+- (RKRequest*)loadModels:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 /**
  * Fetch a resource via an HTTP GET with a dictionary of parameters and invoke a callback with the models mapped from the payload
  */
 - (RKRequest*)loadModels:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
+
+/**
+ * Fetch methods for clients that implement local caching
+ */
+- (RKRequest*)loadModels:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
+
+- (RKRequest*)loadModels:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKModelLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
 // Model Mappable object helpers
