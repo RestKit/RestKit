@@ -148,7 +148,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	// Merge changes into the main context on the main thread
 	[_managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
 											withObject:notification
-										 waitUntilDone:YES];  
+										 waitUntilDone:YES];
 }
 
 #pragma mark -

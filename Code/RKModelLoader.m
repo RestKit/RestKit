@@ -15,7 +15,7 @@
 
 @implementation RKModelLoader
 
-@synthesize mapper = _mapper, delegate = _delegate, callback = _callback;
+@synthesize mapper = _mapper, delegate = _delegate, callback = _callback, fetchRequest = _fetchRequest;
 
 + (id)loaderWithMapper:(RKModelMapper*)mapper {
 	return [[[self alloc] initWithMapper:mapper] autorelease];
@@ -68,20 +68,21 @@
 	NSArray* models = [dictionary objectForKey:@"models"];
 	[dictionary release];
 	
-	// Since we're passing NSManagedObjects across threads, we need to ensure we're only passing NSManagedObjectIDs
-	// and not the objects themselves.  Note that all modelLoaderDelegates must respect this contract and load
-	// their model objects from a proper context using objectWithId:
-	NSMutableArray* modelIds = [[NSMutableArray alloc] init];
-	for (NSObject* object in models) {
-		if ([object isKindOfClass:[RKManagedModel class]]) {
-			[modelIds addObject:[(RKManagedModel*)object objectID]];
+	// NOTE: The models dictionary may contain NSManagedObjectID's from persistent objects
+	// that were model mapped on a background thread. We look up the objects by ID and then
+	// notify the delegate that the operation has completed.
+	NSMutableArray* objects = [NSMutableArray arrayWithCapacity:[models count]];
+	RKManagedObjectStore* objectStore = [[RKModelManager manager] objectStore];
+	for (id object in models) {
+		if ([object isKindOfClass:[NSManagedObjectID class]]) {
+			[objects addObject:[objectStore objectWithID:(NSManagedObjectID*)object]];
 		} else {
-			[modelIds addObject:object];
+			[objects addObject:object];
 		}
 	}
 	
 	RKRequest* request = response.request;
-	[_delegate modelLoaderRequest:request didLoadModels:modelIds response:response modelObject:(id<RKModelMappable>)request.userData];
+	[_delegate modelLoaderRequest:request didLoadModels:[NSArray arrayWithArray:objects] response:response modelObject:(id<RKModelMappable>)request.userData];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
@@ -106,49 +107,59 @@
 	[response release];
 }
 
+
 - (void)processLoadModelsInBackground:(RKResponse *)response {
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
+	RKManagedObjectStore* objectStore = [[RKModelManager manager] objectStore];
 	
 	// If the request was sent through a model, we map the results back into that object
 	// TODO: Note that this assumption may not work in all cases, other approaches?
 	// The issue is that not specifying the object results in new objects being created
 	// rather than mapping back into the original. This is a problem for create (POST) operations.
-	id mapperResult = nil;
-	id mainThreadModel = response.request.userData;	
+	NSArray* results = nil;
+	id mainThreadModel = response.request.userData;	// The object dispatching the request
 	if (mainThreadModel) {
 		if ([mainThreadModel isKindOfClass:[NSManagedObject class]]) {
-			NSManagedObjectID* modelId = [(NSManagedObject*)mainThreadModel objectID];
-			id backgroundThreadModel = [RKManagedModel objectWithId:modelId];
+			NSManagedObjectID* modelID = [(NSManagedObject*)mainThreadModel objectID];
+			NSManagedObject* backgroundThreadModel = [objectStore objectWithID:modelID];
 			[_mapper mapModel:backgroundThreadModel fromString:[response bodyAsString]];
-			mapperResult = modelId;
+			results = [NSArray arrayWithObject:backgroundThreadModel];
 		} else {
 			[_mapper mapModel:mainThreadModel fromString:[response bodyAsString]];
-			mapperResult = mainThreadModel;
+			results = [NSArray arrayWithObject:mainThreadModel];
 		}
 	} else {
-		mapperResult = [_mapper mapFromString:[response bodyAsString]];
+		id result = [_mapper mapFromString:[response bodyAsString]];
+		if ([result isKindOfClass:[NSArray class]]) {
+			results = (NSArray*)result;
+		} else {
+			results = [NSArray arrayWithObject:result];
+		}
 		
-		NSFetchRequest* fetchRequest = response.request.fetchRequest;
-		if (fetchRequest) {
-			NSArray* cachedObjects = [RKManagedModel objectsWithRequest:fetchRequest];
+		if (self.fetchRequest) {
+			// TODO: Get rid of objectsWithRequest on 
+			NSArray* cachedObjects = [RKManagedModel objectsWithRequest:self.fetchRequest];
 			
-			for (RKManagedModel* object in cachedObjects) {
+			for (id object in cachedObjects) {
 				if ([object isKindOfClass:[RKManagedModel class]]) {
-					if (NO == [mapperResult containsObject:object]) {
-						NSLog(@"About to destroy: %@", object);
-						[[RKManagedModel managedObjectContext] deleteObject:object];
+					if (NO == [results containsObject:object]) {
+						[[objectStore managedObjectContext] deleteObject:object];
 					}
 				}
 			}
 		}
 	}
-		
-	NSArray* models = nil;
-	if ([mapperResult isKindOfClass:[NSArray class]]) {
-		models = mapperResult;
-	} else if ([mapperResult conformsToProtocol:@protocol(RKModelMappable)] ||
-			   [mapperResult isKindOfClass:[NSManagedObjectID class]]) {
-		models = [NSArray arrayWithObject:mapperResult];
+	
+	// NOTE: Passing Core Data objects across threads is not safe. 
+	// Iterate over each model and coerce Core Data objects into ID's to pass across the threads.
+	// The object ID's will be deserialized back into objects on the main thread before the delegate is called back
+	NSMutableArray* models = [NSMutableArray arrayWithCapacity:[results count]];
+	for (id object in models) {
+		if ([object isKindOfClass:[NSManagedObject class]]) {
+			[models addObject:[(NSManagedObject*)object objectID]];
+		} else {
+			[models addObject:object];			 
+		}
 	}
 		
 	NSError* error = [[[RKModelManager manager] objectStore] save];
@@ -159,7 +170,7 @@
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", models, @"models", nil] retain];
 		[self performSelectorOnMainThread:@selector(informDelegateOfModelLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];
 	}
-	
+
 	[pool release];
 }
 
