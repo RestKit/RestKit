@@ -154,7 +154,7 @@
 	// Iterate over each model and coerce Core Data objects into ID's to pass across the threads.
 	// The object ID's will be deserialized back into objects on the main thread before the delegate is called back
 	NSMutableArray* models = [NSMutableArray arrayWithCapacity:[results count]];
-	for (id object in models) {
+	for (id object in results) {
 		if ([object isKindOfClass:[NSManagedObject class]]) {
 			[models addObject:[(NSManagedObject*)object objectID]];
 		} else {
