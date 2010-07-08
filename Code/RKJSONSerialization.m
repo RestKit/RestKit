@@ -32,9 +32,22 @@
 	return @"application/json";
 }
 
+- (NSString*)JSONRepresentation {
+	return [_object JSONRepresentation];
+}
 
 - (NSData*)HTTPBody {	
-	return [[_object JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding];
+	return [[self JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (BOOL)isEqual:(id)object {
+	if ([object isKindOfClass:[NSString class]]) {
+		return [[self JSONRepresentation] isEqualToString:object];
+	} if ([object respondsToSelector:@selector(JSONRepresentation)]) {
+		return [[self JSONRepresentation] isEqualToString:[(NSObject*)object JSONRepresentation]];
+	} else {
+		return NO;
+	}
 }
 
 @end

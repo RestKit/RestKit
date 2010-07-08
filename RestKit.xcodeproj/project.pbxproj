@@ -10,6 +10,8 @@
 		2520776E113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */; };
 		25232D4F11E62C470048F9B4 /* RKJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 25232D4D11E62C470048F9B4 /* RKJSONSerialization.h */; };
 		25232D5011E62C470048F9B4 /* RKJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25232D4E11E62C470048F9B4 /* RKJSONSerialization.m */; };
+		25232F8811E6476B0048F9B4 /* NSObject+RKJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 25232F8611E6476B0048F9B4 /* NSObject+RKJSONSerialization.h */; };
+		25232F8911E6476B0048F9B4 /* NSObject+RKJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25232F8711E6476B0048F9B4 /* NSObject+RKJSONSerialization.m */; };
 		2525EBEB106961DD0069EBED /* RKManagedObjectStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525EBE9106961DD0069EBED /* RKManagedObjectStore.h */; };
 		2525EBEC106961DD0069EBED /* RKManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */; };
 		2525F9A0106C0FF40069EBED /* RKNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525F99E106C0FF40069EBED /* RKNotifications.h */; };
@@ -163,6 +165,8 @@
 		2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+RKRequestSerializationSpec.m"; sourceTree = "<group>"; };
 		25232D4D11E62C470048F9B4 /* RKJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKJSONSerialization.h; path = Code/RestKit/RKJSONSerialization.h; sourceTree = "<group>"; };
 		25232D4E11E62C470048F9B4 /* RKJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKJSONSerialization.m; path = Code/RKJSONSerialization.m; sourceTree = "<group>"; };
+		25232F8611E6476B0048F9B4 /* NSObject+RKJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+RKJSONSerialization.h"; path = "Code/RestKit/NSObject+RKJSONSerialization.h"; sourceTree = "<group>"; };
+		25232F8711E6476B0048F9B4 /* NSObject+RKJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+RKJSONSerialization.m"; path = "Code/NSObject+RKJSONSerialization.m"; sourceTree = "<group>"; };
 		2525EBE9106961DD0069EBED /* RKManagedObjectStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKManagedObjectStore.h; path = Code/RestKit/RKManagedObjectStore.h; sourceTree = "<group>"; };
 		2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKManagedObjectStore.m; path = Code/RKManagedObjectStore.m; sourceTree = "<group>"; };
 		2525F99E106C0FF40069EBED /* RKNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKNotifications.h; path = Code/RestKit/RKNotifications.h; sourceTree = "<group>"; };
@@ -408,6 +412,8 @@
 				256FE8D6112EE5310077F340 /* RestKit.h */,
 				25B86E09115BEB71009761A1 /* Errors.h */,
 				25B86EDD115BEFE8009761A1 /* Errors.m */,
+				25232F8611E6476B0048F9B4 /* NSObject+RKJSONSerialization.h */,
+				25232F8711E6476B0048F9B4 /* NSObject+RKJSONSerialization.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -531,6 +537,7 @@
 				739573DA11BC15F800F44055 /* SBJsonParser.h in Headers */,
 				739573DB11BC15F800F44055 /* SBJsonWriter.h in Headers */,
 				25232D4F11E62C470048F9B4 /* RKJSONSerialization.h in Headers */,
+				25232F8811E6476B0048F9B4 /* NSObject+RKJSONSerialization.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,6 +736,7 @@
 				739573C611BC15E700F44055 /* SBJsonParser.m in Sources */,
 				739573C711BC15E700F44055 /* SBJsonWriter.m in Sources */,
 				25232D5011E62C470048F9B4 /* RKJSONSerialization.m in Sources */,
+				25232F8911E6476B0048F9B4 /* NSObject+RKJSONSerialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
