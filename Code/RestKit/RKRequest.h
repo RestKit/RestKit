@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "RKRequestSerializable.h"
+#import "RKJSONSerialization.h"
 
 typedef enum RKRequestMethod {
 	RKRequestMethodGET = 0,
