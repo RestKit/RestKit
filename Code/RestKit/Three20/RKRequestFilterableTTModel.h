@@ -7,7 +7,7 @@
 //
 
 #import "RKRequestTTModel.h"
-#import "RKSearchEngine.h"
+#import <RestKit/RKSearchEngine.h>
 
 /**
  * Provides an interface for searching and filtering a collection
