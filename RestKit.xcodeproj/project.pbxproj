@@ -12,6 +12,16 @@
 		25232D5011E62C470048F9B4 /* RKJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25232D4E11E62C470048F9B4 /* RKJSONSerialization.m */; };
 		25232F8811E6476B0048F9B4 /* NSObject+RKJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 25232F8611E6476B0048F9B4 /* NSObject+RKJSONSerialization.h */; };
 		25232F8911E6476B0048F9B4 /* NSObject+RKJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25232F8711E6476B0048F9B4 /* NSObject+RKJSONSerialization.m */; };
+		2523362C11E7A1360048F9B4 /* RKRequestFilterableTTModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 2523362411E7A1360048F9B4 /* RKRequestFilterableTTModel.h */; };
+		2523362D11E7A1360048F9B4 /* RKRequestFilterableTTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2523362511E7A1360048F9B4 /* RKRequestFilterableTTModel.m */; };
+		2523362E11E7A1360048F9B4 /* RKRequestModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 2523362611E7A1360048F9B4 /* RKRequestModel.h */; };
+		2523362F11E7A1360048F9B4 /* RKRequestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2523362711E7A1360048F9B4 /* RKRequestModel.m */; };
+		2523363011E7A1360048F9B4 /* RKRequestTTModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 2523362811E7A1360048F9B4 /* RKRequestTTModel.h */; };
+		2523363111E7A1360048F9B4 /* RKRequestTTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2523362911E7A1360048F9B4 /* RKRequestTTModel.m */; };
+		2523363311E7A1360048F9B4 /* RKSearchEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2523362B11E7A1360048F9B4 /* RKSearchEngine.m */; };
+		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		2523366011E7A4E70048F9B4 /* Three20.h in Headers */ = {isa = PBXBuildFile; fileRef = 2523365F11E7A4E70048F9B4 /* Three20.h */; };
+		2523367711E7A6800048F9B4 /* RKSearchEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 2523367611E7A6800048F9B4 /* RKSearchEngine.h */; };
 		2525EBEB106961DD0069EBED /* RKManagedObjectStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525EBE9106961DD0069EBED /* RKManagedObjectStore.h */; };
 		2525EBEC106961DD0069EBED /* RKManagedObjectStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */; };
 		2525F9A0106C0FF40069EBED /* RKNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = 2525F99E106C0FF40069EBED /* RKNotifications.h */; };
@@ -167,6 +177,16 @@
 		25232D4E11E62C470048F9B4 /* RKJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKJSONSerialization.m; path = Code/RKJSONSerialization.m; sourceTree = "<group>"; };
 		25232F8611E6476B0048F9B4 /* NSObject+RKJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+RKJSONSerialization.h"; path = "Code/RestKit/NSObject+RKJSONSerialization.h"; sourceTree = "<group>"; };
 		25232F8711E6476B0048F9B4 /* NSObject+RKJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+RKJSONSerialization.m"; path = "Code/NSObject+RKJSONSerialization.m"; sourceTree = "<group>"; };
+		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2523362411E7A1360048F9B4 /* RKRequestFilterableTTModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKRequestFilterableTTModel.h; path = Code/RestKit/Three20/RKRequestFilterableTTModel.h; sourceTree = "<group>"; };
+		2523362511E7A1360048F9B4 /* RKRequestFilterableTTModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKRequestFilterableTTModel.m; path = Code/Three20/RKRequestFilterableTTModel.m; sourceTree = "<group>"; };
+		2523362611E7A1360048F9B4 /* RKRequestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKRequestModel.h; path = Code/RestKit/Three20/RKRequestModel.h; sourceTree = "<group>"; };
+		2523362711E7A1360048F9B4 /* RKRequestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKRequestModel.m; path = Code/Three20/RKRequestModel.m; sourceTree = "<group>"; };
+		2523362811E7A1360048F9B4 /* RKRequestTTModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKRequestTTModel.h; path = Code/RestKit/Three20/RKRequestTTModel.h; sourceTree = "<group>"; };
+		2523362911E7A1360048F9B4 /* RKRequestTTModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKRequestTTModel.m; path = Code/Three20/RKRequestTTModel.m; sourceTree = "<group>"; };
+		2523362B11E7A1360048F9B4 /* RKSearchEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKSearchEngine.m; path = Code/RKSearchEngine.m; sourceTree = "<group>"; };
+		2523365F11E7A4E70048F9B4 /* Three20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Three20.h; path = Code/RestKit/Three20.h; sourceTree = "<group>"; };
+		2523367611E7A6800048F9B4 /* RKSearchEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKSearchEngine.h; path = Code/RestKit/RKSearchEngine.h; sourceTree = "<group>"; };
 		2525EBE9106961DD0069EBED /* RKManagedObjectStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKManagedObjectStore.h; path = Code/RestKit/RKManagedObjectStore.h; sourceTree = "<group>"; };
 		2525EBEA106961DD0069EBED /* RKManagedObjectStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKManagedObjectStore.m; path = Code/RKManagedObjectStore.m; sourceTree = "<group>"; };
 		2525F99E106C0FF40069EBED /* RKNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKNotifications.h; path = Code/RestKit/RKNotifications.h; sourceTree = "<group>"; };
@@ -260,6 +280,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2523360311E79F090048F9B4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3F6C39A310FE5C95008F47C5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -289,6 +317,7 @@
 			children = (
 				D2AAC07E0554694100DB518D /* libRestKit.a */,
 				3F6C39A510FE5C95008F47C5 /* UI Spec.app */,
+				2523360511E79F090048F9B4 /* libRestKitThree20.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -299,6 +328,7 @@
 				739573BB11BC15CD00F44055 /* JSON */,
 				256FEA54112EF35C0077F340 /* Core */,
 				256FEA5C112EF3870077F340 /* Modeling */,
+				2523362211E7A1080048F9B4 /* Three20 */,
 				3F6C3A9210FE750E008F47C5 /* Specs */,
 				2580B1AA102F72D700832D07 /* Libraries */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
@@ -319,6 +349,20 @@
 				255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2523362211E7A1080048F9B4 /* Three20 */ = {
+			isa = PBXGroup;
+			children = (
+				2523362411E7A1360048F9B4 /* RKRequestFilterableTTModel.h */,
+				2523362511E7A1360048F9B4 /* RKRequestFilterableTTModel.m */,
+				2523362611E7A1360048F9B4 /* RKRequestModel.h */,
+				2523362711E7A1360048F9B4 /* RKRequestModel.m */,
+				2523362811E7A1360048F9B4 /* RKRequestTTModel.h */,
+				2523362911E7A1360048F9B4 /* RKRequestTTModel.m */,
+				2523365F11E7A4E70048F9B4 /* Three20.h */,
+			);
+			name = Three20;
 			sourceTree = "<group>";
 		};
 		255DE05B10FFA04200A85891 /* Models */ = {
@@ -414,6 +458,8 @@
 				25B86EDD115BEFE8009761A1 /* Errors.m */,
 				25232F8611E6476B0048F9B4 /* NSObject+RKJSONSerialization.h */,
 				25232F8711E6476B0048F9B4 /* NSObject+RKJSONSerialization.m */,
+				2523367611E7A6800048F9B4 /* RKSearchEngine.h */,
+				2523362B11E7A1360048F9B4 /* RKSearchEngine.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -503,6 +549,17 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		2523360111E79F090048F9B4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2523362C11E7A1360048F9B4 /* RKRequestFilterableTTModel.h in Headers */,
+				2523362E11E7A1360048F9B4 /* RKRequestModel.h in Headers */,
+				2523363011E7A1360048F9B4 /* RKRequestTTModel.h in Headers */,
+				2523366011E7A4E70048F9B4 /* Three20.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D2AAC07A0554694100DB518D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -538,12 +595,30 @@
 				739573DB11BC15F800F44055 /* SBJsonWriter.h in Headers */,
 				25232D4F11E62C470048F9B4 /* RKJSONSerialization.h in Headers */,
 				25232F8811E6476B0048F9B4 /* NSObject+RKJSONSerialization.h in Headers */,
+				2523367711E7A6800048F9B4 /* RKSearchEngine.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		2523360411E79F090048F9B4 /* Three20 Support */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2523361C11E79F170048F9B4 /* Build configuration list for PBXNativeTarget "Three20 Support" */;
+			buildPhases = (
+				2523360111E79F090048F9B4 /* Headers */,
+				2523360211E79F090048F9B4 /* Sources */,
+				2523360311E79F090048F9B4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Three20 Support";
+			productName = "Three20 Support";
+			productReference = 2523360511E79F090048F9B4 /* libRestKitThree20.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		3F6C39A410FE5C95008F47C5 /* UISpec */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3F6C39AA10FE5C95008F47C5 /* Build configuration list for PBXNativeTarget "UISpec" */;
@@ -601,6 +676,7 @@
 			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* RestKit */,
+				2523360411E79F090048F9B4 /* Three20 Support */,
 				3F6C39A410FE5C95008F47C5 /* UISpec */,
 			);
 		};
@@ -657,6 +733,17 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2523360211E79F090048F9B4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2523362D11E7A1360048F9B4 /* RKRequestFilterableTTModel.m in Sources */,
+				2523362F11E7A1360048F9B4 /* RKRequestModel.m in Sources */,
+				2523363111E7A1360048F9B4 /* RKRequestTTModel.m in Sources */,
+				2523363311E7A1360048F9B4 /* RKSearchEngine.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3F6C39A210FE5C95008F47C5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -834,6 +921,62 @@
 			};
 			name = Release;
 		};
+		2523360611E79F0A0048F9B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ADDITIONAL_SDKS = "";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RestKit_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../three20/Build/Products/three20,
+					Code,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = RestKitThree20;
+			};
+			name = Debug;
+		};
+		2523360711E79F0A0048F9B4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ADDITIONAL_SDKS = "";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RestKit_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					../three20/Build/Products/three20,
+					Code,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = RestKitThree20;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		3F6C39A810FE5C95008F47C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -922,6 +1065,15 @@
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,
 				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2523361C11E79F170048F9B4 /* Build configuration list for PBXNativeTarget "Three20 Support" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2523360611E79F0A0048F9B4 /* Debug */,
+				2523360711E79F0A0048F9B4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
