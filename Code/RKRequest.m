@@ -105,7 +105,7 @@
 	NSDate* sentAt = [NSDate date];
 	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
-	RKResponse* response = [[[RKResponse alloc] initWithRestRequest:self] autorelease];
+	RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
 	_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
 }
 

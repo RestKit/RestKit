@@ -24,7 +24,7 @@
 	return self;
 }
 
-- (id)initWithRestRequest:(RKRequest*)request {
+- (id)initWithRequest:(RKRequest*)request {
 	if (self = [self init]) {
 		_request = [request retain];
 	}

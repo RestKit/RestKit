@@ -52,11 +52,10 @@
  */
 @property(nonatomic, readonly) NSError* failureError;
 
-
 /**
  * Initialize a new response object for a REST request
  */
-- (id)initWithRestRequest:(RKRequest*)request;
+- (id)initWithRequest:(RKRequest*)request;
 
 /**
  * Initializes a response object from the results of a synchronous request
