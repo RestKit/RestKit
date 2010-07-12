@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 4/26/10.
-//  Copyright 2010 GateGuru. All rights reserved.
+//  Copyright 2010 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
