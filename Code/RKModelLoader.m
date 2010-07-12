@@ -133,7 +133,9 @@
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {
-			results = [NSArray arrayWithObject:result];
+			// Using arrayWithObjects: instead of arrayWithObject:
+			// so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
+			results = [NSArray arrayWithObjects:result, nil];
 		}
 		
 		if (self.fetchRequest) {
