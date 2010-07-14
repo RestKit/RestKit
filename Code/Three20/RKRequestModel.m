@@ -183,8 +183,9 @@
 }
 
 - (void)modelsDidLoad:(NSArray*)models {
+	[models retain];
 	[_objects release];
-	_objects = [models retain];
+	_objects = models;
 	_loaded = YES;
 	
 	// NOTE: You must finish load after clearing the loadingRequest and setting the loaded flag	
@@ -206,7 +207,6 @@
 			[modelsArray addObject:object];
 		}
 	}
-	[models release];
 	
 	[self modelsDidLoad:[NSArray arrayWithArray:modelsArray]];
 	[modelsArray release];
