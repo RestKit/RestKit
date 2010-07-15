@@ -199,17 +199,7 @@
 
 // This callback is invoked after the request has been fully serviced. Finish the load here.
 - (void)modelLoaderRequest:(RKRequest*)request didLoadModels:(NSArray*)models response:(RKResponse*)response modelObject:(id<RKModelMappable>)modelObject {
-	NSMutableArray* modelsArray = [[NSMutableArray alloc] init];
-	for (NSObject* object in models) {
-		if ([object isKindOfClass:[NSManagedObjectID class]]) {
-			[modelsArray addObject:[RKManagedModel objectWithId:(NSManagedObjectID*)object]];
-		} else {
-			[modelsArray addObject:object];
-		}
-	}
-	
-	[self modelsDidLoad:[NSArray arrayWithArray:modelsArray]];
-	[modelsArray release];
+	[self modelsDidLoad:models];
 }
 
 - (void)modelLoaderRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response modelObject:(id<RKModelMappable>)modelObject {
