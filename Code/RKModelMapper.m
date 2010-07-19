@@ -225,6 +225,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			comparisonSelector = @selector(isEqualToDate:);
 		} else if ([propertyValue isKindOfClass:[NSArray class]]) {
 			comparisonSelector = @selector(isEqualToArray:);
+		} else if ([propertyValue isKindOfClass:[NSDictionary class]]) {
+			comparisonSelector = @selector(isEqualToDictionary:);
 		} else {
 			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@ (%@)", propertyName, [propertyValue class]];
 		}
