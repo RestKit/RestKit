@@ -1,33 +1,30 @@
 //
-//  RKModelManagerSpec.m
+//  RKResourceManagerSpec.m
 //  RestKit
 //
 //  Created by Blake Watters on 1/14/10.
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "UISpec.h"
-#import "dsl/UIExpectation.h"
-
-#import "RKModelManager.h"
+#import "RKSpecEnvironment.h"
+#import "RKResourceManager.h"
 #import "RKSpecResponseLoader.h"
 #import "RKHuman.h"
 
-
-@interface RKModelManagerSpec : NSObject <UISpec> {
-	RKModelManager* _modelManager;
+@interface RKResourceManagerSpec : NSObject <UISpec> {
+	RKResourceManager* _modelManager;
 	RKSpecResponseLoader* _responseLoader;
 }
 
 @end
 
-@implementation RKModelManagerSpec
+@implementation RKResourceManagerSpec
 
 - (void)beforeAll {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3000", getenv("RKREST_IP_ADDRESS")];
-	_modelManager = [RKModelManager managerWithBaseURL:localBaseURL];
+	_modelManager = [RKResourceManager managerWithBaseURL:localBaseURL];
 	_modelManager.objectStore = [[RKManagedObjectStore alloc] initWithStoreFilename:@"RKSpecs.sqlite"];
-	[_modelManager registerModel:[RKHuman class] forElementNamed:@"human"];
+	[_modelManager registerClass:[RKHuman class] forElementNamed:@"human"];
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];
 }
 
@@ -44,21 +41,21 @@
 
 - (void)itShouldHandleConnectionFailures {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3001", getenv("RKREST_IP_ADDRESS")];
-	RKModelManager* modelManager = [RKModelManager managerWithBaseURL:localBaseURL];
-	[modelManager loadModel:@"/humans/1" delegate:_responseLoader callback:@selector(loadResponse:)];
+	RKResourceManager* modelManager = [RKResourceManager managerWithBaseURL:localBaseURL];
+	[modelManager loadResource:@"/humans/1" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	[expectThat(_responseLoader.success) should:be(NO)];
 }
 
 - (void)itShouldLoadAHuman {
-	[_modelManager loadModel:@"/humans/1" delegate:_responseLoader callback:@selector(loadResponse:)];
+	[_modelManager loadResource:@"/humans/1" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	RKHuman* blake = (RKHuman*) _responseLoader.response;
 	[expectThat(blake.name) should:be(@"Blake Watters")];
 }
 
 - (void)itShouldLoadAllHumans {
-	[_modelManager loadModels:@"/humans" delegate:_responseLoader callback:@selector(loadResponse:)];
+	[_modelManager loadResource:@"/humans" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	NSArray* humans = (NSArray*) _responseLoader.response;
 	[expectThat([humans count]) should:be(4)];

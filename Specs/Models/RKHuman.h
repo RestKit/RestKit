@@ -6,10 +6,10 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKManagedModel.h"
+#import "RKManagedObject.h"
 
 
-@interface RKHuman : RKManagedModel {	
+@interface RKHuman : RKManagedObject {	
 }
 
 @property (nonatomic, retain) NSNumber* railsID;

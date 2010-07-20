@@ -1,16 +1,16 @@
 //
-//  RKModelSeeder.m
+//  RKObjectSeeder.m
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKModelSeeder.h"
+#import "RKObjectSeeder.h"
 
-@implementation RKModelSeeder
+@implementation RKObjectSeeder
 
-- (id)initWithModelManager:(RKModelManager*)manager {
+- (id)initWithResourceManager:(RKResourceManager*)manager {
 	if (self = [self init]) {
 		_manager = [manager retain];
 	}

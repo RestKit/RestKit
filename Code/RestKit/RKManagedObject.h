@@ -1,5 +1,5 @@
 //
-// RKManagedModel.h
+// RKManagedObject.h
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/09.
@@ -8,15 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "RKModelMappableProtocol.h"
-#import "RKModelManager.h"
-
-@class RKManagedModel;
+#import "RKResourceMappable.h"
+#import "RKResourceManager.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // RestKit managed models
 
-@interface RKManagedModel : NSManagedObject <RKModelMappable> {
+@interface RKManagedObject : NSManagedObject <RKResourceMappable> {
 	
 }
 
@@ -47,7 +45,7 @@
 + (NSUInteger)count;
 
 /**
- *	Creates a new OTManagedModel and inserts it into the managedObjectContext.
+ *	Creates a new managed object and inserts it into the managedObjectContext.
  */
 + (id)newObject;
 
@@ -79,19 +77,6 @@
 + (id)findByPrimaryKey:(id)value;
 
 /**
- *	Defines the properties which the OTModelMapper maps elements to
- */
-+ (NSDictionary*)elementToPropertyMappings;
-
-/**
- *	Defines the relationship properties which the OTModelMapper maps elements to
- *	@"user" => @"user" will map the @"user" element to an NSObject* property @"user"
- *	@"memberships > user" => @"users"   will map the @"user" elements in the @"memberships" element
- *				to an NSSet* property named @"users"
- */
-+ (NSDictionary*)elementToRelationshipMappings;
-
-/**
  * Returns all the XML/JSON element names for the properties of this model
  */
 + (NSArray*)elementNames;
@@ -104,6 +89,7 @@
 // The server side name of the model?
 // TODO: Should be registered on the model manager somehow...
 // TODO: Use entity name on managed model?
+// TODO: Moves to the router probably...
 + (NSString*)modelName;
 
 /**

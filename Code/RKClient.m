@@ -7,7 +7,7 @@
 //
 
 #import "RKClient.h"
-#import "RKModelLoader.h"
+#import "RKResourceLoader.h"
 #import <SystemConfiguration/SCNetworkReachability.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

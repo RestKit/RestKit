@@ -1,5 +1,5 @@
 //
-//  RKModelMapper.h
+//  RKResourceMapper.h
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKModelMappableProtocol.h"
+#import "RKResourceMappable.h"
 #import "RKObjectPropertyInspector.h"
 
 /**
@@ -26,7 +26,7 @@
 
 @end
 
-@interface RKModelMapper : NSObject {
+@interface RKResourceMapper : NSObject {
 	NSMutableDictionary* _elementToClassMappings;
 	RKMappingFormat _format;
 	RKObjectPropertyInspector* _inspector;
@@ -67,7 +67,7 @@
  * Register a mapping for a given class for an XML element with the given tag name
  * will blow up if the class does not respond to elementToPropertyMappings and elementToRelationshipMappings
  */
-- (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName;
+- (void)registerClass:(Class<RKResourceMappable>)aClass forElementNamed:(NSString*)elementName;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Core Mapping API

@@ -6,7 +6,7 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKModelMapper.h"
+#import "RKResourceMapper.h"
 #import "JSON.h"
 
 @interface RKMappingFormatJSONParser : NSObject <RKMappingFormatParser> {

@@ -1,5 +1,5 @@
 //
-//  RKModelLoader.m
+//  RKResourceLoader.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/8/09.
@@ -7,21 +7,21 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKModelLoader.h"
+#import "RKResourceLoader.h"
 #import "RKResponse.h"
-#import "RKModelManager.h"
+#import "RKResourceManager.h"
 #import "Errors.h"
-#import "RKManagedModel.h"
+#import "RKManagedObject.h"
 
-@implementation RKModelLoader
+@implementation RKResourceLoader
 
 @synthesize mapper = _mapper, delegate = _delegate, callback = _callback, fetchRequest = _fetchRequest;
 
-+ (id)loaderWithMapper:(RKModelMapper*)mapper {
++ (id)loaderWithMapper:(RKResourceMapper*)mapper {
 	return [[[self alloc] initWithMapper:mapper] autorelease];
 }
 
-- (id)initWithMapper:(RKModelMapper*)mapper {
+- (id)initWithMapper:(RKResourceMapper*)mapper {
 	if (self = [self init]) {
 		_mapper = [mapper retain];
 	}
@@ -35,13 +35,13 @@
 }
 
 - (SEL)callback {
-	return @selector(loadModelsFromResponse:);
+	return @selector(loadObjectsFromResponse:);
 }
 
 - (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
 	RKRequest* request = response.request;
 	if ([response isFailure]) {
-		[_delegate modelLoaderRequest:response.request didFailWithError:response.failureError response:response modelObject:(id<RKModelMappable>)request.userData];
+		[_delegate resourceLoadRequest:response.request didFailWithError:response.failureError response:response object:(id<RKResourceMappable>)request.userData];
 		return YES;
 	} else if ([response isError]) {
 		NSString* errorMessage = nil;
@@ -56,7 +56,7 @@
 								  nil];		
 		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
 		
-		[_delegate modelLoaderRequest:response.request didFailWithError:error response:response modelObject:(id<RKModelMappable>)request.userData];
+		[_delegate resourceLoadRequest:response.request didFailWithError:error response:response object:(id<RKResourceMappable>)request.userData];
 		return YES;
 	}
 	
@@ -72,7 +72,7 @@
 	// that were model mapped on a background thread. We look up the objects by ID and then
 	// notify the delegate that the operation has completed.
 	NSMutableArray* objects = [NSMutableArray arrayWithCapacity:[models count]];
-	RKManagedObjectStore* objectStore = [[RKModelManager manager] objectStore];
+	RKManagedObjectStore* objectStore = [[RKResourceManager manager] objectStore];
 	for (id object in models) {
 		if ([object isKindOfClass:[NSManagedObjectID class]]) {
 			[objects addObject:[objectStore objectWithID:(NSManagedObjectID*)object]];
@@ -82,7 +82,7 @@
 	}
 	
 	RKRequest* request = response.request;
-	[_delegate modelLoaderRequest:request didLoadModels:[NSArray arrayWithArray:objects] response:response modelObject:(id<RKModelMappable>)request.userData];
+	[_delegate resourceLoadRequest:request didLoadObjects:[NSArray arrayWithArray:objects] response:response object:(id<RKResourceMappable>)request.userData];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
@@ -101,7 +101,7 @@
 	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
 	
 	RKRequest* request = response.request;
-	[_delegate modelLoaderRequest:response.request didFailWithError:rkError response:response modelObject:(id<RKModelMappable>)request.userData];
+	[_delegate resourceLoadRequest:response.request didFailWithError:rkError response:response object:(id<RKResourceMappable>)request.userData];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
@@ -110,7 +110,7 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
-	RKManagedObjectStore* objectStore = [[RKModelManager manager] objectStore];
+	RKManagedObjectStore* objectStore = [[RKResourceManager manager] objectStore]; // TODO: Should probably relax singleton...
 	
 	// If the request was sent through a model, we map the results back into that object
 	// TODO: Note that this assumption may not work in all cases, other approaches?
@@ -140,10 +140,10 @@
 		
 		if (self.fetchRequest) {
 			// TODO: Get rid of objectsWithRequest on 
-			NSArray* cachedObjects = [RKManagedModel objectsWithRequest:self.fetchRequest];
+			NSArray* cachedObjects = [RKManagedObject objectsWithRequest:self.fetchRequest];
 			
 			for (id object in cachedObjects) {
-				if ([object isKindOfClass:[RKManagedModel class]]) {
+				if ([object isKindOfClass:[RKManagedObject class]]) {
 					if (NO == [results containsObject:object]) {
 						[[objectStore managedObjectContext] deleteObject:object];
 					}
@@ -164,7 +164,7 @@
 		}
 	}
 		
-	NSError* error = [[[RKModelManager manager] objectStore] save];
+	NSError* error = [[[RKResourceManager manager] objectStore] save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
 		[self performSelectorOnMainThread:@selector(informDelegateOfModelLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];
@@ -176,7 +176,7 @@
 	[pool release];
 }
 
-- (void)loadModelsFromResponse:(RKResponse*)response {
+- (void)loadObjectsFromResponse:(RKResponse*)response {
 	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {
 		// Retain the response to prevent this thread from dealloc'ing before we have finished processing
 		[response retain];

@@ -6,16 +6,16 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKModelManager.h"
+#import "RKResourceManager.h"
 
-@interface RKModelSeeder : NSObject {
-	RKModelManager* _manager;
+@interface RKObjectSeeder : NSObject {
+	RKResourceManager* _manager;
 }
 
 /**
  * Initialize a new model seeder
  */
-- (id)initWithModelManager:(RKModelManager*)manager;
+- (id)initWithResourceManager:(RKResourceManager*)manager;
 
 /**
  * Read a file from the main bundle and seed the database with its contents.

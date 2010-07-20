@@ -1,34 +1,31 @@
 //
-//  CRTransactionSpec.m
-//  Cash Register
+//  RKResourceMapperSpec.m
+//  RestKit
 //
 //  Created by Jeremy Ellison on 12/8/09.
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-
-#import "UISpec.h"
-#import "dsl/UIExpectation.h"
-
-#import "RKModelMapper.h"
+#import "RKSpecEnvironment.h"
+#import "RKResourceMapper.h"
 
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
-#import "RKModelMapperSpecModel.h"
+#import "RKResourceMapperSpecModel.h"
 
-@interface RKModelMapperSpec : NSObject <UISpec>
+@interface RKResourceMapperSpec : NSObject <UISpec>
 
 @end
 
-@implementation RKModelMapperSpec
+@implementation RKResourceMapperSpec
 
 - (void)itShouldMapFromJSON {
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_many"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_one"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
 	id result = [mapper buildModelFromString:[self jsonString]];
 	
 	[expectThat(result) shouldNot:be(nil)];
@@ -44,12 +41,12 @@
 }
 
 - (void)itShouldMapObjectsFromJSON {
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_many"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_one"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
 	NSArray* results = [mapper buildModelsFromString:[self jsonCollectionString]];
 	[expectThat([results count]) should:be(2)];
 	
@@ -67,12 +64,12 @@
 }
 
 - (void)itShouldMapFromXML {
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	mapper.format = RKMappingFormatXML;
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_many"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_one"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
 	id result = [mapper buildModelFromString:[self xmlString]];
 	
 	[expectThat(result) shouldNot:be(nil)];
@@ -88,12 +85,12 @@
 }
 
 - (void)itShouldMapObjectsFromXML {
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	mapper.format = RKMappingFormatXML;
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_many"];
-	[mapper registerModel:[RKMappableAssociation class] forElementNamed:@"has_one"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
 	NSArray* results = [mapper buildModelsFromString:[self xmlCollectionString]];
 	[expectThat([results count]) should:be(2)];
 	
@@ -111,33 +108,33 @@
 }
 
 - (void)itShouldNotUpdateNilPropertyToNil {
-	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"name"];
 	
 	[expectThat(model.name) should:be(nil)];
 }
 
 - (void)itShouldBeAbleToSetNonNilPropertiesToNil {
-	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
+	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
 	model.age = [NSNumber numberWithInt:0];
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be(nil)];
 }
 
 - (void)itShouldBeAbleToSetNilPropertiesToNonNil {
-	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be([NSNumber numberWithInt:0])];
 }
 
 - (void)itShouldBeAbleToSetNonNilNSStringPropertiesToNonNil {
-	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	
 	model.name = @"Bob";
 	[mapper updateObject:model ifNewPropertyValue:@"Will" forPropertyNamed:@"name"];
@@ -145,8 +142,8 @@
 }
 
 - (void)itShouldBeAbleToSetNonNilNSNumberPropertiesToNonNil {
-	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	
 	model.age = [NSNumber numberWithInt:16];
 	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
@@ -154,8 +151,8 @@
 }
 
 - (void)itShouldBeAbleToSetNonNilNSDatePropertiesToNonNil {
-	RKModelMapperSpecModel* model = [[RKModelMapperSpecModel alloc] autorelease];
-	RKModelMapper* mapper = [[RKModelMapper alloc] init];
+	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
+	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
 	
 	model.createdAt = [NSDate date];
 	[mapper updateObject:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
@@ -165,7 +162,7 @@
 
 @end
 
-@implementation RKModelMapperSpec (Private)
+@implementation RKResourceMapperSpec (Private)
 
 - (NSString*)jsonString {
 	return

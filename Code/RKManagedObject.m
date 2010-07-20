@@ -1,22 +1,22 @@
 //
-//  RKManagedModel.m
+//  RKManagedObject.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/09.
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-#import "RKManagedModel.h"
+#import "RKManagedObject.h"
 #import "NSString+InflectionSupport.h"
 #import <objc/runtime.h>
 
-@implementation RKManagedModel
+@implementation RKManagedObject
 
 #pragma mark -
 #pragma mark NSManagedObject helper methods
 
 + (NSManagedObjectContext*)managedObjectContext {
-	return [[[RKModelManager manager] objectStore] managedObjectContext];
+	return [[[RKResourceManager manager] objectStore] managedObjectContext];
 }
 
 + (NSManagedObject*)objectWithId:(NSManagedObjectID*)objectId {
@@ -113,6 +113,7 @@
 }
 
 // TODO: This is Rails specific. Clean up!
+// TODO: Moves to the router
 - (NSString*)resourcePathForMethod:(RKRequestMethod)method {
 	// TODO: Support an optional RKResourceAdapter class?
 	switch (method) {
@@ -129,6 +130,8 @@
 		default:
 			break;
 	}
+	
+	return nil;
 }
 
 // TODO: Would be nice to specify this via an annotation in the mappings definition...

@@ -6,12 +6,11 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKManagedModel.h"
-
+#import "RKManagedObject.h"
 
 @class RKHouse;
 
-@interface RKResident : RKManagedModel {
+@interface RKResident : RKManagedObject {
 }
 
 @property (nonatomic, retain) NSString* residableType;

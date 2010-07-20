@@ -6,12 +6,12 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKManagedModel.h"
+#import "RKManagedObject.h"
 
 
 @class RKHuman;
 
-@interface RKCat : RKManagedModel {
+@interface RKCat : RKManagedObject {
 
 }
 

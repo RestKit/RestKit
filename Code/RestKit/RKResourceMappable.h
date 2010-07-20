@@ -1,5 +1,5 @@
 /*
- *  RKModelMappableProtocol.h
+ *  RKResourceMappable.h
  *  RestKit
  *
  *  Created by Blake Watters on 8/14/09.
@@ -9,6 +9,7 @@
 
 #import "RKRequest.h"
 
+// TODO: De-emphasize this and move...
 typedef enum {
 	RKMappingFormatXML = 0,
 	RKMappingFormatJSON
@@ -18,7 +19,7 @@ typedef enum {
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes
  */
-@protocol RKModelMappable
+@protocol RKResourceMappable
 
 /**
  * Must return a dictionary containing mapping from XML element names to property accessors
@@ -42,22 +43,10 @@ typedef enum {
  */
 + (NSDictionary*)elementToRelationshipMappings;
 
-// TODO: Add an errors property. This will be populated when there are errors in the mapping.
+// TODO: Add an optional errors property. This will be populated when there are errors in the mapping.
+// TODO: resourceParams/resourceAttributes?
 
 @optional
-
-// TODO: Should the path/params stuff live on a different protocol? RKResource? RKManagedModel implements RKModelMappable. RKRailsResourceAdapter for path/params stuff
-
-/**
- * Return the resourcePath for the specified HTTP method
- */
-- (NSString*)resourcePathForMethod:(RKRequestMethod)method;
-
-/**
- * Returns <RKRequestSerializable> representation of the model parameters.
- */
-// TODO: Better method signature
-- (NSObject<RKRequestSerializable>*)resourceSerializationForMethod:(RKRequestMethod)method;
 
 /**
  * Must return a new instance of the model class ready for mapping. Used to initialize the model

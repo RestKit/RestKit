@@ -7,14 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKModelLoader.h"
+#import "RKResourceLoader.h"
 
-@interface RKSpecResponseLoader : NSObject <RKModelLoaderDelegate> {
+@interface RKSpecResponseLoader : NSObject <RKResourceLoaderDelegate> {
 	BOOL _awaitingResponse;
 	BOOL _success;
 	id _response;
 	NSError* _failureError;
 	NSString* _errorMessage;
+	NSTimeInterval _timeout;
 }
 
 // The object that was loaded from the web request
@@ -28,6 +29,8 @@
 
 // The error message returned by the server
 @property (nonatomic, readonly) NSString* errorMessage;
+
+@property (nonatomic, assign)	NSTimeInterval timeout;
 
 // Wait for a response to load
 - (void)waitForResponse;

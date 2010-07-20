@@ -15,6 +15,16 @@
 @synthesize failureError = _failureError;
 @synthesize errorMessage = _errorMessage;
 @synthesize success = _success;
+@synthesize timeout = _timeout;
+
+- (id)init {
+	if (self = [super init]) {
+		_timeout = 10;
+		_awaitingResponse = NO;
+	}
+	
+	return self;
+}
 
 - (void)dealloc {
 	[_response release];
@@ -25,9 +35,14 @@
 
 - (void)waitForResponse {
 	_awaitingResponse = YES;
-	while (_awaitingResponse == YES) {
-		[[NSRunLoop currentRunLoop] runUntilDate:
-		 [NSDate dateWithTimeIntervalSinceNow:1.0]];
+	NSDate* startDate = [NSDate date];
+	
+	while (_awaitingResponse) {		
+		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
+			[NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
+			_awaitingResponse = NO;
+		}
 	}
 }
 
@@ -38,7 +53,11 @@
 	_success = YES;
 }
 
-- (void)modelLoaderRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response model:(id<RKModelMappable>)model {
+- (void)resourceLoadRequest:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKResourceMappable>)object {
+	[self loadResponse:response];
+}
+
+- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKResourceMappable>)object {
 	_awaitingResponse = NO;
 	_success = NO;
 	_failureError = [error retain];

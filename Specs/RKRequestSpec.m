@@ -6,9 +6,7 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "UISpec.h"
-#import "dsl/UIExpectation.h"
-
+#import "RKSpecEnvironment.h"
 #import "RKRequest.h"
 
 @interface RKRequestSpec : NSObject <UISpec> {

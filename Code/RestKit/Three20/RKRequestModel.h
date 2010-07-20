@@ -25,7 +25,7 @@
 /**
  * Generic class for loading a remote model using a RestKit request
  */
-@interface RKRequestModel : NSObject <RKModelLoaderDelegate, RKRequestDelegate> {
+@interface RKRequestModel : NSObject <RKResourceLoaderDelegate, RKRequestDelegate> {
 	NSArray *_objects;
 	BOOL _loaded;
 	

@@ -8,16 +8,17 @@
 
 #import <objc/message.h>
 
-#import "RKModelMapper.h"
+#import "RKResourceMapper.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKMappingFormatJSONParser.h"
 
 // Default format string for date and time objects from Rails
+// TODO: Rails specifics should probably move elsewhere...
 static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'HH:mm:ss'Z'"; // 2009-08-08T17:23:59Z
 static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatParser";
 
-@interface RKModelMapper (Private)
+@interface RKResourceMapper (Private)
 
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 
@@ -37,7 +38,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 @end
 
-@implementation RKModelMapper
+@implementation RKResourceMapper
 
 @synthesize format = _format;
 @synthesize dateFormats = _dateFormats;
@@ -66,7 +67,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	[super dealloc];
 }
 
-- (void)registerModel:(Class)aClass forElementNamed:(NSString*)elementName {
+- (void)registerClass:(Class<RKResourceMappable>)aClass forElementNamed:(NSString*)elementName {
 	[_elementToClassMappings setObject:aClass forKey:elementName];
 }
 
@@ -176,12 +177,14 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Persistent Instance Finders
 
+// TODO: This responsibility probaby belongs elsewhere...
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
 	id object = nil;
+	// TODO: Maybe add back to RKResourceMappable protocol. better selectors?
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
-		NSString* primaryKeyElement = [class primaryKeyElement];
+		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
 		NSNumber* primaryKey = [elements objectForKey:primaryKeyElement];
-		object = [class findByPrimaryKey:primaryKey];
+		object = [class performSelector:@selector(findByPrimaryKey:) withObject:primaryKey];
 	}
 	
 	// instantiate if object is nil
