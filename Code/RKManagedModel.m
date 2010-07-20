@@ -49,7 +49,6 @@
 
 + (NSArray*)objectsWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
-//	NSLog(@"About to perform a collection request: %@", request);
 	NSArray* objects = [[self managedObjectContext] executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
@@ -113,13 +112,23 @@
 	return nil;
 }
 
-- (NSString*)collectionPath {
-	return [NSString stringWithFormat:@"%@", [self resourcePath]];
-}
-
-- (NSString*)memberPath {
-	NSLog(@"Was asked for memberPath. primaryKeyValue is %@. self = %@", [self valueForKey:[[self class] primaryKey]], self);
-	return [NSString stringWithFormat:@"%@/%@", [self resourcePath], [self valueForKey:[[self class] primaryKey]]];
+// TODO: This is Rails specific. Clean up!
+- (NSString*)resourcePathForMethod:(RKRequestMethod)method {
+	// TODO: Support an optional RKResourceAdapter class?
+	switch (method) {
+		case RKRequestMethodGET:
+		case RKRequestMethodPUT:
+		case RKRequestMethodDELETE:
+			return [NSString stringWithFormat:@"%@/%@", [self resourcePath], [self valueForKey:[[self class] primaryKey]]];
+			break;
+		
+		case RKRequestMethodPOST:
+			return [NSString stringWithFormat:@"%@", [self resourcePath]];
+			break;
+			
+		default:
+			break;
+	}
 }
 
 // TODO: Would be nice to specify this via an annotation in the mappings definition...

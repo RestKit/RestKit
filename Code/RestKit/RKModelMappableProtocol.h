@@ -7,6 +7,8 @@
  *
  */
 
+#import "RKRequest.h"
+
 typedef enum {
 	RKMappingFormatXML = 0,
 	RKMappingFormatJSON
@@ -44,47 +46,23 @@ typedef enum {
 
 @optional
 
-/**
- * Must return the path to the resource on the server
- * used for get/put/post/delete
- * required if you intend to do get/put/post/delete requests
- */
-- (NSString*)resourcePath;
+// TODO: Should the path/params stuff live on a different protocol? RKResource? RKManagedModel implements RKModelMappable. RKRailsResourceAdapter for path/params stuff
 
 /**
- * The path to the RESTful resource collection this object belongs to. i.e. /books
+ * Return the resourcePath for the specified HTTP method
  */
-- (NSString*)collectionPath;
+- (NSString*)resourcePathForMethod:(RKRequestMethod)method;
 
 /**
- * The path to the RESTful resource this object represents. i.e. /books/1
+ * Returns <RKRequestSerializable> representation of the model parameters.
  */
-- (NSString*)memberPath;
-
-/**
- * Must return the put/post params for the instance 
- */
-// TODO: Gets eliminated...
-- (NSDictionary*)resourceParams;
+// TODO: Better method signature
+- (NSObject<RKRequestSerializable>*)resourceSerializationForMethod:(RKRequestMethod)method;
 
 /**
  * Must return a new instance of the model class ready for mapping. Used to initialize the model
  * via any method other than alloc & init.
  */
 + (id)newObject;
-
-/**
- * Must return the selector for the XML element corresponding to the primary key for this model instance.
- */
-+ (NSString*)primaryKey;
-
-+ (NSString*)primaryKeyElement;
-
-/**
- * Must return the model instance corresponding to the given primary key value.
- * Expected to return nil if the model instance does not exist and hence we should
- * instantiate a new instance.
- */
-+ (id)findByPrimaryKey:(id)value;
 
 @end

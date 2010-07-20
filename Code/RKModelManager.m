@@ -144,21 +144,27 @@ static RKModelManager* sharedManager = nil;
 }
 
 - (RKRequest*)getModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	return [self modelLoaderRequest:model resourcePath:[model memberPath] method:RKRequestMethodGET params:nil delegate:delegate];
+	NSObject<RKRequestSerializable>* params = [model resourceSerializationForMethod:RKRequestMethodGET];
+	NSString* resourcePath = [model resourcePathForMethod:RKRequestMethodGET];
+	return [self modelLoaderRequest:model resourcePath:resourcePath method:RKRequestMethodGET params:params delegate:delegate];
 }
 
 - (RKRequest*)postModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	RKParams* params = [RKParams paramsWithDictionary:[model resourceParams]];
-	return [self modelLoaderRequest:model resourcePath:[model collectionPath] method:RKRequestMethodPOST params:params delegate:delegate];
+	NSObject<RKRequestSerializable>* params = [model resourceSerializationForMethod:RKRequestMethodPOST];
+	NSString* resourcePath = [model resourcePathForMethod:RKRequestMethodPOST];
+	return [self modelLoaderRequest:model resourcePath:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
 }
 
 - (RKRequest*)putModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	RKParams* params = [RKParams paramsWithDictionary:[model resourceParams]];
-	return [self modelLoaderRequest:model resourcePath:[model memberPath] method:RKRequestMethodPUT params:params delegate:delegate];
+	NSObject<RKRequestSerializable>* params = [model resourceSerializationForMethod:RKRequestMethodPUT];
+	NSString* resourcePath = [model resourcePathForMethod:RKRequestMethodPUT];
+	return [self modelLoaderRequest:model resourcePath:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
 }
 
 - (RKRequest*)deleteModel:(id<RKModelMappable>)model delegate:(NSObject<RKModelLoaderDelegate>*)delegate {
-	return [self modelLoaderRequest:model resourcePath:[model memberPath] method:RKRequestMethodDELETE params:nil delegate:delegate];
+	NSObject<RKRequestSerializable>* params = [model resourceSerializationForMethod:RKRequestMethodDELETE];
+	NSString* resourcePath = [model resourcePathForMethod:RKRequestMethodDELETE];
+	return [self modelLoaderRequest:model resourcePath:resourcePath method:RKRequestMethodDELETE params:params delegate:delegate];
 }
 
 @end
