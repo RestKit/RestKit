@@ -1262,7 +1262,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = RestKit_Prefix.pch;
+				GCC_PREFIX_HEADER = Code/RestKit_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
 					../three20/Build/Products/three20,
 					Code,
@@ -1289,7 +1289,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = RestKit_Prefix.pch;
+				GCC_PREFIX_HEADER = Code/RestKit_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
 					../three20/Build/Products/three20,
 					Code,

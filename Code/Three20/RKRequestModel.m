@@ -135,7 +135,7 @@
 			[_delegate rkModelDidStartLoad];
 		}
 		
-		_objects = [[RKManagedModel objectsWithRequest:_fetchRequest] retain];
+		_objects = [[RKManagedObject objectsWithRequest:_fetchRequest] retain];
 		_loaded = YES;
 		
 		if ([_delegate respondsToSelector:@selector(rkModelDidFinishLoad)]) {
@@ -178,7 +178,7 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	// Go Offline button
 	if (1 == buttonIndex) {
-		[[RKModelManager manager] goOffline];
+		[[RKResourceManager manager] goOffline];
 	}
 }
 
@@ -198,11 +198,11 @@
 // RKModelLoaderDelegate
 
 // This callback is invoked after the request has been fully serviced. Finish the load here.
-- (void)modelLoaderRequest:(RKRequest*)request didLoadModels:(NSArray*)models response:(RKResponse*)response modelObject:(id<RKModelMappable>)modelObject {
-	[self modelsDidLoad:models];
+- (void)resourceLoadRequest:(RKRequest *)request didLoadObjects:(NSArray *)objects response:(RKResponse *)response object:(id<RKResourceMappable>)object {
+	[self modelsDidLoad:objects];
 }
 
-- (void)modelLoaderRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response modelObject:(id<RKModelMappable>)modelObject {
+- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKResourceMappable>)object {
 	if ([self errorWarrantsOptionToGoOffline:error]) {
 		[self showAlertWithOptionToGoOfflineForError:error];
 	} else {
@@ -225,9 +225,9 @@
 
 - (void)load {
 	if (_params) {
-		_loadingRequest = [[RKModelManager manager] loadModels:_resourcePath fetchRequest:_fetchRequest method:_method params:_params delegate:self];
+		_loadingRequest = [[RKResourceManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method params:_params delegate:self];
 	} else {
-		_loadingRequest = [[RKModelManager manager] loadModels:_resourcePath fetchRequest:_fetchRequest method:_method delegate:self];
+		_loadingRequest = [[RKResourceManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method delegate:self];
 	}	
 }
 
