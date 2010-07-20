@@ -9,6 +9,7 @@
 #import "RestKit/RKClient.h"
 #import "RestKit/Errors.h"
 #import "RestKit/RKResourceManager.h"
+#import "RestKit/RKObject.h"
 #import "RestKit/RKManagedObject.h"
 #import "RestKit/RKNotifications.h"
 #import "RestKit/RKObjectSeeder.h"
