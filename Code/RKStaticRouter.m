@@ -7,6 +7,7 @@
 //
 
 #import "RKStaticRouter.h"
+#import "NSDictionary+RKRequestSerialization.h"
 
 @implementation RKStaticRouter
 
@@ -92,6 +93,7 @@
 }
 
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKResourceMappable>*)object method:(RKRequestMethod)method {
+	// By default return a form encoded serializable dictionary
 	return [object paramsForSerialization];
 }
 
