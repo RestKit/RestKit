@@ -44,7 +44,12 @@ typedef enum {
 + (NSDictionary*)elementToRelationshipMappings;
 
 // TODO: Add an optional errors property. This will be populated when there are errors in the mapping.
-// TODO: resourceParams/resourceAttributes?
+
+/**
+ * Return a dictionary of values to be serialized for submission to a remote resource. The router
+ * will encode these parameters into a serialization format (form encoded, JSON, etc).
+ */
+- (NSDictionary*)paramsForSerialization;
 
 @optional
 

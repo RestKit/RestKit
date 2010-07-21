@@ -19,11 +19,11 @@
 /**
  * Returns the remote path to send requests for a given object and HTTP method
  */
-- (NSString*)pathForObject:(NSObject<RKResourceMappable>*)resource method:(RKRequestMethod)method;
+- (NSString*)pathForObject:(NSObject<RKResourceMappable>*)object method:(RKRequestMethod)method;
 
 /**
  * Returns a serialization of an object suitable for exchanging with a remote system
  */
-- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKResourceMappable>*)resource method:(RKRequestMethod)method;
+- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKResourceMappable>*)object method:(RKRequestMethod)method;
 
 @end

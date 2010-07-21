@@ -79,6 +79,7 @@
 		256FD652112C7B780077F340 /* RKMappableAssociation.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FD650112C7B780077F340 /* RKMappableAssociation.m */; };
 		256FDE55112DB0B90077F340 /* RKResourceMapperSpecModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FDE54112DB0B90077F340 /* RKResourceMapperSpecModel.m */; };
 		257EA42011F6317A00DB04C3 /* libOCMock-iPhone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 257EA41C11F6317600DB04C3 /* libOCMock-iPhone.a */; };
+		257EAAAF11F73DA000DB04C3 /* RKObjectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 257EAAAE11F73DA000DB04C3 /* RKObjectSpec.m */; };
 		2580B068102E0F1000832D07 /* RKResourceLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 2580B066102E0F1000832D07 /* RKResourceLoader.h */; };
 		2580B069102E0F1000832D07 /* RKResourceLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2580B067102E0F1000832D07 /* RKResourceLoader.m */; };
 		25B86E0A115BEB71009761A1 /* Errors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B86E09115BEB71009761A1 /* Errors.h */; };
@@ -354,6 +355,7 @@
 		256FDE53112DB0B90077F340 /* RKResourceMapperSpecModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKResourceMapperSpecModel.h; sourceTree = "<group>"; };
 		256FDE54112DB0B90077F340 /* RKResourceMapperSpecModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResourceMapperSpecModel.m; sourceTree = "<group>"; };
 		256FE8D6112EE5310077F340 /* RestKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RestKit.h; path = Code/RestKit/RestKit.h; sourceTree = "<group>"; };
+		257EAAAE11F73DA000DB04C3 /* RKObjectSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectSpec.m; sourceTree = "<group>"; };
 		2580B066102E0F1000832D07 /* RKResourceLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKResourceLoader.h; path = Code/RestKit/RKResourceLoader.h; sourceTree = "<group>"; };
 		2580B067102E0F1000832D07 /* RKResourceLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKResourceLoader.m; path = Code/RKResourceLoader.m; sourceTree = "<group>"; };
 		25B86E09115BEB71009761A1 /* Errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Errors.h; path = Code/RestKit/Errors.h; sourceTree = "<group>"; };
@@ -652,6 +654,7 @@
 				255DE03010FF9BDF00A85891 /* RKManagedObjectSpec.m */,
 				255DE05910FF9DA500A85891 /* RKModelManagerSpec.m */,
 				250BC22A11F621B400F3FE5A /* RKStaticRouterSpec.m */,
+				257EAAAE11F73DA000DB04C3 /* RKObjectSpec.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1118,6 +1121,7 @@
 				250BC22311F620F900F3FE5A /* RKStaticRouter.m in Sources */,
 				250BC22B11F621B400F3FE5A /* RKStaticRouterSpec.m in Sources */,
 				250429A911F62E0200553519 /* UISpec+UISpecRunner.m in Sources */,
+				257EAAAF11F73DA000DB04C3 /* RKObjectSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

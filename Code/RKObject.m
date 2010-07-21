@@ -19,4 +19,18 @@
 	return [NSDictionary dictionary];
 }
 
++ (id)newObject {
+	return [[self new] autorelease];
+}
+
+- (NSDictionary*)paramsForSerialization {
+	NSMutableDictionary* params = [NSMutableDictionary dictionary];
+	for (NSString* elementName in [[self class] elementToPropertyMappings]) {
+		NSString* propertyName = [[[self class] elementToPropertyMappings] objectForKey:elementName];
+		[params setValue:[self valueForKey:propertyName] forKey:elementName];
+	}
+	
+	return [NSDictionary dictionaryWithDictionary:params];
+}
+
 @end

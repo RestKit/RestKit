@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
 	// Run the specs
 	[UISpec runSpecsFromEnvironmentAfterDelay:0.5];
 	
-    int retVal = UIApplicationMain(argc, argv, nil, @"InMotionAppDelegate");
+    int retVal = UIApplicationMain(argc, argv, nil, nil);
     [pool release];
     return retVal;
 }

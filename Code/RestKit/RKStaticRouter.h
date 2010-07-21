@@ -10,16 +10,17 @@
 #import "RKResourceMappable.h"
 
 @interface RKStaticRouter : NSObject <RKRouter> {
+	NSMutableDictionary* _routes;
 }
 
 /**
  * Register a static mapping from an object class to a resource path
  */
-- (void)routeClass:(Class<RKResourceMappable>)class toPath:(NSString*)resourcePath;
+- (void)routeClass:(Class<RKResourceMappable>)class toPath:(NSString*)path;
 
 /**
  * Register a static mapping from an object class to a resource path for a given HTTP method
  */
-- (void)routeClass:(Class<RKResourceMappable>)class toPath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
+- (void)routeClass:(Class<RKResourceMappable>)class toPath:(NSString*)path forMethod:(RKRequestMethod)method;
 
 @end
