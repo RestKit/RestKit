@@ -11,6 +11,14 @@
 #import "RKObjectPropertyInspector.h"
 
 /**
+ * Define the resource mapping formats
+ */
+typedef enum {
+	RKMappingFormatXML = 0,
+	RKMappingFormatJSON
+} RKMappingFormat;
+
+/**
  * The format parser is responsible for transforming a string
  * of data into a dictionary. This allows the model mapper to
  * map properties using key-value coding

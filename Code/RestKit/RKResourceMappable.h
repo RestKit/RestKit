@@ -9,12 +9,6 @@
 
 #import "RKRequest.h"
 
-// TODO: De-emphasize this and move...
-typedef enum {
-	RKMappingFormatXML = 0,
-	RKMappingFormatJSON
-} RKMappingFormat;
-
 /**
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes
