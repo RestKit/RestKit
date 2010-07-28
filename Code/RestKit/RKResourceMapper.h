@@ -90,7 +90,7 @@ typedef enum {
  * Sets the properties and relationships serialized in the string into the model instance
  * provided
  */
-- (void)mapModel:(id)model fromString:(NSString*)string;
+- (void)mapObject:(id)model fromString:(NSString*)string;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Object Mapping API
@@ -99,18 +99,24 @@ typedef enum {
  * Sets the properties and relationships serialized in the dictionary into the model instance
  * provided
  */
-- (void)mapModel:(id)model fromDictionary:(NSDictionary*)dictionary;
+- (void)mapObject:(id)model fromDictionary:(NSDictionary*)dictionary;
 
 /**
  * Returns mapped model(s) from the data serialized in the dictionary into the model instance
  * provided
  */
-- (id)mapModelFromDictionary:(NSDictionary*)dictionary;
+- (id)mapObjectFromDictionary:(NSDictionary*)dictionary;
 
 /**
  * Constructs an array of mapped model objects from an array of dictionaries
  * containing serialized objects
  */
-- (NSArray*)mapModelsFromArrayOfDictionaries:(NSArray*)array;
+- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array;
+
+///////////////////////////////////////////////////////////////////////////////
+// Non-element based object mapping
+
+- (id)parseString:(NSString*)string;
+- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class;
 
 @end

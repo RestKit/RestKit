@@ -218,35 +218,35 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 25042C5011F6309000553519 /* OCMock.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 3F45512511E4BCD700AE56A6 /* libOCMock-iPhone.a */;
+			remoteGlobalIDString = 3F45512511E4BCD700AE56A6;
 			remoteInfo = "OCMock-iPhone";
 		};
 		257EA42D11F6319800DB04C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 3F45512511E4BCD700AE56A6 /* libOCMock-iPhone.a */;
+			remoteGlobalIDString = 3F45512511E4BCD700AE56A6;
 			remoteInfo = "OCMock-iPhone";
 		};
 		257EA43211F6319800DB04C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 3F45512511E4BCD700AE56A6 /* libOCMock-iPhone.a */;
+			remoteGlobalIDString = 3F45512511E4BCD700AE56A6;
 			remoteInfo = "OCMock-iPhone";
 		};
 		257EA43711F6319800DB04C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 3F45512511E4BCD700AE56A6 /* libOCMock-iPhone.a */;
+			remoteGlobalIDString = 3F45512511E4BCD700AE56A6;
 			remoteInfo = "OCMock-iPhone";
 		};
 		257EA5A511F632D700DB04C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 3F45512411E4BCD700AE56A6 /* OCMock-iPhone */;
+			remoteGlobalIDString = 3F45512411E4BCD700AE56A6;
 			remoteInfo = "OCMock-iPhone";
 		};
 /* End PBXContainerItemProxy section */
@@ -1260,6 +1260,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Debug;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -1288,6 +1289,7 @@
 			buildSettings = {
 				ADDITIONAL_SDKS = "";
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;

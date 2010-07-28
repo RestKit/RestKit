@@ -41,6 +41,28 @@
 		NSLog(@"[RestKit] RKModelSeeder: Seeded %d objects from %@...", [objects count], [NSString stringWithFormat:@"%@.%@", fileName, type]);
 	}
 	
+	[self finalizeSeedingAndExit];
+}
+
+- (void)seedObjectsFromFile:(NSString*)fileName ofType:(NSString*)type toClass:(Class)theClass keyPath:(NSString*)keyPath {
+	NSError* error = nil;
+	NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:type];
+	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+	if (nil == error) {
+		id objects = [_manager.mapper parseString:payload];
+		NSAssert1(objects != nil, @"Unable to parse data from file %@", filePath);		
+		id parseableObjects = [objects valueForKeyPath:keyPath];
+		NSAssert1([parseableObjects isKindOfClass:[NSArray class]], @"Expected an NSArray of objects, got %@", objects);
+		NSAssert1([[parseableObjects objectAtIndex:0] isKindOfClass:[NSDictionary class]], @"Expected an array of NSDictionaries, got %@", [objects objectAtIndex:0]);
+		
+		NSArray* mappedObjects = [_manager.mapper mapObjectsFromArrayOfDictionaries:parseableObjects toClass:theClass];
+		NSLog(@"[RestKit] RKModelSeeder: Seeded %d objects from %@...", [mappedObjects count], [NSString stringWithFormat:@"%@.%@", fileName, type]);
+	} else {
+		NSLog(@"Unable to read file %@ with type %@: %@", fileName, type, [error localizedDescription]);
+	}
+}
+
+- (void)finalizeSeedingAndExit {
 	NSError* error = [[_manager objectStore] save];
 	if (error != nil) {
 		NSLog(@"[RestKit] RKModelSeeder: Error saving object context: %@", [error localizedDescription]);

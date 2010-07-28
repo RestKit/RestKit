@@ -8,6 +8,8 @@
 
 #import "RKResourceManager.h"
 
+// TODO: This class needs an API scrubbing
+// TODO: Really only needs to be initialized with mapper, not the manager... ?
 @interface RKObjectSeeder : NSObject {
 	RKResourceManager* _manager;
 }
@@ -24,5 +26,16 @@
 - (NSArray*)seedDatabaseWithBundledFile:(NSString*)fileName ofType:(NSString*)type;
 
 - (void)seedDatabaseWithBundledFiles:(NSArray*)fileNames ofType:(NSString*)type;
+
+/**
+ * Seed a specific object class with data from a file
+ */
+- (void)seedObjectsFromFile:(NSString*)fileName ofType:(NSString*)type toClass:(Class)theClass keyPath:(NSString*)keyPath;
+
+/**
+ * Completes a seeding session by persisting the store, outputing an informational message
+ * and exiting the process
+ */
+- (void)finalizeSeedingAndExit;
 
 @end

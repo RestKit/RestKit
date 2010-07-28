@@ -1,5 +1,5 @@
 //
-//  RKModelMapper.m
+//  RKResourceMapper.m
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
@@ -81,7 +81,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Mapping from a string
 
-- (id)parseObjectFromString:(NSString*)string {
+- (id)parseString:(NSString*)string {
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
 	NSObject<RKMappingFormatParser>* parser = [threadDictionary objectForKey:kRKModelMapperMappingFormatParserKey];
 	if (!parser) {
@@ -95,13 +95,13 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 }
 
 - (id)mapFromString:(NSString*)string {
-	id object = [self parseObjectFromString:string];
+	id object = [self parseString:string];
 	if ([object isKindOfClass:[NSDictionary class]]) {
-		return [self mapModelFromDictionary:(NSDictionary*)object];
+		return [self mapObjectFromDictionary:(NSDictionary*)object];
 	} else if ([object isKindOfClass:[NSArray class]]) {
-		return [self mapModelsFromArrayOfDictionaries:(NSArray*)object];
+		return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
 	} else if (nil == object) {
-		NSLog(@"[RestKit] RKModelMapper: mapModel:fromString: attempted to map from a nil payload. Skipping...");
+		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
 		return nil;
 	} else {
 		[NSException raise:@"Unable to map from requested string" 
@@ -110,12 +110,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	}
 }
 
-- (void)mapModel:(id)model fromString:(NSString*)string {
-	id object = [self parseObjectFromString:string];
+- (void)mapObject:(id)model fromString:(NSString*)string {
+	id object = [self parseString:string];
 	if ([object isKindOfClass:[NSDictionary class]]) {
-		[self mapModel:model fromDictionary:object];
+		[self mapObject:model fromDictionary:object];
 	} else if (nil == object) {
-		NSLog(@"[RestKit] RKModelMapper: mapModel:fromString: attempted to map from a nil payload. Skipping...");
+		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
 		return;
 	} else {
 		[NSException raise:@"Unable to map from requested string"
@@ -126,7 +126,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Mapping from objects
 
-- (void)mapModel:(id)model fromDictionary:(NSDictionary*)dictionary {
+- (void)mapObject:(id)model fromDictionary:(NSDictionary*)dictionary {
 	Class class = [model class];
 	NSString* elementName = [_elementToClassMappings keyForObject:class];
 	if (elementName) {
@@ -138,7 +138,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	}
 }
 
-- (id)mapModelFromDictionary:(NSDictionary*)dictionary {
+- (id)mapObjectFromDictionary:(NSDictionary*)dictionary {
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];
 	NSDictionary* elements = [dictionary objectForKey:elementName];
@@ -148,7 +148,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	return model;
 }
 
-- (NSArray*)mapModelsFromArrayOfDictionaries:(NSArray*)array {
+- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array {
 	NSMutableArray* objects = [NSMutableArray array];
 	for (NSDictionary* dictionary in array) {
 		if (![dictionary isKindOfClass:[NSNull class]]) {
@@ -156,6 +156,19 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			Class class = [_elementToClassMappings objectForKey:elementName];
 			NSDictionary* elements = [dictionary objectForKey:elementName];
 			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
+			[objects addObject:object];
+		}
+	}
+	
+	return (NSArray*)objects;
+}
+
+// TODO: This form of mapping may need to be factored out... simple mapper / element mapper?
+- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class {
+	NSMutableArray* objects = [NSMutableArray array];
+	for (NSDictionary* dictionary in array) {
+		if (![dictionary isKindOfClass:[NSNull class]]) {
+			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:dictionary];
 			[objects addObject:object];
 		}
 	}

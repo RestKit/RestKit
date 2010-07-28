@@ -107,4 +107,9 @@
 
 - (NSDictionary*)elementNamesAndPropertyValues;
 
+/**
+ * Returns YES when an object has not been saved to the managed object context yet
+ */
+- (BOOL)isNew;
+
 @end
