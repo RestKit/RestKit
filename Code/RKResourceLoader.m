@@ -122,10 +122,10 @@
 		if ([mainThreadModel isKindOfClass:[NSManagedObject class]]) {
 			NSManagedObjectID* modelID = [(NSManagedObject*)mainThreadModel objectID];
 			NSManagedObject* backgroundThreadModel = [objectStore objectWithID:modelID];
-			[_mapper mapModel:backgroundThreadModel fromString:[response bodyAsString]];
+			[_mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:backgroundThreadModel];
 		} else {
-			[_mapper mapModel:mainThreadModel fromString:[response bodyAsString]];
+			[_mapper mapObject:mainThreadModel fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:mainThreadModel];
 		}
 	} else {
