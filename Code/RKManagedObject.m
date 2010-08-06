@@ -19,14 +19,14 @@
 	return [[[RKResourceManager manager] objectStore] managedObjectContext];
 }
 
-+ (NSManagedObject*)objectWithId:(NSManagedObjectID*)objectId {
-	return [[self managedObjectContext] objectWithID:objectId];
++ (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
+	return [[RKManagedObject managedObjectContext] objectWithID:objectID];
 }
 
-+ (NSArray*)objectsWithIds:(NSArray*)objectIds {
++ (NSArray*)objectsWithIDs:(NSArray*)objectIDs {
 	NSMutableArray* objects = [[NSMutableArray alloc] init];
-	for (NSManagedObjectID* objectId in objectIds) {
-		[objects addObject:[[self managedObjectContext] objectWithID:objectId]];
+	for (NSManagedObjectID* objectID in objectIDs) {
+		[objects addObject:[[RKManagedObject managedObjectContext] objectWithID:objectID]];
 	}
 	NSArray* objectArray = [NSArray arrayWithArray:objects];
 	[objects release];
@@ -36,7 +36,7 @@
 
 + (NSEntityDescription*)entity {
 	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
-	return [NSEntityDescription entityForName:className inManagedObjectContext:[self managedObjectContext]];
+	return [NSEntityDescription entityForName:className inManagedObjectContext:[RKManagedObject managedObjectContext]];
 }
 
 + (NSFetchRequest*)request {
@@ -49,7 +49,7 @@
 
 + (NSArray*)objectsWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
-	NSArray* objects = [[self managedObjectContext] executeFetchRequest:request error:&error];
+	NSArray* objects = [[RKManagedObject managedObjectContext] executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
 		// TODO: Error handling
@@ -86,13 +86,13 @@
 + (NSUInteger)count {
 	NSFetchRequest *request = [self request];	
 	NSError *error = nil;
-	NSUInteger count = [[self managedObjectContext] countForFetchRequest:request error:&error];
+	NSUInteger count = [[RKManagedObject managedObjectContext] countForFetchRequest:request error:&error];
 	// TODO: Error handling...
 	return count;
 }
 
 + (id)newObject {
-	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[self managedObjectContext]];
+	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[RKManagedObject managedObjectContext]];
 	return [model autorelease];
 }
 

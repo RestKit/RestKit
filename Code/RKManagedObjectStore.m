@@ -163,19 +163,4 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     return basePath;
 }
 
-- (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
-	return [self.managedObjectContext objectWithID:objectID];
-}
-
-- (NSArray*)objectsWithIDs:(NSArray*)objectIDs {
-	NSMutableArray* objects = [[NSMutableArray alloc] init];
-	for (NSManagedObjectID* objectID in objectIDs) {
-		[objects addObject:[self.managedObjectContext objectWithID:objectID]];
-	}
-	NSArray* objectArray = [NSArray arrayWithArray:objects];
-	[objects release];
-	
-	return objectArray;
-}
-
 @end

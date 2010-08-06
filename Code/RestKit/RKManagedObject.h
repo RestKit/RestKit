@@ -52,13 +52,13 @@
 /**
  *	Retrieves a model object from the appropriate context using the objectId
  */
-+ (NSManagedObject*)objectWithId:(NSManagedObjectID*)objectId;
++ (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID;
 
 /**
  *	Retrieves a array of model objects from the appropriate context using
  *	an array of NSManagedObjectIDs
  */
-+ (NSArray*)objectsWithIds:(NSArray*)objectIds;
++ (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
 
 /**
  *	The primaryKey property mapping, defaults to @"railsID"
