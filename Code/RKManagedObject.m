@@ -217,7 +217,7 @@
 // TODO: This implementation is Rails specific. Consider using an adapter approach.
 // TODO: Gets handled in a Rails adapter, moved completely off the model itself...
 // TODO: Moves to the model mapper? encodeProperties:?
-- (NSDictionary*)resourceParams {
+- (NSDictionary*)paramsForSerialization {
 	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValues];
 	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];
 	// TODO: Eliminate modelName somehow... should be using the name of the element this class was registered for!

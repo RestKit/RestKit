@@ -487,7 +487,7 @@
 		25042B7C11F62FF500553519 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				25042B8311F62FF500553519 /* OCMock.framework */,
+				25042B8311F62FF500553519 /* OCMock */,
 				25042B8511F62FF500553519 /* OCMockTests.octest */,
 				257EA42E11F6319800DB04C3 /* libOCMock-iPhone.a */,
 			);
@@ -517,7 +517,7 @@
 		250BC44C11F6262600F3FE5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				250BC45311F6262600F3FE5A /* OCMock.framework */,
+				250BC45311F6262600F3FE5A /* OCMock */,
 				250BC45511F6262600F3FE5A /* OCMockTests.octest */,
 				257EA43811F6319800DB04C3 /* libOCMock-iPhone.a */,
 			);
@@ -527,7 +527,7 @@
 		250BC4DD11F62D4400F3FE5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				250BC4E411F62D4400F3FE5A /* OCMock.framework */,
+				250BC4E411F62D4400F3FE5A /* OCMock */,
 				250BC4E611F62D4400F3FE5A /* OCMockTests.octest */,
 				257EA43311F6319800DB04C3 /* libOCMock-iPhone.a */,
 			);
@@ -926,10 +926,10 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		25042B8311F62FF500553519 /* OCMock.framework */ = {
+		25042B8311F62FF500553519 /* OCMock */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = OCMock.framework;
+			path = OCMock;
 			remoteRef = 25042B8211F62FF500553519 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -975,10 +975,10 @@
 			remoteRef = 250BC43611F6260100F3FE5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		250BC45311F6262600F3FE5A /* OCMock.framework */ = {
+		250BC45311F6262600F3FE5A /* OCMock */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = OCMock.framework;
+			path = OCMock;
 			remoteRef = 250BC45211F6262600F3FE5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -989,10 +989,10 @@
 			remoteRef = 250BC45411F6262600F3FE5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		250BC4E411F62D4400F3FE5A /* OCMock.framework */ = {
+		250BC4E411F62D4400F3FE5A /* OCMock */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
-			path = OCMock.framework;
+			path = OCMock;
 			remoteRef = 250BC4E311F62D4400F3FE5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1192,7 +1192,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RestKit;
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos4.0;
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
@@ -1213,7 +1213,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RestKit;
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos4.0;
 			};
 			name = Release;
 		};
@@ -1232,7 +1232,7 @@
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos4.0;
 				USER_HEADER_SEARCH_PATHS = ../ElementParser/Classes;
 			};
 			name = Debug;
@@ -1251,7 +1251,7 @@
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos4.0;
 			};
 			name = Release;
 		};
@@ -1344,7 +1344,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "UI Spec";
-				SDKROOT = /Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator3.1.sdk;
+				SDKROOT = iphoneos4.0;
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
@@ -1379,7 +1379,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = "UI Spec";
-				SDKROOT = iphoneos3.1.2;
+				SDKROOT = iphoneos4.0;
 				ZERO_LINK = NO;
 			};
 			name = Release;
