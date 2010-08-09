@@ -302,12 +302,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
 		}
 		
-		if ([relationshipElements isKindOfClass:[NSArray class]]) {
+		if ([relationshipElements isKindOfClass:[NSArray class]] || [relationshipElements isKindOfClass:[NSSet class]]) {
 			// NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
 			NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
 			Class class = [_elementToClassMappings objectForKey:[componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1]];
 			NSMutableSet* children = [NSMutableSet setWithCapacity:[relationshipElements count]];
-			for (NSDictionary* childElements in relationshipElements) {
+			for (NSDictionary* childElements in relationshipElements) {				
 				id child = [self createOrUpdateInstanceOfModelClass:class fromElements:childElements];		
 				if (child) {
 					[children addObject:child];
