@@ -39,9 +39,13 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[_storeFilename release];
+	_storeFilename = nil;
 	[_managedObjectContext release];
+	_managedObjectContext = nil;
     [_managedObjectModel release];
+	_managedObjectModel = nil;
     [_persistentStoreCoordinator release];
+	_persistentStoreCoordinator = nil;
 	[super dealloc];
 }
 

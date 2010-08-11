@@ -56,8 +56,13 @@ static RKResourceManager* sharedManager = nil;
 
 - (void)dealloc {
 	[_mapper release];
+	_mapper = nil;
 	[_router release];
+	_router = nil;
 	[_client release];
+	_client = nil;
+	[_objectStore release];
+	_objectStore = nil;
 	[super dealloc];
 }
 
