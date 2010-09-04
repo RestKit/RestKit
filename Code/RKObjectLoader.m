@@ -41,7 +41,7 @@
 - (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
 	RKRequest* request = response.request;
 	if ([response isFailure]) {
-		[_delegate resourceLoadRequest:response.request didFailWithError:response.failureError response:response object:(id<RKObjectMappable>)request.userData];
+		[_delegate request:response.request didFailWithError:response.failureError response:response object:(id<RKObjectMappable>)request.userData];
 		return YES;
 	} else if ([response isError]) {
 		NSString* errorMessage = nil;
@@ -56,7 +56,7 @@
 								  nil];		
 		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
 		
-		[_delegate resourceLoadRequest:response.request didFailWithError:error response:response object:(id<RKObjectMappable>)request.userData];
+		[_delegate request:response.request didFailWithError:error response:response object:(id<RKObjectMappable>)request.userData];
 		return YES;
 	}
 	
@@ -81,7 +81,7 @@
 	}
 	
 	RKRequest* request = response.request;
-	[_delegate resourceLoadRequest:request didLoadObjects:[NSArray arrayWithArray:objects] response:response object:(id<RKObjectMappable>)request.userData];
+	[_delegate request:request didLoadObjects:[NSArray arrayWithArray:objects] response:response object:(id<RKObjectMappable>)request.userData];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
@@ -100,7 +100,7 @@
 	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
 	
 	RKRequest* request = response.request;
-	[_delegate resourceLoadRequest:response.request didFailWithError:rkError response:response object:(id<RKObjectMappable>)request.userData];
+	[_delegate request:response.request didFailWithError:rkError response:response object:(id<RKObjectMappable>)request.userData];
 	
 	// Release the response now that we have finished all our processing
 	[response release];

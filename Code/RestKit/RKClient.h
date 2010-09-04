@@ -74,9 +74,19 @@
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
 
 /**
+ * Returns a resource path with a dictionary of query parameters URL encoded and appended
+ */
+- (NSString*)resourcePath:(NSString*)resourcePath withQueryParams:(NSDictionary*)queryParams;
+
+/**
  * Returns a NSURL by adding a resource path to the base URL
  */
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath;
+
+/**
+ * Returns a NSURL by adding a resource path to the base URL and appending a URL encoded set of query parameters
+ */
+- (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams;
 
 /**
  * Return a request object targetted at a resource path relative to the base URL. By default the method is set to GET
@@ -105,7 +115,7 @@
  * Note that this request _only_ allows NSDictionary objects as the params. The dictionary will be coerced into a URL encoded
  * string and then appended to the resourcePath as the query string of the request.
  */
-- (RKRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate callback:(SEL)callback;
 
 /**
  * Create a resource via an HTTP POST with a set of form parameters and invoke a callback with the resulting payload

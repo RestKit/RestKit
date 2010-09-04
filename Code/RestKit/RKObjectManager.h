@@ -97,29 +97,22 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 @property(nonatomic, retain) RKManagedObjectStore* objectStore;
 
 /**
- * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
+ * Return an object mapping request object ready to be sent. The method defaults to GET and the URL is relative to the
+ * baseURL configured on the client.
  */
-- (RKRequest*)loadResource:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
-
-// Load via a method...
-- (RKRequest*)loadResource:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
- * Fetch a resource via a specified HTTP method
+ * Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
+ * with the loaded response
  */
-- (RKRequest*)loadResource:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKRequest*)getObjectsAtResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
- * Fetch a resource via an HTTP GET with a dictionary of parameters and invoke a callback with the models mapped from the payload
+ * Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
+ * of query parameters to append to the URL and call back the delegate with the loaded objects
  */
-- (RKRequest*)loadResource:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
-
-/**
- * Fetch methods for clients that implement local caching
- */
-// TODO: Need a better implementation of the cacheing...
-- (RKRequest*)loadResource:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
-- (RKRequest*)loadResource:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKRequest*)getObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
 // Model Mappable object helpers
@@ -130,12 +123,12 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 - (RKRequest*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
- * Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting model from the payload
+ * Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting objects from the payload
  */
 - (RKRequest*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
- * Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting model from the payload
+ * Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting objects from the payload
  */
 - (RKRequest*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 

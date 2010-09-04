@@ -85,9 +85,16 @@ static RKClient* sharedClient = nil;
 	return isNetworkAvailable;
 }
 
+- (NSString*)resourcePath:(NSString*)resourcePath withQueryParams:(NSDictionary*)queryParams {
+	return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+}
+
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath {
-	NSString* urlString = [NSString stringWithFormat:@"%@%@", self.baseURL, resourcePath];
-	return [NSURL URLWithString:urlString];
+	return [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", self.baseURL, resourcePath]];
+}
+
+- (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams {
+	return [self URLForResourcePath:[self resourcePath:resourcePath withQueryParams:queryParams]];
 }
 
 - (void)setupRequest:(RKRequest*)request {
@@ -125,8 +132,8 @@ static RKClient* sharedClient = nil;
 	return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate callback:callback];
 }
 
-- (RKRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
-	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
+- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate callback:(SEL)callback {
+	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
 	return [self load:resourcePathWithQueryString method:RKRequestMethodGET params:nil delegate:delegate callback:callback];
 }
 

@@ -17,13 +17,14 @@
  * Invoked when a request sent through the resource manager loads a collection of objects. The model will be nil if the request was
  * not dispatched through an object
  */
-- (void)resourceLoadRequest:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKObjectMappable>)object;
+// TODO: Do I need to send back the object??? Can I put the response onto the request to shorten the selector?? Maybe the object too?
+- (void)request:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKObjectMappable>)object;
 
 /**
  * Invoked when a request sent through the resource manager encounters an error. The model will be nil if the request was
  * not dispatched through an object
  */
-- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKObjectMappable>)object;
+- (void)request:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKObjectMappable>)object;
 
 @end
 
