@@ -16,7 +16,7 @@
 #pragma mark NSManagedObject helper methods
 
 + (NSManagedObjectContext*)managedObjectContext {
-	return [[[RKResourceManager manager] objectStore] managedObjectContext];
+	return [[[RKObjectManager manager] objectStore] managedObjectContext];
 }
 
 + (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
@@ -115,7 +115,7 @@
 // TODO: This is Rails specific. Clean up!
 // TODO: Moves to the router
 - (NSString*)resourcePathForMethod:(RKRequestMethod)method {
-	// TODO: Support an optional RKResourceAdapter class?
+	// TODO: Support an optional RKObjectAdapter class?
 	switch (method) {
 		case RKRequestMethodGET:
 		case RKRequestMethodPUT:

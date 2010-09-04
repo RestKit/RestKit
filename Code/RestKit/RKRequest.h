@@ -119,16 +119,6 @@ typedef enum RKRequestMethod {
 - (RKResponse*)sendSynchronously;
 
 /**
- * Utility method for setting the request HTTP method and then sending the method asynchronously
- */
-- (void)sendWithMethod:(RKRequestMethod)method;
-
-/**
- * Utility method for setting the request HTTP method and then sending the method synchronously
- */
-- (RKResponse*)sendSynchronouslyWithMethod:(RKRequestMethod)method;
-
-/**
  * Cancels the underlying URL connection
  */
 - (void)cancel;

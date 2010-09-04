@@ -6,18 +6,18 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKResourceManager.h"
+#import "RKObjectManager.h"
 
 // TODO: This class needs an API scrubbing
 // TODO: Really only needs to be initialized with mapper, not the manager... ?
 @interface RKObjectSeeder : NSObject {
-	RKResourceManager* _manager;
+	RKObjectManager* _manager;
 }
 
 /**
  * Initialize a new model seeder
  */
-- (id)initWithResourceManager:(RKResourceManager*)manager;
+- (id)initWithResourceManager:(RKObjectManager*)manager;
 
 /**
  * Read a file from the main bundle and seed the database with its contents.

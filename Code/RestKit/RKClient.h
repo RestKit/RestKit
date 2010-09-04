@@ -73,24 +73,26 @@
  */
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
 
+/**
+ * Returns a NSURL by adding a resource path to the base URL
+ */
+- (NSURL*)URLForResourcePath:(NSString*)resourcePath;
+
+/**
+ * Return a request object targetted at a resource path relative to the base URL. By default the method is set to GET
+ * All headers set on the client will automatically be applied to the request as well.
+ */
+- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Asynchronous Requests
+// Asynchronous Helper Methods
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Load a resource via the specified HTTP method and invoke a callback with the resulting payload
+ * These methods are provided as a convenience to cover the common asynchronous request tasks. All other request
+ * needs should instantiate a request via requestWithResourcePath:delegate:callback and work with the RKRequest
+ * object directly.
  */
-- (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(id)delegate callback:(SEL)callback;
-
-/**
- * Load a resource via the specified HTTP method and invoke a callback with the resulting payload
- */
-- (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback;
-
-/**
- * Load a locally-cached resource via the specified HTTP method and invoke a callback with the resulting payload
- */
-- (RKRequest*)load:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback;
 
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the result
@@ -119,37 +121,5 @@
  * Destroy a resource via an HTTP DELETE and invoke a callback with the resulting payload
  */
 - (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Synchronous Requests
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Fetch a resource synchronously via an HTTP GET and return the response
- */
-- (RKResponse*)getSynchronously:(NSString*)resourcePath;
-
-/**
- * Fetch a resource synchronously via an HTTP GET with a dictionary of params and return the response
- *
- * Note that this request _only_ allows NSDictionary objects as the params. The dictionary will be coerced into a URL encoded
- * string and then appended to the resourcePath as the query string of the request.
- */
-- (RKResponse*)getSynchronously:(NSString*)resourcePath params:(NSDictionary*)params;
-
-/**
- * Create a resource via an HTTP POST with a set of form parameters and return the response
- */
-- (RKResponse*)postSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params;
-
-/**
- * Update a resource via an HTTP PUT and return the response
- */
-- (RKResponse*)putSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params;
-
-/**
- * Destroy a resource via an HTTP DELETE and return the response
- */
-- (RKResponse*)deleteSynchronously:(NSString*)resourcePath;
 
 @end

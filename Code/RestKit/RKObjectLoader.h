@@ -1,5 +1,5 @@
 //
-//  RKResourceLoader.h
+//  RKObjectLoader.h
 //  RestKit
 //
 //  Created by Blake Watters on 8/8/09.
@@ -9,27 +9,27 @@
 #import <CoreData/CoreData.h>
 #import "RKRequest.h"
 #import "RKResponse.h"
-#import "RKResourceMapper.h"
+#import "RKObjectMapper.h"
 
-@protocol RKResourceLoaderDelegate <RKRequestDelegate>
+@protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
 /**
  * Invoked when a request sent through the resource manager loads a collection of objects. The model will be nil if the request was
  * not dispatched through an object
  */
-- (void)resourceLoadRequest:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKResourceMappable>)object;
+- (void)resourceLoadRequest:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKObjectMappable>)object;
 
 /**
  * Invoked when a request sent through the resource manager encounters an error. The model will be nil if the request was
  * not dispatched through an object
  */
-- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKResourceMappable>)object;
+- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKObjectMappable>)object;
 
 @end
 
-@interface RKResourceLoader : NSObject <RKRequestDelegate> {
-	RKResourceMapper* _mapper;
-	NSObject<RKResourceLoaderDelegate>* _delegate;
+@interface RKObjectLoader : NSObject <RKRequestDelegate> {
+	RKObjectMapper* _mapper;
+	NSObject<RKObjectLoaderDelegate>* _delegate;
 	SEL _callback;
 	NSFetchRequest* _fetchRequest;
 }
@@ -37,7 +37,7 @@
 /**
  * The resource mapper this loader is working with
  */
-@property (nonatomic, readonly) RKResourceMapper* mapper;
+@property (nonatomic, readonly) RKObjectMapper* mapper;
 
 /**
  * The object to be invoked with the loaded models
@@ -45,7 +45,7 @@
  * If this object implements life-cycle methods from the RKRequestDelegate protocol, 
  * events from the request will be forwarded back.
  */
-@property (nonatomic, retain) NSObject<RKResourceLoaderDelegate>* delegate;
+@property (nonatomic, retain) NSObject<RKObjectLoaderDelegate>* delegate;
 
 /**
  * The method to invoke to trigger model mappings. Used as the callback for a restful model mapping request
@@ -60,11 +60,11 @@
  */
 @property (nonatomic, retain) NSFetchRequest* fetchRequest;
 
-+ (id)loaderWithMapper:(RKResourceMapper*)mapper;
++ (id)loaderWithMapper:(RKObjectMapper*)mapper;
 
 /**
  * Initialize a new model loader with a model mapper
  */
-- (id)initWithMapper:(RKResourceMapper*)mapper;
+- (id)initWithMapper:(RKObjectMapper*)mapper;
 
 @end

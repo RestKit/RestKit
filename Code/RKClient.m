@@ -7,7 +7,7 @@
 //
 
 #import "RKClient.h"
-#import "RKResourceLoader.h"
+#import "RKObjectLoader.h"
 #import <SystemConfiguration/SCNetworkReachability.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,41 +100,34 @@ static RKClient* sharedClient = nil;
 	[_HTTPHeaders setValue:value forKey:header];
 }
 
+- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
+	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
+	[self setupRequest:request];
+	
+	return request;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Asynchronous Requests
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	[self setupRequest:request];
-	[request sendWithMethod:method];
-	return request;
-}
 
 - (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
 	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
 	[self setupRequest:request];
 	request.params = params;
-	[request sendWithMethod:method];
-	return request;
-}
-
-- (RKRequest*)load:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
-	[self setupRequest:request];
-	request.params = params;
-	request.fetchRequest = fetchRequest;
-	[request sendWithMethod:method];
+	request.method = method;
+	[request send];
+	
 	return request;
 }
 
 - (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
-	return [self load:resourcePath method:RKRequestMethodGET delegate:delegate callback:callback];
+	return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate callback:callback];
 }
 
 - (RKRequest*)get:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate callback:(SEL)callback {
 	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
-	return [self load:resourcePathWithQueryString method:RKRequestMethodGET delegate:delegate callback:callback];
+	return [self load:resourcePathWithQueryString method:RKRequestMethodGET params:nil delegate:delegate callback:callback];
 }
 
 - (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
@@ -146,45 +139,7 @@ static RKClient* sharedClient = nil;
 }
 
 - (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
-	return [self load:resourcePath method:RKRequestMethodDELETE delegate:delegate callback:callback];
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Synchronous Requests
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-- (RKResponse*)loadSynchronously:(NSString*)resourcePath method:(RKRequestMethod)method {
-	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
-	[self setupRequest:request];	
-	return [request sendSynchronouslyWithMethod:method];;
-}
-
-- (RKResponse*)loadSynchronously:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params {
-	RKRequest* request = [[[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath]] autorelease];
-	[self setupRequest:request];
-	request.params = params;	
-	return [request sendSynchronouslyWithMethod:method];;
-}
-
-- (RKResponse*)getSynchronously:(NSString*)resourcePath {
-	return [self loadSynchronously:resourcePath method:RKRequestMethodGET];
-}
-
-- (RKResponse*)getSynchronously:(NSString*)resourcePath params:(NSDictionary*)params {
-	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [params URLEncodedString]];
-	return [self loadSynchronously:resourcePathWithQueryString method:RKRequestMethodGET];
-}
-
-- (RKResponse*)postSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params {
-	return [self loadSynchronously:resourcePath method:RKRequestMethodPOST params:params];
-}
-
-- (RKResponse*)putSynchronously:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params {
-	return [self loadSynchronously:resourcePath method:RKRequestMethodPUT params:params];
-}
-
-- (RKResponse*)deleteSynchronously:(NSString*)resourcePath {
-	return [self loadSynchronously:resourcePath method:RKRequestMethodDELETE];
+	return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate callback:callback];
 }
 
 @end

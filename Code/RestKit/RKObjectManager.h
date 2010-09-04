@@ -1,5 +1,5 @@
 //
-//  RKResourceManager.h
+//  RKObjectManager.h
 //  RestKit
 //
 //  Created by Jeremy Ellison on 8/14/09.
@@ -7,8 +7,8 @@
 //
 
 #import "RKClient.h"
-#import "RKResourceMapper.h"
-#import "RKResourceLoader.h"
+#import "RKObjectMapper.h"
+#import "RKObjectLoader.h"
 #import "RKStaticRouter.h"
 #import "RKManagedObjectStore.h"
 
@@ -16,10 +16,10 @@
 extern NSString* const RKDidEnterOfflineModeNotification;
 extern NSString* const RKDidEnterOnlineModeNotification;
 
-@interface RKResourceManager : NSObject {
+@interface RKObjectManager : NSObject {
 	RKClient* _client;
 	RKMappingFormat _format;
-	RKResourceMapper* _mapper;
+	RKObjectMapper* _mapper;
 	NSObject<RKRouter>* _router;
 	RKManagedObjectStore* _objectStore;		
 	BOOL _isOnline;
@@ -28,18 +28,18 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * Return the shared instance of the model manager
  */
-+ (RKResourceManager*)manager;
++ (RKObjectManager*)manager;
 
 /**
  * Set the shared instance of the model manager
  */
-+ (void)setManager:(RKResourceManager*)manager;
++ (void)setManager:(RKObjectManager*)manager;
 
 /**
  * Create and initialize a new model manager. If this is the first instance created
  * it will be set as the shared instance
  */
-+ (RKResourceManager*)managerWithBaseURL:(NSString*)baseURL;
++ (RKObjectManager*)managerWithBaseURL:(NSString*)baseURL;
 
 /**
  * Initialize a new model manager instance
@@ -76,12 +76,12 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * Register a resource mapping from a domain model class to a JSON/XML element name
  */
-- (void)registerClass:(Class<RKResourceMappable>)class forElementNamed:(NSString*)elementName;
+- (void)registerClass:(Class<RKObjectMappable>)class forElementNamed:(NSString*)elementName;
 
 /**
  * Mapper object responsible for mapping remote HTTP resources to Cocoa objects
  */
-@property(nonatomic, readonly) RKResourceMapper* mapper;
+@property(nonatomic, readonly) RKObjectMapper* mapper;
 
 /**
  * Routing object responsible for generating paths for objects and serializing
@@ -99,27 +99,27 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * Fetch a resource via an HTTP GET and invoke a callback with the model for the resulting payload
  */
-- (RKRequest*)loadResource:(NSString*)resourcePath delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)loadResource:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 // Load via a method...
-- (RKRequest*)loadResource:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)loadResource:(NSString*)resourcePath method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Fetch a resource via a specified HTTP method
  */
-- (RKRequest*)loadResource:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)loadResource:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Fetch a resource via an HTTP GET with a dictionary of parameters and invoke a callback with the models mapped from the payload
  */
-- (RKRequest*)loadResource:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)loadResource:(NSString*)resourcePath params:(NSDictionary*)params delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Fetch methods for clients that implement local caching
  */
-- (RKRequest*)loadResource:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
-
-- (RKRequest*)loadResource:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+// TODO: Need a better implementation of the cacheing...
+- (RKRequest*)loadResource:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKRequest*)loadResource:(NSString*)resourcePath fetchRequest:(NSFetchRequest*)fetchRequest method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
 // Model Mappable object helpers
@@ -127,21 +127,21 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * Update a mappable model by loading its attributes from the web
  */
-- (RKRequest*)getObject:(NSObject<RKResourceMappable>*)object delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting model from the payload
  */
-- (RKRequest*)postObject:(NSObject<RKResourceMappable>*)object delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting model from the payload
  */
-- (RKRequest*)putObject:(NSObject<RKResourceMappable>*)object delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
  */
-- (RKRequest*)deleteObject:(NSObject<RKResourceMappable>*)object delegate:(NSObject<RKResourceLoaderDelegate>*)delegate;
+- (RKRequest*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 @end

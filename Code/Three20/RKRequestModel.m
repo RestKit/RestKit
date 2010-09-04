@@ -178,7 +178,7 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	// Go Offline button
 	if (1 == buttonIndex) {
-		[[RKResourceManager manager] goOffline];
+		[[RKObjectManager manager] goOffline];
 	}
 }
 
@@ -198,11 +198,11 @@
 // RKModelLoaderDelegate
 
 // This callback is invoked after the request has been fully serviced. Finish the load here.
-- (void)resourceLoadRequest:(RKRequest *)request didLoadObjects:(NSArray *)objects response:(RKResponse *)response object:(id<RKResourceMappable>)object {
+- (void)resourceLoadRequest:(RKRequest *)request didLoadObjects:(NSArray *)objects response:(RKResponse *)response object:(id<RKObjectMappable>)object {
 	[self modelsDidLoad:objects];
 }
 
-- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKResourceMappable>)object {
+- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKObjectMappable>)object {
 	if ([self errorWarrantsOptionToGoOffline:error]) {
 		[self showAlertWithOptionToGoOfflineForError:error];
 	} else {
@@ -225,9 +225,9 @@
 
 - (void)load {
 	if (_params) {
-		_loadingRequest = [[RKResourceManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method params:_params delegate:self];
+		_loadingRequest = [[RKObjectManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method params:_params delegate:self];
 	} else {
-		_loadingRequest = [[RKResourceManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method delegate:self];
+		_loadingRequest = [[RKObjectManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method delegate:self];
 	}	
 }
 

@@ -73,8 +73,13 @@
 }
 
 - (void)setParams:(NSObject<RKRequestSerializable>*)params {
-	_params = [params retain];
-	[_URLRequest setHTTPBody:[_params HTTPBody]];
+	[params retain];
+	[_params release];
+	_params = params;
+	
+	if (params) {
+		[_URLRequest setHTTPBody:[_params HTTPBody]];
+	}
 }
 
 - (NSString*)HTTPMethod {
@@ -121,16 +126,6 @@
 	NSError* error = nil;
 	NSData* payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
 	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
-}
-
-- (void)sendWithMethod:(RKRequestMethod)method {
-	self.method = method;
-	[self send];
-}
-
-- (RKResponse*)sendSynchronouslyWithMethod:(RKRequestMethod)method {
-	self.method = method;
-	return [self sendSynchronously];
 }
 
 - (void)cancel {

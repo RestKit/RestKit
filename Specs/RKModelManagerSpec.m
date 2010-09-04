@@ -1,5 +1,5 @@
 //
-//  RKResourceManagerSpec.m
+//  RKObjectManagerSpec.m
 //  RestKit
 //
 //  Created by Blake Watters on 1/14/10.
@@ -7,22 +7,22 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKResourceManager.h"
+#import "RKObjectManager.h"
 #import "RKSpecResponseLoader.h"
 #import "RKHuman.h"
 
-@interface RKResourceManagerSpec : NSObject <UISpec> {
-	RKResourceManager* _modelManager;
+@interface RKObjectManagerSpec : NSObject <UISpec> {
+	RKObjectManager* _modelManager;
 	RKSpecResponseLoader* _responseLoader;
 }
 
 @end
 
-@implementation RKResourceManagerSpec
+@implementation RKObjectManagerSpec
 
 - (void)beforeAll {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3000", getenv("RKREST_IP_ADDRESS")];
-	_modelManager = [RKResourceManager managerWithBaseURL:localBaseURL];
+	_modelManager = [RKObjectManager managerWithBaseURL:localBaseURL];
 	_modelManager.objectStore = [[RKManagedObjectStore alloc] initWithStoreFilename:@"RKSpecs.sqlite"];
 	[_modelManager registerClass:[RKHuman class] forElementNamed:@"human"];
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];
@@ -41,7 +41,7 @@
 
 - (void)itShouldHandleConnectionFailures {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3001", getenv("RKREST_IP_ADDRESS")];
-	RKResourceManager* modelManager = [RKResourceManager managerWithBaseURL:localBaseURL];
+	RKObjectManager* modelManager = [RKObjectManager managerWithBaseURL:localBaseURL];
 	[modelManager loadResource:@"/humans/1" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	[expectThat(_responseLoader.success) should:be(NO)];

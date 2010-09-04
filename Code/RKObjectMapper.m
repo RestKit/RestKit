@@ -1,5 +1,5 @@
 //
-//  RKResourceMapper.m
+//  RKObjectMapper.m
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
@@ -8,7 +8,7 @@
 
 #import <objc/message.h>
 
-#import "RKResourceMapper.h"
+#import "RKObjectMapper.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKMappingFormatJSONParser.h"
 
@@ -18,7 +18,7 @@ static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'
 static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatParser";
 
-@interface RKResourceMapper (Private)
+@interface RKObjectMapper (Private)
 
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 
@@ -38,7 +38,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 @end
 
-@implementation RKResourceMapper
+@implementation RKObjectMapper
 
 @synthesize format = _format;
 @synthesize dateFormats = _dateFormats;
@@ -67,7 +67,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	[super dealloc];
 }
 
-- (void)registerClass:(Class<RKResourceMappable>)aClass forElementNamed:(NSString*)elementName {
+- (void)registerClass:(Class<RKObjectMappable>)aClass forElementNamed:(NSString*)elementName {
 	[_elementToClassMappings setObject:aClass forKey:elementName];
 }
 
@@ -193,7 +193,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 // TODO: This responsibility probaby belongs elsewhere...
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
 	id object = nil;
-	// TODO: Maybe add back to RKResourceMappable protocol. better selectors?
+	// TODO: Maybe add back to RKObjectMappable protocol. better selectors?
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
 		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
 		NSNumber* primaryKey = [elements objectForKey:primaryKeyElement];

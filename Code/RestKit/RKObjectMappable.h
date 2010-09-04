@@ -1,5 +1,5 @@
 /*
- *  RKResourceMappable.h
+ *  RKObjectMappable.h
  *  RestKit
  *
  *  Created by Blake Watters on 8/14/09.
@@ -13,7 +13,7 @@
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes
  */
-@protocol RKResourceMappable
+@protocol RKObjectMappable
 
 /**
  * Must return a dictionary containing mapping from XML element names to property accessors

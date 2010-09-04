@@ -1,5 +1,5 @@
 //
-//  RKResourceMapperSpecModel.h
+//  RKObjectMapperSpecModel.h
 //  RestKit
 //
 //  Created by Blake Watters on 2/18/10.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RKResourceMapperSpecModel : NSObject {
+@interface RKObjectMapperSpecModel : NSObject {
 	NSString* _name;
 	NSNumber* _age;
 	NSDate* _createdAt;

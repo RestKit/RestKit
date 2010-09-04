@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "RKResourceMappable.h"
-#import "RKResourceManager.h"
+#import "RKObjectMappable.h"
+#import "RKObjectManager.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // RestKit managed models
 
-@interface RKManagedObject : NSManagedObject <RKResourceMappable> {
+@interface RKManagedObject : NSManagedObject <RKObjectMappable> {
 	
 }
 

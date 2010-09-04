@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKResourceLoader.h"
+#import "RKObjectLoader.h"
 
-@interface RKSpecResponseLoader : NSObject <RKResourceLoaderDelegate> {
+@interface RKSpecResponseLoader : NSObject <RKObjectLoaderDelegate> {
 	BOOL _awaitingResponse;
 	BOOL _success;
 	id _response;

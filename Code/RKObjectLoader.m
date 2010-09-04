@@ -1,5 +1,5 @@
 //
-//  RKResourceLoader.m
+//  RKObjectLoader.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/8/09.
@@ -7,21 +7,21 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKResourceLoader.h"
+#import "RKObjectLoader.h"
 #import "RKResponse.h"
-#import "RKResourceManager.h"
+#import "RKObjectManager.h"
 #import "Errors.h"
 #import "RKManagedObject.h"
 
-@implementation RKResourceLoader
+@implementation RKObjectLoader
 
 @synthesize mapper = _mapper, delegate = _delegate, callback = _callback, fetchRequest = _fetchRequest;
 
-+ (id)loaderWithMapper:(RKResourceMapper*)mapper {
++ (id)loaderWithMapper:(RKObjectMapper*)mapper {
 	return [[[self alloc] initWithMapper:mapper] autorelease];
 }
 
-- (id)initWithMapper:(RKResourceMapper*)mapper {
+- (id)initWithMapper:(RKObjectMapper*)mapper {
 	if (self = [self init]) {
 		_mapper = [mapper retain];
 	}
@@ -41,7 +41,7 @@
 - (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
 	RKRequest* request = response.request;
 	if ([response isFailure]) {
-		[_delegate resourceLoadRequest:response.request didFailWithError:response.failureError response:response object:(id<RKResourceMappable>)request.userData];
+		[_delegate resourceLoadRequest:response.request didFailWithError:response.failureError response:response object:(id<RKObjectMappable>)request.userData];
 		return YES;
 	} else if ([response isError]) {
 		NSString* errorMessage = nil;
@@ -56,7 +56,7 @@
 								  nil];		
 		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
 		
-		[_delegate resourceLoadRequest:response.request didFailWithError:error response:response object:(id<RKResourceMappable>)request.userData];
+		[_delegate resourceLoadRequest:response.request didFailWithError:error response:response object:(id<RKObjectMappable>)request.userData];
 		return YES;
 	}
 	
@@ -81,7 +81,7 @@
 	}
 	
 	RKRequest* request = response.request;
-	[_delegate resourceLoadRequest:request didLoadObjects:[NSArray arrayWithArray:objects] response:response object:(id<RKResourceMappable>)request.userData];
+	[_delegate resourceLoadRequest:request didLoadObjects:[NSArray arrayWithArray:objects] response:response object:(id<RKObjectMappable>)request.userData];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
@@ -100,7 +100,7 @@
 	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
 	
 	RKRequest* request = response.request;
-	[_delegate resourceLoadRequest:response.request didFailWithError:rkError response:response object:(id<RKResourceMappable>)request.userData];
+	[_delegate resourceLoadRequest:response.request didFailWithError:rkError response:response object:(id<RKObjectMappable>)request.userData];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
@@ -109,7 +109,7 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
-	RKManagedObjectStore* objectStore = [[RKResourceManager manager] objectStore]; // TODO: Should probably relax singleton...
+	RKManagedObjectStore* objectStore = [[RKObjectManager manager] objectStore]; // TODO: Should probably relax singleton...
 	
 	// If the request was sent through a model, we map the results back into that object
 	// TODO: Note that this assumption may not work in all cases, other approaches?
@@ -152,7 +152,7 @@
 	
 	// Before looking up NSManagedObjectIDs, need to save to ensure we do not have
 	// temporary IDs for new objects prior to handing the objectIDs across threads
-	NSError* error = [[[RKResourceManager manager] objectStore] save];
+	NSError* error = [[[RKObjectManager manager] objectStore] save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
 		[self performSelectorOnMainThread:@selector(informDelegateOfModelLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];		
