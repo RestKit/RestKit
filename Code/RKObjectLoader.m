@@ -13,17 +13,25 @@
 #import "Errors.h"
 #import "RKManagedObject.h"
 
+@interface RKObjectLoader (Private)
+- (void)loadObjectsFromResponse:(RKResponse*)response;
+@end
+
 @implementation RKObjectLoader
 
-@synthesize mapper = _mapper, delegate = _delegate, callback = _callback, fetchRequest = _fetchRequest;
+@synthesize mapper = _mapper, delegate = _delegate, fetchRequest = _fetchRequest,
+			request = _request, response = _response, objectClass = _objectClass,
+			source = _source;
 
-+ (id)loaderWithMapper:(RKObjectMapper*)mapper {
-	return [[[self alloc] initWithMapper:mapper] autorelease];
++ (id)loaderWithMapper:(RKObjectMapper*)mapper request:(RKRequest*)request delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+	return [[[self alloc] initWithMapper:mapper request:request delegate:delegate] autorelease];
 }
 
-- (id)initWithMapper:(RKObjectMapper*)mapper {
+- (id)initWithMapper:(RKObjectMapper*)mapper request:(RKRequest*)request delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	if (self = [self init]) {
 		_mapper = [mapper retain];
+		self.request = request;
+		self.delegate = delegate;
 	}
 	
 	return self;
@@ -31,17 +39,66 @@
 
 - (void)dealloc {
 	[_mapper release];
+	[_request release];
+	[_delegate release];
+	[_response release];
+	[_fetchRequest release];	
 	[super dealloc];
 }
 
-- (SEL)callback {
-	return @selector(loadObjectsFromResponse:);
+- (void)setRequest:(RKRequest *)request {
+	[request retain];
+	[_request release];
+	_request = request;
+	
+	_request.delegate = self;
+	_request.callback = @selector(loadObjectsFromResponse:);
 }
 
+#pragma mark RKRequest Proxy Methods
+
+- (NSURL*)URL {
+	return self.request.URL;
+}
+
+- (RKRequestMethod)method {
+	return self.request.method;
+}
+
+- (void)setMethod:(RKRequestMethod)method {
+	self.request.method = method;
+}
+
+- (NSObject<RKRequestSerializable>*)params {
+	return self.request.params;
+}
+
+- (void)setParams:(NSObject<RKRequestSerializable>*)params {
+	self.request.params = params;
+}
+
+- (NSObject<RKObjectMappable>*)source {
+	return (NSObject<RKObjectMappable>*)self.request.userData;
+}
+
+- (void)setSource:(NSObject<RKObjectMappable>*)source {
+	self.request.userData = source;
+}
+
+- (void)send {
+	[self.request send];
+}
+
+- (void)sendSynchronously {
+	RKResponse* response = [self.request sendSynchronously];
+	[self loadObjectsFromResponse:response];
+}
+
+#pragma mark Response Processing
+
 - (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
-	RKRequest* request = response.request;
 	if ([response isFailure]) {
-		[_delegate request:response.request didFailWithError:response.failureError response:response object:(id<RKObjectMappable>)request.userData];
+		[_delegate objectLoader:self didFailWithError:response.failureError];
 		return YES;
 	} else if ([response isError]) {
 		NSString* errorMessage = nil;
@@ -54,16 +111,16 @@
 		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 								  errorMessage, NSLocalizedDescriptionKey,
 								  nil];		
-		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
+		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
 		
-		[_delegate request:response.request didFailWithError:error response:response object:(id<RKObjectMappable>)request.userData];
+		[_delegate objectLoader:self didFailWithError:error];
 		return YES;
 	}
 	
 	return NO;
 }
 
-- (void)informDelegateOfModelLoadWithInfoDictionary:(NSDictionary*)dictionary {
+- (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
 	RKResponse* response = [dictionary objectForKey:@"response"];
 	NSArray* models = [dictionary objectForKey:@"models"];
 	[dictionary release];
@@ -80,27 +137,25 @@
 		}
 	}
 	
-	RKRequest* request = response.request;
-	[_delegate request:request didLoadObjects:[NSArray arrayWithArray:objects] response:response object:(id<RKObjectMappable>)request.userData];
+	[_delegate objectLoader:self didLoadObjects:[NSArray arrayWithArray:objects]];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
 }
 
-- (void)informDelegateOfModelLoadErrorWithInfoDictionary:(NSDictionary*)dictionary {
+- (void)informDelegateOfObjectLoadErrorWithInfoDictionary:(NSDictionary*)dictionary {
 	RKResponse* response = [dictionary objectForKey:@"response"];
 	NSError* error = [dictionary objectForKey:@"error"];
 	[dictionary release];
 	
-	NSLog(@"[RestKit] RKModelLoader: Error saving managed object context: error=%@ userInfo=%@", error, error.userInfo);
+	NSLog(@"[RestKit] RKObjectLoader: Error saving managed object context: error=%@ userInfo=%@", error, error.userInfo);
 	
 	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 							  [error localizedDescription], NSLocalizedDescriptionKey,
 							  nil];		
-	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKModelLoaderRemoteSystemError userInfo:userInfo];
+	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
 	
-	RKRequest* request = response.request;
-	[_delegate request:response.request didFailWithError:rkError response:response object:(id<RKObjectMappable>)request.userData];
+	[_delegate objectLoader:self didFailWithError:rkError];
 	
 	// Release the response now that we have finished all our processing
 	[response release];
@@ -155,7 +210,7 @@
 	NSError* error = [[[RKObjectManager manager] objectStore] save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
-		[self performSelectorOnMainThread:@selector(informDelegateOfModelLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];		
+		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];		
 	} else {
 		// NOTE: Passing Core Data objects across threads is not safe. 
 		// Iterate over each model and coerce Core Data objects into ID's to pass across the threads.
@@ -170,16 +225,16 @@
 		}		
 		
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", models, @"models", nil] retain];
-		[self performSelectorOnMainThread:@selector(informDelegateOfModelLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];
+		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];
 	}
 
 	[pool release];
 }
 
 - (void)loadObjectsFromResponse:(RKResponse*)response {
+	_response = [response retain];
+	
 	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {
-		// Retain the response to prevent this thread from dealloc'ing before we have finished processing
-		[response retain];
 		[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 	} else {
 		// TODO: What do we do if this is not a 200, 4xx or 5xx response? Need new delegate method...

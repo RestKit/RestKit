@@ -97,44 +97,76 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 @property(nonatomic, retain) RKManagedObjectStore* objectStore;
 
 /**
- * Return an object mapping request object ready to be sent. The method defaults to GET and the URL is relative to the
+ * Return an object loader request object ready to be sent. The method defaults to GET and the URL is relative to the
  * baseURL configured on the client.
  */
-- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)loaderWithResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+
+////////////////////////////////////////////////////////
+// Registered Object Loaders
 
 /**
- * Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
- * with the loaded response
+ * These methods are suitable for loading remote payloads that encode type information into the payload. This enables
+ * the mapping of complex payloads spanning multiple types (i.e. a search operation returning Articles & Comments in
+ * one payload). Ruby on Rails JSON serialization is an example of such a conformant system.
  */
-- (RKRequest*)getObjectsAtResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+ 
+/**
+ * Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
+ * with the loaded objects. Remote objects will be mapped to local objects by consulting the element registrations
+ * set on the mapper.
+ */
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
- * of query parameters to append to the URL and call back the delegate with the loaded objects
+ * of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped to 
+ * local objects by consulting the element registrations set on the mapper.
  */
-- (RKRequest*)getObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
-// Model Mappable object helpers
+// Explicit Object Loaders
+
+/**
+ * These methods are suitable for loading remote payloads where no type information is encoded into the payload. When
+ * the request is completed, the resulting payload will be mapped into instances of the specified mappable object class.
+ */
+
+/**
+ * Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
+ * with the loaded objects. Remote objects will be mapped into instances of the specified object mappable class.
+ */
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+
+/**
+ * Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
+ * of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped into 
+ * instances of the specified object mappable class.
+ */
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
+
+////////////////////////////////////////////////////////
+// Mappable object helpers
 
 /**
  * Update a mappable model by loading its attributes from the web
  */
-- (RKRequest*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting objects from the payload
  */
-- (RKRequest*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting objects from the payload
  */
-- (RKRequest*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
  */
-- (RKRequest*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 @end

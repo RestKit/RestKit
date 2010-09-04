@@ -11,6 +11,9 @@
 #import "RKRequestSerializable.h"
 #import "RKJSONSerialization.h"
 
+/**
+ * HTTP methods for requests
+ */
 typedef enum RKRequestMethod {
 	RKRequestMethodGET = 0,
 	RKRequestMethodPOST,
@@ -36,22 +39,22 @@ typedef enum RKRequestMethod {
 }
 
 /**
- * used for http auth chalange
+ * The URL this request is loading
  */
-@property(nonatomic, retain) NSString* username;
-@property(nonatomic, retain) NSString* password;
-
 @property(nonatomic, readonly) NSURL* URL;
 
 /**
- * The NSMutableURLRequest being sent for the Restful request
+ * The HTTP verb the request is sent via
+ *
+ * @default RKRequestMethodGET
  */
-@property(nonatomic, readonly) NSMutableURLRequest* URLRequest;
+@property(nonatomic, assign) RKRequestMethod method;
 
 /**
- * The HTTP Method used for this request
+ * A serializable collection of parameters sent as the HTTP Body of the request
  */
-@property(nonatomic, readonly) NSString* HTTPMethod;
+// TODO: Should I be copy?
+@property(nonatomic, retain) NSObject<RKRequestSerializable>* params;
 
 /**
  * The delegate to inform when the request is completed
@@ -64,31 +67,30 @@ typedef enum RKRequestMethod {
 @property(nonatomic, assign) SEL callback;
 
 /**
- * An opaque pointer to associate user defined data with the request.
- */
-@property(nonatomic, retain) id userData;
-
-/**
  * A Dictionary of additional HTTP Headers to send with the request
  */
 @property(nonatomic, retain) NSDictionary* additionalHTTPHeaders;
 
 /**
- * A serializable collection of parameters sent as the HTTP Body of the request
+ * An opaque pointer to associate user defined data with the request.
  */
-// TODO: Should I be copy?
-@property(nonatomic, retain) NSObject<RKRequestSerializable>* params;
+@property(nonatomic, retain) id userData;
 
 /**
- * The HTTP verb the request is sent via
+ * Credentials for HTTP AUTH Challenge
  */
-@property(nonatomic, assign) RKRequestMethod method;
+@property(nonatomic, retain) NSString* username;
+@property(nonatomic, retain) NSString* password;
 
 /**
- * NSFetchRequest used to obtain locally cached objects
+ * The underlying NSMutableURLRequest sent for this request
  */
-@property(nonatomic, retain) NSFetchRequest* fetchRequest;
+@property(nonatomic, readonly) NSMutableURLRequest* URLRequest;
 
+/**
+ * The HTTP method as a string used for this request
+ */
+@property(nonatomic, readonly) NSString* HTTPMethod;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

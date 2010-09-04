@@ -10,5 +10,5 @@
 extern NSString* const RKRestKitErrorDomain;
 
 typedef enum {
-	RKModelLoaderRemoteSystemError = 1
+	RKObjectLoaderRemoteSystemError = 1
 } RKRestKitError;
