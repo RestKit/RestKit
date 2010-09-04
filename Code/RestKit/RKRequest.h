@@ -58,6 +58,9 @@ typedef enum RKRequestMethod {
 
 /**
  * The delegate to inform when the request is completed
+ *
+ * If the object implements the RKRequestDelegate protocol,
+ * it will receive request lifecycle event messages.
  */
 @property(nonatomic, retain) id delegate;
 
@@ -154,8 +157,25 @@ typedef enum RKRequestMethod {
  */
 @protocol RKRequestDelegate 
 @optional
+
+/**
+ * Sent when a request has started loading
+ */
 - (void)requestDidStartLoad:(RKRequest*)request;
+
+/**
+ * Sent when a request has finished loading
+ */
 - (void)requestDidFinishLoad:(RKRequest*)request;
+
+/**
+ * Sent when a request has failed due to an error
+ */
 - (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error;
+
+/**
+ * Sent when a request has been canceled
+ */
 - (void)requestDidCancelLoad:(RKRequest*)request;
+
 @end
