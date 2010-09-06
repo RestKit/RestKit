@@ -50,6 +50,8 @@
 		252F558B1140B93A003C6F42 /* RKObjectPropertyInspector.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F558A1140B93A003C6F42 /* RKObjectPropertyInspector.m */; };
 		252F558C1140B93A003C6F42 /* RKObjectPropertyInspector.h in Headers */ = {isa = PBXBuildFile; fileRef = 252F55891140B93A003C6F42 /* RKObjectPropertyInspector.h */; };
 		252F558D1140B93A003C6F42 /* RKObjectPropertyInspector.m in Sources */ = {isa = PBXBuildFile; fileRef = 252F558A1140B93A003C6F42 /* RKObjectPropertyInspector.m */; };
+		2538E89812342B9100ACB5D7 /* NSDictionary+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 2538E89612342B9100ACB5D7 /* NSDictionary+RKAdditions.h */; };
+		2538E89912342B9100ACB5D7 /* NSDictionary+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E89712342B9100ACB5D7 /* NSDictionary+RKAdditions.m */; };
 		253BBE961076AB1C00C804B2 /* NSString+InflectionSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = 253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */; };
 		253BBE971076AB1C00C804B2 /* NSString+InflectionSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */; };
 		255DE05A10FF9DA500A85891 /* RKModelManagerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05910FF9DA500A85891 /* RKModelManagerSpec.m */; };
@@ -334,6 +336,8 @@
 		252F4FA8114046C9003C6F42 /* RKMappingFormatJSONParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingFormatJSONParser.m; path = Code/RKMappingFormatJSONParser.m; sourceTree = "<group>"; };
 		252F55891140B93A003C6F42 /* RKObjectPropertyInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKObjectPropertyInspector.h; path = Code/RKObjectPropertyInspector.h; sourceTree = "<group>"; };
 		252F558A1140B93A003C6F42 /* RKObjectPropertyInspector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKObjectPropertyInspector.m; path = Code/RKObjectPropertyInspector.m; sourceTree = "<group>"; };
+		2538E89612342B9100ACB5D7 /* NSDictionary+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDictionary+RKAdditions.h"; path = "Code/RestKit/NSDictionary+RKAdditions.h"; sourceTree = "<group>"; };
+		2538E89712342B9100ACB5D7 /* NSDictionary+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDictionary+RKAdditions.m"; path = "Code/NSDictionary+RKAdditions.m"; sourceTree = "<group>"; };
 		253BBE941076AB1C00C804B2 /* NSString+InflectionSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+InflectionSupport.h"; path = "Code/RestKit/NSString+InflectionSupport.h"; sourceTree = "<group>"; };
 		253BBE951076AB1C00C804B2 /* NSString+InflectionSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+InflectionSupport.m"; path = "Code/NSString+InflectionSupport.m"; sourceTree = "<group>"; };
 		255DE03010FF9BDF00A85891 /* RKManagedObjectSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectSpec.m; sourceTree = "<group>"; };
@@ -720,6 +724,8 @@
 				3F4E1919102DD42F00320118 /* NSDictionary+RKRequestSerialization.m */,
 				25232F8611E6476B0048F9B4 /* NSObject+RKJSONSerialization.h */,
 				25232F8711E6476B0048F9B4 /* NSObject+RKJSONSerialization.m */,
+				2538E89612342B9100ACB5D7 /* NSDictionary+RKAdditions.h */,
+				2538E89712342B9100ACB5D7 /* NSDictionary+RKAdditions.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -836,6 +842,7 @@
 				250BBF9A11F5FFF500F3FE5A /* RKObject.h in Headers */,
 				250BBFAF11F606D300F3FE5A /* RKRouter.h in Headers */,
 				250BBFC311F608DB00F3FE5A /* RKStaticRouter.h in Headers */,
+				2538E89812342B9100ACB5D7 /* NSDictionary+RKAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1174,6 +1181,7 @@
 				25232F8911E6476B0048F9B4 /* NSObject+RKJSONSerialization.m in Sources */,
 				250BBF9B11F5FFF500F3FE5A /* RKObject.m in Sources */,
 				250BBFC411F608DB00F3FE5A /* RKStaticRouter.m in Sources */,
+				2538E89912342B9100ACB5D7 /* NSDictionary+RKAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

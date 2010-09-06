@@ -37,15 +37,14 @@
  */
 + (NSDictionary*)elementToRelationshipMappings;
 
-// TODO: Add an optional errors property. This will be populated when there are errors in the mapping.
+@optional
 
 /**
  * Return a dictionary of values to be serialized for submission to a remote resource. The router
- * will encode these parameters into a serialization format (form encoded, JSON, etc).
+ * will encode these parameters into a serialization format (form encoded, JSON, etc). This is
+ * required to use putObject: and postObject: for updating and creating remote object representations.
  */
 - (NSDictionary*)paramsForSerialization;
-
-@optional
 
 /**
  * Must return a new instance of the model class ready for mapping. Used to initialize the model

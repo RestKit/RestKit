@@ -94,12 +94,16 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	return [parser objectFromString:string];
 }
 
-- (id)mapFromString:(NSString*)string {
+- (id)mapFromString:(NSString*)string toClass:(Class)class {
 	id object = [self parseString:string];
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		return [self mapObjectFromDictionary:(NSDictionary*)object];
 	} else if ([object isKindOfClass:[NSArray class]]) {
-		return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
+		if (class) {
+			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object toClass:class];
+		} else {
+			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
+		}
 	} else if (nil == object) {
 		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
 		return nil;
@@ -108,6 +112,10 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 					format:@"The object was deserialized into a %@. A dictionary or array of dictionaries was expected.", [object class]];
 		return nil;
 	}
+}
+
+- (id)mapFromString:(NSString*)string {
+	[self mapFromString:string toClass:nil];
 }
 
 - (void)mapObject:(id)model fromString:(NSString*)string {
@@ -152,8 +160,10 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	NSMutableArray* objects = [NSMutableArray array];
 	for (NSDictionary* dictionary in array) {
 		if (![dictionary isKindOfClass:[NSNull class]]) {
+			// TODO: Makes assumptions about the structure of the JSON...
 			NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 			Class class = [_elementToClassMappings objectForKey:elementName];
+			NSAssert(class != nil, @"Unable to perform object mapping without a destination class");
 			NSDictionary* elements = [dictionary objectForKey:elementName];
 			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
 			[objects addObject:object];

@@ -26,20 +26,20 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 }
 
 /**
- * Return the shared instance of the model manager
+ * Return the globally shared instance of the object manager
  */
-+ (RKObjectManager*)manager;
++ (RKObjectManager*)globalManager;
 
 /**
- * Set the shared instance of the model manager
+ * Set the globally shared instance of the object manager
  */
-+ (void)setManager:(RKObjectManager*)manager;
++ (void)setGlobalManager:(RKObjectManager*)manager;
 
 /**
- * Create and initialize a new model manager. If this is the first instance created
+ * Create and initialize a new object manager. If this is the first instance created
  * it will be set as the shared instance
  */
-+ (RKObjectManager*)managerWithBaseURL:(NSString*)baseURL;
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL;
 
 /**
  * Initialize a new model manager instance
@@ -49,7 +49,7 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 /**
  * The wire format to use for communications. Either RKMappingFormatXML or RKMappingFormatJSON.
  *
- * Defaults to RKMappingFormatXML
+ * Defaults to RKMappingFormatJSON
  */
 @property(nonatomic, assign) RKMappingFormat format;
 

@@ -13,3 +13,4 @@
 #import "RestKit/RKManagedObject.h"
 #import "RestKit/RKNotifications.h"
 #import "RestKit/RKObjectSeeder.h"
+#import "RestKit/NSDictionary+RKAdditions.h"

@@ -15,14 +15,18 @@
 #pragma mark -
 #pragma mark NSManagedObject helper methods
 
+// TODO: The managedObjectContext should be settable at the class level to ease coupling with
+// singleton object manager
 + (NSManagedObjectContext*)managedObjectContext {
-	return [[[RKObjectManager manager] objectStore] managedObjectContext];
+	return [[[RKObjectManager globalManager] objectStore] managedObjectContext];
 }
 
+// TODO: Move to new home!
 + (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
 	return [[RKManagedObject managedObjectContext] objectWithID:objectID];
 }
 
+// TODO: Move to new home!
 + (NSArray*)objectsWithIDs:(NSArray*)objectIDs {
 	NSMutableArray* objects = [[NSMutableArray alloc] init];
 	for (NSManagedObjectID* objectID in objectIDs) {

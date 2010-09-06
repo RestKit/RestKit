@@ -117,6 +117,7 @@ typedef enum {
 // Non-element based object mapping
 
 - (id)parseString:(NSString*)string;
+- (id)mapFromString:(NSString *)string toClass:(Class)class;
 - (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class;
 
 @end

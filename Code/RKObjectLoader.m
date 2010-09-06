@@ -164,7 +164,7 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
-	RKManagedObjectStore* objectStore = [[RKObjectManager manager] objectStore]; // TODO: Should probably relax singleton...
+	RKManagedObjectStore* objectStore = [[RKObjectManager globalManager] objectStore]; // TODO: Should probably relax singleton...
 	
 	// If the request was sent through a model, we map the results back into that object
 	// TODO: Note that this assumption may not work in all cases, other approaches?
@@ -183,7 +183,8 @@
 			results = [NSArray arrayWithObject:mainThreadModel];
 		}
 	} else {
-		id result = [_mapper mapFromString:[response bodyAsString]];
+		
+		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {
@@ -193,7 +194,6 @@
 		}
 		
 		if (self.fetchRequest) {
-			// TODO: Get rid of objectsWithRequest on 
 			NSArray* cachedObjects = [RKManagedObject objectsWithRequest:self.fetchRequest];			
 			for (id object in cachedObjects) {
 				if ([object isKindOfClass:[RKManagedObject class]]) {
@@ -207,7 +207,7 @@
 	
 	// Before looking up NSManagedObjectIDs, need to save to ensure we do not have
 	// temporary IDs for new objects prior to handing the objectIDs across threads
-	NSError* error = [[[RKObjectManager manager] objectStore] save];
+	NSError* error = [[[RKObjectManager globalManager] objectStore] save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
 		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];		
