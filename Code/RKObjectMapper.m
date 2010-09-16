@@ -9,7 +9,7 @@
 #import <objc/message.h>
 
 #import "RKObjectMapper.h"
-#import "NSDictionary+RKRequestSerialization.h"
+#import "NSDictionary+RKAdditions.h"
 #import "RKMappingFormatJSONParser.h"
 
 // Default format string for date and time objects from Rails
