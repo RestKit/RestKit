@@ -40,9 +40,8 @@
 - (void)dealloc {
 	[_mapper release];
 	[_request release];
-	[_delegate release];
 	[_response release];
-	[_fetchRequest release];	
+	[_fetchRequest release];
 	[super dealloc];
 }
 
@@ -121,7 +120,6 @@
 }
 
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
-	RKResponse* response = [dictionary objectForKey:@"response"];
 	NSArray* models = [dictionary objectForKey:@"models"];
 	[dictionary release];
 	
@@ -138,13 +136,9 @@
 	}
 	
 	[_delegate objectLoader:self didLoadObjects:[NSArray arrayWithArray:objects]];
-	
-	// Release the response now that we have finished all our processing
-	[response release];
 }
 
 - (void)informDelegateOfObjectLoadErrorWithInfoDictionary:(NSDictionary*)dictionary {
-	RKResponse* response = [dictionary objectForKey:@"response"];
 	NSError* error = [dictionary objectForKey:@"error"];
 	[dictionary release];
 	
@@ -156,9 +150,6 @@
 	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
 	
 	[_delegate objectLoader:self didFailWithError:rkError];
-	
-	// Release the response now that we have finished all our processing
-	[response release];
 }
 
 

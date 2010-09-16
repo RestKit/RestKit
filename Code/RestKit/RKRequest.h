@@ -62,7 +62,7 @@ typedef enum RKRequestMethod {
  * If the object implements the RKRequestDelegate protocol,
  * it will receive request lifecycle event messages.
  */
-@property(nonatomic, retain) id delegate;
+@property(nonatomic, assign) id delegate;
 
 /**
  * The selector to invoke when the request is completed

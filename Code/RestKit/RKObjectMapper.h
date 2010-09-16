@@ -75,6 +75,7 @@ typedef enum {
  * Register a mapping for a given class for an XML element with the given tag name
  * will blow up if the class does not respond to elementToPropertyMappings and elementToRelationshipMappings
  */
+// TODO: Should be forKeyPath or have a sister forKeyPath method
 - (void)registerClass:(Class<RKObjectMappable>)aClass forElementNamed:(NSString*)elementName;
 
 ///////////////////////////////////////////////////////////////////////////////

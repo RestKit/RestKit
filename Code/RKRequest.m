@@ -35,7 +35,7 @@
 
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
 	if (self = [self initWithURL:URL]) {
-		_delegate = [delegate retain];
+		_delegate = delegate;
 		_callback = callback;		
 	}
 	
@@ -43,10 +43,11 @@
 }
 
 - (void)dealloc {
+	[_connection cancel];
+	[_connection release];
 	[_userData release];
 	[_URL release];
 	[_URLRequest release];
-	[_delegate release];
 	[_params release];
 	[_additionalHTTPHeaders release];
 	[_username release];

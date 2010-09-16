@@ -50,7 +50,7 @@
  * If this object implements life-cycle methods from the RKRequestDelegate protocol, 
  * events from the request will be forwarded back.
  */
-@property (nonatomic, retain) NSObject<RKObjectLoaderDelegate>* delegate;
+@property (nonatomic, assign) NSObject<RKObjectLoaderDelegate>* delegate;
 
 /**
  * The underlying request object for this loader
