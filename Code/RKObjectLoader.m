@@ -38,6 +38,7 @@
 }
 
 - (void)dealloc {
+	_request.delegate = nil;
 	[_mapper release];
 	[_request release];
 	[_response release];
@@ -85,23 +86,26 @@
 }
 
 - (void)send {
+	[self retain];
 	[self.request send];
 }
 
 - (void)sendSynchronously {
+	[self retain];
 	RKResponse* response = [self.request sendSynchronously];
 	[self loadObjectsFromResponse:response];
 }
 
 #pragma mark Response Processing
 
-- (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
+- (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {	
 	if ([response isFailure]) {
 		[_delegate objectLoader:self didFailWithError:response.failureError];
 		return YES;
 	} else if ([response isError]) {
 		NSString* errorMessage = nil;
 		if ([response isJSON]) {
+			// TODO: Processing errors should be moved to a delegate to accommodate non-Rails services...
 			errorMessage = [[[response bodyAsJSON] valueForKey:@"errors"] componentsJoinedByString:@", "];
 		}
 		if (nil == errorMessage) {
@@ -223,6 +227,7 @@
 }
 
 - (void)loadObjectsFromResponse:(RKResponse*)response {
+	[self release];
 	_response = [response retain];
 	
 	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {
