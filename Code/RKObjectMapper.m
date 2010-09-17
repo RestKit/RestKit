@@ -213,8 +213,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	
 	// instantiate if object is nil
 	if (object == nil) {
-		if ([class respondsToSelector:@selector(newObject)]) {
-			object = [class newObject];
+		if ([class respondsToSelector:@selector(object)]) {
+			object = [class object];
 		} else {
 			object = [[[class alloc] init] autorelease];
 		}

@@ -50,7 +50,7 @@
 /**
  *	Creates a new managed object and inserts it into the managedObjectContext.
  */
-+ (id)newObject;
++ (id)object;
 
 /**
  *	Retrieves a model object from the appropriate context using the objectId

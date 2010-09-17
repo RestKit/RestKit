@@ -15,7 +15,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 @interface RKManagedObjectStore (Private)
 - (void)createPersistentStoreCoordinator;
 - (NSString *)applicationDocumentsDirectory;
-- (NSManagedObjectContext*)createManagedObjectContext;
+- (NSManagedObjectContext*)newManagedObjectContext;
 @end
 
 @implementation RKManagedObjectStore
@@ -30,7 +30,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		_storeFilename = [storeFilename retain];
 		_managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];
 		[self createPersistentStoreCoordinator];
-		_managedObjectContext = [self createManagedObjectContext];
+		_managedObjectContext = [self newManagedObjectContext];
 	}
 	
 	return self;
@@ -78,7 +78,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	}
 }
 
-- (NSManagedObjectContext*)createManagedObjectContext {
+- (NSManagedObjectContext*)newManagedObjectContext {
 	NSManagedObjectContext* managedObjectContext = [[NSManagedObjectContext alloc] init];
 	[managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[managedObjectContext setUndoManager:nil];
@@ -120,7 +120,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	[_managedObjectContext release];
 	
 	[self createPersistentStoreCoordinator];
-	_managedObjectContext = [self createManagedObjectContext];
+	_managedObjectContext = [self newManagedObjectContext];
 }
 
 /**
@@ -136,7 +136,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
 		NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:kRKManagedObjectContextKey];
 		if (!backgroundThreadContext) {
-			backgroundThreadContext = [self createManagedObjectContext];					
+			backgroundThreadContext = [self newManagedObjectContext];					
 			[threadDictionary setObject:backgroundThreadContext forKey:kRKManagedObjectContextKey];			
 			[backgroundThreadContext release];
 			

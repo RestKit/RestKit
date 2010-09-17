@@ -47,9 +47,9 @@
 - (NSDictionary*)paramsForSerialization;
 
 /**
- * Must return a new instance of the model class ready for mapping. Used to initialize the model
+ * Must return a new autoreleased instance of the model class ready for mapping. Used to initialize the model
  * via any method other than alloc & init.
  */
-+ (id)newObject;
++ (id)object;
 
 @end

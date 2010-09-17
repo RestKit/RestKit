@@ -95,9 +95,9 @@
 	return count;
 }
 
-+ (id)newObject {
-	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[RKManagedObject managedObjectContext]];
-	return [model autorelease];
++ (id)object {
+	id object = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[RKManagedObject managedObjectContext]];
+	return [object autorelease];
 }
 
 #pragma mark -
@@ -108,35 +108,7 @@
 }
 
 #pragma mark -
-#pragma mark RKModelMappable
-
-// TODO: All this path shit needs cleaning up...
-- (NSString*)resourcePath {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
-// TODO: This is Rails specific. Clean up!
-// TODO: Moves to the router
-- (NSString*)resourcePathForMethod:(RKRequestMethod)method {
-	// TODO: Support an optional RKObjectAdapter class?
-	switch (method) {
-		case RKRequestMethodGET:
-		case RKRequestMethodPUT:
-		case RKRequestMethodDELETE:
-			return [NSString stringWithFormat:@"%@/%@", [self resourcePath], [self valueForKey:[[self class] primaryKey]]];
-			break;
-		
-		case RKRequestMethodPOST:
-			return [NSString stringWithFormat:@"%@", [self resourcePath]];
-			break;
-			
-		default:
-			break;
-	}
-	
-	return nil;
-}
+#pragma mark RKObjectMappable
 
 // TODO: Would be nice to specify this via an annotation in the mappings definition...
 + (NSString*)primaryKey {
