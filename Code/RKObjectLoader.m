@@ -86,12 +86,10 @@
 }
 
 - (void)send {
-	[self retain];
 	[self.request send];
 }
 
 - (void)sendSynchronously {
-	[self retain];
 	RKResponse* response = [self.request sendSynchronously];
 	[self loadObjectsFromResponse:response];
 }
@@ -227,7 +225,6 @@
 }
 
 - (void)loadObjectsFromResponse:(RKResponse*)response {
-	[self release];
 	_response = [response retain];
 	
 	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {
