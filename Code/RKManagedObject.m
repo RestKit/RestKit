@@ -43,6 +43,7 @@
 	return [NSEntityDescription entityForName:className inManagedObjectContext:[RKManagedObject managedObjectContext]];
 }
 
+// should be fetchRequest
 + (NSFetchRequest*)request {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	NSEntityDescription *entity = [self entity];

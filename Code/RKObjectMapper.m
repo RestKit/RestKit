@@ -207,12 +207,33 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 // TODO: This responsibility probaby belongs elsewhere...
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
+	NSArray* objects = nil;
 	id object = nil;
-	// TODO: Maybe add back to RKObjectMappable protocol. better selectors?
-	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
-		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
-		NSNumber* primaryKey = [elements objectForKey:primaryKeyElement];
-		object = [class performSelector:@selector(findByPrimaryKey:) withObject:primaryKey];
+	
+	if ([class respondsToSelector:@selector(allObjects)]) {
+		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+		
+		if (nil == [threadDictionary objectForKey:class]) {
+			NSFetchRequest* fetchRequest = [class request];
+			[fetchRequest setReturnsObjectsAsFaults:NO];			
+			objects = [class objectsWithRequest:fetchRequest];
+			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
+			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+			NSString* primaryKey = [class performSelector:@selector(primaryKey)];
+			for (id theObject in objects) {			
+				id primaryKeyValue = [theObject valueForKey:primaryKey];
+				[dictionary setObject:theObject forKey:primaryKeyValue];
+			}
+			
+			[threadDictionary setObject:dictionary forKey:class];
+		}
+		
+		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
+		if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
+			NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
+			id primaryKeyValue = [elements objectForKey:primaryKeyElement];
+			object = [dictionary objectForKey:primaryKeyValue];
+		}
 	}
 	
 	// instantiate if object is nil
@@ -236,7 +257,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Property & Relationship Manipulation
 
-- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {
+- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {	
 	id currentValue = [model valueForKey:propertyName];
 	if (nil == currentValue && nil == propertyValue) {
 		// Don't set the property, both are nil
