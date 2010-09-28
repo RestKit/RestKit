@@ -8,7 +8,7 @@
 
 #import "RKResponse.h"
 #import "RKNotifications.h"
-#import "JSON.h"
+#import "RKMappingFormatJSONParser.h"
 
 @implementation RKResponse
 
@@ -111,7 +111,7 @@
 }
 
 - (id)bodyAsJSON {
-	return [[[[SBJSON alloc] init] autorelease] objectWithString:[self bodyAsString]];
+	return [[[RKMappingFormatJSONParser alloc] init] objectFromString:[self bodyAsString]];
 }
 
 - (NSString*)failureErrorDescription {

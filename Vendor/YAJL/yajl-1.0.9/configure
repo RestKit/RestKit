@@ -1,0 +1,94 @@
+#!/usr/bin/env ruby
+# Copyright 2010, Lloyd Hilaiel.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+# 
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in
+#     the documentation and/or other materials provided with the
+#     distribution.
+# 
+#  3. Neither the name of Lloyd Hilaiel nor the names of its
+#     contributors may be used to endorse or promote products derived
+#     from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+# IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+require 'fileutils'
+require 'optparse'
+
+prefix = "/usr/local"
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: configure [options]"
+  opts.on("-p", "--prefix PATH", "Set installation prefix") do |p|
+    prefix = p
+  end
+  opts.on_tail("-h", "--help", "Output usage summary") do 
+    puts opts
+    exit
+  end
+
+  opts.parse!(ARGV)
+end
+
+puts "== removing old build files"
+FileUtils.rm_rf("build")
+FileUtils.rm_f("Makefile")
+puts "== running CMake in build directory"
+FileUtils.mkdir("build")
+FileUtils.cd("build") do 
+  if (!system("cmake -DCMAKE_INSTALL_PREFIX='#{prefix}' .."))
+    puts "The \"cmake\" program is required to configure yajl.  It's"
+    puts "available from most ports/packaging systems and http://cmake.org"
+    exit 1
+  end
+end
+
+# now generate a Makefile
+puts "== Generating Makefile"
+File.open("Makefile", "w+") do |f| 
+  f.puts ".PHONY: all clean distclean install package test distro"
+  f.puts "all: distro doc test"
+  f.puts
+  f.puts "distro:"
+  f.puts "	@cd build && make"
+  f.puts
+  f.puts "doc:"
+  f.puts "	@cd build && make doc"
+  f.puts
+  f.puts "test:"
+  f.puts "	@cd build && make test"
+  f.puts
+  f.puts "clean:"  
+  f.puts "	@cd build && make clean"
+  f.puts
+  f.puts "distclean:"  
+  f.puts "	@rm -rf Makefile build"
+  f.puts "	@rm -f yajl-*.tgz"
+  f.puts
+  f.puts "install: all" 
+  f.puts "	@cd build && make install"
+  f.puts
+  f.puts "package: all"
+  f.puts "	@echo \"compressing to `basename build/yajl-*`.tgz\""
+  f.puts "	@cd build && tar czf ../`basename yajl-*`.tgz yajl-*"
+end
+
+puts "== Configured with installation prefix: #{prefix}"
+

@@ -178,7 +178,7 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	// Go Offline button
 	if (1 == buttonIndex) {
-		[[RKObjectManager manager] goOffline];
+		[[RKObjectManager globalManager] goOffline];
 	}
 }
 
@@ -225,9 +225,9 @@
 
 - (void)load {
 	if (_params) {
-		_loadingRequest = [[RKObjectManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method params:_params delegate:self];
+		_loadingRequest = [[RKObjectManager globalManager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method params:_params delegate:self];
 	} else {
-		_loadingRequest = [[RKObjectManager manager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method delegate:self];
+		_loadingRequest = [[RKObjectManager globalManager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method delegate:self];
 	}	
 }
 

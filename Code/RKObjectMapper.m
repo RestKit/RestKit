@@ -91,7 +91,11 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			[parser release];
 		}
 	}
-	return [parser objectFromString:string];
+	
+	NSLog(@"Began parse...");
+	id result = [parser objectFromString:string];
+	NSLog(@"Finished parse...");
+	return result;
 }
 
 - (id)mapFromString:(NSString*)string toClass:(Class)class {
