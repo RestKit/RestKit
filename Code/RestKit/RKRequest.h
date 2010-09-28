@@ -11,6 +11,9 @@
 #import "RKRequestSerializable.h"
 #import "RKJSONSerialization.h"
 
+/**
+ * HTTP methods for requests
+ */
 typedef enum RKRequestMethod {
 	RKRequestMethodGET = 0,
 	RKRequestMethodPOST,
@@ -36,42 +39,16 @@ typedef enum RKRequestMethod {
 }
 
 /**
- * used for http auth chalange
+ * The URL this request is loading
  */
-@property(nonatomic, retain) NSString* username;
-@property(nonatomic, retain) NSString* password;
-
 @property(nonatomic, readonly) NSURL* URL;
 
 /**
- * The NSMutableURLRequest being sent for the Restful request
+ * The HTTP verb the request is sent via
+ *
+ * @default RKRequestMethodGET
  */
-@property(nonatomic, readonly) NSMutableURLRequest* URLRequest;
-
-/**
- * The HTTP Method used for this request
- */
-@property(nonatomic, readonly) NSString* HTTPMethod;
-
-/**
- * The delegate to inform when the request is completed
- */
-@property(nonatomic, retain) id delegate;
-
-/**
- * The selector to invoke when the request is completed
- */
-@property(nonatomic, assign) SEL callback;
-
-/**
- * An opaque pointer to associate user defined data with the request.
- */
-@property(nonatomic, retain) id userData;
-
-/**
- * A Dictionary of additional HTTP Headers to send with the request
- */
-@property(nonatomic, retain) NSDictionary* additionalHTTPHeaders;
+@property(nonatomic, assign) RKRequestMethod method;
 
 /**
  * A serializable collection of parameters sent as the HTTP Body of the request
@@ -80,15 +57,43 @@ typedef enum RKRequestMethod {
 @property(nonatomic, retain) NSObject<RKRequestSerializable>* params;
 
 /**
- * The HTTP verb the request is sent via
+ * The delegate to inform when the request is completed
+ *
+ * If the object implements the RKRequestDelegate protocol,
+ * it will receive request lifecycle event messages.
  */
-@property(nonatomic, assign) RKRequestMethod method;
+@property(nonatomic, assign) id delegate;
 
 /**
- * NSFetchRequest used to obtain locally cached objects
+ * The selector to invoke when the request is completed
  */
-@property(nonatomic, retain) NSFetchRequest* fetchRequest;
+@property(nonatomic, assign) SEL callback;
 
+/**
+ * A Dictionary of additional HTTP Headers to send with the request
+ */
+@property(nonatomic, retain) NSDictionary* additionalHTTPHeaders;
+
+/**
+ * An opaque pointer to associate user defined data with the request.
+ */
+@property(nonatomic, retain) id userData;
+
+/**
+ * Credentials for HTTP AUTH Challenge
+ */
+@property(nonatomic, retain) NSString* username;
+@property(nonatomic, retain) NSString* password;
+
+/**
+ * The underlying NSMutableURLRequest sent for this request
+ */
+@property(nonatomic, readonly) NSMutableURLRequest* URLRequest;
+
+/**
+ * The HTTP method as a string used for this request
+ */
+@property(nonatomic, readonly) NSString* HTTPMethod;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,16 +122,6 @@ typedef enum RKRequestMethod {
  * Send the request synchronously and return a hydrated response object
  */
 - (RKResponse*)sendSynchronously;
-
-/**
- * Utility method for setting the request HTTP method and then sending the method asynchronously
- */
-- (void)sendWithMethod:(RKRequestMethod)method;
-
-/**
- * Utility method for setting the request HTTP method and then sending the method synchronously
- */
-- (RKResponse*)sendSynchronouslyWithMethod:(RKRequestMethod)method;
 
 /**
  * Cancels the underlying URL connection
@@ -162,8 +157,25 @@ typedef enum RKRequestMethod {
  */
 @protocol RKRequestDelegate 
 @optional
+
+/**
+ * Sent when a request has started loading
+ */
 - (void)requestDidStartLoad:(RKRequest*)request;
+
+/**
+ * Sent when a request has finished loading
+ */
 - (void)requestDidFinishLoad:(RKRequest*)request;
+
+/**
+ * Sent when a request has failed due to an error
+ */
 - (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error;
+
+/**
+ * Sent when a request has been canceled
+ */
 - (void)requestDidCancelLoad:(RKRequest*)request;
+
 @end

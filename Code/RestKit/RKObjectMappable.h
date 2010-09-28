@@ -1,5 +1,5 @@
 /*
- *  RKResourceMappable.h
+ *  RKObjectMappable.h
  *  RestKit
  *
  *  Created by Blake Watters on 8/14/09.
@@ -13,7 +13,7 @@
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes
  */
-@protocol RKResourceMappable
+@protocol RKObjectMappable
 
 /**
  * Must return a dictionary containing mapping from XML element names to property accessors
@@ -37,20 +37,19 @@
  */
 + (NSDictionary*)elementToRelationshipMappings;
 
-// TODO: Add an optional errors property. This will be populated when there are errors in the mapping.
-
-/**
- * Return a dictionary of values to be serialized for submission to a remote resource. The router
- * will encode these parameters into a serialization format (form encoded, JSON, etc).
- */
-- (NSDictionary*)paramsForSerialization;
-
 @optional
 
 /**
- * Must return a new instance of the model class ready for mapping. Used to initialize the model
+ * Return a dictionary of values to be serialized for submission to a remote resource. The router
+ * will encode these parameters into a serialization format (form encoded, JSON, etc). This is
+ * required to use putObject: and postObject: for updating and creating remote object representations.
+ */
+- (NSDictionary*)paramsForSerialization;
+
+/**
+ * Must return a new autoreleased instance of the model class ready for mapping. Used to initialize the model
  * via any method other than alloc & init.
  */
-+ (id)newObject;
++ (id)object;
 
 @end

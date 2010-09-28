@@ -62,7 +62,7 @@
 
 // Public
 
-- (void)routeClass:(Class<RKResourceMappable>)class toPath:(NSString*)path {
+- (void)routeClass:(Class<RKObjectMappable>)class toPath:(NSString*)path {
 	[self routeClass:class toPath:path forMethodName:@"ANY"];
 }
 
@@ -73,7 +73,7 @@
 
 #pragma mark RKRouter
 
-- (NSString*)pathForObject:(NSObject<RKResourceMappable>*)object method:(RKRequestMethod)method {
+- (NSString*)pathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
 	NSString* methodName = [self HTTPVerbForMethod:method];		
 	NSString* className  = NSStringFromClass([object class]);		
 	NSDictionary* classRoutes = [_routes objectForKey:className];
@@ -92,7 +92,7 @@
 	return nil;
 }
 
-- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKResourceMappable>*)object method:(RKRequestMethod)method {
+- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
 	// By default return a form encoded serializable dictionary
 	return [object paramsForSerialization];
 }

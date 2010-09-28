@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "RKResourceMappable.h"
-#import "RKResourceManager.h"
+#import "RKObjectMappable.h"
+#import "RKObjectManager.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // RestKit managed models
 
-@interface RKManagedObject : NSManagedObject <RKResourceMappable> {
+@interface RKManagedObject : NSManagedObject <RKObjectMappable> {
 	
 }
 
@@ -28,15 +28,18 @@
  *	The NSEntityDescription for the Subclass 
  *	defaults to the subclass className, may be overridden
  */
+// TODO: Should be entityDescription
 + (NSEntityDescription*)entity;
 
 /**
  *	Returns an initialized NSFetchRequest for the entity, with no predicate
  */
+// TODO: Should be fetchRequest
 + (NSFetchRequest*)request;
 
+// TODO: Stays, document all these guys...
 + (NSArray*)objectsWithRequest:(NSFetchRequest*)request;
-+ (id)objectWithRequest:(NSFetchRequest*)request;
++ (id)objectWithRequest:(NSFetchRequest*)request; // objectWithFetchRequest:
 + (NSArray*)objectsWithPredicate:(NSPredicate*)predicate;
 + (id)objectWithPredicate:(NSPredicate*)predicate;
 + (NSArray*)allObjects;
@@ -47,22 +50,26 @@
 /**
  *	Creates a new managed object and inserts it into the managedObjectContext.
  */
-+ (id)newObject;
++ (id)object;
 
 /**
  *	Retrieves a model object from the appropriate context using the objectId
  */
-+ (NSManagedObject*)objectWithId:(NSManagedObjectID*)objectId;
+// TODO: Moves to objectStore
++ (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID;
 
 /**
  *	Retrieves a array of model objects from the appropriate context using
  *	an array of NSManagedObjectIDs
  */
-+ (NSArray*)objectsWithIds:(NSArray*)objectIds;
+// TODO: Moves to objectStore
++ (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
 
+// TODO: RKObjectFindable / RKObjectPersistable??? RKObjectLocatable / RKObjectAddressable
 /**
  *	The primaryKey property mapping, defaults to @"railsID"
  */
+// Moves to mapper? primaryKeyForObjectClass: / primaryKeyElementForObjectClass: / primaryKeyFo
 + (NSString*)primaryKey;
 
 /**
@@ -79,11 +86,7 @@
 /**
  * Returns all the XML/JSON element names for the properties of this model
  */
-+ (NSArray*)elementNames;
-
-/**
- * Returns all the Managed Model property names of this model
- */
+// TODO: Moves to the mapper perhaps???
 + (NSArray*)elementNames;
 
 // The server side name of the model?
@@ -96,6 +99,7 @@
  * Formats an element name to match the encoding format of a mapping request. By default, assumes
  * that the element name should be dasherized for XML and underscored for JSON
  */
+// TODO: Moves to the router...
 + (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
 
 /**
@@ -103,6 +107,7 @@
  * store for a given resource path. The default implementation does nothing, so subclasses
  * are responsible for parsing the object path and building a valid fetch request.
  */
+// TODO: Gets removed...
 + (NSFetchRequest*)fetchRequestForResourcePath:(NSString*)resourcePath;
 
 - (NSDictionary*)elementNamesAndPropertyValues;

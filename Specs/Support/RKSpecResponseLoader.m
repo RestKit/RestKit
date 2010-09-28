@@ -53,11 +53,11 @@
 	_success = YES;
 }
 
-- (void)resourceLoadRequest:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKResourceMappable>)object {
+- (void)resourceLoadRequest:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKObjectMappable>)object {
 	[self loadResponse:response];
 }
 
-- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKResourceMappable>)object {
+- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKObjectMappable>)object {
 	_awaitingResponse = NO;
 	_success = NO;
 	_failureError = [error retain];

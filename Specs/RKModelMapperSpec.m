@@ -1,5 +1,5 @@
 //
-//  RKResourceMapperSpec.m
+//  RKObjectMapperSpec.m
 //  RestKit
 //
 //  Created by Jeremy Ellison on 12/8/09.
@@ -7,20 +7,20 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKResourceMapper.h"
+#import "RKObjectMapper.h"
 
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
-#import "RKResourceMapperSpecModel.h"
+#import "RKObjectMapperSpecModel.h"
 
-@interface RKResourceMapperSpec : NSObject <UISpec>
+@interface RKObjectMapperSpec : NSObject <UISpec>
 
 @end
 
-@implementation RKResourceMapperSpec
+@implementation RKObjectMapperSpec
 
 - (void)itShouldMapFromJSON {
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
@@ -41,7 +41,7 @@
 }
 
 - (void)itShouldMapObjectsFromJSON {
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
@@ -64,7 +64,7 @@
 }
 
 - (void)itShouldMapFromXML {
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	mapper.format = RKMappingFormatXML;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
@@ -85,7 +85,7 @@
 }
 
 - (void)itShouldMapObjectsFromXML {
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	mapper.format = RKMappingFormatXML;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
@@ -108,33 +108,33 @@
 }
 
 - (void)itShouldNotUpdateNilPropertyToNil {
-	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"name"];
 	
 	[expectThat(model.name) should:be(nil)];
 }
 
 - (void)itShouldBeAbleToSetNonNilPropertiesToNil {
-	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
+	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
 	model.age = [NSNumber numberWithInt:0];
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be(nil)];
 }
 
 - (void)itShouldBeAbleToSetNilPropertiesToNonNil {
-	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be([NSNumber numberWithInt:0])];
 }
 
 - (void)itShouldBeAbleToSetNonNilNSStringPropertiesToNonNil {
-	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.name = @"Bob";
 	[mapper updateObject:model ifNewPropertyValue:@"Will" forPropertyNamed:@"name"];
@@ -142,8 +142,8 @@
 }
 
 - (void)itShouldBeAbleToSetNonNilNSNumberPropertiesToNonNil {
-	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.age = [NSNumber numberWithInt:16];
 	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
@@ -151,8 +151,8 @@
 }
 
 - (void)itShouldBeAbleToSetNonNilNSDatePropertiesToNonNil {
-	RKResourceMapperSpecModel* model = [[RKResourceMapperSpecModel alloc] autorelease];
-	RKResourceMapper* mapper = [[RKResourceMapper alloc] init];
+	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.createdAt = [NSDate date];
 	[mapper updateObject:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
@@ -162,7 +162,7 @@
 
 @end
 
-@implementation RKResourceMapperSpec (Private)
+@implementation RKObjectMapperSpec (Private)
 
 - (NSString*)jsonString {
 	return

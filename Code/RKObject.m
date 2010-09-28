@@ -19,7 +19,7 @@
 	return [NSDictionary dictionary];
 }
 
-+ (id)newObject {
++ (id)object {
 	return [[self new] autorelease];
 }
 

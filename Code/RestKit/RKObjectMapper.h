@@ -1,5 +1,5 @@
 //
-//  RKResourceMapper.h
+//  RKObjectMapper.h
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKResourceMappable.h"
+#import "RKObjectMappable.h"
 #import "RKObjectPropertyInspector.h"
 
 /**
@@ -34,7 +34,7 @@ typedef enum {
 
 @end
 
-@interface RKResourceMapper : NSObject {
+@interface RKObjectMapper : NSObject {
 	NSMutableDictionary* _elementToClassMappings;
 	RKMappingFormat _format;
 	RKObjectPropertyInspector* _inspector;
@@ -75,7 +75,8 @@ typedef enum {
  * Register a mapping for a given class for an XML element with the given tag name
  * will blow up if the class does not respond to elementToPropertyMappings and elementToRelationshipMappings
  */
-- (void)registerClass:(Class<RKResourceMappable>)aClass forElementNamed:(NSString*)elementName;
+// TODO: Should be forKeyPath or have a sister forKeyPath method
+- (void)registerClass:(Class<RKObjectMappable>)aClass forElementNamed:(NSString*)elementName;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Core Mapping API
@@ -117,6 +118,7 @@ typedef enum {
 // Non-element based object mapping
 
 - (id)parseString:(NSString*)string;
+- (id)mapFromString:(NSString *)string toClass:(Class)class;
 - (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class;
 
 @end

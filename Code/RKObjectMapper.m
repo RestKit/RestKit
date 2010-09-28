@@ -1,5 +1,5 @@
 //
-//  RKResourceMapper.m
+//  RKObjectMapper.m
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
@@ -8,8 +8,8 @@
 
 #import <objc/message.h>
 
-#import "RKResourceMapper.h"
-#import "NSDictionary+RKRequestSerialization.h"
+#import "RKObjectMapper.h"
+#import "NSDictionary+RKAdditions.h"
 #import "RKMappingFormatJSONParser.h"
 
 // Default format string for date and time objects from Rails
@@ -18,7 +18,7 @@ static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'
 static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatParser";
 
-@interface RKResourceMapper (Private)
+@interface RKObjectMapper (Private)
 
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 
@@ -38,7 +38,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 @end
 
-@implementation RKResourceMapper
+@implementation RKObjectMapper
 
 @synthesize format = _format;
 @synthesize dateFormats = _dateFormats;
@@ -67,7 +67,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	[super dealloc];
 }
 
-- (void)registerClass:(Class<RKResourceMappable>)aClass forElementNamed:(NSString*)elementName {
+- (void)registerClass:(Class<RKObjectMappable>)aClass forElementNamed:(NSString*)elementName {
 	[_elementToClassMappings setObject:aClass forKey:elementName];
 }
 
@@ -94,12 +94,16 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	return [parser objectFromString:string];
 }
 
-- (id)mapFromString:(NSString*)string {
+- (id)mapFromString:(NSString*)string toClass:(Class)class {
 	id object = [self parseString:string];
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		return [self mapObjectFromDictionary:(NSDictionary*)object];
 	} else if ([object isKindOfClass:[NSArray class]]) {
-		return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
+		if (class) {
+			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object toClass:class];
+		} else {
+			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
+		}
 	} else if (nil == object) {
 		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
 		return nil;
@@ -108,6 +112,10 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 					format:@"The object was deserialized into a %@. A dictionary or array of dictionaries was expected.", [object class]];
 		return nil;
 	}
+}
+
+- (id)mapFromString:(NSString*)string {
+	return [self mapFromString:string toClass:nil];
 }
 
 - (void)mapObject:(id)model fromString:(NSString*)string {
@@ -138,6 +146,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	}
 }
 
+// TODO: Can I make this support keyPath??
 - (id)mapObjectFromDictionary:(NSDictionary*)dictionary {
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];
@@ -152,8 +161,10 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	NSMutableArray* objects = [NSMutableArray array];
 	for (NSDictionary* dictionary in array) {
 		if (![dictionary isKindOfClass:[NSNull class]]) {
+			// TODO: Makes assumptions about the structure of the JSON...
 			NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 			Class class = [_elementToClassMappings objectForKey:elementName];
+			NSAssert(class != nil, @"Unable to perform object mapping without a destination class");
 			NSDictionary* elements = [dictionary objectForKey:elementName];
 			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
 			[objects addObject:object];
@@ -193,7 +204,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 // TODO: This responsibility probaby belongs elsewhere...
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
 	id object = nil;
-	// TODO: Maybe add back to RKResourceMappable protocol. better selectors?
+	// TODO: Maybe add back to RKObjectMappable protocol. better selectors?
 	if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
 		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
 		NSNumber* primaryKey = [elements objectForKey:primaryKeyElement];
@@ -202,8 +213,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	
 	// instantiate if object is nil
 	if (object == nil) {
-		if ([class respondsToSelector:@selector(newObject)]) {
-			object = [class newObject];
+		if ([class respondsToSelector:@selector(object)]) {
+			object = [class object];
 		} else {
 			object = [[[class alloc] init] autorelease];
 		}
@@ -302,12 +313,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
 		}
 		
-		if ([relationshipElements isKindOfClass:[NSArray class]]) {
+		if ([relationshipElements isKindOfClass:[NSArray class]] || [relationshipElements isKindOfClass:[NSSet class]]) {
 			// NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
 			NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
 			Class class = [_elementToClassMappings objectForKey:[componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1]];
 			NSMutableSet* children = [NSMutableSet setWithCapacity:[relationshipElements count]];
-			for (NSDictionary* childElements in relationshipElements) {
+			for (NSDictionary* childElements in relationshipElements) {				
 				id child = [self createOrUpdateInstanceOfModelClass:class fromElements:childElements];		
 				if (child) {
 					[children addObject:child];

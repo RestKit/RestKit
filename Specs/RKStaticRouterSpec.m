@@ -21,7 +21,7 @@
 	RKStaticRouter* router = [[[RKStaticRouter alloc] init] autorelease];
 	NSException* exception = nil;
 	@try {
-		[router pathForObject:[RKHuman newObject] method:RKRequestMethodPOST];
+		[router pathForObject:[RKHuman object] method:RKRequestMethodPOST];
 	}
 	@catch (NSException * e) {
 		exception = e;
@@ -34,7 +34,7 @@
 	[router routeClass:[RKHuman class] toPath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
 	NSException* exception = nil;
 	@try {
-		[router pathForObject:[RKHuman newObject] method:RKRequestMethodPOST];
+		[router pathForObject:[RKHuman object] method:RKRequestMethodPOST];
 	}
 	@catch (NSException * e) {
 		exception = e;
@@ -45,16 +45,16 @@
 -(void)itShouldReturnPathsRegisteredForSpecificRequestMethods {
 	RKStaticRouter* router = [[[RKStaticRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toPath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
-	NSString* path = [router pathForObject:[RKHuman newObject] method:RKRequestMethodGET];
+	NSString* path = [router pathForObject:[RKHuman object] method:RKRequestMethodGET];
 	[expectThat(path) should:be(@"/HumanService.asp")];		
 }
 
 -(void)itShouldReturnPathsRegisteredForTheClassAsAWhole {
 	RKStaticRouter* router = [[[RKStaticRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toPath:@"/HumanService.asp"];
-	NSString* path = [router pathForObject:[RKHuman newObject] method:RKRequestMethodGET];
+	NSString* path = [router pathForObject:[RKHuman object] method:RKRequestMethodGET];
 	[expectThat(path) should:be(@"/HumanService.asp")];
-	path = [router pathForObject:[RKHuman newObject] method:RKRequestMethodPOST];
+	path = [router pathForObject:[RKHuman object] method:RKRequestMethodPOST];
 	[expectThat(path) should:be(@"/HumanService.asp")];
 }
 
@@ -62,11 +62,11 @@
 	RKStaticRouter* router = [[[RKStaticRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toPath:@"/HumanService.asp"];
 	[router routeClass:[RKHuman class] toPath:@"/HumanServiceForPUT.asp" forMethod:RKRequestMethodPUT];
-	NSString* path = [router pathForObject:[RKHuman newObject] method:RKRequestMethodGET];
+	NSString* path = [router pathForObject:[RKHuman object] method:RKRequestMethodGET];
 	[expectThat(path) should:be(@"/HumanService.asp")];
-	path = [router pathForObject:[RKHuman newObject] method:RKRequestMethodPOST];
+	path = [router pathForObject:[RKHuman object] method:RKRequestMethodPOST];
 	[expectThat(path) should:be(@"/HumanService.asp")];
-	path = [router pathForObject:[RKHuman newObject] method:RKRequestMethodPUT];
+	path = [router pathForObject:[RKHuman object] method:RKRequestMethodPUT];
 	[expectThat(path) should:be(@"/HumanServiceForPUT.asp")];
 }
 

@@ -14,8 +14,7 @@
 @implementation RKRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, callback = _callback, additionalHTTPHeaders = _additionalHTTPHeaders,
-			params = _params, userData = _userData, username = _username, password = _password, method = _method,
-			fetchRequest = _fetchRequest;
+			params = _params, userData = _userData, username = _username, password = _password, method = _method;
 
 + (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL delegate:delegate callback:callback];
@@ -36,7 +35,7 @@
 
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
 	if (self = [self initWithURL:URL]) {
-		_delegate = [delegate retain];
+		_delegate = delegate;
 		_callback = callback;		
 	}
 	
@@ -44,15 +43,15 @@
 }
 
 - (void)dealloc {
+	[_connection cancel];
+	[_connection release];
 	[_userData release];
 	[_URL release];
 	[_URLRequest release];
-	[_delegate release];
 	[_params release];
 	[_additionalHTTPHeaders release];
 	[_username release];
 	[_password release];
-	[_fetchRequest release];
 	[super dealloc];
 }
 
@@ -73,8 +72,13 @@
 }
 
 - (void)setParams:(NSObject<RKRequestSerializable>*)params {
-	_params = [params retain];
-	[_URLRequest setHTTPBody:[_params HTTPBody]];
+	[params retain];
+	[_params release];
+	_params = params;
+	
+	if (params) {
+		[_URLRequest setHTTPBody:[_params HTTPBody]];
+	}
 }
 
 - (NSString*)HTTPMethod {
@@ -121,16 +125,6 @@
 	NSError* error = nil;
 	NSData* payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
 	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
-}
-
-- (void)sendWithMethod:(RKRequestMethod)method {
-	self.method = method;
-	[self send];
-}
-
-- (RKResponse*)sendSynchronouslyWithMethod:(RKRequestMethod)method {
-	self.method = method;
-	return [self sendSynchronously];
 }
 
 - (void)cancel {

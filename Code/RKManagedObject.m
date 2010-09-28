@@ -15,18 +15,22 @@
 #pragma mark -
 #pragma mark NSManagedObject helper methods
 
+// TODO: The managedObjectContext should be settable at the class level to ease coupling with
+// singleton object manager
 + (NSManagedObjectContext*)managedObjectContext {
-	return [[[RKResourceManager manager] objectStore] managedObjectContext];
+	return [[[RKObjectManager globalManager] objectStore] managedObjectContext];
 }
 
-+ (NSManagedObject*)objectWithId:(NSManagedObjectID*)objectId {
-	return [[self managedObjectContext] objectWithID:objectId];
+// TODO: Move to new home!
++ (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
+	return [[RKManagedObject managedObjectContext] objectWithID:objectID];
 }
 
-+ (NSArray*)objectsWithIds:(NSArray*)objectIds {
+// TODO: Move to new home!
++ (NSArray*)objectsWithIDs:(NSArray*)objectIDs {
 	NSMutableArray* objects = [[NSMutableArray alloc] init];
-	for (NSManagedObjectID* objectId in objectIds) {
-		[objects addObject:[[self managedObjectContext] objectWithID:objectId]];
+	for (NSManagedObjectID* objectID in objectIDs) {
+		[objects addObject:[[RKManagedObject managedObjectContext] objectWithID:objectID]];
 	}
 	NSArray* objectArray = [NSArray arrayWithArray:objects];
 	[objects release];
@@ -36,7 +40,7 @@
 
 + (NSEntityDescription*)entity {
 	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
-	return [NSEntityDescription entityForName:className inManagedObjectContext:[self managedObjectContext]];
+	return [NSEntityDescription entityForName:className inManagedObjectContext:[RKManagedObject managedObjectContext]];
 }
 
 + (NSFetchRequest*)request {
@@ -49,7 +53,7 @@
 
 + (NSArray*)objectsWithRequest:(NSFetchRequest*)request {
 	NSError* error = nil;
-	NSArray* objects = [[self managedObjectContext] executeFetchRequest:request error:&error];
+	NSArray* objects = [[RKManagedObject managedObjectContext] executeFetchRequest:request error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
 		// TODO: Error handling
@@ -86,14 +90,14 @@
 + (NSUInteger)count {
 	NSFetchRequest *request = [self request];	
 	NSError *error = nil;
-	NSUInteger count = [[self managedObjectContext] countForFetchRequest:request error:&error];
+	NSUInteger count = [[RKManagedObject managedObjectContext] countForFetchRequest:request error:&error];
 	// TODO: Error handling...
 	return count;
 }
 
-+ (id)newObject {
-	id model = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[self managedObjectContext]];
-	return [model autorelease];
++ (id)object {
+	id object = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[RKManagedObject managedObjectContext]];
+	return [object autorelease];
 }
 
 #pragma mark -
@@ -104,35 +108,7 @@
 }
 
 #pragma mark -
-#pragma mark RKModelMappable
-
-// TODO: All this path shit needs cleaning up...
-- (NSString*)resourcePath {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
-// TODO: This is Rails specific. Clean up!
-// TODO: Moves to the router
-- (NSString*)resourcePathForMethod:(RKRequestMethod)method {
-	// TODO: Support an optional RKResourceAdapter class?
-	switch (method) {
-		case RKRequestMethodGET:
-		case RKRequestMethodPUT:
-		case RKRequestMethodDELETE:
-			return [NSString stringWithFormat:@"%@/%@", [self resourcePath], [self valueForKey:[[self class] primaryKey]]];
-			break;
-		
-		case RKRequestMethodPOST:
-			return [NSString stringWithFormat:@"%@", [self resourcePath]];
-			break;
-			
-		default:
-			break;
-	}
-	
-	return nil;
-}
+#pragma mark RKObjectMappable
 
 // TODO: Would be nice to specify this via an annotation in the mappings definition...
 + (NSString*)primaryKey {
@@ -217,7 +193,7 @@
 // TODO: This implementation is Rails specific. Consider using an adapter approach.
 // TODO: Gets handled in a Rails adapter, moved completely off the model itself...
 // TODO: Moves to the model mapper? encodeProperties:?
-- (NSDictionary*)resourceParams {
+- (NSDictionary*)paramsForSerialization {
 	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValues];
 	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];
 	// TODO: Eliminate modelName somehow... should be using the name of the element this class was registered for!

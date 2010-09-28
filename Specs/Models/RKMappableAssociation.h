@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKResourceMappable.h"
+#import "RKObjectMappable.h"
 
-@interface RKMappableAssociation : NSObject <RKResourceMappable> {
+@interface RKMappableAssociation : NSObject <RKObjectMappable> {
 	NSString* _testString;
 }
 
