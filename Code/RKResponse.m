@@ -111,7 +111,7 @@
 }
 
 - (id)bodyAsJSON {
-	return [[[RKMappingFormatJSONParser alloc] init] objectFromString:[self bodyAsString]];
+	return [[[[RKMappingFormatJSONParser alloc] init] autorelease] objectFromString:[self bodyAsString]];
 }
 
 - (NSString*)failureErrorDescription {
