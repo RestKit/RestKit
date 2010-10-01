@@ -7,9 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
-#import "RKObjectMappable.h"
-#import "RKObjectManager.h"
+#import "../ObjectMapping/ObjectMapping.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // RestKit managed models

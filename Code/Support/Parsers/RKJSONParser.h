@@ -6,10 +6,9 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKObjectMapper.h"
+#import "RKParser.h"
 
-@interface RKMappingFormatJSONParser : NSObject <RKMappingFormatParser> {
-	id _parser;
+@interface RKJSONParser : NSObject <RKParser> {
 }
 
 @end

@@ -1,23 +1,22 @@
 //
-//  RKModelSeeder.h
+//  RKObjectSeeder.h
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKObjectManager.h"
+#import "../ObjectMapping/ObjectMapping.h"
 
 // TODO: This class needs an API scrubbing
-// TODO: Really only needs to be initialized with mapper, not the manager... ?
 @interface RKObjectSeeder : NSObject {
 	RKObjectManager* _manager;
 }
 
 /**
- * Initialize a new model seeder
+ * Initialize a new object seeder
  */
-- (id)initWithResourceManager:(RKObjectManager*)manager;
+- (id)initWithObjectManager:(RKObjectManager*)manager;
 
 /**
  * Read a file from the main bundle and seed the database with its contents.
@@ -25,6 +24,9 @@
  */
 - (NSArray*)seedDatabaseWithBundledFile:(NSString*)fileName ofType:(NSString*)type;
 
+/**
+ * Seeds the database with an array of files of the specified type
+ */
 - (void)seedDatabaseWithBundledFiles:(NSArray*)fileNames ofType:(NSString*)type;
 
 /**

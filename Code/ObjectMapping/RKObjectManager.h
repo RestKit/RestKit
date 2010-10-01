@@ -6,15 +6,18 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-#import "RKClient.h"
+#import "../Network/Network.h"
 #import "RKObjectMapper.h"
 #import "RKObjectLoader.h"
 #import "RKStaticRouter.h"
-#import "RKManagedObjectStore.h"
 
 // Notifications
 extern NSString* const RKDidEnterOfflineModeNotification;
 extern NSString* const RKDidEnterOnlineModeNotification;
+
+// TODO: Factor out into a protocol...
+// insertObject:, deleteObject:, save, etc.
+@class RKManagedObjectStore;
 
 @interface RKObjectManager : NSObject {
 	RKClient* _client;

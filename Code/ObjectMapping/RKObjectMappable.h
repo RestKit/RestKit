@@ -7,8 +7,6 @@
  *
  */
 
-#import "RKRequest.h"
-
 /**
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes

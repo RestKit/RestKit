@@ -1,0 +1,14 @@
+- Update README to reflect new realities
+- Clean up CoreData mess
+- Sample apps
+- Doxygen markup & generation
+- Request Queue
+- Network Watcher
+- Clean up specs
+- Factor out Rails support
+  - RKObjectMapperDelegate
+    - extract error from the payload
+    - digest the payload to return objects at arbitrary KVC paths
+  - RKRailsObjectMapperDelegate
+- Dynamic Router (interpolate property values into paths)
+- Three20 Integration Cleanup

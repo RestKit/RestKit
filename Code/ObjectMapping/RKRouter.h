@@ -6,9 +6,8 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKRequest.h"
+#import "../Network/Network.h"
 #import "RKObjectMappable.h"
-#import "RKRequestSerializable.h"
 
 /**
  * Defines a protocol for mapping Cocoa objects to remote resource locations and

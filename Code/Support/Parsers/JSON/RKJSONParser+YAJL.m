@@ -6,10 +6,10 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKMappingFormatJSONParser.h"
+#import "RKJSONParser.h"
 #import "YAJL.h"
 
-@implementation RKMappingFormatJSONParser
+@implementation RKJSONParser
 
 - (NSDictionary*)objectFromString:(NSString*)string {
 	return [string yajl_JSON];

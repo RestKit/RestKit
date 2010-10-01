@@ -8,8 +8,7 @@
 
 // TODO: Factor core data out...
 #import <CoreData/CoreData.h>
-#import "RKRequest.h"
-#import "RKResponse.h"
+#import "../Network/Network.h"
 #import "RKObjectMapper.h"
 
 @class RKObjectLoader;

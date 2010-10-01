@@ -7,10 +7,12 @@
 //
 
 #import <objc/message.h>
+// TODO: Factor out Core Data...
+#import <CoreData/CoreData.h>
 
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
-#import "RKMappingFormatJSONParser.h"
+#import "RKJSONParser.h"
 
 // Default format string for date and time objects from Rails
 // TODO: Rails specifics should probably move elsewhere...
@@ -20,6 +22,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 @interface RKObjectMapper (Private)
 
+- (id)parseString:(NSString*)string;
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 
 - (Class)typeClassForProperty:(NSString*)property ofClass:(Class)class;
@@ -83,10 +86,10 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 - (id)parseString:(NSString*)string {
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-	NSObject<RKMappingFormatParser>* parser = [threadDictionary objectForKey:kRKModelMapperMappingFormatParserKey];
+	NSObject<RKParser>* parser = [threadDictionary objectForKey:kRKModelMapperMappingFormatParserKey];
 	if (!parser) {
 		if (_format == RKMappingFormatJSON) {
-			parser = [[RKMappingFormatJSONParser alloc] init];
+			parser = [[RKJSONParser alloc] init];
 			[threadDictionary setObject:parser forKey:kRKModelMapperMappingFormatParserKey];
 			[parser release];
 		}

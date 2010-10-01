@@ -9,30 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "RKObjectMappable.h"
 #import "RKObjectPropertyInspector.h"
+#import "../Support/RKParser.h"
 
 /**
- * Define the resource mapping formats
+ * Define the object mapping formats
  */
 typedef enum {
 	RKMappingFormatXML = 0,
 	RKMappingFormatJSON
 } RKMappingFormat;
-
-/**
- * The format parser is responsible for transforming a string
- * of data into a dictionary. This allows the model mapper to
- * map properties using key-value coding
- */
-@protocol RKMappingFormatParser
-
-/**
- * Return a key-value coding compliant representation of a payload.
- * Object attributes are encoded as a dictionary and collections
- * of objects are returned as arrays.
- */
-- (id)objectFromString:(NSString*)string;
-
-@end
 
 @interface RKObjectMapper : NSObject {
 	NSMutableDictionary* _elementToClassMappings;
@@ -117,8 +102,15 @@ typedef enum {
 ///////////////////////////////////////////////////////////////////////////////
 // Non-element based object mapping
 
-- (id)parseString:(NSString*)string;
+/**
+ * Map the objects in a given payload string to a particular object class
+ */
 - (id)mapFromString:(NSString *)string toClass:(Class)class;
+
+/**
+ * Map an array of object dictionary representations to instances of a particular
+ * object class
+ */
 - (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class;
 
 @end

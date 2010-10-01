@@ -8,7 +8,6 @@
 
 #import <CoreData/CoreData.h>
 #import "RKObjectLoader.h"
-#import "RKResponse.h"
 #import "RKObjectManager.h"
 #import "Errors.h"
 #import "RKManagedObject.h"
