@@ -33,8 +33,9 @@ The sources for SBJSON and YAJL are included in the Vendor/ subdirectory. The he
     #import <RestKit/Support/JSON/YAJL/YAJL.h>
 
 Currently bundled version of these dependencies are:
-1. **YAJLIOS** - 0.2.21
-1. **SBJSON** - 2.3.1
+
+* **YAJLIOS** - 0.2.21
+* **SBJSON** - 2.3.1
   
 If you currently link against or include SBJSON or YAJL in your project, you can disable the RKJSONParser targets and compile the appropriate RKJSONParser implementation directly into your application.
 
