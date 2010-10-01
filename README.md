@@ -56,8 +56,7 @@ Quick Start (Git Submodule)
 
 To add RestKit to your project (you're using git, right?):
 
-1. Add the submodule:
-    git submodule add git://github.com/twotoasters/RestKit.git RestKit
+1. Add the submodule: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
 1. Open RestKit.xcodeproj and drag the RestKit project file into your XCode project.
 1. Click on the entry for RestKit.xcodeproj in your project's **Groups & Files** section. In the right hand pane, find the entry for **libRestKit.a** and click the checkbox on the far right underneath the silver target icon. This will link your project against RestKit. If you wish to use the Core Data support, click the checkbox next to **libRestKitCoreData.a** also (this requires that you add Core Data to the Linked Libraries section at the bottom of the screen as well).
 1. Get Info on your target and you should be looking at the **General** tag. In the top **Direct Dependencies** section, click the plus button and add a direct dependency on the RestKit target. 
