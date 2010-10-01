@@ -46,11 +46,13 @@
 /**
  * Return the configured singleton instance of the Rest client
  */
+// TODO: Should be sharedClient/globalClient?
 + (RKClient*)client;
 
 /**
  * Set the shared singleton issue of the Rest client
  */
+// TODO: Should be sharedClient/globalClient?
 + (void)setClient:(RKClient*)client;
 
 /**

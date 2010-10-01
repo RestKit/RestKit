@@ -1,6 +1,6 @@
 - Update README to reflect new realities
-- Clean up CoreData mess
 - Sample apps
+- Clean up CoreData mess
 - Doxygen markup & generation
 - Request Queue
 - Network Watcher
