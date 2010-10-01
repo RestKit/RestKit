@@ -11,7 +11,7 @@ To get started with installation, skip down the document below the Design & Depe
 Design
 -------------------------
 
-RestKit is composed of 3 main pieces: Network, Object Mapping, and Core Data. Each layer provides a higher level of abstraction around the problem of accessing web services and representing the data returned as an object. The primary goal of RestKit is to allow the application programmer to think more in terms of their application's data model and less about the details of fetching, parsing, and representing resources. Functionally, each piece provides...
+RestKit is composed of 3 main pieces: **Network**, **Object Mapping**, and **Core Data**. Each layer provides a higher level of abstraction around the problem of accessing web services and representing the data returned as an object. The primary goal of RestKit is to allow the application programmer to think more in terms of their application's data model and less about the details of fetching, parsing, and representing resources. Functionally, each piece provides...
 
 1. **Network** - The network layer provides a request/response abstraction on top of NSURLConnection. The main interface for the end developer is the *RKClient*, which provides an interface for sending GET, POST, PUT, and DELETE requests asynchronously. This wraps the construction and dispatch of *RKRequest* and *RKResponse* objects, that provide a nice interface for working with HTTP requests. Sending parameters with your request is as easy as providing an NSDictionary of key/value pairs. File uploading support from NSData and files is supported through the use of an *RKParams* object, which serializes into a multipart form representation suitable for submission to a remote web server for processing. SSL & HTTP AUTH is fully supported for requests. *RKResponse* objects provide access to the string of JSON parsed versions of the response body in one line of code. There are also a number of helpful method for inspecting the request and response such as isXHTML, isJSON, isRedirect, isOK, etc.
 1. **Object Mapping** - The object mapping layer provides a simple API for turning remote JSON responses into local domain objects declaratively. Rather than working directly with *RKClient*, the developer works with *RKObjectManager*. *RKObjectManager* provides support for loading a remote resource path (see below for discussion) and calling back a delegate with object representations of the data loaded. Remote payloads are parsed to NSDictionary representation and are then mapped to local objects using Key-Value Coding. Any class implementing the *RKObjectMappable* protocol can be object mapped. For convenience, RestKit ships with a *RKObject* implementation that can serve as a turn-key superclass for modeling your resources. You need only inherit & implement *elementToPropertyMappings* to begin loading resources via *RKObjectManager*'s *loadObjectsAtResourcePath:objectClass:delegate:* method.
@@ -21,7 +21,7 @@ RestKit is composed of 3 main pieces: Network, Object Mapping, and Core Data. Ea
 
 RestKit utilizes the concepts of the Base URL and resource paths throughout the library. Basically the base URL is a prefix URL that all requests will be sent to. This prevents you from spreading server name details across the code base and repeatedly constructing URL fragments. The *RKClient* and *RKObjectManager* are both initialized with a base URL initially. All other operations dispatched through these objects work of a resource path, which is basically just a URL path fragment that is appended to the base URL before constructing the request. This allows you to switch between development, staging, and production servers very easily and reduces redundancy.
 
-Note that you can send RKRequest objects to arbitrary URL's by constructing them yourself.
+Note that you can send *RKRequest* objects to arbitrary URL's by constructing them yourself.
 
 Dependencies
 -------------------------
@@ -29,12 +29,12 @@ Dependencies
 RestKit provides JSON parser implementations using SBJSON & YAJL. The default RestKit target links against YAJL (as it is known to be faster), but you can use the SBJSON backend instead by linking against RestKitNetwork, RestKitSupport, and RestKitJSONParser+SBJSON instead of the default target.
 
 The sources for SBJSON and YAJL are included in the Vendor/ subdirectory. The headers are copied into the RestKit headers path at build time and can be imported into your project via:
-  #import <RestKit/Support/JSON/SBJSON/JSON.h>
-  #import <RestKit/Support/JSON/YAJL/YAJL.h>
+    #import <RestKit/Support/JSON/SBJSON/JSON.h>
+    #import <RestKit/Support/JSON/YAJL/YAJL.h>
 
 Currently bundled version of these dependencies are:
-* **YAJLIOS** - 0.2.21
-* **SBJSON** - 2.3.1
+1. **YAJLIOS** - 0.2.21
+1. **SBJSON** - 2.3.1
   
 If you currently link against or include SBJSON or YAJL in your project, you can disable the RKJSONParser targets and compile the appropriate RKJSONParser implementation directly into your application.
 
@@ -68,8 +68,9 @@ To add RestKit to your project (you're using git, right?):
 Congratulations, you are now done adding RestKit into your project!
 
 You now only need to add includes for the RestKit libraries at the appropriate places in your application. The relevant includes are:
-    `#import <RestKit/RestKit.h>`
-    `#import <RestKit/CoreData/CoreData.h>`
+    #import <RestKit/RestKit.h>
+    // And if you are using Core Data...
+    #import <RestKit/CoreData/CoreData.h>
 
 Please see the Examples/ directory for details on utilizing the library.
 
