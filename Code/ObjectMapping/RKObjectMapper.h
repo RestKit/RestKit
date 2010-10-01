@@ -113,4 +113,9 @@ typedef enum {
  */
 - (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class;
 
+/**
+ * Parse a string using the appropriate parser and return the results
+ */
+- (id)parseString:(NSString*)string;
+
 @end
