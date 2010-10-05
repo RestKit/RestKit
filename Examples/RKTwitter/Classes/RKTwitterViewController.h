@@ -9,14 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <RestKit/RestKit.h>
 
-@interface RKTwitterViewController : UIViewController <UITableViewDelegate, RKObjectLoaderDelegate> {
-	IBOutlet UITableView* _tableView;
+@interface RKTwitterViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, RKObjectLoaderDelegate> {
+	UITableView* _tableView;
 	NSArray* _statuses;
 }
-
-/**
- * An array of RKTStatus objects
- */
-@property (nonatomic, retain) NSArray* statuses;
 
 @end

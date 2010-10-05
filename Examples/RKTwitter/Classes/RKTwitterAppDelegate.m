@@ -14,10 +14,6 @@
 
 @implementation RKTwitterAppDelegate
 
-@synthesize window;
-@synthesize viewController;
-
-
 #pragma mark -
 #pragma mark Application lifecycle
 
@@ -31,16 +27,17 @@
 	[mapper registerClass:[RKTUser class] forElementNamed:@"user"];
 	[mapper registerClass:[RKTStatus class] forElementNamed:@"status"];
 
-    // Add the view controller's view to the window and display.
-    [window addSubview:viewController.view];
+    // Create Window and View Controllers
+	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+	UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
+	UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+    [window addSubview:controller.view];
     [window makeKeyAndVisible];
 
     return YES;
 }
 
 - (void)dealloc {
-    [viewController release];
-    [window release];
     [super dealloc];
 }
 

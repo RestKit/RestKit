@@ -13,13 +13,18 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		2538E811123419CA00ACB5D7 /* RKTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E810123419CA00ACB5D7 /* RKTUser.m */; };
 		2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
-		2538E861123424C900ACB5D7 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E806123417E500ACB5D7 /* libRestKit.a */; };
 		2538E865123424F000ACB5D7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E864123424F000ACB5D7 /* CoreData.framework */; };
 		2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
-		2899E5220DE3E06400AC0155 /* RKTwitterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2899E5210DE3E06400AC0155 /* RKTwitterViewController.xib */; };
-		28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 28AD733E0D9D9553002E5188 /* MainWindow.xib */; };
 		28D7ACF80DDB3853001CB0EB /* RKTwitterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */; };
+		3F3CE343125B95CD0083FDCB /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E806123417E500ACB5D7 /* libRestKit.a */; };
+		3F3CE34C125B95F60083FDCB /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */; };
+		3F3CE3FC125B9A6E0083FDCB /* listbg.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE3FA125B9A6E0083FDCB /* listbg.png */; };
+		3F3CE3FD125B9A6E0083FDCB /* listbg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE3FB125B9A6E0083FDCB /* listbg@2x.png */; };
+		3F3CE40E125B9B450083FDCB /* BG.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40A125B9B450083FDCB /* BG.png */; };
+		3F3CE40F125B9B450083FDCB /* BG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40B125B9B450083FDCB /* BG@2x.png */; };
+		3F3CE410125B9B450083FDCB /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40C125B9B450083FDCB /* Default.png */; };
+		3F3CE411125B9B450083FDCB /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40D125B9B450083FDCB /* Default@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,24 +32,66 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = D2AAC07E0554694100DB518D /* libRestKit.a */;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = RestKit;
 		};
 		2538E807123417E500ACB5D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 2523360511E79F090048F9B4 /* libRestKitThree20.a */;
+			remoteGlobalIDString = 2523360511E79F090048F9B4;
 			remoteInfo = "Three20 Support";
 		};
 		2538E809123417E500ACB5D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 3F6C39A510FE5C95008F47C5 /* UI Spec.app */;
+			remoteGlobalIDString = 3F6C39A510FE5C95008F47C5;
 			remoteInfo = UISpec;
 		};
-		2538E80B123417F000ACB5D7 /* PBXContainerItemProxy */ = {
+		3F3CE2C4125B93780083FDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A07FC1255161B00976E89 /* libRestKitNetwork.a */;
+			remoteInfo = RestKitNetwork;
+		};
+		3F3CE2C6125B93780083FDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A08031255162C00976E89 /* libRestKitObjectMapping.a */;
+			remoteInfo = RestKitObjectMapping;
+		};
+		3F3CE2C8125B93780083FDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A080C12551D3000976E89 /* libRestKitSupport.a */;
+			remoteInfo = RestKitSupport;
+		};
+		3F3CE2CA125B93780083FDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */;
+			remoteInfo = "RestKitJSONParser+YAJL";
+		};
+		3F3CE2CC125B93780083FDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */;
+			remoteInfo = "RestKitJSONParser+SBJSON";
+		};
+		3F3CE2CE125B93780083FDCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A081412551D5300976E89 /* libRestKitCoreData.a */;
+			remoteInfo = RestKitCoreData;
+		};
+		3F3CE2E3125B93EB0083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 1;
@@ -67,12 +114,16 @@
 		2538E864123424F000ACB5D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2538E8661234250100ACB5D7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		2899E5210DE3E06400AC0155 /* RKTwitterViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RKTwitterViewController.xib; sourceTree = "<group>"; };
-		28AD733E0D9D9553002E5188 /* MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		28D7ACF60DDB3853001CB0EB /* RKTwitterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitterViewController.h; sourceTree = "<group>"; };
 		28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterViewController.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* RKTwitter_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitter_Prefix.pch; sourceTree = "<group>"; };
+		3F3CE3FA125B9A6E0083FDCB /* listbg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = listbg.png; sourceTree = "<group>"; };
+		3F3CE3FB125B9A6E0083FDCB /* listbg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "listbg@2x.png"; sourceTree = "<group>"; };
+		3F3CE40A125B9B450083FDCB /* BG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BG.png; sourceTree = "<group>"; };
+		3F3CE40B125B9B450083FDCB /* BG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BG@2x.png"; sourceTree = "<group>"; };
+		3F3CE40C125B9B450083FDCB /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		3F3CE40D125B9B450083FDCB /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* RKTwitter-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RKTwitter-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,9 +135,10 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
-				2538E861123424C900ACB5D7 /* libRestKit.a in Frameworks */,
 				2538E865123424F000ACB5D7 /* CoreData.framework in Frameworks */,
 				2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */,
+				3F3CE343125B95CD0083FDCB /* libRestKit.a in Frameworks */,
+				3F3CE34C125B95F60083FDCB /* libRestKitCoreData.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +172,12 @@
 			isa = PBXGroup;
 			children = (
 				2538E806123417E500ACB5D7 /* libRestKit.a */,
+				3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */,
+				3F3CE2C7125B93780083FDCB /* libRestKitObjectMapping.a */,
+				3F3CE2C9125B93780083FDCB /* libRestKitSupport.a */,
+				3F3CE2CB125B93780083FDCB /* libRestKitJSONParserYAJL.a */,
+				3F3CE2CD125B93780083FDCB /* libRestKitJSONParserSBJSON.a */,
+				3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */,
 				2538E808123417E500ACB5D7 /* libRestKitThree20.a */,
 				2538E80A123417E500ACB5D7 /* UI Spec.app */,
 			);
@@ -151,11 +209,15 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				2899E5210DE3E06400AC0155 /* RKTwitterViewController.xib */,
-				28AD733E0D9D9553002E5188 /* MainWindow.xib */,
+				3F3CE40A125B9B450083FDCB /* BG.png */,
+				3F3CE40B125B9B450083FDCB /* BG@2x.png */,
+				3F3CE40C125B9B450083FDCB /* Default.png */,
+				3F3CE40D125B9B450083FDCB /* Default@2x.png */,
+				3F3CE3FA125B9A6E0083FDCB /* listbg.png */,
+				3F3CE3FB125B9A6E0083FDCB /* listbg@2x.png */,
 				8D1107310486CEB800E47090 /* RKTwitter-Info.plist */,
 			);
-			name = Resources;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
@@ -184,7 +246,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				2538E80C123417F000ACB5D7 /* PBXTargetDependency */,
+				3F3CE2E4125B93EB0083FDCB /* PBXTargetDependency */,
 			);
 			name = RKTwitter;
 			productName = RKTwitter;
@@ -198,7 +260,14 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RKTwitter" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectReferences = (
@@ -236,6 +305,48 @@
 			remoteRef = 2538E809123417E500ACB5D7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitNetwork.a;
+			remoteRef = 3F3CE2C4125B93780083FDCB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3F3CE2C7125B93780083FDCB /* libRestKitObjectMapping.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitObjectMapping.a;
+			remoteRef = 3F3CE2C6125B93780083FDCB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3F3CE2C9125B93780083FDCB /* libRestKitSupport.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitSupport.a;
+			remoteRef = 3F3CE2C8125B93780083FDCB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3F3CE2CB125B93780083FDCB /* libRestKitJSONParserYAJL.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitJSONParserYAJL.a;
+			remoteRef = 3F3CE2CA125B93780083FDCB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3F3CE2CD125B93780083FDCB /* libRestKitJSONParserSBJSON.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitJSONParserSBJSON.a;
+			remoteRef = 3F3CE2CC125B93780083FDCB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitCoreData.a;
+			remoteRef = 3F3CE2CE125B93780083FDCB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -243,8 +354,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
-				2899E5220DE3E06400AC0155 /* RKTwitterViewController.xib in Resources */,
+				3F3CE3FC125B9A6E0083FDCB /* listbg.png in Resources */,
+				3F3CE3FD125B9A6E0083FDCB /* listbg@2x.png in Resources */,
+				3F3CE40E125B9B450083FDCB /* BG.png in Resources */,
+				3F3CE40F125B9B450083FDCB /* BG@2x.png in Resources */,
+				3F3CE410125B9B450083FDCB /* Default.png in Resources */,
+				3F3CE411125B9B450083FDCB /* Default@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,10 +381,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		2538E80C123417F000ACB5D7 /* PBXTargetDependency */ = {
+		3F3CE2E4125B93EB0083FDCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RestKit;
-			targetProxy = 2538E80B123417F000ACB5D7 /* PBXContainerItemProxy */;
+			targetProxy = 3F3CE2E3125B93EB0083FDCB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -283,8 +398,8 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = ../../Code;
-				INFOPLIST_FILE = "RKTwitter-Info.plist";
+				HEADER_SEARCH_PATHS = ../../Build;
+				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -300,8 +415,8 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = ../../Code;
-				INFOPLIST_FILE = "RKTwitter-Info.plist";
+				HEADER_SEARCH_PATHS = ../../Build;
+				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -320,7 +435,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 			};
 			name = Debug;
 		};
@@ -334,7 +449,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 			};
 			name = Release;
 		};
