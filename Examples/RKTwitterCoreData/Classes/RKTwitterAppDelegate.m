@@ -1,0 +1,48 @@
+//
+//  RKTwitterAppDelegate.m
+//  RKTwitter
+//
+//  Created by Blake Watters on 9/5/10.
+//  Copyright Two Toasters 2010. All rights reserved.
+//
+
+#import <RestKit/RestKit.h>
+#import "RKTwitterAppDelegate.h"
+#import "RKTwitterViewController.h"
+#import "RKTStatus.h"
+#import "RKTUser.h"
+
+@implementation RKTwitterAppDelegate
+
+#pragma mark -
+#pragma mark Application lifecycle
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
+    
+    // Initialize RestKit
+	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:@"http://twitter.com"];
+	RKObjectMapper* mapper = objectManager.mapper;
+	
+	// Initialize object store
+	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"RKTwitterData.sqlite"] autorelease];
+	
+	// Add our element to object mappings
+	[mapper registerClass:[RKTUser class] forElementNamed:@"user"];
+	[mapper registerClass:[RKTStatus class] forElementNamed:@"status"];
+
+    // Create Window and View Controllers
+	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+	UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
+	UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+    [window addSubview:controller.view];
+    [window makeKeyAndVisible];
+
+    return YES;
+}
+
+- (void)dealloc {
+    [super dealloc];
+}
+
+
+@end
