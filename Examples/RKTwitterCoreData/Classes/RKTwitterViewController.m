@@ -49,11 +49,10 @@
 
 - (void)loadObjectsFromDataStore {
 	[_statuses release];
-	_statuses = [[RKTStatus allObjects] retain];
 	NSFetchRequest* request = [RKTStatus request];
-	NSSortDescriptor* descriptor = [NSSortDescriptor sortDescriptorWithKey:@"statusID" ascending:NO];
+	NSSortDescriptor* descriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO];
 	[request setSortDescriptors:[NSArray arrayWithObject:descriptor]];
-	[[RKTStatus objectsWithRequest:request] retain];
+	_statuses = [[RKTStatus objectsWithRequest:request] retain];
 }
 
 - (void)reloadButtonWasPressed:(id)sender {

@@ -29,6 +29,12 @@
 	// Add our element to object mappings
 	[mapper registerClass:[RKTUser class] forElementNamed:@"user"];
 	[mapper registerClass:[RKTStatus class] forElementNamed:@"status"];
+	
+	// Update date format so that we can parse twitter dates properly
+	// Wed Sep 29 15:31:08 +0000 2010
+	NSMutableArray* dateFormats = [[[mapper dateFormats] mutableCopy] autorelease];
+	[dateFormats addObject:@"E MMM d HH:mm:ss Z y"];
+	[mapper setDateFormats:dateFormats];
 
     // Create Window and View Controllers
 	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
