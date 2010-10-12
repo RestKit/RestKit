@@ -14,7 +14,7 @@
 @synthesize loaded = _loaded;
 @synthesize resourcePath = _resourcePath;
 @synthesize params = _params;
-@synthesize loadingRequest = _loadingRequest;
+@synthesize objectLoader = _objectLoader;
 @synthesize method = _method;
 @synthesize fetchRequest = _fetchRequest;
 @synthesize refreshRate = _refreshRate;
@@ -25,6 +25,14 @@
 
 + (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate {
 	return [[[self alloc] initWithResourcePath:resourcePath params:params delegate:delegate] autorelease];
+}
+
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate {
+	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass delegate:delegate] autorelease];
+}
+
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate {
+	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath delegate:delegate] autorelease];
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {
@@ -46,18 +54,35 @@
 	return self;
 }
 
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_params = [params retain];
+		_delegate = [delegate retain];
+		_objectClass = [klass retain];
+	}
+	
+	return self;
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_params = [params retain];
+		_delegate = [delegate retain];
+		_objectClass = [klass retain];
+		_keyPath = [keyPath retain];
+	}
+	
+	return self;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 
 - (id)init {
 	if (self = [super init]) {
-		_loadingRequest = nil;		
-		_objects = nil;
-		_delegate = nil;
-		_params = nil;
-		_loaded = NO;
 		_method = RKRequestMethodGET;
-		_fetchRequest = nil;
 		_refreshRate = (60*60); // 1 hour default
 	}
 	return self;
@@ -65,14 +90,13 @@
 
 - (void)dealloc {
 	[_delegate release];
-	[_loadingRequest cancel];
-	[_loadingRequest release];
-	_loadingRequest = nil;
+	[_objectLoader.request cancel];
+	[_objectLoader release];
 	[_params release];
-	_params = nil;
 	[_objects release];
-	_objects = nil;
 	[_fetchRequest release];
+	[_objectClass release];
+	[_keyPath release];
 	[super dealloc];
 }
 	
@@ -90,19 +114,16 @@
 	if ([_delegate respondsToSelector:@selector(rkModelDidFinishLoad)]) {
 		[_delegate rkModelDidFinishLoad];
 	}
-	[_loadingRequest release];_loadingRequest=nil;	
 }
 
-// TODO: I get replaced...
+//// TODO: I get replaced...
 - (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error {
-	[_loadingRequest release];_loadingRequest=nil;
 	if ([_delegate respondsToSelector:@selector(rkModelDidFailLoadWithError:)]) {
 		[_delegate rkModelDidFailLoadWithError:error];
 	}
 }
 
 - (void)requestDidCancelLoad:(RKRequest*)request {
-	[_loadingRequest release];_loadingRequest=nil;
 	if ([_delegate respondsToSelector:@selector(rkModelDidCancelLoad)]) {
 		[_delegate rkModelDidCancelLoad];
 	}
@@ -198,16 +219,18 @@
 // RKModelLoaderDelegate
 
 // This callback is invoked after the request has been fully serviced. Finish the load here.
-- (void)resourceLoadRequest:(RKRequest *)request didLoadObjects:(NSArray *)objects response:(RKResponse *)response object:(id<RKObjectMappable>)object {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects {
 	[self modelsDidLoad:objects];
+	[objectLoader release];
 }
 
-- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKObjectMappable>)object {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
 	if ([self errorWarrantsOptionToGoOffline:error]) {
 		[self showAlertWithOptionToGoOfflineForError:error];
 	} else {
 		[_delegate didFailLoadWithError:error];
 	}
+	[objectLoader release];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,11 +247,15 @@
 }
 
 - (void)load {
-	if (_params) {
-		_loadingRequest = [[RKObjectManager globalManager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method params:_params delegate:self];
-	} else {
-		_loadingRequest = [[RKObjectManager globalManager] loadResource:_resourcePath fetchRequest:_fetchRequest method:_method delegate:self];
-	}	
+	_objectLoader = [[[RKObjectManager globalManager] loaderWithResourcePath:_resourcePath objectClass:_objectClass delegate:self] retain];
+	_objectLoader.method = _method;
+	_objectLoader.keyPath = _keyPath;
+	_objectLoader.params = _params;
+	[_objectLoader send];
+}
+
+- (RKRequest*)loadingRequest {
+	return _objectLoader.request;
 }
 
 @end

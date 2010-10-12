@@ -7,7 +7,7 @@
 //
 
 #import <Three20/Three20.h>
-#import "RestKit.h"
+#import <RestKit/RestKit.h>
 #import "RKRequestModel.h"
 
 /**
@@ -22,8 +22,12 @@
 
 + (id)modelWithResourcePath:(NSString*)resourcePath;
 + (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params;
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass;
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath;
 - (id)initWithResourcePath:(NSString*)resourcePath;
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params;
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass;
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath;
 
 - (NSArray*)objects;
 

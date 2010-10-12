@@ -7,6 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
+#import "../CoreData/RKManagedObject.h"
 
 /**
  * Lifecycle events for RKRequestModel
@@ -31,9 +32,12 @@
 	
 	NSString* _resourcePath;
 	NSDictionary* _params;
-	RKRequest* _loadingRequest;
 	RKRequestMethod _method;
 	id _delegate;
+	RKObjectLoader* _objectLoader;
+	Class _objectClass;
+	NSString* _keyPath;
+	
 	
 	NSFetchRequest* _fetchRequest;
 	NSTimeInterval _refreshRate;
@@ -53,6 +57,7 @@
  */
 @property (nonatomic, readonly) NSDictionary* params;
 
+@property (nonatomic, readonly) RKObjectLoader* objectLoader;
 @property (nonatomic, readonly) RKRequest* loadingRequest;
 
 /**
@@ -70,8 +75,12 @@
  */
 + (id)modelWithResourcePath:(NSString*)resourcePath delegate:(id)delegate;
 + (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate;
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate;
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate;
 - (id)initWithResourcePath:(NSString*)resourcePath delegate:(id)delegate;
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate;
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate;
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate;
 
 /**
  * Clear the last loaded time for the model

@@ -36,6 +36,7 @@
 	RKResponse* _response;
 	Class<RKObjectMappable> _objectClass;
 	NSFetchRequest* _fetchRequest;
+	NSString* _keyPath;
 }
 
 /**
@@ -95,6 +96,12 @@
  * TODO: May belong in an inherited subclass to isolate persistent/non-persistent mapping in the future.
  */
 @property (nonatomic, retain) NSFetchRequest* fetchRequest;
+
+/*
+ * The keyPath property is an optional property to tell the mapper to map a subset of the response
+ * defined by a specific key.
+ */
+@property (nonatomic, copy) NSString* keyPath;
 
 /**
  * Return an auto-released loader with with an object mapper, a request, and a delegate
