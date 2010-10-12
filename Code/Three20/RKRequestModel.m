@@ -220,10 +220,6 @@
 
 // This callback is invoked after the request has been fully serviced. Finish the load here.
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects {
-	NSLog(@"Response: %@", [objectLoader.response bodyAsJSON]);
-//	[objectLoader.mapper mapFromString:[objectLoader.response bodyAsString]];
-//	NSLog(@"Map: %@", [objectLoader.mapper mapFromString:[objectLoader.response bodyAsString]]);
-	NSLog(@"Objects: %@", objects);
 	[self modelsDidLoad:objects];
 	[objectLoader release];
 }
