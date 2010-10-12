@@ -20,6 +20,14 @@
 	return [[[self alloc] initWithResourcePath:resourcePath params:params] autorelease];
 }
 
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass{
+	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass] autorelease];
+}
+
++ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath {
+	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath] autorelease];
+}
+
 - (id)initWithResourcePath:(NSString*)resourcePath {
 	if (self = [self init]) {
 		_model = [[RKRequestModel modelWithResourcePath:resourcePath delegate:self] retain];
@@ -30,6 +38,20 @@
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params {
 	if (self = [self init]) {
 		_model = [[RKRequestModel modelWithResourcePath:resourcePath params:params delegate:self] retain];
+	}
+	return self;
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass{
+	if (self = [self init]) {
+		_model = [[RKRequestModel modelWithResourcePath:resourcePath params:params objectClass:klass delegate:self] retain];
+	}
+	return self;
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath {
+	if (self = [self init]) {
+		_model = [[RKRequestModel modelWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath delegate:self] retain];
 	}
 	return self;
 }

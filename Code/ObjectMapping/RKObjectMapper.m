@@ -101,8 +101,11 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	return result;
 }
 
-- (id)mapFromString:(NSString*)string toClass:(Class)class {
+- (id)mapFromString:(NSString*)string toClass:(Class)class keyPath:(NSString*)keyPath {
 	id object = [self parseString:string];
+	if (keyPath) {
+		object = [object valueForKeyPath:keyPath];
+	}
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		return [self mapObjectFromDictionary:(NSDictionary*)object];
 	} else if ([object isKindOfClass:[NSArray class]]) {

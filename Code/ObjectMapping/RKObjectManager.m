@@ -108,6 +108,7 @@ static RKObjectManager* globalManager = nil;
 	
 	NSURL* URL = [self.client URLForResourcePath:resourcePath];
 	RKRequest* request = [[[RKRequest alloc] initWithURL:URL] autorelease];
+	[self.client setupRequest:request];
 	RKObjectLoader* loader = [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
 	loader.objectClass = objectClass;
 	

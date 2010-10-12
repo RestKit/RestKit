@@ -20,7 +20,7 @@
 
 @synthesize mapper = _mapper, delegate = _delegate, fetchRequest = _fetchRequest,
 			request = _request, response = _response, objectClass = _objectClass,
-			source = _source;
+			source = _source, keyPath = _keyPath;
 
 + (id)loaderWithMapper:(RKObjectMapper*)mapper request:(RKRequest*)request delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	return [[[self alloc] initWithMapper:mapper request:request delegate:delegate] autorelease];
@@ -42,6 +42,7 @@
 	[_request release];
 	[_response release];
 	[_fetchRequest release];
+	[_keyPath release];
 	[super dealloc];
 }
 
@@ -176,7 +177,7 @@
 		}
 	} else {
 		
-		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass];
+		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {
