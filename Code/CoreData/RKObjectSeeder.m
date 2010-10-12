@@ -7,6 +7,7 @@
 //
 
 #import "RKObjectSeeder.h"
+#import "RKManagedObjectStore.h"
 
 @implementation RKObjectSeeder
 

@@ -125,7 +125,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 }
 
 - (id)mapFromString:(NSString*)string {
-	return [self mapFromString:string toClass:nil];
+	return [self mapFromString:string toClass:nil keyPath:nil];
 }
 
 - (void)mapObject:(id)model fromString:(NSString*)string {

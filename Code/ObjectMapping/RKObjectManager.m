@@ -106,9 +106,8 @@ static RKObjectManager* globalManager = nil;
 		return nil;
 	}
 	
-	NSURL* URL = [self.client URLForResourcePath:resourcePath];
-	RKRequest* request = [[[RKRequest alloc] initWithURL:URL] autorelease];
-	[self.client setupRequest:request];
+	// Grab request through client to get HTTP AUTH & Headers
+	RKRequest* request = [self.client requestWithResourcePath:resourcePath delegate:nil callback:nil];
 	RKObjectLoader* loader = [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
 	loader.objectClass = objectClass;
 	

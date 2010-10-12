@@ -103,9 +103,10 @@ typedef enum {
 // Non-element based object mapping
 
 /**
- * Map the objects in a given payload string to a particular object class
+ * Map the objects in a given payload string to a particular object class, optionally filtering
+ * the parsed result set via a keyPath before mapping the results.
  */
-- (id)mapFromString:(NSString *)string toClass:(Class)class;
+- (id)mapFromString:(NSString *)string toClass:(Class)class keyPath:(NSString*)keyPath;
 
 /**
  * Map an array of object dictionary representations to instances of a particular
