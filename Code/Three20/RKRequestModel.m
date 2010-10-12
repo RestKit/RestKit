@@ -220,17 +220,19 @@
 
 // This callback is invoked after the request has been fully serviced. Finish the load here.
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects {
-	[self modelsDidLoad:objects];
 	[objectLoader release];
+	_objectLoader = nil;
+	[self modelsDidLoad:objects];
 }
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
+	[objectLoader release];
+	_objectLoader = nil;
 	if ([self errorWarrantsOptionToGoOffline:error]) {
 		[self showAlertWithOptionToGoOfflineForError:error];
 	} else {
 		[_delegate didFailLoadWithError:error];
 	}
-	[objectLoader release];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
