@@ -225,6 +225,13 @@
 			remoteGlobalIDString = 03BF2D3708F1C69500978C59;
 			remoteInfo = OCMockTests;
 		};
+		252D9DA81266106000E9DF33 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */;
+			remoteInfo = "RestKitJSONParser+SBJSON";
+		};
 		253A08B91255216000976E89 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -1343,6 +1350,7 @@
 				253A08BC1255216000976E89 /* PBXTargetDependency */,
 				253A08BE1255216000976E89 /* PBXTargetDependency */,
 				253A08C01255216000976E89 /* PBXTargetDependency */,
+				252D9DA91266106000E9DF33 /* PBXTargetDependency */,
 				253A08C41255216000976E89 /* PBXTargetDependency */,
 			);
 			name = RestKit;
@@ -1692,6 +1700,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		252D9DA91266106000E9DF33 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */;
+			targetProxy = 252D9DA81266106000E9DF33 /* PBXContainerItemProxy */;
+		};
 		253A08BA1255216000976E89 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 253A07FB1255161B00976E89 /* RestKitNetwork */;

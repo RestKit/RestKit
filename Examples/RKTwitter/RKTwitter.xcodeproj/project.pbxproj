@@ -53,49 +53,49 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 253A07FC1255161B00976E89 /* libRestKitNetwork.a */;
+			remoteGlobalIDString = 253A07FC1255161B00976E89;
 			remoteInfo = RestKitNetwork;
 		};
 		3F3CE2C6125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 253A08031255162C00976E89 /* libRestKitObjectMapping.a */;
+			remoteGlobalIDString = 253A08031255162C00976E89;
 			remoteInfo = RestKitObjectMapping;
 		};
 		3F3CE2C8125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 253A080C12551D3000976E89 /* libRestKitSupport.a */;
+			remoteGlobalIDString = 253A080C12551D3000976E89;
 			remoteInfo = RestKitSupport;
 		};
 		3F3CE2CA125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */;
+			remoteGlobalIDString = 2590E64F125231F600531FA8;
 			remoteInfo = "RestKitJSONParser+YAJL";
 		};
 		3F3CE2CC125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */;
+			remoteGlobalIDString = 2590E66B1252353700531FA8;
 			remoteInfo = "RestKitJSONParser+SBJSON";
 		};
 		3F3CE2CE125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 253A081412551D5300976E89 /* libRestKitCoreData.a */;
+			remoteGlobalIDString = 253A081412551D5300976E89;
 			remoteInfo = RestKitCoreData;
 		};
 		3F3CE2E3125B93EB0083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* RestKit */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = RestKit;
 		};
 /* End PBXContainerItemProxy section */
