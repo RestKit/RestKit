@@ -26,7 +26,7 @@ Note that you can send *RKRequest* objects to arbitrary URL's by constructing th
 Dependencies
 -------------------------
 
-RestKit provides JSON parser implementations using SBJSON & YAJL. The default RestKit target links against YAJL (as it is known to be faster), but you can use the SBJSON backend instead by linking against RestKitNetwork, RestKitSupport, and RestKitJSONParser+SBJSON instead of the default target.
+RestKit provides JSON parser implementations using SBJSON & YAJL. The default RestKit target builds YAJL (as it is known to be faster), but you can use the SBJSON backend instead by adding a dependency on libRestKitJSONParserSBJSON linking against libRestKitJSONParserSBJSON.a instead of the libRestKitJSONParserYAJL.a
 
 The sources for SBJSON and YAJL are included in the Vendor/ subdirectory. The headers are copied into the RestKit headers path at build time and can be imported into your project via:
     #import <RestKit/Support/JSON/SBJSON/JSON.h>
@@ -58,7 +58,7 @@ To add RestKit to your project (you're using git, right?):
 
 1. Add the submodule: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
 1. Open RestKit.xcodeproj and drag the RestKit project file into your XCode project.
-1. Click on the entry for RestKit.xcodeproj in your project's **Groups & Files** section. In the right hand pane, find the entry for **libRestKit.a** and click the checkbox on the far right underneath the silver target icon. This will link your project against RestKit. If you wish to use the Core Data support, click the checkbox next to **libRestKitCoreData.a** also (this requires that you add Core Data to the Linked Libraries section at the bottom of the screen as well).
+1. Click on the entry for RestKit.xcodeproj in your project's **Groups & Files** section. In the right hand pane, find the entries for **libRestKitSupport.a** **libRestKitObjectMapping.a** **libRestKitNetwork.a** and **libRestKitJSONParserYAJL.a** and click the checkboxes on the far right underneath the silver target icon. This will link your project against RestKit. If you wish to use the Core Data support, click the checkbox next to **libRestKitCoreData.a** also (this requires that you add Core Data to the Linked Libraries section at the bottom of the screen as well).
 1. Get Info on your target and you should be looking at the **General** tag. In the top **Direct Dependencies** section, click the plus button and add a direct dependency on the RestKit target. 
 1. Switch to the 'Build' tab in your project inspector. Make sure that your **Configuration** pop-up menu reads **All Configurations** so that your changes will work for all build configurations. 
 1. Find the **Header Search Paths** setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your header path would be 'Libraries/RestKit/Build'.
