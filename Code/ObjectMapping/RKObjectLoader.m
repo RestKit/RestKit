@@ -101,20 +101,7 @@
 		[_delegate objectLoader:self didFailWithError:response.failureError];
 		return YES;
 	} else if ([response isError]) {
-		NSString* errorMessage = nil;
-		if ([response isJSON]) {
-			// TODO: Processing errors should be moved to a delegate to accommodate non-Rails services...
-			errorMessage = [[[response bodyAsJSON] valueForKey:@"errors"] componentsJoinedByString:@", "];
-		}
-		if (nil == errorMessage) {
-			errorMessage = [response bodyAsString];
-		}
-		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-								  errorMessage, NSLocalizedDescriptionKey,
-								  nil];		
-		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
-		
-		[_delegate objectLoader:self didFailWithError:error];
+		[_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
 		return YES;
 	}
 	

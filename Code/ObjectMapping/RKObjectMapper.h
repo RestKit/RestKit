@@ -26,6 +26,8 @@ typedef enum {
 	NSArray* _dateFormats;
 	NSTimeZone* _remoteTimeZone;
 	NSTimeZone* _localTimeZone;
+	NSString* _errorsKeyPath;
+	NSString* _errorsConcatenationString;
 }
 
 /**
@@ -56,6 +58,16 @@ typedef enum {
  */
 @property(nonatomic, retain) NSTimeZone* localTimeZone;
 
+/*
+ * This defines the key path to look for errors in a string. defaults to @"errors"
+ */
+@property (nonatomic, copy) NSString* errorsKeyPath;
+
+/*
+ * This string is used to concatenate the errors returned in a string. defaults to @", "
+ */
+@property (nonatomic, copy) NSString* errorsConcatenationString;
+
 /**
  * Register a mapping for a given class for an XML element with the given tag name
  * will blow up if the class does not respond to elementToPropertyMappings and elementToRelationshipMappings
@@ -71,6 +83,12 @@ typedef enum {
  * serialized in the string
  */
 - (id)mapFromString:(NSString*)string;
+
+/**
+ * Digests a string (such as an error response body) in to an NSError.
+ * It should only be called for a string you know contains an error.
+ */
+- (NSError*)parseErrorFromString:(NSString*)string;
 
 /**
  * Sets the properties and relationships serialized in the string into the model instance

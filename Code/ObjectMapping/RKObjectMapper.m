@@ -13,6 +13,7 @@
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
 #import "RKJSONParser.h"
+#import "Errors.h"
 
 // Default format string for date and time objects from Rails
 // TODO: Rails specifics should probably move elsewhere...
@@ -47,6 +48,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 @synthesize dateFormats = _dateFormats;
 @synthesize remoteTimeZone = _remoteTimeZone;
 @synthesize localTimeZone = _localTimeZone;
+@synthesize errorsKeyPath = _errorsKeyPath;
+@synthesize errorsConcatenationString = _errorsConcatenationString;
 
 ///////////////////////////////////////////////////////////////////////////////
 // public
@@ -59,6 +62,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		self.dateFormats = [NSArray arrayWithObjects:kRKModelMapperRailsDateTimeFormatString, kRKModelMapperRailsDateFormatString, nil];
 		self.remoteTimeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
 		self.localTimeZone = [NSTimeZone localTimeZone];
+		self.errorsKeyPath = @"errors";
+		self.errorsConcatenationString = @", ";
 	}
 	return self;
 }
@@ -67,6 +72,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	[_elementToClassMappings release];
 	[_inspector release];
 	[_dateFormats release];
+	[_errorsKeyPath release];
+	[_errorsConcatenationString release];
 	[super dealloc];
 }
 
@@ -99,6 +106,16 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	id result = [parser objectFromString:string];
 	NSLog(@"Finished parse...");
 	return result;
+}
+
+- (NSError*)parseErrorFromString:(NSString*)string {
+	NSString* errorMessage = [[[self parseString:string] valueForKeyPath:_errorsKeyPath] componentsJoinedByString:_errorsConcatenationString];
+	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+							  errorMessage, NSLocalizedDescriptionKey,
+							  nil];
+	NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
+	
+	return error;
 }
 
 - (id)mapFromString:(NSString*)string toClass:(Class)class keyPath:(NSString*)keyPath {
