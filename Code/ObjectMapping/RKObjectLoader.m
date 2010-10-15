@@ -18,7 +18,7 @@
 
 @implementation RKObjectLoader
 
-@synthesize mapper = _mapper, delegate = _delegate, fetchRequest = _fetchRequest,
+@synthesize mapper = _mapper, delegate = _delegate, fetchRequests = _fetchRequests,
 			request = _request, response = _response, objectClass = _objectClass,
 			source = _source, keyPath = _keyPath;
 
@@ -41,7 +41,7 @@
 	[_mapper release];
 	[_request release];
 	[_response release];
-	[_fetchRequest release];
+	[_fetchRequests release];
 	[_keyPath release];
 	[super dealloc];
 }
@@ -173,8 +173,8 @@
 			results = [NSArray arrayWithObjects:result, nil];
 		}
 		
-		if (self.fetchRequest) {
-			NSArray* cachedObjects = [RKManagedObject objectsWithRequest:self.fetchRequest];			
+		if (self.fetchRequests) {
+			NSArray* cachedObjects = [RKManagedObject objectsWithFetchRequests:self.fetchRequests];			
 			for (id object in cachedObjects) {
 				if ([object isKindOfClass:[RKManagedObject class]]) {
 					if (NO == [results containsObject:object]) {

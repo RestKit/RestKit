@@ -32,12 +32,12 @@
 /**
  *	Returns an initialized NSFetchRequest for the entity, with no predicate
  */
-// TODO: Should be fetchRequest
-+ (NSFetchRequest*)request;
++ (NSFetchRequest*)fetchRequest;
 
 // TODO: Stays, document all these guys...
-+ (NSArray*)objectsWithRequest:(NSFetchRequest*)request;
-+ (id)objectWithRequest:(NSFetchRequest*)request; // objectWithFetchRequest:
++ (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
++ (NSArray*)objectsWithFetchRequests:(NSArray*)fetchRequests;
++ (id)objectWithFetchRequest:(NSFetchRequest*)fetchRequest;
 + (NSArray*)objectsWithPredicate:(NSPredicate*)predicate;
 + (id)objectWithPredicate:(NSPredicate*)predicate;
 + (NSArray*)allObjects;
@@ -101,12 +101,12 @@
 + (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
 
 /**
- * Return a fetch request used for querying locally cached objects in the Core Data
+ * Return a collection of fetch requests used for querying locally cached objects in the Core Data
  * store for a given resource path. The default implementation does nothing, so subclasses
- * are responsible for parsing the object path and building a valid fetch request.
+ * are responsible for parsing the object path and building a set of valid fetch requests.
  */
 // TODO: Gets removed...
-+ (NSFetchRequest*)fetchRequestForResourcePath:(NSString*)resourcePath;
++ (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath;
 
 - (NSDictionary*)elementNamesAndPropertyValues;
 

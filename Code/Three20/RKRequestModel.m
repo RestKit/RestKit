@@ -16,7 +16,7 @@
 @synthesize params = _params;
 @synthesize objectLoader = _objectLoader;
 @synthesize method = _method;
-@synthesize fetchRequest = _fetchRequest;
+@synthesize fetchRequests = _fetchRequests;
 @synthesize refreshRate = _refreshRate;
 
 + (id)modelWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {
@@ -94,7 +94,7 @@
 	[_objectLoader release];
 	[_params release];
 	[_objects release];
-	[_fetchRequest release];
+	[_fetchRequests release];
 	[_objectClass release];
 	[_keyPath release];
 	[super dealloc];
@@ -151,12 +151,12 @@
 }
 
 - (void)loadFromObjectCache {
-	if (_fetchRequest != nil) {
+	if (_fetchRequests != nil) {
 		if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
 			[_delegate rkModelDidStartLoad];
 		}
 		
-		_objects = [[RKManagedObject objectsWithRequest:_fetchRequest] retain];
+		_objects = [[RKManagedObject objectsWithRequests:_fetchRequests] retain];
 		_loaded = YES;
 		
 		if ([_delegate respondsToSelector:@selector(rkModelDidFinishLoad)]) {
@@ -238,9 +238,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // public
 
-- (void)setFetchRequest:(NSFetchRequest*)fetchRequest {
-	[_fetchRequest release];
-	_fetchRequest = [fetchRequest retain];
+- (void)setFetchRequests:(NSArray*)fetchRequests {
+	[_fetchRequests release];
+	_fetchRequests = [fetchRequests retain];
 	[self loadFromObjectCache];
 }
 
@@ -253,6 +253,7 @@
 	_objectLoader.method = _method;
 	_objectLoader.keyPath = _keyPath;
 	_objectLoader.params = _params;
+	_objectLoader.fetchRequests = _fetchRequests;
 	[_objectLoader send];
 }
 

@@ -38,8 +38,7 @@
 	Class _objectClass;
 	NSString* _keyPath;
 	
-	
-	NSFetchRequest* _fetchRequest;
+	NSArray* _fetchRequests;
 	NSTimeInterval _refreshRate;
 }
 
@@ -65,7 +64,7 @@
  */
 @property (nonatomic, assign) RKRequestMethod method;
 
-@property (nonatomic, retain) NSFetchRequest* fetchRequest;
+@property (nonatomic, retain) NSArray* fetchRequests;
 
 @property (assign) NSTimeInterval refreshRate;
 

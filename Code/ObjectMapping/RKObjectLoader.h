@@ -35,7 +35,7 @@
 	RKRequest* _request;
 	RKResponse* _response;
 	Class<RKObjectMappable> _objectClass;
-	NSFetchRequest* _fetchRequest;
+	NSArray* _fetchRequests;
 	NSString* _keyPath;
 }
 
@@ -90,12 +90,12 @@
 @property (nonatomic, retain) NSObject<RKRequestSerializable>* params;
 
 /**
- * Fetch request for loading cached objects. This is used to remove objects from the local persistent store
+ * Fetch requests for loading cached objects. This is used to remove objects from the local persistent store
  * when model mapping operations are completed.
  *
  * TODO: May belong in an inherited subclass to isolate persistent/non-persistent mapping in the future.
  */
-@property (nonatomic, retain) NSFetchRequest* fetchRequest;
+@property (nonatomic, retain) NSArray* fetchRequests;
 
 /*
  * The keyPath property is an optional property to tell the mapper to map a subset of the response
