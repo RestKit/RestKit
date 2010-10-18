@@ -101,24 +101,21 @@ static RKObjectManager* globalManager = nil;
 	[_mapper registerClass:class forElementNamed:elementName];
 }
 
-- (RKObjectLoader*)loaderWithResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	if ([self isOffline]) {
 		return nil;
 	}
 	
 	// Grab request through client to get HTTP AUTH & Headers
-	RKRequest* request = [self.client requestWithResourcePath:resourcePath delegate:nil callback:nil];
-	RKObjectLoader* loader = [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
-	loader.objectClass = objectClass;
-	
-	return loader;
+	RKRequest* request = [self.client requestWithResourcePath:resourcePath delegate:nil callback:nil];	
+	return [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
 }
 
 /////////////////////////////////////////////////////////////
 // Object Collection Loaders
 
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath objectClass:nil delegate:delegate];
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	loader.method = RKRequestMethodGET;
 	
 	[loader send];
@@ -128,7 +125,7 @@ static RKObjectManager* globalManager = nil;
 
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject <RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePathWithQuery = [self.client resourcePath:resourcePath withQueryParams:queryParams];
-	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePathWithQuery objectClass:nil delegate:delegate];
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePathWithQuery delegate:delegate];
 	loader.method = RKRequestMethodGET;	
 	
 	[loader send];
@@ -137,8 +134,9 @@ static RKObjectManager* globalManager = nil;
 }
 
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath objectClass:objectClass delegate:delegate];
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	loader.method = RKRequestMethodGET;
+	loader.objectClass = objectClass;
 	
 	[loader send];
 	
@@ -147,8 +145,9 @@ static RKObjectManager* globalManager = nil;
 
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject <RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePathWithQuery = [self.client resourcePath:resourcePath withQueryParams:queryParams];
-	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePathWithQuery objectClass:objectClass delegate:delegate];
-	loader.method = RKRequestMethodGET;	
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePathWithQuery delegate:delegate];
+	loader.method = RKRequestMethodGET;
+	loader.objectClass = objectClass;
 	
 	[loader send];
 	
@@ -158,51 +157,51 @@ static RKObjectManager* globalManager = nil;
 /////////////////////////////////////////////////////////////
 // Object Instance Loaders
 
-- (RKObjectLoader*)loaderForObject:(NSObject<RKObjectMappable>*)object resourcePath:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	// TODO: Need to factor core data stuff out of here...
-	if (method != RKRequestMethodGET) {
-		NSError* error = [self.objectStore save];
-		if (error != nil) {
-			NSLog(@"[RestKit] RKModelManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
-		}
-	}
+- (RKObjectLoader*)objectLoaderForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+	// Get the serialization representation from the router
+	NSString* resourcePath = [self.router pathForObject:object method:method];
+	NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	
-	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath objectClass:[object class] delegate:delegate];
 	loader.method = method;
 	loader.params = params;
 	loader.source = object;
+	loader.objectClass = [object class];
 	
 	return loader;
 }
 
+// TODO: Need to factor core data stuff out of here...
+- (void)saveObjectStore {	
+	NSError* error = [self.objectStore save];
+	if (nil == error) {
+		NSLog(@"[RestKit] RKModelManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
+	}
+}
+
 - (RKObjectLoader*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodGET];
-	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodGET];
-	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodGET params:params delegate:delegate];
+	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodGET delegate:delegate];
 	[loader send];
 	return loader;
 }
 
 - (RKObjectLoader*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodPOST];
-	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodPOST];
-	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
+	[self saveObjectStore];
+	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPOST delegate:delegate];
 	[loader send];
 	return loader;
 }
 
 - (RKObjectLoader*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodPUT];
-	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodPUT];
-	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
+	[self saveObjectStore];
+	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPUT delegate:delegate];
 	[loader send];
 	return loader;
 }
 
 - (RKObjectLoader*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodDELETE];
-	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodDELETE];
-	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodDELETE params:params delegate:delegate];
+	[self saveObjectStore];
+	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodDELETE delegate:delegate];
 	[loader send];
 	return loader;
 }

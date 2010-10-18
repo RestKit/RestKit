@@ -249,8 +249,9 @@
 }
 
 - (void)load {
-	_objectLoader = [[[RKObjectManager globalManager] loaderWithResourcePath:_resourcePath objectClass:_objectClass delegate:self] retain];
+	_objectLoader = [[[RKObjectManager globalManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
 	_objectLoader.method = _method;
+	_objectLoader.objectClass = _objectClass;
 	_objectLoader.keyPath = _keyPath;
 	_objectLoader.params = _params;
 	[_objectLoader send];
