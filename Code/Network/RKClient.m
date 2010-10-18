@@ -8,6 +8,7 @@
 
 #import "RKClient.h"
 #import "RKObjectLoader.h"
+#import "RKURL.h"
 #import <SystemConfiguration/SCNetworkReachability.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +91,7 @@ static RKClient* sharedClient = nil;
 }
 
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath {
-	return [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", self.baseURL, resourcePath]];
+	return [RKURL URLWithBaseURLString:self.baseURL resourcePath:resourcePath];
 }
 
 - (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams {

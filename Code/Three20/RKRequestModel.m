@@ -7,6 +7,7 @@
 //
 
 #import "RKRequestModel.h"
+#import "RKManagedObjectStore.h"
 #import <Three20/Three20.h>
 
 @implementation RKRequestModel
@@ -16,64 +17,36 @@
 @synthesize params = _params;
 @synthesize objectLoader = _objectLoader;
 @synthesize method = _method;
-@synthesize fetchRequests = _fetchRequests;
 @synthesize refreshRate = _refreshRate;
-
-+ (id)modelWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {
-	return [[[self alloc] initWithResourcePath:resourcePath delegate:delegate] autorelease];
-}
-
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate {
-	return [[[self alloc] initWithResourcePath:resourcePath params:params delegate:delegate] autorelease];
-}
-
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate {
-	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass delegate:delegate] autorelease];
-}
-
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate {
-	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath delegate:delegate] autorelease];
-}
 
 - (id)initWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {
 	if (self = [self init]) {
 		_resourcePath = [resourcePath retain];
 		_delegate = [delegate retain];
 	}
+	[self loadFromObjectCache];
 	
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate {
-	if (self = [self init]) {
-		_resourcePath = [resourcePath retain];
+	if (self = [self initWithResourcePath:resourcePath delegate:delegate]) {
 		_params = [params retain];
-		_delegate = [delegate retain];
-	}
-	
+	}	
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate {
-	if (self = [self init]) {
-		_resourcePath = [resourcePath retain];
-		_params = [params retain];
-		_delegate = [delegate retain];
+	if (self = [self initWithResourcePath:resourcePath params:params delegate:delegate]) {
 		_objectClass = [klass retain];
 	}
-	
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate {
-	if (self = [self init]) {
-		_resourcePath = [resourcePath retain];
-		_params = [params retain];
-		_delegate = [delegate retain];
-		_objectClass = [klass retain];
+	if (self = [self initWithResourcePath:resourcePath params:params objectClass:klass delegate:delegate]) {
 		_keyPath = [keyPath retain];
 	}
-	
 	return self;
 }
 
@@ -83,7 +56,7 @@
 - (id)init {
 	if (self = [super init]) {
 		_method = RKRequestMethodGET;
-		_refreshRate = (60*60); // 1 hour default
+		_refreshRate = NSTimeIntervalSince1970; // Essentially, default to never
 	}
 	return self;
 }
@@ -94,7 +67,6 @@
 	[_objectLoader release];
 	[_params release];
 	[_objects release];
-	[_fetchRequests release];
 	[_objectClass release];
 	[_keyPath release];
 	[super dealloc];
@@ -102,12 +74,6 @@
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // RKRequestDelegate
-
-- (void)requestDidStartLoad:(RKRequest*)request {
-	if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
-		[_delegate rkModelDidStartLoad];
-	}
-}
 
 - (void)requestDidFinishLoad:(RKRequest*)request {
 	[self saveLoadedTime];
@@ -131,11 +97,13 @@
 
 - (BOOL)needsRefresh {
 	NSDate* loadedTime = self.loadedTime;
+	BOOL outdated = NO;
 	if (loadedTime) {
-		BOOL outdated = -[loadedTime timeIntervalSinceNow] > _refreshRate;
-		return outdated;
+		outdated = -[loadedTime timeIntervalSinceNow] > _refreshRate;
+	} else {
+		[self saveLoadedTime];
 	}
-	return YES;
+	return outdated;
 }
 
 - (void)clearLoadedTime {
@@ -151,22 +119,28 @@
 }
 
 - (void)loadFromObjectCache {
-	if (_fetchRequests != nil) {
-		if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
-			[_delegate rkModelDidStartLoad];
-		}
+	RKManagedObjectStore* store = [RKObjectManager globalManager].objectStore;
+	NSArray* cachedObjects = nil;
+	
+	if (store.managedObjectCache) {
+		cachedObjects = [RKManagedObject objectsWithFetchRequests:[store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath]];
 		
-		_objects = [[RKManagedObject objectsWithRequests:_fetchRequests] retain];
-		_loaded = YES;
-		
-		if ([_delegate respondsToSelector:@selector(rkModelDidFinishLoad)]) {
-			[_delegate rkModelDidFinishLoad];
+		if (cachedObjects && [cachedObjects count] > 0) {
+			if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
+				[_delegate rkModelDidStartLoad];
+			}
+			
+			_objects = [cachedObjects retain];
+			_loaded = YES;
+			
+			if ([_delegate respondsToSelector:@selector(rkModelDidLoad)]) {
+				[_delegate rkModelDidLoad];
+			}
 		}
-		
-		// TODO: What if self.needsRefresh does the update load???
-		if ([self needsRefresh]) {
-			[self load];
-		}
+	}
+	
+	if (cachedObjects == nil || [cachedObjects count] == 0 || [self needsRefresh]) {
+		[self load];
 	}
 }
 
@@ -238,27 +212,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // public
 
-- (void)setFetchRequests:(NSArray*)fetchRequests {
-	[_fetchRequests release];
-	_fetchRequests = [fetchRequests retain];
-	[self loadFromObjectCache];
-}
-
 - (void)reset {
 	[self clearLoadedTime];
 }
 
 - (void)load {
+	if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
+		[_delegate rkModelDidStartLoad];
+	}
+	
 	_objectLoader = [[[RKObjectManager globalManager] loaderWithResourcePath:_resourcePath objectClass:_objectClass delegate:self] retain];
 	_objectLoader.method = _method;
 	_objectLoader.keyPath = _keyPath;
 	_objectLoader.params = _params;
-	_objectLoader.fetchRequests = _fetchRequests;
 	[_objectLoader send];
-}
-
-- (RKRequest*)loadingRequest {
-	return _objectLoader.request;
 }
 
 @end

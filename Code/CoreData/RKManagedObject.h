@@ -100,14 +100,6 @@
 // TODO: Moves to the router...
 + (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
 
-/**
- * Return a collection of fetch requests used for querying locally cached objects in the Core Data
- * store for a given resource path. The default implementation does nothing, so subclasses
- * are responsible for parsing the object path and building a set of valid fetch requests.
- */
-// TODO: Gets removed...
-+ (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath;
-
 - (NSDictionary*)elementNamesAndPropertyValues;
 
 /**

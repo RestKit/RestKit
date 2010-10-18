@@ -12,46 +12,30 @@
 
 @synthesize model = _model;
 
-+ (id)modelWithResourcePath:(NSString*)resourcePath {
-	return [[[self alloc] initWithResourcePath:resourcePath] autorelease];
-}
-
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params {
-	return [[[self alloc] initWithResourcePath:resourcePath params:params] autorelease];
-}
-
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass{
-	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass] autorelease];
-}
-
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath {
-	return [[[self alloc] initWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath] autorelease];
-}
-
 - (id)initWithResourcePath:(NSString*)resourcePath {
 	if (self = [self init]) {
-		_model = [[RKRequestModel modelWithResourcePath:resourcePath delegate:self] retain];
+		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath delegate:self];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params {
 	if (self = [self init]) {
-		_model = [[RKRequestModel modelWithResourcePath:resourcePath params:params delegate:self] retain];
+		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params delegate:self];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass{
 	if (self = [self init]) {
-		_model = [[RKRequestModel modelWithResourcePath:resourcePath params:params objectClass:klass delegate:self] retain];
+		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params objectClass:klass delegate:self];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath {
 	if (self = [self init]) {
-		_model = [[RKRequestModel modelWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath delegate:self] retain];
+		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath delegate:self];
 	}
 	return self;
 }
@@ -68,6 +52,7 @@
 
 - (void)dealloc {
 	[_model release];
+	_model = nil;
 	[super dealloc];
 }
 
@@ -79,7 +64,7 @@
 }
 
 - (BOOL)isLoading {
-	return nil != _model.loadingRequest;
+	return nil != _model.objectLoader;
 }
 
 - (BOOL)isLoadingMore {
@@ -91,8 +76,8 @@
 }
 
 - (void)cancel {
-	if (_model) {
-		[_model.loadingRequest cancel];
+	if (_model && _model.objectLoader.request) {
+		[_model.objectLoader.request cancel];
 	}
 }
 

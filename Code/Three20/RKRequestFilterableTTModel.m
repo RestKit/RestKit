@@ -12,12 +12,13 @@
 
 @synthesize searchEngine = _searchEngine;
 @synthesize predicate = _predicate;
-@synthesize sortDescriptor = _sortDescriptor;
+@synthesize sortDescriptors = _sortDescriptors;
+@synthesize sortSelector = _sortSelector;
 
 - (id)init {
 	if (self = [super init]) {
 		_predicate = nil;
-		_sortDescriptor = nil;
+		_sortDescriptors = nil;
 		_searchText = nil;
 		_searchEngine = nil;
 	}
@@ -28,14 +29,14 @@
 - (void)dealloc {
 	[_searchEngine release];_searchEngine=nil;
 	[_predicate release];_predicate=nil;
-	[_sortDescriptor release];_sortDescriptor=nil;
+	[_sortDescriptors release];_sortDescriptors=nil;
 	[_searchText release];_searchText=nil;
 	[super dealloc];
 }
 
 - (void)reset {
 	[_predicate release];_predicate=nil;
-	[_sortDescriptor release];_sortDescriptor=nil;
+	[_sortDescriptors release];_sortDescriptors=nil;
 	[_searchText release];_searchText=nil;
 	[self didChange];
 }
@@ -80,8 +81,10 @@
 		results = [self search:_searchText inCollection:results];
 	}
 	
-	if (self.sortDescriptor) {
-		results = [results sortedArrayUsingDescriptors:[NSArray arrayWithObject:self.sortDescriptor]];
+	if (self.sortSelector) {
+		results = [results sortedArrayUsingSelector:self.sortSelector];
+	} else if (self.sortDescriptors) {
+		results = [results sortedArrayUsingDescriptors:self.sortDescriptors];
 	}
 	
 	return results;

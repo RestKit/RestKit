@@ -110,13 +110,6 @@
 }
 
 #pragma mark -
-#pragma mark Object Cacheing
-
-+ (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath {
-	return nil;
-}
-
-#pragma mark -
 #pragma mark RKObjectMappable
 
 // TODO: Would be nice to specify this via an annotation in the mappings definition...

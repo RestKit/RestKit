@@ -171,6 +171,7 @@ static RKObjectManager* globalManager = nil;
 	loader.method = method;
 	loader.params = params;
 	loader.source = object;
+	loader.managedObjectStore = self.objectStore;
 	
 	return loader;
 }

@@ -11,6 +11,7 @@
 #import "RKObjectManager.h"
 #import "Errors.h"
 #import "RKManagedObject.h"
+#import "RKURL.h"
 
 @interface RKObjectLoader (Private)
 - (void)loadObjectsFromResponse:(RKResponse*)response;
@@ -18,9 +19,8 @@
 
 @implementation RKObjectLoader
 
-@synthesize mapper = _mapper, delegate = _delegate, fetchRequests = _fetchRequests,
-			request = _request, response = _response, objectClass = _objectClass,
-			source = _source, keyPath = _keyPath;
+@synthesize mapper = _mapper, delegate = _delegate, request = _request, response = _response,
+			objectClass = _objectClass, source = _source, keyPath = _keyPath, managedObjectStore = _managedObjectStore;
 
 + (id)loaderWithMapper:(RKObjectMapper*)mapper request:(RKRequest*)request delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	return [[[self alloc] initWithMapper:mapper request:request delegate:delegate] autorelease];
@@ -31,6 +31,7 @@
 		_mapper = [mapper retain];
 		self.request = request;
 		self.delegate = delegate;
+		self.managedObjectStore = nil;
 	}
 	
 	return self;
@@ -41,8 +42,8 @@
 	[_mapper release];
 	[_request release];
 	[_response release];
-	[_fetchRequests release];
 	[_keyPath release];
+	self.managedObjectStore = nil;
 	[super dealloc];
 }
 
@@ -173,12 +174,16 @@
 			results = [NSArray arrayWithObjects:result, nil];
 		}
 		
-		if (self.fetchRequests) {
-			NSArray* cachedObjects = [RKManagedObject objectsWithFetchRequests:self.fetchRequests];			
-			for (id object in cachedObjects) {
-				if ([object isKindOfClass:[RKManagedObject class]]) {
-					if (NO == [results containsObject:object]) {
-						[[objectStore managedObjectContext] deleteObject:object];
+		if (self.managedObjectStore && [self.managedObjectStore managedObjectCache]) {
+			if ([self.URL isKindOfClass:[RKURL class]]) {
+				RKURL* rkURL = (RKURL*)self.URL;
+				NSArray* fetchRequests = [[self.managedObjectStore managedObjectCache] fetchRequestsForResourcePath:rkURL.resourcePath];
+				NSArray* cachedObjects = [RKManagedObject objectsWithFetchRequests:fetchRequests];			
+				for (id object in cachedObjects) {
+					if ([object isKindOfClass:[RKManagedObject class]]) {
+						if (NO == [results containsObject:object]) {
+							[[objectStore managedObjectContext] deleteObject:object];
+						}
 					}
 				}
 			}
@@ -187,7 +192,7 @@
 	
 	// Before looking up NSManagedObjectIDs, need to save to ensure we do not have
 	// temporary IDs for new objects prior to handing the objectIDs across threads
-	NSError* error = [[[RKObjectManager globalManager] objectStore] save];
+	NSError* error = [self.managedObjectStore save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
 		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];		
