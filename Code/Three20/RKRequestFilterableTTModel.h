@@ -23,7 +23,7 @@
 
 /**
  * A predicate to filter the model objects by
- */
+ */	
 @property (nonatomic, retain) NSPredicate* predicate;
 
 /**
