@@ -7,6 +7,7 @@
 //
 
 #import "RKRequestFilterableTTModel.h"
+#import "RKSearchEngine.h"
 
 @implementation RKRequestFilterableTTModel
 

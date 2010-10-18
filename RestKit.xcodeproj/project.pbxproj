@@ -229,7 +229,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */;
+			remoteGlobalIDString = 2590E66A1252353700531FA8;
 			remoteInfo = "RestKitJSONParser+SBJSON";
 		};
 		253A08B91255216000976E89 /* PBXContainerItemProxy */ = {

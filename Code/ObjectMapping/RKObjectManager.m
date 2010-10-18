@@ -178,25 +178,33 @@ static RKObjectManager* globalManager = nil;
 - (RKObjectLoader*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodGET];
 	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodGET];
-	return [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodGET params:params delegate:delegate];
+	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodGET params:params delegate:delegate];
+	[loader send];
+	return loader;
 }
 
 - (RKObjectLoader*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodPOST];
 	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodPOST];
-	return [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
+	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
+	[loader send];
+	return loader;
 }
 
 - (RKObjectLoader*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodPUT];
 	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodPUT];
-	return [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
+	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
+	[loader send];
+	return loader;
 }
 
 - (RKObjectLoader*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePath = [_router pathForObject:object method:RKRequestMethodDELETE];
 	NSObject<RKRequestSerializable>* params = [_router serializationForObject:object method:RKRequestMethodDELETE];
-	return [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodDELETE params:params delegate:delegate];
+	RKObjectLoader* loader = [self loaderForObject:object resourcePath:resourcePath method:RKRequestMethodDELETE params:params delegate:delegate];
+	[loader send];
+	return loader;
 }
 
 @end

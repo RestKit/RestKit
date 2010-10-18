@@ -7,7 +7,8 @@
 //
 
 #import "RKRequestTTModel.h"
-#import "RKSearchEngine.h"
+
+@class RKSearchEngine;
 
 /**
  * Provides an interface for searching and filtering a collection
