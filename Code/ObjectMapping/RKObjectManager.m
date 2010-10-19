@@ -107,8 +107,11 @@ static RKObjectManager* globalManager = nil;
 	}
 	
 	// Grab request through client to get HTTP AUTH & Headers
-	RKRequest* request = [self.client requestWithResourcePath:resourcePath delegate:nil callback:nil];	
-	return [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
+	RKRequest* request = [self.client requestWithResourcePath:resourcePath delegate:nil callback:nil];
+	RKObjectLoader* loader = [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
+	loader.managedObjectStore = self.objectStore;
+	
+	return loader;
 }
 
 /////////////////////////////////////////////////////////////
