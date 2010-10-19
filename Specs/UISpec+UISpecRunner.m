@@ -6,8 +6,17 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "UISpec+UISpecRunner.h"
 #import <objc/runtime.h>
+#import "UISpec+UISpecRunner.h"
+
+@interface UISpec ()
+
+/**
+ * Returns YES when a class implement the UISpec protocol
+ */
++(BOOL)isASpec:(Class)class;
+
+@end
 
 @implementation UISpec (UISpecRunner)
 
