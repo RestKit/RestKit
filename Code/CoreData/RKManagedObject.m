@@ -43,18 +43,16 @@
 	return [NSEntityDescription entityForName:className inManagedObjectContext:[RKManagedObject managedObjectContext]];
 }
 
-// should be fetchRequest
-+ (NSFetchRequest*)request {
-	NSFetchRequest *request = [[NSFetchRequest alloc] init];
++ (NSFetchRequest*)fetchRequest {
+	NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
 	NSEntityDescription *entity = [self entity];
-	[request setEntity:entity];
-	[request autorelease];
-	return request;
+	[fetchRequest setEntity:entity];
+	return fetchRequest;
 }
 
-+ (NSArray*)objectsWithRequest:(NSFetchRequest*)request {
++ (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest {
 	NSError* error = nil;
-	NSArray* objects = [[RKManagedObject managedObjectContext] executeFetchRequest:request error:&error];
+	NSArray* objects = [[RKManagedObject managedObjectContext] executeFetchRequest:fetchRequest error:&error];
 	if (error != nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
 		// TODO: Error handling
@@ -62,9 +60,19 @@
 	return objects;
 }
 
-+ (id)objectWithRequest:(NSFetchRequest*)request {
-	[request setFetchLimit:1];
-	NSArray* objects = [self objectsWithRequest:request];
++ (NSArray*)objectsWithFetchRequests:(NSArray*)fetchRequests {
+	NSMutableArray* mutableObjectArray = [[NSMutableArray alloc] init];
+	for (NSFetchRequest* fetchRequest in fetchRequests) {
+		[mutableObjectArray addObjectsFromArray:[RKManagedObject objectsWithFetchRequest:fetchRequest]];
+	}
+	NSArray* objects = [NSArray arrayWithArray:mutableObjectArray];
+	[mutableObjectArray release];
+	return objects;
+}
+
++ (id)objectWithFetchRequest:(NSFetchRequest*)fetchRequest {
+	[fetchRequest setFetchLimit:1];
+	NSArray* objects = [self objectsWithFetchRequest:fetchRequest];
 	if ([objects count] == 0) {
 		return nil;
 	} else {
@@ -73,15 +81,15 @@
 }
 
 + (NSArray*)objectsWithPredicate:(NSPredicate*)predicate {
-	NSFetchRequest* request = [self request];
-	[request setPredicate:predicate];
-	return [self objectsWithRequest:request];
+	NSFetchRequest* fetchRequest = [self fetchRequest];
+	[fetchRequest setPredicate:predicate];
+	return [self objectsWithFetchRequest:fetchRequest];
 }
 
 + (id)objectWithPredicate:(NSPredicate*)predicate {
-	NSFetchRequest* request = [self request];
-	[request setPredicate:predicate];
-	return [self objectWithRequest:request];
+	NSFetchRequest* fetchRequest = [self fetchRequest];
+	[fetchRequest setPredicate:predicate];
+	return [self objectWithFetchRequest:fetchRequest];
 }
 
 + (NSArray*)allObjects {
@@ -89,9 +97,9 @@
 }
 
 + (NSUInteger)count {
-	NSFetchRequest *request = [self request];	
+	NSFetchRequest *fetchRequest = [self fetchRequest];	
 	NSError *error = nil;
-	NSUInteger count = [[RKManagedObject managedObjectContext] countForFetchRequest:request error:&error];
+	NSUInteger count = [[RKManagedObject managedObjectContext] countForFetchRequest:fetchRequest error:&error];
 	// TODO: Error handling...
 	return count;
 }
@@ -99,13 +107,6 @@
 + (id)object {
 	id object = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[RKManagedObject managedObjectContext]];
 	return [object autorelease];
-}
-
-#pragma mark -
-#pragma mark Object Cacheing
-
-+ (NSFetchRequest*)fetchRequestForResourcePath:(NSString*)resourcePath {
-	return nil;
 }
 
 #pragma mark -

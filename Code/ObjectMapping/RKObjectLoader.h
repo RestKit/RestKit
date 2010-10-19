@@ -12,6 +12,7 @@
 #import "RKObjectMapper.h"
 
 @class RKObjectLoader;
+@class RKManagedObjectStore;
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
 /**
@@ -35,8 +36,8 @@
 	RKRequest* _request;
 	RKResponse* _response;
 	Class<RKObjectMappable> _objectClass;
-	NSFetchRequest* _fetchRequest;
 	NSString* _keyPath;
+	RKManagedObjectStore* _managedObjectStore;
 }
 
 /**
@@ -89,19 +90,18 @@
  */
 @property (nonatomic, retain) NSObject<RKRequestSerializable>* params;
 
-/**
- * Fetch request for loading cached objects. This is used to remove objects from the local persistent store
- * when model mapping operations are completed.
- *
- * TODO: May belong in an inherited subclass to isolate persistent/non-persistent mapping in the future.
- */
-@property (nonatomic, retain) NSFetchRequest* fetchRequest;
-
 /*
  * The keyPath property is an optional property to tell the mapper to map a subset of the response
  * defined by a specific key.
  */
 @property (nonatomic, copy) NSString* keyPath;
+
+/*
+ * In cases where CoreData is used for local object storage/caching, a reference to
+ * the managedObjectStore for use in retrieving locally cached objects using the store's
+ * managedObjectCache property.
+ */
+@property (nonatomic, retain) RKManagedObjectStore* managedObjectStore;
 
 /**
  * Return an auto-released loader with with an object mapper, a request, and a delegate

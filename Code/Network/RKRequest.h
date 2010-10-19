@@ -35,7 +35,6 @@ typedef enum RKRequestMethod {
 	NSString* _username;
 	NSString* _password;
 	RKRequestMethod _method;
-	NSFetchRequest* _fetchRequest;
 }
 
 /**

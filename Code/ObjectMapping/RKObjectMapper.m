@@ -237,9 +237,9 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
 		
 		if (nil == [threadDictionary objectForKey:class]) {
-			NSFetchRequest* fetchRequest = [class request];
+			NSFetchRequest* fetchRequest = [class fetchRequest];
 			[fetchRequest setReturnsObjectsAsFaults:NO];			
-			objects = [class objectsWithRequest:fetchRequest];
+			objects = [class objectsWithFetchRequest:fetchRequest];
 			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
 			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
 			NSString* primaryKey = [class performSelector:@selector(primaryKey)];
