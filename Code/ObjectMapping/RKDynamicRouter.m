@@ -1,15 +1,16 @@
 //
-//  RKStaticRouter.m
+//  RKDynamicRouter.m
 //  RestKit
 //
-//  Created by Blake Watters on 7/20/10.
+//  Created by Blake Watters on 10/18/10.
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKStaticRouter.h"
+#import "RKDynamicRouter.h"
+#import "RKDynamicRouter.h"
 #import "NSDictionary+RKRequestSerialization.h"
 
-@implementation RKStaticRouter
+@implementation RKDynamicRouter
 
 - (id)init {
 	if (self = [super init]) {
@@ -24,7 +25,7 @@
 	[super dealloc];
 }
 
-- (void)routeClass:(Class)class toPath:(NSString*)resourcePath forMethodName:(NSString*)methodName {
+- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethodName:(NSString*)methodName {
 	NSString* className = NSStringFromClass(class);
 	if (nil == [_routes objectForKey:className]) {
 		NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
@@ -35,7 +36,7 @@
 	if ([classRoutes objectForKey:methodName]) {
 		[NSException raise:nil format:@"A route has already been registered for class '%@' and HTTP method '%@'", className, methodName];
 	}
-		
+	
 	[classRoutes setValue:resourcePath forKey:methodName];
 }
 
@@ -62,18 +63,18 @@
 
 // Public
 
-- (void)routeClass:(Class<RKObjectMappable>)class toPath:(NSString*)path {
-	[self routeClass:class toPath:path forMethodName:@"ANY"];
+- (void)routeClass:(Class<RKObjectMappable>)class toResourcePath:(NSString*)resourcePath {
+	[self routeClass:class toResourcePath:resourcePath forMethodName:@"ANY"];
 }
 
-- (void)routeClass:(Class)class toPath:(NSString*)path forMethod:(RKRequestMethod)method {
+- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method {
 	NSString* methodName = [self HTTPVerbForMethod:method];
-	[self routeClass:class toPath:path forMethodName:methodName];
+	[self routeClass:class toResourcePath:resourcePath forMethodName:methodName];
 }
 
 #pragma mark RKRouter
 
-- (NSString*)pathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
+- (NSString*)resourcePathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
 	NSString* methodName = [self HTTPVerbForMethod:method];		
 	NSString* className  = NSStringFromClass([object class]);		
 	NSDictionary* classRoutes = [_routes objectForKey:className];
@@ -88,7 +89,7 @@
 	}
 	
 	[NSException raise:nil format:@"Unable to find a routable path for object of type '%@' for HTTP Method '%@'", className, methodName];
-
+	
 	return nil;
 }
 

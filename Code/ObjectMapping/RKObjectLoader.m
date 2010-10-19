@@ -7,6 +7,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "../CoreData/RKManagedObjectStore.h"
 #import "RKObjectLoader.h"
 #import "RKObjectManager.h"
 #import "Errors.h"
@@ -119,7 +120,7 @@
 	NSMutableArray* objects = [NSMutableArray arrayWithCapacity:[models count]];
 	for (id object in models) {
 		if ([object isKindOfClass:[NSManagedObjectID class]]) {
-			[objects addObject:[RKManagedObject objectWithID:(NSManagedObjectID*)object]];
+			[objects addObject:[self.managedObjectStore objectWithID:(NSManagedObjectID*)object]];
 		} else {
 			[objects addObject:object];
 		}
@@ -156,7 +157,7 @@
 	if (mainThreadModel) {
 		if ([mainThreadModel isKindOfClass:[NSManagedObject class]]) {
 			NSManagedObjectID* modelID = [(NSManagedObject*)mainThreadModel objectID];
-			NSManagedObject* backgroundThreadModel = [RKManagedObject objectWithID:modelID];
+			NSManagedObject* backgroundThreadModel = [self.managedObjectStore objectWithID:modelID];
 			[_mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:backgroundThreadModel];
 		} else {
@@ -164,11 +165,6 @@
 			results = [NSArray arrayWithObject:mainThreadModel];
 		}
 	} else {
-		// What we really need:
-		// 1) Move Core Data logic into the mapper entirely
-		// 2) Don't expose the resourcePath to the mapper
-		// 3) Maybe assign the objectStore to the loader???
-		// 4) Move the Core Data info into the object store instead...
 		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;

@@ -9,6 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKObject.h"
 #import "NSDictionary+RKRequestSerialization.h"
+#import "NSDictionary+RKAdditions.h"
 
 @interface RKObjectSpec : RKObject <UISpec> {
 	NSString* _favoriteColor;

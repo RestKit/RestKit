@@ -29,7 +29,7 @@ static RKObjectManager* globalManager = nil;
 - (id)initWithBaseURL:(NSString*)baseURL {
 	if (self = [super init]) {
 		_mapper = [[RKObjectMapper alloc] init];
-		_router = [[RKStaticRouter alloc] init];
+		_router = [[RKDynamicRouter alloc] init];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
 		self.format = RKMappingFormatJSON;
 		_isOnline = YES;		
@@ -159,7 +159,7 @@ static RKObjectManager* globalManager = nil;
 
 - (RKObjectLoader*)objectLoaderForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	// Get the serialization representation from the router
-	NSString* resourcePath = [self.router pathForObject:object method:method];
+	NSString* resourcePath = [self.router resourcePathForObject:object method:method];
 	NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	
@@ -173,6 +173,9 @@ static RKObjectManager* globalManager = nil;
 }
 
 // TODO: Need to factor core data stuff out of here...
+// TODO: Use notifications for this???
+// RKObjectManagerWillGETObject / RKObjectManagerWillPOSTObject / RKObjectManagerWillPUTObject / RKObjectManagerWillDELETEObject
+// RKObjectManagerDidGETObject / RKObjectManagerDidPOSTObject / RKObjectManagerDidPUTObject / RKObjectManagerDidDELETEObject
 - (void)saveObjectStore {	
 	NSError* error = [self.objectStore save];
 	if (nil == error) {

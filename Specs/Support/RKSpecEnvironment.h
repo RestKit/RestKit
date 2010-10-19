@@ -11,11 +11,9 @@
 #import "UIQuery.h"
 #import "UIExpectation.h"
 
-#import <OCMockObject.h>
-#import <OCMockRecorder.h>
-#import <OCMConstraint.h>
-#import <OCMArg.h>
-#import <NSNotificationCenter+OCMAdditions.h>
+#import <OCMock/OCMock.h>
+//#import <RestKit/RestKit.h>
+//#import <RestKit/CoreData/CoreData.h>
 
 ////////////////////////////////////////////////////////////////////////////
 // OCMock - For some reason this macro is incorrect. Note the use of __typeof

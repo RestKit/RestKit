@@ -1,7 +1,3 @@
 [submodule "Specs/Support/UISpec"]
 	path = Specs/Support/UISpec
 	url = git://github.com/twotoasters/UISpec.git
-
-[submodule "Specs/Support/OCMock"]
-	path = Specs/Support/OCMock
-	url = git@github.com:twotoasters/OCMock.git

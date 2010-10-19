@@ -9,7 +9,7 @@
 #import "../Network/Network.h"
 #import "RKObjectMapper.h"
 #import "RKObjectLoader.h"
-#import "RKStaticRouter.h"
+#import "RKDynamicRouter.h"
 
 // Notifications
 extern NSString* const RKDidEnterOfflineModeNotification;
@@ -90,7 +90,7 @@ extern NSString* const RKDidEnterOnlineModeNotification;
  * Routing object responsible for generating paths for objects and serializing
  * representations of the object for transport.
  *
- * Defaults to an instance of RKStaticRouter
+ * Defaults to an instance of RKDynamicRouter
  */
 @property(nonatomic, retain) NSObject<RKRouter>* router;
 

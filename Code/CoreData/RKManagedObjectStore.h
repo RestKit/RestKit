@@ -46,4 +46,15 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  */
 - (void)deletePersistantStore;
 
+/**
+ *	Retrieves a model object from the appropriate context using the objectId
+ */
+- (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID;
+
+/**
+ *	Retrieves a array of model objects from the appropriate context using
+ *	an array of NSManagedObjectIDs
+ */
+- (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
+
 @end

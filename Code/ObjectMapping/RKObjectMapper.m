@@ -7,8 +7,9 @@
 //
 
 #import <objc/message.h>
+
 // TODO: Factor out Core Data...
-#import <CoreData/CoreData.h>
+#import "../CoreData/CoreData.h"
 
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
@@ -201,7 +202,6 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	return (NSArray*)objects;
 }
 
-// TODO: This form of mapping may need to be factored out... simple mapper / element mapper?
 - (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class {
 	NSMutableArray* objects = [NSMutableArray array];
 	for (NSDictionary* dictionary in array) {
@@ -228,11 +228,11 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Persistent Instance Finders
 
-// TODO: This responsibility probaby belongs elsewhere...
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
 	NSArray* objects = nil;
 	id object = nil;
 	
+	// TODO: Core Data dependency... Push into objectStore
 	if ([class respondsToSelector:@selector(allObjects)]) {
 		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
 		
@@ -242,7 +242,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			objects = [class objectsWithFetchRequest:fetchRequest];
 			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
 			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-			NSString* primaryKey = [class performSelector:@selector(primaryKey)];
+			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
 			for (id theObject in objects) {			
 				id primaryKeyValue = [theObject valueForKey:primaryKey];
 				[dictionary setObject:theObject forKey:primaryKeyValue];
@@ -252,7 +252,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		}
 		
 		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
-		if ([class respondsToSelector:@selector(findByPrimaryKey:)]) {
+		if ([class respondsToSelector:@selector(objectWithPrimaryKeyValue:)]) {
 			NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
 			id primaryKeyValue = [elements objectForKey:primaryKeyElement];
 			object = [dictionary objectForKey:primaryKeyValue];

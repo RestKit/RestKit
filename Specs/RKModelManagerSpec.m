@@ -22,7 +22,7 @@
 
 - (void)beforeAll {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3000", getenv("RKREST_IP_ADDRESS")];
-	_modelManager = [RKObjectManager managerWithBaseURL:localBaseURL];
+	_modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
 	_modelManager.objectStore = [[RKManagedObjectStore alloc] initWithStoreFilename:@"RKSpecs.sqlite"];
 	[_modelManager registerClass:[RKHuman class] forElementNamed:@"human"];
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];

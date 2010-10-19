@@ -26,7 +26,6 @@
  *	The NSEntityDescription for the Subclass 
  *	defaults to the subclass className, may be overridden
  */
-// TODO: Should be entityDescription
 + (NSEntityDescription*)entity;
 
 /**
@@ -34,16 +33,54 @@
  */
 + (NSFetchRequest*)fetchRequest;
 
-// TODO: Stays, document all these guys...
+/**
+ * Fetches all objects from the persistent store identified by the fetchRequest
+ */
 + (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
+
+/**
+ * Fetches all objects from the persistent store via a set of fetch requests and
+ * returns all results in a single array.
+ */
 + (NSArray*)objectsWithFetchRequests:(NSArray*)fetchRequests;
+
+/**
+ * Fetches the first object identified by the fetch request. A limit of one will be
+ * applied to the fetch request before dispatching.
+ */
 + (id)objectWithFetchRequest:(NSFetchRequest*)fetchRequest;
+
+/**
+ * Fetches all objects from the persistent store by constructing a fetch request and
+ * applying the predicate supplied. A short-cut for doing filtered searches on the objects
+ * of this class under management.
+ */
 + (NSArray*)objectsWithPredicate:(NSPredicate*)predicate;
+
+/**
+ * Fetches the first object matching a predicate from the persistent store. A fetch request
+ * will be constructed for you and a fetch limit of 1 will be applied.
+ */
 + (id)objectWithPredicate:(NSPredicate*)predicate;
+
+/**
+ * Fetches all managed objects of this class from the persistent store as an array
+ */
 + (NSArray*)allObjects;
 
-// Count the objects of this class in the store...
-+ (NSUInteger)count;
+/**
+ * Returns a count of all managed objects of this class in the persistent store. On
+ * error, will populate the error argument
+ */
++ (NSUInteger)count:(NSError**)error;
+
+/**
+ * Returns a count of all managed objects of this class in the persistent store. Deprecated
+ * use the error form above
+ *
+ * @deprecated
+ */
++ (NSUInteger)count DEPRECATED_ATTRIBUTE;
 
 /**
  *	Creates a new managed object and inserts it into the managedObjectContext.
@@ -51,56 +88,27 @@
 + (id)object;
 
 /**
- *	Retrieves a model object from the appropriate context using the objectId
+ * The name of an object mapped property existing on this classs representing the unique primary key. 
+ * Must be implemented by the subclass for the mapper to be able to uniquely identify objects.
  */
-// TODO: Moves to objectStore
-+ (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID;
++ (NSString*)primaryKeyProperty;
 
 /**
- *	Retrieves a array of model objects from the appropriate context using
- *	an array of NSManagedObjectIDs
- */
-// TODO: Moves to objectStore
-+ (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
-
-// TODO: RKObjectFindable / RKObjectPersistable??? RKObjectLocatable / RKObjectAddressable
-/**
- *	The primaryKey property mapping, defaults to @"railsID"
- */
-// Moves to mapper? primaryKeyForObjectClass: / primaryKeyElementForObjectClass: / primaryKeyFo
-+ (NSString*)primaryKey;
-
-/**
- * The name of the primary key in the server-side data payload. Defaults to @"id" for Rails generated XML/JSON
+ * The name of the primary key in the server-side data payload. This defaults to the key
+ * in the element to property mappings corresponding to the primaryKeyProperty value.
  */
 + (NSString*)primaryKeyElement;
 
 /**
- *	Will find the existing object with the primary key of 'value' and return it
- *	or return nil
+ * Returns the instance of this class where the primary key value is value or nil when not found. This
+ * is the preferred way to retrieve a single unique object.
  */
-+ (id)findByPrimaryKey:(id)value;
++ (id)objectWithPrimaryKeyValue:(id)value;
 
 /**
- * Returns all the XML/JSON element names for the properties of this model
+ * Returns the value of the primary key property for this object
  */
-// TODO: Moves to the mapper perhaps???
-+ (NSArray*)elementNames;
-
-// The server side name of the model?
-// TODO: Should be registered on the model manager somehow...
-// TODO: Use entity name on managed model?
-// TODO: Moves to the router probably...
-+ (NSString*)modelName;
-
-/**
- * Formats an element name to match the encoding format of a mapping request. By default, assumes
- * that the element name should be dasherized for XML and underscored for JSON
- */
-// TODO: Moves to the router...
-+ (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format;
-
-- (NSDictionary*)elementNamesAndPropertyValues;
+- (id)primaryKeyValue;
 
 /**
  * Returns YES when an object has not been saved to the managed object context yet

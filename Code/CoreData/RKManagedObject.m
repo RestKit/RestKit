@@ -21,23 +21,6 @@
 	return [[[RKObjectManager globalManager] objectStore] managedObjectContext];
 }
 
-// TODO: Move to new home!
-+ (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
-	return [[RKManagedObject managedObjectContext] objectWithID:objectID];
-}
-
-// TODO: Move to new home!
-+ (NSArray*)objectsWithIDs:(NSArray*)objectIDs {
-	NSMutableArray* objects = [[NSMutableArray alloc] init];
-	for (NSManagedObjectID* objectID in objectIDs) {
-		[objects addObject:[[RKManagedObject managedObjectContext] objectWithID:objectID]];
-	}
-	NSArray* objectArray = [NSArray arrayWithArray:objects];
-	[objects release];
-	
-	return objectArray;
-}
-
 + (NSEntityDescription*)entity {
 	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
 	return [NSEntityDescription entityForName:className inManagedObjectContext:[RKManagedObject managedObjectContext]];
@@ -96,13 +79,14 @@
 	return [self objectsWithPredicate:nil];
 }
 
-// add flavor with error param
++ (NSUInteger)count:(NSError**)error {
+	NSFetchRequest* fetchRequest = [self fetchRequest];
+	return [[RKManagedObject managedObjectContext] countForFetchRequest:fetchRequest error:error];
+}
+
 + (NSUInteger)count {
-	NSFetchRequest *fetchRequest = [self fetchRequest];	
 	NSError *error = nil;
-	NSUInteger count = [[RKManagedObject managedObjectContext] countForFetchRequest:fetchRequest error:&error];
-	// TODO: Error handling...
-	return count;
+	return [self count:&error];
 }
 
 + (id)object {
@@ -113,20 +97,23 @@
 #pragma mark -
 #pragma mark RKObjectMappable
 
-// TODO: should be primaryKeyProperty
-+ (NSString*)primaryKey {
++ (NSString*)primaryKeyProperty {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
 }
 
-// TODO: Would be nice to specify this via an annotation in the mappings definition...
-// TODO: flip the keys/values and look up primaryKey
 + (NSString*)primaryKeyElement {
-	return @"id";
 	NSDictionary* mappings = [[self class] elementToPropertyMappings];
-	// Return all the properties of this model in a dictionary under their element names
 	for (NSString* elementName in mappings) {
 		NSString* propertyName = [mappings valueForKey:elementName];
+		if ([propertyName isEqualToString:[self primaryKeyProperty]]) {
+			return elementName;
+		}
+	}
+	
+	// Blow up if not found
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
 }
 
 /**
@@ -137,7 +124,8 @@
  * differences causes nil return values in some cases. This needs to be better understood and the assumptions
  * unwound.
  */
-+ (id)findByPrimaryKey:(id)value {
+// TODO: Need to inspect the property type here...
++ (id)objectWithPrimaryKeyValue:(id)value {
 	id primaryKeyValue = nil;
 	if ([value isKindOfClass:[NSString class]]) {
 		// Cast from string to a number
@@ -146,7 +134,7 @@
 		// Make blind assumption here.
 		primaryKeyValue = value;
 	}
-	NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K = %@", [self primaryKey], primaryKeyValue];
+	NSPredicate* predicate = [NSPredicate predicateWithFormat:@"%K = %@", [self primaryKeyProperty], primaryKeyValue];
  	return [self objectWithPredicate:predicate];
 }
 
@@ -159,27 +147,10 @@
 	return [NSDictionary dictionary];
 }
 
-+ (NSArray*)elementNames {
-	return [[self elementToPropertyMappings] allKeys];
-}
-
-+ (NSArray*)propertyNames {
-	return [[self elementToPropertyMappings] allValues];
-}
-
 #pragma mark Helpers
 
-- (NSDictionary*)elementNamesAndPropertyValues {
-	NSDictionary* mappings = [[self class] elementToPropertyMappings];
-	NSMutableDictionary* elementsAndPropertyValues = [NSMutableDictionary dictionaryWithCapacity:[mappings count]];
-	// Return all the properties of this model in a dictionary under their element names
-	for (NSString* elementName in mappings) {
-		NSString* propertyName = [mappings valueForKey:elementName];
-		id propertyValue = [self valueForKey:propertyName];
-		[elementsAndPropertyValues setValue:propertyValue forKey:elementName];
-	}
-	
-	return (NSDictionary*) elementsAndPropertyValues;
+- (id)primaryKeyValue {
+	return [self valueForKey:[[self class] primaryKeyProperty]];
 }
 
 - (NSDictionary*)paramsForSerialization {
