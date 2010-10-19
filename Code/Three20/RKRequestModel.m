@@ -24,29 +24,55 @@
 		_resourcePath = [resourcePath retain];
 		_delegate = [delegate retain];
 	}
+	
 	[self loadFromObjectCache];
 	
 	return self;
 }
 
+/**
+ * TODO: These initializers have to set the ivars so the state is configured before loadFromObjectCache is triggered.
+ * Do NOT DRY these up by adding dependencies or loadFromObjectCache will fire too early.
+ *
+ * WARNING
+ */
+
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate {
-	if (self = [self initWithResourcePath:resourcePath delegate:delegate]) {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_delegate = [delegate retain];
 		_params = [params retain];
-	}	
+	}
+	
+	[self loadFromObjectCache];
+	
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate {
-	if (self = [self initWithResourcePath:resourcePath params:params delegate:delegate]) {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_delegate = [delegate retain];
+		_params = [params retain];
 		_objectClass = [klass retain];
 	}
+	
+	[self loadFromObjectCache];
+	
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate {
-	if (self = [self initWithResourcePath:resourcePath params:params objectClass:klass delegate:delegate]) {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_delegate = [delegate retain];
+		_params = [params retain];
+		_objectClass = [klass retain];
 		_keyPath = [keyPath retain];
 	}
+	
+	[self loadFromObjectCache];
+	
 	return self;
 }
 
@@ -120,28 +146,30 @@
 
 - (void)loadFromObjectCache {
 	RKManagedObjectStore* store = [RKObjectManager globalManager].objectStore;
-	NSArray* cachedObjects = nil;
-	
-	if (store.managedObjectCache) {
-		cachedObjects = [RKManagedObject objectsWithFetchRequests:[store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath]];
-		
-		if (cachedObjects && [cachedObjects count] > 0) {
-			if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
-				[_delegate rkModelDidStartLoad];
-			}
-			
-			_objects = [cachedObjects retain];
-			_loaded = YES;
-			
-			if ([_delegate respondsToSelector:@selector(rkModelDidLoad)]) {
-				[_delegate rkModelDidLoad];
-			}
-		}
-	}
-	
-	if (cachedObjects == nil || [cachedObjects count] == 0 || [self needsRefresh]) {
-		[self load];
-	}
+    NSArray* cachedObjects = nil;
+    
+    if (store.managedObjectCache) {
+        cachedObjects = [RKManagedObject objectsWithFetchRequests:[store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath]];
+        
+        if (cachedObjects && [cachedObjects count] > 0) {
+            if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
+                [_delegate rkModelDidStartLoad];
+            }
+            
+            _objects = [cachedObjects retain];
+            _loaded = YES;
+            
+            if ([_delegate respondsToSelector:@selector(rkModelDidLoad)]) {
+                [_delegate rkModelDidLoad];
+            }
+        } else {
+            [self load];
+        }
+    }
+    
+    if ([self needsRefresh]) {
+        [self load];
+    }
 }
 
 - (BOOL)errorWarrantsOptionToGoOffline:(NSError*)error {

@@ -163,8 +163,7 @@
 			[_mapper mapObject:mainThreadModel fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:mainThreadModel];
 		}
-	} else {
-		
+	} else {		
 		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
