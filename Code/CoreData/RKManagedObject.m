@@ -43,7 +43,6 @@
 	return [NSEntityDescription entityForName:className inManagedObjectContext:[RKManagedObject managedObjectContext]];
 }
 
-// should be fetchRequest
 + (NSFetchRequest*)request {
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	NSEntityDescription *entity = [self entity];
@@ -88,6 +87,7 @@
 	return [self objectsWithPredicate:nil];
 }
 
+// add flavor with error param
 + (NSUInteger)count {
 	NSFetchRequest *request = [self request];	
 	NSError *error = nil;
@@ -102,23 +102,22 @@
 }
 
 #pragma mark -
-#pragma mark Object Cacheing
+#pragma mark RKObjectMappable
 
-+ (NSFetchRequest*)fetchRequestForResourcePath:(NSString*)resourcePath {
+// TODO: should be primaryKeyProperty
++ (NSString*)primaryKey {
+	[self doesNotRecognizeSelector:_cmd];
 	return nil;
 }
 
-#pragma mark -
-#pragma mark RKObjectMappable
-
 // TODO: Would be nice to specify this via an annotation in the mappings definition...
-+ (NSString*)primaryKey {
-	return @"railsID";
-}
-
-// TODO: Would be nice to specify this via an annotation in the mappings definition...
+// TODO: flip the keys/values and look up primaryKey
 + (NSString*)primaryKeyElement {
 	return @"id";
+	NSDictionary* mappings = [[self class] elementToPropertyMappings];
+	// Return all the properties of this model in a dictionary under their element names
+	for (NSString* elementName in mappings) {
+		NSString* propertyName = [mappings valueForKey:elementName];
 }
 
 /**
@@ -159,23 +158,6 @@
 	return [[self elementToPropertyMappings] allValues];
 }
 
-// TODO: I get eliminated...
-+ (NSString*)formatElementName:(NSString*)elementName forMappingFormat:(RKMappingFormat)format {
-	if (RKMappingFormatXML == format) {
-		return [[elementName camelize] dasherize];
-	} else if (RKMappingFormatJSON == format) {
-		return [[elementName camelize] underscore];
-	}
-	
-	return elementName;
-}
-
-// TODO: I get eliminated...
-+ (NSString*)modelName {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
 #pragma mark Helpers
 
 - (NSDictionary*)elementNamesAndPropertyValues {
@@ -191,24 +173,14 @@
 	return (NSDictionary*) elementsAndPropertyValues;
 }
 
-// TODO: This implementation is Rails specific. Consider using an adapter approach.
-// TODO: Gets handled in a Rails adapter, moved completely off the model itself...
-// TODO: Moves to the model mapper? encodeProperties:?
 - (NSDictionary*)paramsForSerialization {
-	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValues];
-	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];
-	// TODO: Eliminate modelName somehow... should be using the name of the element this class was registered for!
-	NSString* underscoredModelName = [[[self class] modelName] underscore];
-	for (NSString* elementName in [elementsAndProperties allKeys]) {
-		id value = [elementsAndProperties valueForKey:elementName];
-		NSString* attributeName = [elementName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
-		if (![attributeName isEqualToString:@"id"]) {
-			NSString* keyName = [NSString stringWithFormat:@"%@[%@]", underscoredModelName, attributeName];
-			[resourceParams setValue:value forKey:keyName];
-		}
+	NSMutableDictionary* params = [NSMutableDictionary dictionary];
+	for (NSString* elementName in [[self class] elementToPropertyMappings]) {
+		NSString* propertyName = [[[self class] elementToPropertyMappings] objectForKey:elementName];
+		[params setValue:[self valueForKey:propertyName] forKey:elementName];
 	}
 	
-	return resourceParams;
+	return [NSDictionary dictionaryWithDictionary:params];
 }
 
 - (BOOL)isNew {

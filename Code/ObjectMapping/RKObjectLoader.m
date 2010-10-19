@@ -176,7 +176,11 @@
 			results = [NSArray arrayWithObject:mainThreadModel];
 		}
 	} else {
-		
+		// What we really need:
+		// 1) Move Core Data logic into the mapper entirely
+		// 2) Don't expose the resourcePath to the mapper
+		// 3) Maybe assign the objectStore to the loader???
+		// 4) Move the Core Data info into the object store instead...
 		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
