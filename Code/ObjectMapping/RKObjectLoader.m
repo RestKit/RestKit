@@ -11,6 +11,7 @@
 #import "RKObjectManager.h"
 #import "Errors.h"
 #import "RKManagedObject.h"
+#import "RKURL.h"
 
 @interface RKObjectLoader (Private)
 - (void)loadObjectsFromResponse:(RKResponse*)response;
@@ -18,9 +19,8 @@
 
 @implementation RKObjectLoader
 
-@synthesize mapper = _mapper, delegate = _delegate, fetchRequest = _fetchRequest,
-			request = _request, response = _response, objectClass = _objectClass,
-			source = _source, keyPath = _keyPath;
+@synthesize mapper = _mapper, delegate = _delegate, request = _request, response = _response,
+			objectClass = _objectClass, source = _source, keyPath = _keyPath, managedObjectStore = _managedObjectStore;
 
 + (id)loaderWithMapper:(RKObjectMapper*)mapper request:(RKRequest*)request delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	return [[[self alloc] initWithMapper:mapper request:request delegate:delegate] autorelease];
@@ -31,6 +31,7 @@
 		_mapper = [mapper retain];
 		self.request = request;
 		self.delegate = delegate;
+		self.managedObjectStore = nil;
 	}
 	
 	return self;
@@ -41,8 +42,8 @@
 	[_mapper release];
 	[_request release];
 	[_response release];
-	[_fetchRequest release];
 	[_keyPath release];
+	self.managedObjectStore = nil;
 	[super dealloc];
 }
 
@@ -101,20 +102,7 @@
 		[_delegate objectLoader:self didFailWithError:response.failureError];
 		return YES;
 	} else if ([response isError]) {
-		NSString* errorMessage = nil;
-		if ([response isJSON]) {
-			// TODO: Processing errors should be moved to a delegate to accommodate non-Rails services...
-			errorMessage = [[[response bodyAsJSON] valueForKey:@"errors"] componentsJoinedByString:@", "];
-		}
-		if (nil == errorMessage) {
-			errorMessage = [response bodyAsString];
-		}
-		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-								  errorMessage, NSLocalizedDescriptionKey,
-								  nil];		
-		NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
-		
-		[_delegate objectLoader:self didFailWithError:error];
+		[_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
 		return YES;
 	}
 	
@@ -190,12 +178,16 @@
 			results = [NSArray arrayWithObjects:result, nil];
 		}
 		
-		if (self.fetchRequest) {
-			NSArray* cachedObjects = [RKManagedObject objectsWithRequest:self.fetchRequest];			
-			for (id object in cachedObjects) {
-				if ([object isKindOfClass:[RKManagedObject class]]) {
-					if (NO == [results containsObject:object]) {
-						[[objectStore managedObjectContext] deleteObject:object];
+		if (self.managedObjectStore && [self.managedObjectStore managedObjectCache]) {
+			if ([self.URL isKindOfClass:[RKURL class]]) {
+				RKURL* rkURL = (RKURL*)self.URL;
+				NSArray* fetchRequests = [[self.managedObjectStore managedObjectCache] fetchRequestsForResourcePath:rkURL.resourcePath];
+				NSArray* cachedObjects = [RKManagedObject objectsWithFetchRequests:fetchRequests];			
+				for (id object in cachedObjects) {
+					if ([object isKindOfClass:[RKManagedObject class]]) {
+						if (NO == [results containsObject:object]) {
+							[[objectStore managedObjectContext] deleteObject:object];
+						}
 					}
 				}
 			}
@@ -204,7 +196,7 @@
 	
 	// Before looking up NSManagedObjectIDs, need to save to ensure we do not have
 	// temporary IDs for new objects prior to handing the objectIDs across threads
-	NSError* error = [[[RKObjectManager globalManager] objectStore] save];
+	NSError* error = [self.managedObjectStore save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
 		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];		

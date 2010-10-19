@@ -7,6 +7,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "RKManagedObjectCache.h"
 
 /**
  * Notifications
@@ -20,12 +21,14 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
     NSManagedObjectModel* _managedObjectModel;
 	NSPersistentStoreCoordinator* _persistentStoreCoordinator;
     NSManagedObjectContext* _managedObjectContext;
+	NSObject<RKManagedObjectCache>* _managedObjectCache;
 }
 
 @property (nonatomic, readonly) NSString* storeFilename;
 @property (nonatomic, readonly) NSManagedObjectModel* managedObjectModel;
 @property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, readonly) NSPersistentStoreCoordinator* persistentStoreCoordinator;
+@property (nonatomic, retain) NSObject<RKManagedObjectCache>* managedObjectCache;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified

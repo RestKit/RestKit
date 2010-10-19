@@ -99,12 +99,6 @@ extern NSString* const RKDidEnterOnlineModeNotification;
  */
 @property(nonatomic, retain) RKManagedObjectStore* objectStore;
 
-/**
- * Return an object loader request object ready to be sent. The method defaults to GET and the URL is relative to the
- * baseURL configured on the client.
- */
-- (RKObjectLoader*)loaderWithResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
-
 ////////////////////////////////////////////////////////
 // Registered Object Loaders
 
@@ -171,5 +165,32 @@ extern NSString* const RKDidEnterOnlineModeNotification;
  * Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
  */
 - (RKObjectLoader*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+
+////////////////////////////////////////////////////////
+// Object Loader Primitives
+
+/**
+ * These methods are provided for situations where the remote system you are working with has slightly different conventions
+ * than the default methods provide. They return fully initialized object loaders that are ready for dispatch, but
+ * have not yet been sent. This can be used to add one-off params to the request body or otherwise manipulate the request
+ * before it is sent off to be loaded & object mapped. This can also be used to perform a synchronous object load.
+ */
+
+/**
+ * Return an object loader ready to be sent. The method defaults to GET and the URL is relative to the
+ * baseURL configured on the client. The loader is configured for an implicit objectClass load. This is
+ * the best place to begin work if you need to create a slightly different collection loader than what is
+ * provided by the loadObjects family of methods.
+ */
+- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+
+/**
+ * Returns an object loader configured for transmitting an object instance across the wire. A request will be constructed
+ * for you with the resource path & object serialization configured for you by the Router. This is the best place to
+ * begin work if you need a slightly different interaction with the server than what is provided for you by get/post/put/delete
+ * object family of methods. Note that this should be used for one-off changes. If you need to substantially modify all your
+ * object loads, you are better off subclassing or implementing your own RKRouter for dryness.
+ */
+- (RKObjectLoader*)objectLoaderForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 @end

@@ -7,7 +7,7 @@
 //
 
 #import "RKRequestTTModel.h"
-#import "RKSearchEngine.h"
+#import "../Support/RKSearchEngine.h"
 
 /**
  * Provides an interface for searching and filtering a collection
@@ -16,19 +16,27 @@
 @interface RKRequestFilterableTTModel : RKRequestTTModel {
 	RKSearchEngine* _searchEngine;
 	NSPredicate* _predicate;
-	NSSortDescriptor* _sortDescriptor;
+	NSArray* _sortDescriptors;
 	NSString* _searchText;
+	SEL _sortSelector;
 }
 
 /**
  * A predicate to filter the model objects by
- */
+ */	
 @property (nonatomic, retain) NSPredicate* predicate;
 
 /**
- * A sort descriptor to sort the objects by
+ * An array of sort descriptors to sort the objects with
  */
-@property (nonatomic, retain) NSSortDescriptor* sortDescriptor;
+@property (nonatomic, retain) NSArray* sortDescriptors;
+
+/**
+ * A selector to use in sorting the objects.  When present,
+ * the sortSelector will be used for sorting objects, rather than
+ * the sortDescriptors.
+ */
+@property (nonatomic, assign) SEL sortSelector;
 
 /**
  * A search engine instance for searching the data. If none is assigned,

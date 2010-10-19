@@ -20,10 +20,6 @@
 
 @property (nonatomic, readonly) RKRequestModel* model;
 
-+ (id)modelWithResourcePath:(NSString*)resourcePath;
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params;
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass;
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath;
 - (id)initWithResourcePath:(NSString*)resourcePath;
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params;
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass;

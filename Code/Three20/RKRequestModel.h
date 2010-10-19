@@ -38,8 +38,6 @@
 	Class _objectClass;
 	NSString* _keyPath;
 	
-	
-	NSFetchRequest* _fetchRequest;
 	NSTimeInterval _refreshRate;
 }
 
@@ -58,25 +56,18 @@
 @property (nonatomic, readonly) NSDictionary* params;
 
 @property (nonatomic, readonly) RKObjectLoader* objectLoader;
-@property (nonatomic, readonly) RKRequest* loadingRequest;
 
 /**
  * The HTTP method to load the models with. Defaults to RKRequestMethodGET
  */
 @property (nonatomic, assign) RKRequestMethod method;
 
-@property (nonatomic, retain) NSFetchRequest* fetchRequest;
-
 @property (assign) NSTimeInterval refreshRate;
 
 
 /**
- * Init methods and class methods for creating new models
+ * Init methods for creating new models
  */
-+ (id)modelWithResourcePath:(NSString*)resourcePath delegate:(id)delegate;
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate;
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate;
-+ (id)modelWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate;
 - (id)initWithResourcePath:(NSString*)resourcePath delegate:(id)delegate;
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params delegate:(id)delegate;
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate;
@@ -106,5 +97,7 @@
 - (void)reset;
 
 - (void)load;
+
+- (void)loadFromObjectCache;
 
 @end

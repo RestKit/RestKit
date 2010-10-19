@@ -145,6 +145,10 @@
 		3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A2D10FE749C008F47C5 /* Foundation.framework */; };
 		3F6C3A9410FE7519008F47C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3A9310FE7519008F47C5 /* main.m */; };
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7377FBE11268E96300868752 /* RKManagedObjectCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		73FE56C6126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
+		73FE56C7126CB91600E0F30B /* RKURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 73FE56C4126CB91600E0F30B /* RKURL.h */; };
+		73FE56C8126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -229,7 +233,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */;
+			remoteGlobalIDString = 2590E66A1252353700531FA8;
 			remoteInfo = "RestKitJSONParser+SBJSON";
 		};
 		253A08B91255216000976E89 /* PBXContainerItemProxy */ = {
@@ -301,6 +305,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3F45512411E4BCD700AE56A6;
 			remoteInfo = "OCMock-iPhone";
+		};
+		73FE56A8126CB83400E0F30B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 253A080B12551D3000976E89 /* RestKitSupport */;
+			remoteInfo = RestKitSupport;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -518,6 +529,9 @@
 		3F6C3A9310FE7519008F47C5 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3F6C3A9510FE7524008F47C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		3F6C3AD010FE76C1008F47C5 /* RKModelMapperSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKModelMapperSpec.m; sourceTree = "<group>"; };
+		7377FBE11268E96300868752 /* RKManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCache.h; sourceTree = "<group>"; };
+		73FE56C4126CB91600E0F30B /* RKURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURL.h; sourceTree = "<group>"; };
+		73FE56C5126CB91600E0F30B /* RKURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURL.m; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D2AAC07E0554694100DB518D /* libRestKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -754,6 +768,7 @@
 				25431EBA1255640800A315CF /* CoreData.h */,
 				253A086112551D8D00976E89 /* RKManagedObject.h */,
 				253A086212551D8D00976E89 /* RKManagedObject.m */,
+				7377FBE11268E96300868752 /* RKManagedObjectCache.h */,
 				253A086312551D8D00976E89 /* RKManagedObjectStore.h */,
 				253A086412551D8D00976E89 /* RKManagedObjectStore.m */,
 				253A088812551D8D00976E89 /* RKObjectSeeder.h */,
@@ -788,6 +803,8 @@
 				253A087912551D8D00976E89 /* RKRequestSerializable.h */,
 				253A087A12551D8D00976E89 /* RKResponse.h */,
 				253A087B12551D8D00976E89 /* RKResponse.m */,
+				73FE56C4126CB91600E0F30B /* RKURL.h */,
+				73FE56C5126CB91600E0F30B /* RKURL.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -1101,6 +1118,7 @@
 				253A08DD125522E100976E89 /* RKRequest.h in Headers */,
 				253A08DF125522E300976E89 /* RKRequestSerializable.h in Headers */,
 				253A08E0125522E300976E89 /* RKResponse.h in Headers */,
+				73FE56C7126CB91600E0F30B /* RKURL.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1143,6 +1161,7 @@
 				253A09261255258500976E89 /* RKManagedObjectStore.h in Headers */,
 				25431EBB1255640800A315CF /* CoreData.h in Headers */,
 				2543201C1256179900A315CF /* RKObjectSeeder.h in Headers */,
+				7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1206,6 +1225,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				73FE56A9126CB83400E0F30B /* PBXTargetDependency */,
 			);
 			name = RestKitThree20;
 			productName = "Three20 Support";
@@ -1591,6 +1611,7 @@
 				253A08DC125522DD00976E89 /* RKParamsFileAttachment.m in Sources */,
 				253A08DE125522E200976E89 /* RKRequest.m in Sources */,
 				253A08E1125522E400976E89 /* RKResponse.m in Sources */,
+				73FE56C8126CB91600E0F30B /* RKURL.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1686,6 +1707,7 @@
 				250BC22B11F621B400F3FE5A /* RKStaticRouterSpec.m in Sources */,
 				250429A911F62E0200553519 /* UISpec+UISpecRunner.m in Sources */,
 				257EAAAF11F73DA000DB04C3 /* RKObjectSpec.m in Sources */,
+				73FE56C6126CB91600E0F30B /* RKURL.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1734,6 +1756,11 @@
 			isa = PBXTargetDependency;
 			name = "OCMock-iPhone";
 			targetProxy = 257EA5A511F632D700DB04C3 /* PBXContainerItemProxy */;
+		};
+		73FE56A9126CB83400E0F30B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 253A080B12551D3000976E89 /* RestKitSupport */;
+			targetProxy = 73FE56A8126CB83400E0F30B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
