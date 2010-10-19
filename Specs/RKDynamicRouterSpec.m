@@ -90,4 +90,15 @@
 	[expectThat(exception) shouldNot:be(nil)];
 }
 
+- (void)itShouldInterpolatePropertyNamesReferencedInTheMapping {
+	RKHuman* blake = [RKHuman object];
+	blake.name = @"blake";
+	blake.railsID = [NSNumber numberWithInt:31337];
+	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	[router routeClass:[RKHuman class] toResourcePath:@"/humans/(railsID)/(name)" forMethod:RKRequestMethodGET];
+	
+	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+	[expectThat(resourcePath) should:be(@"/humans/31337/blake")];
+}
+
 @end

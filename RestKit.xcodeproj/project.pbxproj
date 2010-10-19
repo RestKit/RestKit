@@ -165,6 +165,9 @@
 		25956986126DF1AE004BAC4C /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A08031255162C00976E89 /* libRestKitObjectMapping.a */; };
 		25956987126DF1AE004BAC4C /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A080C12551D3000976E89 /* libRestKitSupport.a */; };
 		259569D5126DF464004BAC4C /* UISpec_1_0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250BC51011F62D6B00F3FE5A /* UISpec_1_0.a */; };
+		259576CF126E2439004BAC4C /* RegexKitLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 259576CD126E2439004BAC4C /* RegexKitLite.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		259576D0126E2439004BAC4C /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 259576CE126E2439004BAC4C /* RegexKitLite.m */; };
+		259576E8126E257A004BAC4C /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 259576E7126E257A004BAC4C /* libicucore.dylib */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -560,6 +563,9 @@
 		2595659B126DE9DF004BAC4C /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
 		2595659C126DE9DF004BAC4C /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		2595698D126DF283004BAC4C /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = Specs/Support/UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = SOURCE_ROOT; };
+		259576CD126E2439004BAC4C /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
+		259576CE126E2439004BAC4C /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
+		259576E7126E257A004BAC4C /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
 		3F032AA610FFBBCD00F35142 /* RKHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHouse.h; sourceTree = "<group>"; };
@@ -645,6 +651,7 @@
 				25956986126DF1AE004BAC4C /* libRestKitObjectMapping.a in Frameworks */,
 				25956987126DF1AE004BAC4C /* libRestKitSupport.a in Frameworks */,
 				259569D5126DF464004BAC4C /* UISpec_1_0.a in Frameworks */,
+				259576E8126E257A004BAC4C /* libicucore.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -675,6 +682,7 @@
 				2590E6711252357200531FA8 /* Vendor */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				259576E7126E257A004BAC4C /* libicucore.dylib */,
 			);
 			name = OTRestFramework;
 			sourceTree = "<group>";
@@ -866,6 +874,7 @@
 		253A089312551D8D00976E89 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				259576CC126E2439004BAC4C /* RegexKitLite */,
 				253A08B41255212300976E89 /* Parsers */,
 				25432040125618F000A315CF /* RKParser.h */,
 				253A089412551D8D00976E89 /* Errors.h */,
@@ -1152,6 +1161,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		259576CC126E2439004BAC4C /* RegexKitLite */ = {
+			isa = PBXGroup;
+			children = (
+				259576CD126E2439004BAC4C /* RegexKitLite.h */,
+				259576CE126E2439004BAC4C /* RegexKitLite.m */,
+			);
+			name = RegexKitLite;
+			path = Vendor/RegexKitLite;
+			sourceTree = SOURCE_ROOT;
+		};
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1230,6 +1249,7 @@
 				253A091E1255251800976E89 /* RKSearchEngine.h in Headers */,
 				253A09F612552BDC00976E89 /* Support.h in Headers */,
 				25432041125618F000A315CF /* RKParser.h in Headers */,
+				259576CF126E2439004BAC4C /* RegexKitLite.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1689,6 +1709,7 @@
 				253A09191255250C00976E89 /* NSDictionary+RKAdditions.m in Sources */,
 				253A091C1255250F00976E89 /* NSString+InflectionSupport.m in Sources */,
 				253A091F1255251900976E89 /* RKSearchEngine.m in Sources */,
+				259576D0126E2439004BAC4C /* RegexKitLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

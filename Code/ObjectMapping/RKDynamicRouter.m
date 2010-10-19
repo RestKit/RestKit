@@ -9,6 +9,7 @@
 #import "RKDynamicRouter.h"
 #import "RKDynamicRouter.h"
 #import "NSDictionary+RKRequestSerialization.h"
+#import "RegexKitLite.h"
 
 @implementation RKDynamicRouter
 
@@ -74,18 +75,43 @@
 
 #pragma mark RKRouter
 
+- (NSString*)resourcePath:(NSString*)resourcePath withPropertiesInterpolatedForObject:(NSObject<RKObjectMappable>*)object {
+	NSMutableDictionary* substitutions = [NSMutableDictionary dictionary];
+	
+	// Find all property names encoded in parentheses
+	NSString *regEx = @"\\(.+?\\)";
+	for (NSString* match in [resourcePath componentsMatchedByRegex:regEx]) {
+		NSString* keyPath = [match stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"()"]]; 
+		NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
+		[substitutions setObject:propertyStringValue forKey:match];
+	}
+	
+	if (0 == [substitutions count]) {
+		return resourcePath;
+	}
+	
+	NSMutableString* interpolatedResourcePath = [resourcePath mutableCopy];
+	for (NSString* find in substitutions) {
+		NSString* replace = [substitutions valueForKey:find];
+		[interpolatedResourcePath replaceOccurrencesOfString:find withString:replace 
+													 options:NSLiteralSearch range:NSMakeRange(0, [interpolatedResourcePath length])];
+	}
+	
+	return [NSString stringWithString:interpolatedResourcePath];
+}
+
 - (NSString*)resourcePathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
 	NSString* methodName = [self HTTPVerbForMethod:method];		
 	NSString* className  = NSStringFromClass([object class]);		
 	NSDictionary* classRoutes = [_routes objectForKey:className];
 	
-	NSString* path = nil;
-	if (path = [classRoutes objectForKey:methodName]) {
-		return path;
+	NSString* resourcePath = nil;
+	if (resourcePath = [classRoutes objectForKey:methodName]) {
+		return [self resourcePath:resourcePath withPropertiesInterpolatedForObject:object];
 	}
 	
-	if (path = [classRoutes objectForKey:@"ANY"]) {
-		return path;
+	if (resourcePath = [classRoutes objectForKey:@"ANY"]) {
+		return [self resourcePath:resourcePath withPropertiesInterpolatedForObject:object];
 	}
 	
 	[NSException raise:nil format:@"Unable to find a routable path for object of type '%@' for HTTP Method '%@'", className, methodName];
