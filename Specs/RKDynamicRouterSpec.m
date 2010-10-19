@@ -86,7 +86,7 @@
 	}
 	@catch (NSException * e) {
 		exception = e;
-	}	
+	}
 	[expectThat(exception) shouldNot:be(nil)];
 }
 

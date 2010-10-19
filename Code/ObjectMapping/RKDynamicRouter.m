@@ -9,7 +9,6 @@
 #import "RKDynamicRouter.h"
 #import "RKDynamicRouter.h"
 #import "NSDictionary+RKRequestSerialization.h"
-#import "RegexKitLite.h"
 
 @implementation RKDynamicRouter
 
@@ -77,13 +76,21 @@
 
 - (NSString*)resourcePath:(NSString*)resourcePath withPropertiesInterpolatedForObject:(NSObject<RKObjectMappable>*)object {
 	NSMutableDictionary* substitutions = [NSMutableDictionary dictionary];
+	NSScanner* scanner = [NSScanner scannerWithString:resourcePath];
 	
-	// Find all property names encoded in parentheses
-	NSString *regEx = @"\\(.+?\\)";
-	for (NSString* match in [resourcePath componentsMatchedByRegex:regEx]) {
-		NSString* keyPath = [match stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"()"]]; 
-		NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
-		[substitutions setObject:propertyStringValue forKey:match];
+	while ([scanner isAtEnd] == NO) {
+		NSString* keyPath = nil;
+		if ([scanner scanUpToString:@"(" intoString:nil]) {
+			// Advance beyond the opening parentheses
+			if (NO == [scanner isAtEnd]) {
+				[scanner setScanLocation:[scanner scanLocation] + 1];
+			}
+			if ([scanner scanUpToString:@")" intoString:&keyPath]) {
+				NSString* searchString = [NSString stringWithFormat:@"(%@)", keyPath];
+				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];				
+				[substitutions setObject:propertyStringValue forKey:searchString];
+			}
+		}
 	}
 	
 	if (0 == [substitutions count]) {
