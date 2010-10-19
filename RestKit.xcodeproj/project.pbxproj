@@ -165,6 +165,7 @@
 		25956986126DF1AE004BAC4C /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A08031255162C00976E89 /* libRestKitObjectMapping.a */; };
 		25956987126DF1AE004BAC4C /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A080C12551D3000976E89 /* libRestKitSupport.a */; };
 		259569D5126DF464004BAC4C /* UISpec_1_0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250BC51011F62D6B00F3FE5A /* UISpec_1_0.a */; };
+		25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -560,6 +561,7 @@
 		2595659B126DE9DF004BAC4C /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
 		2595659C126DE9DF004BAC4C /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
 		2595698D126DF283004BAC4C /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = Specs/Support/UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = SOURCE_ROOT; };
+		25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRailsRouterSpec.m; sourceTree = "<group>"; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
 		3F032AA610FFBBCD00F35142 /* RKHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHouse.h; sourceTree = "<group>"; };
@@ -957,17 +959,17 @@
 			path = Support;
 			sourceTree = "<group>";
 		};
-		255DE43011010ED400A85891 /* Core */ = {
+		255DE43011010ED400A85891 /* Network */ = {
 			isa = PBXGroup;
 			children = (
 				255DE43111010EE700A85891 /* RKRequestSpec.m */,
 				255DE43A11010F8400A85891 /* RKResponseSpec.m */,
 				2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */,
 			);
-			name = Core;
+			name = Network;
 			sourceTree = "<group>";
 		};
-		256FD52A112C6AEC0077F340 /* Resources */ = {
+		256FD52A112C6AEC0077F340 /* ObjectMapping */ = {
 			isa = PBXGroup;
 			children = (
 				3F6C3AD010FE76C1008F47C5 /* RKModelMapperSpec.m */,
@@ -975,8 +977,9 @@
 				255DE05910FF9DA500A85891 /* RKModelManagerSpec.m */,
 				250BC22A11F621B400F3FE5A /* RKDynamicRouterSpec.m */,
 				257EAAAE11F73DA000DB04C3 /* RKObjectSpec.m */,
+				25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */,
 			);
-			name = Resources;
+			name = ObjectMapping;
 			sourceTree = "<group>";
 		};
 		2590E6711252357200531FA8 /* Vendor */ = {
@@ -1155,8 +1158,8 @@
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
-				255DE43011010ED400A85891 /* Core */,
-				256FD52A112C6AEC0077F340 /* Resources */,
+				255DE43011010ED400A85891 /* Network */,
+				256FD52A112C6AEC0077F340 /* ObjectMapping */,
 				255DE0A110FFA43A00A85891 /* Support */,
 				255DE05B10FFA04200A85891 /* Models */,
 				3F6C3A9310FE7519008F47C5 /* main.m */,
@@ -1760,6 +1763,7 @@
 				250BC22B11F621B400F3FE5A /* RKDynamicRouterSpec.m in Sources */,
 				250429A911F62E0200553519 /* UISpec+UISpecRunner.m in Sources */,
 				257EAAAF11F73DA000DB04C3 /* RKObjectSpec.m in Sources */,
+				25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
