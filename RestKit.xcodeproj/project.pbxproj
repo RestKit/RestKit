@@ -2152,6 +2152,7 @@
 					"-force_load",
 					"$(PROJECT_DIR)/Specs/Support/OCMock/libOCMock.a",
 					"-ObjC",
+					"-all_load",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = UISpec;
@@ -2189,6 +2190,7 @@
 					"-force_load",
 					"$(PROJECT_DIR)/Specs/Support/OCMock/libOCMock.a",
 					"-ObjC",
+					"-all_load",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = UISpec;
