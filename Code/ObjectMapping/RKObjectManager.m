@@ -182,7 +182,7 @@ static RKObjectManager* globalManager = nil;
 - (void)saveObjectStore {	
 	NSError* error = [self.objectStore save];
 	if (nil == error) {
-		NSLog(@"[RestKit] RKModelManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
+		NSLog(@"[RestKit] RKObjectManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
 	}
 }
 

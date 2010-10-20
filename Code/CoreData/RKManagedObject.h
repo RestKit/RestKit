@@ -17,7 +17,7 @@
 }
 
 /**
- * The Core Data managed object context from the RKModelManager's objectStore
+ * The Core Data managed object context from the RKObjectManager's objectStore
  * that is managing this model
  */
 + (NSManagedObjectContext*)managedObjectContext;
