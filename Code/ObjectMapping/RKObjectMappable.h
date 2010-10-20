@@ -14,24 +14,25 @@
 @protocol RKObjectMappable
 
 /**
- * Must return a dictionary containing mapping from XML element names to property accessors
+ * Must return a dictionary containing mapping from JSON element names to property accessors
  */
 + (NSDictionary*)elementToPropertyMappings;
 
 /**
- * Must return a dictionary mapping XML element names to related object accessors. Must
+ * Must return a dictionary mapping JSON element names to related object accessors. Must
  * return an empty dictionary if there are no related objects.
  *
- * To differentiate between single associated objects and collections, use descendent
- * selectors. For example, given a Project model associated with a user and a collection
- * of tasks:
+ * When assigning a collection of related objects, use key-value coding to traverse the
+ * collection and access the descendent objects. For example, given a Project object 
+ * associated with a user and a collection of tasks: 
  *
  * [NSDictionary dictionaryWithObject:@"user" forKey:@"user"];
- * Will map from an XML element named user to the user property on the model instance.
+ * Will map from an element named 'user' to the user property on the model instance.
  *
- * [NSDictionary dictionaryWithObject:@"tasks" forKey:@"tasks > task"];
- * Will map from the collection of XML elements named task nested under the tasks element
- * to the tasks property on the model instance. The assigned collection is assumed to be an NSSet.
+ * [NSDictionary dictionaryWithObject:@"tasks" forKey:@"tasks.task"];
+ * Will map each 'task' element nested under a containing element named 'tasks' and
+ * assign the collection to the tasks property on the target object.
+ * The assigned collection is assumed to be an NSSet.
  */
 + (NSDictionary*)elementToRelationshipMappings;
 
