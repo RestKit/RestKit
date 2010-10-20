@@ -154,9 +154,9 @@
 		2590E8601252515400531FA8 /* GHNSBundle+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85B1252515400531FA8 /* GHNSBundle+Utils.m */; };
 		2590E8611252515400531FA8 /* GTMBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E85D1252515400531FA8 /* GTMBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E8621252515400531FA8 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85E1252515400531FA8 /* GTMBase64.m */; };
-		259562E4126D3B36004BAC4C /* RKDynamicRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKDynamicRouter.h */; };
+		259562E4126D3B36004BAC4C /* RKDynamicRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKDynamicRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259562E5126D3B36004BAC4C /* RKDynamicRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E3126D3B36004BAC4C /* RKDynamicRouter.m */; };
-		259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E6126D3B43004BAC4C /* RKRailsRouter.h */; };
+		259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E6126D3B43004BAC4C /* RKRailsRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259562E9126D3B43004BAC4C /* RKRailsRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E7126D3B43004BAC4C /* RKRailsRouter.m */; };
 		2595659D126DE9E3004BAC4C /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2595659C126DE9DF004BAC4C /* libOCMock.a */; };
 		25956983126DF1AE004BAC4C /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A081412551D5300976E89 /* libRestKitCoreData.a */; };
