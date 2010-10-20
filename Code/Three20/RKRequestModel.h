@@ -6,7 +6,7 @@
 //  Copyright 2010 RestKit. All rights reserved.
 //
 
-#import <RestKit/RestKit.h>
+#import "../RestKit.h"
 #import "../CoreData/RKManagedObject.h"
 
 /**

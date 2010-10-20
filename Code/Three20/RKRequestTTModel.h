@@ -7,7 +7,6 @@
 //
 
 #import <Three20/Three20.h>
-#import <RestKit/RestKit.h>
 #import "RKRequestModel.h"
 
 /**
