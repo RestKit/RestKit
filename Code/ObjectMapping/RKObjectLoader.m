@@ -88,22 +88,26 @@
 }
 
 - (void)send {
+	[self retain];
 	[self.request send];
 }
 
 - (void)sendSynchronously {
+	[self retain];
 	RKResponse* response = [self.request sendSynchronously];
 	[self loadObjectsFromResponse:response];
 }
 
 #pragma mark Response Processing
 
-- (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {	
+- (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
 	if ([response isFailure]) {
 		[_delegate objectLoader:self didFailWithError:response.failureError];
+		[self release];
 		return YES;
 	} else if ([response isError]) {
 		[_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
+		[self release];
 		return YES;
 	}
 	
@@ -127,6 +131,7 @@
 	}
 	
 	[_delegate objectLoader:self didLoadObjects:[NSArray arrayWithArray:objects]];
+	[self release];
 }
 
 - (void)informDelegateOfObjectLoadErrorWithInfoDictionary:(NSDictionary*)dictionary {
@@ -141,12 +146,15 @@
 	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
 	
 	[_delegate objectLoader:self didFailWithError:rkError];
+	[self release];
 }
 
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
 	RKManagedObjectStore* objectStore = self.managedObjectStore;
+	
+	NSLog(@"The response body is %@", [response bodyAsString]);
 	
 	// If the request was sent through a model, we map the results back into that object
 	// TODO: Note that this assumption may not work in all cases, other approaches?
@@ -250,6 +258,7 @@
 }
 
 - (void)requestDidCancelLoad:(RKRequest*)request {
+	[self release];
 	if ([_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
 		[(NSObject<RKRequestDelegate>*)_delegate requestDidCancelLoad:request];
 	}
