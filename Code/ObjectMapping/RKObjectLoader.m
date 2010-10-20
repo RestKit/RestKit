@@ -154,8 +154,6 @@
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
 	RKManagedObjectStore* objectStore = self.managedObjectStore;
 	
-	NSLog(@"The response body is %@", [response bodyAsString]);
-	
 	// If the request was sent through a model, we map the results back into that object
 	// TODO: Note that this assumption may not work in all cases, other approaches?
 	// The issue is that not specifying the object results in new objects being created
