@@ -111,6 +111,7 @@
 		256FD652112C7B780077F340 /* RKMappableAssociation.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FD650112C7B780077F340 /* RKMappableAssociation.m */; };
 		256FDE55112DB0B90077F340 /* RKObjectMapperSpecModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */; };
 		257EAAAF11F73DA000DB04C3 /* RKObjectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 257EAAAE11F73DA000DB04C3 /* RKObjectSpec.m */; };
+		257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 253A089212551D8D00976E89 /* RestKit.h */; };
 		2590E67F125235C200531FA8 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E674125235C200531FA8 /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E680125235C200531FA8 /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E675125235C200531FA8 /* NSObject+SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E681125235C200531FA8 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E676125235C200531FA8 /* NSObject+SBJSON.m */; };
@@ -354,9 +355,10 @@
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(BUILD_DIR/RestKit";
+			dstPath = "$(BUILD_DIR)/RestKit";
 			dstSubfolderSpec = 0;
 			files = (
+				257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
