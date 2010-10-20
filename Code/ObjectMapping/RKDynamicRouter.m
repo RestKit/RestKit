@@ -97,7 +97,7 @@
 		return resourcePath;
 	}
 	
-	NSMutableString* interpolatedResourcePath = [resourcePath mutableCopy];
+	NSMutableString* interpolatedResourcePath = [[resourcePath mutableCopy] autorelease];
 	for (NSString* find in substitutions) {
 		NSString* replace = [substitutions valueForKey:find];
 		[interpolatedResourcePath replaceOccurrencesOfString:find withString:replace 
