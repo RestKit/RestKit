@@ -179,10 +179,12 @@ static RKObjectManager* globalManager = nil;
 // TODO: Use notifications for this???
 // RKObjectManagerWillGETObject / RKObjectManagerWillPOSTObject / RKObjectManagerWillPUTObject / RKObjectManagerWillDELETEObject
 // RKObjectManagerDidGETObject / RKObjectManagerDidPOSTObject / RKObjectManagerDidPUTObject / RKObjectManagerDidDELETEObject
-- (void)saveObjectStore {	
-	NSError* error = [self.objectStore save];
-	if (nil == error) {
-		NSLog(@"[RestKit] RKObjectManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
+- (void)saveObjectStore {
+	if (self.objectStore) {
+		NSError* error = [self.objectStore save];
+		if (nil == error) {
+			NSLog(@"[RestKit] RKObjectManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
+		}
 	}
 }
 
