@@ -12,7 +12,7 @@
 #import <SystemConfiguration/SCNetworkReachability.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// global
+// Global
 
 static RKClient* sharedClient = nil;
 
@@ -25,10 +25,21 @@ static RKClient* sharedClient = nil;
 @synthesize password = _password;
 @synthesize HTTPHeaders = _HTTPHeaders;
 
++ (RKClient*)sharedClient {
+	return sharedClient;
+}
+
++ (void)setSharedClient:(RKClient*)client {
+	[sharedClient release];
+	sharedClient = [client retain];
+}
+
+// Deprecated
 + (RKClient*)client {
 	return sharedClient;
 }
 
+// Deprecated
 + (void)setClient:(RKClient*)client {
 	[sharedClient release];
 	sharedClient = [client retain];
@@ -38,7 +49,7 @@ static RKClient* sharedClient = nil;
 	RKClient* client = [[[RKClient alloc] init] autorelease];
 	client.baseURL = baseURL;
 	if (sharedClient == nil) {
-		[RKClient setClient:client];
+		[RKClient setSharedClient:client];
 	}
 	
 	return client;

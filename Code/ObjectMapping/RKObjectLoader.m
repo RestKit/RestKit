@@ -229,6 +229,7 @@
 		[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 	} else {
 		// TODO: What do we do if this is not a 200, 4xx or 5xx response? Need new delegate method...
+		NSLog(@"Encountered unexpected response code: %d", response.statusCode);
 	}
 }
 

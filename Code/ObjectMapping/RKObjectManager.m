@@ -12,9 +12,9 @@ NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotif
 NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
 
 //////////////////////////////////
-// Global Instance
+// Shared Instance
 
-static RKObjectManager* globalManager = nil;
+static RKObjectManager* sharedManager = nil;
 
 ///////////////////////////////////
 
@@ -37,20 +37,32 @@ static RKObjectManager* globalManager = nil;
 	return self;
 }
 
-+ (RKObjectManager*)globalManager {
-	return globalManager;
++ (RKObjectManager*)sharedManager {
+	return sharedManager;
 }
 
++ (void)setSharedManager:(RKObjectManager*)manager {
+	[manager retain];
+	[sharedManager release];
+	sharedManager = manager;
+}
+
+// Deprecated
++ (RKObjectManager*)globalManager {
+	return sharedManager;
+}
+
+// Deprecated
 + (void)setGlobalManager:(RKObjectManager*)manager {
 	[manager retain];
-	[globalManager release];
-	globalManager = manager;
+	[sharedManager release];
+	sharedManager = manager;
 }
 
 + (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL {
 	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL] autorelease];
-	if (nil == globalManager) {
-		[RKObjectManager setGlobalManager:manager];
+	if (nil == sharedManager) {
+		[RKObjectManager setSharedManager:manager];
 	}
 	return manager;
 }
