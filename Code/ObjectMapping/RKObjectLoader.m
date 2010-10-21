@@ -225,11 +225,16 @@
 - (void)loadObjectsFromResponse:(RKResponse*)response {
 	_response = [response retain];
 	
-	if (NO == [self encounteredErrorWhileProcessingRequest:response] && [response isSuccessful]) {
-		[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
-	} else {
-		// TODO: What do we do if this is not a 200, 4xx or 5xx response? Need new delegate method...
-		NSLog(@"Encountered unexpected response code: %d", response.statusCode);
+	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
+		if ([response isSuccessful]) {
+			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
+		} else {
+			NSLog(@"Encountered unexpected response code: %d", response.statusCode);
+			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
+				[_delegate objectLoaderDidLoadUnexpectedResponse:self];
+				[self release];
+			}			
+		}
 	}
 }
 
