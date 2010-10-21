@@ -25,6 +25,16 @@
  */
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error;
 
+@optional
+/**
+ * Sent when an object loader encounters a response status code it does not know how to handle.
+ * 2xx, 4xx, and 5xx responses are all handled appropriately. This should only occur when the remote
+ * service sends back a really odd-ball response.
+ *
+ * @optional
+ */
+- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader;
+
 @end
 
 /**

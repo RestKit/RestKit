@@ -46,14 +46,12 @@
 /**
  * Return the configured singleton instance of the Rest client
  */
-// TODO: Should be sharedClient/globalClient?
-+ (RKClient*)client;
++ (RKClient*)sharedClient;
 
 /**
  * Set the shared singleton issue of the Rest client
  */
-// TODO: Should be sharedClient/globalClient?
-+ (void)setClient:(RKClient*)client;
++ (void)setSharedClient:(RKClient*)client;
 
 /**
  * Return a Rest client scoped to a particular base URL. If the singleton client is nil, the return client is set as the singleton
@@ -64,6 +62,13 @@
  * Return a Rest client scoped to a particular base URL with a set of HTTP AUTH credentials. If the singleton client is nil, the return client is set as the singleton
  */
 + (RKClient*)clientWithBaseURL:(NSString*)baseURL username:(NSString*)username password:(NSString*)password;
+
+/**
+ * Deprecated global instance accessors. Use sharedClient & setSharedClient
+ * @deprecated
+ */
++ (RKClient*)client DEPRECATED_ATTRIBUTE;
++ (void)setClient:(RKClient*)client DEPRECATED_ATTRIBUTE;
 
 /**
  *  Will check for network connectivity (to google.com)

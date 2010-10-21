@@ -29,14 +29,21 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 }
 
 /**
- * Return the globally shared instance of the object manager
+ * Return the shared instance of the object manager
  */
-+ (RKObjectManager*)globalManager;
++ (RKObjectManager*)sharedManager;
 
 /**
- * Set the globally shared instance of the object manager
+ * Set the shared instance of the object manager
  */
-+ (void)setGlobalManager:(RKObjectManager*)manager;
++ (void)setSharedManager:(RKObjectManager*)manager;
+
+/**
+ * Deprecated global instance accessors. Use sharedManager & setSharedManager
+ * @deprecated
+ */
++ (RKObjectManager*)globalManager DEPRECATED_ATTRIBUTE;
++ (void)setGlobalManager:(RKObjectManager*)manager DEPRECATED_ATTRIBUTE;
 
 /**
  * Create and initialize a new object manager. If this is the first instance created
