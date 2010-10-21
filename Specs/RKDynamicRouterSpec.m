@@ -101,4 +101,15 @@
 	[expectThat(resourcePath) should:be(@"/humans/31337/blake")];
 }
 
+- (void)itShouldAllowForPolymorphicURLsViaMethodCalls {
+	RKHuman* blake = [RKHuman object];
+	blake.name = @"blake";
+	blake.railsID = [NSNumber numberWithInt:31337];
+	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	[router routeClass:[RKHuman class] toResourcePath:@"(polymorphicResourcePath)" forMethod:RKRequestMethodGET];
+	
+	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+	[expectThat(resourcePath) should:be(@"/this/is/the/path")];
+}
+
 @end

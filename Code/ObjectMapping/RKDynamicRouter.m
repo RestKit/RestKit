@@ -78,18 +78,15 @@
 	NSMutableDictionary* substitutions = [NSMutableDictionary dictionary];
 	NSScanner* scanner = [NSScanner scannerWithString:resourcePath];
 	
+	BOOL startsWithParentheses = [[resourcePath substringToIndex:1] isEqualToString:@"("];
 	while ([scanner isAtEnd] == NO) {
 		NSString* keyPath = nil;
-		BOOL scannedToOpenParan = [scanner scanUpToString:@"(" intoString:nil];
-		if (scannedToOpenParan || [resourcePath characterAtIndex:0] == [@"(" characterAtIndex:0]) {
+		if (startsWithParentheses || [scanner scanUpToString:@"(" intoString:nil]) {
 			// Advance beyond the opening parentheses
-			if (scannedToOpenParan && NO == [scanner isAtEnd]) {
+			if (NO == [scanner isAtEnd]) {
 				[scanner setScanLocation:[scanner scanLocation] + 1];
 			}
 			if ([scanner scanUpToString:@")" intoString:&keyPath]) {
-				if (!scannedToOpenParan) {
-					keyPath = [keyPath substringFromIndex:1];
-				}
 				NSString* searchString = [NSString stringWithFormat:@"(%@)", keyPath];
 				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
 				[substitutions setObject:propertyStringValue forKey:searchString];

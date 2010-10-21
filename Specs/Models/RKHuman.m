@@ -31,4 +31,8 @@
 			nil];
 }
 
+- (NSString*)polymorphicResourcePath {
+	return @"/this/is/the/path";
+}
+
 @end

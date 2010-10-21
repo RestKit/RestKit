@@ -169,6 +169,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		NSDictionary* elements = [dictionary objectForKey:elementName];	
 		[self updateModel:model fromElements:elements];
 	} else {
+		// TODO: Can't we just check if this thing implements RKObjectMappable and try to map it if so???
 		[NSException raise:@"Unable to map from requested dictionary"
 					format:@"There was no mappable element found for objects of type %@", class];
 	}
