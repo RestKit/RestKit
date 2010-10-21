@@ -162,16 +162,26 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Mapping from objects
 
+// TODO: Should accept RKObjectMappable instead of id...
 - (void)mapObject:(id)model fromDictionary:(NSDictionary*)dictionary {
 	Class class = [model class];
 	NSString* elementName = [_elementToClassMappings keyForObject:class];
 	if (elementName) {
-		NSDictionary* elements = [dictionary objectForKey:elementName];	
-		[self updateModel:model fromElements:elements];
+		// Extract elements nested in dictionary
+		if ([[dictionary allKeys] containsObject:elementName]) {
+			NSDictionary* elements = [dictionary objectForKey:elementName];
+			[self updateModel:model fromElements:elements];
+		} else {
+			// If the dictionary is not namespaced, attempt mapping its properties directly...
+			[self updateModel:model fromElements:dictionary];
+		}
 	} else {
-		// TODO: Can't we just check if this thing implements RKObjectMappable and try to map it if so???
-		[NSException raise:@"Unable to map from requested dictionary"
-					format:@"There was no mappable element found for objects of type %@", class];
+		if ([model conformsToProtocol:@protocol(RKObjectMappable)]) {
+			[self updateModel:model fromElements:dictionary];
+		} else {
+			[NSException raise:@"Unable to map from requested dictionary"
+						format:@"There was no mappable element found for objects of type %@", class];
+		}		
 	}
 }
 

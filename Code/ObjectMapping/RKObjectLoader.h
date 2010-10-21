@@ -83,6 +83,7 @@
  * The mappable object that generated this loader. This is used to map object
  * updates back to the source object that sent the request
  */
+// TODO: This should have a better name... targetObject?
 @property (nonatomic, retain) NSObject<RKObjectMappable>* source;
 
 /**

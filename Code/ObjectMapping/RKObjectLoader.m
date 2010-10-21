@@ -154,21 +154,21 @@
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
 	RKManagedObjectStore* objectStore = self.managedObjectStore;
 	
-	// If the request was sent through a model, we map the results back into that object
-	// TODO: Note that this assumption may not work in all cases, other approaches?
-	// The issue is that not specifying the object results in new objects being created
-	// rather than mapping back into the original. This is a problem for create (POST) operations.
+	/**
+	 * If this loader is bound to a particular object, then we map
+	 * the results back into the instance. This is used for loading and updating
+	 * individual object instances via getObject & friends.
+	 */
 	NSArray* results = nil;
-	id mainThreadModel = response.request.userData;	// The object dispatching the request
-	if (mainThreadModel) {
-		if ([mainThreadModel isKindOfClass:[NSManagedObject class]]) {
-			NSManagedObjectID* modelID = [(NSManagedObject*)mainThreadModel objectID];
+	if (self.source) {
+		if ([self.source isKindOfClass:[NSManagedObject class]]) {
+			NSManagedObjectID* modelID = [(NSManagedObject*)self.source objectID];
 			NSManagedObject* backgroundThreadModel = [self.managedObjectStore objectWithID:modelID];
 			[_mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:backgroundThreadModel];
 		} else {
-			[_mapper mapObject:mainThreadModel fromString:[response bodyAsString]];
-			results = [NSArray arrayWithObject:mainThreadModel];
+			[_mapper mapObject:self.source fromString:[response bodyAsString]];
+			results = [NSArray arrayWithObject:self.source];
 		}
 	} else {
 		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
