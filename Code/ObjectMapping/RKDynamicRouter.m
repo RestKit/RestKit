@@ -32,7 +32,7 @@
 		[_routes setObject:dictionary forKey:className];		 
 	}
 	
-	NSDictionary* classRoutes = [_routes objectForKey:className];
+	NSMutableDictionary* classRoutes = [_routes objectForKey:className];
 	if ([classRoutes objectForKey:methodName]) {
 		[NSException raise:nil format:@"A route has already been registered for class '%@' and HTTP method '%@'", className, methodName];
 	}
@@ -80,14 +80,18 @@
 	
 	while ([scanner isAtEnd] == NO) {
 		NSString* keyPath = nil;
-		if ([scanner scanUpToString:@"(" intoString:nil]) {
+		BOOL scannedToOpenParan = [scanner scanUpToString:@"(" intoString:nil];
+		if (scannedToOpenParan || [resourcePath characterAtIndex:0] == [@"(" characterAtIndex:0]) {
 			// Advance beyond the opening parentheses
-			if (NO == [scanner isAtEnd]) {
+			if (scannedToOpenParan && NO == [scanner isAtEnd]) {
 				[scanner setScanLocation:[scanner scanLocation] + 1];
 			}
 			if ([scanner scanUpToString:@")" intoString:&keyPath]) {
+				if (!scannedToOpenParan) {
+					keyPath = [keyPath substringFromIndex:1];
+				}
 				NSString* searchString = [NSString stringWithFormat:@"(%@)", keyPath];
-				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];				
+				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
 				[substitutions setObject:propertyStringValue forKey:searchString];
 			}
 		}
@@ -108,8 +112,8 @@
 }
 
 - (NSString*)resourcePathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
-	NSString* methodName = [self HTTPVerbForMethod:method];		
-	NSString* className  = NSStringFromClass([object class]);		
+	NSString* methodName = [self HTTPVerbForMethod:method];
+	NSString* className  = NSStringFromClass([object class]);
 	NSDictionary* classRoutes = [_routes objectForKey:className];
 	
 	NSString* resourcePath = nil;
