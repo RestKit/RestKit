@@ -106,7 +106,6 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 }
 
 - (NSUInteger)HTTPHeaderValueForContentLength {
-	NSLog(@"HTTPHeaderValueForContentLength called. Returned: %d", _length);
 	return _length;
 }
 
@@ -115,7 +114,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 	[_attachments makeObjectsPerformSelector:@selector(open)];
 	
 	// Calculate the length	of the stream
-    _length     = _footerLength;	
+    _length = _footerLength;	
 	for (RKParamsAttachment* attachment in _attachments) {
 		_length += [attachment length];
 	}
@@ -125,35 +124,40 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 #pragma mark NSInputStream methods
 
-- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len {
-    NSUInteger sent = 0, read;
-	NSUInteger lengthOfAttachments = (_length - _footerLength); // TODO: Make this a method???
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLength {
+    NSUInteger bytesSentInThisRead = 0, bytesRead;
+	NSUInteger lengthOfAttachments = (_length - _footerLength);
 	
 	// Proxy the read through to our attachments
     _streamStatus = NSStreamStatusReading;
-    while (_bytesDelivered < _length && sent < len && _currentPart < [_attachments count]) {
-        if ((read = [[_attachments objectAtIndex:_currentPart] read:buffer + sent maxLength:len - sent]) == 0) {
+    while (_bytesDelivered < _length && bytesSentInThisRead < maxLength && _currentPart < [_attachments count]) {
+        if ((bytesRead = [[_attachments objectAtIndex:_currentPart] read:buffer + bytesSentInThisRead maxLength:maxLength - bytesSentInThisRead]) == 0) {
             _currentPart ++;
             continue;
         }
 		
-        sent += read;
-        _bytesDelivered += read;
+        bytesSentInThisRead += bytesRead;
+        _bytesDelivered += bytesRead;
     }
 	
-	// Append the boundary to the end of the stream
-    if (_bytesDelivered >= (_length - _footerLength) && sent < len) {
-		NSUInteger a, b;		
-		a = _footerLength - (_bytesDelivered - lengthOfAttachments);
-		b = len - sent;		
-        read       = (a < b) ? a : b;
+	// If we have sent all the attachments data, begin emitting the boundary footer
+    if ((_bytesDelivered >= lengthOfAttachments) && (bytesSentInThisRead < maxLength)) {
+		NSUInteger footerBytesSent, footerBytesRemaining, bytesRemainingInBuffer;
 		
-        [_footer getBytes:buffer + sent range:NSMakeRange(_bytesDelivered - lengthOfAttachments, read)];
-        sent      += read;
-        _bytesDelivered += read;
+		// Calculate our position in the stream & buffer
+		footerBytesSent = _bytesDelivered - lengthOfAttachments;
+		footerBytesRemaining = _footerLength - footerBytesSent;
+		bytesRemainingInBuffer = maxLength - bytesSentInThisRead;
+		
+		// Send the entire footer back if there is room
+        bytesRead = (footerBytesRemaining < bytesRemainingInBuffer) ? footerBytesRemaining : bytesRemainingInBuffer;		
+        [_footer getBytes:buffer + bytesSentInThisRead range:NSMakeRange(footerBytesSent, bytesRead)];
+		
+        bytesSentInThisRead += bytesRead;
+        _bytesDelivered += bytesRead;
     }
 	
-    return sent;
+    return bytesSentInThisRead;
 }
 
 - (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len {
