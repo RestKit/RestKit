@@ -18,7 +18,7 @@
 // TODO: The managedObjectContext should be settable at the class level to ease coupling with
 // singleton object manager
 + (NSManagedObjectContext*)managedObjectContext {
-	return [[[RKObjectManager globalManager] objectStore] managedObjectContext];
+	return [[[RKObjectManager sharedManager] objectStore] managedObjectContext];
 }
 
 + (NSEntityDescription*)entity {

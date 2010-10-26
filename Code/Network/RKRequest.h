@@ -177,4 +177,9 @@ typedef enum RKRequestMethod {
  */
 - (void)requestDidCancelLoad:(RKRequest*)request;
 
+/**
+ * Sent when a request has uploaded data to the remote site
+ */
+- (void)request:(RKRequest*)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
+
 @end
