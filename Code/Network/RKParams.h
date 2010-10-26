@@ -8,12 +8,22 @@
 
 #import <Foundation/Foundation.h>
 #import "RKRequestSerializable.h"
-#import "RKParamsFileAttachment.h"
-#import "RKParamsDataAttachment.h"
+#import "RKParamsAttachment.h"
 
-@interface RKParams : NSObject <RKRequestSerializable> {
-	NSMutableDictionary* _valueData;
-	NSMutableDictionary* _fileData;
+/**
+ * Provides support for creating multi-part request body for RKRequest
+ * objects.
+ */
+@interface RKParams : NSInputStream <RKRequestSerializable> {
+	NSMutableArray* _attachments;
+	
+	@private
+	NSStreamStatus _streamStatus;
+	NSData* _footer;
+	NSUInteger _bytesDelivered;
+	NSUInteger _length;
+	NSUInteger _footerLength;
+	NSUInteger _currentPart;
 }
 
 /**
@@ -34,36 +44,28 @@
 /**
  * Sets the value for a named parameter
  */
-- (void)setValue:(id <NSObject>)value forParam:(NSString*)param;
+- (RKParamsAttachment*)setValue:(id <NSObject>)value forParam:(NSString*)param;
 
 /**
  * Sets the value for a named parameter to the data contained in a file at the given path
  */
-- (RKParamsFileAttachment*)setFile:(NSString*)filePath forParam:(NSString*)param;
+- (RKParamsAttachment*)setFile:(NSString*)filePath forParam:(NSString*)param;
 
 /**
  * Sets the value for a named parameter to the data contained in a file at the given path with the specified MIME Type and attachment file name
  */
-- (RKParamsFileAttachment*)setFile:(NSString*)filePath MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param;
+// TODO: Deprecate.
+- (RKParamsAttachment*)setFile:(NSString*)filePath MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param;
 
 /**
  * Sets the value to the data object for a named parameter
  */
-- (RKParamsDataAttachment*)setData:(NSData*)data forParam:(NSString*)param;
+- (RKParamsAttachment*)setData:(NSData*)data forParam:(NSString*)param;
 
 /**
  * Sets the value for a named parameter to a data object with the specified MIME Type and attachment file name
  */
-- (RKParamsDataAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param;
-
-/**
- * Returns the value for the Content-Type header for these params
- */
-- (NSString*)ContentTypeHTTPHeader;
-
-/**
- * Returns the data contained in this params object as a MIME string
- */
-- (NSData*)HTTPBody;
+// TODO: Deprecate
+- (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param;
 
 @end

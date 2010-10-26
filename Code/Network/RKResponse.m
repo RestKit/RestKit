@@ -102,6 +102,11 @@
 	}
 }
 
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+	NSLog(@"Connection dedSendBodyData invoked. %d bytesWritten, %d totalBytesWritten, %d totalBytesExpectedToWrite", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
+}
+
+
 - (NSString*)localizedStatusCodeString {
 	return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];
 }

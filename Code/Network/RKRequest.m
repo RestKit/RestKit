@@ -62,6 +62,9 @@
 	}
 	if (_params != nil) {
 		[_URLRequest setValue:[_params ContentTypeHTTPHeader] forHTTPHeaderField:@"Content-Type"];
+		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
+			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
+		}
 	}	
 	NSLog(@"Headers: %@", [_URLRequest allHTTPHeaderFields]);
 }
@@ -77,7 +80,12 @@
 	_params = params;
 	
 	if (params) {
-		[_URLRequest setHTTPBody:[_params HTTPBody]];
+		// Prefer the use of a stream over a raw body
+		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {			
+			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];			
+		} else {
+			[_URLRequest setHTTPBody:[_params HTTPBody]];
+		}
 	}
 }
 

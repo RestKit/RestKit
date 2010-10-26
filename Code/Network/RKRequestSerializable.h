@@ -16,11 +16,35 @@
 /**
  * The value of the Content-Type header for the HTTP Body representation of the serialization
  */
+// TODO: Deprecate?
 - (NSString*)ContentTypeHTTPHeader;
+
+// TODO:?
+// - (NSString*)HTTPHeaderValueForContentType;
+
+@optional
+
+/**
+ * NOTE: One of the following methods MUST be implemented for your serializable implementation
+ * to be complete. If you are allowing serialization of a small in-memory data structure, implement
+ * HTTPBody as it is much simpler. HTTPBodyStream provides support for streaming a large payload
+ * from disk instead of memory.
+ */
 
 /**
  * An NSData representing the HTTP Body serialization of the object implementing the protocol
  */
 - (NSData*)HTTPBody;
+
+/**
+ * Returns an input stream for reading the serialization as a stream. Used to provide support for
+ * handling large HTTP payloads.
+ */
+- (NSInputStream*)HTTPBodyStream;
+
+/**
+ * Returns the length of the HTTP Content-Length header
+ */
+- (NSUInteger)HTTPHeaderValueForContentLength;
 
 @end

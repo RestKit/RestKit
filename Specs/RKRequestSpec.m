@@ -8,6 +8,8 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKRequest.h"
+#import "RKParams.h"
+#import "RKResponse.h"
 
 @interface RKRequestSpec : NSObject <UISpec> {
 }
@@ -15,5 +17,23 @@
 @end
 
 @implementation RKRequestSpec
+
+/**
+ * This spec requires the test Sinatra server to be running
+ */
+- (void)itShouldSendMultiPartRequests {
+	NSString* URLString = [NSString stringWithFormat:@"http://%s:4567/photo", getenv("RESTKIT_IP_ADDRESS")];
+	NSURL* URL = [NSURL URLWithString:URLString];
+	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+	RKParams* params = [[RKParams params] retain];
+	NSString* filePath = [[NSBundle mainBundle] pathForResource:@"blake" ofType:@"png"];
+	[params setFile:filePath forParam:@"file"];
+	[params setValue:@"this is the value" forParam:@"test"];
+	request.method = RKRequestMethodPOST;
+	request.params = params;
+	NSLog(@"the stream is: %@", [request.URLRequest HTTPBodyStream]);
+	RKResponse* response = [request sendSynchronously];
+	[expectThat(response.statusCode) should:be(200)];
+}
 
 @end
