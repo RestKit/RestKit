@@ -42,7 +42,7 @@ static NSString *urlEncode(id object) {
 	return [parts componentsJoinedByString: @"&"];
 }
 
-- (NSString*)ContentTypeHTTPHeader {
+- (NSString*)HTTPHeaderValueForContentType {
 	return @"application/x-www-form-urlencoded";
 }
 

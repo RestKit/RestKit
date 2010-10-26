@@ -11,8 +11,9 @@
 
 @interface NSDictionary (RKRequestSerialization) <RKRequestSerializable>
 
+/**
+ * Returns a representation of the dictionary as a URLEncoded string
+ */
 - (NSString*)URLEncodedString;
-- (NSString*)ContentTypeHTTPHeader;
-- (NSData*)HTTPBody;
 
 @end

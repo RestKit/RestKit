@@ -8,10 +8,6 @@
 
 #import "RKParamsAttachment.h"
 
-#ifndef min
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif
-
 /**
  * The multi-part boundary. See RKParams.m
  */
@@ -32,8 +28,6 @@ extern NSString* const kRKStringBoundary;
 - (id)initWithName:(NSString*)name value:(id<NSObject>)value {
 	if (self = [self initWithName:name]) {
 		NSMutableData* body = [NSMutableData data];
-		NSLog(@"Attempting to add HTTP param named %@ with type %@ and value %@", _name, [value class], value);
-		// TODO: Can get _PFCachedNumber objects back from valueForKey: from Core Data. Need to figure this out...
 		if ([value respondsToSelector:@selector(dataUsingEncoding:)]) {
 			[body appendData:[(NSString*)value dataUsingEncoding:NSUTF8StringEncoding]];
 		} else {
@@ -118,38 +112,47 @@ extern NSString* const kRKStringBoundary;
     return _length;
 }
 
-- (NSUInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len {
-	// TODO: Add assertions that open has been called!
+- (NSUInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLength {
     NSUInteger sent = 0, read;
 	
+	// We are done with the read
     if (_delivered >= _length) {
         return 0;
     }
 	
-	// Read the MIME headers
-    if (_delivered < _MIMEHeaderLength && sent < len) {
-        read       = min(_MIMEHeaderLength - _delivered, len - sent);
+	// First we send back the MIME headers
+    if (_delivered < _MIMEHeaderLength && sent < maxLength) {
+		NSUInteger headerBytesRemaining, bytesRemainingInBuffer;
+		
+		headerBytesRemaining = _MIMEHeaderLength - _delivered;
+		bytesRemainingInBuffer = maxLength - sent;
+		
+		// Send the entire header if there is room
+        read       = (headerBytesRemaining < bytesRemainingInBuffer) ? headerBytesRemaining : bytesRemainingInBuffer;
         [_MIMEHeader getBytes:buffer + sent range:NSMakeRange(_delivered, read)];
-        sent      += read;
+		
+        sent += read;
         _delivered += sent;
     }
 	
 	// Read the attachment body out of our underlying stream
-    while (_delivered >= _MIMEHeaderLength && _delivered < (_length - 2) && sent < len) {
-        if ((read = [_bodyStream read:(buffer + sent) maxLength:(len - sent)]) == 0) {
+    while (_delivered >= _MIMEHeaderLength && _delivered < (_length - 2) && sent < maxLength) {
+        if ((read = [_bodyStream read:(buffer + sent) maxLength:(maxLength - sent)]) == 0) {
             break;
         }
-        sent      += read;
+		
+        sent += read;
         _delivered += read;
     }
 	
 	// Append the \r\n 
-    if (_delivered >= (_length - 2) && sent < len) {
+    if (_delivered >= (_length - 2) && sent < maxLength) {
         if (_delivered == (_length - 2)) {
             *(buffer + sent) = '\r';
             sent ++;
 			_delivered ++;
         }
+		
         *(buffer + sent) = '\n';
         sent ++;
 		_delivered ++;

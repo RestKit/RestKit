@@ -28,7 +28,7 @@
 	[super dealloc];
 }
 
-- (NSString*)ContentTypeHTTPHeader {
+- (NSString*)HTTPHeaderValueForContentType {
 	return @"application/json";
 }
 

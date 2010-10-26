@@ -16,11 +16,7 @@
 /**
  * The value of the Content-Type header for the HTTP Body representation of the serialization
  */
-// TODO: Deprecate?
-- (NSString*)ContentTypeHTTPHeader;
-
-// TODO:?
-// - (NSString*)HTTPHeaderValueForContentType;
+- (NSString*)HTTPHeaderValueForContentType;
 
 @optional
 
@@ -46,5 +42,12 @@
  * Returns the length of the HTTP Content-Length header
  */
 - (NSUInteger)HTTPHeaderValueForContentLength;
+
+/**
+ * The value of the Content-Type header for the HTTP Body representation of the serialization
+ *
+ * @deprecated Implement HTTPHeaderValueForContentType instead
+ */
+- (NSString*)ContentTypeHTTPHeader DEPRECATED_ATTRIBUTE;
 
 @end

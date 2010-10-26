@@ -61,7 +61,12 @@
 		[_URLRequest setValue:[_additionalHTTPHeaders valueForKey:header] forHTTPHeaderField:header];
 	}
 	if (_params != nil) {
-		[_URLRequest setValue:[_params ContentTypeHTTPHeader] forHTTPHeaderField:@"Content-Type"];
+		// Temporarily support older RKRequestSerializable implementations
+		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentType)]) {
+			[_URLRequest setValue:[_params HTTPHeaderValueForContentType] forHTTPHeaderField:@"Content-Type"];
+		} else if ([_params respondsToSelector:@selector(ContentTypeHTTPHeader)]) {
+			[_URLRequest setValue:[_params performSelector:@selector(ContentTypeHTTPHeader)] forHTTPHeaderField:@"Content-Type"];
+		}		
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
