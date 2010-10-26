@@ -145,7 +145,7 @@
 }
 
 - (void)loadFromObjectCache {
-	RKManagedObjectStore* store = [RKObjectManager globalManager].objectStore;
+	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
     NSArray* cachedObjects = nil;
     
     if (store.managedObjectCache) {
@@ -201,7 +201,7 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
 	// Go Offline button
 	if (1 == buttonIndex) {
-		[[RKObjectManager globalManager] goOffline];
+		[[RKObjectManager sharedManager] goOffline];
 	}
 }
 
@@ -249,7 +249,7 @@
 		[_delegate rkModelDidStartLoad];
 	}
 	
-	_objectLoader = [[[RKObjectManager globalManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
+	_objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
 	_objectLoader.method = _method;
 	_objectLoader.objectClass = _objectClass;
 	_objectLoader.keyPath = _keyPath;
