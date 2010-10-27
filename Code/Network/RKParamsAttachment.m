@@ -6,12 +6,17 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
+#import <MobileCoreServices/UTType.h>
 #import "RKParamsAttachment.h"
 
 /**
  * The multi-part boundary. See RKParams.m
  */
 extern NSString* const kRKStringBoundary;
+
+@interface RKParamsAttachment (Private)
+- (NSString *)mimeTypeForExtension:(NSString *)extension;
+@end
 
 @implementation RKParamsAttachment
 
@@ -51,17 +56,16 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (id)initWithName:(NSString*)name file:(NSString*)filePath {
-	if (self = [self initWithName:name]) {
-		_fileName = [filePath lastPathComponent];
-		_MIMEType = @"application/octet-stream"; // TODO: Add MIME type auto-detection!
-		// TODO: [self mimeTypeForExtension:[path pathExtension] -> default the MIMEType		
-		_bodyStream    = [[NSInputStream inputStreamWithFileAtPath:filePath] retain];
-				
+	if (self = [self initWithName:name]) {		
 		NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:filePath], @"Expected file to exist at path: %@", filePath);
+		_fileName = [filePath lastPathComponent];
+		_MIMEType = [self mimeTypeForExtension:[filePath pathExtension]];
+		_bodyStream    = [[NSInputStream inputStreamWithFileAtPath:filePath] retain];
+		
 		NSError* error = nil;		
 		_bodyLength    = [[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error] objectForKey:NSFileSize] unsignedIntegerValue];		
 		if (error) {
-			NSLog(@"Encountered an error while determining file size: %@");
+			NSLog(@"Encountered an error while determining file size: %@", error);
 		}
 	}
 	
@@ -85,6 +89,25 @@ extern NSString* const kRKStringBoundary;
 - (NSString*)MIMEBoundary {
 	return kRKStringBoundary;
 }
+
+- (NSString *)mimeTypeForExtension:(NSString *)extension {
+	if (NULL != UTTypeCreatePreferredIdentifierForTag) {
+		CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)extension, NULL);
+		if (uti != NULL) {
+			CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+			CFRelease(uti);
+			if (mime != NULL) {
+				NSString *type = [NSString stringWithString:(NSString *)mime];
+				CFRelease(mime);
+				return type;
+			}
+		}
+	}
+	
+    return @"application/octet-stream";
+}
+
+#pragma mark NSStream methods
 
 - (void)open {
 	// Generate the MIME header for this part
