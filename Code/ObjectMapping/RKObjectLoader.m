@@ -226,10 +226,11 @@
 	_response = [response retain];
 	
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
-		if ([response isSuccessful]) {
+		// TODO: When other mapping formats are supported, unwind this assumption...
+		if ([response isSuccessful] && [response isJSON]) {
 			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 		} else {
-			NSLog(@"Encountered unexpected response code: %d", response.statusCode);
+			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", response.statusCode, response.MIMEType);
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[_delegate objectLoaderDidLoadUnexpectedResponse:self];
 				[self release];
