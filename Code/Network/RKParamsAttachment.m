@@ -1,5 +1,5 @@
 //
-//  RKAttachment.m
+//  RKParamsAttachment.m
 //  RestKit
 //
 //  Created by Blake Watters on 8/6/09.
@@ -56,8 +56,13 @@ extern NSString* const kRKStringBoundary;
 		_MIMEType = @"application/octet-stream"; // TODO: Add MIME type auto-detection!
 		// TODO: [self mimeTypeForExtension:[path pathExtension] -> default the MIMEType		
 		_bodyStream    = [[NSInputStream inputStreamWithFileAtPath:filePath] retain];
-		_bodyLength    = [[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:NULL] objectForKey:NSFileSize] unsignedIntegerValue];
-		// TODO: Error handling!!!
+				
+		NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:filePath], @"Expected file to exist at path: %@", filePath);
+		NSError* error = nil;		
+		_bodyLength    = [[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error] objectForKey:NSFileSize] unsignedIntegerValue];		
+		if (error) {
+			NSLog(@"Encountered an error while determining file size: %@");
+		}
 	}
 	
 	return self;

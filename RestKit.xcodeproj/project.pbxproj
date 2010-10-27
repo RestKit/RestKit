@@ -33,6 +33,7 @@
 		250BC51111F62D6B00F3FE5A /* UISpec.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 250BC50A11F62D6B00F3FE5A /* UISpec.bundle */; };
 		2520776E113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		2524CB5D1278930200D1314C /* RKParamsAttachmentSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2524CB5C1278930200D1314C /* RKParamsAttachmentSpec.m */; };
 		253A08AF12551EA500976E89 /* Network.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A08AE12551EA500976E89 /* Network.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253A08CC125522CE00976E89 /* NSDictionary+RKRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A086612551D8D00976E89 /* NSDictionary+RKRequestSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253A08CD125522D000976E89 /* NSDictionary+RKRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A086712551D8D00976E89 /* NSDictionary+RKRequestSerialization.m */; };
@@ -403,6 +404,7 @@
 		250BC51011F62D6B00F3FE5A /* UISpec_1_0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = UISpec_1_0.a; sourceTree = "<group>"; };
 		2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+RKRequestSerializationSpec.m"; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2524CB5C1278930200D1314C /* RKParamsAttachmentSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKParamsAttachmentSpec.m; sourceTree = "<group>"; };
 		253A07FC1255161B00976E89 /* libRestKitNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		253A08031255162C00976E89 /* libRestKitObjectMapping.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitObjectMapping.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		253A080C12551D3000976E89 /* libRestKitSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitSupport.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -958,6 +960,7 @@
 				255DE43111010EE700A85891 /* RKRequestSpec.m */,
 				255DE43A11010F8400A85891 /* RKResponseSpec.m */,
 				2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */,
+				2524CB5C1278930200D1314C /* RKParamsAttachmentSpec.m */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -1754,6 +1757,7 @@
 				250429A911F62E0200553519 /* UISpec+UISpecRunner.m in Sources */,
 				257EAAAF11F73DA000DB04C3 /* RKObjectSpec.m in Sources */,
 				25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */,
+				2524CB5D1278930200D1314C /* RKParamsAttachmentSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
