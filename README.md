@@ -91,6 +91,6 @@ Forks, patches and other feedback are always welcome.
 
 A Google Group for development and usage of library is available at: [http://groups.google.com/group/restkit](http://groups.google.com/group/restkit)
 
-Follow RestKit on Twitter:[http://www.twitter.com/restkit](http://www.twitter.com/restkit)
+Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restkit)
 
 ### RestKit is brought to you by [Two Toasters](http://www.twotoasters.com/). ###
