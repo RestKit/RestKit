@@ -106,6 +106,24 @@
 + (id)objectWithPrimaryKeyValue:(id)value;
 
 /**
+ * Must return a dictionary mapping Core Data relationships for the managed object
+ * to their corresponding primary key properties on the managed object.  Must
+ * return an empty dictionary if there are no relationships to be mapped.
+ *
+ * For example, given a Project object associated with a user, where the user is
+ * specified by a userId property on the managed object:
+ *
+ * [NSDictionary dictionaryWithObject:@"userId" forKey:@"user"];
+ * Will hydrate the 'user' association on the managed object with the object
+ * in the local object graph having the primary key specified in the managed object's
+ * userId property.
+ * 
+ * In effect, this approach allows foreign key relationships between managed objects
+ * to be automatically maintained from the server to the underlying Core Data object graph.
+ */
++ (NSDictionary*)relationshipToPrimaryKeyPropertyMappings;
+
+/**
  * Returns the value of the primary key property for this object
  */
 - (id)primaryKeyValue;

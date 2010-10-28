@@ -7,6 +7,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "RKManagedObject.h"
 #import "RKManagedObjectCache.h"
 
 /**
@@ -56,5 +57,14 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  *	an array of NSManagedObjectIDs
  */
 - (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
+
+/**
+ * Retrieves a model object from the object store given the model object's class and
+ * the primaryKeyValue for the model object. This method leverages techniques specific to 
+ * Core Data for optimal performance. The return value will be nil in cases where an existing
+ * object cannot be found in the object store.
+ */
+- (RKManagedObject*)findInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue;
+
 
 @end

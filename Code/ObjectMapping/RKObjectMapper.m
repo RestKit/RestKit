@@ -240,36 +240,13 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 // Persistent Instance Finders
 
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
-	NSArray* objects = nil;
 	id object = nil;
-	
-	// TODO: Core Data dependency... Push into objectStore
-	if ([class respondsToSelector:@selector(allObjects)]) {
-		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-		
-		if (nil == [threadDictionary objectForKey:class]) {
-			NSFetchRequest* fetchRequest = [class fetchRequest];
-			[fetchRequest setReturnsObjectsAsFaults:NO];			
-			objects = [class objectsWithFetchRequest:fetchRequest];
-			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
-			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
-			for (id theObject in objects) {			
-				id primaryKeyValue = [theObject valueForKey:primaryKey];
-				[dictionary setObject:theObject forKey:primaryKeyValue];
-			}
-			
-			[threadDictionary setObject:dictionary forKey:class];
-		}
-		
-		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
-		if ([class respondsToSelector:@selector(objectWithPrimaryKeyValue:)]) {
-			NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
-			id primaryKeyValue = [elements objectForKey:primaryKeyElement];
-			object = [dictionary objectForKey:primaryKeyValue];
-		}
+	if ([class respondsToSelector:@selector(primaryKeyElement)]) {
+		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
+		id primaryKeyValue = [elements objectForKey:primaryKeyElement];
+		object = [[[RKObjectManager sharedManager] objectStore] findInstanceOfManagedObject:class
+																		   withPrimaryKeyValue:primaryKeyValue];
 	}
-	
 	// instantiate if object is nil
 	if (object == nil) {
 		if ([class respondsToSelector:@selector(object)]) {
@@ -390,6 +367,30 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			Class class = [_elementToClassMappings objectForKey:[componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1]];
 			id child = [self createOrUpdateInstanceOfModelClass:class fromElements:relationshipElements];		
 			[object setValue:child forKey:propertyName];
+		}
+	}
+	
+	if ([object isKindOfClass:[RKManagedObject class]]) {
+		RKManagedObject* managedObject = (RKManagedObject*)object;
+		NSDictionary* relationshipToPkPropertyMappings = [[managedObject class] relationshipToPrimaryKeyPropertyMappings];
+		for (NSString* relationship in relationshipToPkPropertyMappings) {
+			NSString* primaryKeyPropertyString = [relationshipToPkPropertyMappings objectForKey:relationship];
+			
+			NSNumber* objectPrimaryKeyValue = nil;
+			@try {
+				objectPrimaryKeyValue = [managedObject valueForKeyPath:primaryKeyPropertyString];
+			} @catch (NSException* e) {
+				NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for object:%@", e, primaryKeyPropertyString, managedObject);
+			}
+			
+			NSDictionary* relationshipsByName = [[managedObject entity] relationshipsByName];
+			NSEntityDescription* relationshipDestinationEntity = [[relationshipsByName objectForKey:relationship] destinationEntity];
+			id relationshipDestinationClass = objc_getClass([[relationshipDestinationEntity managedObjectClassName] cStringUsingEncoding:NSUTF8StringEncoding]);
+			RKManagedObject* relationshipValue = [[[RKObjectManager sharedManager] objectStore] findInstanceOfManagedObject:relationshipDestinationClass
+																											   withPrimaryKeyValue:objectPrimaryKeyValue];			
+			if (relationshipValue) {
+				[managedObject setValue:relationshipValue forKey:relationship];
+			}
 		}
 	}
 }
