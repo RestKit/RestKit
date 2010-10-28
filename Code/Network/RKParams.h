@@ -52,9 +52,15 @@
 - (RKParamsAttachment*)setFile:(NSString*)filePath forParam:(NSString*)param;
 
 /**
- * Sets the value to the data object for a named parameter
+ * Sets the value to the data object for a named parameter. A default MIME type of
+ * application/octet-stream will be used.
  */
 - (RKParamsAttachment*)setData:(NSData*)data forParam:(NSString*)param;
+
+/**
+ * Sets the value for a named parameter to an NSData object with a specific MIME type
+ */
+- (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType forParam:(NSString*)param;
 
 /**
  * Sets the value for a named parameter to a data object with the specified MIME Type and attachment file name

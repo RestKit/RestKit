@@ -106,7 +106,11 @@
 		[self release];
 		return YES;
 	} else if ([response isError]) {
-		[_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
+		if ([response isJSON]) {
+			[_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
+		} else {
+			[_delegate objectLoader:self didFailWithError:[response bodyAsString]];
+		}		
 		[self release];
 		return YES;
 	}
