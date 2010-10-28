@@ -186,4 +186,31 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return objectArray;
 }
 
+- (RKManagedObject*)findInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue {
+	RKManagedObject* object = nil;
+	if ([class respondsToSelector:@selector(allObjects)]) {
+		NSArray* objects = nil;
+		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+		
+		if (nil == [threadDictionary objectForKey:class]) {
+			NSFetchRequest* fetchRequest = [class fetchRequest];
+			[fetchRequest setReturnsObjectsAsFaults:NO];			
+			objects = [class objectsWithFetchRequest:fetchRequest];
+			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
+			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
+			for (id theObject in objects) {			
+				id primaryKeyValue = [theObject valueForKey:primaryKey];
+				[dictionary setObject:theObject forKey:primaryKeyValue];
+			}
+			
+			[threadDictionary setObject:dictionary forKey:class];
+		}
+		
+		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
+		object = [dictionary objectForKey:primaryKeyValue];
+	}
+	return object;
+}
+
 @end

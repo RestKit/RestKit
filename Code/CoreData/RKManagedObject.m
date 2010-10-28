@@ -147,6 +147,10 @@
 	return [NSDictionary dictionary];
 }
 
++ (NSDictionary*)relationshipToPrimaryKeyPropertyMappings {
+	return [NSDictionary dictionary];
+}
+
 #pragma mark Helpers
 
 - (id)primaryKeyValue {
