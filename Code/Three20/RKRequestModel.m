@@ -237,6 +237,12 @@
 	}
 }
 
+- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
+	[objectLoader release];
+	_objectLoader = nil;
+	[_delegate didFailLoadWithError:nil];
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // public
 
