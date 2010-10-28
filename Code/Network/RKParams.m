@@ -75,6 +75,15 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 	return attachment;
 }
 
+- (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType forParam:(NSString*)param {
+	RKParamsAttachment* attachment = [self setData:data forParam:param];
+	if (MIMEType != nil) {
+		attachment.MIMEType = MIMEType;
+	}
+	
+	return attachment;
+}
+
 - (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param {
 	RKParamsAttachment* attachment = [self setData:data forParam:param];
 	if (MIMEType != nil) {

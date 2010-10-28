@@ -62,7 +62,7 @@ To add RestKit to your project (you're using git, right?):
 1. Look to the bottom of the **General** pane labeled **Linked Libraries**. You will need to add the following frameworks:
  * **CFNetwork.framework** - Required for networking support.
  * **SystemConfiguration.framework** - Required for detection of network availability.
- * **MobileCoreServices.framework** - Optional. Provides support for MIME type auto-detection for uploaded files.
+ * **MobileCoreServices.framework** - Required. Provides support for MIME type auto-detection for uploaded files.
  * **CoreData.framework** - Optional. Required for use of the Core Data backed persistent object store.
 1. Get Info on your target and you should be looking at the **General** tag. In the top **Direct Dependencies** section, click the plus button and add a direct dependency on the RestKit target.
 1. Switch to the 'Build' tab in your project inspector. Make sure that your **Configuration** pop-up menu reads **All Configurations** so that your changes will work for all build configurations. 
