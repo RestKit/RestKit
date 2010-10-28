@@ -245,16 +245,18 @@
 }
 
 - (void)load {
-	if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
-		[_delegate rkModelDidStartLoad];
+	if ([[RKObjectManager sharedManager] isOnline]) {
+		if ([_delegate respondsToSelector:@selector(rkModelDidStartLoad)]) {
+			[_delegate rkModelDidStartLoad];
+		}
+		
+		_objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
+		_objectLoader.method = _method;
+		_objectLoader.objectClass = _objectClass;
+		_objectLoader.keyPath = _keyPath;
+		_objectLoader.params = _params;
+		[_objectLoader send];
 	}
-	
-	_objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
-	_objectLoader.method = _method;
-	_objectLoader.objectClass = _objectClass;
-	_objectLoader.keyPath = _keyPath;
-	_objectLoader.params = _params;
-	[_objectLoader send];
 }
 
 @end
