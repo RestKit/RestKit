@@ -109,7 +109,9 @@
 		if ([response isJSON]) {
 			[_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
 		} else {
-			[_delegate objectLoader:self didFailWithError:[response bodyAsString]];
+			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
+				[_delegate objectLoaderDidLoadUnexpectedResponse:self];
+			}
 		}		
 		[self release];
 		return YES;
