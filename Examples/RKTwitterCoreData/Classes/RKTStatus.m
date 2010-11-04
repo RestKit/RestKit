@@ -37,7 +37,7 @@
 			nil];
 }
 
-+ (NSString*)primaryKey {
++ (NSString*)primaryKeyProperty {
 	return @"statusID";
 }
 

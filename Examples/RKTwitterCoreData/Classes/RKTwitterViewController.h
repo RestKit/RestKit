@@ -13,5 +13,5 @@
 	UITableView* _tableView;
 	NSArray* _statuses;
 }
-
+- (void)loadObjectsFromDataStore;
 @end

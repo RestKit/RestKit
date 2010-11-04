@@ -24,7 +24,7 @@
 			nil];
 }
 
-+ (NSString*)primaryKey {
++ (NSString*)primaryKeyProperty {
 	return @"userID";
 }
 
