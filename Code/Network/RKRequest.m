@@ -84,7 +84,7 @@
 	[_params release];
 	_params = params;
 	
-	if (params) {
+	if (params && ![self isGET]) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {			
 			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];			
