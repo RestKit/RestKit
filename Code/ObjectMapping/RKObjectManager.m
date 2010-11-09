@@ -176,6 +176,11 @@ static RKObjectManager* sharedManager = nil;
 	// Get the serialization representation from the router
 	NSString* resourcePath = [self.router resourcePathForObject:object method:method];
 	NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
+	
+	if (method != RKRequestMethodGET) {
+		[self saveObjectStore];
+	}
+	
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	
 	loader.method = method;
@@ -207,21 +212,18 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (RKObjectLoader*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	[self saveObjectStore];
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPOST delegate:delegate];
 	[loader send];
 	return loader;
 }
 
 - (RKObjectLoader*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	[self saveObjectStore];
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPUT delegate:delegate];
 	[loader send];
 	return loader;
 }
 
 - (RKObjectLoader*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	[self saveObjectStore];
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodDELETE delegate:delegate];
 	[loader send];
 	return loader;
