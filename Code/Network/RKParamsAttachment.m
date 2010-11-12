@@ -119,8 +119,8 @@ extern NSString* const kRKStringBoundary;
 	} else if (self.MIMEType) {
 		// Typical for data values
 		_MIMEHeader = [[[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"\r\n"
-												   @"Content-Type: application/octet-stream\r\n\r\n", 
-						 [self MIMEBoundary], self.name] dataUsingEncoding:NSUTF8StringEncoding] retain];
+												   @"Content-Type: %@\r\n\r\n", 
+						 [self MIMEBoundary], self.name, self.MIMEType] dataUsingEncoding:NSUTF8StringEncoding] retain];
 	} else {
 		// Typical for raw values
 		_MIMEHeader = [[[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"\r\n\r\n", 
