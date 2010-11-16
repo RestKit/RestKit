@@ -201,7 +201,9 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
 			for (id theObject in objects) {			
 				id primaryKeyValue = [theObject valueForKey:primaryKey];
-				[dictionary setObject:theObject forKey:primaryKeyValue];
+				if (primaryKeyValue) {
+					[dictionary setObject:theObject forKey:primaryKeyValue];
+				}
 			}
 			
 			[threadDictionary setObject:dictionary forKey:class];
