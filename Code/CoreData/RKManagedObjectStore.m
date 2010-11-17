@@ -88,6 +88,10 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	[managedObjectContext setUndoManager:nil];
 	[managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(objectsDidChange:)
+												 name:NSManagedObjectContextObjectsDidChangeNotification
+											   object:managedObjectContext];
 	return managedObjectContext;
 }
 
@@ -159,6 +163,25 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 										 waitUntilDone:YES];
 }
 
+- (void)objectsDidChange:(NSNotification*)notification {
+	NSDictionary* userInfo = notification.userInfo;
+	NSSet* insertedObjects = [userInfo objectForKey:NSInsertedObjectsKey];
+	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+	
+	for (NSManagedObject* object in insertedObjects) {
+		if ([object respondsToSelector:@selector(primaryKeyProperty)]) {
+			Class class = [object class];
+			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
+			id primaryKeyValue = [object valueForKey:primaryKey];
+			
+			NSMutableDictionary* classCache = [threadDictionary objectForKey:class];
+			if (classCache && primaryKeyValue && [classCache objectForKey:primaryKeyValue] == nil) {
+				[classCache setObject:object forKey:primaryKeyValue];
+			}
+		}
+	}
+}
+
 #pragma mark -
 #pragma mark Helpers
 
@@ -186,7 +209,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return objectArray;
 }
 
-- (RKManagedObject*)findInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue {
+- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue {
 	RKManagedObject* object = nil;
 	if ([class respondsToSelector:@selector(allObjects)]) {
 		NSArray* objects = nil;
@@ -211,6 +234,11 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		
 		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
 		object = [dictionary objectForKey:primaryKeyValue];
+		
+		if (object == nil && primaryKeyValue && [class respondsToSelector:@selector(object)]) {
+			object = [class object];
+			[dictionary setObject:object forKey:primaryKeyValue];
+		}
 	}
 	return object;
 }
