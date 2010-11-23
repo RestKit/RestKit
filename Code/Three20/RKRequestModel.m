@@ -76,6 +76,48 @@
 	return self;
 }
 
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method delegate:(id)delegate {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_delegate = [delegate retain];
+		_params = [params retain];
+		_method = method;
+	}
+	
+	[self loadFromObjectCache];
+	
+	return self;
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass delegate:(id)delegate {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_delegate = [delegate retain];
+		_params = [params retain];
+		_objectClass = [klass retain];
+		_method = method;
+	}
+	
+	[self loadFromObjectCache];
+	
+	return self;
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate {
+	if (self = [self init]) {
+		_resourcePath = [resourcePath retain];
+		_delegate = [delegate retain];
+		_params = [params retain];
+		_objectClass = [klass retain];
+		_keyPath = [keyPath retain];
+		_method = method;
+	}
+	
+	[self loadFromObjectCache];
+	
+	return self;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 

@@ -40,6 +40,27 @@
 	return self;
 }
 
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method {
+	if (self = [self init]) {
+		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params method:method delegate:self];
+	}
+	return self;
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass {
+	if (self = [self init]) {
+		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params method:method objectClass:klass delegate:self];
+	}
+	return self;
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass keyPath:(NSString*)keyPath {
+	if (self = [self init]) {
+		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params method:method objectClass:klass keyPath:keyPath delegate:self];
+	}
+	return self;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // NSObject
 

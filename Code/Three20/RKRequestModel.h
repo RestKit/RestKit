@@ -73,6 +73,11 @@
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass delegate:(id)delegate;
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate;
 
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method delegate:(id)delegate;
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass delegate:(id)delegate;
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass keyPath:(NSString*)keyPath delegate:(id)delegate;
+
+
 /**
  * Clear the last loaded time for the model
  */

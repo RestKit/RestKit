@@ -61,10 +61,10 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 /**
  * Retrieves a model object from the object store given the model object's class and
  * the primaryKeyValue for the model object. This method leverages techniques specific to 
- * Core Data for optimal performance. The return value will be nil in cases where an existing
- * object cannot be found in the object store.
+ * Core Data for optimal performance. If an existing object is not found, a new object is created
+ * and returned.
  */
-- (RKManagedObject*)findInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue;
+- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue;
 
 
 @end

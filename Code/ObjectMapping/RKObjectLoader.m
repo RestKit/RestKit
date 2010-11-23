@@ -79,14 +79,6 @@
 	self.request.params = params;
 }
 
-- (NSObject<RKObjectMappable>*)source {
-	return (NSObject<RKObjectMappable>*)self.request.userData;
-}
-
-- (void)setSource:(NSObject<RKObjectMappable>*)source {
-	self.request.userData = source;
-}
-
 - (void)send {
 	[self retain];
 	[self.request send];

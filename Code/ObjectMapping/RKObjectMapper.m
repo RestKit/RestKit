@@ -244,16 +244,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	if ([class respondsToSelector:@selector(primaryKeyElement)]) {
 		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
 		id primaryKeyValue = [elements objectForKey:primaryKeyElement];
-		object = [[[RKObjectManager sharedManager] objectStore] findInstanceOfManagedObject:class
+		object = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:class
 																		   withPrimaryKeyValue:primaryKeyValue];
 	}
 	// instantiate if object is nil
 	if (object == nil) {
-		if ([class respondsToSelector:@selector(object)]) {
-			object = [class object];
-		} else {
-			object = [[[class alloc] init] autorelease];
-		}
+		object = [[[class alloc] init] autorelease];
 	}
 	
 	return object;
@@ -386,7 +382,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			NSDictionary* relationshipsByName = [[managedObject entity] relationshipsByName];
 			NSEntityDescription* relationshipDestinationEntity = [[relationshipsByName objectForKey:relationship] destinationEntity];
 			id relationshipDestinationClass = objc_getClass([[relationshipDestinationEntity managedObjectClassName] cStringUsingEncoding:NSUTF8StringEncoding]);
-			RKManagedObject* relationshipValue = [[[RKObjectManager sharedManager] objectStore] findInstanceOfManagedObject:relationshipDestinationClass
+			RKManagedObject* relationshipValue = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:relationshipDestinationClass
 																											   withPrimaryKeyValue:objectPrimaryKeyValue];			
 			if (relationshipValue) {
 				[managedObject setValue:relationshipValue forKey:relationship];

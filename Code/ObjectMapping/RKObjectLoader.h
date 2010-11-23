@@ -45,6 +45,7 @@
 	NSObject<RKObjectLoaderDelegate>* _delegate;	
 	RKRequest* _request;
 	RKResponse* _response;
+	NSObject<RKObjectMappable>* _source;
 	Class<RKObjectMappable> _objectClass;
 	NSString* _keyPath;
 	RKManagedObjectStore* _managedObjectStore;
