@@ -17,27 +17,28 @@
 
 - (id)init {
 	if (self = [super init]) {
-		_predicate = nil;
-		_sortDescriptors = nil;
+		self.predicate = nil;
+		self.sortDescriptors = nil;
+		self.searchEngine = nil;
 		_searchText = nil;
-		_searchEngine = nil;
 	}
-	
 	return self;
 }
 
 - (void)dealloc {
-	[_searchEngine release];_searchEngine=nil;
-	[_predicate release];_predicate=nil;
-	[_sortDescriptors release];_sortDescriptors=nil;
-	[_searchText release];_searchText=nil;
+	self.predicate = nil;
+	self.sortDescriptors = nil;
+	self.searchEngine = nil;
+	[_searchText release];
+	_searchText = nil;
 	[super dealloc];
 }
 
 - (void)reset {
-	[_predicate release];_predicate=nil;
-	[_sortDescriptors release];_sortDescriptors=nil;
-	[_searchText release];_searchText=nil;
+	self.predicate = nil;
+	self.sortDescriptors = nil;
+	[_searchText release];
+	_searchText = nil;
 	[self didChange];
 }
 
@@ -53,7 +54,7 @@
 	return _searchEngine;
 }
 
-- (NSArray*)search:(NSString *)text inCollection:(NSArray*)collection {
+- (NSArray*)search:(NSString*)text inCollection:(NSArray*)collection {
 	if (text.length) {
 		RKSearchEngine* searchEngine = [self createSearchEngine];
 		return [searchEngine searchFor:text inCollection:collection];
@@ -62,31 +63,30 @@
 	}
 }
 
-// public
-
-- (void)search:(NSString *)text {
+- (void)search:(NSString*)text {
 	[_searchText release];
+	_searchText = nil;
 	_searchText = [text retain];
 	[self didFinishLoad];
 }
 
-// Overloaded to hide filtering/searching from the underlying data source
 - (NSArray*)objects {
-	NSArray* results = _model.objects;
-	if (self.predicate) {
-		results = [results filteredArrayUsingPredicate:self.predicate];
+	NSArray* results = _objects;
+	if (results && [results count] > 0) {
+		if (self.predicate) {
+			results = [results filteredArrayUsingPredicate:self.predicate];
+		}
+		
+		if (_searchText) {
+			results = [self search:_searchText inCollection:results];
+		}
+		
+		if (self.sortSelector) {
+			results = [results sortedArrayUsingSelector:self.sortSelector];
+		} else if (self.sortDescriptors) {
+			results = [results sortedArrayUsingDescriptors:self.sortDescriptors];
+		}
 	}
-	
-	if (_searchText) {
-		results = [self search:_searchText inCollection:results];
-	}
-	
-	if (self.sortSelector) {
-		results = [results sortedArrayUsingSelector:self.sortSelector];
-	} else if (self.sortDescriptors) {
-		results = [results sortedArrayUsingDescriptors:self.sortDescriptors];
-	}
-	
 	return results;
 }
 

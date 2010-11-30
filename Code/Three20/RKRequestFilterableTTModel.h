@@ -62,6 +62,6 @@
 /**
  * Search the model for matching text
  */
-- (void)search:(NSString *)text;
+- (void)search:(NSString*)text;
 
 @end

@@ -82,8 +82,6 @@
 		253A092D125525EE00976E89 /* Three20.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A08A512551D8D00976E89 /* Three20.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253A092E125525EF00976E89 /* RKRequestTTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08A412551D8D00976E89 /* RKRequestTTModel.m */; };
 		253A092F125525F000976E89 /* RKRequestTTModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A08A312551D8D00976E89 /* RKRequestTTModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		253A0930125525F000976E89 /* RKRequestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08A212551D8D00976E89 /* RKRequestModel.m */; };
-		253A0931125525F100976E89 /* RKRequestModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A08A112551D8D00976E89 /* RKRequestModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253A0932125525F100976E89 /* RKRequestFilterableTTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08A012551D8D00976E89 /* RKRequestFilterableTTModel.m */; };
 		253A0933125525F100976E89 /* RKRequestFilterableTTModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A089F12551D8D00976E89 /* RKRequestFilterableTTModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253A09E612552B5300976E89 /* ObjectMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A09E512552B5300976E89 /* ObjectMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -459,8 +457,6 @@
 		253A089D12551D8D00976E89 /* RKSearchEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchEngine.m; sourceTree = "<group>"; };
 		253A089F12551D8D00976E89 /* RKRequestFilterableTTModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestFilterableTTModel.h; sourceTree = "<group>"; };
 		253A08A012551D8D00976E89 /* RKRequestFilterableTTModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestFilterableTTModel.m; sourceTree = "<group>"; };
-		253A08A112551D8D00976E89 /* RKRequestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestModel.h; sourceTree = "<group>"; };
-		253A08A212551D8D00976E89 /* RKRequestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestModel.m; sourceTree = "<group>"; };
 		253A08A312551D8D00976E89 /* RKRequestTTModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestTTModel.h; sourceTree = "<group>"; };
 		253A08A412551D8D00976E89 /* RKRequestTTModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestTTModel.m; sourceTree = "<group>"; };
 		253A08A512551D8D00976E89 /* Three20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Three20.h; sourceTree = "<group>"; };
@@ -867,7 +863,6 @@
 			isa = PBXGroup;
 			children = (
 				253A08B41255212300976E89 /* Parsers */,
-				25432040125618F000A315CF /* RKParser.h */,
 				253A089412551D8D00976E89 /* Errors.h */,
 				253A089512551D8D00976E89 /* Errors.m */,
 				253A089612551D8D00976E89 /* NSDictionary+RKAdditions.h */,
@@ -876,6 +871,7 @@
 				253A089912551D8D00976E89 /* NSString+InflectionSupport.h */,
 				253A089A12551D8D00976E89 /* NSString+InflectionSupport.m */,
 				253A089B12551D8D00976E89 /* RestKit_Prefix.pch */,
+				25432040125618F000A315CF /* RKParser.h */,
 				253A089C12551D8D00976E89 /* RKSearchEngine.h */,
 				253A089D12551D8D00976E89 /* RKSearchEngine.m */,
 				253A09F512552BDC00976E89 /* Support.h */,
@@ -889,8 +885,6 @@
 				253A08A512551D8D00976E89 /* Three20.h */,
 				253A089F12551D8D00976E89 /* RKRequestFilterableTTModel.h */,
 				253A08A012551D8D00976E89 /* RKRequestFilterableTTModel.m */,
-				253A08A112551D8D00976E89 /* RKRequestModel.h */,
-				253A08A212551D8D00976E89 /* RKRequestModel.m */,
 				253A08A312551D8D00976E89 /* RKRequestTTModel.h */,
 				253A08A412551D8D00976E89 /* RKRequestTTModel.m */,
 			);
@@ -1179,7 +1173,6 @@
 			files = (
 				253A092D125525EE00976E89 /* Three20.h in Headers */,
 				253A092F125525F000976E89 /* RKRequestTTModel.h in Headers */,
-				253A0931125525F100976E89 /* RKRequestModel.h in Headers */,
 				253A0933125525F100976E89 /* RKRequestFilterableTTModel.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1645,7 +1638,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				253A092E125525EF00976E89 /* RKRequestTTModel.m in Sources */,
-				253A0930125525F000976E89 /* RKRequestModel.m in Sources */,
 				253A0932125525F100976E89 /* RKRequestFilterableTTModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

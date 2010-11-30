@@ -25,13 +25,4 @@
     return [self dictionaryWithObjects:values forKeys:keys];
 }
 
-- (id)keyForObject:(id)object {
-	for (id key in self) {
-		if ([[self objectForKey:key] isEqual:object]) {
-			return key;
-		}
-	}	
-	return nil;
-}
-
 @end
