@@ -33,6 +33,7 @@
 		self.request = request;
 		self.delegate = delegate;
 		self.managedObjectStore = nil;
+		_sourceObjectID = nil;
 	}
 	
 	return self;
@@ -40,11 +41,15 @@
 
 - (void)dealloc {
 	_request.delegate = nil;
+	self.delegate = nil;
+	[_request cancel];
 	[_mapper release];
 	[_request release];
 	[_response release];
 	[_keyPath release];
 	self.managedObjectStore = nil;
+	[_sourceObjectID release];
+	_sourceObjectID = nil;
 	[super dealloc];
 }
 
@@ -63,6 +68,15 @@
 	return self.request.URL;
 }
 
+- (NSString*)resourcePath {
+	NSString* resourcePath = nil;
+	if ([self.request.URL isKindOfClass:[RKURL class]]) {
+		RKURL* url = (RKURL*)self.request.URL;
+		resourcePath = url.resourcePath;
+	}
+	return resourcePath;
+}
+
 - (RKRequestMethod)method {
 	return self.request.method;
 }
@@ -77,6 +91,19 @@
 
 - (void)setParams:(NSObject<RKRequestSerializable>*)params {
 	self.request.params = params;
+}
+
+- (void)setSource:(NSObject<RKObjectMappable>*)source {
+	[_source release];
+	_source = nil;
+	_source = [source retain];
+	
+	[_sourceObjectID release];
+	_sourceObjectID = nil;
+	
+	if ([source isKindOfClass:[NSManagedObject class]]) {
+		_sourceObjectID = [[(NSManagedObject*)source objectID] retain];
+	}
 }
 
 - (void)send {
@@ -159,9 +186,8 @@
 	 */
 	NSArray* results = nil;
 	if (self.source) {
-		if ([self.source isKindOfClass:[NSManagedObject class]]) {
-			NSManagedObjectID* modelID = [(NSManagedObject*)self.source objectID];
-			NSManagedObject* backgroundThreadModel = [self.managedObjectStore objectWithID:modelID];
+		if (_sourceObjectID) {
+			NSManagedObject* backgroundThreadModel = [self.managedObjectStore objectWithID:_sourceObjectID];
 			[_mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:backgroundThreadModel];
 		} else {

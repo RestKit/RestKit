@@ -24,6 +24,7 @@ static RKClient* sharedClient = nil;
 @synthesize username = _username;
 @synthesize password = _password;
 @synthesize HTTPHeaders = _HTTPHeaders;
+@synthesize baseURLReachabilityObserver = _baseURLReachabilityObserver;
 
 + (RKClient*)sharedClient {
 	return sharedClient;
@@ -80,20 +81,13 @@ static RKClient* sharedClient = nil;
 }
 
 - (BOOL)isNetworkAvailable {
-	Boolean success;    
-	
-	const char *host_name = "google.com"; // your data source host name
-	
-	SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(NULL, host_name);
-#ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-	SCNetworkReachabilityFlags flags;
-#else
-	SCNetworkConnectionFlags flags;
-#endif
-	success = SCNetworkReachabilityGetFlags(reachability, &flags);
-	BOOL isNetworkAvailable = success && (flags & kSCNetworkFlagsReachable) && !(flags & kSCNetworkFlagsConnectionRequired);
-	CFRelease(reachability);
-	
+	BOOL isNetworkAvailable = NO;
+	if (self.baseURLReachabilityObserver) {
+		isNetworkAvailable = [self.baseURLReachabilityObserver isNetworkReachable];
+	} else {
+		RKReachabilityObserver* googleObserver = [RKReachabilityObserver reachabilityObserverWithHostName:@"google.com"];
+		isNetworkAvailable = [googleObserver isNetworkReachable];
+	}
 	return isNetworkAvailable;
 }
 
@@ -117,6 +111,16 @@ static RKClient* sharedClient = nil;
 
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header {
 	[_HTTPHeaders setValue:value forKey:header];
+}
+
+- (void)setBaseURL:(NSString*)baseURL {
+	[_baseURL release];
+	_baseURL = nil;
+	_baseURL = [baseURL retain];
+	
+	[_baseURLReachabilityObserver release];
+	_baseURLReachabilityObserver = nil;
+	_baseURLReachabilityObserver = [[RKReachabilityObserver reachabilityObserverWithHostName:baseURL] retain];
 }
 
 - (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {

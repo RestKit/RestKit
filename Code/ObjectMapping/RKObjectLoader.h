@@ -49,6 +49,7 @@
 	Class<RKObjectMappable> _objectClass;
 	NSString* _keyPath;
 	RKManagedObjectStore* _managedObjectStore;
+	NSManagedObjectID* _sourceObjectID;
 }
 
 /**
@@ -91,6 +92,11 @@
  * The URL this loader sent the request to
  */
 @property (nonatomic, readonly) NSURL* URL;
+
+/**
+ * The resourcePath portion of this loader's URL
+ */
+@property (nonatomic, readonly) NSString* resourcePath;
 
 /**
  * The HTTP method used to send the request

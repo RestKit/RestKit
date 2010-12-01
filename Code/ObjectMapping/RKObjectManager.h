@@ -26,6 +26,7 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 	NSObject<RKRouter>* _router;
 	RKManagedObjectStore* _objectStore;		
 	BOOL _isOnline;
+	BOOL _onlineStateForced;
 }
 
 /**

@@ -58,6 +58,13 @@
 - (id)initWithRequest:(RKRequest*)request;
 
 /**
+ * Initialize a new response object for a REST request along
+ * with an error object, allowing for failures prior to an asynchronous
+ * request being sent.
+ */
+- (id)initWithRequest:(RKRequest*)request error:(NSError*)error;
+
+/**
  * Initializes a response object from the results of a synchronous request
  */
 - (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error;

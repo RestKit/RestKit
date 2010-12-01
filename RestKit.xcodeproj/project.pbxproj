@@ -171,6 +171,9 @@
 		3F6C3A9410FE7519008F47C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3A9310FE7519008F47C5 /* main.m */; };
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
 		7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7377FBE11268E96300868752 /* RKManagedObjectCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		73C89EF112A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */; };
+		73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */; };
 		73FE56C7126CB91600E0F30B /* RKURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 73FE56C4126CB91600E0F30B /* RKURL.h */; };
 		73FE56C8126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
 /* End PBXBuildFile section */
@@ -572,6 +575,8 @@
 		3F6C3A9510FE7524008F47C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		3F6C3AD010FE76C1008F47C5 /* RKModelMapperSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKModelMapperSpec.m; sourceTree = "<group>"; };
 		7377FBE11268E96300868752 /* RKManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCache.h; sourceTree = "<group>"; };
+		73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKReachabilityObserver.h; sourceTree = "<group>"; };
+		73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKReachabilityObserver.m; sourceTree = "<group>"; };
 		73FE56C4126CB91600E0F30B /* RKURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURL.h; sourceTree = "<group>"; };
 		73FE56C5126CB91600E0F30B /* RKURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURL.m; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -824,6 +829,8 @@
 				253A087012551D8D00976E89 /* RKParams.m */,
 				253A087112551D8D00976E89 /* RKParamsAttachment.h */,
 				253A087212551D8D00976E89 /* RKParamsAttachment.m */,
+				73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */,
+				73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */,
 				253A087712551D8D00976E89 /* RKRequest.h */,
 				253A087812551D8D00976E89 /* RKRequest.m */,
 				253A087912551D8D00976E89 /* RKRequestSerializable.h */,
@@ -1192,6 +1199,7 @@
 				253A08DF125522E300976E89 /* RKRequestSerializable.h in Headers */,
 				253A08E0125522E300976E89 /* RKResponse.h in Headers */,
 				73FE56C7126CB91600E0F30B /* RKURL.h in Headers */,
+				73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1656,6 +1664,7 @@
 				253A08DE125522E200976E89 /* RKRequest.m in Sources */,
 				253A08E1125522E400976E89 /* RKResponse.m in Sources */,
 				73FE56C8126CB91600E0F30B /* RKURL.m in Sources */,
+				73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1754,6 +1763,7 @@
 				257EAAAF11F73DA000DB04C3 /* RKObjectSpec.m in Sources */,
 				25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */,
 				2524CB5D1278930200D1314C /* RKParamsAttachmentSpec.m in Sources */,
+				73C89EF112A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

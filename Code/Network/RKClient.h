@@ -10,6 +10,7 @@
 #import "RKParams.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
+#import "RKReachabilityObserver.h"
 
 /**
  * RKClient exposes the low level client interface for working
@@ -21,6 +22,7 @@
 	NSString* _username;
 	NSString* _password;
 	NSMutableDictionary* _HTTPHeaders;
+	RKReachabilityObserver* _baseURLReachabilityObserver;
 }
 
 /**
@@ -42,6 +44,12 @@
  * A dictionary of headers to be sent with each request
  */
 @property(nonatomic, readonly) NSDictionary* HTTPHeaders;
+
+/**
+ * The RKReachabilityObserver used to monitor whether or not the client has a connection
+ * path to the baseURL
+ */
+@property(nonatomic, readonly) RKReachabilityObserver* baseURLReachabilityObserver;
 
 /**
  * Return the configured singleton instance of the Rest client

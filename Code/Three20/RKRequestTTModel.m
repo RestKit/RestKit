@@ -134,8 +134,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (BOOL)isOutdated {
-	return ([[RKObjectManager sharedManager] isOnline] && ![self isLoading] &&
-			(-[self.loadedTime timeIntervalSinceNow] > _refreshRate));
+	return (![self isLoading] && (-[self.loadedTime timeIntervalSinceNow] > _refreshRate));
 }
 
 - (void)cancel {
@@ -177,11 +176,11 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		[_objectLoader release];
 		_objectLoader = nil;
 	}
-//	if ([self errorWarrantsOptionToGoOffline:error]) {
-//		[self showAlertWithOptionToGoOfflineForError:error];
-//	} else {
+	if ([self errorWarrantsOptionToGoOffline:error]) {
+		[self showAlertWithOptionToGoOfflineForError:error];
+	} else {
 		[self didFailLoadWithError:error];
-//	}
+	}
 }
 
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
@@ -217,38 +216,38 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:_resourcePath];
 }
 
-//- (BOOL)errorWarrantsOptionToGoOffline:(NSError*)error {
-//	switch ([error code]) {
-//		case NSURLErrorTimedOut:
-//		case NSURLErrorCannotFindHost:
-//		case NSURLErrorCannotConnectToHost:
-//		case NSURLErrorNetworkConnectionLost:
-//		case NSURLErrorDNSLookupFailed:
-//		case NSURLErrorNotConnectedToInternet:
-//		case NSURLErrorInternationalRoamingOff:
-//			return YES;
-//			break;
-//		default:
-//			return NO;
-//			break;
-//	}
-//}
-//
-//- (void)showAlertWithOptionToGoOfflineForError:(NSError*)error {
-//	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:TTLocalizedString(@"Network Error", @"")
-//													 message:[error localizedDescription]
-//													delegate:self
-//										   cancelButtonTitle:TTLocalizedString(@"OK", @"")
-//										   otherButtonTitles:TTLocalizedString(@"Go Offline", @""), nil] autorelease];
-//	[alert show];
-//}
-//
-//- (void)alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-//	// Go Offline button
-//	if (1 == buttonIndex) {
-//		[[RKObjectManager sharedManager] goOffline];
-//	}
-//}
+- (BOOL)errorWarrantsOptionToGoOffline:(NSError*)error {
+	switch ([error code]) {
+		case NSURLErrorTimedOut:
+		case NSURLErrorCannotFindHost:
+		case NSURLErrorCannotConnectToHost:
+		case NSURLErrorNetworkConnectionLost:
+		case NSURLErrorDNSLookupFailed:
+		case NSURLErrorNotConnectedToInternet:
+		case NSURLErrorInternationalRoamingOff:
+			return YES;
+			break;
+		default:
+			return NO;
+			break;
+	}
+}
+
+- (void)showAlertWithOptionToGoOfflineForError:(NSError*)error {
+	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:TTLocalizedString(@"Network Error", @"")
+													 message:[error localizedDescription]
+													delegate:self
+										   cancelButtonTitle:TTLocalizedString(@"OK", @"")
+										   otherButtonTitles:TTLocalizedString(@"Go Offline", @""), nil] autorelease];
+	[alert show];
+}
+
+- (void)alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	// Go Offline button
+	if (1 == buttonIndex) {
+		[[RKObjectManager sharedManager] goOffline];
+	}
+}
 
 - (void)modelsDidLoad:(NSArray*)models {
 	[models retain];
@@ -265,7 +264,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 // public
 
 - (void)load {		
-	BOOL isOnline = [[RKObjectManager sharedManager] isOnline];
 	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
 	NSArray* cacheFetchRequests = nil;
 	NSArray* cachedObjects = nil;
@@ -274,8 +272,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
 	}
 	
-	if (isOnline && (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded || [cachedObjects count] == 0)) {
-		
+	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded || [cachedObjects count] == 0) {
 		_objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
 		_objectLoader.method = self.method;
 		_objectLoader.objectClass = _objectClass;
@@ -283,13 +280,11 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		_objectLoader.params = self.params;
 		
 		[self didStartLoad];
-		
 		[_objectLoader send];
 		
 	} else if (cacheFetchRequests && !_cacheLoaded) {
 		_cacheLoaded = YES;
 		[self modelsDidLoad:cachedObjects];
-		
 	}
 }
 

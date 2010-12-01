@@ -10,6 +10,8 @@
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
+#import "RKClient.h"
+#import "../Support/Support.h"
 
 @implementation RKRequest
 
@@ -115,29 +117,54 @@
 }
 
 - (void)send {
-	[self addHeadersToRequest];
-	NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-	NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-	[body release];
-	NSDate* sentAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
-	RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-	_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+	if ([[RKClient sharedClient] isNetworkAvailable]) {
+		[self addHeadersToRequest];
+		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
+		NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+		[body release];
+		NSDate* sentAt = [NSDate date];
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
+		
+		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
+		_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+	} else {
+		NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+								  errorMessage, NSLocalizedDescriptionKey,
+								  nil];
+		NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];		
+		RKResponse* response = [[[RKResponse alloc] initWithRequest:self error:error] autorelease];
+	}
 }
 
 - (RKResponse*)sendSynchronously {
-	[self addHeadersToRequest];
-	NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-	NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-	[body release];
-	NSDate* sentAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];	
 	NSURLResponse* URLResponse = nil;
 	NSError* error = nil;
-	NSData* payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
-	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+	NSData* payload = nil;
+	RKResponse* response = nil;
+	
+	if ([[RKClient sharedClient] isNetworkAvailable]) {
+		[self addHeadersToRequest];
+		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
+		NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+		[body release];
+		NSDate* sentAt = [NSDate date];
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
+		
+		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
+		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+	} else {
+		NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+								  errorMessage, NSLocalizedDescriptionKey,
+								  nil];
+		error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
+		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+	}
+	
+	return response;
 }
 
 - (void)cancel {

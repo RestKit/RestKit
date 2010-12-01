@@ -10,3 +10,4 @@
 #import "RKRequest.h"
 #import "RKResponse.h"
 #import "RKRequestSerializable.h"
+#import "RKReachabilityObserver.h"

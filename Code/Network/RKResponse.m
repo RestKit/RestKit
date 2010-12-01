@@ -32,6 +32,19 @@
 	return self;
 }
 
+- (id)initWithRequest:(RKRequest*)request error:(NSError*)error {
+	if (self = [self initWithRequest:request]) {
+		_failureError = [error retain];
+		[[_request delegate] performSelector:[_request callback] withObject:self];
+		
+		if ([[_request delegate] respondsToSelector:@selector(request:didFailLoadWithError:)]) {
+			[[_request delegate] request:_request didFailLoadWithError:error];
+		}
+	}
+	
+	return self;
+}
+
 - (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
 	if (self = [super init]) {
 		_request = [request retain];		
