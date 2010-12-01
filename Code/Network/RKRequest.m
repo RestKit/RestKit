@@ -7,6 +7,7 @@
 //
 
 #import "RKRequest.h"
+#import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
@@ -115,6 +116,10 @@
 }
 
 - (void)send {
+	[[RKRequestQueue sharedQueue] sendRequest:self];
+}
+
+- (void)fireAsynchronousRequest {
 	[self addHeadersToRequest];
 	NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
 	NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);

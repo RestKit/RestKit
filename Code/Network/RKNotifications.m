@@ -10,3 +10,4 @@
 
 NSString* const kRKRequestSentNotification = @"kRKRequestSentNotification";
 NSString* const kRKResponseReceivedNotification = @"kRKRespongReceivedNotification";
+NSString* const kRKRequestFailedWithErrorNotification = @"kRKRequestFailedWithErrorNotification";

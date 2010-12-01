@@ -61,11 +61,13 @@ typedef enum RKRequestMethod {
  * If the object implements the RKRequestDelegate protocol,
  * it will receive request lifecycle event messages.
  */
+// TODO: Should be RKRequestDelegate instead of id
 @property(nonatomic, assign) id delegate;
 
 /**
  * The selector to invoke when the request is completed
  */
+// TODO: Eliminate callback in favor of a delegate method (requestDidLoadResponse:) for simplicity
 @property(nonatomic, assign) SEL callback;
 
 /**
@@ -113,7 +115,8 @@ typedef enum RKRequestMethod {
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback;
 
 /**
- * Send the request asynchronously
+ * Send the request asynchronously. It will be added to the queue and
+ * dispatched as soon as possible.
  */
 - (void)send;
 
@@ -154,6 +157,7 @@ typedef enum RKRequestMethod {
  *
  * Modeled off of TTURLRequest
  */
+// TODO: Add a didLoadResponse: delegate method in place off callback
 @protocol RKRequestDelegate 
 @optional
 

@@ -18,3 +18,4 @@
  */
 extern NSString* const kRKRequestSentNotification;
 extern NSString* const kRKResponseReceivedNotification;
+extern NSString* const kRKRequestFailedWithErrorNotification;
