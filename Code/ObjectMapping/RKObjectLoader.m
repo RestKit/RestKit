@@ -13,24 +13,20 @@
 #import "Errors.h"
 #import "RKManagedObject.h"
 #import "RKURL.h"
-
-@interface RKObjectLoader (Private)
-- (void)loadObjectsFromResponse:(RKResponse*)response;
-@end
+#import "RKNotifications.h"
 
 @implementation RKObjectLoader
 
-@synthesize mapper = _mapper, objectLoaderDelegate = _objectLoaderDelegate, response = _response,
-			objectClass = _objectClass, targetObject = _targetObject, keyPath = _keyPath, managedObjectStore = _managedObjectStore;
+@synthesize mapper = _mapper, response = _response, objectClass = _objectClass, targetObject = _targetObject,
+			keyPath = _keyPath, managedObjectStore = _managedObjectStore;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	return [[[self alloc] initWithResourcePath:resourcePath mapper:mapper delegate:delegate] autorelease];
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	if (self = [self initWithURL:[[RKClient sharedClient] URLForResourcePath:resourcePath] delegate:self]) {
+	if (self = [self initWithURL:[[RKClient sharedClient] URLForResourcePath:resourcePath] delegate:delegate]) {
 		_mapper = [mapper retain];
-		self.objectLoaderDelegate = delegate;
 		self.managedObjectStore = nil;
 		_targetObjectID = nil;
 		
@@ -40,15 +36,17 @@
 }
 
 - (void)dealloc {
-	self.delegate = nil;
-	self.objectLoaderDelegate = nil;
-	[self cancel];
 	[_mapper release];
+	_mapper = nil;
 	[_response release];
+	_response = nil;
 	[_keyPath release];
-	self.managedObjectStore = nil;
+	_keyPath = nil;
+	[_targetObject release];
+	_targetObject = nil;
 	[_targetObjectID release];
-	_targetObjectID = nil;
+	_targetObjectID = nil;	
+	self.managedObjectStore = nil;
 	[super dealloc];
 }
 
@@ -68,16 +66,25 @@
 
 #pragma mark Response Processing
 
+- (void)responseProcessingComplete {
+	_isLoading = NO;
+	_isLoaded = YES;
+	
+	NSDate* receivedAt = [NSDate date];
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", receivedAt, @"receivedAt", nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:_response userInfo:userInfo];		
+}
+
 - (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
 	if ([response isFailure]) {
-		[_objectLoaderDelegate objectLoader:self didFailWithError:response.failureError];
+		[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:response.failureError];
 		return YES;
 	} else if ([response isError]) {
 		if ([response isJSON]) {
-			[_objectLoaderDelegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
+			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
 		} else {
-			if ([_objectLoaderDelegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
-				[_objectLoaderDelegate objectLoaderDidLoadUnexpectedResponse:self];
+			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
+				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}
 		}		
 		return YES;
@@ -101,7 +108,9 @@
 		}
 	}
 	
-	[_objectLoaderDelegate objectLoader:self didLoadObjects:[NSArray arrayWithArray:objects]];
+	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didLoadObjects:[NSArray arrayWithArray:objects]];
+	
+	[self responseProcessingComplete];
 }
 
 - (void)informDelegateOfObjectLoadErrorWithInfoDictionary:(NSDictionary*)dictionary {
@@ -115,7 +124,9 @@
 							  nil];		
 	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
 	
-	[_objectLoaderDelegate objectLoader:self didFailWithError:rkError];
+	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:rkError];
+	
+	[self responseProcessingComplete];
 }
 
 
@@ -190,19 +201,12 @@
 	[pool release];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// RKRequestDelegate
-//
-// If our delegate responds to the messages, forward them back...
-
-- (void)requestDidStartLoad:(RKRequest*)request {
-	if ([_objectLoaderDelegate respondsToSelector:@selector(requestDidStartLoad:)]) {
-		[_objectLoaderDelegate requestDidStartLoad:request];
-	}
-}
-
-- (void)requestDidFinishLoad:(RKRequest*)request withResponse:(RKResponse*)response {
+- (void)didFinishLoad:(RKResponse*)response {
 	_response = [response retain];
+	
+	if ([_delegate respondsToSelector:@selector(requestDidFinishLoad:withResponse:)]) {
+		[_delegate requestDidFinishLoad:self withResponse:response];
+	}
 	
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
 		// TODO: When other mapping formats are supported, unwind this assumption...
@@ -210,26 +214,13 @@
 			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 		} else {
 			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", response.statusCode, response.MIMEType);
-			if ([_objectLoaderDelegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
-				[_objectLoaderDelegate objectLoaderDidLoadUnexpectedResponse:self];
+			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
+				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}			
+			[self responseProcessingComplete];
 		}
-	}
-	
-	if ([_objectLoaderDelegate respondsToSelector:@selector(requestDidFinishLoad:)]) {
-		[(NSObject<RKRequestDelegate>*)_objectLoaderDelegate requestDidFinishLoad:request withResponse:response];
-	}
-}
-
-- (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error {
-	if ([_objectLoaderDelegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
-		[(NSObject<RKRequestDelegate>*)_objectLoaderDelegate request:request didFailLoadWithError:error];
-	}
-}
-
-- (void)request:(RKRequest*)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	if ([_objectLoaderDelegate respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
-		[(NSObject<RKRequestDelegate>*)_objectLoaderDelegate request:request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
+	} else {
+		[self responseProcessingComplete];
 	}
 }
 

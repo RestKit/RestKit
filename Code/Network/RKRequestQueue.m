@@ -76,12 +76,11 @@ static const NSInteger kMaxConcurrentLoads = 5;
 - (void)loadNextInQueue {
 	_queueTimer = nil;
 	
-	for (int i = _totalLoading;
-		 i < kMaxConcurrentLoads && i < _requests.count;
-		 ++i) {
-		RKRequest* request = [_requests objectAtIndex:i];
-		++_totalLoading;
-		[self dispatchRequest:request];
+	for (RKRequest* request in _requests) {
+		if (![request isLoading] && ![request isLoaded] && _totalLoading < kMaxConcurrentLoads) {
+			++_totalLoading;
+			[self dispatchRequest:request];
+		}
 	}
 	
 	if (_requests.count && !_suspended) {
@@ -106,27 +105,36 @@ static const NSInteger kMaxConcurrentLoads = 5;
 	[self loadNextInQueue];
 }
 
-- (void)cancelRequest:(RKRequest*)request {
-	if ([_requests containsObject:request]) {
+- (void)cancelRequest:(RKRequest*)request loadNext:(BOOL)loadNext {
+	if ([_requests containsObject:request] && ![request isLoaded]) {
 		[request cancel];
+		
 		NSLog(@"Request cancelled and removed: URL=%@", [request URL]);
+		
 		[_requests removeObject:request];
 		_totalLoading--;
-		[self loadNextInQueue];		
+		
+		if (loadNext) {
+			[self loadNextInQueue];
+		}
 	}
+}
+
+- (void)cancelRequest:(RKRequest*)request {
+	[self cancelRequest:request loadNext:YES];
 }
 
 - (void)cancelRequestsWithDelegate:(NSObject<RKRequestDelegate>*)delegate {
 	for (RKRequest* request in _requests) {
 		if (request.delegate && request.delegate == delegate) {
-			[request cancel];
+			[self cancelRequest:request];
 		}
 	}
 }
 
 - (void)cancelAllRequests {
 	for (RKRequest* request in [[[_requests copy] autorelease] objectEnumerator]) {
-		[request cancel];
+		[self cancelRequest:request loadNext:NO];
 	}
 }
 
@@ -137,9 +145,6 @@ static const NSInteger kMaxConcurrentLoads = 5;
 - (void)responseDidLoad:(NSNotification*)notification {
 	if (notification.object && [notification.object isKindOfClass:[RKResponse class]]) {
 		RKResponse* response = (RKResponse*)notification.object;
-		[_requests removeObject:[response request]];
-		_totalLoading--;
-		[self loadNextInQueue];
 		
 		NSError* error = (NSError*)[notification.userInfo objectForKey:@"error"];
 		if (error) {
@@ -147,6 +152,11 @@ static const NSInteger kMaxConcurrentLoads = 5;
 		} else {
 			NSLog(@"Request completed and removed: URL=%@", [[response request] URL]);
 		}
+		
+		[_requests removeObject:[response request]];
+		_totalLoading--;
+															  
+		[self loadNextInQueue];
 	}
 }
 

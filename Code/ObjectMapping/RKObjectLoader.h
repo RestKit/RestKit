@@ -40,9 +40,8 @@
 /**
  * Wraps a request/response cycle and loads a remote object representation into local domain objects
  */
-@interface RKObjectLoader : RKRequest <RKRequestDelegate> {
+@interface RKObjectLoader : RKRequest {
 	RKObjectMapper* _mapper;
-	NSObject<RKObjectLoaderDelegate>* _objectLoaderDelegate;	
 	RKResponse* _response;
 	NSObject<RKObjectMappable>* _targetObject;
 	Class<RKObjectMappable> _objectClass;
@@ -55,14 +54,6 @@
  * The resource mapper this loader is working with
  */
 @property (nonatomic, readonly) RKObjectMapper* mapper;
-
-/**
- * The object to be invoked with the loaded models
- *
- * If this object implements life-cycle methods from the RKRequestDelegate protocol, 
- * events from the request will be forwarded back.
- */
-@property (nonatomic, assign) NSObject<RKObjectLoaderDelegate>* objectLoaderDelegate;
 
 /**
  * The underlying response object for this loader

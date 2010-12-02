@@ -34,20 +34,11 @@
 	return self;
 }
 
-- (id)initWithRequest:(RKRequest*)request error:(NSError*)error {
-	if (self = [self initWithRequest:request]) {
-		_failureError = [error retain];	
-		if ([[_request delegate] respondsToSelector:@selector(request:didFailLoadWithError:)]) {
-			[[_request delegate] request:_request didFailLoadWithError:error];
-		}
-	}
-	
-	return self;
-}
-
 - (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
 	if (self = [super init]) {
-		_request = [request retain];		
+		// TODO: Does the lack of retain here cause problems with synchronous requests, since they
+		// are not being retained by the RKRequestQueue??
+		_request = request;
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
 		_body = [body retain];
@@ -94,25 +85,12 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-	if ([[_request delegate] respondsToSelector:@selector(requestDidFinishLoad:withResponse:)]) {
-		[[_request delegate] requestDidFinishLoad:_request withResponse:self];
-	}
-	
-	NSDate* receivedAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", [_request URL], @"URL", receivedAt, @"receivedAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:self userInfo:userInfo];
+	[_request didFinishLoad:self];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
-	if ([[_request delegate] respondsToSelector:@selector(request:didFailLoadWithError:)]) {
-		[[_request delegate] request:_request didFailLoadWithError:error];
-	}
-	
-	NSDate* receivedAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", 
-							  [_request URL], @"URL", receivedAt, @"receivedAt", error, @"error", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification object:_request userInfo:userInfo];
+	[_request didFailLoadWithError:_failureError];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {	

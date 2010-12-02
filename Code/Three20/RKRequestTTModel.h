@@ -15,13 +15,13 @@
  */
 @interface RKRequestTTModel : TTModel <RKObjectLoaderDelegate> {
 	NSArray *_objects;
-	BOOL _loaded;
+	BOOL _isLoaded;
+	BOOL _isLoading;
 	BOOL _cacheLoaded;
 
 	NSString* _resourcePath;
 	NSDictionary* _params;
 	RKRequestMethod _method;
-	RKObjectLoader* _objectLoader;
 	Class _objectClass;
 	NSString* _keyPath;
 
@@ -37,12 +37,6 @@
  * The resourcePath used to create this model
  */
 @property (nonatomic, readonly) NSString* resourcePath;
-
-/**
- * The RKObjectLoader, created when this model is loading data
- * from the resourcePath.
- */
-@property (nonatomic, readonly) RKObjectLoader* objectLoader;
 
 /**
  * The NSDate object representing the last time this model was loaded.

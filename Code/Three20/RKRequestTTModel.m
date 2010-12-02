@@ -31,7 +31,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 @synthesize objects = _objects;
 @synthesize resourcePath = _resourcePath;
 @synthesize params = _params;
-@synthesize objectLoader = _objectLoader;
 @synthesize method = _method;
 @synthesize refreshRate = _refreshRate;
 
@@ -97,18 +96,15 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		self.params = nil;
 		_cacheLoaded = NO;
 		_objects = nil;
-		_loaded = NO;
+		_isLoaded = NO;
+		_isLoading = NO;
 		_resourcePath = nil;
-		_objectLoader = nil;
 	}
 	return self;
 }
 
 - (void)dealloc {
-	[_objectLoader setObjectLoaderDelegate:nil];
-	[[RKRequestQueue sharedQueue] cancelRequest:_objectLoader];
-	[_objectLoader release];
-	_objectLoader = nil;
+	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
 	[_objects release];
 	_objects = nil;
 	[_objectClass release];
@@ -123,11 +119,11 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 // TTModel
 
 - (BOOL)isLoaded {
-	return _loaded;
+	return _isLoaded;
 }
 
 - (BOOL)isLoading {
-	return nil != _objectLoader;
+	return _isLoading;
 }
 
 - (BOOL)isLoadingMore {
@@ -139,9 +135,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)cancel {
-	[[RKRequestQueue sharedQueue] cancelRequest:_objectLoader];
-	[_objectLoader release];
-	_objectLoader = nil;
+	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
 	[self didCancelLoad];
 }
 
@@ -164,30 +158,24 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 
 #pragma mark RKModelLoaderDelegate
 
-// This callback is invoked after the request has been fully serviced. Finish the load here.
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
-	if (objectLoader == _objectLoader) {
-		[_objectLoader release];
-		_objectLoader = nil;
-		[self modelsDidLoad:objects];
-	}
+	_isLoading = NO;
+	[self modelsDidLoad:objects];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	if (objectLoader == _objectLoader) {
-		[_objectLoader release];
-		_objectLoader = nil;
-	}
+	_isLoading = NO;
+	[self didFailLoadWithError:error];
 	if ([self errorWarrantsOptionToGoOffline:error]) {
 		[self showAlertWithOptionToGoOfflineForError:error];
-	} else {
-		[self didFailLoadWithError:error];
 	}
 }
 
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
-	[objectLoader release];
-	_objectLoader = nil;
+	_isLoading = NO;
+	
+	// TODO: Passing a nil error here does nothing for Three20.  Need to construct our
+	// own error here to make Three20 happy??
 	[self didFailLoadWithError:nil];
 }
 
@@ -241,7 +229,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	_objects = nil;
 	
 	_objects = models;
-	_loaded = YES;
+	_isLoaded = YES;
 	
 	[self saveLoadedTime];
 	[self didFinishLoad];
@@ -260,14 +248,15 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	}
 	
 	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded || [cachedObjects count] == 0) {
-		_objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
-		_objectLoader.method = self.method;
-		_objectLoader.objectClass = _objectClass;
-		_objectLoader.keyPath = _keyPath;
-		_objectLoader.params = self.params;
+		RKObjectLoader* objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
+		objectLoader.method = self.method;
+		objectLoader.objectClass = _objectClass;
+		objectLoader.keyPath = _keyPath;
+		objectLoader.params = self.params;
 		
+		_isLoading = YES;
 		[self didStartLoad];
-		[_objectLoader send];
+		[objectLoader send];
 		
 	} else if (cacheFetchRequests && !_cacheLoaded) {
 		_cacheLoaded = YES;

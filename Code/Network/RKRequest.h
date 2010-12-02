@@ -35,6 +35,8 @@ typedef enum RKRequestMethod {
 	NSString* _username;
 	NSString* _password;
 	RKRequestMethod _method;
+	BOOL _isLoading;
+	BOOL _isLoaded;
 }
 
 /**
@@ -124,6 +126,18 @@ typedef enum RKRequestMethod {
 - (RKResponse*)sendSynchronously;
 
 /**
+ * Callback performed to notify the request that the underlying NSURLConnection
+ * has failed with an error.
+ */
+- (void)didFailLoadWithError:(NSError*)error;
+
+/**
+ * Callback performed to notify the request that the underlying NSURLConnection
+ * has completed with a response.
+ */
+- (void)didFinishLoad:(RKResponse*)response;
+
+/**
  * Cancels the underlying URL connection
  */
 - (void)cancel;
@@ -147,6 +161,16 @@ typedef enum RKRequestMethod {
  * Returns YES when this is a DELETE request
  */
 - (BOOL)isDELETE;
+
+/**
+ * Returns YES when this request is in-progress
+ */
+- (BOOL)isLoading;
+
+/**
+ * Returns YES when this request has been completed
+ */
+- (BOOL)isLoaded;
 
 @end
 
