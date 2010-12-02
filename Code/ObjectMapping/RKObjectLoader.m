@@ -66,27 +66,52 @@
 
 #pragma mark Response Processing
 
-- (void)responseProcessingComplete {
+- (void)responseProcessingSuccessful:(BOOL)successful withError:(NSError*)error {
 	_isLoading = NO;
-	_isLoaded = YES;
 	
 	NSDate* receivedAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", receivedAt, @"receivedAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:_response userInfo:userInfo];		
+	if (successful) {
+		_isLoaded = YES;		
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod",
+								  [self URL], @"URL",
+								  receivedAt, @"receivedAt",
+								  nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification
+															object:_response
+														  userInfo:userInfo];
+	} else {
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", 
+								  [self URL], @"URL",
+								  receivedAt, @"receivedAt",
+								  error, @"error",
+								  nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification
+															object:self
+														  userInfo:userInfo];
+	}
 }
 
 - (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
 	if ([response isFailure]) {
 		[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:response.failureError];
+		
+		[self responseProcessingSuccessful:NO withError:response.failureError];
+		
 		return YES;
 	} else if ([response isError]) {
+		NSError* error = nil;
+		
 		if ([response isJSON]) {
-			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:[_mapper parseErrorFromString:[response bodyAsString]]];
+			error = [_mapper parseErrorFromString:[response bodyAsString]];
+			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 		} else {
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}
-		}		
+		}
+		
+		[self responseProcessingSuccessful:NO withError:error];
+		
 		return YES;
 	}
 	return NO;
@@ -110,7 +135,7 @@
 	
 	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didLoadObjects:[NSArray arrayWithArray:objects]];
 	
-	[self responseProcessingComplete];
+	[self responseProcessingSuccessful:YES withError:nil];
 }
 
 - (void)informDelegateOfObjectLoadErrorWithInfoDictionary:(NSDictionary*)dictionary {
@@ -126,7 +151,7 @@
 	
 	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:rkError];
 	
-	[self responseProcessingComplete];
+	[self responseProcessingSuccessful:NO withError:rkError];
 }
 
 
@@ -201,6 +226,16 @@
 	[pool release];
 }
 
+- (void)didFailLoadWithError:(NSError*)error {
+	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
+		[_delegate request:self didFailLoadWithError:error];
+	}
+	
+	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+	
+	[self responseProcessingSuccessful:NO withError:error];
+}
+
 - (void)didFinishLoad:(RKResponse*)response {
 	_response = [response retain];
 	
@@ -217,10 +252,8 @@
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}			
-			[self responseProcessingComplete];
+			[self responseProcessingSuccessful:NO withError:nil];
 		}
-	} else {
-		[self responseProcessingComplete];
 	}
 }
 

@@ -143,18 +143,26 @@ static const NSInteger kMaxConcurrentLoads = 5;
  * the completed request from the queue and continue processing
  */
 - (void)responseDidLoad:(NSNotification*)notification {
-	if (notification.object && [notification.object isKindOfClass:[RKResponse class]]) {
-		RKResponse* response = (RKResponse*)notification.object;
-		
-		NSError* error = (NSError*)[notification.userInfo objectForKey:@"error"];
-		if (error) {
-			NSLog(@"Request failed and removed: URL=%@, error=%@", [[response request] URL], error);
-		} else {
+	if (notification.object) {
+		// Our RKRequest completed and we're notified with an RKResponse object
+		if ([notification.object isKindOfClass:[RKResponse class]]) {
+			RKResponse* response = (RKResponse*)notification.object;
+			
 			NSLog(@"Request completed and removed: URL=%@", [[response request] URL]);
+			
+			[_requests removeObject:[response request]];
+			_totalLoading--;
+			
+		// Our RKRequest failed and we're notified with the original RKRequest object
+		} else if ([notification.object isKindOfClass:[RKRequest class]]) {
+			RKRequest* request = (RKRequest*)notification.object;
+			
+			NSError* error = (NSError*)[notification.userInfo objectForKey:@"error"];
+			NSLog(@"Request failed and removed: URL=%@, error=%@", [request URL], error);
+			
+			[_requests removeObject:request];
+			_totalLoading--;
 		}
-		
-		[_requests removeObject:[response request]];
-		_totalLoading--;
 															  
 		[self loadNextInQueue];
 	}
