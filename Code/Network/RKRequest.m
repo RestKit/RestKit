@@ -7,19 +7,21 @@
 //
 
 #import "RKRequest.h"
+#import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
 #import "RKClient.h"
 #import "../Support/Support.h"
+#import "RKURL.h"
 
 @implementation RKRequest
 
-@synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, callback = _callback, additionalHTTPHeaders = _additionalHTTPHeaders,
+@synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
 			params = _params, userData = _userData, username = _username, password = _password, method = _method;
 
-+ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:URL delegate:delegate callback:callback];
++ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
+	RKRequest* request = [[RKRequest alloc] initWithURL:URL delegate:delegate];
 	[request autorelease];
 	
 	return request;
@@ -35,10 +37,9 @@
 	return self;
 }
 
-- (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
+- (id)initWithURL:(NSURL*)URL delegate:(id)delegate {
 	if (self = [self initWithURL:URL]) {
 		_delegate = delegate;
-		_callback = callback;		
 	}
 	
 	return self;
@@ -117,6 +118,10 @@
 }
 
 - (void)send {
+	[[RKRequestQueue sharedQueue] sendRequest:self];
+}
+
+- (void)fireAsynchronousRequest {
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
 		[self addHeadersToRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
@@ -171,9 +176,6 @@
 	[_connection cancel];
 	[_connection release];
 	_connection = nil;
-	if ([_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
-		[_delegate requestDidCancelLoad:self];
-	}
 }
 
 - (BOOL)isGET {
@@ -190,6 +192,15 @@
 
 - (BOOL)isDELETE {
 	return _method == RKRequestMethodDELETE;
+}
+
+- (NSString*)resourcePath {
+	NSString* resourcePath = nil;
+	if ([self.URL isKindOfClass:[RKURL class]]) {
+		RKURL* url = (RKURL*)self.URL;
+		resourcePath = url.resourcePath;
+	}
+	return resourcePath;
 }
 
 @end

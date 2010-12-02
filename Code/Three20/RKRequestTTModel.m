@@ -8,6 +8,7 @@
 
 #import "RKRequestTTModel.h"
 #import "RKManagedObjectStore.h"
+#import "../Network/Network.h"
 
 static NSTimeInterval defaultRefreshRate = NSTimeIntervalSince1970;
 static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTimeKey";
@@ -104,8 +105,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)dealloc {
-	[_objectLoader setDelegate:nil];
-	[self cancel];
+	[_objectLoader setObjectLoaderDelegate:nil];
+	[[RKRequestQueue sharedQueue] cancelRequest:_objectLoader];
 	[_objectLoader release];
 	_objectLoader = nil;
 	[_objects release];
@@ -138,9 +139,10 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)cancel {
-	if (_objectLoader && _objectLoader.request) {
-		[_objectLoader.request cancel];
-	}
+	[[RKRequestQueue sharedQueue] cancelRequest:_objectLoader];
+	[_objectLoader release];
+	_objectLoader = nil;
+	[self didCancelLoad];
 }
 
 - (void)invalidate:(BOOL)erase {
@@ -187,22 +189,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	[objectLoader release];
 	_objectLoader = nil;
 	[self didFailLoadWithError:nil];
-}
-
-
-#pragma mark RKRequestDelegate
-
-- (void)requestDidFinishLoad:(RKRequest*)request {
-	[self saveLoadedTime];
-	[self didFinishLoad];
-}
-
-- (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error {
-	[self didFailLoadWithError:error];
-}
-
-- (void)requestDidCancelLoad:(RKRequest*)request {
-	[self didCancelLoad];
 }
 
 
@@ -257,6 +243,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	_objects = models;
 	_loaded = YES;
 	
+	[self saveLoadedTime];
 	[self didFinishLoad];
 }
 

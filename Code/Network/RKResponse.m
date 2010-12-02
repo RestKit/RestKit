@@ -26,7 +26,9 @@
 
 - (id)initWithRequest:(RKRequest*)request {
 	if (self = [self init]) {
-		_request = [request retain];
+		// We don't retain here as we're letting RKRequestQueue manage
+		// request ownership
+		_request = request;
 	}
 	
 	return self;
@@ -34,9 +36,7 @@
 
 - (id)initWithRequest:(RKRequest*)request error:(NSError*)error {
 	if (self = [self initWithRequest:request]) {
-		_failureError = [error retain];
-		[[_request delegate] performSelector:[_request callback] withObject:self];
-		
+		_failureError = [error retain];	
 		if ([[_request delegate] respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 			[[_request delegate] request:_request didFailLoadWithError:error];
 		}
@@ -60,13 +60,12 @@
 - (void)dealloc {
 	[_httpURLResponse release];
 	[_body release];
-	[_request release];
 	[_failureError release];
 	[super dealloc];
 }
 
 // Handle basic auth
--(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     if ([challenge previousFailureCount] == 0) {
         NSURLCredential *newCredential;
         newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
@@ -94,25 +93,26 @@
 	_httpURLResponse = [response retain];
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {	
-	NSDate* receivedAt = [NSDate date]; // TODO - Carry around this timestamp on the response or request?
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", [_request URL], @"URL", receivedAt, @"receivedAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:self userInfo:userInfo];	
-	
-	[[_request delegate] performSelector:[_request callback] withObject:self];
-	
-	if ([[_request delegate] respondsToSelector:@selector(requestDidFinishLoad:)]) {
-		[[_request delegate] requestDidFinishLoad:_request];
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+	if ([[_request delegate] respondsToSelector:@selector(requestDidFinishLoad:withResponse:)]) {
+		[[_request delegate] requestDidFinishLoad:_request withResponse:self];
 	}
+	
+	NSDate* receivedAt = [NSDate date];
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", [_request URL], @"URL", receivedAt, @"receivedAt", nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:self userInfo:userInfo];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
-	[[_request delegate] performSelector:[_request callback] withObject:self];
-	
 	if ([[_request delegate] respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 		[[_request delegate] request:_request didFailLoadWithError:error];
 	}
+	
+	NSDate* receivedAt = [NSDate date];
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", 
+							  [_request URL], @"URL", receivedAt, @"receivedAt", error, @"error", nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification object:_request userInfo:userInfo];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {	
@@ -120,7 +120,6 @@
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 	}
 }
-
 
 - (NSString*)localizedStatusCodeString {
 	return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];

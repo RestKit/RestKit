@@ -22,6 +22,7 @@ typedef enum RKRequestMethod {
 } RKRequestMethod;
 
 @class RKResponse;
+@protocol RKRequestDelegate;
 
 @interface RKRequest : NSObject {
 	NSURL* _URL;
@@ -29,8 +30,7 @@ typedef enum RKRequestMethod {
 	NSURLConnection* _connection;
 	NSDictionary* _additionalHTTPHeaders;
 	NSObject<RKRequestSerializable>* _params;
-	id _delegate;
-	SEL _callback;
+	NSObject<RKRequestDelegate>* _delegate;
 	id _userData;
 	NSString* _username;
 	NSString* _password;
@@ -41,6 +41,11 @@ typedef enum RKRequestMethod {
  * The URL this request is loading
  */
 @property(nonatomic, readonly) NSURL* URL;
+
+/**
+ * The resourcePath portion of this loader's URL
+ */
+@property (nonatomic, readonly) NSString* resourcePath;
 
 /**
  * The HTTP verb the request is sent via
@@ -61,12 +66,7 @@ typedef enum RKRequestMethod {
  * If the object implements the RKRequestDelegate protocol,
  * it will receive request lifecycle event messages.
  */
-@property(nonatomic, assign) id delegate;
-
-/**
- * The selector to invoke when the request is completed
- */
-@property(nonatomic, assign) SEL callback;
+@property(nonatomic, assign) NSObject<RKRequestDelegate>* delegate;
 
 /**
  * A Dictionary of additional HTTP Headers to send with the request
@@ -100,7 +100,7 @@ typedef enum RKRequestMethod {
 /**
  * Return a REST request that is ready for dispatching
  */
-+ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback;
++ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate;
 
 /**
  * Initialize a synchronous request
@@ -110,10 +110,11 @@ typedef enum RKRequestMethod {
 /**
  * Initialize a REST request and prepare it for dispatching
  */
-- (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback;
+- (id)initWithURL:(NSURL*)URL delegate:(id)delegate;
 
 /**
- * Send the request asynchronously
+ * Send the request asynchronously. It will be added to the queue and
+ * dispatched as soon as possible.
  */
 - (void)send;
 
@@ -154,18 +155,13 @@ typedef enum RKRequestMethod {
  *
  * Modeled off of TTURLRequest
  */
-@protocol RKRequestDelegate 
+@protocol RKRequestDelegate
 @optional
-
-/**
- * Sent when a request has started loading
- */
-- (void)requestDidStartLoad:(RKRequest*)request;
 
 /**
  * Sent when a request has finished loading
  */
-- (void)requestDidFinishLoad:(RKRequest*)request;
+- (void)requestDidFinishLoad:(RKRequest*)request withResponse:(RKResponse*)response;
 
 /**
  * Sent when a request has failed due to an error
@@ -173,9 +169,9 @@ typedef enum RKRequestMethod {
 - (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error;
 
 /**
- * Sent when a request has been canceled
+ * Sent when a request has started loading
  */
-- (void)requestDidCancelLoad:(RKRequest*)request;
+- (void)requestDidStartLoad:(RKRequest*)request;
 
 /**
  * Sent when a request has uploaded data to the remote site

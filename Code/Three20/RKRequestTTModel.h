@@ -13,7 +13,7 @@
  * Generic class for loading a remote model using a RestKit request and supplying the model to a 
  * TTListDataSource subclass
  */
-@interface RKRequestTTModel : TTModel <RKObjectLoaderDelegate, RKRequestDelegate> {
+@interface RKRequestTTModel : TTModel <RKObjectLoaderDelegate> {
 	NSArray *_objects;
 	BOOL _loaded;
 	BOOL _cacheLoaded;

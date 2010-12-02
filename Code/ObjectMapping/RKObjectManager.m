@@ -138,9 +138,7 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	// Grab request through client to get HTTP AUTH & Headers
-	RKRequest* request = [self.client requestWithResourcePath:resourcePath delegate:nil callback:nil];
-	RKObjectLoader* loader = [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
+	RKObjectLoader* loader = [RKObjectLoader loaderWithResourcePath:resourcePath mapper:self.mapper delegate:delegate];
 	loader.managedObjectStore = self.objectStore;
 	
 	return loader;
@@ -205,7 +203,7 @@ static RKObjectManager* sharedManager = nil;
 	
 	loader.method = method;
 	loader.params = params;
-	loader.source = object;
+	loader.targetObject = object;
 	loader.objectClass = [object class];
 	loader.managedObjectStore = self.objectStore;
 	
