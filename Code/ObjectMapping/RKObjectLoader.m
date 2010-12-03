@@ -105,6 +105,8 @@
 			error = [_mapper parseErrorFromString:[response bodyAsString]];
 			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 		} else {
+			// TODO: We've likely run into a maintenance page here.  Consider adding the ability
+			// to put the stack into offline mode in response...
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}
@@ -153,7 +155,6 @@
 	
 	[self responseProcessingSuccessful:NO withError:rkError];
 }
-
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];	
@@ -205,7 +206,7 @@
 	NSError* error = [objectStore save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
-		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];		
+		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];		
 	} else {
 		// NOTE: Passing Core Data objects across threads is not safe. 
 		// Iterate over each model and coerce Core Data objects into ID's to pass across the threads.
@@ -220,10 +221,10 @@
 		}		
 		
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", models, @"models", nil] retain];
-		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:NO];
+		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
 	}
 
-	[pool release];
+	[pool drain];
 }
 
 - (void)didFailLoadWithError:(NSError*)error {

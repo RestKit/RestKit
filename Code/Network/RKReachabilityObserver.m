@@ -14,7 +14,7 @@ NSString* const RKReachabilityStateChangedNotification = @"RKReachabilityStateCh
 static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* info) {
 #pragma unused (target, flags)
 	// We're on the main RunLoop, so an NSAutoreleasePool is not necessary, but is added defensively
-	// in case someon uses the Reachablity object in a different thread.
+	// in case someone uses the Reachablity object in a different thread.
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	
 	RKReachabilityObserver* observer = (RKReachabilityObserver*) info;

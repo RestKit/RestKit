@@ -104,9 +104,12 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)dealloc {
+	NSLog(@"RKRequestTTModel:dealloc %@", _resourcePath);
 	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
 	[_objects release];
 	_objects = nil;
+	[_resourcePath release];
+	_resourcePath = nil;
 	[_objectClass release];
 	_objectClass = nil;
 	[_keyPath release];
