@@ -163,8 +163,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
 	_isLoading = NO;
-	[self modelsDidLoad:objects];
 	[self saveLoadedTime];
+	[self modelsDidLoad:objects];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
