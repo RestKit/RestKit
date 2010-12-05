@@ -52,20 +52,6 @@
 	[super dealloc];
 }
 
-// Handle basic auth
--(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    if ([challenge previousFailureCount] == 0) {
-        NSURLCredential *newCredential;
-        newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                 password:[NSString stringWithFormat:@"%@", _request.password]
-                                              persistence:NSURLCredentialPersistenceNone];
-        [[challenge sender] useCredential:newCredential
-               forAuthenticationChallenge:challenge];
-    } else {
-        [[challenge sender] cancelAuthenticationChallenge:challenge];
-    }
-}
-
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	if (NO == _loading) {
 		_loading = YES;

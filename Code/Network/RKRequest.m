@@ -70,7 +70,18 @@
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
-	}	
+	}
+    if (_username != nil) {
+        // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
+        CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
+        CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password, kCFHTTPAuthenticationSchemeBasic, FALSE);
+        CFStringRef authorizationString = CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
+        
+        [_URLRequest setValue:(NSString *)authorizationString forHTTPHeaderField:@"Authorization"];
+        
+        CFRelease(dummyRequest);
+        CFRelease(authorizationString);
+    }
 	NSLog(@"Headers: %@", [_URLRequest allHTTPHeaderFields]);
 }
 
