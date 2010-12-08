@@ -240,8 +240,8 @@
 - (void)didFinishLoad:(RKResponse*)response {
 	_response = [response retain];
 	
-	if ([_delegate respondsToSelector:@selector(requestDidFinishLoad:withResponse:)]) {
-		[_delegate requestDidFinishLoad:self withResponse:response];
+	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
+		[_delegate request:self didLoadResponse:response];
 	}
 	
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {

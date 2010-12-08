@@ -7,6 +7,7 @@
 //
 
 #import "RKReachabilityObserver.h"
+#import <UIKit/UIKit.h>
 
 // Constants
 NSString* const RKReachabilityStateChangedNotification = @"RKReachabilityStateChangedNotification";
@@ -44,7 +45,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	if (nil != reachabilityRef) {
 		observer = [[[self alloc] initWithReachabilityRef:reachabilityRef] autorelease];
 	}
-	
 	return observer;
 }
 
@@ -52,17 +52,25 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	if (self = [self init]) {
 		_reachabilityRef = reachabilityRef;
 		[self scheduleObserver];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(scheduleObserver)
+													 name:UIApplicationDidBecomeActiveNotification
+												   object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(unscheduleObserver)
+													 name:UIApplicationWillResignActiveNotification
+												   object:nil];
 	}
-	
 	return self;
 }
 
 - (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[self unscheduleObserver];
 	if (_reachabilityRef) {
 		CFRelease(_reachabilityRef);
 	}
-	
 	[super dealloc];
 }
 
@@ -101,7 +109,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 			status = RKReachabilityReachableViaWWAN;
 		}
 	}
-	
 	return status;	
 }
 
@@ -115,7 +122,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	if (SCNetworkReachabilityGetFlags(_reachabilityRef, &flags)) {
 		return (flags & kSCNetworkReachabilityFlagsConnectionRequired);
 	}
-	
 	return NO;
 }
 

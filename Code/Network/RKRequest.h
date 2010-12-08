@@ -185,7 +185,7 @@ typedef enum RKRequestMethod {
 /**
  * Sent when a request has finished loading
  */
-- (void)requestDidFinishLoad:(RKRequest*)request withResponse:(RKResponse*)response;
+- (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response;
 
 /**
  * Sent when a request has failed due to an error

@@ -32,7 +32,7 @@ static RKObjectManager* sharedManager = nil;
 		_router = [[RKDynamicRouter alloc] init];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
 		self.format = RKMappingFormatJSON;
-		_isOnline = YES;
+		_onlineState = RKObjectManagerOnlineStateUndetermined;
 		_onlineStateForced = NO;
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)
@@ -86,19 +86,19 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (void)goOffline {
-	_isOnline = NO;
+	_onlineState = RKObjectManagerOnlineStateDisconnected;
 	_onlineStateForced = YES;
 	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
 }
 
 - (void)goOnline {
-	_isOnline = YES;
+	_onlineState = RKObjectManagerOnlineStateConnected;
 	_onlineStateForced = YES;
 	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
 }
 
 - (BOOL)isOnline {
-	return _isOnline;
+	return (_onlineState == RKObjectManagerOnlineStateConnected);
 }
 
 - (BOOL)isOffline {
@@ -108,14 +108,14 @@ static RKObjectManager* sharedManager = nil;
 - (void)reachabilityChanged:(NSNotification*)notification {	
 	if (!_onlineStateForced) {
 		BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-		BOOL isOnline = _isOnline;
+		BOOL onlineState = _onlineState;
 		
-		_isOnline = isHostReachable;
+		_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
 		
-		if (isOnline && !isHostReachable) {
+		if ((onlineState == RKObjectManagerOnlineStateConnected || onlineState == RKObjectManagerOnlineStateUndetermined) && !isHostReachable) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
 			
-		} else if (!isOnline && isHostReachable) {
+		} else if ((onlineState == RKObjectManagerOnlineStateDisconnected || onlineState == RKObjectManagerOnlineStateUndetermined) && isHostReachable) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
 		}
 	}

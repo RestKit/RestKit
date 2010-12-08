@@ -207,8 +207,8 @@
 	_isLoading = NO;
 	_isLoaded = YES;
 	
-	if ([_delegate respondsToSelector:@selector(requestDidFinishLoad:withResponse:)]) {
-		[_delegate requestDidFinishLoad:self withResponse:response];
+	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
+		[_delegate request:self didLoadResponse:response];
 	}
 	
 	NSDate* receivedAt = [NSDate date];

@@ -100,10 +100,6 @@ static const NSInteger kMaxConcurrentLoads = 5;
 
 - (void)sendRequest:(RKRequest*)request {
 	[_requests addObject:request];
-	
-	NSLog(@"Request added: URL=%@, request=%@, delegate=%@",
-		  [request URL], request, [request delegate]);
-	
 	[self loadNextInQueue];
 }
 
@@ -111,9 +107,6 @@ static const NSInteger kMaxConcurrentLoads = 5;
 	if ([_requests containsObject:request] && ![request isLoaded]) {
 		[request cancel];
 		request.delegate = nil;
-		
-		NSLog(@"Request cancelled and removed: URL=%@, request=%@, delegate=%@",
-			  [request URL], request, [request delegate]);
 		
 		[_requests removeObject:request];
 		_totalLoading--;
@@ -153,21 +146,12 @@ static const NSInteger kMaxConcurrentLoads = 5;
 		// Our RKRequest completed and we're notified with an RKResponse object
 		if ([notification.object isKindOfClass:[RKResponse class]]) {
 			RKRequest* request = [(RKResponse*)notification.object request];
-			
-			NSLog(@"Request completed and removed: URL=%@, request=%@, delegate=%@",
-				  [request URL], request, [request delegate]);
-			
 			[_requests removeObject:request];
 			_totalLoading--;
 			
 		// Our RKRequest failed and we're notified with the original RKRequest object
 		} else if ([notification.object isKindOfClass:[RKRequest class]]) {
 			RKRequest* request = (RKRequest*)notification.object;
-			
-			NSError* error = (NSError*)[notification.userInfo objectForKey:@"error"];
-			NSLog(@"Request failed and removed: URL=%@, error=%@, request=%@, delegate=%@",
-				  [request URL], error, request, [request delegate]);
-			
 			[_requests removeObject:request];
 			_totalLoading--;
 		}

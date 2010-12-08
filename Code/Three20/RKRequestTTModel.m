@@ -170,9 +170,9 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
 	_isLoading = NO;
 	[self didFailLoadWithError:error];
-	if ([self errorWarrantsOptionToGoOffline:error]) {
-		[self showAlertWithOptionToGoOfflineForError:error];
-	}
+//	if ([self errorWarrantsOptionToGoOffline:error]) {
+//		[self showAlertWithOptionToGoOfflineForError:error];
+//	}
 }
 
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
