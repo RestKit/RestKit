@@ -21,6 +21,7 @@
 		self.sortDescriptors = nil;
 		self.searchEngine = nil;
 		_searchText = nil;
+		_filteredObjects = nil;
 	}
 	return self;
 }
@@ -67,10 +68,14 @@
 	[_searchText release];
 	_searchText = nil;
 	_searchText = [text retain];
+	
+	[_filteredObjects release];
+	_filteredObjects = nil;
+	
 	[self didFinishLoad];
 }
 
-- (NSArray*)objects {
+- (void)filterRawObjects {
 	NSArray* results = _objects;
 	if (results && [results count] > 0) {
 		if (self.predicate) {
@@ -86,8 +91,58 @@
 		} else if (self.sortDescriptors) {
 			results = [results sortedArrayUsingDescriptors:self.sortDescriptors];
 		}
+		
+		_filteredObjects = [results retain];
+	} else {
+		_filteredObjects = [results copy];
 	}
-	return results;
+}
+
+- (NSArray*)objects {
+	if (nil == _filteredObjects) {
+		[self filterRawObjects];
+	}
+	return _filteredObjects;
+}
+
+- (void)modelsDidLoad:(NSArray*)models {
+	[models retain];
+	[_objects release];
+	_objects = nil;
+	[_filteredObjects release];
+	_filteredObjects = nil;
+	
+	_objects = models;
+	[self filterRawObjects];
+	_isLoaded = YES;
+	
+	[self didFinishLoad];
+}
+
+- (void)setPredicate:(NSPredicate*)predicate {
+	[_predicate release];
+	_predicate = nil;
+	_predicate = [predicate retain];
+	
+	[_filteredObjects release];
+	_filteredObjects = nil;
+}
+
+- (void)setSortDescriptors:(NSArray*)sortDescriptors {
+	[_sortDescriptors release];
+	_sortDescriptors = nil;
+	_sortDescriptors = [sortDescriptors retain];
+	
+	[_filteredObjects release];
+	_filteredObjects = nil;
+}
+
+- (void)setSortSelector:(SEL)sortSelector {
+	_sortSelector = nil;
+	_sortSelector = sortSelector;
+	
+	[_filteredObjects release];
+	_filteredObjects = nil;
 }
 
 @end

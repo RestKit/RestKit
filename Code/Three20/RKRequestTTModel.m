@@ -104,7 +104,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)dealloc {
-	NSLog(@"RKRequestTTModel:dealloc %@", _resourcePath);
 	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
 	[_objects release];
 	_objects = nil;
@@ -250,7 +249,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
 	}
 	
-	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded || [cachedObjects count] == 0) {
+	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded ||
+		([cachedObjects count] == 0 && [[RKObjectManager sharedManager] isOnline])) {
 		RKObjectLoader* objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
 		objectLoader.method = self.method;
 		objectLoader.objectClass = _objectClass;

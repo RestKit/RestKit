@@ -19,6 +19,7 @@
 	NSArray* _sortDescriptors;
 	NSString* _searchText;
 	SEL _sortSelector;
+	NSArray* _filteredObjects;
 }
 
 /**
