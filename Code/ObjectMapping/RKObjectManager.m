@@ -108,15 +108,13 @@ static RKObjectManager* sharedManager = nil;
 - (void)reachabilityChanged:(NSNotification*)notification {	
 	if (!_onlineStateForced) {
 		BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-		BOOL onlineState = _onlineState;
 		
 		_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
 		
-		if ((onlineState == RKObjectManagerOnlineStateConnected || onlineState == RKObjectManagerOnlineStateUndetermined) && !isHostReachable) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
-			
-		} else if ((onlineState == RKObjectManagerOnlineStateDisconnected || onlineState == RKObjectManagerOnlineStateUndetermined) && isHostReachable) {
+		if (isHostReachable) {
 			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
+		} else {
+			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
 		}
 	}
 }
