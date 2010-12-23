@@ -7,20 +7,21 @@
 //
 
 #import "RKRequest.h"
+#import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
+#import "RKClient.h"
+#import "../Support/Support.h"
+#import "RKURL.h"
 
 @implementation RKRequest
 
-@synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, callback = _callback, additionalHTTPHeaders = _additionalHTTPHeaders,
+@synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
 			params = _params, userData = _userData, username = _username, password = _password, method = _method;
 
-+ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:URL delegate:delegate callback:callback];
-	[request autorelease];
-	
-	return request;
++ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
+	return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
 }
 
 - (id)initWithURL:(NSURL*)URL {
@@ -28,30 +29,38 @@
 		_URL = [URL retain];
 		_URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
 		_connection = nil;
+		_isLoading = NO;
+		_isLoaded = NO;
 	}
-	
 	return self;
 }
 
-- (id)initWithURL:(NSURL*)URL delegate:(id)delegate callback:(SEL)callback {
+- (id)initWithURL:(NSURL*)URL delegate:(id)delegate {
 	if (self = [self initWithURL:URL]) {
 		_delegate = delegate;
-		_callback = callback;		
 	}
-	
 	return self;
 }
 
 - (void)dealloc {
+	self.delegate = nil;
 	[_connection cancel];
 	[_connection release];
+	_connection = nil;
 	[_userData release];
+	_userData = nil;
 	[_URL release];
+	_URL = nil;
 	[_URLRequest release];
+	_URLRequest = nil;
 	[_params release];
+	_params = nil;
 	[_additionalHTTPHeaders release];
+	_additionalHTTPHeaders = nil;
 	[_username release];
+	_username = nil;
 	[_password release];
+	_password = nil;
 	[super dealloc];
 }
 
@@ -126,38 +135,96 @@
 }
 
 - (void)send {
-	[self addHeadersToRequest];
-	NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-	NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-	[body release];
-	NSDate* sentAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
-	RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-	_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+	[[RKRequestQueue sharedQueue] sendRequest:self];
+}
+
+- (void)fireAsynchronousRequest {
+	if ([[RKClient sharedClient] isNetworkAvailable]) {
+		[self addHeadersToRequest];
+		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
+		NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+		[body release];
+		NSDate* sentAt = [NSDate date];
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
+		
+		_isLoading = YES;
+		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
+		_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+	} else {
+		NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+								  errorMessage, NSLocalizedDescriptionKey,
+								  nil];
+		NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];		
+		[self didFailLoadWithError:error];
+	}
 }
 
 - (RKResponse*)sendSynchronously {
-	[self addHeadersToRequest];
-	NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-	NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-	[body release];
-	NSDate* sentAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];	
 	NSURLResponse* URLResponse = nil;
 	NSError* error = nil;
-	NSData* payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
-	return [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+	NSData* payload = nil;
+	RKResponse* response = nil;
+	
+	if ([[RKClient sharedClient] isNetworkAvailable]) {
+		[self addHeadersToRequest];
+		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
+		NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+		[body release];
+		NSDate* sentAt = [NSDate date];
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
+		
+		_isLoading = YES;
+		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
+		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+	} else {
+		NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+								  errorMessage, NSLocalizedDescriptionKey,
+								  nil];
+		error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
+		[self didFailLoadWithError:error];
+		
+		// TODO: Is this needed here?  Or can we just return a nil response and everyone will be happy??
+		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+	}
+	
+	return response;
 }
 
 - (void)cancel {
 	[_connection cancel];
 	[_connection release];
 	_connection = nil;
-	if ([_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
-		[_delegate requestDidCancelLoad:self];
+	_isLoading = NO;
+}
+
+- (void)didFailLoadWithError:(NSError*)error {
+	_isLoading = NO;
+	
+	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
+		[_delegate request:self didFailLoadWithError:error];
 	}
+	
+	NSDate* receivedAt = [NSDate date];
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", 
+							  [self URL], @"URL", receivedAt, @"receivedAt", error, @"error", nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification object:self userInfo:userInfo];	
+}
+
+- (void)didFinishLoad:(RKResponse*)response {
+	_isLoading = NO;
+	_isLoaded = YES;
+	
+	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
+		[_delegate request:self didLoadResponse:response];
+	}
+	
+	NSDate* receivedAt = [NSDate date];
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", receivedAt, @"receivedAt", nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:response userInfo:userInfo];	
 }
 
 - (BOOL)isGET {
@@ -174,6 +241,23 @@
 
 - (BOOL)isDELETE {
 	return _method == RKRequestMethodDELETE;
+}
+
+- (BOOL)isLoading {
+	return _isLoading;
+}
+
+- (BOOL)isLoaded {
+	return _isLoaded;
+}
+
+- (NSString*)resourcePath {
+	NSString* resourcePath = nil;
+	if ([self.URL isKindOfClass:[RKURL class]]) {
+		RKURL* url = (RKURL*)self.URL;
+		resourcePath = url.resourcePath;
+	}
+	return resourcePath;
 }
 
 @end

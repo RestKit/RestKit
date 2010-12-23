@@ -17,9 +17,4 @@
  */
 + (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
 
-/**
- * Returns the key for an object within the dictionary
- */
-- (id)keyForObject:(id)object;
-
 @end

@@ -24,6 +24,7 @@ static RKClient* sharedClient = nil;
 @synthesize username = _username;
 @synthesize password = _password;
 @synthesize HTTPHeaders = _HTTPHeaders;
+@synthesize baseURLReachabilityObserver = _baseURLReachabilityObserver;
 
 + (RKClient*)sharedClient {
 	return sharedClient;
@@ -80,20 +81,13 @@ static RKClient* sharedClient = nil;
 }
 
 - (BOOL)isNetworkAvailable {
-	Boolean success;    
-	
-	const char *host_name = "google.com"; // your data source host name
-	
-	SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(NULL, host_name);
-#ifdef TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-	SCNetworkReachabilityFlags flags;
-#else
-	SCNetworkConnectionFlags flags;
-#endif
-	success = SCNetworkReachabilityGetFlags(reachability, &flags);
-	BOOL isNetworkAvailable = success && (flags & kSCNetworkFlagsReachable) && !(flags & kSCNetworkFlagsConnectionRequired);
-	CFRelease(reachability);
-	
+	BOOL isNetworkAvailable = NO;
+	if (self.baseURLReachabilityObserver) {
+		isNetworkAvailable = [self.baseURLReachabilityObserver isNetworkReachable];
+	} else {
+		RKReachabilityObserver* googleObserver = [RKReachabilityObserver reachabilityObserverWithHostName:@"google.com"];
+		isNetworkAvailable = [googleObserver isNetworkReachable];
+	}
 	return isNetworkAvailable;
 }
 
@@ -119,8 +113,18 @@ static RKClient* sharedClient = nil;
 	[_HTTPHeaders setValue:value forKey:header];
 }
 
-- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
+- (void)setBaseURL:(NSString*)baseURL {
+	[_baseURL release];
+	_baseURL = nil;
+	_baseURL = [baseURL retain];
+	
+	[_baseURLReachabilityObserver release];
+	_baseURLReachabilityObserver = nil;
+	_baseURLReachabilityObserver = [[RKReachabilityObserver reachabilityObserverWithHostName:baseURL] retain];
+}
+
+- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {
+	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate];
 	[self setupRequest:request];
 	[request autorelease];
 	
@@ -131,8 +135,8 @@ static RKClient* sharedClient = nil;
 // Asynchronous Requests
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate callback:callback];
+- (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate {
+	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate];
 	[self setupRequest:request];
 	[request autorelease];
 	request.params = params;
@@ -142,25 +146,25 @@ static RKClient* sharedClient = nil;
 	return request;
 }
 
-- (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
-	return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate callback:callback];
+- (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate {
+	return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
 }
 
-- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate callback:(SEL)callback {
+- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate {
 	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
-	return [self load:resourcePathWithQueryString method:RKRequestMethodGET params:nil delegate:delegate callback:callback];
+	return [self load:resourcePathWithQueryString method:RKRequestMethodGET params:nil delegate:delegate];
 }
 
-- (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
-	return [self load:resourcePath method:RKRequestMethodPOST params:params delegate:delegate callback:callback];
+- (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate {
+	return [self load:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
 }
 
-- (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback {
-	return [self load:resourcePath method:RKRequestMethodPUT params:params delegate:delegate callback:callback];
+- (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate {
+	return [self load:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
 }
 
-- (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback {
-	return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate callback:callback];
+- (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate {
+	return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate];
 }
 
 @end

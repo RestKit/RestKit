@@ -26,7 +26,9 @@
 
 - (id)initWithRequest:(RKRequest*)request {
 	if (self = [self init]) {
-		_request = [request retain];
+		// We don't retain here as we're letting RKRequestQueue manage
+		// request ownership
+		_request = request;
 	}
 	
 	return self;
@@ -34,7 +36,9 @@
 
 - (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
 	if (self = [super init]) {
-		_request = [request retain];		
+		// TODO: Does the lack of retain here cause problems with synchronous requests, since they
+		// are not being retained by the RKRequestQueue??
+		_request = request;
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
 		_body = [body retain];
@@ -47,9 +51,22 @@
 - (void)dealloc {
 	[_httpURLResponse release];
 	[_body release];
-	[_request release];
 	[_failureError release];
 	[super dealloc];
+}
+
+// Handle basic auth
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    if ([challenge previousFailureCount] == 0) {
+        NSURLCredential *newCredential;
+        newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+                                                 password:[NSString stringWithFormat:@"%@", _request.password]
+                                              persistence:NSURLCredentialPersistenceNone];
+        [[challenge sender] useCredential:newCredential
+               forAuthenticationChallenge:challenge];
+    } else {
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
@@ -67,25 +84,13 @@
 	_httpURLResponse = [response retain];
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {	
-	NSDate* receivedAt = [NSDate date]; // TODO - Carry around this timestamp on the response or request?
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[_request HTTPMethod], @"HTTPMethod", [_request URL], @"URL", receivedAt, @"receivedAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:self userInfo:userInfo];	
-	
-	[[_request delegate] performSelector:[_request callback] withObject:self];
-	
-	if ([[_request delegate] respondsToSelector:@selector(requestDidFinishLoad:)]) {
-		[[_request delegate] requestDidFinishLoad:_request];
-	}
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+	[_request didFinishLoad:self];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
-	[[_request delegate] performSelector:[_request callback] withObject:self];
-	
-	if ([[_request delegate] respondsToSelector:@selector(request:didFailLoadWithError:)]) {
-		[[_request delegate] request:_request didFailLoadWithError:error];
-	}
+	[_request didFailLoadWithError:_failureError];
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {	
@@ -93,7 +98,6 @@
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 	}
 }
-
 
 - (NSString*)localizedStatusCodeString {
 	return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];

@@ -32,7 +32,12 @@ static RKObjectManager* sharedManager = nil;
 		_router = [[RKDynamicRouter alloc] init];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
 		self.format = RKMappingFormatJSON;
-		_isOnline = YES;		
+		_onlineState = RKObjectManagerOnlineStateUndetermined;
+		_onlineStateForced = NO;
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(reachabilityChanged:)
+													 name:RKReachabilityStateChangedNotification
+												   object:nil];
 	}
 	return self;
 }
@@ -68,6 +73,7 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[_mapper release];
 	_mapper = nil;
 	[_router release];
@@ -80,21 +86,37 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (void)goOffline {
-	_isOnline = NO;
+	_onlineState = RKObjectManagerOnlineStateDisconnected;
+	_onlineStateForced = YES;
 	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
 }
 
 - (void)goOnline {
-	_isOnline = YES;
+	_onlineState = RKObjectManagerOnlineStateConnected;
+	_onlineStateForced = YES;
 	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
 }
 
 - (BOOL)isOnline {
-	return _isOnline;
+	return (_onlineState == RKObjectManagerOnlineStateConnected);
 }
 
 - (BOOL)isOffline {
 	return ![self isOnline];
+}
+
+- (void)reachabilityChanged:(NSNotification*)notification {	
+	if (!_onlineStateForced) {
+		BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
+		
+		_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
+		
+		if (isHostReachable) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
+		} else {
+			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
+		}
+	}
 }
 
 - (void)setFormat:(RKMappingFormat)format {
@@ -114,13 +136,7 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	if ([self isOffline]) {
-		return nil;
-	}
-	
-	// Grab request through client to get HTTP AUTH & Headers
-	RKRequest* request = [self.client requestWithResourcePath:resourcePath delegate:nil callback:nil];
-	RKObjectLoader* loader = [RKObjectLoader loaderWithMapper:self.mapper request:request delegate:delegate];
+	RKObjectLoader* loader = [RKObjectLoader loaderWithResourcePath:resourcePath mapper:self.mapper delegate:delegate];
 	loader.managedObjectStore = self.objectStore;
 	
 	return loader;
@@ -185,7 +201,7 @@ static RKObjectManager* sharedManager = nil;
 	
 	loader.method = method;
 	loader.params = params;
-	loader.source = object;
+	loader.targetObject = object;
 	loader.objectClass = [object class];
 	loader.managedObjectStore = self.objectStore;
 	

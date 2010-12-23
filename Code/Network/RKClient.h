@@ -10,6 +10,7 @@
 #import "RKParams.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
+#import "RKReachabilityObserver.h"
 
 /**
  * RKClient exposes the low level client interface for working
@@ -21,6 +22,7 @@
 	NSString* _username;
 	NSString* _password;
 	NSMutableDictionary* _HTTPHeaders;
+	RKReachabilityObserver* _baseURLReachabilityObserver;
 }
 
 /**
@@ -42,6 +44,12 @@
  * A dictionary of headers to be sent with each request
  */
 @property(nonatomic, readonly) NSDictionary* HTTPHeaders;
+
+/**
+ * The RKReachabilityObserver used to monitor whether or not the client has a connection
+ * path to the baseURL
+ */
+@property(nonatomic, readonly) RKReachabilityObserver* baseURLReachabilityObserver;
 
 /**
  * Return the configured singleton instance of the Rest client
@@ -95,11 +103,13 @@
  */
 - (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams;
 
+- (void)setupRequest:(RKRequest*)request;
+
 /**
  * Return a request object targetted at a resource path relative to the base URL. By default the method is set to GET
  * All headers set on the client will automatically be applied to the request as well.
  */
-- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Asynchronous Helper Methods
@@ -112,31 +122,31 @@
  */
 
 /**
- * Fetch a resource via an HTTP GET and invoke a callback with the result
+ * Fetch a resource via an HTTP GET
  */
-- (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate;
 
 /**
- * Fetch a resource via an HTTP GET with a dictionary of params and invoke a callback with the resulting payload
+ * Fetch a resource via an HTTP GET with a dictionary of params
  *
  * Note that this request _only_ allows NSDictionary objects as the params. The dictionary will be coerced into a URL encoded
  * string and then appended to the resourcePath as the query string of the request.
  */
-- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate;
 
 /**
- * Create a resource via an HTTP POST with a set of form parameters and invoke a callback with the resulting payload
+ * Create a resource via an HTTP POST with a set of form parameters
  */
-- (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate;
 
 /**
- * Update a resource via an HTTP PUT and invoke a callback with the resulting payload
+ * Update a resource via an HTTP PUT
  */
-- (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate;
 
 /**
- * Destroy a resource via an HTTP DELETE and invoke a callback with the resulting payload
+ * Destroy a resource via an HTTP DELETE
  */
-- (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate callback:(SEL)callback;
+- (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate;
 
 @end

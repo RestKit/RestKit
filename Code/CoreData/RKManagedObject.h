@@ -88,7 +88,7 @@
 + (id)object;
 
 /**
- * The name of an object mapped property existing on this classs representing the unique primary key. 
+ * The name of an object mapped property existing on this class representing the unique primary key. 
  * Must be implemented by the subclass for the mapper to be able to uniquely identify objects.
  */
 + (NSString*)primaryKeyProperty;

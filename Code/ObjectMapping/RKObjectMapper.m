@@ -104,7 +104,13 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	}
 	
 	NSLog(@"Began parse...");
-	id result = [parser objectFromString:string];
+	id result = nil;
+	@try {
+		result = [parser objectFromString:string];
+	}
+	@catch (NSException* e) {
+		NSLog(@"[RestKit] RKObjectMapper:parseString: Exception (%@) parsing error from string: %@", [e reason], string);
+	}
 	NSLog(@"Finished parse...");
 	return result;
 }
@@ -165,23 +171,25 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 // TODO: Should accept RKObjectMappable instead of id...
 - (void)mapObject:(id)model fromDictionary:(NSDictionary*)dictionary {
 	Class class = [model class];
-	NSString* elementName = [_elementToClassMappings keyForObject:class];
-	if (elementName) {
-		// Extract elements nested in dictionary
-		if ([[dictionary allKeys] containsObject:elementName]) {
-			NSDictionary* elements = [dictionary objectForKey:elementName];
-			[self updateModel:model fromElements:elements];
-		} else {
-			// If the dictionary is not namespaced, attempt mapping its properties directly...
-			[self updateModel:model fromElements:dictionary];
-		}
-	} else {
+	
+	NSArray* elementNames = [_elementToClassMappings allKeysForObject:class];
+	if ([elementNames count] == 0) {
 		if ([model conformsToProtocol:@protocol(RKObjectMappable)]) {
 			[self updateModel:model fromElements:dictionary];
 		} else {
 			[NSException raise:@"Unable to map from requested dictionary"
 						format:@"There was no mappable element found for objects of type %@", class];
-		}		
+		}
+	} else {
+		for (NSString* elementName in elementNames) {
+			if ([[dictionary allKeys] containsObject:elementName]) {
+				NSDictionary* elements = [dictionary objectForKey:elementName];
+				[self updateModel:model fromElements:elements];
+				return;
+			}
+		}
+		// If the dictionary is not namespaced, attempt mapping its properties directly...
+		[self updateModel:model fromElements:dictionary];
 	}
 }
 

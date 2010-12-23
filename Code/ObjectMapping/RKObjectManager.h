@@ -15,6 +15,12 @@
 extern NSString* const RKDidEnterOfflineModeNotification;
 extern NSString* const RKDidEnterOnlineModeNotification;
 
+typedef enum {
+	RKObjectManagerOnlineStateUndetermined,
+	RKObjectManagerOnlineStateDisconnected,
+	RKObjectManagerOnlineStateConnected
+} RKObjectManagerOnlineState;
+
 // TODO: Factor out into a protocol...
 // insertObject:, deleteObject:, save, etc.
 @class RKManagedObjectStore;
@@ -24,8 +30,9 @@ extern NSString* const RKDidEnterOnlineModeNotification;
 	RKMappingFormat _format;
 	RKObjectMapper* _mapper;
 	NSObject<RKRouter>* _router;
-	RKManagedObjectStore* _objectStore;		
-	BOOL _isOnline;
+	RKManagedObjectStore* _objectStore;	
+	RKObjectManagerOnlineState _onlineState;
+	BOOL _onlineStateForced;
 }
 
 /**

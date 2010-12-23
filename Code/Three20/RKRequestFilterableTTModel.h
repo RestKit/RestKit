@@ -19,6 +19,7 @@
 	NSArray* _sortDescriptors;
 	NSString* _searchText;
 	SEL _sortSelector;
+	NSArray* _filteredObjects;
 }
 
 /**
@@ -62,6 +63,6 @@
 /**
  * Search the model for matching text
  */
-- (void)search:(NSString *)text;
+- (void)search:(NSString*)text;
 
 @end

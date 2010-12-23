@@ -6,6 +6,5 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKRequestModel.h"
 #import "RKRequestTTModel.h"
 #import "RKRequestFilterableTTModel.h"

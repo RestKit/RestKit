@@ -17,27 +17,29 @@
 
 - (id)init {
 	if (self = [super init]) {
-		_predicate = nil;
-		_sortDescriptors = nil;
+		self.predicate = nil;
+		self.sortDescriptors = nil;
+		self.searchEngine = nil;
 		_searchText = nil;
-		_searchEngine = nil;
+		_filteredObjects = nil;
 	}
-	
 	return self;
 }
 
 - (void)dealloc {
-	[_searchEngine release];_searchEngine=nil;
-	[_predicate release];_predicate=nil;
-	[_sortDescriptors release];_sortDescriptors=nil;
-	[_searchText release];_searchText=nil;
+	self.predicate = nil;
+	self.sortDescriptors = nil;
+	self.searchEngine = nil;
+	[_searchText release];
+	_searchText = nil;
 	[super dealloc];
 }
 
 - (void)reset {
-	[_predicate release];_predicate=nil;
-	[_sortDescriptors release];_sortDescriptors=nil;
-	[_searchText release];_searchText=nil;
+	self.predicate = nil;
+	self.sortDescriptors = nil;
+	[_searchText release];
+	_searchText = nil;
 	[self didChange];
 }
 
@@ -53,7 +55,7 @@
 	return _searchEngine;
 }
 
-- (NSArray*)search:(NSString *)text inCollection:(NSArray*)collection {
+- (NSArray*)search:(NSString*)text inCollection:(NSArray*)collection {
 	if (text.length) {
 		RKSearchEngine* searchEngine = [self createSearchEngine];
 		return [searchEngine searchFor:text inCollection:collection];
@@ -62,32 +64,85 @@
 	}
 }
 
-// public
-
-- (void)search:(NSString *)text {
+- (void)search:(NSString*)text {
 	[_searchText release];
+	_searchText = nil;
 	_searchText = [text retain];
+	
+	[_filteredObjects release];
+	_filteredObjects = nil;
+	
 	[self didFinishLoad];
 }
 
-// Overloaded to hide filtering/searching from the underlying data source
+- (void)filterRawObjects {
+	NSArray* results = _objects;
+	if (results && [results count] > 0) {
+		if (self.predicate) {
+			results = [results filteredArrayUsingPredicate:self.predicate];
+		}
+		
+		if (_searchText) {
+			results = [self search:_searchText inCollection:results];
+		}
+		
+		if (self.sortSelector) {
+			results = [results sortedArrayUsingSelector:self.sortSelector];
+		} else if (self.sortDescriptors) {
+			results = [results sortedArrayUsingDescriptors:self.sortDescriptors];
+		}
+		
+		_filteredObjects = [results retain];
+	} else {
+		_filteredObjects = [results copy];
+	}
+}
+
 - (NSArray*)objects {
-	NSArray* results = _model.objects;
-	if (self.predicate) {
-		results = [results filteredArrayUsingPredicate:self.predicate];
+	if (nil == _filteredObjects) {
+		[self filterRawObjects];
 	}
+	return _filteredObjects;
+}
+
+- (void)modelsDidLoad:(NSArray*)models {
+	[models retain];
+	[_objects release];
+	_objects = nil;
+	[_filteredObjects release];
+	_filteredObjects = nil;
 	
-	if (_searchText) {
-		results = [self search:_searchText inCollection:results];
-	}
+	_objects = models;
+	[self filterRawObjects];
+	_isLoaded = YES;
 	
-	if (self.sortSelector) {
-		results = [results sortedArrayUsingSelector:self.sortSelector];
-	} else if (self.sortDescriptors) {
-		results = [results sortedArrayUsingDescriptors:self.sortDescriptors];
-	}
+	[self didFinishLoad];
+}
+
+- (void)setPredicate:(NSPredicate*)predicate {
+	[_predicate release];
+	_predicate = nil;
+	_predicate = [predicate retain];
 	
-	return results;
+	[_filteredObjects release];
+	_filteredObjects = nil;
+}
+
+- (void)setSortDescriptors:(NSArray*)sortDescriptors {
+	[_sortDescriptors release];
+	_sortDescriptors = nil;
+	_sortDescriptors = [sortDescriptors retain];
+	
+	[_filteredObjects release];
+	_filteredObjects = nil;
+}
+
+- (void)setSortSelector:(SEL)sortSelector {
+	_sortSelector = nil;
+	_sortSelector = sortSelector;
+	
+	[_filteredObjects release];
+	_filteredObjects = nil;
 }
 
 @end

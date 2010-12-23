@@ -7,56 +7,81 @@
 //
 
 #import "RKRequestTTModel.h"
+#import "RKManagedObjectStore.h"
+#import "../Network/Network.h"
+
+static NSTimeInterval defaultRefreshRate = NSTimeIntervalSince1970;
+static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTimeKey";
+
+@interface RKRequestTTModel (Private)
+
+- (void)clearLoadedTime;
+- (void)saveLoadedTime;
+- (BOOL)errorWarrantsOptionToGoOffline:(NSError*)error;
+- (void)showAlertWithOptionToGoOfflineForError:(NSError*)error;
+- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
+- (void)modelsDidLoad:(NSArray*)models;
+- (void)load;
+
+@end
+
 
 @implementation RKRequestTTModel
 
-@synthesize model = _model;
+@synthesize objects = _objects;
+@synthesize resourcePath = _resourcePath;
+@synthesize params = _params;
+@synthesize method = _method;
+@synthesize refreshRate = _refreshRate;
+
++ (NSDate*)defaultLoadedTime {
+	NSDate* defaultLoadedTime = [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultLoadedTimeKey];
+	if (defaultLoadedTime == nil) {
+		defaultLoadedTime = [NSDate date];
+		[[NSUserDefaults standardUserDefaults] setObject:defaultLoadedTime forKey:kDefaultLoadedTimeKey];
+	}
+	return defaultLoadedTime;
+}
+
++ (NSTimeInterval)defaultRefreshRate {
+	return defaultRefreshRate;
+}
+
++ (void)setDefaultRefreshRate:(NSTimeInterval)newDefaultRefreshRate {
+	defaultRefreshRate = defaultRefreshRate;
+}
 
 - (id)initWithResourcePath:(NSString*)resourcePath {
 	if (self = [self init]) {
-		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath delegate:self];
+		_resourcePath = [resourcePath retain];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params {
-	if (self = [self init]) {
-		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params delegate:self];
-	}
+	if (self = [self initWithResourcePath:resourcePath]) {
+		self.params = [params retain];
+	}	
 	return self;
 }
 
-- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass{
-	if (self = [self init]) {
-		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params objectClass:klass delegate:self];
+- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass {
+	if (self = [self initWithResourcePath:resourcePath params:params]) {
+		_objectClass = [klass retain];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath {
-	if (self = [self init]) {
-		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params objectClass:klass keyPath:keyPath delegate:self];
+	if (self = [self initWithResourcePath:resourcePath params:params objectClass:klass]) {
+		_keyPath = [keyPath retain];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method {
-	if (self = [self init]) {
-		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params method:method delegate:self];
-	}
-	return self;
-}
-
-- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass {
-	if (self = [self init]) {
-		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params method:method objectClass:klass delegate:self];
-	}
-	return self;
-}
-
-- (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method objectClass:(Class)klass keyPath:(NSString*)keyPath {
-	if (self = [self init]) {
-		_model = [[RKRequestModel alloc] initWithResourcePath:resourcePath params:params method:method objectClass:klass keyPath:keyPath delegate:self];
+	if (self = [self initWithResourcePath:resourcePath params:params]) {
+		_method = method;
 	}
 	return self;
 }
@@ -66,14 +91,29 @@
 
 - (id)init {
 	if (self = [super init]) {
-		_model = nil;
+		self.method = RKRequestMethodGET;
+		self.refreshRate = [RKRequestTTModel defaultRefreshRate];
+		self.params = nil;
+		_cacheLoaded = NO;
+		_objects = nil;
+		_isLoaded = NO;
+		_isLoading = NO;
+		_resourcePath = nil;
 	}
 	return self;
 }
 
 - (void)dealloc {
-	[_model release];
-	_model = nil;
+	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
+	[_objects release];
+	_objects = nil;
+	[_resourcePath release];
+	_resourcePath = nil;
+	[_objectClass release];
+	_objectClass = nil;
+	[_keyPath release];
+	_keyPath = nil;
+	self.params = nil;
 	[super dealloc];
 }
 
@@ -81,11 +121,11 @@
 // TTModel
 
 - (BOOL)isLoaded {
-	return _model.loaded;
+	return _isLoaded;
 }
 
 - (BOOL)isLoading {
-	return nil != _model.objectLoader;
+	return _isLoading;
 }
 
 - (BOOL)isLoadingMore {
@@ -93,52 +133,138 @@
 }
 
 - (BOOL)isOutdated {
-	return NO;
+	return (![self isLoading] && (-[self.loadedTime timeIntervalSinceNow] > _refreshRate));
 }
 
 - (void)cancel {
-	if (_model && _model.objectLoader.request) {
-		[_model.objectLoader.request cancel];
-	}
+	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
+	[self didCancelLoad];
 }
 
 - (void)invalidate:(BOOL)erase {
 	// TODO: Note sure how to handle erase...
-	[_model clearLoadedTime];
-}
-
-- (void)reset {
-	[_model reset];
+	[self clearLoadedTime];
 }
 
 - (void)load:(TTURLRequestCachePolicy)cachePolicy more:(BOOL)more {
-	[_model load];
+	[self load];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// RKRequestModelDelegate
-
-- (void)rkModelDidStartLoad {
-	[self didStartLoad];
+- (NSDate*)loadedTime {
+	NSDate* loadedTime = [[NSUserDefaults standardUserDefaults] objectForKey:_resourcePath];
+	if (loadedTime == nil) {
+		return [RKRequestTTModel defaultLoadedTime];
+	}
+	return loadedTime;
 }
 
-- (void)rkModelDidFailLoadWithError:(NSError*)error {
+#pragma mark RKModelLoaderDelegate
+
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
+	_isLoading = NO;
+	[self saveLoadedTime];
+	[self modelsDidLoad:objects];
+}
+
+- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
+	_isLoading = NO;
 	[self didFailLoadWithError:error];
+//	if ([self errorWarrantsOptionToGoOffline:error]) {
+//		[self showAlertWithOptionToGoOfflineForError:error];
+//	}
 }
 
-- (void)rkModelDidCancelLoad {
-	[self didCancelLoad];
+- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
+	_isLoading = NO;
+	
+	// TODO: Passing a nil error here does nothing for Three20.  Need to construct our
+	// own error here to make Three20 happy??
+	[self didFailLoadWithError:nil];
 }
 
-- (void)rkModelDidLoad {
+
+#pragma mark RKRequestTTModel (Private)
+
+- (void)clearLoadedTime {
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:_resourcePath];
+}
+
+- (void)saveLoadedTime {
+	[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:_resourcePath];
+}
+
+- (BOOL)errorWarrantsOptionToGoOffline:(NSError*)error {
+	switch ([error code]) {
+		case NSURLErrorTimedOut:
+		case NSURLErrorCannotFindHost:
+		case NSURLErrorCannotConnectToHost:
+		case NSURLErrorNetworkConnectionLost:
+		case NSURLErrorDNSLookupFailed:
+		case NSURLErrorNotConnectedToInternet:
+		case NSURLErrorInternationalRoamingOff:
+			return YES;
+			break;
+		default:
+			return NO;
+			break;
+	}
+}
+
+- (void)showAlertWithOptionToGoOfflineForError:(NSError*)error {
+	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:TTLocalizedString(@"Network Error", @"")
+													 message:[error localizedDescription]
+													delegate:self
+										   cancelButtonTitle:TTLocalizedString(@"OK", @"")
+										   otherButtonTitles:TTLocalizedString(@"Go Offline", @""), nil] autorelease];
+	[alert show];
+}
+
+- (void)alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
+	// Go Offline button
+	if (1 == buttonIndex) {
+		[[RKObjectManager sharedManager] goOffline];
+	}
+}
+
+- (void)modelsDidLoad:(NSArray*)models {
+	[models retain];
+	[_objects release];
+	_objects = nil;
+	
+	_objects = models;
+	_isLoaded = YES;
+	
 	[self didFinishLoad];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // public
 
-- (NSArray*)objects {
-	return _model.objects;
+- (void)load {		
+	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
+	NSArray* cacheFetchRequests = nil;
+	NSArray* cachedObjects = nil;
+	if (store.managedObjectCache) {
+		cacheFetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
+		cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
+	}
+	
+	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded ||
+		([cachedObjects count] == 0 && [[RKObjectManager sharedManager] isOnline])) {
+		RKObjectLoader* objectLoader = [[[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self] retain];
+		objectLoader.method = self.method;
+		objectLoader.objectClass = _objectClass;
+		objectLoader.keyPath = _keyPath;
+		objectLoader.params = self.params;
+		
+		_isLoading = YES;
+		[self didStartLoad];
+		[objectLoader send];
+		
+	} else if (cacheFetchRequests && !_cacheLoaded) {
+		_cacheLoaded = YES;
+		[self modelsDidLoad:cachedObjects];
+	}
 }
 
 @end
