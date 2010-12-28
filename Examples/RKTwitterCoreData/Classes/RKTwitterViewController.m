@@ -57,8 +57,7 @@
 
 - (void)reloadButtonWasPressed:(id)sender {
 	// Load the object model via RestKit
-	// Retain the object loader that is returned so that it is not dealloc'd after the request is sent.
-	RKObjectManager* objectManager = [RKObjectManager globalManager];
+	RKObjectManager* objectManager = [RKObjectManager sharedManager];
 	[[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters.json" objectClass:[RKTStatus class] delegate:self] retain];
 }
 
@@ -70,14 +69,12 @@
 	NSLog(@"Loaded statuses: %@", objects);
 	[self loadObjectsFromDataStore];
 	[_tableView reloadData];
-	[objectLoader release];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
 	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
 	[alert show];
 	NSLog(@"Hit error: %@", error);
-	[objectLoader release];
 }
 
 #pragma mark UITableViewDelegate methods
