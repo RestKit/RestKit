@@ -93,7 +93,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 25956956126DF0A8004BAC4C /* RestKit */;
+			remoteGlobalIDString = 25956956126DF0A8004BAC4C;
 			remoteInfo = RestKit;
 		};
 /* End PBXContainerItemProxy section */
@@ -434,7 +434,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -448,7 +448,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
