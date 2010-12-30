@@ -40,7 +40,8 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 + (RKReachabilityObserver*)reachabilityObserverWithHostName:(NSString*)hostName {
 	RKReachabilityObserver* observer = nil;
-	SCNetworkReachabilityRef reachabilityRef = SCNetworkReachabilityCreateWithName(NULL, [hostName UTF8String]);
+	NSURL* url = [NSURL URLWithString:hostName];
+	SCNetworkReachabilityRef reachabilityRef = SCNetworkReachabilityCreateWithName(NULL, [[url host] UTF8String]);
 	
 	if (nil != reachabilityRef) {
 		observer = [[[self alloc] initWithReachabilityRef:reachabilityRef] autorelease];
