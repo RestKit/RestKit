@@ -52,7 +52,7 @@ static RKClient* sharedClient = nil;
 	if (sharedClient == nil) {
 		[RKClient setSharedClient:client];
 	}
-	
+
 	return client;
 }
 
@@ -60,7 +60,7 @@ static RKClient* sharedClient = nil;
 	RKClient* client = [RKClient clientWithBaseURL:baseURL];
 	client.username = username;
 	client.password = password;
-	
+
 	return client;
 }
 
@@ -68,7 +68,7 @@ static RKClient* sharedClient = nil;
 	if (self = [super init]) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
 	}
-	
+
 	return self;
 }
 
@@ -117,7 +117,7 @@ static RKClient* sharedClient = nil;
 	[_baseURL release];
 	_baseURL = nil;
 	_baseURL = [baseURL retain];
-	
+
 	[_baseURLReachabilityObserver release];
 	_baseURLReachabilityObserver = nil;
 	NSURL* URL = [NSURL URLWithString:baseURL];
@@ -128,7 +128,7 @@ static RKClient* sharedClient = nil;
 	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate];
 	[self setupRequest:request];
 	[request autorelease];
-	
+
 	return request;
 }
 
@@ -140,10 +140,10 @@ static RKClient* sharedClient = nil;
 	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate];
 	[self setupRequest:request];
 	[request autorelease];
-	request.params = params;
 	request.method = method;
+	request.params = params;
 	[request send];
-	
+
 	return request;
 }
 
