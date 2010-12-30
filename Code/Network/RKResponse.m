@@ -20,7 +20,7 @@
 		_failureError = nil;
 		_loading = NO;
 	}
-	
+
 	return self;
 }
 
@@ -30,7 +30,7 @@
 		// request ownership
 		_request = request;
 	}
-	
+
 	return self;
 }
 
@@ -44,7 +44,7 @@
 		_body = [body retain];
 		_loading = NO;
 	}
-	
+
 	return self;
 }
 
@@ -76,8 +76,8 @@
 			[[_request delegate] requestDidStartLoad:_request];
 		}
 	}
-	
-	[_body appendData:data];		
+
+	[_body appendData:data];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
@@ -93,7 +93,7 @@
 	[_request didFailLoadWithError:_failureError];
 }
 
-- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {	
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 	}
@@ -115,7 +115,7 @@
 	if ([self isFailure]) {
 		return [_failureError localizedDescription];
 	} else {
-		return nil;				
+		return nil;
 	}
 }
 
@@ -173,6 +173,10 @@
 
 - (BOOL)isCreated {
 	return ([self statusCode] == 201);
+}
+
+- (BOOL)isUnauthorized {
+	return ([self statusCode] == 401);
 }
 
 - (BOOL)isForbidden {

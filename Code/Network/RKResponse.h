@@ -134,6 +134,11 @@
 - (BOOL)isCreated;
 
 /**
+ * Indicates an HTTP response code of 401
+ */
+- (BOOL)isUnauthorized;
+
+/**
  * Indicates an HTTP response code of 403
  */
 - (BOOL)isForbidden;
