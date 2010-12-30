@@ -120,7 +120,8 @@ static RKClient* sharedClient = nil;
 	
 	[_baseURLReachabilityObserver release];
 	_baseURLReachabilityObserver = nil;
-	_baseURLReachabilityObserver = [[RKReachabilityObserver reachabilityObserverWithHostName:baseURL] retain];
+	NSURL* URL = [NSURL URLWithString:baseURL];
+	_baseURLReachabilityObserver = [[RKReachabilityObserver reachabilityObserverWithHostName:[URL host]] retain];
 }
 
 - (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {
