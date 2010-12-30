@@ -135,6 +135,10 @@
 	return [_httpURLResponse allHeaderFields];
 }
 
+- (NSArray*)cookies {
+	return [NSHTTPCookie cookiesWithResponseHeaderFields:self.allHeaderFields forURL:self.URL];
+}
+
 - (BOOL)isFailure {
 	return (nil != _failureError);
 }

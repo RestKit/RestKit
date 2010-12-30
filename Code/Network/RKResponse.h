@@ -53,6 +53,11 @@
 @property(nonatomic, readonly) NSError* failureError;
 
 /**
+ * An NSArray of NSHTTPCookie objects associated with the response
+ */
+@property(nonatomic, readonly) NSArray* cookies;
+
+/**
  * Initialize a new response object for a REST request
  */
 - (id)initWithRequest:(RKRequest*)request;
