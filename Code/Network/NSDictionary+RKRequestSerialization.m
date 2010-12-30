@@ -16,7 +16,12 @@ static NSString *toString(id object) {
 // private helper function to convert string to UTF-8 and URL encode it
 static NSString *urlEncode(id object) {
 	NSString *string = toString(object);
-	return [string stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
+	NSString *encodedString = (NSString*)CFURLCreateStringByAddingPercentEscapes(NULL,
+																				 (CFStringRef)string,
+																				 NULL,
+																				 (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+																				 kCFStringEncodingUTF8);
+	return [encodedString autorelease];
 }
 
 
@@ -28,17 +33,17 @@ static NSString *urlEncode(id object) {
 		id value = [self objectForKey:key];
 		if ([value isKindOfClass:[NSArray class]]) {
 			for (id item in value) {
-				NSString *part = [NSString stringWithFormat: @"%@[]=%@", 
+				NSString *part = [NSString stringWithFormat: @"%@[]=%@",
 								  urlEncode(key), urlEncode(item)];
 				[parts addObject:part];
 			}
 		} else {
-			NSString *part = [NSString stringWithFormat: @"%@=%@", 
+			NSString *part = [NSString stringWithFormat: @"%@=%@",
 							  urlEncode(key), urlEncode(value)];
 			[parts addObject:part];
-		}		
+		}
 	}
-	
+
 	return [parts componentsJoinedByString: @"&"];
 }
 
