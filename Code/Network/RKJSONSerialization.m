@@ -7,7 +7,8 @@
 //
 
 #import "RKJSONSerialization.h"
-#import "NSObject+SBJSON.h"
+#import "NSObject+RKJSONSerialization.h"
+#import "RKJSONParser.h"
 
 @implementation RKJSONSerialization
 
@@ -33,7 +34,7 @@
 }
 
 - (NSString*)JSONRepresentation {
-	return [_object JSONRepresentation];
+	return [[[[RKJSONParser alloc] init] autorelease] stringFromObject:_object];
 }
 
 - (NSData*)HTTPBody {	
@@ -43,10 +44,9 @@
 - (BOOL)isEqual:(id)object {
 	if ([object isKindOfClass:[NSString class]]) {
 		return [[self JSONRepresentation] isEqualToString:object];
-	} if ([object respondsToSelector:@selector(JSONRepresentation)]) {
-		return [[self JSONRepresentation] isEqualToString:[(NSObject*)object JSONRepresentation]];
 	} else {
-		return NO;
+		NSString* string = [[[[RKJSONParser alloc] init] autorelease] stringFromObject:object];
+		return [[self JSONRepresentation] isEqualToString:string];
 	}
 }
 

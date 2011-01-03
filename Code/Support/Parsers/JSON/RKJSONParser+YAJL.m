@@ -15,4 +15,8 @@
 	return [string yajl_JSON];
 }
 
+- (NSString*)stringFromObject:(id)object {
+	return [object yajl_JSONString];
+}
+
 @end
