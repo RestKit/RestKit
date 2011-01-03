@@ -20,4 +20,6 @@
  */
 - (id)objectFromString:(NSString*)string;
 
+- (NSString*)stringFromObject:(id)object;
+
 @end

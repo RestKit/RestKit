@@ -2164,7 +2164,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = UISpec;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
 			};
@@ -2202,7 +2202,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = UISpec;
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				ZERO_LINK = NO;
 			};
