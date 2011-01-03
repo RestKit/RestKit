@@ -341,12 +341,6 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 				}
 			}
 			
-			// TODO: Introduce policy here for clearing out 
-			// If it returned nil, do we want to clear it or leave it alone???
-			if (elementValue == nil) {
-				NSLog(@"Setting nil value for property %@", propertyName);
-			}
-			
 			[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
 		}
 	}
