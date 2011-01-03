@@ -46,6 +46,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 @implementation RKObjectMapper
 
 @synthesize format = _format;
+@synthesize missingElementMappingPolicy = _missingElementMappingPolicy;
 @synthesize dateFormats = _dateFormats;
 @synthesize remoteTimeZone = _remoteTimeZone;
 @synthesize localTimeZone = _localTimeZone;
@@ -59,6 +60,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	if (self = [super init]) {
 		_elementToClassMappings = [[NSMutableDictionary alloc] init];
 		_format = RKMappingFormatJSON;
+		_missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
 		_inspector = [[RKObjectPropertyInspector alloc] init];
 		self.dateFormats = [NSArray arrayWithObjects:kRKModelMapperRailsDateTimeFormatString, kRKModelMapperRailsDateFormatString, nil];
 		self.remoteTimeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
@@ -103,7 +105,6 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		}
 	}
 	
-	NSLog(@"Began parse...");
 	id result = nil;
 	@try {
 		result = [parser objectFromString:string];
@@ -111,7 +112,6 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	@catch (NSException* e) {
 		NSLog(@"[RestKit] RKObjectMapper:parseString: Exception (%@) parsing error from string: %@", [e reason], string);
 	}
-	NSLog(@"Finished parse...");
 	return result;
 }
 
@@ -324,6 +324,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			setValue = NO;
 		}
 		
+		// If the value retrieved from the element is nil (no value found), then
+		// consult the missing element policy to determine if we should clear the value
+		if (nil == elementValue) {
+			setValue = (_missingElementMappingPolicy == RKSetNilForMissingElementMappingPolicy);
+		}
+		
 		if (setValue) {
 			id propertyValue = elementValue;
 			NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];
@@ -333,6 +339,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 					NSDate* date = [self parseDateFromString:(propertyValue)];
 					propertyValue = [self dateInLocalTime:date];
 				}
+			}
+			
+			// TODO: Introduce policy here for clearing out 
+			// If it returned nil, do we want to clear it or leave it alone???
+			if (elementValue == nil) {
+				NSLog(@"Setting nil value for property %@", propertyName);
 			}
 			
 			[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];

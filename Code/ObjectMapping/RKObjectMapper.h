@@ -19,9 +19,26 @@ typedef enum {
 	RKMappingFormatJSON
 } RKMappingFormat;
 
-@interface RKObjectMapper : NSObject {
+/**
+ * The policy to use when a payload returned from the remote service
+ * does not contain values for all elements specified in the 
+ * elementToPropertyMappings definition. 
+ *
+ * When the ignore policy (RKIgnoreMissingElementMappingPolicy) is selected, the mapper 
+ * will leave the current value assigned to the corresponding object property as is.
+ *
+ * When the set nil policy (RKSetNilForMissingElementMappingPolicy) is selected, the mapper
+ * will set the value for the mapped property target to nil to clear its value.
+ */
+typedef enum {
+	RKIgnoreMissingElementMappingPolicy = 0,
+	RKSetNilForMissingElementMappingPolicy
+} RKMissingElementMappingPolicy;
+
+@interface RKObjectMapper : NSObject {	
 	NSMutableDictionary* _elementToClassMappings;
 	RKMappingFormat _format;
+	RKMissingElementMappingPolicy _missingElementMappingPolicy;
 	RKObjectPropertyInspector* _inspector;
 	NSArray* _dateFormats;
 	NSTimeZone* _remoteTimeZone;
@@ -34,6 +51,15 @@ typedef enum {
  * The format the mapper is using
  */
 @property(nonatomic, assign) RKMappingFormat format;
+
+/**
+ * The policy to use when the mapper encounters a payload that does not
+ * have property values specified for all elements. See the description
+ * about the available mapping policies above for more information.
+ *
+ * @default RKIgnoreMissingElementMappingPolicy
+ */
+@property(nonatomic, assign) RKMissingElementMappingPolicy missingElementMappingPolicy;
 
 /**
  * An array of date format strings to attempt to parse mapped date properties with
