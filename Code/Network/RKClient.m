@@ -17,6 +17,17 @@
 static RKClient* sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+// URL Conveniences functions
+
+NSURL* RKMakeURL(NSString* resourcePath) {
+	return [[RKClient sharedClient] URLForResourcePath:resourcePath];
+}
+
+NSString* RKMakeURLPath(NSString* resourcePath) {
+	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation RKClient
 
@@ -97,6 +108,10 @@ static RKClient* sharedClient = nil;
 
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath {
 	return [RKURL URLWithBaseURLString:self.baseURL resourcePath:resourcePath];
+}
+
+- (NSString*)URLPathForResourcePath:(NSString*)resourcePath {
+	return [[self URLForResourcePath:resourcePath] absoluteString];
 }
 
 - (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams {

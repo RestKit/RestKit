@@ -12,6 +12,30 @@
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKReachabilityObserver.h"
 
+/////////////////////////////////////////////////////////////////////////
+
+/**
+ * URL & URL Path Convenience methods
+ */
+
+/**
+ * Returns an NSURL with the specified resource path appended to the base URL
+ * that the shared RKClient instance is configured with
+ *
+ * Shortcut for calling [[RKClient sharedClient] URLForResourcePath:@"/some/path"]
+ */
+NSURL* RKMakeURL(NSString* resourcePath);
+
+/**
+ * Returns an NSString with the specified resource path appended to the base URL
+ * that the shared RKClient instance is configured with
+ *
+ * Shortcut for calling [[RKClient sharedClient] URLPathForResourcePath:@"/some/path"]
+ */
+NSString* RKMakeURLPath(NSString* resourcePath);
+
+/////////////////////////////////////////////////////////////////////////
+
 /**
  * RKClient exposes the low level client interface for working
  * with HTTP servers and RESTful services. It wraps the request/response
@@ -97,6 +121,11 @@
  * Returns a NSURL by adding a resource path to the base URL
  */
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath;
+
+/**
+ * Returns an NSString by adding a resource path to the base URL
+ */
+- (NSString*)URLPathForResourcePath:(NSString*)resourcePath;
 
 /**
  * Returns a NSURL by adding a resource path to the base URL and appending a URL encoded set of query parameters
