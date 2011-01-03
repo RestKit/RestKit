@@ -133,6 +133,11 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 		if (NO == SCNetworkReachabilityScheduleWithRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
 			NSLog(@"Warning -- Unable to schedule reachability observer in current run loop.");
 		}
+		
+		// Fire the run loop to allow the observer to be scheduled. This ensures that requests fired
+		// after the observer is scheduled, but before control is yieled to the run loop are not mistakenly
+		// denied dispatching because no network availbility can be determined.
+		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 	}
 }
 
