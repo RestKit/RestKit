@@ -65,11 +65,23 @@
 	[super dealloc];
 }
 
+- (void)setRequestBody {
+	if (_params) {
+		// Prefer the use of a stream over a raw body
+		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
+			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
+		} else {
+			[_URLRequest setHTTPBody:[_params HTTPBody]];
+		}
+	}
+}
+
 - (void)addHeadersToRequest {
 	NSString* header;
 	for (header in _additionalHTTPHeaders) {
 		[_URLRequest setValue:[_additionalHTTPHeaders valueForKey:header] forHTTPHeaderField:header];
 	}
+
 	if (_params != nil) {
 		// Temporarily support older RKRequestSerializable implementations
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentType)]) {
@@ -81,6 +93,7 @@
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
 	}
+
     if (_username != nil) {
         // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
         CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
@@ -95,24 +108,11 @@
 	NSLog(@"Headers: %@", [_URLRequest allHTTPHeaderFields]);
 }
 
-- (void)setMethod:(RKRequestMethod)method {
-	_method = method;
+// Setup the NSURLRequest. The request must be prepared right before dispatching
+- (void)prepareURLRequest {
 	[_URLRequest setHTTPMethod:[self HTTPMethod]];
-}
-
-- (void)setParams:(NSObject<RKRequestSerializable>*)params {
-	[params retain];
-	[_params release];
-	_params = params;
-
-	if (params && ![self isGET]) {
-		// Prefer the use of a stream over a raw body
-		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
-			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
-		} else {
-			[_URLRequest setHTTPBody:[_params HTTPBody]];
-		}
-	}
+	[self setRequestBody];
+	[self addHeadersToRequest];
 }
 
 - (NSString*)HTTPMethod {
@@ -141,7 +141,7 @@
 
 - (void)fireAsynchronousRequest {
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
-		[self addHeadersToRequest];
+		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
 		NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
@@ -169,7 +169,7 @@
 	RKResponse* response = nil;
 
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
-		[self addHeadersToRequest];
+		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
 		NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
