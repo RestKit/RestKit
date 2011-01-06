@@ -203,6 +203,10 @@
 	return ([self statusCode] == 201 || [self statusCode] == 204 || [self statusCode] == 304);
 }
 
+- (BOOL)isServiceUnavailable {
+	return ([self statusCode] == 503);
+}
+
 - (NSString*)contentType {
 	return ([[self allHeaderFields] objectForKey:@"Content-Type"]);
 }

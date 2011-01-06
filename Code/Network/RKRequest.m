@@ -14,6 +14,7 @@
 #import "RKClient.h"
 #import "../Support/Support.h"
 #import "RKURL.h"
+#import <UIKit/UIKit.h>
 
 @implementation RKRequest
 
@@ -64,54 +65,54 @@
 	[super dealloc];
 }
 
+- (void)setRequestBody {
+	if (_params) {
+		// Prefer the use of a stream over a raw body
+		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
+			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
+		} else {
+			[_URLRequest setHTTPBody:[_params HTTPBody]];
+		}
+	}
+}
+
 - (void)addHeadersToRequest {
 	NSString* header;
 	for (header in _additionalHTTPHeaders) {
 		[_URLRequest setValue:[_additionalHTTPHeaders valueForKey:header] forHTTPHeaderField:header];
 	}
+
 	if (_params != nil) {
 		// Temporarily support older RKRequestSerializable implementations
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentType)]) {
 			[_URLRequest setValue:[_params HTTPHeaderValueForContentType] forHTTPHeaderField:@"Content-Type"];
 		} else if ([_params respondsToSelector:@selector(ContentTypeHTTPHeader)]) {
 			[_URLRequest setValue:[_params performSelector:@selector(ContentTypeHTTPHeader)] forHTTPHeaderField:@"Content-Type"];
-		}		
+		}
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
 	}
+
     if (_username != nil) {
         // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
         CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
         CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password, kCFHTTPAuthenticationSchemeBasic, FALSE);
         CFStringRef authorizationString = CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
-        
+
         [_URLRequest setValue:(NSString *)authorizationString forHTTPHeaderField:@"Authorization"];
-        
+
         CFRelease(dummyRequest);
         CFRelease(authorizationString);
     }
 	NSLog(@"Headers: %@", [_URLRequest allHTTPHeaderFields]);
 }
 
-- (void)setMethod:(RKRequestMethod)method {
-	_method = method;
+// Setup the NSURLRequest. The request must be prepared right before dispatching
+- (void)prepareURLRequest {
 	[_URLRequest setHTTPMethod:[self HTTPMethod]];
-}
-
-- (void)setParams:(NSObject<RKRequestSerializable>*)params {
-	[params retain];
-	[_params release];
-	_params = params;
-	
-	if (params && ![self isGET]) {
-		// Prefer the use of a stream over a raw body
-		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {			
-			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];			
-		} else {
-			[_URLRequest setHTTPBody:[_params HTTPBody]];
-		}
-	}
+	[self setRequestBody];
+	[self addHeadersToRequest];
 }
 
 - (NSString*)HTTPMethod {
@@ -140,14 +141,14 @@
 
 - (void)fireAsynchronousRequest {
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
-		[self addHeadersToRequest];
+		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
 		NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
 		NSDate* sentAt = [NSDate date];
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
-		
+
 		_isLoading = YES;
 		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
 		_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
@@ -156,7 +157,7 @@
 		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 								  errorMessage, NSLocalizedDescriptionKey,
 								  nil];
-		NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];		
+		NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
 		[self didFailLoadWithError:error];
 	}
 }
@@ -166,16 +167,16 @@
 	NSError* error = nil;
 	NSData* payload = nil;
 	RKResponse* response = nil;
-	
+
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
-		[self addHeadersToRequest];
+		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
 		NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
 		NSDate* sentAt = [NSDate date];
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
-		
+
 		_isLoading = YES;
 		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
 		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
@@ -186,11 +187,11 @@
 								  nil];
 		error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
 		[self didFailLoadWithError:error];
-		
+
 		// TODO: Is this needed here?  Or can we just return a nil response and everyone will be happy??
 		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
 	}
-	
+
 	return response;
 }
 
@@ -203,28 +204,39 @@
 
 - (void)didFailLoadWithError:(NSError*)error {
 	_isLoading = NO;
-	
+
 	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 		[_delegate request:self didFailLoadWithError:error];
 	}
-	
+
 	NSDate* receivedAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", 
+	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod",
 							  [self URL], @"URL", receivedAt, @"receivedAt", error, @"error", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification object:self userInfo:userInfo];	
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification object:self userInfo:userInfo];
 }
 
 - (void)didFinishLoad:(RKResponse*)response {
 	_isLoading = NO;
 	_isLoaded = YES;
-	
+
 	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
 		[_delegate request:self didLoadResponse:response];
 	}
-	
+
 	NSDate* receivedAt = [NSDate date];
 	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", receivedAt, @"receivedAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:response userInfo:userInfo];	
+	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:response userInfo:userInfo];
+
+	if ([response isServiceUnavailable] && [[RKClient sharedClient] serviceUnavailableAlertEnabled]) {
+		UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[RKClient sharedClient] serviceUnavailableAlertTitle]
+															message:[[RKClient sharedClient] serviceUnavailableAlertMessage]
+														   delegate:nil
+												  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+												  otherButtonTitles:nil];
+		[alertView show];
+		[alertView release];
+
+	}
 }
 
 - (BOOL)isGET {

@@ -47,6 +47,9 @@ NSString* RKMakeURLPath(NSString* resourcePath);
 	NSString* _password;
 	NSMutableDictionary* _HTTPHeaders;
 	RKReachabilityObserver* _baseURLReachabilityObserver;
+	NSString* _serviceUnavailableAlertTitle;
+	NSString* _serviceUnavailableAlertMessage;
+	BOOL _serviceUnavailableAlertEnabled;
 }
 
 /**
@@ -74,6 +77,27 @@ NSString* RKMakeURLPath(NSString* resourcePath);
  * path to the baseURL
  */
 @property(nonatomic, readonly) RKReachabilityObserver* baseURLReachabilityObserver;
+
+/**
+ * The title to use in the UIAlertView shown when a request encounters a
+ * ServiceUnavailable (503) response.
+ * If not provided, the default is: "Service Unavailable"
+ */
+@property(nonatomic, retain) NSString* serviceUnavailableAlertTitle;
+
+/**
+ * The message to use in the UIAlertView shown when a request encounters a
+ * ServiceUnavailable (503) response.
+ * If not provided, the default is: "The remote resource is unavailable. Please try again later."
+ */
+@property(nonatomic, retain) NSString* serviceUnavailableAlertMessage;
+
+/**
+ * Flag that determines whether the Service Unavailable alert is shown in response
+ * to a ServiceUnavailable (503) response.
+ * Defaults to NO.
+ */
+@property(nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
 
 /**
  * Return the configured singleton instance of the Rest client
