@@ -94,7 +94,7 @@ NSString* RKMakeURLPath(NSString* resourcePath) {
 	self.username = nil;
 	self.password = nil;
 	self.serviceUnavailableAlertTitle = nil;
-	self.serviceUnavailableAlertTitle = nil;
+	self.serviceUnavailableAlertMessage = nil;
 	[_HTTPHeaders release];
 	[super dealloc];
 }
