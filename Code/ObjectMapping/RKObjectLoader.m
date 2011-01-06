@@ -169,8 +169,12 @@
 	if (self.targetObject) {
 		if (_targetObjectID) {
 			NSManagedObject* backgroundThreadModel = [self.managedObjectStore objectWithID:_targetObjectID];
-			[_mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
-			results = [NSArray arrayWithObject:backgroundThreadModel];
+			if (self.method == RKRequestMethodDELETE) {
+				[[objectStore managedObjectContext] deleteObject:backgroundThreadModel];
+			} else {
+				[_mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
+				results = [NSArray arrayWithObject:backgroundThreadModel];
+			}
 		} else {
 			[_mapper mapObject:self.targetObject fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:self.targetObject];

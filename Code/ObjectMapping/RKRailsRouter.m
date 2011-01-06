@@ -44,6 +44,11 @@
 #pragma mark RKRouter
 
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
+	// Rails does not send parameters for delete requests.
+	if (method == RKRequestMethodDELETE) {
+		return nil;
+	}
+	
 	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValuesForObject:object];
 	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];	
 	NSString* modelName = [_classToModelMappings objectForKey:[object class]];
