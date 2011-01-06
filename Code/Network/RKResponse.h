@@ -169,6 +169,11 @@
 - (BOOL)isEmpty;
 
 /**
+ * Indicates an HTTP response code of 503
+ */
+- (BOOL)isServiceUnavailable;
+
+/**
  * Returns the value of 'Content-Type' HTTP header
  */
 - (NSString*)contentType;

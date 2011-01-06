@@ -36,6 +36,9 @@ NSString* RKMakeURLPath(NSString* resourcePath) {
 @synthesize password = _password;
 @synthesize HTTPHeaders = _HTTPHeaders;
 @synthesize baseURLReachabilityObserver = _baseURLReachabilityObserver;
+@synthesize serviceUnavailableAlertTitle = _serviceUnavailableAlertTitle;
+@synthesize serviceUnavailableAlertMessage = _serviceUnavailableAlertMessage;
+@synthesize serviceUnavailableAlertEnabled = _serviceUnavailableAlertEnabled;
 
 + (RKClient*)sharedClient {
 	return sharedClient;
@@ -78,15 +81,20 @@ NSString* RKMakeURLPath(NSString* resourcePath) {
 - (id)init {
 	if (self = [super init]) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
+		self.serviceUnavailableAlertEnabled = NO;
+		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
+		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
 	}
 
 	return self;
 }
 
 - (void)dealloc {
-	[_baseURL release];
-	[_username release];
-	[_password release];
+	self.baseURL = nil;
+	self.username = nil;
+	self.password = nil;
+	self.serviceUnavailableAlertTitle = nil;
+	self.serviceUnavailableAlertTitle = nil;
 	[_HTTPHeaders release];
 	[super dealloc];
 }
