@@ -37,26 +37,7 @@
 	_tableView.backgroundColor = [UIColor clearColor];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 	
-	// Load the object model via RestKit
-	
-	if ([[RKClient sharedClient] isNetworkAvailable]) {	
-		[self loadData];
-	} else {
-		NSLog(@"Network is not available");
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:RKReachabilityStateChangedNotification object:nil];
-	}
-}
-
-- (void)reachabilityChanged:(NSNotification*)note {
-	if ([[RKClient sharedClient] isNetworkAvailable]) {	
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityStateChangedNotification object:nil];
-		[self loadData];
-	} else {
-		NSLog(@"Network is not available");
-	}
-}
-
-- (void)loadData {
+	// Load the object model via RestKit	
 	RKObjectManager* objectManager = [RKObjectManager sharedManager];
 	[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters.json" objectClass:[RKTStatus class] delegate:self];
 }

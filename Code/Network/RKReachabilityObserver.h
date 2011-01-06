@@ -15,6 +15,7 @@
 extern NSString* const RKReachabilityStateChangedNotification;
 
 typedef enum {
+	RKReachabilityIndeterminate,
 	RKReachabilityNotReachable,
 	RKReachabilityReachableViaWiFi,
 	RKReachabilityReachableViaWWAN

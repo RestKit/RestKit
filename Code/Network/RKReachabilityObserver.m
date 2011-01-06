@@ -11,6 +11,7 @@
 
 // Constants
 NSString* const RKReachabilityStateChangedNotification = @"RKReachabilityStateChangedNotification";
+static bool hasNetworkAvailabilityBeenDetermined = NO;
 
 static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void* info) {
 #pragma unused (target, flags)
@@ -19,6 +20,9 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	
 	RKReachabilityObserver* observer = (RKReachabilityObserver*) info;
+	
+	hasNetworkAvailabilityBeenDetermined = YES;
+	
 	// Post a notification to notify the client that the network reachability changed.
 	[[NSNotificationCenter defaultCenter] postNotificationName:RKReachabilityStateChangedNotification object:observer];
 	
@@ -79,6 +83,11 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	RKReachabilityNetworkStatus status = RKReachabilityNotReachable;
 	SCNetworkReachabilityFlags flags;
 	
+	if (!hasNetworkAvailabilityBeenDetermined) {
+		return RKReachabilityIndeterminate;
+	}
+	
+	
 	if (SCNetworkReachabilityGetFlags(_reachabilityRef, &flags)) {		
 		if ((flags & kSCNetworkReachabilityFlagsReachable) == 0) {
 			// if target host is not reachable
@@ -133,11 +142,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 		if (NO == SCNetworkReachabilityScheduleWithRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
 			NSLog(@"Warning -- Unable to schedule reachability observer in current run loop.");
 		}
-		
-		// Fire the run loop to allow the observer to be scheduled. This ensures that requests fired
-		// after the observer is scheduled, but before control is yieled to the run loop are not mistakenly
-		// denied dispatching because no network availbility can be determined.
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 	}
 }
 

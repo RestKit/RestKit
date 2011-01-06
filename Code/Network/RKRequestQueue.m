@@ -9,6 +9,7 @@
 #import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "RKNotifications.h"
+#import "RKClient.h"
 
 static RKRequestQueue* gSharedQueue = nil;
 
@@ -73,6 +74,13 @@ static const NSInteger kMaxConcurrentLoads = 5;
 }
 
 - (void)loadNextInQueue {
+	// This makes sure that the Request Queue does not fire off any requests until the Reachability state has been determined.
+	// This prevents the request queue from 
+	if ([[[RKClient client] baseURLReachabilityObserver] networkStatus] == RKReachabilityIndeterminate) {
+		[self loadNextInQueueDelayed];
+		return;
+	}
+	
 	_queueTimer = nil;
 	
 	for (RKRequest* request in _requests) {
