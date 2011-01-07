@@ -1,6 +1,5 @@
 GEM
   remote: http://rubygems.org/
-  remote: http://rubygems.org/
   specs:
     abstract (1.0.0)
     actionmailer (3.0.3)
@@ -82,7 +81,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  authlogic
+  authlogic (= 2.1.6)
   paperclip
   rails (= 3.0.3)
   ruby-debug

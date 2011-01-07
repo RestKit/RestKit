@@ -6,7 +6,7 @@ class UsersController < ApplicationController
     user_session = UserSession.new(params)
     if user_session.save
       user = user_session.user
-      render :json => {:login => user.login, :single_access_token => user.single_access_token}
+      render :json => {:login => user.login, :single_access_token => user.single_access_token, :user_id => user.id}
     else
       render :json => {:error => "Invalid Login"}
     end
@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   def signup
     user = User.new(params[:user])
     if user.save
-      render :json => {:login => user.login, :single_access_token => user.single_access_token}
+      render :json => {:login => user.login, :single_access_token => user.single_access_token, :user_id => user.id}
     else
       render :json => {:errors => user.errors.full_messages}
     end
