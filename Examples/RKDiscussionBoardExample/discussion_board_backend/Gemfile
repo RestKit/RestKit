@@ -30,6 +30,5 @@ gem 'ruby-debug'
 #   gem 'webrat'
 # end
 
-source "http://rubygems.org"
 gem 'authlogic', :require => 'authlogic'
 gem 'paperclip'
