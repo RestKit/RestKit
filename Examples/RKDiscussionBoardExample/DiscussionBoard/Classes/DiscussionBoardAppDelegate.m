@@ -7,6 +7,9 @@
 //
 
 #import "DiscussionBoardAppDelegate.h"
+#import <RestKit/RestKit.h>
+
+#import "DBTopic.h"
 
 @implementation DiscussionBoardAppDelegate
 
@@ -17,12 +20,12 @@
 #pragma mark Application lifecycle
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    
-    // Override point for customization after application launch.
-    
-    [self.window makeKeyAndVisible];
-    
-    return YES;
+	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:kDBBaseURLString];
+	RKObjectMapper* mapper =  objectManager.mapper;
+	[mapper registerClass:[DBTopic class] forElementNamed:@"topic"];
+	
+	[self.window makeKeyAndVisible];
+	return YES;
 }
 
 
