@@ -1,8 +1,12 @@
 curl -d "user[login]=jeremy&user[password]=password&user[email]=jeremy@twotoasters.com&user[password_confirmation]=password" http://localhost:3000/signup
 => {"single_access_token":"LvQmmzh6je1XzhC9XASg","login":"jeremy"}
+curl -d "user[login]=jeremy&user[password]=password&user[email]=jeremy@twotoasters.com&user[password_confirmation]=password" http://discussionboard.heroku.com/signup
+=> {"single_access_token":"onzn83RGNV93AQWPIY7W","login":"jeremy"}
 
-curl -d "login=jeremy&password=password" http://localhost:3000/signup
-=> {"single_access_token":"LvQmmzh6je1XzhC9XASg","login":"jeremy"}
+
+curl -d "login=jeremy&password=password" http://localhost:3000/login
+{"single_access_token":"LvQmmzh6je1XzhC9XASg","user_id":1,"login":"jeremy"}
+curl -d "login=jeremy&password=password" http://discussionboard.heroku.com/login
 
 set the SingleAccessToken header to the token (LvQmmzh6je1XzhC9XASg)
 
