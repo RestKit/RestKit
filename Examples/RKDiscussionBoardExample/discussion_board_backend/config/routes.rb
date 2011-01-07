@@ -1,4 +1,6 @@
 DiscussionBoardBackend::Application.routes.draw do
+  resources :topics
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
   
