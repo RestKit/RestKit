@@ -21,6 +21,15 @@
 		A7A2D2F112D7806C00683D6F /* libThree20UINavigator.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D2C912D7803100683D6F /* libThree20UINavigator.a */; };
 		A7A2D30112D780B200683D6F /* Three20.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7A2D30012D780B200683D6F /* Three20.bundle */; };
 		A7A2D33A12D780DD00683D6F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D33912D780DD00683D6F /* QuartzCore.framework */; };
+		A7A2D3BA12D7823600683D6F /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */; };
+		A7A2D3BB12D7824000683D6F /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */; };
+		A7A2D3BC12D7824600683D6F /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */; };
+		A7A2D3BD12D7824E00683D6F /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */; };
+		A7A2D3BF12D7826800683D6F /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */; };
+		A7A2D3C412D7829E00683D6F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C312D7829E00683D6F /* CFNetwork.framework */; };
+		A7A2D3C612D7829E00683D6F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C512D7829E00683D6F /* CoreData.framework */; };
+		A7A2D3C812D7829E00683D6F /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C712D7829E00683D6F /* MobileCoreServices.framework */; };
+		A7A2D3CA12D7829E00683D6F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C912D7829E00683D6F /* SystemConfiguration.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -367,6 +376,69 @@
 			remoteGlobalIDString = BEF31F390F352DF5000DE5D2;
 			remoteInfo = Three20Network;
 		};
+		A7A2D3AA12D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A07FC1255161B00976E89 /* libRestKitNetwork.a */;
+			remoteInfo = RestKitNetwork;
+		};
+		A7A2D3AC12D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A08031255162C00976E89 /* libRestKitObjectMapping.a */;
+			remoteInfo = RestKitObjectMapping;
+		};
+		A7A2D3AE12D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A080C12551D3000976E89 /* libRestKitSupport.a */;
+			remoteInfo = RestKitSupport;
+		};
+		A7A2D3B012D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */;
+			remoteInfo = "RestKitJSONParser+YAJL";
+		};
+		A7A2D3B212D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */;
+			remoteInfo = "RestKitJSONParser+SBJSON";
+		};
+		A7A2D3B412D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 253A081412551D5300976E89 /* libRestKitCoreData.a */;
+			remoteInfo = RestKitCoreData;
+		};
+		A7A2D3B612D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2523360511E79F090048F9B4 /* libRestKitThree20.a */;
+			remoteInfo = RestKitThree20;
+		};
+		A7A2D3B812D7822D00683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3F6C39A510FE5C95008F47C5 /* UISpec.app */;
+			remoteInfo = UISpec;
+		};
+		A7A2D3D312D782A700683D6F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 25956956126DF0A8004BAC4C /* RestKit */;
+			remoteInfo = RestKit;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -389,6 +461,11 @@
 		A7A2D26D12D7803100683D6F /* Three20UI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Three20UI.xcodeproj; path = Libraries/three20/src/Three20UI/Three20UI.xcodeproj; sourceTree = SOURCE_ROOT; };
 		A7A2D30012D780B200683D6F /* Three20.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Three20.bundle; path = Libraries/three20/src/Three20.bundle; sourceTree = SOURCE_ROOT; };
 		A7A2D33912D780DD00683D6F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../../RestKit.xcodeproj; sourceTree = SOURCE_ROOT; };
+		A7A2D3C312D7829E00683D6F /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		A7A2D3C512D7829E00683D6F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		A7A2D3C712D7829E00683D6F /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		A7A2D3C912D7829E00683D6F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -406,6 +483,15 @@
 				A7A2D2F012D7806900683D6F /* libThree20UICommon.a in Frameworks */,
 				A7A2D2F112D7806C00683D6F /* libThree20UINavigator.a in Frameworks */,
 				A7A2D33A12D780DD00683D6F /* QuartzCore.framework in Frameworks */,
+				A7A2D3BA12D7823600683D6F /* libRestKitSupport.a in Frameworks */,
+				A7A2D3BB12D7824000683D6F /* libRestKitObjectMapping.a in Frameworks */,
+				A7A2D3BC12D7824600683D6F /* libRestKitJSONParserYAJL.a in Frameworks */,
+				A7A2D3BD12D7824E00683D6F /* libRestKitNetwork.a in Frameworks */,
+				A7A2D3BF12D7826800683D6F /* libRestKitCoreData.a in Frameworks */,
+				A7A2D3C412D7829E00683D6F /* CFNetwork.framework in Frameworks */,
+				A7A2D3C612D7829E00683D6F /* CoreData.framework in Frameworks */,
+				A7A2D3C812D7829E00683D6F /* MobileCoreServices.framework in Frameworks */,
+				A7A2D3CA12D7829E00683D6F /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -439,6 +525,10 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				A7A2D33912D780DD00683D6F /* QuartzCore.framework */,
+				A7A2D3C312D7829E00683D6F /* CFNetwork.framework */,
+				A7A2D3C512D7829E00683D6F /* CoreData.framework */,
+				A7A2D3C712D7829E00683D6F /* MobileCoreServices.framework */,
+				A7A2D3C912D7829E00683D6F /* SystemConfiguration.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -474,6 +564,7 @@
 		A7A2D21612D77FEF00683D6F /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */,
 				A7A2D30012D780B200683D6F /* Three20.bundle */,
 				A7A2D25E12D7803100683D6F /* Three20Core.xcodeproj */,
 				A7A2D26112D7803100683D6F /* Three20Network.xcodeproj */,
@@ -577,6 +668,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A7A2D39512D7822C00683D6F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */,
+				A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */,
+				A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */,
+				A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */,
+				A7A2D3B312D7822D00683D6F /* libRestKitJSONParserSBJSON.a */,
+				A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */,
+				A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */,
+				A7A2D3B912D7822D00683D6F /* UISpec.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -598,6 +704,7 @@
 				A7A2D2FB12D7809500683D6F /* PBXTargetDependency */,
 				A7A2D2FD12D7809500683D6F /* PBXTargetDependency */,
 				A7A2D2FF12D7809500683D6F /* PBXTargetDependency */,
+				A7A2D3D412D782A700683D6F /* PBXTargetDependency */,
 			);
 			name = DiscussionBoard;
 			productName = DiscussionBoard;
@@ -622,6 +729,10 @@
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = A7A2D39512D7822C00683D6F /* Products */;
+					ProjectRef = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+				},
 				{
 					ProductGroup = A7A2D24012D7801100683D6F /* Products */;
 					ProjectRef = A7A2D21712D7801000683D6F /* Three20.xcodeproj */;
@@ -953,6 +1064,62 @@
 			remoteRef = A7A2D2E612D7803100683D6F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitNetwork.a;
+			remoteRef = A7A2D3AA12D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitObjectMapping.a;
+			remoteRef = A7A2D3AC12D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitSupport.a;
+			remoteRef = A7A2D3AE12D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitJSONParserYAJL.a;
+			remoteRef = A7A2D3B012D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A2D3B312D7822D00683D6F /* libRestKitJSONParserSBJSON.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitJSONParserSBJSON.a;
+			remoteRef = A7A2D3B212D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitCoreData.a;
+			remoteRef = A7A2D3B412D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitThree20.a;
+			remoteRef = A7A2D3B612D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A2D3B912D7822D00683D6F /* UISpec.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = UISpec.app;
+			remoteRef = A7A2D3B812D7822D00683D6F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1015,6 +1182,11 @@
 			name = Three20Network;
 			targetProxy = A7A2D2FE12D7809500683D6F /* PBXContainerItemProxy */;
 		};
+		A7A2D3D412D782A700683D6F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RestKit;
+			targetProxy = A7A2D3D312D782A700683D6F /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -1053,7 +1225,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = Libraries/three20/Build/Products/three20;
+				HEADER_SEARCH_PATHS = (
+					../../../Build,
+					Libraries/three20/Build/Products/three20,
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -1071,6 +1246,10 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../Build,
+					Libraries/three20/Build/Products/three20,
+				);
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
