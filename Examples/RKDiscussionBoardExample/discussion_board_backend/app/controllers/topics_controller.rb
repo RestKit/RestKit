@@ -5,19 +5,19 @@ class TopicsController < ApplicationController
   before_filter :requre_owner, :only => [:update, :destroy]
   
   index.response do |wants|
-    wants.js { render :json => collection }
+    wants.json { render :json => collection }
   end
   create.response do |wants|
-    wants.js { render :json => object }
+    wants.json{ render :json => object }
   end
   update.response do |wants|
-    wants.js { render :json => object }
+    wants.json{ render :json => object }
   end
   destroy.response do |wants|
-    wants.js { render :json => {} }
+    wants.json{ render :json => {} }
   end
   show.response do |wants|
-    wants.js { render :json => object }
+    wants.json{ render :json => object }
   end
   
   create.before do

@@ -7,19 +7,19 @@ class PostsController < ApplicationController
   before_filter :requre_owner, :only => [:update, :destroy]
   
   index.response do |wants|
-    wants.js { render :json => collection.to_json(:methods => :attachment_path) }
+    wants.json{ render :json => collection.to_json(:methods => :attachment_path) }
   end
   create.response do |wants|
-    wants.js { render :json => object.to_json(:methods => :attachment_path) }
+    wants.json{ render :json => object.to_json(:methods => :attachment_path) }
   end
   update.response do |wants|
-    wants.js { render :json => object.to_json(:methods => :attachment_path) }
+    wants.json{ render :json => object.to_json(:methods => :attachment_path) }
   end
   destroy.response do |wants|
-    wants.js { render :json => {} }
+    wants.json{ render :json => {} }
   end
   show.response do |wants|
-    wants.js { render :json => object.to_json(:methods => :attachment_path) }
+    wants.json{ render :json => object.to_json(:methods => :attachment_path) }
   end
   
   create.before do

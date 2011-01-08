@@ -8,7 +8,9 @@
 
 #import "DiscussionBoardAppDelegate.h"
 #import <RestKit/RestKit.h>
-
+#import <Three20/Three20.h>
+#import <Three20/Three20+Additions.h>
+#import "DBTopicsTableViewController.h"
 #import "DBTopic.h"
 
 @implementation DiscussionBoardAppDelegate
@@ -20,11 +22,23 @@
 #pragma mark Application lifecycle
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
+	// Initialize object manager
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:kDBBaseURLString];
+	
+	// Initialize object store
+	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"DiscussionBoard.sqlite"] autorelease];
+	
 	RKObjectMapper* mapper =  objectManager.mapper;
+	
 	[mapper registerClass:[DBTopic class] forElementNamed:@"topic"];
 	
-	[self.window makeKeyAndVisible];
+	// Initialize Three20
+	TTURLMap* map = [[TTNavigator navigator] URLMap];
+	[map from:@"db://topics" toViewController:[DBTopicsTableViewController class]];
+	
+	
+	TTOpenURL(@"db://topics");
+	[[TTNavigator navigator].window makeKeyAndVisible];
 	return YES;
 }
 
