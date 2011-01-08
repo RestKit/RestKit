@@ -34,7 +34,8 @@
 			@"attachment_file_name", @"attachmentFileName",
 			@"attachment_file_size", @"attachmentFileSize",
 			@"attachment_path", @"attachmentPath",
-			@"attachment_updated_at", @"attachment_updated_at",
+			@"attachment_updated_at", @"attachmentUpdatedAt",
+			@"body", @"body",
 			nil];
 }
 

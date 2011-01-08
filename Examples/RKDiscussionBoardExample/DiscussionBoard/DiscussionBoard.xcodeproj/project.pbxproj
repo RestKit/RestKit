@@ -27,6 +27,7 @@
 		3F4563C212D7EA3500BE25AD /* DBPost.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4563C112D7EA3500BE25AD /* DBPost.m */; };
 		3F76BBD612D7DA9D001562DC /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */; };
 		3F76BBF812D7DB5A001562DC /* DBTopicsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F76BBF712D7DB5A001562DC /* DBTopicsTableViewController.m */; };
+		3FB1FC3712D7ECDF00B2636A /* DBPostsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3FB1FC3612D7ECDF00B2636A /* DBPostsTableViewController.m */; };
 		A7A2D33A12D780DD00683D6F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D33912D780DD00683D6F /* QuartzCore.framework */; };
 		A7A2D3C412D7829E00683D6F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C312D7829E00683D6F /* CFNetwork.framework */; };
 		A7A2D3C612D7829E00683D6F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C512D7829E00683D6F /* CoreData.framework */; };
@@ -473,6 +474,8 @@
 		3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		3F76BBF612D7DB5A001562DC /* DBTopicsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTopicsTableViewController.h; sourceTree = "<group>"; };
 		3F76BBF712D7DB5A001562DC /* DBTopicsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTopicsTableViewController.m; sourceTree = "<group>"; };
+		3FB1FC3512D7ECDF00B2636A /* DBPostsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBPostsTableViewController.h; sourceTree = "<group>"; };
+		3FB1FC3612D7ECDF00B2636A /* DBPostsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPostsTableViewController.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DiscussionBoard-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A7A2D33912D780DD00683D6F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../../RestKit.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -530,6 +533,8 @@
 				3F76BBF712D7DB5A001562DC /* DBTopicsTableViewController.m */,
 				3F4563C012D7EA3500BE25AD /* DBPost.h */,
 				3F4563C112D7EA3500BE25AD /* DBPost.m */,
+				3FB1FC3512D7ECDF00B2636A /* DBPostsTableViewController.h */,
+				3FB1FC3612D7ECDF00B2636A /* DBPostsTableViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1171,6 +1176,7 @@
 				3F76BBD612D7DA9D001562DC /* DataModel.xcdatamodel in Sources */,
 				3F76BBF812D7DB5A001562DC /* DBTopicsTableViewController.m in Sources */,
 				3F4563C212D7EA3500BE25AD /* DBPost.m in Sources */,
+				3FB1FC3712D7ECDF00B2636A /* DBPostsTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1234,6 +1240,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = DiscussionBoard_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				HEADER_SEARCH_PATHS = (
 					../../../Build,
 					Libraries/three20/Build/Products/three20,
@@ -1255,6 +1262,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = DiscussionBoard_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				HEADER_SEARCH_PATHS = (
 					../../../Build,
 					Libraries/three20/Build/Products/three20,

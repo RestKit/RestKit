@@ -14,6 +14,7 @@
 
 - (void)loadView {
 	[super loadView];
+	self.title = @"Topics";
 	
 	self.model = [[[RKRequestTTModel alloc] initWithResourcePath:@"/topics"] autorelease];
 }
@@ -23,7 +24,7 @@
 	NSMutableArray* items = [NSMutableArray arrayWithCapacity:[model.objects count]];
 	
 	for(DBTopic* topic in model.objects) {
-		NSString* url = [NSString stringWithFormat:@"db://topic/%@", topic.topicID];
+		NSString* url = [NSString stringWithFormat:@"db://topics/%@/posts", topic.topicID];
 		[items addObject:[TTTableTextItem itemWithText:topic.name URL:url]];
 	}
 	NSLog(@"Items: %@", items);

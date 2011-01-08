@@ -12,6 +12,8 @@
 #import <Three20/Three20+Additions.h>
 #import "DBTopicsTableViewController.h"
 #import "DBTopic.h"
+#import "DBPostsTableViewController.h"
+#import "DBPost.h"
 
 @implementation DiscussionBoardAppDelegate
 
@@ -31,11 +33,13 @@
 	RKObjectMapper* mapper =  objectManager.mapper;
 	
 	[mapper registerClass:[DBTopic class] forElementNamed:@"topic"];
+	[mapper registerClass:[DBPost class] forElementNamed:@"post"];
 	
 	// Initialize Three20
 	TTURLMap* map = [[TTNavigator navigator] URLMap];
 	[map from:@"db://topics" toViewController:[DBTopicsTableViewController class]];
-	
+	[map from:@"db://topics/(initWithTopicID:)/posts" toViewController:[DBPostsTableViewController class]];
+	[map from:@"*" toViewController:[TTWebController class]];
 	
 	TTOpenURL(@"db://topics");
 	[[TTNavigator navigator].window makeKeyAndVisible];
