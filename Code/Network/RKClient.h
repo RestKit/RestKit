@@ -177,7 +177,7 @@ NSString* RKMakeURLPath(NSString* resourcePath);
 /**
  * Fetch a resource via an HTTP GET
  */
-- (RKRequest*)get:(NSString*)resourcePath delegate:(id)delegate;
+- (RKRequest*)get:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate>*)delegate;
 
 /**
  * Fetch a resource via an HTTP GET with a dictionary of params
@@ -185,21 +185,21 @@ NSString* RKMakeURLPath(NSString* resourcePath);
  * Note that this request _only_ allows NSDictionary objects as the params. The dictionary will be coerced into a URL encoded
  * string and then appended to the resourcePath as the query string of the request.
  */
-- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate;
+- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject<RKRequestDelegate>*)delegate;
 
 /**
  * Create a resource via an HTTP POST with a set of form parameters
  */
-- (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate;
+- (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKRequestDelegate>*)delegate;
 
 /**
  * Update a resource via an HTTP PUT
  */
-- (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate;
+- (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKRequestDelegate>*)delegate;
 
 /**
  * Destroy a resource via an HTTP DELETE
  */
-- (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate;
+- (RKRequest*)delete:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate>*)delegate;
 
 @end
