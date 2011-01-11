@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
     token = request.headers["HTTP_USER_ACCESS_TOKEN"]
     @user = User.find_by_single_access_token(token)
     if @user.nil?
-      render :json => {:error => "Invalid Access Token"}
+      render :json => {:error => "Invalid Access Token"}, :status => 401
     end
   end
   

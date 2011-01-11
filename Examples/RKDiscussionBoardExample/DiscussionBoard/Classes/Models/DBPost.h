@@ -10,7 +10,7 @@
 #import <RestKit/CoreData/CoreData.h>
 
 @interface DBPost : RKManagedObject {
-
+	UIImage* _newAttachment;
 }
 
 @property (nonatomic, retain) NSString* attachmentContentType;
@@ -24,5 +24,7 @@
 @property (nonatomic, retain) NSDate* updatedAt;
 @property (nonatomic, retain) NSNumber* userID;
 @property (nonatomic, retain) NSNumber* postID;
+
+@property (nonatomic, retain) UIImage* newAttachment;
 
 @end

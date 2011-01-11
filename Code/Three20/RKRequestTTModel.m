@@ -10,6 +10,7 @@
 #import "RKManagedObjectStore.h"
 #import "../Network/Network.h"
 
+
 static NSTimeInterval defaultRefreshRate = NSTimeIntervalSince1970;
 static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTimeKey";
 
@@ -48,7 +49,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 + (void)setDefaultRefreshRate:(NSTimeInterval)newDefaultRefreshRate {
-	defaultRefreshRate = defaultRefreshRate;
+	defaultRefreshRate = newDefaultRefreshRate;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath {
@@ -133,7 +134,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (BOOL)isOutdated {
-	return (![self isLoading] && (-[self.loadedTime timeIntervalSinceNow] > _refreshRate));
+	NSTimeInterval sinceNow = [self.loadedTime timeIntervalSinceNow];
+	return (![self isLoading] && (-sinceNow > _refreshRate));
 }
 
 - (void)cancel {
@@ -240,7 +242,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // public
 
-- (void)load {		
+- (void)load {
 	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
 	NSArray* cacheFetchRequests = nil;
 	NSArray* cachedObjects = nil;

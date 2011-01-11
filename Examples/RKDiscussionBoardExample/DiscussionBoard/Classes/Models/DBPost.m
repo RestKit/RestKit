@@ -23,6 +23,8 @@
 @dynamic userID;
 @dynamic postID;
 
+@synthesize newAttachment = _newAttachment;
+
 + (NSDictionary*)elementToPropertyMappings {
 	return [NSDictionary dictionaryWithKeysAndObjects:
 			@"id",@"postID", 
@@ -41,6 +43,19 @@
 
 + (NSString*)primaryKeyProperty {
 	return @"postID";
+}
+
+- (NSDictionary*)paramsForSerialization {
+	RKParams* params = [RKParams params];
+	[params setValue:self.body forParam:@"post[body]"];
+	if (_newAttachment) {
+		NSData* data = UIImagePNGRepresentation(_newAttachment);
+		NSLog(@"Data Size: %d", [data length]);
+		[params setData:data MIMEType:@"application/octet-stream" forParam:@"topic[attachment]"];
+	}
+	
+	// Suppress warning. todo: should this method return an <RKRequestSerializable> by default?
+	return (NSDictionary*)params;
 }
 
 @end

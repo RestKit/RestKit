@@ -28,7 +28,7 @@ class TopicsController < ApplicationController
   
   def requre_owner
     unless @user == object.user
-      render :json => {:error => "Unauthorized"}
+      render :json => {:error => "Unauthorized"}, :status => 401
     end
   end
   

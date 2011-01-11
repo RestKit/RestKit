@@ -32,5 +32,10 @@
 	return @"topicID";
 }
 
+- (NSDictionary*)paramsForSerialization {
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+			self.name, @"topic[name]", nil];
+}
+
 
 @end

@@ -11,3 +11,11 @@
  */
 
 extern NSString* const kDBBaseURLString;
+
+extern NSString* const kCurrentUserIDKey;
+
+
+extern NSString* const kUserLoggedInNotificationName;
+extern NSString* const kLoginCanceledNotificationName;
+extern NSString* const kUserLoggedOutNotificationName;
+extern NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName;

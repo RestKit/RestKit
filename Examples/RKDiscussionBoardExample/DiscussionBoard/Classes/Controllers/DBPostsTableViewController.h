@@ -8,9 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <Three20/Three20.h>
+#import "DBResourceListTableViewController.h"
+#import "DBTopic.h"
 
-@interface DBPostsTableViewController : TTTableViewController {
+@interface DBPostsTableViewController : DBResourceListTableViewController {
 	NSString* _topicID;
 }
+
+@property (nonatomic, readonly) DBTopic* topic;
 
 @end

@@ -10,7 +10,7 @@
 #import <RestKit/CoreData/CoreData.h>
 
 @interface DBTopic : RKManagedObject {
-
+	
 }
 
 @property (nonatomic, retain) NSNumber* topicID;
