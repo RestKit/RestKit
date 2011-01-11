@@ -7,6 +7,8 @@
  *
  */
 
+@protocol RKRequestSerializable;
+
 /**
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes
@@ -43,7 +45,7 @@
  * will encode these parameters into a serialization format (form encoded, JSON, etc). This is
  * required to use putObject: and postObject: for updating and creating remote object representations.
  */
-- (NSDictionary*)paramsForSerialization;
+- (id<RKRequestSerializable>)paramsForSerialization;
 
 /**
  * Must return a new autoreleased instance of the model class ready for mapping. Used to initialize the model

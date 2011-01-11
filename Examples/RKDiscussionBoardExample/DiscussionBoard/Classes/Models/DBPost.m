@@ -22,6 +22,7 @@
 @dynamic updatedAt;
 @dynamic userID;
 @dynamic postID;
+@dynamic username;
 
 @synthesize newAttachment = _newAttachment;
 
@@ -38,6 +39,7 @@
 			@"attachment_path", @"attachmentPath",
 			@"attachment_updated_at", @"attachmentUpdatedAt",
 			@"body", @"body",
+			@"user_login", @"username",
 			nil];
 }
 
@@ -45,17 +47,18 @@
 	return @"postID";
 }
 
-- (NSDictionary*)paramsForSerialization {
+- (id<RKRequestSerializable>)paramsForSerialization {
 	RKParams* params = [RKParams params];
 	[params setValue:self.body forParam:@"post[body]"];
+	NSLog(@"Self Body: %@", self.body);
 	if (_newAttachment) {
 		NSData* data = UIImagePNGRepresentation(_newAttachment);
 		NSLog(@"Data Size: %d", [data length]);
-		[params setData:data MIMEType:@"application/octet-stream" forParam:@"topic[attachment]"];
+		RKParamsAttachment* attachment = [params setData:data MIMEType:@"application/octet-stream" forParam:@"post[attachment]"];
+		attachment.fileName = @"image.png";
 	}
 	
-	// Suppress warning. todo: should this method return an <RKRequestSerializable> by default?
-	return (NSDictionary*)params;
+	return params;
 }
 
 @end

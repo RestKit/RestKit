@@ -157,7 +157,7 @@
 	return [self valueForKey:[[self class] primaryKeyProperty]];
 }
 
-- (NSDictionary*)paramsForSerialization {
+- (id<RKRequestSerializable>)paramsForSerialization {
 	NSMutableDictionary* params = [NSMutableDictionary dictionary];
 	for (NSString* elementName in [[self class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[self class] elementToPropertyMappings] objectForKey:elementName];

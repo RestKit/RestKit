@@ -71,7 +71,12 @@
 		
 		for(DBPost* post in model.objects) {
 			NSString* url = [NSString stringWithFormat:@"db://posts/%@", post.postID];
-			[postItems addObject:[TTTableLongTextItem itemWithText:post.body URL:url]];
+			NSString* imageURL = [NSString stringWithFormat:@"%@%@", [RKObjectManager sharedManager].client.baseURL,
+								  post.attachmentPath];
+			TTTableImageItem* item = [TTTableImageItem itemWithText:post.body
+														   imageURL:imageURL
+																URL:url];
+			[postItems addObject:item];
 		}
 		
 		self.dataSource = [TTSectionedDataSource dataSourceWithArrays:@"Topic",

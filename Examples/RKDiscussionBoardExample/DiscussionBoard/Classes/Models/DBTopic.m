@@ -15,6 +15,7 @@
 @dynamic userID;
 @dynamic createdAt;
 @dynamic updatedAt;
+@dynamic username;
 
 #pragma mark RKObjectMappable methods
 
@@ -24,7 +25,8 @@
 					@"name",@"name", 
 					@"user_id",@"userID",
 					@"created_at",@"createdAt", 
-					@"updated_at",@"updatedAt", 
+					@"updated_at",@"updatedAt",
+					@"user_login", @"username",
 					nil];
 }
 
@@ -32,7 +34,7 @@
 	return @"topicID";
 }
 
-- (NSDictionary*)paramsForSerialization {
+- (id<RKRequestSerializable>)paramsForSerialization {
 	return [NSDictionary dictionaryWithObjectsAndKeys:
 			self.name, @"topic[name]", nil];
 }

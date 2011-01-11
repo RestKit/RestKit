@@ -78,6 +78,7 @@
 		_passwordField.returnKeyType = UIReturnKeyGo;
 	}
 	self.dataSource = [TTListDataSource dataSourceWithItems:items];
+	
 	[_usernameField becomeFirstResponder];
 }
 

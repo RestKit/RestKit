@@ -9,6 +9,7 @@
 #import "DiscussionBoardAppDelegate.h"
 #import <RestKit/RestKit.h>
 #import <RestKit/ObjectMapping/RKDynamicRouter.h>
+#import <RestKit/ObjectMapping/RKRailsRouter.h>
 #import <Three20/Three20.h>
 #import <Three20/Three20+Additions.h>
 #import "DBTopicsTableViewController.h"
@@ -52,13 +53,16 @@ static NSString* const kAccessTokenHeaderField = @"HTTP_USER_ACCESS_TOKEN";
 	
 	// Set Up Router
 	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+//	RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
 	[router routeClass:[DBUser class] toResourcePath:@"/signup" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBUser class] toResourcePath:@"/login" forMethod:RKRequestMethodPUT];
 	
+//	[router setModelName:@"topic" forClass:[DBTopic class]];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodPUT];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodDELETE];
 	
+//	[router setModelName:@"post" forClass:[DBPost class]];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
@@ -88,9 +92,6 @@ static NSString* const kAccessTokenHeaderField = @"HTTP_USER_ACCESS_TOKEN";
 	NSLog(@"Token: %@", user.singleAccessToken);
 	NSLog(@"User: %@", user);
 	[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:@"USER_ACCESS_TOKEN"];
-	
-	// Testing
-	TTOpenURL(@"db://posts/9");
 	
 	return YES;
 }

@@ -8,6 +8,7 @@
 
 #import "DBPostTableViewController.h"
 #import <Three20/Three20+Additions.h>
+#import "DBUser.h"
 
 @implementation DBPostTableViewController
 
@@ -51,9 +52,6 @@
 	}
 	
 	_requiresLoggedInUser = YES;
-	if (![self isNewRecord]) {
-		_requiredUserID = _post.userID;
-	}
 	
 	[super loadView];
 	
@@ -61,40 +59,56 @@
 	_bodyTextEditor.font = [UIFont systemFontOfSize:12];
 	_bodyTextEditor.autoresizesToText = NO;
 	_bodyTextEditor.delegate = self;
+	_bodyTextEditor.text = _post.body;
 }
 
 - (void)createModel {
+	BOOL isAuthorizedUser = [[DBUser currentUser].userID isEqualToNumber:_post.userID] || [self isNewRecord];
+	
 	NSMutableArray* items = [NSMutableArray array];
 	
-	_bodyTextEditor.text = _post.body;
-	
-	[items addObject:[TTTableControlItem itemWithCaption:@"" control:(UIControl*)_bodyTextEditor]];
-	
 	// Attachment item.
-	if (_newAttachment) {
-		// has new attachment. show it. allow update.
-		[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:@"" defaultImage:_newAttachment URL:@"db://updateAttachment"]];
-	} else if (![[_post attachmentPath] isWhitespaceAndNewlines]) {
-		// Has existing attachment. allow replace
-		NSString* url = [NSString stringWithFormat:@"%@%@", [RKObjectManager sharedManager].client.baseURL, _post.attachmentPath];
-		[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:url defaultImage:nil URL:@"db://updateAttachment"]];
+	if (isAuthorizedUser) {
+		[items addObject:[TTTableControlItem itemWithCaption:@"" control:(UIControl*)_bodyTextEditor]];
+		if (_newAttachment) {
+			// has new attachment. show it. allow update.
+			[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:@"" defaultImage:_newAttachment URL:@"db://updateAttachment"]];
+		} else if (![[_post attachmentPath] isWhitespaceAndNewlines]) {
+			// Has existing attachment. allow replace
+			NSString* url = [NSString stringWithFormat:@"%@%@", [RKObjectManager sharedManager].client.baseURL, _post.attachmentPath];
+			[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:url defaultImage:nil URL:@"db://updateAttachment"]];
+		} else {
+			// has no attachment. allow new one.
+			[items addObject:[TTTableTextItem itemWithText:@"Tap to Add Image" URL:@"db://updateAttachment"]];
+		}
 	} else {
-		// has no attachment. allow new one.
-		[items addObject:[TTTableTextItem itemWithText:@"Tap to Add Image" URL:@"db://updateAttachment"]];
+		[items addObject:[TTTableLongTextItem itemWithText:_post.body]];
+		NSString* url = [NSString stringWithFormat:@"%@%@", [RKObjectManager sharedManager].client.baseURL, _post.attachmentPath];
+		[items addObject:[TTTableImageItem itemWithText:@"" imageURL:url URL:nil]];
 	}
 	
 	if ([self isNewRecord]) {
 		self.title = @"New Post";
 		[items addObject:[TTTableButton itemWithText:@"Create" delegate:self selector:@selector(createButtonWasPressed:)]];
 	} else {
-		self.title = @"Edit Post";
-		[items addObject:[TTTableButton itemWithText:@"Update" delegate:self selector:@selector(updateButtonWasPressed:)]];
-		[items addObject:[TTTableButton itemWithText:@"Delete" delegate:self selector:@selector(destroyButtonWasPressed:)]];
+		if (isAuthorizedUser) {
+			self.title = @"Edit Post";
+			[items addObject:[TTTableButton itemWithText:@"Update" delegate:self selector:@selector(updateButtonWasPressed:)]];
+			[items addObject:[TTTableButton itemWithText:@"Delete" delegate:self selector:@selector(destroyButtonWasPressed:)]];
+		} else {
+			self.title = @"Post";
+		}
 	}
-	self.dataSource = [TTListDataSource dataSourceWithItems:items];
+	NSString* byLine = @"";
+	if (![self isNewRecord]) {
+		NSString* username = (isAuthorizedUser ? @"me" : _post.username);
+		byLine = [NSString stringWithFormat:@"posted by %@", username];
+	}
+	self.dataSource = [TTSectionedDataSource dataSourceWithArrays:byLine, items, nil];
 }
 
 - (void)updateAttachment {
+	[_bodyTextEditor resignFirstResponder];
 	UIImagePickerController* controller = [[[UIImagePickerController alloc] init] autorelease];
 	controller.delegate = self;
 	[self presentModalViewController:controller animated:YES];

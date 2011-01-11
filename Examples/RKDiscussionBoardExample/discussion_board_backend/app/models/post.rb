@@ -7,4 +7,8 @@ class Post < ActiveRecord::Base
     attachment.url
   end
   
+  def user_login
+    user.login
+  end
+  
 end
