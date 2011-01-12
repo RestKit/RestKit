@@ -36,6 +36,7 @@
 }
 
 - (void)viewDidUnload {
+	[super viewDidUnload];
 	[_loadedAtLabel release];
 	_loadedAtLabel = nil;
 	

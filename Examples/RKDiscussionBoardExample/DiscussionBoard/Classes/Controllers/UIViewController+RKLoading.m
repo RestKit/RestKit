@@ -7,28 +7,33 @@
 //
 
 #import "UIViewController+RKLoading.h"
-
+#import <Three20/Three20.h>
 
 @implementation UIViewController (RKLoading)
 
 - (void)requestDidStartLoad:(RKRequest*)request {
 	UIView* overlayView = [self.view viewWithTag:66];
-	UIView* progressView = [self.view viewWithTag:67];
-	if (overlayView == nil && progressView == nil) {
-		overlayView = [[UIView alloc] initWithFrame:self.view.bounds];
+	if (overlayView == nil) {
+		overlayView = [[TTActivityLabel alloc] initWithFrame:self.view.bounds style:TTActivityLabelStyleBlackBox text:@"Loading..."];
 		overlayView.backgroundColor = [UIColor blackColor];
 		overlayView.alpha = 0.5;
 		overlayView.tag = 66;
-		progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 100, 300, 20)];
-		progressView.tag = 67;
 		
 		[self.view addSubview:overlayView];
-		[self.view addSubview:progressView];
 	}
 }
 
 - (void)request:(RKRequest*)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
 	UIProgressView* progressView = (UIProgressView*)[self.view viewWithTag:67];
+	if (progressView == nil) {
+		if (totalBytesWritten >= totalBytesExpectedToWrite) {
+			// Uploaded all data at once. don't need a progress bar.
+			return;
+		}
+		progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 100, 300, 20)];
+		progressView.tag = 67;
+		[self.view addSubview:progressView];
+	}
 	progressView.progress = totalBytesWritten / (float)totalBytesExpectedToWrite;
 }
 
