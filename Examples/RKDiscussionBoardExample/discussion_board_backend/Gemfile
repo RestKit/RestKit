@@ -31,4 +31,5 @@ gem 'ruby-debug'
 # end
 
 gem 'authlogic', '2.1.6', :require => 'authlogic'
+gem 'aws-s3'
 gem 'paperclip'

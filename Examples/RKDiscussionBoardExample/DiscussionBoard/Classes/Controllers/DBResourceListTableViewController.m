@@ -59,6 +59,7 @@
 }
 
 - (void)didLoadModel:(BOOL)firstTime {
+	[super didLoadModel:firstTime];
 	if ([self.model isKindOfClass:[RKRequestTTModel class]]) {
 		RKRequestTTModel* model = (RKRequestTTModel*)self.model;
 		

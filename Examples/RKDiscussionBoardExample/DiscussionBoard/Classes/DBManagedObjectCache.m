@@ -13,14 +13,6 @@
 @implementation DBManagedObjectCache
 
 - (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath {
-	// Don't return anything from the cache if we are online..
-	// If we return cached objects, RestKit assumes they are up to date
-	// and does not hit the server.
-	
-//	if ([[RKObjectManager sharedManager] isOnline]) {
-//		return nil;
-//	}
-	
 	if ([resourcePath isEqualToString:@"/topics"]) {
 		NSFetchRequest* request = [DBTopic fetchRequest];
 		NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:YES];

@@ -75,7 +75,7 @@
 			[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:@"" defaultImage:_newAttachment URL:@"db://updateAttachment"]];
 		} else if (![[_post attachmentPath] isWhitespaceAndNewlines]) {
 			// Has existing attachment. allow replace
-			NSString* url = [NSString stringWithFormat:@"%@%@", [RKObjectManager sharedManager].client.baseURL, _post.attachmentPath];
+			NSString* url = _post.attachmentPath;
 			[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:url defaultImage:nil URL:@"db://updateAttachment"]];
 		} else {
 			// has no attachment. allow new one.
@@ -83,7 +83,7 @@
 		}
 	} else {
 		[items addObject:[TTTableLongTextItem itemWithText:_post.body]];
-		NSString* url = [NSString stringWithFormat:@"%@%@", [RKObjectManager sharedManager].client.baseURL, _post.attachmentPath];
+		NSString* url = _post.attachmentPath;
 		[items addObject:[TTTableImageItem itemWithText:@"" imageURL:url URL:nil]];
 	}
 	
@@ -129,6 +129,7 @@
 	_post.newAttachment = _newAttachment;
 	[[RKObjectManager sharedManager] postObject:_post delegate:self];
 }
+
 
 - (void)updateButtonWasPressed:(id)sender {
 	_post.body = _bodyTextEditor.text;

@@ -22,7 +22,7 @@
 #import "DBUser.h"
 #import "DBPostTableViewController.h"
 
-static NSString* const kAccessTokenHeaderField = @"HTTP_USER_ACCESS_TOKEN";
+static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 
 @implementation DiscussionBoardAppDelegate
 
@@ -81,6 +81,8 @@ static NSString* const kAccessTokenHeaderField = @"HTTP_USER_ACCESS_TOKEN";
 	
 	
 	[map from:@"*" toViewController:[TTWebController class]];
+	
+	[[TTURLRequestQueue mainQueue] setMaxContentLength:0]; // Don't limit content length.
 	
 	TTOpenURL(@"db://topics");
 	[[TTNavigator navigator].window makeKeyAndVisible];

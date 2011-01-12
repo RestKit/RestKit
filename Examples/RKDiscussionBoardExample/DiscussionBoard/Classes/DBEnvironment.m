@@ -8,8 +8,8 @@
 
 #import "DBEnvironment.h"
 
-NSString* const kDBBaseURLString = @"http://localhost:3000";
-//NSString* const kDBBaseURLString = @"http://discussionboard.heroku.com";
+//NSString* const kDBBaseURLString = @"http://localhost:3000";
+NSString* const kDBBaseURLString = @"http://discussionboard.heroku.com";
 
 NSString* const kCurrentUserIDKey = @"currentUserKey";
 

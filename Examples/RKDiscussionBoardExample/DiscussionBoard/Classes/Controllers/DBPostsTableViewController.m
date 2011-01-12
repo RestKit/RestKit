@@ -71,18 +71,19 @@
 		
 		for(DBPost* post in model.objects) {
 			NSString* url = [NSString stringWithFormat:@"db://posts/%@", post.postID];
-			NSString* imageURL = [NSString stringWithFormat:@"%@%@", [RKObjectManager sharedManager].client.baseURL,
-								  post.attachmentPath];
+			NSString* imageURL = post.attachmentPath;
 			TTTableImageItem* item = [TTTableImageItem itemWithText:post.body
 														   imageURL:imageURL
 																URL:url];
 			[postItems addObject:item];
 		}
 		
-		self.dataSource = [TTSectionedDataSource dataSourceWithArrays:@"Topic",
+		TTSectionedDataSource* dataSource = [TTSectionedDataSource dataSourceWithArrays:@"Topic",
 																	  topicItems,
 																	  @"Posts",
 																	  postItems, nil];
+		dataSource.model = model;
+		self.dataSource = dataSource;
 	}
 }
 

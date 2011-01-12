@@ -31,6 +31,10 @@ GEM
     arel (2.0.6)
     authlogic (2.1.6)
       activesupport
+    aws-s3 (0.5.1)
+      builder
+      mime-types
+      xml-simple
     builder (2.1.2)
     columnize (0.3.2)
     erubis (2.6.6)
@@ -66,6 +70,9 @@ GEM
       rake (>= 0.8.7)
       thor (~> 0.14.4)
     rake (0.8.7)
+    right_aws (1.10.0)
+      right_http_connection (>= 1.2.4)
+    right_http_connection (1.2.4)
     ruby-debug (0.10.4)
       columnize (>= 0.1)
       ruby-debug-base (~> 0.10.4.0)
@@ -76,13 +83,16 @@ GEM
     treetop (1.4.9)
       polyglot (>= 0.3.1)
     tzinfo (0.3.23)
+    xml-simple (1.0.12)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   authlogic (= 2.1.6)
+  aws-s3
   paperclip
   rails (= 3.0.3)
+  right_aws
   ruby-debug
   sqlite3-ruby

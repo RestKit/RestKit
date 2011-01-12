@@ -12,6 +12,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */; };
 		3F255A9712DB5F9200AFD2D1 /* DBManagedObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255A9612DB5F9200AFD2D1 /* DBManagedObjectCache.m */; };
 		3F255C9812DB70E200AFD2D1 /* DBPostsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255C9312DB70E200AFD2D1 /* DBPostsTableViewController.m */; };
 		3F255C9912DB70E200AFD2D1 /* DBResourceListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255C9512DB70E200AFD2D1 /* DBResourceListTableViewController.m */; };
@@ -35,6 +36,7 @@
 		3F4562D012D7E50A00BE25AD /* libThree20Style-Xcode3.2.5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F45625A12D7E47000BE25AD /* libThree20Style-Xcode3.2.5.a */; };
 		3F4562D112D7E50C00BE25AD /* libThree20UI-Xcode3.2.5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F45629012D7E47000BE25AD /* libThree20UI-Xcode3.2.5.a */; };
 		3F4562D212D7E50F00BE25AD /* libThree20UICommon-Xcode3.2.5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F45626C12D7E47000BE25AD /* libThree20UICommon-Xcode3.2.5.a */; };
+		3F49C15B12DE1D9900FDE614 /* RKRequestTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */; };
 		3F76BBD612D7DA9D001562DC /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */; };
 		A7A2D33A12D780DD00683D6F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D33912D780DD00683D6F /* QuartzCore.framework */; };
 		A7A2D3C412D7829E00683D6F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C312D7829E00683D6F /* CFNetwork.framework */; };
@@ -476,6 +478,8 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* DiscussionBoard_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscussionBoard_Prefix.pch; sourceTree = "<group>"; };
+		3F22448612DDFCB30002559D /* UIViewController+RKLoading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+RKLoading.h"; sourceTree = "<group>"; };
+		3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+RKLoading.m"; sourceTree = "<group>"; };
 		3F255A9512DB5F9200AFD2D1 /* DBManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBManagedObjectCache.h; sourceTree = "<group>"; };
 		3F255A9612DB5F9200AFD2D1 /* DBManagedObjectCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBManagedObjectCache.m; sourceTree = "<group>"; };
 		3F255C9212DB70E200AFD2D1 /* DBPostsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBPostsTableViewController.h; sourceTree = "<group>"; };
@@ -505,6 +509,8 @@
 		3F45622412D7E46F00BE25AD /* Three20UINavigator.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Three20UINavigator.xcodeproj; path = ../../../../three20/src/Three20UINavigator/Three20UINavigator.xcodeproj; sourceTree = SOURCE_ROOT; };
 		3F45622712D7E46F00BE25AD /* Three20UI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Three20UI.xcodeproj; path = ../../../../three20/src/Three20UI/Three20UI.xcodeproj; sourceTree = SOURCE_ROOT; };
 		3F45622A12D7E46F00BE25AD /* Three20.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Three20.xcodeproj; path = ../../../../three20/src/Three20/Three20.xcodeproj; sourceTree = SOURCE_ROOT; };
+		3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKRequestTTModel+Loading.h"; sourceTree = "<group>"; };
+		3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKRequestTTModel+Loading.m"; sourceTree = "<group>"; };
 		3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DiscussionBoard-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A7A2D33912D780DD00683D6F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -634,6 +640,8 @@
 				3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */,
 				3F3239EB12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.h */,
 				3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */,
+				3F22448612DDFCB30002559D /* UIViewController+RKLoading.h */,
+				3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -647,6 +655,8 @@
 				3F255C9F12DB70E700AFD2D1 /* DBTopic.m */,
 				3F255CA612DB711900AFD2D1 /* DBUser.h */,
 				3F255CA712DB711900AFD2D1 /* DBUser.m */,
+				3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */,
+				3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1243,6 +1253,8 @@
 				3F255D1E12DB779B00AFD2D1 /* DBLoginViewController.m in Sources */,
 				3F3239E112DBB9C600AB2F6E /* DBPostTableViewController.m in Sources */,
 				3F3239ED12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m in Sources */,
+				3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */,
+				3F49C15B12DE1D9900FDE614 /* RKRequestTTModel+Loading.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1318,6 +1330,7 @@
 					../../../../three20/Build/Products/three20,
 				);
 				INFOPLIST_FILE = "DiscussionBoard-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -1340,6 +1353,7 @@
 					../../../../three20/Build/Products/three20,
 				);
 				INFOPLIST_FILE = "DiscussionBoard-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
