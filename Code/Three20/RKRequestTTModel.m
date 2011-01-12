@@ -38,7 +38,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 + (NSDate*)defaultLoadedTime {
 	NSDate* defaultLoadedTime = [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultLoadedTimeKey];
 	if (defaultLoadedTime == nil) {
-		defaultLoadedTime = [NSDate date];
+		defaultLoadedTime = [NSDate dateWithTimeIntervalSinceNow:-defaultRefreshRate];
 		[[NSUserDefaults standardUserDefaults] setObject:defaultLoadedTime forKey:kDefaultLoadedTimeKey];
 	}
 	return defaultLoadedTime;
