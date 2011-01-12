@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 2/19/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//
 //
 
 #import "Network/Network.h"

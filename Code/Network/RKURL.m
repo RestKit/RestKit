@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 10/18/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//
 //
 
 #import "RKURL.h"
