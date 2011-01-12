@@ -33,7 +33,6 @@ static RKObjectManager* sharedManager = nil;
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
 		self.format = RKMappingFormatJSON;
 		_onlineState = RKObjectManagerOnlineStateUndetermined;
-		_onlineStateForced = NO;
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)
 													 name:RKReachabilityStateChangedNotification
@@ -85,18 +84,6 @@ static RKObjectManager* sharedManager = nil;
 	[super dealloc];
 }
 
-- (void)goOffline {
-	_onlineState = RKObjectManagerOnlineStateDisconnected;
-	_onlineStateForced = YES;
-	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
-}
-
-- (void)goOnline {
-	_onlineState = RKObjectManagerOnlineStateConnected;
-	_onlineStateForced = YES;
-	[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
-}
-
 - (BOOL)isOnline {
 	return (_onlineState == RKObjectManagerOnlineStateConnected);
 }
@@ -106,16 +93,14 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (void)reachabilityChanged:(NSNotification*)notification {	
-	if (!_onlineStateForced) {
-		BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-		
-		_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
-		
-		if (isHostReachable) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
-		} else {
-			[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
-		}
+	BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
+	
+	_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
+	
+	if (isHostReachable) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
+	} else {
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
 	}
 }
 

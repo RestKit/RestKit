@@ -69,14 +69,17 @@
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+- (void)ensureDidStartLoading {
 	if (NO == _loading) {
 		_loading = YES;
 		if ([[_request delegate] respondsToSelector:@selector(requestDidStartLoad:)]) {
 			[[_request delegate] requestDidStartLoad:_request];
 		}
 	}
+}
 
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+	[self ensureDidStartLoading];
 	[_body appendData:data];
 }
 
@@ -94,6 +97,8 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+	[self ensureDidStartLoading];
+	
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 	}

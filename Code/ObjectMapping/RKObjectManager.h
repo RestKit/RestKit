@@ -32,7 +32,6 @@ typedef enum {
 	NSObject<RKRouter>* _router;
 	RKManagedObjectStore* _objectStore;	
 	RKObjectManagerOnlineState _onlineState;
-	BOOL _onlineStateForced;
 }
 
 /**
@@ -74,16 +73,6 @@ typedef enum {
  * The REST client for this manager
  */
 @property (nonatomic, retain) RKClient* client;
-
-/**
- * Puts the manager into offline mode. Requests will not be sent.
- */
-- (void)goOffline;
-
-/**
- * Puts the manager into online mode. Requests will be sent.
- */
-- (void)goOnline;
 
 /**
  * True when we are in online mode
