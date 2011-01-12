@@ -69,7 +69,7 @@
     }
 }
 
-- (void)ensureDidStartLoading {
+- (void)dispatchRequestDidStartLoadIfNecessary {
 	if (NO == _loading) {
 		_loading = YES;
 		if ([[_request delegate] respondsToSelector:@selector(requestDidStartLoad:)]) {
@@ -79,11 +79,11 @@
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-	[self ensureDidStartLoading];
 	[_body appendData:data];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
+	[self dispatchRequestDidStartLoadIfNecessary];
 	_httpURLResponse = [response retain];
 }
 
@@ -96,8 +96,14 @@
 	[_request didFailLoadWithError:_failureError];
 }
 
+// In the event that the url request is a post, this delegate method will be called before
+// either connection:didReceiveData: or connection:didReceiveResponse:
+// However this method is only called if there is payload data to be sent.
+// Therefore, we ensure the delegate recieves the did start loading here and
+// in connection:didReceiveResponse: to ensure that the RKRequestDelegate
+// callbacks get called in the correct order.
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	[self ensureDidStartLoading];
+	[self dispatchRequestDidStartLoadIfNecessary];
 	
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
