@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import "RKRequest.h"

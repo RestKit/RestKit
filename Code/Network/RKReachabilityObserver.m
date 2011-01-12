@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/14/10.
-//
+//  Copyright 2010 RestKit. All rights reserved.
 //
 
 #import "RKReachabilityObserver.h"

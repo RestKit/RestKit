@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/3/09.
-//
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

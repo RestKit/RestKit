@@ -3,7 +3,7 @@
 //  Two Toasters
 //
 //  Created by Blake Watters on 8/26/09.
-//
+//  Copyright 2009 Two Toasters. All rights reserved.
 //
 
 #import "RKSearchEngine.h"

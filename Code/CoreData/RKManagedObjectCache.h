@@ -3,7 +3,7 @@
  *  RestKit
  *
  *  Created by Jeff Arena on 10/15/10.
- *
+ *  Copyright 2010 GateGuru. All rights reserved.
  *
  */
 
