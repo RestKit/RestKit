@@ -21,15 +21,20 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 	NSString* _storeFilename;	
     NSManagedObjectModel* _managedObjectModel;
 	NSPersistentStoreCoordinator* _persistentStoreCoordinator;
-    NSManagedObjectContext* _managedObjectContext;
 	NSObject<RKManagedObjectCache>* _managedObjectCache;
 }
 
 @property (nonatomic, readonly) NSString* storeFilename;
 @property (nonatomic, readonly) NSManagedObjectModel* managedObjectModel;
-@property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, readonly) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 @property (nonatomic, retain) NSObject<RKManagedObjectCache>* managedObjectCache;
+
+/*
+ * This returns an appropriate managed object context for this object store.
+ * Because of the intrecacies of how CoreData works across threads it returns
+ * a different NSManagedObjectContext for each thread.
+ */
+@property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified

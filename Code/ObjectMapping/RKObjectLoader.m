@@ -116,13 +116,13 @@
 			error = [_mapper parseErrorFromString:[response bodyAsString]];
 			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 
-		} else if ([response isServiceUnavailable] && [[RKClient sharedClient] serviceUnavailableAlertEnabled]) {
+		} else if ([response isServiceUnavailable] && [_client serviceUnavailableAlertEnabled]) {
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}
 
-			UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[RKClient sharedClient] serviceUnavailableAlertTitle]
-																message:[[RKClient sharedClient] serviceUnavailableAlertMessage]
+			UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[_client serviceUnavailableAlertTitle]
+																message:[_client serviceUnavailableAlertMessage]
 															   delegate:nil
 													  cancelButtonTitle:NSLocalizedString(@"OK", nil)
 													  otherButtonTitles:nil];
@@ -154,7 +154,9 @@
 	NSMutableArray* objects = [NSMutableArray arrayWithCapacity:[models count]];
 	for (id object in models) {
 		if ([object isKindOfClass:[NSManagedObjectID class]]) {
-			[objects addObject:[self.managedObjectStore objectWithID:(NSManagedObjectID*)object]];
+			id obj = [self.managedObjectStore objectWithID:(NSManagedObjectID*)object];
+			NSLog(@"OBJ: %@", obj);
+			[objects addObject:obj];
 		} else {
 			[objects addObject:object];
 		}

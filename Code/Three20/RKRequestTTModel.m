@@ -215,17 +215,10 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (void)showAlertWithOptionToGoOfflineForError:(NSError*)error {
 	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:TTLocalizedString(@"Network Error", @"")
 													 message:[error localizedDescription]
-													delegate:self
+													delegate:nil
 										   cancelButtonTitle:TTLocalizedString(@"OK", @"")
-										   otherButtonTitles:TTLocalizedString(@"Go Offline", @""), nil] autorelease];
+										   otherButtonTitles:nil] autorelease];
 	[alert show];
-}
-
-- (void)alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-	// Go Offline button
-	if (1 == buttonIndex) {
-		[[RKObjectManager sharedManager] goOffline];
-	}
 }
 
 - (void)modelsDidLoad:(NSArray*)models {

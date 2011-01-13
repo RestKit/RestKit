@@ -23,7 +23,6 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 @synthesize storeFilename = _storeFilename;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectCache = _managedObjectCache;
 
 - (id)initWithStoreFilename:(NSString*)storeFilename {
@@ -31,8 +30,6 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		_storeFilename = [storeFilename retain];
 		_managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];
 		[self createPersistentStoreCoordinator];
-		_managedObjectContext = [self newManagedObjectContext];
-		_managedObjectCache = nil;
 	}
 	
 	return self;
@@ -42,8 +39,6 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[_storeFilename release];
 	_storeFilename = nil;
-	[_managedObjectContext release];
-	_managedObjectContext = nil;
     [_managedObjectModel release];
 	_managedObjectModel = nil;
     [_persistentStoreCoordinator release];
@@ -125,10 +120,12 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	}
 	
 	[_persistentStoreCoordinator release];
-	[_managedObjectContext release];
+	
+	// Clear the current managed object context. Will be re-created next time it is accessed.
+	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+	[threadDictionary setObject:nil forKey:kRKManagedObjectContextKey];
 	
 	[self createPersistentStoreCoordinator];
-	_managedObjectContext = [self newManagedObjectContext];
 }
 
 /**
@@ -138,29 +135,30 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
  *
  */
 -(NSManagedObjectContext*)managedObjectContext {
-	if ([NSThread isMainThread]) {
-		return _managedObjectContext;
-	} else {
-		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-		NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:kRKManagedObjectContextKey];
-		if (!backgroundThreadContext) {
-			backgroundThreadContext = [self newManagedObjectContext];					
-			[threadDictionary setObject:backgroundThreadContext forKey:kRKManagedObjectContextKey];			
-			[backgroundThreadContext release];
-			
-			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mergeChanges:)
-														 name:NSManagedObjectContextDidSaveNotification
-													   object:backgroundThreadContext];
-		}
-		return backgroundThreadContext;
+	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+	NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:kRKManagedObjectContextKey];
+	if (!backgroundThreadContext) {
+		backgroundThreadContext = [self newManagedObjectContext];					
+		[threadDictionary setObject:backgroundThreadContext forKey:kRKManagedObjectContextKey];			
+		[backgroundThreadContext release];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mergeChanges:)
+													 name:NSManagedObjectContextDidSaveNotification
+												   object:backgroundThreadContext];
 	}
+	return backgroundThreadContext;
 }
 
-- (void)mergeChanges:(NSNotification *)notification {	
-	// Merge changes into the main context on the main thread
-	[_managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
+- (void)mergeChangesOnMainThreadWithNotification:(NSNotification*)notification {
+	assert([NSThread isMainThread]);
+	[self.managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
 											withObject:notification
 										 waitUntilDone:YES];
+}
+
+- (void)mergeChanges:(NSNotification *)notification {
+	// Merge changes into the main context on the main thread
+	[self performSelectorOnMainThread:@selector(mergeChangesOnMainThreadWithNotification:) withObject:notification waitUntilDone:YES];
 }
 
 - (void)objectsDidChange:(NSNotification*)notification {
