@@ -15,6 +15,9 @@
 
 @interface RKObjectMapperSpec : NSObject <UISpec>
 
+- (NSString*)jsonString;
+- (NSString*)jsonCollectionString;
+
 @end
 
 @implementation RKObjectMapperSpec
@@ -26,7 +29,7 @@
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
-	id result = [mapper buildModelFromString:[self jsonString]];
+	id result = [mapper mapFromString:[self jsonString]];
 	
 	[expectThat(result) shouldNot:be(nil)];
 	[expectThat([result dateTest]) shouldNot:be(nil)];
@@ -47,7 +50,9 @@
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
-	NSArray* results = [mapper buildModelsFromString:[self jsonCollectionString]];
+	NSString* collectionString = [self jsonCollectionString];
+	NSArray* results = [mapper mapFromString:collectionString];
+	NSLog(@"Results: %@", results);
 	[expectThat([results count]) should:be(2)];
 	
 	RKMappableObject* result = (RKMappableObject*) [results objectAtIndex:0];
@@ -63,54 +68,55 @@
 	[expectThat([[result hasMany] count]) should:be(2)];
 }
 
-- (void)itShouldMapFromXML {
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
-	mapper.format = RKMappingFormatXML;
-	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
-	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
-	id result = [mapper buildModelFromString:[self xmlString]];
-	
-	[expectThat(result) shouldNot:be(nil)];
-	[expectThat([result dateTest]) shouldNot:be(nil)];
-	[expectThat([result numberTest]) should:be(2)];
-	[expectThat([result stringTest]) should:be(@"SomeString")];
-	
-	[expectThat([result hasOne]) shouldNot:be(nil)];
-	[expectThat([[result hasOne] testString]) should:be(@"A String")];
-	
-	[expectThat([result hasMany]) shouldNot:be(nil)];
-	[expectThat([[result hasMany] count]) should:be(2)];
-}
-
-- (void)itShouldMapObjectsFromXML {
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
-	mapper.format = RKMappingFormatXML;
-	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
-	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
-	NSArray* results = [mapper buildModelsFromString:[self xmlCollectionString]];
-	[expectThat([results count]) should:be(2)];
-	
-	RKMappableObject* result = (RKMappableObject*) [results objectAtIndex:0];
-	[expectThat(result) shouldNot:be(nil)];
-	[expectThat([result dateTest]) shouldNot:be(nil)];
-	[expectThat([result numberTest]) should:be(2)];
-	[expectThat([result stringTest]) should:be(@"SomeString")];
-	
-	[expectThat([result hasOne]) shouldNot:be(nil)];
-	[expectThat([[result hasOne] testString]) should:be(@"A String")];
-	
-	[expectThat([result hasMany]) shouldNot:be(nil)];
-	[expectThat([[result hasMany] count]) should:be(2)];
-}
+// TODO: re-implement these specs when we re-implement xml parsing.
+//- (void)itShouldMapFromXML {
+//	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+//	mapper.format = RKMappingFormatXML;
+//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
+//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
+//	id result = [mapper mapFromString:[self xmlString]];
+//	
+//	[expectThat(result) shouldNot:be(nil)];
+//	[expectThat([result dateTest]) shouldNot:be(nil)];
+//	[expectThat([result numberTest]) should:be(2)];
+//	[expectThat([result stringTest]) should:be(@"SomeString")];
+//	
+//	[expectThat([result hasOne]) shouldNot:be(nil)];
+//	[expectThat([[result hasOne] testString]) should:be(@"A String")];
+//	
+//	[expectThat([result hasMany]) shouldNot:be(nil)];
+//	[expectThat([[result hasMany] count]) should:be(2)];
+//}
+//
+//- (void)itShouldMapObjectsFromXML {
+//	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+//	mapper.format = RKMappingFormatXML;
+//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
+//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
+//	NSArray* results = [mapper mapFromString:[self xmlCollectionString]];
+//	[expectThat([results count]) should:be(2)];
+//	
+//	RKMappableObject* result = (RKMappableObject*) [results objectAtIndex:0];
+//	[expectThat(result) shouldNot:be(nil)];
+//	[expectThat([result dateTest]) shouldNot:be(nil)];
+//	[expectThat([result numberTest]) should:be(2)];
+//	[expectThat([result stringTest]) should:be(@"SomeString")];
+//	
+//	[expectThat([result hasOne]) shouldNot:be(nil)];
+//	[expectThat([[result hasOne] testString]) should:be(@"A String")];
+//	
+//	[expectThat([result hasMany]) shouldNot:be(nil)];
+//	[expectThat([[result hasMany] count]) should:be(2)];
+//}
 
 - (void)itShouldNotUpdateNilPropertyToNil {
 	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
-	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"name"];
+	[mapper updateModel:model ifNewPropertyValue:nil forPropertyNamed:@"name"];
 	
 	[expectThat(model.name) should:be(nil)];
 }
@@ -119,7 +125,7 @@
 	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
 	model.age = [NSNumber numberWithInt:0];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
-	[mapper updateObject:model ifNewPropertyValue:nil forPropertyNamed:@"age"];
+	[mapper updateModel:model ifNewPropertyValue:nil forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be(nil)];
 }
@@ -127,7 +133,7 @@
 - (void)itShouldBeAbleToSetNilPropertiesToNonNil {
 	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
-	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
+	[mapper updateModel:model ifNewPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be([NSNumber numberWithInt:0])];
 }
@@ -137,7 +143,7 @@
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.name = @"Bob";
-	[mapper updateObject:model ifNewPropertyValue:@"Will" forPropertyNamed:@"name"];
+	[mapper updateModel:model ifNewPropertyValue:@"Will" forPropertyNamed:@"name"];
 	[expectThat(model.name) should:be(@"Will")];	
 }
 
@@ -146,7 +152,7 @@
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.age = [NSNumber numberWithInt:16];
-	[mapper updateObject:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
+	[mapper updateModel:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
 	[expectThat(model.age) should:be([NSNumber numberWithInt:17])];	
 }
 
@@ -155,7 +161,7 @@
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.createdAt = [NSDate date];
-	[mapper updateObject:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
+	[mapper updateModel:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
 	[expectThat(model.createdAt) should:be([NSDate dateWithTimeIntervalSince1970:0])];	
 }
 
@@ -192,8 +198,7 @@
 
 - (NSString*)jsonCollectionString {
 	return
-	@"{"
-	@"   \"test_serialization_classes\":["
+	@"["
 	@"      {"
 	@"         \"test_serialization_class\":{"
 	@"            \"date_test\":\"2009-08-17T19:24:40Z\","
@@ -238,8 +243,8 @@
 	@"            ]"
 	@"         }"
 	@"      }"
-	@"   ]"
-	@"}";
+	@"]"
+	@"";
 }
 
 - (NSString*)xmlString {

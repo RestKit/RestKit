@@ -20,6 +20,7 @@
 
 /**
  * This spec requires the test Sinatra server to be running
+ * `ruby Specs/server.rb`
  */
 - (void)itShouldSendMultiPartRequests {
 	NSString* URLString = [NSString stringWithFormat:@"http://%s:4567/photo", getenv("RESTKIT_IP_ADDRESS")];

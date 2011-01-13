@@ -28,11 +28,16 @@
 			@"age", @"age",
 			@"createdAt", @"created-at",
 			@"updatedAt", @"updated-at",
+			@"railsID", @"id",
 			nil];
 }
 
 - (NSString*)polymorphicResourcePath {
 	return @"/this/is/the/path";
+}
+
++ (NSString*)primaryKeyProperty {
+	return @"railsID";
 }
 
 @end

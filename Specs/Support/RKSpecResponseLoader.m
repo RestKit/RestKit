@@ -19,7 +19,7 @@
 
 - (id)init {
 	if (self = [super init]) {
-		_timeout = 10;
+		_timeout = 100;
 		_awaitingResponse = NO;
 	}
 	
@@ -53,11 +53,13 @@
 	_success = YES;
 }
 
-- (void)resourceLoadRequest:(RKRequest*)request didLoadObjects:(NSArray*)objects response:(RKResponse*)response object:(id<RKObjectMappable>)object {
-	[self loadResponse:response];
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
+	NSLog(@"Response: %@", [objectLoader.response bodyAsString]);
+	[self loadResponse:objects];
 }
 
-- (void)resourceLoadRequest:(RKRequest*)request didFailWithError:(NSError*)error response:(RKResponse*)response object:(id<RKObjectMappable>)object {
+- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error; {
+	NSLog(@"Error: %@", error);
 	_awaitingResponse = NO;
 	_success = NO;
 	_failureError = [error retain];
