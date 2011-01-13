@@ -22,16 +22,24 @@
 			keyPath = _keyPath, managedObjectStore = _managedObjectStore;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	return [[[self alloc] initWithResourcePath:resourcePath mapper:mapper delegate:delegate] autorelease];
+	return [self loaderWithResourcePath:resourcePath client:[RKClient sharedClient] mapper:mapper delegate:delegate];
+}
+
++ (id)loaderWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+	return [[[self alloc] initWithResourcePath:resourcePath client:client mapper:mapper delegate:delegate] autorelease];
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	if (self = [self initWithURL:[[RKClient sharedClient] URLForResourcePath:resourcePath] delegate:delegate]) {
+	return [self initWithResourcePath:resourcePath client:[RKClient sharedClient] mapper:mapper delegate:delegate];
+}
+
+- (id)initWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+	if (self = [self initWithURL:[client URLForResourcePath:resourcePath] delegate:delegate]) {
 		_mapper = [mapper retain];
 		self.managedObjectStore = nil;
 		_targetObjectID = nil;
-
-		[[RKClient sharedClient] setupRequest:self];
+		_client = [client retain];
+		[_client setupRequest:self];
 	}
 	return self;
 }
@@ -47,6 +55,8 @@
 	_targetObject = nil;
 	[_targetObjectID release];
 	_targetObjectID = nil;
+	[_client release];
+	_client = nil;
 	self.managedObjectStore = nil;
 	[super dealloc];
 }

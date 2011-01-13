@@ -48,6 +48,7 @@
 	NSString* _keyPath;
 	RKManagedObjectStore* _managedObjectStore;
 	NSManagedObjectID* _targetObjectID;
+	RKClient* _client;
 }
 
 /**
@@ -89,10 +90,12 @@
  * Return an auto-released loader with with an object mapper, a request, and a delegate
  */
 + (id)loaderWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
++ (id)loaderWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Initialize a new object loader with an object mapper, a request, and a delegate
  */
-- (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;																   
+- (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;									
+- (id)initWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 @end
