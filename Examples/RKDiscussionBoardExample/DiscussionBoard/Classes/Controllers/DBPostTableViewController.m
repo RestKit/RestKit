@@ -32,6 +32,7 @@
 	[super dealloc];
 }
 
+// TODO: Move this into the model
 - (BOOL)isNewRecord {
 	return [[_post postID] intValue] == 0;
 }
@@ -50,11 +51,11 @@
 		_post = [[DBPost object] retain];
 		_post.topicID = _topicID;
 	}
-	
+
 	_requiresLoggedInUser = YES;
-	
+
 	[super loadView];
-	
+
 	_bodyTextEditor = [[TTTextEditor alloc] initWithFrame:CGRectMake(0, 0, 300, 120)];
 	_bodyTextEditor.font = [UIFont systemFontOfSize:12];
 	_bodyTextEditor.autoresizesToText = NO;
@@ -64,9 +65,9 @@
 
 - (void)createModel {
 	BOOL isAuthorizedUser = [[DBUser currentUser].userID isEqualToNumber:_post.userID] || [self isNewRecord];
-	
+
 	NSMutableArray* items = [NSMutableArray array];
-	
+
 	// Attachment item.
 	if (isAuthorizedUser) {
 		[items addObject:[TTTableControlItem itemWithCaption:@"" control:(UIControl*)_bodyTextEditor]];
@@ -86,7 +87,7 @@
 		NSString* url = _post.attachmentPath;
 		[items addObject:[TTTableImageItem itemWithText:@"" imageURL:url URL:nil]];
 	}
-	
+
 	if ([self isNewRecord]) {
 		self.title = @"New Post";
 		[items addObject:[TTTableButton itemWithText:@"Create" delegate:self selector:@selector(createButtonWasPressed:)]];

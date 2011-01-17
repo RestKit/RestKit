@@ -1,0 +1,50 @@
+//
+// Copyright 2009-2010 Facebook
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+#import <Foundation/Foundation.h>
+
+@class TTPostController;
+
+@protocol TTPostControllerDelegate <NSObject>
+@optional
+
+/**
+ * The user has posted text and an animation is about to show the text return to its origin.
+ *
+ * @return whether to dismiss the controller or wait for the user to call dismiss.
+ */
+- (BOOL)postController:(TTPostController*)postController willPostText:(NSString*)text;
+
+/**
+ * The text will animate towards a rectangle.
+ *
+ * @return the rect in screen coordinates where the text should animate towards.
+ */
+- (CGRect)postController:(TTPostController*)postController willAnimateTowards:(CGRect)rect;
+
+/**
+ * The text has been posted.
+ */
+- (void)postController: (TTPostController*)postController
+           didPostText: (NSString*)text
+            withResult: (id)result;
+
+/**
+ * The controller was cancelled before posting.
+ */
+- (void)postControllerDidCancel:(TTPostController*)postController;
+
+@end
