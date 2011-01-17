@@ -16,6 +16,7 @@
 - (id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query {
 	if (self = [super initWithNavigatorURL:URL query:query]) {
 		self.title = @"Topics";
+		_tableTitleHeaderLabel.text = @"Recent Topics";		
 		_resourcePath = [@"/topics" retain];
 		_resourceClass = [DBTopic class];
 	}

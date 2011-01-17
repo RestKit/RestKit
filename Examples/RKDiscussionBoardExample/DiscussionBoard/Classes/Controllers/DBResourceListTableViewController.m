@@ -13,18 +13,30 @@
 
 - (void)loadView {
 	[super loadView];
+	UIImageView* backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.png"]];
+	[self.navigationController.view addSubview:backgroundImage];
+	[self.navigationController.view sendSubviewToBack:backgroundImage];
+	[self.view setBackgroundColor:[UIColor clearColor]];
+	[self.tableView setBackgroundColor:[UIColor clearColor]];
 
-	UIView* tableHeaderView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 90)] autorelease];
-	_loadedAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 300, 20)];
+	UIView* tableHeaderView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 31)] autorelease];
+	UIImageView* headerBackgroundImage = [[UIImageView alloc] initWithFrame:tableHeaderView.frame];
+	[headerBackgroundImage setImage:[UIImage imageNamed:@"tableHeaderBackground.png"]];
+	[tableHeaderView addSubview:headerBackgroundImage];
+	_loadedAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(210, 0, 100, 22)];
 	_loadedAtLabel.textAlignment = UITextAlignmentCenter;
+	_loadedAtLabel.font = [UIFont systemFontOfSize:10.0];
+	_loadedAtLabel.backgroundColor = [UIColor clearColor];
+	_loadedAtLabel.textColor = [UIColor colorWithRed:0.53 green:0.56 blue:0.60 alpha:1];
 	[tableHeaderView addSubview:_loadedAtLabel];
-	UIButton* reloadButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-	[reloadButton setTitle:@"Reload" forState:UIControlStateNormal];
+	UIButton* reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	[reloadButton setImage:[UIImage imageNamed:@"reload.png"] forState:UIControlStateNormal];
+	[reloadButton setFrame:CGRectMake(131, 0, 82, 23)];
 	[reloadButton addTarget:self action:@selector(reloadButtonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
-	reloadButton.frame = CGRectMake(100, 40, 100, 40);
 	[tableHeaderView addSubview:reloadButton];
-
-	self.tableView.tableHeaderView = tableHeaderView;
+	[self.view addSubview:tableHeaderView];
+	UIView* tableSpacer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 31)];
+	self.tableView.tableHeaderView = tableSpacer;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userStateChanged:) name:kUserLoggedInNotificationName object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userStateChanged:) name:kUserLoggedOutNotificationName object:nil];
@@ -51,10 +63,6 @@
 	[self invalidateModel];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-}
-
 - (void)createModel {
 	self.model = [[[RKRequestTTModel alloc] initWithResourcePath:_resourcePath] autorelease];
 }
@@ -66,7 +74,7 @@
 
 		NSDateFormatter* formatter = [[[NSDateFormatter alloc] init] autorelease];
 		[formatter setDateFormat:@"hh:mm:ss MM/dd/yy"];
-		_loadedAtLabel.text = [NSString stringWithFormat:@"Loaded At: %@", [formatter stringFromDate:model.loadedTime]];
+		_loadedAtLabel.text = [formatter stringFromDate:model.loadedTime];
 	}
 }
 

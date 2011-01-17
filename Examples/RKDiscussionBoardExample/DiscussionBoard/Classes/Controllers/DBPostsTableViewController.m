@@ -16,7 +16,6 @@
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
 		_topicID = [topicID retain];
-
 		self.title = @"Posts";
 		_resourcePath = [[NSString stringWithFormat:@"/topics/%@/posts", _topicID] retain];
 		_resourceClass = [DBPost class];

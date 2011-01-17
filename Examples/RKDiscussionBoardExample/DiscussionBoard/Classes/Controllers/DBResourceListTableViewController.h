@@ -12,6 +12,7 @@
 
 @interface DBResourceListTableViewController : TTTableViewController {
 	UILabel* _loadedAtLabel;
+	UILabel* _tableTitleHeaderLabel;
 
 	NSString* _resourcePath;
 	Class _resourceClass;
