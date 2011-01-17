@@ -32,7 +32,12 @@
 	}
 	self.navigationItem.leftBarButtonItem = item;
 
-	UIBarButtonItem* newItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addButtonWasPressed:)] autorelease];
+	UIButton* newButton = [UIButton buttonWithType:UIButtonTypeCustom];
+	UIImage* newButtonImage = [UIImage imageNamed:@"add.png"];
+	[newButton setImage:newButtonImage forState:UIControlStateNormal];
+	[newButton addTarget:self action:@selector(addButtonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
+	[newButton setFrame:CGRectMake(0, 0, newButtonImage.size.width, newButtonImage.size.height)];
+	UIBarButtonItem* newItem = [[UIBarButtonItem alloc] initWithCustomView:newButton];
 	self.navigationItem.rightBarButtonItem = newItem;
 }
 
