@@ -693,8 +693,6 @@
 				2590E6711252357200531FA8 /* Vendor */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
-				3F19126812DF6B3200C077AD /* CoreFoundation.framework */,
-				3F19129712DF6B4800C077AD /* CFNetwork.framework */,
 			);
 			name = OTRestFramework;
 			sourceTree = "<group>";
@@ -702,6 +700,8 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3F19126812DF6B3200C077AD /* CoreFoundation.framework */,
+				3F19129712DF6B4800C077AD /* CFNetwork.framework */,
 				3F6C3A9510FE7524008F47C5 /* UIKit.framework */,
 				3F6C3A2D10FE749C008F47C5 /* Foundation.framework */,
 				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
@@ -1884,7 +1884,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				HEADER_SEARCH_PATHS = ../three20/Build/Products/three20;
+				HEADER_SEARCH_PATHS = (
+					../three20/Build/Products/three20,
+					Examples/RKDiscussionBoardExample/DiscussionBoard/Libraries/three20,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -1910,7 +1913,10 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				HEADER_SEARCH_PATHS = ../three20/Build/Products/three20;
+				HEADER_SEARCH_PATHS = (
+					../three20/Build/Products/three20,
+					Examples/RKDiscussionBoardExample/DiscussionBoard/Libraries/three20,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-framework",

@@ -18,7 +18,7 @@
 	NSString* _boundary;
 	NSString* _fileName;
 	NSString* _MIMEType;
-	
+
 	@private
 	NSData*			_MIMEHeader;
 	NSUInteger		_MIMEHeaderLength;
@@ -31,7 +31,7 @@
 /**
  * The parameter name of this attachment in the multi-part document
  */
-@property (nonatomic, readonly) NSString* name;
+@property (nonatomic, retain) NSString* name;
 
 /**
  * The name of the attached file in the MIME stream
@@ -40,10 +40,11 @@
 @property (nonatomic, retain) NSString* fileName;
 
 /**
- * The MIME type of the attached file in the MIME stream
+ * The MIME type of the attached file in the MIME stream. MIME Type will be
+ * auto-detected from the file extension of the attached file.
+ *
  * Defaults to nil
  */
-// TODO: Autodetect from the MIME Type from the file extension
 @property (nonatomic, retain) NSString* MIMEType;
 
 /**

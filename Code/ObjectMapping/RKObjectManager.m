@@ -92,11 +92,11 @@ static RKObjectManager* sharedManager = nil;
 	return ![self isOnline];
 }
 
-- (void)reachabilityChanged:(NSNotification*)notification {	
+- (void)reachabilityChanged:(NSNotification*)notification {
 	BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-	
+
 	_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
-	
+
 	if (isHostReachable) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
 	} else {
@@ -121,9 +121,9 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	RKObjectLoader* loader = [RKObjectLoader loaderWithResourcePath:resourcePath client:_client mapper:self.mapper delegate:delegate];
+	RKObjectLoader* loader = [RKObjectLoader loaderWithResourcePath:resourcePath client:self.client mapper:self.mapper delegate:delegate];
 	loader.managedObjectStore = self.objectStore;
-	
+
 	return loader;
 }
 
@@ -133,19 +133,19 @@ static RKObjectManager* sharedManager = nil;
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	loader.method = RKRequestMethodGET;
-	
+
 	[loader send];
-	
+
 	return loader;
 }
 
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject <RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePathWithQuery = [self.client resourcePath:resourcePath withQueryParams:queryParams];
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePathWithQuery delegate:delegate];
-	loader.method = RKRequestMethodGET;	
-	
+	loader.method = RKRequestMethodGET;
+
 	[loader send];
-	
+
 	return loader;
 }
 
@@ -153,9 +153,9 @@ static RKObjectManager* sharedManager = nil;
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	loader.method = RKRequestMethodGET;
 	loader.objectClass = objectClass;
-	
+
 	[loader send];
-	
+
 	return loader;
 }
 
@@ -164,9 +164,9 @@ static RKObjectManager* sharedManager = nil;
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePathWithQuery delegate:delegate];
 	loader.method = RKRequestMethodGET;
 	loader.objectClass = objectClass;
-	
+
 	[loader send];
-	
+
 	return loader;
 }
 
@@ -177,19 +177,19 @@ static RKObjectManager* sharedManager = nil;
 	// Get the serialization representation from the router
 	NSString* resourcePath = [self.router resourcePathForObject:object method:method];
 	NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
-	
+
 	if (method != RKRequestMethodGET) {
 		[self saveObjectStore];
 	}
-	
+
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
-	
+
 	loader.method = method;
 	loader.params = params;
 	loader.targetObject = object;
 	loader.objectClass = [object class];
 	loader.managedObjectStore = self.objectStore;
-	
+
 	return loader;
 }
 
