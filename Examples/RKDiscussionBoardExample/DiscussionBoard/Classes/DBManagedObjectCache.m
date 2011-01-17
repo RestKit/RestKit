@@ -3,7 +3,7 @@
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/10/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import "DBManagedObjectCache.h"
@@ -33,7 +33,7 @@
 		[request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
 		return [NSArray arrayWithObject:request];
 	}
-	
+
 	return nil;
 }
 

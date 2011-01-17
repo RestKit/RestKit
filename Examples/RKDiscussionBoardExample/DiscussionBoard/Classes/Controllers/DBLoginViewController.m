@@ -3,7 +3,7 @@
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/10/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import "DBLoginViewController.h"
@@ -30,34 +30,34 @@
 
 - (void)loadView {
 	[super loadView];
-	
-	UIBarButtonItem* cancelItem = [[[UIBarButtonItem alloc] initWithTitle:@"Cancel" 
-																   style:UIBarButtonItemStyleBordered 
+
+	UIBarButtonItem* cancelItem = [[[UIBarButtonItem alloc] initWithTitle:@"Cancel"
+																   style:UIBarButtonItemStyleBordered
 																  target:self
 																   action:@selector(cancelButtonWasPressed:)] autorelease];
 	self.navigationItem.leftBarButtonItem = cancelItem;
-	
+
 	_signupOrLoginButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Signup"
 																style:UIBarButtonItemStyleBordered
-															   target:self 
+															   target:self
 															   action:@selector(signupOrLoginButtonItemWasPressed:)];
 	_showingSignup = NO;
 	self.navigationItem.rightBarButtonItem = _signupOrLoginButtonItem;
-	
+
 	_usernameField = [[UITextField alloc] initWithFrame:CGRectZero];
 	_usernameField.autocapitalizationType = UITextAutocapitalizationTypeNone;
 	_usernameField.delegate = self;
 	_usernameField.returnKeyType = UIReturnKeyNext;
-	
+
 	_passwordField = [[UITextField alloc] initWithFrame:CGRectZero];
 	[_passwordField setSecureTextEntry:YES];
 	_passwordField.delegate = self;
-	
+
 	_passwordConfirmationField = [[UITextField alloc] initWithFrame:CGRectZero];
 	[_passwordConfirmationField setSecureTextEntry:YES];
 	_passwordConfirmationField.delegate = self;
 	_passwordConfirmationField.returnKeyType = UIReturnKeyGo;
-	
+
 	_emailField = [[UITextField alloc] initWithFrame:CGRectZero];
 	_emailField.autocapitalizationType = UITextAutocapitalizationTypeNone;
 	_emailField.delegate = self;
@@ -78,7 +78,7 @@
 		_passwordField.returnKeyType = UIReturnKeyGo;
 	}
 	self.dataSource = [TTListDataSource dataSourceWithItems:items];
-	
+
 	[_usernameField becomeFirstResponder];
 }
 
@@ -106,7 +106,7 @@
 		user.email = _emailField.text;
 		user.password = _passwordField.text;
 		user.passwordConfirmation = _passwordConfirmationField.text;
-		
+
 		[[RKObjectManager sharedManager] postObject:user delegate:self];
 	} else {
 		// Login

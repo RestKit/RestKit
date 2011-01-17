@@ -3,7 +3,7 @@
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/7/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import "DBPost.h"
@@ -28,10 +28,10 @@
 
 + (NSDictionary*)elementToPropertyMappings {
 	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id",@"postID", 
+			@"id",@"postID",
 			@"topic_id",@"topicID",
 			@"user_id",@"userID",
-			@"created_at",@"createdAt", 
+			@"created_at",@"createdAt",
 			@"updated_at",@"updatedAt",
 			@"attachment_content_type", @"attachmentContentType",
 			@"attachment_file_name", @"attachmentFileName",
@@ -57,7 +57,7 @@
 		RKParamsAttachment* attachment = [params setData:data MIMEType:@"application/octet-stream" forParam:@"post[attachment]"];
 		attachment.fileName = @"image.png";
 	}
-	
+
 	return params;
 }
 

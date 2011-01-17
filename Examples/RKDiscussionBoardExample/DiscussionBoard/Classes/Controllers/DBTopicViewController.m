@@ -3,7 +3,7 @@
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/10/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import "DBTopicViewController.h"
@@ -34,28 +34,28 @@
 
 - (void)loadView {
 	self.tableViewStyle = UITableViewStyleGrouped;
-	
+
 	if (nil == _topic) {
 		_topic = [[DBTopic object] retain];
 		_topic.name = @"";
 	}
-	
+
 	_requiresLoggedInUser = YES;
 	if (![self isNewRecord]) {
 		_requiredUserID = _topic.userID;
 	}
-	
+
 	[super loadView];
-	
+
 	_topicNameField = [[UITextField alloc] initWithFrame:CGRectZero];
 }
 
 - (void)createModel {
 	NSMutableArray* items = [NSMutableArray array];
-	
+
 	_topicNameField.text = _topic.name;
 	[items addObject:[TTTableControlItem itemWithCaption:@"Name" control:_topicNameField]];
-	
+
 	if ([self isNewRecord]) {
 		self.title = @"New Topic";
 		[items addObject:[TTTableButton itemWithText:@"Create" delegate:self selector:@selector(createButtonWasPressed:)]];

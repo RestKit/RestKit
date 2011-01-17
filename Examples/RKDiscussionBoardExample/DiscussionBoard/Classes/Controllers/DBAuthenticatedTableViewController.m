@@ -3,7 +3,7 @@
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/10/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import "DBAuthenticatedTableViewController.h"
@@ -18,12 +18,12 @@
 
 - (void)loadView {
 	[super loadView];
-	
+
 	// Check if we are authenticated. If not, pop in login view controller.
 	if (_requiresLoggedInUser) {
 		BOOL isAuthenticated = NO;
 		if (_requiredUserID &&
-			[DBUser currentUser].singleAccessToken && 
+			[DBUser currentUser].singleAccessToken &&
 			// Put current user id first because it might be nil.
 			[[DBUser currentUser].userID isEqualToNumber:_requiredUserID]) {
 			isAuthenticated = YES;

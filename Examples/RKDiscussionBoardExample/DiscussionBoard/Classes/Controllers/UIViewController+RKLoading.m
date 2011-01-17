@@ -3,7 +3,7 @@
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/12/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import "UIViewController+RKLoading.h"
@@ -18,7 +18,7 @@
 		overlayView.backgroundColor = [UIColor blackColor];
 		overlayView.alpha = 0.5;
 		overlayView.tag = 66;
-		
+
 		[self.view addSubview:overlayView];
 	}
 }

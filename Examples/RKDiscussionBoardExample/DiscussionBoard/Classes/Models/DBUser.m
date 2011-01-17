@@ -3,7 +3,7 @@
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/10/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import "DBUser.h"
@@ -21,7 +21,7 @@
 
 + (NSDictionary*)elementToPropertyMappings {
 	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id",@"userID", 
+			@"id",@"userID",
 			@"email",@"email",
 			@"login",@"login",
 			@"single_access_token",@"singleAccessToken",
