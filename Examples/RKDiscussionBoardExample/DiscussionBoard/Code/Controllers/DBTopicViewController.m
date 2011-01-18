@@ -20,10 +20,11 @@
 }
 
 - (void)dealloc {
-	[_topic release];
+	TT_RELEASE_SAFELY(_topic);
 	[super dealloc];
 }
 
+// TODO: Move this into the model...
 - (BOOL)isNewRecord {
 	return [[_topic topicID] intValue] == 0;
 }
@@ -67,6 +68,8 @@
 	self.dataSource = [TTListDataSource dataSourceWithItems:items];
 }
 
+#pragma mark Actions
+
 - (void)createButtonWasPressed:(id)sender {
 	_topic.name = _topicNameField.text;
 	[[RKObjectManager sharedManager] postObject:_topic delegate:self];
@@ -81,16 +84,20 @@
 	[[RKObjectManager sharedManager] deleteObject:_topic delegate:self];
 }
 
+#pragma mark RKObjectLoaderDelegate methods
+
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
 	NSLog(@"Loaded Objects: %@", objects);
 	NSLog(@"Status Code: %d", objectLoader.response.statusCode);
 	// Post notification telling view controllers to reload.
+	// TODO: Generalize this notification
 	[[NSNotificationCenter defaultCenter] postNotificationName:kObjectCreatedUpdatedOrDestroyedNotificationName object:objects];
 	// dismiss.
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
+	// TODO: TTAlert or create a DBErrorAlert helper?
 	[[[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
 }
 

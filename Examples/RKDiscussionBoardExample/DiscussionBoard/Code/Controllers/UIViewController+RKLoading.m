@@ -12,7 +12,7 @@
 @implementation UIViewController (RKLoading)
 
 - (void)requestDidStartLoad:(RKRequest*)request {
-	UIView* overlayView = [self.view viewWithTag:66];
+	UIView* overlayView = [self.view viewWithTag:66]; // TODO: Need constant for tags...
 	if (overlayView == nil) {
 		overlayView = [[TTActivityLabel alloc] initWithFrame:self.view.bounds style:TTActivityLabelStyleBlackBox text:@"Loading..."];
 		overlayView.backgroundColor = [UIColor blackColor];
@@ -31,14 +31,14 @@
 			return;
 		}
 		progressView = [[UIProgressView alloc] initWithFrame:CGRectMake(10, 100, 300, 20)];
-		progressView.tag = 67;
+		progressView.tag = 67; // TODO: Need constant for tags...
 		[self.view addSubview:progressView];
 	}
 	progressView.progress = totalBytesWritten / (float)totalBytesExpectedToWrite;
 }
 
 - (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response {
-	UIView* overlayView = [self.view viewWithTag:66];
+	UIView* overlayView = [self.view viewWithTag:66]; // TODO: Need constant for tags...
 	UIView* progressView = [self.view viewWithTag:67];
 	[overlayView removeFromSuperview];
 	[overlayView release];

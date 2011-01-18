@@ -12,6 +12,7 @@
 
 @implementation DBManagedObjectCache
 
+// TODO: Cleanup this code somehow...
 - (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath {
 	if ([resourcePath isEqualToString:@"/topics"]) {
 		NSFetchRequest* request = [DBTopic fetchRequest];

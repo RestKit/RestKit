@@ -98,6 +98,7 @@
 	[self invalidateModel];
 }
 
+// TODO: Move login and sign-up into the model as higher level concepts
 - (void)loginOrSignup {
 	if (_showingSignup) {
 		// Signup
@@ -142,6 +143,7 @@
 	assert([objects count] == 1);
 	DBUser* user = [objects objectAtIndex:0];
 	NSLog(@"Authentication Token: %@", user.singleAccessToken);
+	// TODO: Move this into the DBUser...
 	[[NSUserDefaults standardUserDefaults] setObject:user.userID forKey:kCurrentUserIDKey];
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	[[NSNotificationCenter defaultCenter] postNotificationName:kUserLoggedInNotificationName object:user];
@@ -149,7 +151,12 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	[[[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
+	// TODO: TTAlert???
+	[[[[UIAlertView alloc] initWithTitle:@"Error"
+								 message:[error localizedDescription]
+								delegate:nil
+					   cancelButtonTitle:@"OK"
+					   otherButtonTitles:nil] autorelease] show];
 }
 
 @end

@@ -16,7 +16,7 @@
 - (id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query {
 	if (self = [super initWithNavigatorURL:URL query:query]) {
 		self.title = @"Topics";
-		_tableTitleHeaderLabel.text = @"Recent Topics";		
+		_tableTitleHeaderLabel.text = @"Recent Topics";
 		_resourcePath = [@"/topics" retain];
 		_resourceClass = [DBTopic class];
 	}
@@ -56,6 +56,7 @@
 	NSMutableArray* items = [NSMutableArray arrayWithCapacity:[model.objects count]];
 
 	for(DBTopic* topic in model.objects) {
+		// TODO: RKGeneratePathWithObject. Move to postsTTURL method?
 		NSString* url = [NSString stringWithFormat:@"db://topics/%@/posts", topic.topicID];
 		[items addObject:[TTTableTextItem itemWithText:topic.name URL:url]];
 	}
@@ -63,6 +64,7 @@
 	NSLog(@"Items: %@", items);
 	// Ensure that the datasource's model is still the RKRequestTTModel;
 	// Otherwise isOutdated will not work.
+	// TODO: Better fix for this?
 	TTListDataSource* dataSource = [TTListDataSource dataSourceWithItems:items];
 	dataSource.model = model;
 	self.dataSource = dataSource;

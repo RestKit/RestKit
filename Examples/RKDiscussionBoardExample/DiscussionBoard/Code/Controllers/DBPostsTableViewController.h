@@ -6,15 +6,21 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <Three20/Three20.h>
 #import "DBResourceListTableViewController.h"
 #import "DBTopic.h"
 
+/**
+ * Displays a table of Posts within a given Topic
+ */
 @interface DBPostsTableViewController : DBResourceListTableViewController {
+	// TODO: Just use a Topic
 	NSString* _topicID;
 }
 
+/**
+ * The Topic we are viewing Posts within
+ */
 @property (nonatomic, readonly) DBTopic* topic;
 
 @end

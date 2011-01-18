@@ -8,7 +8,6 @@
 
 #import "DBUser.h"
 
-
 @implementation DBUser
 
 @dynamic email;

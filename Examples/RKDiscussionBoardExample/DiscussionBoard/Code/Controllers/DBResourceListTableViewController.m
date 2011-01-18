@@ -10,10 +10,12 @@
 #import "DBManagedObjectCache.h"
 
 @implementation UINavigationBar (CustomImage)
+
 - (void)drawRect:(CGRect)rect {
 	UIImage *image = [UIImage imageNamed:@"navigationBarBackground.png"];
 	[image drawInRect:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
 }
+
 @end
 
 @implementation DBResourceListTableViewController
@@ -45,6 +47,7 @@
 	UIView* tableSpacer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 31)];
 	self.tableView.tableHeaderView = tableSpacer;
 
+	// TODO: Use more generic notifications
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userStateChanged:) name:kUserLoggedInNotificationName object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userStateChanged:) name:kUserLoggedOutNotificationName object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadNotification:) name:kObjectCreatedUpdatedOrDestroyedNotificationName object:nil];
@@ -56,12 +59,12 @@
 
 - (void)viewDidUnload {
 	[super viewDidUnload];
-	[_loadedAtLabel release];
-	_loadedAtLabel = nil;
 
+	TT_RELEASE_SAFELY(_loadedAtLabel);
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+// TODO: Why not just use invalidateModel as the target of the notifications?
 - (void)reloadNotification:(NSNotification*)note {
 	[self invalidateModel];
 }
@@ -70,12 +73,15 @@
 	[self invalidateModel];
 }
 
+// TODO: Why not use a createResourcePath method instead of an ivar?
 - (void)createModel {
 	self.model = [[[RKRequestTTModel alloc] initWithResourcePath:_resourcePath] autorelease];
 }
 
+// TODO: Comment me up!
 - (void)didLoadModel:(BOOL)firstTime {
 	[super didLoadModel:firstTime];
+
 	if ([self.model isKindOfClass:[RKRequestTTModel class]]) {
 		RKRequestTTModel* model = (RKRequestTTModel*)self.model;
 

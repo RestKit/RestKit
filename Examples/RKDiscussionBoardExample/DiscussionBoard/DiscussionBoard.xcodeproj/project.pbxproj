@@ -20,6 +20,7 @@
 		25359ED112E51070008BF33D /* DBManagedObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ECD12E51070008BF33D /* DBManagedObjectCache.m */; };
 		25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ECF12E51070008BF33D /* DiscussionBoardAppDelegate.m */; };
 		25359ED712E512BB008BF33D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ED612E512BB008BF33D /* main.m */; };
+		25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */; };
 		3F255C9812DB70E200AFD2D1 /* DBPostsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255C9312DB70E200AFD2D1 /* DBPostsTableViewController.m */; };
@@ -38,7 +39,6 @@
 		3F45615F12D7E31700BE25AD /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */; };
 		3F45616012D7E31800BE25AD /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */; };
 		3F45616112D7E31900BE25AD /* libRestKitThree20.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */; };
-		3F49C15B12DE1D9900FDE614 /* RKRequestTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */; };
 		3F76BBD612D7DA9D001562DC /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */; };
 		A755038212E4CBD4009FC5EC /* icon-114.png in Resources */ = {isa = PBXBuildFile; fileRef = A755037712E4CBD4009FC5EC /* icon-114.png */; };
 		A755038312E4CBD4009FC5EC /* icon-57.png in Resources */ = {isa = PBXBuildFile; fileRef = A755037812E4CBD4009FC5EC /* icon-57.png */; };
@@ -1239,11 +1239,11 @@
 				3F3239E112DBB9C600AB2F6E /* DBPostTableViewController.m in Sources */,
 				3F3239ED12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m in Sources */,
 				3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */,
-				3F49C15B12DE1D9900FDE614 /* RKRequestTTModel+Loading.m in Sources */,
 				25359ED012E51070008BF33D /* DBEnvironment.m in Sources */,
 				25359ED112E51070008BF33D /* DBManagedObjectCache.m in Sources */,
 				25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */,
 				25359ED712E512BB008BF33D /* main.m in Sources */,
+				25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1311,6 +1311,10 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
+				);
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
 				);
 				PRODUCT_NAME = DiscussionBoard;
 				VALIDATE_PRODUCT = YES;

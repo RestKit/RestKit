@@ -7,11 +7,17 @@
 //
 
 #import "DiscussionBoardAppDelegate.h"
+
+// RestKit
 #import <RestKit/RestKit.h>
 #import <RestKit/ObjectMapping/RKDynamicRouter.h>
 #import <RestKit/ObjectMapping/RKRailsRouter.h>
+
+// Three20
 #import <Three20/Three20.h>
 #import <Three20/Three20+Additions.h>
+
+// Discussion Board
 #import "DBTopicsTableViewController.h"
 #import "DBTopic.h"
 #import "DBPostsTableViewController.h"
@@ -22,6 +28,7 @@
 #import "DBUser.h"
 #import "DBPostTableViewController.h"
 
+// TODO: Move this to the environment file?
 static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 
 @implementation DiscussionBoardAppDelegate
@@ -31,44 +38,45 @@ static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	// Initialize object manager
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:kDBBaseURLString];
-	
+
 	// Set the default refresh rate to 1. This means we should always hit the web if we can.
 	// If the server is unavailable, we will load from the core data cache.
 	[RKRequestTTModel setDefaultRefreshRate:1];
-	
+
 	// Do not overwrite properties that are missing in the payload to nil.
 	objectManager.mapper.missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
-	
+
 	// Initialize object store
 	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"DiscussionBoard.sqlite"] autorelease];
 	objectManager.objectStore.managedObjectCache = [[DBManagedObjectCache new] autorelease];
-	
+
 	// Set Up Mapper
 	RKObjectMapper* mapper =  objectManager.mapper;
 	[mapper registerClass:[DBTopic class] forElementNamed:@"topic"];
 	[mapper registerClass:[DBPost class] forElementNamed:@"post"];
-	
+
 	// Set Up Router
+	// TODO: Switch to Rails Router
 	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
 //	RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
 	[router routeClass:[DBUser class] toResourcePath:@"/signup" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBUser class] toResourcePath:@"/login" forMethod:RKRequestMethodPUT];
-	
+
 //	[router setModelName:@"topic" forClass:[DBTopic class]];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodPUT];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodDELETE];
-	
+
 //	[router setModelName:@"post" forClass:[DBPost class]];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
-	
+
 	objectManager.router = router;
-	
+
 	// Initialize Three20
 	TTURLMap* map = [[TTNavigator navigator] URLMap];
 	[map from:@"db://topics" toViewController:[DBTopicsTableViewController class]];
@@ -78,15 +86,15 @@ static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 	[map from:@"db://posts/(initWithPostID:)" toViewController:[DBPostTableViewController class]];
 	[map from:@"db://topics/(initWithTopicID:)/posts/new" toViewController:[DBPostTableViewController class]];
 	[map from:@"db://login" toModalViewController:[DBLoginViewController class]];
-	
-	
+
+
 	[map from:@"*" toViewController:[TTWebController class]];
-	
+
 	[[TTURLRequestQueue mainQueue] setMaxContentLength:0]; // Don't limit content length.
-	
+
 	TTOpenURL(@"db://topics");
 	[[TTNavigator navigator].window makeKeyAndVisible];
-	
+
 	// Authentication
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn:) name:kUserLoggedInNotificationName object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedOut:) name:kUserLoggedOutNotificationName object:nil];
@@ -94,10 +102,11 @@ static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 	NSLog(@"Token: %@", user.singleAccessToken);
 	NSLog(@"User: %@", user);
 	[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:@"USER_ACCESS_TOKEN"];
-	
+
 	return YES;
 }
 
+// TODO: Move this login shit into the DBUser model
 - (void)userLoggedIn:(NSNotification*)note {
 	RKObjectManager* objectManager = [RKObjectManager sharedManager];
 	[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:kAccessTokenHeaderField];
@@ -108,59 +117,9 @@ static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 	[objectManager.client setValue:nil forHTTPHeaderField:kAccessTokenHeaderField];
 }
 
-
-- (void)applicationWillResignActive:(UIApplication *)application {
-    /*
-     Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-     Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-     */
-}
-
-
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    /*
-     Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-     If your application supports background execution, called instead of applicationWillTerminate: when the user quits.
-     */
-}
-
-
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    /*
-     Called as part of  transition from the background to the inactive state: here you can undo many of the changes made on entering the background.
-     */
-}
-
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    /*
-     Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-     */
-}
-
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    /*
-     Called when the application is about to terminate.
-     See also applicationDidEnterBackground:.
-     */
-}
-
-
-#pragma mark -
-#pragma mark Memory management
-
-- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
-    /*
-     Free up as much memory as possible by purging cached data objects that can be recreated (or reloaded from disk) later.
-     */
-}
-
-
 - (void)dealloc {
     [window release];
     [super dealloc];
 }
-
 
 @end

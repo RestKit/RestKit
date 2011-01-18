@@ -27,6 +27,7 @@
 			// Put current user id first because it might be nil.
 			[[DBUser currentUser].userID isEqualToNumber:_requiredUserID]) {
 			isAuthenticated = YES;
+			// TODO: Move this isAuthenticated logic into the model!
 		} else if (_requiredUserID == nil &&
 				   [DBUser currentUser].singleAccessToken &&
 				   [DBUser currentUser] != nil) {

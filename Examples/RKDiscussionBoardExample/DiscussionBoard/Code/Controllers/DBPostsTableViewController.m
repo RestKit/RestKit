@@ -17,6 +17,7 @@
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
 		_topicID = [topicID retain];
 		self.title = @"Posts";
+		// TODO: Use routing or something to generate this URL. RKGeneratePathWithObject
 		_resourcePath = [[NSString stringWithFormat:@"/topics/%@/posts", _topicID] retain];
 		_resourceClass = [DBPost class];
 	}
@@ -30,28 +31,37 @@
 
 - (void)loadView {
 	[super loadView];
+
 	self.variableHeightRows = YES;
 
-	UIBarButtonItem* newItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addButtonWasPressed:)] autorelease];
+	UIBarButtonItem* newItem = [[[UIBarButtonItem alloc]
+								 initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+								 target:self
+								 action:@selector(addButtonWasPressed:)] autorelease];
 	self.navigationItem.rightBarButtonItem = newItem;
 }
 
 - (void)addButtonWasPressed:(id)sender {
+	// TODO: Move this onto the model...
+	// RKMakeObjectPath / RKGeneratePathWithObject / RKGeneratePathForObject(@"db://topics/(topicID)/posts/new", self.topic);
 	NSString* url = [NSString stringWithFormat:@"db://topics/%@/posts/new", _topicID];
 	TTOpenURL(url);
 }
 
 - (void)createModel {
 	if (nil == [DBTopic objectWithPrimaryKeyValue:_topicID]) {
+		// TODO: Cleanup???
 		// this topic was deleted or something.
 		[self.navigationController popToRootViewControllerAnimated:YES];
 		return;
 	}
+
 	[super createModel];
 }
 
 - (void)didLoadModel:(BOOL)firstTime {
 	[super didLoadModel:firstTime];
+
 	if ([self.model isKindOfClass:[RKRequestTTModel class]]) {
 		RKRequestTTModel* model = (RKRequestTTModel*)self.model;
 		NSMutableArray* postItems = [NSMutableArray arrayWithCapacity:[model.objects count]];
@@ -68,7 +78,7 @@
 			[topicItems addObject:[TTTableTextItem itemWithText:@"Edit" URL:editURL]];
 		}
 
-		for(DBPost* post in model.objects) {
+		for (DBPost* post in model.objects) {
 			NSString* url = [NSString stringWithFormat:@"db://posts/%@", post.postID];
 			NSString* imageURL = post.attachmentPath;
 			TTTableImageItem* item = [TTTableImageItem itemWithText:post.body
