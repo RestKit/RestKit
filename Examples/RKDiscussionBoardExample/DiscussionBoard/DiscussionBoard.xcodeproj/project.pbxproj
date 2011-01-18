@@ -460,8 +460,8 @@
 		3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBAuthenticatedTableViewController.m; sourceTree = "<group>"; };
 		3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKRequestTTModel+Loading.h"; sourceTree = "<group>"; };
 		3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKRequestTTModel+Loading.m"; sourceTree = "<group>"; };
-		3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DiscussionBoard-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Resources/DataModel.xcdatamodel; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info.plist"; path = "Resources/DiscussionBoard-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A755037712E4CBD4009FC5EC /* icon-114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-114.png"; path = "Resources/PNGs/app_icon/icon-114.png"; sourceTree = SOURCE_ROOT; };
 		A755037812E4CBD4009FC5EC /* icon-57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-57.png"; path = "Resources/PNGs/app_icon/icon-57.png"; sourceTree = SOURCE_ROOT; };
 		A755037912E4CBD4009FC5EC /* icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-72.png"; path = "Resources/PNGs/app_icon/icon-72.png"; sourceTree = SOURCE_ROOT; };
@@ -1282,7 +1282,7 @@
 					../../../Build,
 					Libraries/three20,
 				);
-				INFOPLIST_FILE = "DiscussionBoard-Info.plist";
+				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1305,7 +1305,7 @@
 					../../../Build,
 					Libraries/three20,
 				);
-				INFOPLIST_FILE = "DiscussionBoard-Info.plist";
+				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
