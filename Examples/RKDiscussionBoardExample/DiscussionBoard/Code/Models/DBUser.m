@@ -21,10 +21,10 @@
 
 + (NSDictionary*)elementToPropertyMappings {
 	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id",@"userID",
-			@"email",@"email",
-			@"login",@"login",
-			@"single_access_token",@"singleAccessToken",
+			@"id", @"userID",
+			@"email", @"email",
+			@"login", @"login",
+			@"single_access_token", @"singleAccessToken",
 			@"password", @"password",
 			@"password_confirmation", @"passwordConfirmation",
 			nil];
@@ -51,7 +51,7 @@
 	[super dealloc];
 }
 
-- (NSDictionary*)paramsForSerialization {
+- (NSObject<RKRequestSerializable>*)paramsForSerialization {
 	if (_passwordConfirmation) {
 		return [NSDictionary dictionaryWithObjectsAndKeys:
 				self.email, @"user[email]",

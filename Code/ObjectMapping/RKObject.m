@@ -23,13 +23,13 @@
 	return [[self new] autorelease];
 }
 
-- (id<RKRequestSerializable>)paramsForSerialization {
+- (NSObject<RKRequestSerializable>*)paramsForSerialization {
 	NSMutableDictionary* params = [NSMutableDictionary dictionary];
 	for (NSString* elementName in [[self class] elementToPropertyMappings]) {
 		NSString* propertyName = [[[self class] elementToPropertyMappings] objectForKey:elementName];
 		[params setValue:[self valueForKey:propertyName] forKey:elementName];
 	}
-	
+
 	return [NSDictionary dictionaryWithDictionary:params];
 }
 

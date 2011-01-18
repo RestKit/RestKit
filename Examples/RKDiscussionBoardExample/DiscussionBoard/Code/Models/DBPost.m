@@ -7,7 +7,7 @@
 //
 
 #import "DBPost.h"
-
+#import <RestKit/Support/NSDictionary+RKAdditions.h>
 
 @implementation DBPost
 

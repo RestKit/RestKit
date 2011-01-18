@@ -25,8 +25,8 @@
  * return an empty dictionary if there are no related objects.
  *
  * When assigning a collection of related objects, use key-value coding to traverse the
- * collection and access the descendent objects. For example, given a Project object 
- * associated with a user and a collection of tasks: 
+ * collection and access the descendent objects. For example, given a Project object
+ * associated with a user and a collection of tasks:
  *
  * [NSDictionary dictionaryWithObject:@"user" forKey:@"user"];
  * Will map from an element named 'user' to the user property on the model instance.
@@ -45,7 +45,7 @@
  * will encode these parameters into a serialization format (form encoded, JSON, etc). This is
  * required to use putObject: and postObject: for updating and creating remote object representations.
  */
-- (id<RKRequestSerializable>)paramsForSerialization;
+- (NSObject<RKRequestSerializable>*)paramsForSerialization;
 
 /**
  * Must return a new autoreleased instance of the model class ready for mapping. Used to initialize the model
