@@ -40,7 +40,7 @@ static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	// Initialize object manager
-	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:kDBBaseURLString];
+	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:DBRestKitBaseURL];
 
 	// Set the default refresh rate to 1. This means we should always hit the web if we can.
 	// If the server is unavailable, we will load from the core data cache.
@@ -96,8 +96,9 @@ static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 	[[TTNavigator navigator].window makeKeyAndVisible];
 
 	// Authentication
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn:) name:kUserLoggedInNotificationName object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedOut:) name:kUserLoggedOutNotificationName object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn:) name:DBUserDidLoginNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedOut:) name:DBUserDidLogoutNotification object:nil];
+
 	DBUser* user = [DBUser currentUser];
 	NSLog(@"Token: %@", user.singleAccessToken);
 	NSLog(@"User: %@", user);

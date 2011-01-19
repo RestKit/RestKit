@@ -27,7 +27,7 @@
 	[super createModel];
 
 	UIBarButtonItem* item = nil;
-	if ([DBUser currentUser]) {
+	if ([[DBUser currentUser] isLoggedIn]) {
 		item = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleBordered target:self action:@selector(logoutButtonWasPressed:)] autorelease];
 	}
 	self.navigationItem.leftBarButtonItem = item;
@@ -46,7 +46,7 @@
 }
 
 - (void)logoutButtonWasPressed:(id)sender {
-	[DBUser logout];
+	[[DBUser currentUser] logout];
 }
 
 - (void)didLoadModel:(BOOL)firstTime {
@@ -56,7 +56,7 @@
 	NSMutableArray* items = [NSMutableArray arrayWithCapacity:[model.objects count]];
 
 	for(DBTopic* topic in model.objects) {
-		// TODO: RKGeneratePathWithObject. Move to postsTTURL method?
+		// TODO: RKMakePathWithObject. Move to postsTTURL method?
 		NSString* url = [NSString stringWithFormat:@"db://topics/%@/posts", topic.topicID];
 		[items addObject:[TTTableTextItem itemWithText:topic.name URL:url]];
 	}

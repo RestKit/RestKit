@@ -17,7 +17,7 @@
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
 		_topicID = [topicID retain];
 		self.title = @"Posts";
-		// TODO: Use routing or something to generate this URL. RKGeneratePathWithObject
+		// TODO: Use routing or something to generate this URL. RKMakePathWithObject
 		_resourcePath = [[NSString stringWithFormat:@"/topics/%@/posts", _topicID] retain];
 		_resourceClass = [DBPost class];
 	}
@@ -43,7 +43,7 @@
 
 - (void)addButtonWasPressed:(id)sender {
 	// TODO: Move this onto the model...
-	// RKMakeObjectPath / RKGeneratePathWithObject / RKGeneratePathForObject(@"db://topics/(topicID)/posts/new", self.topic);
+	// RKMakeObjectPath / RKMakePathWithObject(@"db://topics/(topicID)/posts/new", self.topic);
 	NSString* url = [NSString stringWithFormat:@"db://topics/%@/posts/new", _topicID];
 	TTOpenURL(url);
 }

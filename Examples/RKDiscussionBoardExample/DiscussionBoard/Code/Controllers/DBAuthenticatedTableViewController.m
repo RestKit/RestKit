@@ -12,8 +12,8 @@
 @implementation DBAuthenticatedTableViewController
 
 - (void)viewDidUnload {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kUserLoggedInNotificationName object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:kLoginCanceledNotificationName object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:DBUserDidLoginNotification object:nil];
+	// [[NSNotificationCenter defaultCenter] removeObserver:self name:kLoginCanceledNotificationName object:nil];
 }
 
 - (void)loadView {
@@ -33,11 +33,15 @@
 				   [DBUser currentUser] != nil) {
 			isAuthenticated = YES;
 		}
+
 		if (!isAuthenticated) {
 			// Register for login succeeded notification. populate view.
-			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogin:) name:kUserLoggedInNotificationName object:nil];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogin:) name:DBUserDidLoginNotification object:nil];
+
 			// Register for login canceled notification. pop view controller.
-			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginCanceled:) name:kLoginCanceledNotificationName object:nil];
+			// TODO: Not sure what's up with the cancel...
+			// [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginCanceled:) name:kLoginCanceledNotificationName object:nil];
+
 			TTOpenURL(@"db://login");
 		}
 	}

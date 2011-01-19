@@ -8,12 +8,7 @@
 
 #import "DBEnvironment.h"
 
-//NSString* const kDBBaseURLString = @"http://localhost:3000";
-NSString* const kDBBaseURLString = @"http://discussionboard.heroku.com";
-
-NSString* const kCurrentUserIDKey = @"currentUserKey";
-
-NSString* const kUserLoggedInNotificationName = @"kUserLoggedInNotificationName";
-NSString* const kLoginCanceledNotificationName = @"kLoginCanceledNotificationName";
-NSString* const kUserLoggedOutNotificationName = @"kUserLoggedOutNotificationName";
+// TODO: Add conditional compilation!
+NSString* const DBRestKitBaseURL = @"http://localhost:3000";
+//NSString* const kDBBaseURLString = @"http://discussionboard.heroku.com";
 NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName = @"kObjectCreatedUpdatedOrDestroyedNotificationName";

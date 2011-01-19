@@ -84,7 +84,8 @@
 
 - (void)cancelButtonWasPressed:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kLoginCanceledNotificationName object:self];
+	// TODO: Do we need cancel login support???
+//	[[NSNotificationCenter defaultCenter] postNotificationName:kLoginCanceledNotificationName object:self];
 }
 
 - (void)signupOrLoginButtonItemWasPressed:(id)sender {
@@ -103,7 +104,7 @@
 	if (_showingSignup) {
 		// Signup
 		DBUser* user = [DBUser object];
-		user.login = _usernameField.text;
+		user.username = _usernameField.text;
 		user.email = _emailField.text;
 		user.password = _passwordField.text;
 		user.passwordConfirmation = _passwordConfirmationField.text;
@@ -112,7 +113,7 @@
 	} else {
 		// Login
 		DBUser* user = [DBUser object];
-		user.login = _usernameField.text;
+		user.username = _usernameField.text;
 		user.password = _passwordField.text;
 		[[RKObjectManager sharedManager] putObject:user delegate:self];
 	}
@@ -143,10 +144,6 @@
 	assert([objects count] == 1);
 	DBUser* user = [objects objectAtIndex:0];
 	NSLog(@"Authentication Token: %@", user.singleAccessToken);
-	// TODO: Move this into the DBUser...
-	[[NSUserDefaults standardUserDefaults] setObject:user.userID forKey:kCurrentUserIDKey];
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kUserLoggedInNotificationName object:user];
 	[self dismissModalViewControllerAnimated:YES];
 }
 

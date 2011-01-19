@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <RestKit/CoreData/CoreData.h>
+#import "DBUser.h"
+#import "DBTopic.h"
 
 /**
  * The Post models an individual piece of content posted to
@@ -37,6 +39,18 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Relationship properties
+
+/**
+ * The Topic that this Post belongs to. This is a Core Data relationship
+ * to the Topic object with the primary key value contained in the topicID property
+ */
+@property (nonatomic, retain) DBTopic* topic;
+
+/**
+ * The User who created this Post. This is a Core Data relationship
+ * to the User object with the primary key value contained in the userID property
+ */
+@property (nonatomic, retain) DBUser* user;
 
 /**
  * The numeric primary key to the Topic this Post was made to
@@ -94,8 +108,5 @@
  * An accessor for supplying a new image to be attached to this Post
  */
 @property (nonatomic, retain) UIImage* newAttachment;
-
-// TODO: Relationship to the User???
-// TODO: Relationship to the Topic???
 
 @end

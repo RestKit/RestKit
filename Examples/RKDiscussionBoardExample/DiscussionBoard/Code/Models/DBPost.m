@@ -6,8 +6,8 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "DBPost.h"
 #import <RestKit/Support/NSDictionary+RKAdditions.h>
+#import "DBPost.h"
 
 @implementation DBPost
 
@@ -23,6 +23,8 @@
 @dynamic userID;
 @dynamic postID;
 @dynamic username;
+@dynamic user;
+@dynamic topic;
 
 @synthesize newAttachment = _newAttachment;
 
@@ -49,15 +51,29 @@
 
 /**
  * Informs RestKit which property contains the primary key for identifying
- * this object. This is used to ensure that objects are updated
+ * this object. This is used to ensure that existing objects are updated during mapping
  */
 + (NSString*)primaryKeyProperty {
 	return @"postID";
 }
 
-// TODO: Fix encoding stuff with post[body]
-// TODO: Fix bug. Can't edit stuff!
-// TODO: paramsForGET / paramsForPOST / paramsForDELETE / paramsForPUT???
+/**
+ * Informs RestKit which properties contain the primary key values that
+ * can be used to hydrate relationships to other objects. This hint enables
+ * RestKit to automatically maintain true Core Data relationships between objects
+ * in your local store.
+ *
+ * Here we have asked RestKit to connect the 'user' relationship by performing a
+ * primary key lookup with the value in 'userID' property. This is the declarative
+ * equivalent of doing self.user = [DBUser objectWithPrimaryKeyValue:self.userID];
+ */
++ (NSDictionary*)relationshipToPrimaryKeyPropertyMappings {
+	return [NSDictionary dictionaryWithKeysAndObjects:
+			@"user", @"userID",
+			@"topic", @"topicID",
+			nil];
+}
+
 /**
  * Return a serializable representation of this object's properties. This
  * serialization will be encoded by the router into a request body and
@@ -69,13 +85,14 @@
  * in your payloads.
  */
 - (NSObject<RKRequestSerializable>*)paramsForSerialization {
-	RKParams* params = [RKParams params];
-	[params setValue:self.body forParam:@"post[body]"];
+	// TODO: Should I expose the default super-class method as a dictionary returning method for clarity??
+	NSDictionary* attributes = (NSDictionary*) [super paramsForSerialization];
+	RKParams* params = [RKParams paramsWithDictionary:attributes];
 	NSLog(@"Self Body: %@", self.body);
 	if (_newAttachment) {
 		NSData* data = UIImagePNGRepresentation(_newAttachment);
 		NSLog(@"Data Size: %d", [data length]);
-		RKParamsAttachment* attachment = [params setData:data MIMEType:@"application/octet-stream" forParam:@"post[attachment]"];
+		RKParamsAttachment* attachment = [params setData:data MIMEType:@"application/octet-stream" forParam:@"attachment"];
 		attachment.fileName = @"image.png";
 	}
 

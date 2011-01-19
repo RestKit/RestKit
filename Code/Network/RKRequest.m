@@ -272,4 +272,8 @@
 	return resourcePath;
 }
 
+- (BOOL)wasSentToResourcePath:(NSString*)resourcePath {
+	return [[self resourcePath] isEqualToString:resourcePath];
+}
+
 @end

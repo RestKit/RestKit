@@ -8,7 +8,9 @@
 
 #import "DBResourceListTableViewController.h"
 #import "DBManagedObjectCache.h"
+#import "DBUser.h"
 
+// TODO: Move me somewhere else...
 @implementation UINavigationBar (CustomImage)
 
 - (void)drawRect:(CGRect)rect {
@@ -22,6 +24,8 @@
 
 - (void)loadView {
 	[super loadView];
+
+	// TODO: Make this cleaner...
 	UIImageView* backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.png"]];
 	[self.navigationController.view addSubview:backgroundImage];
 	[self.navigationController.view sendSubviewToBack:backgroundImage];
@@ -47,10 +51,11 @@
 	UIView* tableSpacer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 31)];
 	self.tableView.tableHeaderView = tableSpacer;
 
-	// TODO: Use more generic notifications
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userStateChanged:) name:kUserLoggedInNotificationName object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userStateChanged:) name:kUserLoggedOutNotificationName object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadNotification:) name:kObjectCreatedUpdatedOrDestroyedNotificationName object:nil];
+	// Register for notifications. We reload the interface when authentication state changes
+	// or the object graph is manipulated
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:DBUserDidLoginNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:DBUserDidLogoutNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:kObjectCreatedUpdatedOrDestroyedNotificationName object:nil];
 }
 
 - (void)reloadButtonWasPressed:(id)sender {
@@ -62,15 +67,6 @@
 
 	TT_RELEASE_SAFELY(_loadedAtLabel);
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-// TODO: Why not just use invalidateModel as the target of the notifications?
-- (void)reloadNotification:(NSNotification*)note {
-	[self invalidateModel];
-}
-
-- (void)userStateChanged:(NSNotification*)note {
-	[self invalidateModel];
 }
 
 // TODO: Why not use a createResourcePath method instead of an ivar?

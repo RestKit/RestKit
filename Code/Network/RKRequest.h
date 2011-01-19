@@ -172,6 +172,11 @@ typedef enum RKRequestMethod {
  */
 - (BOOL)isLoaded;
 
+/**
+ * Returns YES when the request was sent to the specified resource path
+ */
+- (BOOL)wasSentToResourcePath:(NSString*)resourcePath;
+
 @end
 
 /**
