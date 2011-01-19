@@ -19,3 +19,5 @@ extern NSString* const DBRestKitBaseURL;
 
 // TODO: See if we can eliminate or abstract this further
 extern NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName;
+
+extern NSString* const kAccessTokenHeaderField;

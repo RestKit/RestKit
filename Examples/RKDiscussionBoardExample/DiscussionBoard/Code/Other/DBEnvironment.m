@@ -12,3 +12,5 @@
 NSString* const DBRestKitBaseURL = @"http://localhost:3000";
 //NSString* const kDBBaseURLString = @"http://discussionboard.heroku.com";
 NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName = @"kObjectCreatedUpdatedOrDestroyedNotificationName";
+
+NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";

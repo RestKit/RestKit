@@ -28,9 +28,6 @@
 #import "DBUser.h"
 #import "DBPostTableViewController.h"
 
-// TODO: Move this to the environment file?
-static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
-
 @implementation DiscussionBoardAppDelegate
 
 @synthesize window;
@@ -95,27 +92,12 @@ static NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
 	TTOpenURL(@"db://topics");
 	[[TTNavigator navigator].window makeKeyAndVisible];
 
-	// Authentication
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedIn:) name:DBUserDidLoginNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoggedOut:) name:DBUserDidLogoutNotification object:nil];
-
 	DBUser* user = [DBUser currentUser];
 	NSLog(@"Token: %@", user.singleAccessToken);
 	NSLog(@"User: %@", user);
-	[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:@"USER_ACCESS_TOKEN"];
+	[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:kAccessTokenHeaderField];
 
 	return YES;
-}
-
-// TODO: Move this login shit into the DBUser model
-- (void)userLoggedIn:(NSNotification*)note {
-	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-	[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:kAccessTokenHeaderField];
-}
-
-- (void)userLoggedOut:(NSNotification*)note {
-	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-	[objectManager.client setValue:nil forHTTPHeaderField:kAccessTokenHeaderField];
 }
 
 - (void)dealloc {

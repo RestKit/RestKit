@@ -101,6 +101,10 @@ NSString* const DBUserDidLogoutNotification = @"DBUserDidLogoutNotification";
 		if ([self.delegate respondsToSelector:@selector(userDidLogin:)]) {
 			[self.delegate userDidLogin:self];
 		}
+		
+		RKObjectManager* objectManager = [RKObjectManager sharedManager];
+		[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:kAccessTokenHeaderField];
+		
 		[[NSNotificationCenter defaultCenter] postNotificationName:DBUserDidLoginNotification object:user];
 	} else if ([objectLoader wasSentToResourcePath:@"/logout"]) {
 		// Logout was successful
@@ -113,7 +117,10 @@ NSString* const DBUserDidLogoutNotification = @"DBUserDidLogoutNotification";
 		if ([self.delegate respondsToSelector:@selector(userDidLogout:)]) {
 			[self.delegate userDidLogout:self];
 		}
-
+		
+		RKObjectManager* objectManager = [RKObjectManager sharedManager];
+		[objectManager.client setValue:nil forHTTPHeaderField:kAccessTokenHeaderField];
+		
 		[[NSNotificationCenter defaultCenter] postNotificationName:DBUserDidLogoutNotification object:nil];
 	}
 }
