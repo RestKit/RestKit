@@ -6,15 +6,13 @@ class Post < ActiveRecord::Base
      :bucket => 'DiscussionBoard'} : {}
   
   has_attached_file :attachment, { :default_url => "" }.merge(@paperclip_options)
+  
   belongs_to :user
   belongs_to :topic
   
+  delegate :username, :to => :user
+  
   def attachment_path
     attachment.url
-  end
-  
-  def user_login
-    user.login
-  end
-  
+  end  
 end

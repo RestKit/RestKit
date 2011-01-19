@@ -1,7 +1,8 @@
 DiscussionBoardBackend::Application.routes.draw do
   
-  match 'login' => 'users#login'
-  match 'signup' => 'users#signup'
+  match 'login' => 'sessions#create'
+  match 'logout' => 'sessions#destroy'
+  match 'signup' => 'users#create'
   
   resources :topics do
     resources :posts

@@ -1,16 +1,24 @@
-class ApplicationController < ActionController::Base
-  protect_from_forgery
-  
-  protected
-  
-  def require_user
-    # Look for the correct headers.
-    token = request.headers["HTTP_X_USER_ACCESS_TOKEN"]
-    token ||= request.headers["HTTP_USER_ACCESS_TOKEN"]
-    @user = User.find_by_single_access_token(token)
-    if @user.nil?
-      render :json => {:error => "Invalid Access Token"}, :status => 401
+class ApplicationController < ActionController::Base  
+  protected  
+    def user_access_token
+      request.headers["HTTP_X_USER_ACCESS_TOKEN"] || request.headers["HTTP_USER_ACCESS_TOKEN"]
     end
-  end
   
+    def current_user
+      if token = user_access_token
+        @user ||= User.find_by_single_access_token(token)
+      end
+    end
+  
+    def require_user    
+      unless current_user
+        render :json => {:error => "Invalid Access Token"}, :status => 401
+      end
+    end
+  
+    def require_owner
+      unless current_user && current_user == object.user
+        render :json => {:error => "Unauthorized"}
+      end
+    end
 end

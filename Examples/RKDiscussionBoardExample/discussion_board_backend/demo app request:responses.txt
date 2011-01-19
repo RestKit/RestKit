@@ -1,6 +1,6 @@
-curl -d "user[login]=jeremy&user[password]=password&user[email]=jeremy@twotoasters.com&user[password_confirmation]=password" http://localhost:3000/signup
+curl -d "user[username]=jeremy&user[password]=password&user[email]=jeremy@twotoasters.com&user[password_confirmation]=password" http://localhost:3000/signup
 => {"single_access_token":"LvQmmzh6je1XzhC9XASg","login":"jeremy"}
-curl -d "user[login]=jeremy&user[password]=password&user[email]=jeremy@twotoasters.com&user[password_confirmation]=password" http://discussionboard.heroku.com/signup
+curl -d "user[username]=jeremy&user[password]=password&user[email]=jeremy@twotoasters.com&user[password_confirmation]=password" http://discussionboard.heroku.com/signup
 => {"single_access_token":"onzn83RGNV93AQWPIY7W","login":"jeremy"}
 
 

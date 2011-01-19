@@ -5,7 +5,5 @@ class Topic < ActiveRecord::Base
   validates_presence_of :name
   validates_presence_of :user
   
-  def user_login
-    user.login
-  end
+  delegate :username, :to => :user
 end
