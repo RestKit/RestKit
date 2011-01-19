@@ -15,7 +15,7 @@ static NSInteger const kProgressViewTag = 67;
 @implementation UIViewController (RKLoading)
 
 - (void)requestDidStartLoad:(RKRequest*)request {
-	UIView* overlayView = [self.view viewWithTag:kOverlayViewTag]; // TODO: Need constant for tags...
+	UIView* overlayView = [self.view viewWithTag:kOverlayViewTag];
 	if (overlayView == nil) {
 		overlayView = [[TTActivityLabel alloc] initWithFrame:self.view.bounds style:TTActivityLabelStyleBlackBox text:@"Loading..."];
 		overlayView.backgroundColor = [UIColor blackColor];
