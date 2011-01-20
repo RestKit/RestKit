@@ -53,7 +53,6 @@
 
 	[[TTNavigator navigator].URLMap from:@"db://updateAttachment" toObject:self selector:@selector(updateAttachment)];
 
-	// TODO: Use self.post method?
 	if (nil == _post) {
 		_post = [[DBPost object] retain];
 		_post.topicID = _topicID;

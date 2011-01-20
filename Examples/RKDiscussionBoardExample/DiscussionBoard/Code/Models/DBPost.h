@@ -54,14 +54,11 @@
 
 /**
  * The numeric primary key to the Topic this Post was made to
- *
- * TODO: This is the primary key, used in the automatic primary key association. Document it.
  */
 @property (nonatomic, retain) NSNumber* topicID;
 
 /**
  * The numeric primary key to the User this Post was created by
- * TODO: Create relationship and document
  */
 @property (nonatomic, retain) NSNumber* userID;
 

@@ -10,7 +10,6 @@
 #import "DBManagedObjectCache.h"
 #import "DBUser.h"
 
-// TODO: Move me somewhere else...
 @implementation UINavigationBar (CustomImage)
 
 - (void)drawRect:(CGRect)rect {
@@ -25,14 +24,17 @@
 - (void)loadView {
 	[super loadView];
 
-	// TODO: Make this cleaner...
+	// Background styling
 	UIImageView* backgroundImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.png"]];
 	[self.navigationController.view addSubview:backgroundImage];
 	[self.navigationController.view sendSubviewToBack:backgroundImage];
-	[self.view setBackgroundColor:[UIColor clearColor]];
-	[self.tableView setBackgroundColor:[UIColor clearColor]];
-
-	UIView* tableHeaderView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 31)] autorelease];
+	[backgroundImage release];
+	
+	self.view.backgroundColor = [UIColor clearColor];
+	self.tableView.backgroundColor = [UIColor clearColor];
+	
+	// Setup the Table Header
+	UIView* tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 31)];
 	UIImageView* headerBackgroundImage = [[UIImageView alloc] initWithFrame:tableHeaderView.frame];
 	[headerBackgroundImage setImage:[UIImage imageNamed:@"tableHeaderBackground.png"]];
 	[tableHeaderView addSubview:headerBackgroundImage];
@@ -42,24 +44,25 @@
 	_loadedAtLabel.backgroundColor = [UIColor clearColor];
 	_loadedAtLabel.textColor = [UIColor colorWithRed:0.53 green:0.56 blue:0.60 alpha:1];
 	[tableHeaderView addSubview:_loadedAtLabel];
+	
 	UIButton* reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	[reloadButton setImage:[UIImage imageNamed:@"reload.png"] forState:UIControlStateNormal];
 	[reloadButton setFrame:CGRectMake(131, 0, 82, 23)];
-	[reloadButton addTarget:self action:@selector(reloadButtonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
+	[reloadButton addTarget:self action:@selector(invalidateModel) forControlEvents:UIControlEventTouchUpInside];
 	[tableHeaderView addSubview:reloadButton];
+	
 	[self.view addSubview:tableHeaderView];
+	[tableHeaderView release];
+	
 	UIView* tableSpacer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 31)];
 	self.tableView.tableHeaderView = tableSpacer;
+	[tableSpacer release];
 
 	// Register for notifications. We reload the interface when authentication state changes
 	// or the object graph is manipulated
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:DBUserDidLoginNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:DBUserDidLogoutNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:kObjectCreatedUpdatedOrDestroyedNotificationName object:nil];
-}
-
-- (void)reloadButtonWasPressed:(id)sender {
-	[self invalidateModel];
 }
 
 - (void)viewDidUnload {
@@ -69,12 +72,10 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-// TODO: Why not use a createResourcePath method instead of an ivar?
 - (void)createModel {
 	self.model = [[[RKRequestTTModel alloc] initWithResourcePath:_resourcePath] autorelease];
 }
 
-// TODO: Comment me up!
 - (void)didLoadModel:(BOOL)firstTime {
 	[super didLoadModel:firstTime];
 

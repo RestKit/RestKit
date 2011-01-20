@@ -85,9 +85,10 @@
  * in your payloads.
  */
 - (NSObject<RKRequestSerializable>*)paramsForSerialization {
-	// TODO: Should I expose the default super-class method as a dictionary returning method for clarity??
-	NSDictionary* attributes = (NSDictionary*) [super paramsForSerialization];
-	RKParams* params = [RKParams paramsWithDictionary:attributes];
+	// TODO: This is broken!
+	// TODO: The Rails router does not respect paramsForSerialization. Need to fix that!
+	RKParams* params = [RKParams params];
+	[params setValue:self.body forParam:@"body"];
 	NSLog(@"Self Body: %@", self.body);
 	if (_newAttachment) {
 		NSData* data = UIImagePNGRepresentation(_newAttachment);

@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <RestKit/RestKit.h>
 
-// TODO: Why not move this into a controller and inherit instead of using categories?
 @interface UIViewController (RKLoading) <RKRequestDelegate>
 
 @end

@@ -460,8 +460,8 @@
 		3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPostTableViewController.m; sourceTree = "<group>"; };
 		3F3239EB12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBAuthenticatedTableViewController.h; sourceTree = "<group>"; };
 		3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBAuthenticatedTableViewController.m; sourceTree = "<group>"; };
-		3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKRequestTTModel+Loading.h"; sourceTree = "<group>"; };
-		3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKRequestTTModel+Loading.m"; sourceTree = "<group>"; };
+		3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RKRequestTTModel+Loading.h"; path = "Other/RKRequestTTModel+Loading.h"; sourceTree = "<group>"; };
+		3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RKRequestTTModel+Loading.m"; path = "Other/RKRequestTTModel+Loading.m"; sourceTree = "<group>"; };
 		3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Resources/DataModel.xcdatamodel; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info.plist"; path = "Resources/DiscussionBoard-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A755037712E4CBD4009FC5EC /* icon-114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-114.png"; path = "Resources/PNGs/app_icon/icon-114.png"; sourceTree = SOURCE_ROOT; };
@@ -528,8 +528,7 @@
 				3F255C9112DB70E200AFD2D1 /* Controllers */,
 				25359EC912E51057008BF33D /* Other */,
 			);
-			name = Code;
-			path = Classes;
+			path = Code;
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
@@ -926,6 +925,8 @@
 		25359EC912E51057008BF33D /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */,
+				3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */,
 				25359ED512E512BB008BF33D /* DiscussionBoard_Prefix.pch */,
 				25359ED612E512BB008BF33D /* main.m */,
 				25359ECA12E51070008BF33D /* DBEnvironment.h */,
@@ -1010,8 +1011,6 @@
 				3F255C9F12DB70E700AFD2D1 /* DBTopic.m */,
 				3F255CA612DB711900AFD2D1 /* DBUser.h */,
 				3F255CA712DB711900AFD2D1 /* DBUser.m */,
-				3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */,
-				3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */,
 			);
 			name = Models;
 			path = ../Code/Models;

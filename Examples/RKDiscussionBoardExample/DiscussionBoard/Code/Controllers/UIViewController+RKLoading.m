@@ -37,6 +37,7 @@ static NSInteger const kProgressViewTag = 67;
 		progressView.tag = kProgressViewTag;
 		[self.view addSubview:progressView];
 	}
+	
 	progressView.progress = totalBytesWritten / (float)totalBytesExpectedToWrite;
 }
 
