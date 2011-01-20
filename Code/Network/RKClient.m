@@ -27,6 +27,42 @@ NSString* RKMakeURLPath(NSString* resourcePath) {
 	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
 }
 
+NSString* RKMakePathWithObject(NSString* path, id object) {
+	NSMutableDictionary* substitutions = [NSMutableDictionary dictionary];
+	NSScanner* scanner = [NSScanner scannerWithString:path];
+	
+	BOOL startsWithParentheses = [[path substringToIndex:1] isEqualToString:@"("];
+	while ([scanner isAtEnd] == NO) {
+		NSString* keyPath = nil;
+		if (startsWithParentheses || [scanner scanUpToString:@"(" intoString:nil]) {
+			// Advance beyond the opening parentheses
+			if (NO == [scanner isAtEnd]) {
+				[scanner setScanLocation:[scanner scanLocation] + 1];
+			}
+			if ([scanner scanUpToString:@")" intoString:&keyPath]) {
+				NSString* searchString = [NSString stringWithFormat:@"(%@)", keyPath];
+				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
+				[substitutions setObject:propertyStringValue forKey:searchString];
+			}
+		}
+	}
+	
+	if (0 == [substitutions count]) {
+		return path;
+	}
+	
+	NSMutableString* interpolatedPath = [[path mutableCopy] autorelease];
+	for (NSString* find in substitutions) {
+		NSString* replace = [substitutions valueForKey:find];
+		[interpolatedPath replaceOccurrencesOfString:find 
+										  withString:replace 													 
+											 options:NSLiteralSearch 
+											   range:NSMakeRange(0, [interpolatedPath length])];
+	}
+	
+	return [NSString stringWithString:interpolatedPath];
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation RKClient

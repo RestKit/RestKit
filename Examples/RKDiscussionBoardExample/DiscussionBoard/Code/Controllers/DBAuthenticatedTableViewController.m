@@ -13,7 +13,6 @@
 
 - (void)viewDidUnload {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:DBUserDidLoginNotification object:nil];
-	// [[NSNotificationCenter defaultCenter] removeObserver:self name:kLoginCanceledNotificationName object:nil];
 }
 
 - (void)loadView {
@@ -59,6 +58,5 @@
 - (void)loginCanceled:(NSNotification*)note {
 	[self.navigationController popViewControllerAnimated:YES];
 }
-
 
 @end
