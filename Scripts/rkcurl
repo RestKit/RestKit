@@ -35,7 +35,7 @@ data = nil
 dataMatch = input.match(/HTTP Body: (.*)\n/m)
 data = dataMatch[1] if dataMatch
 
-command = "curl -X #{method} "
+command = "curl -i -X #{method} "
 command << "-d \"#{data.gsub('"', '\"')}\" " if data
 for header in headers
   command << "-H \"#{header.gsub('"', '\"')}\" "
