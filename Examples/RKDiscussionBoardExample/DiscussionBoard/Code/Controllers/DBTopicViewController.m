@@ -49,6 +49,7 @@
 	[super loadView];
 
 	_topicNameField = [[UITextField alloc] initWithFrame:CGRectZero];
+	_topicNameField.placeholder = @"topic name";
 }
 
 - (void)createModel {
