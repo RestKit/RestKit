@@ -30,7 +30,7 @@
 		3F255CA112DB70E700AFD2D1 /* DBTopic.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255C9F12DB70E700AFD2D1 /* DBTopic.m */; };
 		3F255CA812DB711900AFD2D1 /* DBUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255CA712DB711900AFD2D1 /* DBUser.m */; };
 		3F255CC612DB747C00AFD2D1 /* DBTopicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255CC512DB747C00AFD2D1 /* DBTopicViewController.m */; };
-		3F255D1E12DB779B00AFD2D1 /* DBLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255D1D12DB779B00AFD2D1 /* DBLoginViewController.m */; };
+		3F255D1E12DB779B00AFD2D1 /* DBLoginOrSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255D1D12DB779B00AFD2D1 /* DBLoginOrSignUpViewController.m */; };
 		3F3239E112DBB9C600AB2F6E /* DBPostTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */; };
 		3F3239ED12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */; };
 		3F45615B12D7E31100BE25AD /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */; };
@@ -146,7 +146,7 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* DiscussionBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DiscussionBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DiscussionBoard-Development.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		25359D4212E3E0A4008BF33D /* libThree20.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20.a; sourceTree = "<group>"; };
 		25359D4312E3E0A4008BF33D /* libThree20Core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20Core.a; sourceTree = "<group>"; };
@@ -435,6 +435,8 @@
 		25359ECF12E51070008BF33D /* DiscussionBoardAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiscussionBoardAppDelegate.m; path = Code/Other/DiscussionBoardAppDelegate.m; sourceTree = SOURCE_ROOT; };
 		25359ED512E512BB008BF33D /* DiscussionBoard_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiscussionBoard_Prefix.pch; path = Code/Other/DiscussionBoard_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		25359ED612E512BB008BF33D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Code/Other/main.m; sourceTree = SOURCE_ROOT; };
+		25FED6E512E7D60600D94325 /* DiscussionBoard-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy.plist"; path = "Resources/DiscussionBoard-Info copy.plist"; sourceTree = "<group>"; };
+		25FED7BC12E7D6EC00D94325 /* DiscussionBoard-Info copy 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy 2.plist"; path = "Resources/DiscussionBoard-Info copy 2.plist"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		3F22448612DDFCB30002559D /* UIViewController+RKLoading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+RKLoading.h"; sourceTree = "<group>"; };
 		3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+RKLoading.m"; sourceTree = "<group>"; };
@@ -452,8 +454,8 @@
 		3F255CA712DB711900AFD2D1 /* DBUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBUser.m; sourceTree = "<group>"; };
 		3F255CC412DB747C00AFD2D1 /* DBTopicViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBTopicViewController.h; sourceTree = "<group>"; };
 		3F255CC512DB747C00AFD2D1 /* DBTopicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBTopicViewController.m; sourceTree = "<group>"; };
-		3F255D1C12DB779B00AFD2D1 /* DBLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBLoginViewController.h; sourceTree = "<group>"; };
-		3F255D1D12DB779B00AFD2D1 /* DBLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBLoginViewController.m; sourceTree = "<group>"; };
+		3F255D1C12DB779B00AFD2D1 /* DBLoginOrSignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBLoginOrSignUpViewController.h; sourceTree = "<group>"; };
+		3F255D1D12DB779B00AFD2D1 /* DBLoginOrSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBLoginOrSignUpViewController.m; sourceTree = "<group>"; };
 		3F3239DF12DBB9C600AB2F6E /* DBPostTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBPostTableViewController.h; sourceTree = "<group>"; };
 		3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPostTableViewController.m; sourceTree = "<group>"; };
 		3F3239EB12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBAuthenticatedTableViewController.h; sourceTree = "<group>"; };
@@ -533,7 +535,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* DiscussionBoard.app */,
+				1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -954,6 +956,8 @@
 				A755037512E4CBD4009FC5EC /* PNGs */,
 				8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */,
 				3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */,
+				25FED6E512E7D60600D94325 /* DiscussionBoard-Info copy.plist */,
+				25FED7BC12E7D6EC00D94325 /* DiscussionBoard-Info copy 2.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -984,8 +988,8 @@
 				3F255C9712DB70E200AFD2D1 /* DBTopicsTableViewController.m */,
 				3F255CC412DB747C00AFD2D1 /* DBTopicViewController.h */,
 				3F255CC512DB747C00AFD2D1 /* DBTopicViewController.m */,
-				3F255D1C12DB779B00AFD2D1 /* DBLoginViewController.h */,
-				3F255D1D12DB779B00AFD2D1 /* DBLoginViewController.m */,
+				3F255D1C12DB779B00AFD2D1 /* DBLoginOrSignUpViewController.h */,
+				3F255D1D12DB779B00AFD2D1 /* DBLoginOrSignUpViewController.m */,
 				3F3239DF12DBB9C600AB2F6E /* DBPostTableViewController.h */,
 				3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */,
 				3F3239EB12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.h */,
@@ -1100,7 +1104,7 @@
 			);
 			name = DiscussionBoard;
 			productName = DiscussionBoard;
-			productReference = 1D6058910D05DD3D006BFB54 /* DiscussionBoard.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1235,7 +1239,7 @@
 				3F255CA112DB70E700AFD2D1 /* DBTopic.m in Sources */,
 				3F255CA812DB711900AFD2D1 /* DBUser.m in Sources */,
 				3F255CC612DB747C00AFD2D1 /* DBTopicViewController.m in Sources */,
-				3F255D1E12DB779B00AFD2D1 /* DBLoginViewController.m in Sources */,
+				3F255D1E12DB779B00AFD2D1 /* DBLoginOrSignUpViewController.m in Sources */,
 				3F3239E112DBB9C600AB2F6E /* DBPostTableViewController.m in Sources */,
 				3F3239ED12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m in Sources */,
 				3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */,
@@ -1268,7 +1272,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Debug */ = {
+		1D6058940D05DD3E006BFB54 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1277,7 +1281,10 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Code/Other/DiscussionBoard_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DB_ENVIRONMENT=0",
+					"DEBUG=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					../../../Build,
 					Libraries/three20,
@@ -1289,18 +1296,21 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
 				);
-				PRODUCT_NAME = DiscussionBoard;
+				PRODUCT_NAME = "DiscussionBoard-Development";
 			};
-			name = Debug;
+			name = Development;
 		};
-		1D6058950D05DD3E006BFB54 /* Release */ = {
+		1D6058950D05DD3E006BFB54 /* Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Code/Other/DiscussionBoard_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DB_ENVIRONMENT=2",
+					"DEBUG=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					../../../Build,
 					Libraries/three20,
@@ -1319,9 +1329,9 @@
 				PRODUCT_NAME = DiscussionBoard;
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = Production;
 		};
-		C01FCF4F08A954540054247B /* Debug */ = {
+		25FED7DA12E7D78E00D94325 /* Staging */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -1340,9 +1350,58 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
-			name = Debug;
+			name = Staging;
 		};
-		C01FCF5008A954540054247B /* Release */ = {
+		25FED7DB12E7D78E00D94325 /* Staging */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Code/Other/DiscussionBoard_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DB_ENVIRONMENT=1",
+					"DEBUG=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					../../../Build,
+					Libraries/three20,
+				);
+				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/Libraries/three20\"",
+				);
+				PRODUCT_NAME = "DiscussionBoard-Staging";
+			};
+			name = Staging;
+		};
+		C01FCF4F08A954540054247B /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					../../../Build,
+					Libraries/three20/Build/Products/three20,
+				);
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+			};
+			name = Development;
+		};
+		C01FCF5008A954540054247B /* Production */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -1358,7 +1417,7 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
-			name = Release;
+			name = Production;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1366,20 +1425,22 @@
 		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "DiscussionBoard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Debug */,
-				1D6058950D05DD3E006BFB54 /* Release */,
+				1D6058940D05DD3E006BFB54 /* Development */,
+				25FED7DB12E7D78E00D94325 /* Staging */,
+				1D6058950D05DD3E006BFB54 /* Production */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Production;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "DiscussionBoard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Debug */,
-				C01FCF5008A954540054247B /* Release */,
+				C01FCF4F08A954540054247B /* Development */,
+				25FED7DA12E7D78E00D94325 /* Staging */,
+				C01FCF5008A954540054247B /* Production */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Production;
 		};
 /* End XCConfigurationList section */
 	};

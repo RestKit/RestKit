@@ -27,6 +27,7 @@
 	[super createModel];
 
 	UIBarButtonItem* item = nil;
+	NSLog(@"Updating model for Topics table! Current User is: %@", [DBUser currentUser]);
 	if ([[DBUser currentUser] isLoggedIn]) {
 		item = [[[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleBordered target:self action:@selector(logoutButtonWasPressed:)] autorelease];
 	}
@@ -46,6 +47,7 @@
 }
 
 - (void)logoutButtonWasPressed:(id)sender {
+	NSLog(@"Current user is: %@", [DBUser currentUser]);
 	[[DBUser currentUser] logout];
 }
 

@@ -10,7 +10,7 @@
 #import <RestKit/CoreData/CoreData.h>
 
 // Declared here and defined below
-@protocol DBUserDelegate;
+@protocol DBUserAuthenticationDelegate;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,13 +18,13 @@
 	// Transient. Used for login & sign-up
 	NSString* _password;
 	NSString* _passwordConfirmation;
-	NSObject<DBUserDelegate>* _delegate;
+	NSObject<DBUserAuthenticationDelegate>* _delegate;
 }
 
 /**
  * The delegate for the User. Will be informed of session life-cycle events
  */
-@property (nonatomic, retain) NSObject<DBUserDelegate>* delegate;
+@property (nonatomic, assign) NSObject<DBUserAuthenticationDelegate>* delegate;
 
 /**
  * The e-mail address of the User
@@ -67,9 +67,14 @@
 + (DBUser*)currentUser;
 
 /**
+ * Completes a sign up using the properties assigned to the object
+ */
+- (void)signUpWithDelegate:(NSObject<DBUserAuthenticationDelegate>*)delegate;
+
+/**
  * Attempts to log a User into the system with a given username and password
  */
-- (void)loginWithUsername:(NSString*)username andPassword:(NSString*)password;
+- (void)loginWithUsername:(NSString*)username andPassword:(NSString*)password delegate:(NSObject<DBUserAuthenticationDelegate>*)delegate;
 
 /**
  * Returns YES when the User is logged in
@@ -90,14 +95,26 @@
  * Notifications
  */
 extern NSString* const DBUserDidLoginNotification; // Posted when the User logs in
-extern NSString* const DBUserDidFailLoginNotification; // Posted when the User fails login. userInfo contains NSError with reason
 extern NSString* const DBUserDidLogoutNotification; // Posted when the User logs out
 
 /**
  * A protocol defining life-cycles events for a user logging in and out
  * of the application
  */
-@protocol DBUserDelegate
+@protocol DBUserAuthenticationDelegate
+
+@optional
+
+/**
+ * Sent to the delegate when sign up has completed successfully. Immediately
+ * followed by an invocation of userDidLogin:
+ */
+- (void)userDidSignUp:(DBUser*)user;
+
+/**
+ * Sent to the delegate when sign up failed for a specific reason
+ */
+- (void)user:(DBUser*)user didFailSignUpWithError:(NSError*)error;
 
 /**
  * Sent to the delegate when the User has successfully authenticated

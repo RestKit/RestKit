@@ -24,16 +24,20 @@
 #import "DBPost.h"
 #import "DBManagedObjectCache.h"
 #import "DBTopicViewController.h"
-#import "DBLoginViewController.h"
+#import "DBLoginOrSignUpViewController.h"
 #import "DBUser.h"
 #import "DBPostTableViewController.h"
+
+/**
+ * The HTTP Header Field we transmit the authentication token obtained
+ * during login/sign-up back to the server. This token is verified server
+ * side to establish an authenticated session
+ */
+static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 
 @implementation DiscussionBoardAppDelegate
 
 @synthesize window;
-
-#pragma mark -
-#pragma mark Application lifecycle
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 	// Initialize object manager
@@ -44,7 +48,9 @@
 	[RKRequestTTModel setDefaultRefreshRate:1];
 
 	// Do not overwrite properties that are missing in the payload to nil.
-	objectManager.mapper.missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
+	// TODO: Fix! There is a bug where elements that are in the payload
+//	objectManager.mapper.missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
+	objectManager.mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
 
 	// Initialize object store
 	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"DiscussionBoard.sqlite"] autorelease];
@@ -56,18 +62,18 @@
 	[mapper registerClass:[DBPost class] forElementNamed:@"post"];
 
 	// Set Up Router
-	// TODO: Switch to Rails Router
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
-//	RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
+	// TODO: Comment me!
+	RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
+	[router setModelName:@"user" forClass:[DBUser class]];
 	[router routeClass:[DBUser class] toResourcePath:@"/signup" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBUser class] toResourcePath:@"/login" forMethod:RKRequestMethodPUT];
 
-//	[router setModelName:@"topic" forClass:[DBTopic class]];
+	[router setModelName:@"topic" forClass:[DBTopic class]];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodPUT];
 	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodDELETE];
 
-//	[router setModelName:@"post" forClass:[DBPost class]];
+	[router setModelName:@"post" forClass:[DBPost class]];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts" forMethod:RKRequestMethodPOST];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
 	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
@@ -82,25 +88,39 @@
 	[map from:@"db://topics/new" toViewController:[DBTopicViewController class]];
 	[map from:@"db://posts/(initWithPostID:)" toViewController:[DBPostTableViewController class]];
 	[map from:@"db://topics/(initWithTopicID:)/posts/new" toViewController:[DBPostTableViewController class]];
-	[map from:@"db://login" toModalViewController:[DBLoginViewController class]];
-
+	[map from:@"db://login" toModalViewController:[DBLoginOrSignUpViewController class]];
 
 	[map from:@"*" toViewController:[TTWebController class]];
 
-	[[TTURLRequestQueue mainQueue] setMaxContentLength:0]; // Don't limit content length.
-
+	[[TTURLRequestQueue mainQueue] setMaxContentLength:0]; // Don't limit content length.	
+	
+	// Register for authentication notifications
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setAccessTokenHeaderFromAuthenticationNotification:) name:DBUserDidLoginNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setAccessTokenHeaderFromAuthenticationNotification:) name:DBUserDidLogoutNotification object:nil];
+	
+	// Initialize authenticated access if we have a logged in current User reference
+	DBUser* user = [DBUser currentUser];
+	if ([user isLoggedIn]) {
+		NSLog(@"Found logged in User record for username '%@' [Access Token: %@]", user.username, user.singleAccessToken);
+		[objectManager.client setValue:user.singleAccessToken forHTTPHeaderField:kDBAccessTokenHTTPHeaderField];
+	}
+	
+	// Fire up the UI!
 	TTOpenURL(@"db://topics");
 	[[TTNavigator navigator].window makeKeyAndVisible];
-
-	DBUser* user = [DBUser currentUser];
-	NSLog(@"Token: %@", user.singleAccessToken);
-	NSLog(@"User: %@", user);
-	[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:kAccessTokenHeaderField];
 
 	return YES;
 }
 
+// Watch for login/logout events and set the Access Token HTTP Header
+- (void)setAccessTokenHeaderFromAuthenticationNotification:(NSNotification*)notification {
+	DBUser* user = (DBUser*) [notification object];
+	RKObjectManager* objectManager = [RKObjectManager sharedManager];
+	[objectManager.client setValue:user.singleAccessToken forHTTPHeaderField:kDBAccessTokenHTTPHeaderField];
+}
+
 - (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [window release];
     [super dealloc];
 }

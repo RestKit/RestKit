@@ -16,6 +16,9 @@ NSString* const DBUserDidLoginNotification = @"DBUserDidLoginNotification";
 NSString* const DBUserDidFailLoginNotification = @"DBUserDidFailLoginNotification";
 NSString* const DBUserDidLogoutNotification = @"DBUserDidLogoutNotification";
 
+// Current User singleton
+static DBUser* currentUser = nil;
+
 @implementation DBUser
 
 @dynamic email;
@@ -34,7 +37,7 @@ NSString* const DBUserDidLogoutNotification = @"DBUserDidLogoutNotification";
 	return [NSDictionary dictionaryWithKeysAndObjects:
 			@"id", @"userID",
 			@"email", @"email",
-			@"username", @"login",
+			@"username", @"username",
 			@"single_access_token", @"singleAccessToken",
 			@"password", @"password",
 			@"password_confirmation", @"passwordConfirmation",
@@ -54,24 +57,52 @@ NSString* const DBUserDidLogoutNotification = @"DBUserDidLogoutNotification";
  * are not sending messages to nil
  */
 + (DBUser*)currentUser {
-	id userID = [[NSUserDefaults standardUserDefaults] objectForKey:kDBUserCurrentUserIDDefaultsKey];
-	if (userID) {
-		return [self objectWithPrimaryKeyValue:userID];
-	} else {
-		return [self object];
+	if (nil == currentUser) {
+		id userID = [[NSUserDefaults standardUserDefaults] objectForKey:kDBUserCurrentUserIDDefaultsKey];
+		if (userID) {
+			currentUser = [self objectWithPrimaryKeyValue:userID];
+		} else {
+			currentUser = [self object];
+		}
+		
+		[currentUser retain];
 	}
+	
+	return currentUser;
+}
+
++ (void)setCurrentUser:(DBUser*)user {
+	[user retain];
+	[currentUser release];
+	currentUser = user;
+}
+
+/**
+ * Implementation of a RESTful sign-up pattern. We are just relying on RestKit for
+ * request/response processing and object mapping, but we have built a higher level
+ * abstraction around Sign-Up as a concept and exposed notifications and delegate
+ * methods that make it much more meaningful than a POST/parse/process cycle would be.
+ */
+- (void)signUpWithDelegate:(NSObject<DBUserAuthenticationDelegate>*)delegate {
+	_delegate = delegate;
+	[[RKObjectManager sharedManager] postObject:self delegate:self];
 }
 
 /**
  * Implementation of a RESTful login pattern. We construct an object loader addressed to
  * the /login resource path and POST the credentials. The target of the object loader is
- * set so that the login request
- *
+ * set so that the login response gets mapped back into this object, populating the
+ * properties according to the mappings declared in elementToPropertyMappings.
  */
-- (void)loginWithUsername:(NSString*)username andPassword:(NSString*)password {
+- (void)loginWithUsername:(NSString*)username andPassword:(NSString*)password delegate:(NSObject<DBUserAuthenticationDelegate>*)delegate {
+	_delegate = delegate;
+	
+	// TODO: Cleanup. Save the object store so that background threads can update this object
+	[[RKObjectManager sharedManager] saveObjectStore];
+	
 	RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/login" delegate:self];
 	objectLoader.method = RKRequestMethodPOST;
-	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"username", username, @"password", password, nil];
+	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"user[username]", username, @"user[password]", password, nil];
 	objectLoader.targetObject = self;
 	[objectLoader send];
 }
@@ -80,32 +111,43 @@ NSString* const DBUserDidLogoutNotification = @"DBUserDidLogoutNotification";
  * Implementation of a RESTful logout pattern. We POST an object loader to
  * the /logout resource path. This destroys the remote session
  */
-- (void)logout {
+- (void)logout {	
 	RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/logout" delegate:self];
 	objectLoader.method = RKRequestMethodPOST;
-	objectLoader.targetObject = self; // TODO: Not sure I need this?
+	objectLoader.targetObject = self;
 	[objectLoader send];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray *)objects {
-	DBUser* user = [objects objectAtIndex:0];
+- (void)loginWasSuccessful {
+	// Upon login, we become the current user
+	[DBUser setCurrentUser:self];
+	
+	// Persist the UserID for recovery later
+	[[NSUserDefaults standardUserDefaults] setObject:self.userID forKey:kDBUserCurrentUserIDDefaultsKey];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	
+	// Inform the delegate
+	if ([self.delegate respondsToSelector:@selector(userDidLogin:)]) {
+		[self.delegate userDidLogin:self];
+	}
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:DBUserDidLoginNotification object:self];
+}
 
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray *)objects {
+	// NOTE: We don't need objects because self is the target of the mapping operation
+	
 	if ([objectLoader wasSentToResourcePath:@"/login"]) {
 		// Login was successful
-
-		// Persist the UserID for recovery later
-		[[NSUserDefaults standardUserDefaults] setObject:user.userID forKey:kDBUserCurrentUserIDDefaultsKey];
-		[[NSUserDefaults standardUserDefaults] synchronize];
-
-		// Inform the delegate
-		if ([self.delegate respondsToSelector:@selector(userDidLogin:)]) {
-			[self.delegate userDidLogin:self];
+		[self loginWasSuccessful];
+	} else if ([objectLoader wasSentToResourcePath:@"/signup"]) { 
+		// Sign Up was successful
+		if ([self.delegate respondsToSelector:@selector(userDidSignUp:)]) {
+			[self.delegate userDidSignUp:self];
 		}
 		
-		RKObjectManager* objectManager = [RKObjectManager sharedManager];
-		[objectManager.client setValue:[DBUser currentUser].singleAccessToken forHTTPHeaderField:kAccessTokenHeaderField];
-		
-		[[NSNotificationCenter defaultCenter] postNotificationName:DBUserDidLoginNotification object:user];
+		// Complete the login as well
+		[self loginWasSuccessful];		
 	} else if ([objectLoader wasSentToResourcePath:@"/logout"]) {
 		// Logout was successful
 
@@ -118,46 +160,30 @@ NSString* const DBUserDidLogoutNotification = @"DBUserDidLogoutNotification";
 			[self.delegate userDidLogout:self];
 		}
 		
-		RKObjectManager* objectManager = [RKObjectManager sharedManager];
-		[objectManager.client setValue:nil forHTTPHeaderField:kAccessTokenHeaderField];
-		
 		[[NSNotificationCenter defaultCenter] postNotificationName:DBUserDidLogoutNotification object:nil];
 	}
 }
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError*)error {
-	// Login failed
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError*)error {	
 	if ([objectLoader wasSentToResourcePath:@"/login"]) {
+		// Login failed
 		if ([self.delegate respondsToSelector:@selector(user:didFailLoginWithError:)]) {
 			[self.delegate user:self didFailLoginWithError:error];
 		}
+	} else if ([objectLoader wasSentToResourcePath:@"/signup"]) {
+		// Sign Up failed
+		if ([self.delegate respondsToSelector:@selector(user:didFailSignUpWithError:)]) {
+			[self.delegate user:self didFailSignUpWithError:error];
+		}
 	}
-}
-
-// TODO: Do I need this?
-- (void)reauthenticate {
 }
 
 - (BOOL)isLoggedIn {
 	return self.singleAccessToken != nil;
 }
 
-// TODO: Do I need this?
-//- (NSObject<RKRequestSerializable>*)paramsForSerialization {
-//	if (_passwordConfirmation) {
-//		return [NSDictionary dictionaryWithObjectsAndKeys:
-//				self.email, @"user[email]",
-//				self.login, @"user[login]",
-//				self.password, @"user[password]",
-//				self.passwordConfirmation, @"user[password_confirmation]", nil];
-//	} else {
-//		return [NSDictionary dictionaryWithObjectsAndKeys:
-//				self.login, @"user[login]",
-//				self.password, @"user[password]", nil];
-//	}
-//}
-
 - (void)dealloc {
+	_delegate = nil;
 	[_password release];
 	[_passwordConfirmation release];
 	[super dealloc];

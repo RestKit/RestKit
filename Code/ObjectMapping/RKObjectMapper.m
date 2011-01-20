@@ -324,8 +324,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			setValue = NO;
 		}
 		
-		// If the value retrieved from the element is nil (no value found), then
-		// consult the missing element policy to determine if we should clear the value
+		// TODO: Need a way to differentiate between a keyPath that exists, but contains a nil
+		// value and one that is not present in the payload. Causes annoying problems!
 		if (nil == elementValue) {
 			setValue = (_missingElementMappingPolicy == RKSetNilForMissingElementMappingPolicy);
 		}

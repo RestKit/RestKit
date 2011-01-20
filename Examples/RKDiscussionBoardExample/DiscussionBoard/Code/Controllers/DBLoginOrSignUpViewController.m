@@ -1,15 +1,14 @@
 //
-//  DBLoginViewController.m
+//  DBLoginOrSignUpViewController.m
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/10/11.
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "DBLoginViewController.h"
-#import "DBUser.h"
+#import "DBLoginOrSignUpViewController.h"
 
-@implementation DBLoginViewController
+@implementation DBLoginOrSignUpViewController
 
 - (id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query {
 	if (self = [super initWithNavigatorURL:URL query:query]) {
@@ -21,6 +20,11 @@
 }
 
 - (void)viewDidUnload {
+	// Resign as the delegate
+	if ([DBUser currentUser].delegate == self) {
+		[DBUser currentUser].delegate = nil;
+	}
+	
 	TT_RELEASE_SAFELY(_signupOrLoginButtonItem);
 	TT_RELEASE_SAFELY(_usernameField);
 	TT_RELEASE_SAFELY(_passwordField);
@@ -99,7 +103,6 @@
 	[self invalidateModel];
 }
 
-// TODO: Move login and sign-up into the model as higher level concepts
 - (void)loginOrSignup {
 	if (_showingSignup) {
 		// Signup
@@ -108,14 +111,12 @@
 		user.email = _emailField.text;
 		user.password = _passwordField.text;
 		user.passwordConfirmation = _passwordConfirmationField.text;
-
-		[[RKObjectManager sharedManager] postObject:user delegate:self];
+		[user signUpWithDelegate:self];
 	} else {
 		// Login
-		DBUser* user = [DBUser object];
-		user.username = _usernameField.text;
-		user.password = _passwordField.text;
-		[[RKObjectManager sharedManager] putObject:user delegate:self];
+		DBUser* user = [DBUser object];		
+		user.delegate = self;
+		[user loginWithUsername:_usernameField.text andPassword:_passwordField.text delegate:self];
 	}
 }
 
@@ -140,15 +141,18 @@
 	return NO;
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
-	assert([objects count] == 1);
-	DBUser* user = [objects objectAtIndex:0];
-	NSLog(@"Authentication Token: %@", user.singleAccessToken);
+#pragma mark DBUserAuthenticationDelegate methods
+
+- (void)userDidLogin:(DBUser*)user {
 	[self dismissModalViewControllerAnimated:YES];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	// TODO: TTAlert???
+- (void)user:(DBUser*)user didFailSignUpWithError:(NSError*)error {	
+	TTAlert([error localizedDescription]);
+}
+
+- (void)user:(DBUser*)user didFailLoginWithError:(NSError*)error {
+//	TTAlert([error localizedDescription]);
 	[[[[UIAlertView alloc] initWithTitle:@"Error"
 								 message:[error localizedDescription]
 								delegate:nil

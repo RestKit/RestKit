@@ -1,5 +1,5 @@
 //
-//  DBLoginViewController.h
+//  DBLoginOrSignUpViewController.h
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/10/11.
@@ -9,8 +9,9 @@
 #import <Three20/Three20.h>
 #import <Three20/Three20+Additions.h>
 #import <RestKit/RestKit.h>
+#import "DBUser.h"
 
-@interface DBLoginViewController : TTTableViewController <UITextFieldDelegate, RKObjectLoaderDelegate> {
+@interface DBLoginOrSignUpViewController : TTTableViewController <UITextFieldDelegate, DBUserAuthenticationDelegate> {
 	UIBarButtonItem* _signupOrLoginButtonItem;
 	BOOL _showingSignup;
 

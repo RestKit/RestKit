@@ -8,9 +8,14 @@
 
 #import "DBEnvironment.h"
 
-// TODO: Add conditional compilation!
-NSString* const DBRestKitBaseURL = @"http://localhost:3000";
-//NSString* const kDBBaseURLString = @"http://discussionboard.heroku.com";
-NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName = @"kObjectCreatedUpdatedOrDestroyedNotificationName";
+// Base URL
+#if DB_ENVIRONMENT == DB_ENVIRONMENT_DEVELOPMENT
+	NSString* const DBRestKitBaseURL = @"http://localhost:3000";
+#elif DB_ENVIRONMENT == DB_ENVIRONMENT_STAGING
+	// TODO: Need a staging environment...
+#elif DB_ENVIRONMENT == DB_ENVIRONMENT_PRODUCTION
+	NSString* const DBRestKitBaseURL = @"http://discussionboard.heroku.com";
+#endif
 
-NSString* const kAccessTokenHeaderField = @"X-USER-ACCESS-TOKEN";
+// TODO: Eliminate
+NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName = @"kObjectCreatedUpdatedOrDestroyedNotificationName";
