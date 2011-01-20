@@ -29,7 +29,7 @@ headersString.each_line do |line|
 end
 
 method = input.match(/Sending (.*) request to/m)[1]
-url = input.match(/URL (.*)\./m)[1]
+url = input.match(/URL (.*)\. HTTP Body/m)[1]
 
 data = nil
 dataMatch = input.match(/HTTP Body: (.*)\n/m)
