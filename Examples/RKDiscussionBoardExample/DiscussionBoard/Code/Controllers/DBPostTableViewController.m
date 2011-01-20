@@ -23,7 +23,7 @@
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
 		// TODO: Why are we using topic ID here?
-		_topicID = [[NSNumber numberWithInt:[topicID intValue]] retain];
+		_topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
 	}
 
 	return self;
@@ -31,7 +31,7 @@
 
 - (void)dealloc {
 	TT_RELEASE_SAFELY(_post);
-	TT_RELEASE_SAFELY(_topicID);
+	TT_RELEASE_SAFELY(_topic);
 
 	[super dealloc];
 }
@@ -55,7 +55,7 @@
 
 	if (nil == _post) {
 		_post = [[DBPost object] retain];
-		_post.topicID = _topicID;
+		_post.topicID = _topic.topicID;
 	}
 
 	_requiresLoggedInUser = YES;

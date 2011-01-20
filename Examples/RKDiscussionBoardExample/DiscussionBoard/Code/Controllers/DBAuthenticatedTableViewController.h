@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Three20/Three20.h>
+#import "DBLoginOrSignUpViewController.h"
 
-@interface DBAuthenticatedTableViewController : TTTableViewController {
+@interface DBAuthenticatedTableViewController : TTTableViewController <DBLoginOrSignupViewControllerDelegate> {
 	BOOL _requiresLoggedInUser;
 	NSNumber* _requiredUserID;
 }

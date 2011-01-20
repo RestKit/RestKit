@@ -60,4 +60,8 @@
 	return @"topicID";
 }
 
+- (BOOL)isNewRecord {
+	return [[self topicID] intValue] == 0;
+}
+
 @end

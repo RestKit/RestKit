@@ -10,6 +10,8 @@
 
 @implementation DBLoginOrSignUpViewController
 
+@synthesize delegate = _delegate;
+
 - (id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query {
 	if (self = [super initWithNavigatorURL:URL query:query]) {
 		self.title = @"Login";
@@ -88,8 +90,7 @@
 
 - (void)cancelButtonWasPressed:(id)sender {
 	[self dismissModalViewControllerAnimated:YES];
-	// TODO: Do we need cancel login support???
-//	[[NSNotificationCenter defaultCenter] postNotificationName:kLoginCanceledNotificationName object:self];
+	[_delegate loginControllerDidCancel:self];
 }
 
 - (void)signupOrLoginButtonItemWasPressed:(id)sender {

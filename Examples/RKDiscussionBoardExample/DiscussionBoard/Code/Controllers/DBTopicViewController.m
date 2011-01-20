@@ -24,11 +24,6 @@
 	[super dealloc];
 }
 
-// TODO: Move this into the model...
-- (BOOL)isNewRecord {
-	return [[_topic topicID] intValue] == 0;
-}
-
 - (void)viewDidUnload {
 	TT_RELEASE_SAFELY(_topicNameField);
 }
@@ -42,7 +37,7 @@
 	}
 
 	_requiresLoggedInUser = YES;
-	if (![self isNewRecord]) {
+	if (![_topic isNewRecord]) {
 		_requiredUserID = _topic.userID;
 	}
 
@@ -58,7 +53,7 @@
 	_topicNameField.text = _topic.name;
 	[items addObject:[TTTableControlItem itemWithCaption:@"Name" control:_topicNameField]];
 
-	if ([self isNewRecord]) {
+	if ([_topic isNewRecord]) {
 		self.title = @"New Topic";
 		[items addObject:[TTTableButton itemWithText:@"Create" delegate:self selector:@selector(createButtonWasPressed:)]];
 	} else {
@@ -98,7 +93,6 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	// TODO: TTAlert or create a DBErrorAlert helper?
 	[[[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
 }
 

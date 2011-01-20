@@ -12,7 +12,6 @@
 
 @implementation DBManagedObjectCache
 
-// TODO: Cleanup this code somehow...
 - (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath {
 	if ([resourcePath isEqualToString:@"/topics"]) {
 		NSFetchRequest* request = [DBTopic fetchRequest];
@@ -20,6 +19,7 @@
 		[request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
 		return [NSArray arrayWithObject:request];
 	}
+	
 	// match on /topics/:id/posts
 	NSArray* components = [resourcePath componentsSeparatedByString:@"/"];
 	if ([components count] == 4 &&

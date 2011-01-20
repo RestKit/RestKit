@@ -63,4 +63,9 @@
  */
 @property (nonatomic, retain) NSNumber* userID;
 
+/**
+ * Returns true if the record has not yet been saved/synced with the server.
+ */
+- (BOOL)isNewRecord;
+
 @end

@@ -106,4 +106,9 @@
  */
 @property (nonatomic, retain) UIImage* newAttachment;
 
+/**
+ * Returns true if the record has not yet been saved/synced with the server.
+ */
+- (BOOL)isNewRecord;
+
 @end

@@ -100,4 +100,8 @@
 	return params;
 }
 
+- (BOOL)isNewRecord {
+	return [[self postID] intValue] == 0;
+}
+
 @end

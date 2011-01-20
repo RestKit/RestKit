@@ -13,7 +13,6 @@
 
 - (void)viewDidUnload {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:DBUserDidLoginNotification object:nil];
-	// [[NSNotificationCenter defaultCenter] removeObserver:self name:kLoginCanceledNotificationName object:nil];
 }
 
 - (void)loadView {
@@ -23,32 +22,27 @@
 	if (_requiresLoggedInUser) {
 		BOOL isAuthenticated = NO;
 		if (_requiredUserID &&
-			[DBUser currentUser].singleAccessToken &&
-			// Put current user id first because it might be nil.
+			[[DBUser currentUser] isLoggedIn] &&
 			[[DBUser currentUser].userID isEqualToNumber:_requiredUserID]) {
 			isAuthenticated = YES;
 			// TODO: Move this isAuthenticated logic into the model!
 		} else if (_requiredUserID == nil &&
-				   [DBUser currentUser].singleAccessToken &&
-				   [DBUser currentUser] != nil) {
+				   [[DBUser currentUser] isLoggedIn]) {
 			isAuthenticated = YES;
 		}
 
 		if (!isAuthenticated) {
 			// Register for login succeeded notification. populate view.
 			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogin:) name:DBUserDidLoginNotification object:nil];
-
-			// Register for login canceled notification. pop view controller.
-			// TODO: Not sure what's up with the cancel...
-			// [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginCanceled:) name:kLoginCanceledNotificationName object:nil];
-
-			TTOpenURL(@"db://login");
+			
+			DBLoginOrSignUpViewController* loginViewController = (DBLoginOrSignUpViewController*)TTOpenURL(@"db://login");
+			loginViewController.delegate = self;
 		}
 	}
 }
 
 - (void)userDidLogin:(NSNotification*)note {
-	// check user id is allowed.
+	// check to ensure the user that logged in is allowed to acces this controller.
 	if (_requiredUserID && [[DBUser currentUser].userID isEqualToNumber:_requiredUserID]) {
 		[self invalidateModel];
 	} else {
@@ -56,7 +50,7 @@
 	}
 }
 
-- (void)loginCanceled:(NSNotification*)note {
+- (void)loginControllerDidCancel:(DBLoginOrSignUpViewController*)loginController {
 	[self.navigationController popViewControllerAnimated:YES];
 }
 

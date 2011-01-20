@@ -9,10 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "DBAuthenticatedTableViewController.h"
 #import "DBPost.h"
+#import "DBTopic.h"
 
 @interface DBPostTableViewController : DBAuthenticatedTableViewController <RKObjectLoaderDelegate, TTTextEditorDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
 	DBPost* _post;
-	NSNumber* _topicID;
+	DBTopic* _topic;
 
 	TTTextEditor* _bodyTextEditor;
 	TTImageView* _currentAttachmentImageView;
