@@ -17,8 +17,8 @@
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
 		_topicID = [topicID retain];
 		self.title = @"Posts";
-		// TODO: Use routing or something to generate this URL. RKMakePathWithObject
-		_resourcePath = [[NSString stringWithFormat:@"/topics/%@/posts", _topicID] retain];
+		_resourcePath = RKMakePathWithObject(@"/topics/(topicID)/posts", self.topic);
+		[_resourcePath retain];
 		_resourceClass = [DBPost class];
 	}
 	return self;
@@ -42,10 +42,8 @@
 }
 
 - (void)addButtonWasPressed:(id)sender {
-	// TODO: Move this onto the model...
-	// RKMakeObjectPath / RKMakePathWithObject(@"db://topics/(topicID)/posts/new", self.topic);
-	NSString* url = [NSString stringWithFormat:@"db://topics/%@/posts/new", _topicID];
-	TTOpenURL(url);
+	NSString* URLString = RKMakePathWithObject(@"db://topics/(topicID)/posts/new", self.topic);
+	TTOpenURL(URLString);
 }
 
 - (void)createModel {
@@ -72,6 +70,7 @@
 		// the current user id == topic user id.
 		NSNumber* topicUserId = self.topic.userID;
 		// if topicUserId is nil, the topic has no user for some reason (perhaps they got deleted).
+		// TODO: Permissions pattern
 		if ([DBUser currentUser] == nil ||
 			(topicUserId && [[DBUser currentUser].userID isEqualToNumber:topicUserId])) {
 			NSString* editURL = [NSString stringWithFormat:@"db://topics/%@/edit", _topicID];

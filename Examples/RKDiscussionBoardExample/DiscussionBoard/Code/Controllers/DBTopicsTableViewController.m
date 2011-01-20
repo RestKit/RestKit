@@ -58,9 +58,8 @@
 	NSMutableArray* items = [NSMutableArray arrayWithCapacity:[model.objects count]];
 
 	for(DBTopic* topic in model.objects) {
-		// TODO: RKMakePathWithObject. Move to postsTTURL method?
-		NSString* url = [NSString stringWithFormat:@"db://topics/%@/posts", topic.topicID];
-		[items addObject:[TTTableTextItem itemWithText:topic.name URL:url]];
+		NSString* topicPostsURL = RKMakePathWithObject(@"db://topics/(topicID)/posts", topic);
+		[items addObject:[TTTableTextItem itemWithText:topic.name URL:topicPostsURL]];
 	}
 
 	NSLog(@"Items: %@", items);
