@@ -40,9 +40,7 @@
 	[newButton addTarget:self action:@selector(addButtonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
 	[newButton setFrame:CGRectMake(0, 0, newButtonImage.size.width, newButtonImage.size.height)];
 	
-	UIBarButtonItem* newItem = [[UIBarButtonItem alloc] initWithCustomView:newButton];
-	self.navigationItem.rightBarButtonItem = newItem;
-	[newItem release];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addButtonWasPressed:)];	
 }
 
 - (void)addButtonWasPressed:(id)sender {
