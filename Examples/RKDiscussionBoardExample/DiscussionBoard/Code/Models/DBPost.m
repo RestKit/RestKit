@@ -6,6 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import <Three20/Three20+Additions.h>
 #import <RestKit/Support/NSDictionary+RKAdditions.h>
 #import "DBPost.h"
 
