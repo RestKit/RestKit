@@ -196,7 +196,4 @@ typedef enum {
  */
 - (RKObjectLoader*)objectLoaderForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
-// Saves the object store. Temporarily exposed here until Core Data is cleaned up.
-- (void)saveObjectStore;
-
 @end

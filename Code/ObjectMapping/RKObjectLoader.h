@@ -13,6 +13,7 @@
 
 @class RKObjectLoader;
 @class RKManagedObjectStore;
+
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
 /**

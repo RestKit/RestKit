@@ -98,13 +98,11 @@ static DBUser* currentUser = nil;
 - (void)loginWithUsername:(NSString*)username andPassword:(NSString*)password delegate:(NSObject<DBUserAuthenticationDelegate>*)delegate {
 	_delegate = delegate;
 	
-	// TODO: Cleanup. Save the object store so that background threads can update this object
-	[[RKObjectManager sharedManager] saveObjectStore];
-	
 	RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/login" delegate:self];
 	objectLoader.method = RKRequestMethodPOST;
-	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"user[username]", username, @"user[password]", password, nil];
-	objectLoader.targetObject = self;
+	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"user[username]", username, @"user[password]", password, nil];	
+	objectLoader.targetObject = self;	
+	objectLoader.managedObjectStore = [RKObjectManager sharedManager].objectStore;	
 	[objectLoader send];
 }
 

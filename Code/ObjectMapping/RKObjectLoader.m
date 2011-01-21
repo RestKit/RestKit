@@ -63,15 +63,11 @@
 
 - (void)setTargetObject:(NSObject<RKObjectMappable>*)targetObject {
 	[_targetObject release];
-	_targetObject = nil;
-	_targetObject = [targetObject retain];
+	_targetObject = nil;	
+	_targetObject = [targetObject retain];	
 
 	[_targetObjectID release];
 	_targetObjectID = nil;
-
-	if ([targetObject isKindOfClass:[NSManagedObject class]]) {
-		_targetObjectID = [[(NSManagedObject*)targetObject objectID] retain];
-	}
 }
 
 
@@ -276,7 +272,7 @@
 	}
 
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
-		// TODO: When other mapping formats are supported, unwind this assumption...
+		// TODO: When other mapping formats are supported, unwind this assumption... Should probably be an expected MIME types array set by client/manager
 		if ([response isSuccessful] && [response isJSON]) {
 			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 		} else {
@@ -290,8 +286,18 @@
 }
 
 // Give the target object a chance to modify the request
-- (void)triggerWillSendForTargetObject {
+- (void)handleTargetObject {
 	if (self.targetObject) {
+		if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
+			// NOTE: There is an important sequencing issue here. You MUST save the
+			// managed object context before retaining the objectID or you will run
+			// into an error where the object context cannot be saved. We do this
+			// right before send to avoid sequencing issues where the target object is
+			// set before the managed object store.
+			[self.managedObjectStore save];
+			_targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
+		}
+		
 		if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
 			[self.targetObject willSendWithObjectLoader:self];
 		}
@@ -299,12 +305,12 @@
 }
 
 - (void)send {
-	[self triggerWillSendForTargetObject];
+	[self handleTargetObject];
 	[super send];
 }
 
 - (RKResponse*)sendSynchronously {
-	[self triggerWillSendForTargetObject];
+	[self handleTargetObject];
 	return [super sendSynchronously];
 }
 

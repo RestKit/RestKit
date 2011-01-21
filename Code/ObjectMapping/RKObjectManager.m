@@ -179,10 +179,6 @@ static RKObjectManager* sharedManager = nil;
 	NSString* resourcePath = [self.router resourcePathForObject:object method:method];
 	NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
 
-	if (method != RKRequestMethodGET) {
-		[self saveObjectStore];
-	}
-
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 
 	loader.method = method;
@@ -192,16 +188,6 @@ static RKObjectManager* sharedManager = nil;
 	loader.managedObjectStore = self.objectStore;
 
 	return loader;
-}
-
-// TODO: Need to factor core data stuff out of here... Use notifications (probably at RKObjectLoader level) to trigger save of the object store
-- (void)saveObjectStore {
-	if (self.objectStore) {
-		NSError* error = [self.objectStore save];
-		if (nil != error) {
-			NSLog(@"[RestKit] RKObjectManager: Error saving managed object context before PUT/POST/DELETE: error=%@ userInfo=%@", error, error.userInfo);
-		}
-	}
 }
 
 - (RKObjectLoader*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
