@@ -12,10 +12,22 @@
 
 @implementation DBTopicViewController
 
+@synthesize topic = _topic;
+
+- (id)initWithNavigatorURL:(NSURL*)URL query:(NSDictionary*)query {
+	if (self = [super initWithNavigatorURL:URL query:query]) {
+		_topic = [[DBTopic object] retain];
+		_topic.name = @"";
+	}
+	
+	return self;
+}
+
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
 		_topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
 	}
+	
 	return self;
 }
 
@@ -29,19 +41,15 @@
 }
 
 - (void)loadView {
-	self.tableViewStyle = UITableViewStyleGrouped;
-
-	if (nil == _topic) {
-		_topic = [[DBTopic object] retain];
-		_topic.name = @"";
-	}
-
-	_requiresLoggedInUser = YES;
-	if (![_topic isNewRecord]) {
-		_requiredUserID = _topic.userID;
-	}
-
 	[super loadView];
+	
+	self.tableViewStyle = UITableViewStyleGrouped;
+	
+	if (![self.topic isNewRecord]) {
+		// Ensure we are logged in as the User who created the Topic
+		self.requiredUser = self.topic.user;
+	}
+	[self presentLoginViewControllerIfNecessary];
 
 	_topicNameField = [[UITextField alloc] initWithFrame:CGRectZero];
 	_topicNameField.placeholder = @"topic name";
@@ -50,10 +58,10 @@
 - (void)createModel {
 	NSMutableArray* items = [NSMutableArray array];
 
-	_topicNameField.text = _topic.name;
+	_topicNameField.text = self.topic.name;
 	[items addObject:[TTTableControlItem itemWithCaption:@"Name" control:_topicNameField]];
 
-	if ([_topic isNewRecord]) {
+	if ([self.topic isNewRecord]) {
 		self.title = @"New Topic";
 		[items addObject:[TTTableButton itemWithText:@"Create" delegate:self selector:@selector(createButtonWasPressed:)]];
 	} else {
@@ -61,23 +69,24 @@
 		[items addObject:[TTTableButton itemWithText:@"Update" delegate:self selector:@selector(updateButtonWasPressed:)]];
 		[items addObject:[TTTableButton itemWithText:@"Delete" delegate:self selector:@selector(destroyButtonWasPressed:)]];
 	}
+	
 	self.dataSource = [TTListDataSource dataSourceWithItems:items];
 }
 
 #pragma mark Actions
 
 - (void)createButtonWasPressed:(id)sender {
-	_topic.name = _topicNameField.text;
-	[[RKObjectManager sharedManager] postObject:_topic delegate:self];
+	self.topic.name = _topicNameField.text;
+	[[RKObjectManager sharedManager] postObject:self.topic delegate:self];
 }
 
 - (void)updateButtonWasPressed:(id)sender {
-	_topic.name = _topicNameField.text;
-	[[RKObjectManager sharedManager] putObject:_topic delegate:self];
+	self.topic.name = _topicNameField.text;
+	[[RKObjectManager sharedManager] putObject:self.topic delegate:self];
 }
 
 - (void)destroyButtonWasPressed:(id)sender {
-	[[RKObjectManager sharedManager] deleteObject:_topic delegate:self];
+	[[RKObjectManager sharedManager] deleteObject:self.topic delegate:self];
 }
 
 #pragma mark RKObjectLoaderDelegate methods
@@ -93,7 +102,11 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	[[[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
+	[[[[UIAlertView alloc] initWithTitle:@"Error" 
+								 message:[error localizedDescription] 
+								delegate:nil 
+					   cancelButtonTitle:@"OK" 
+					   otherButtonTitles:nil] autorelease] show];
 }
 
 @end

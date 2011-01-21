@@ -10,12 +10,13 @@
 #import <RestKit/CoreData/CoreData.h>
 #import "DBUser.h"
 #import "DBTopic.h"
+#import "DBContentObject.h"
 
 /**
  * The Post models an individual piece of content posted to
  * a Topic by a User within the Discussion Board.
  */
-@interface DBPost : RKManagedObject {
+@interface DBPost : DBContentObject {
 	UIImage* _newAttachment;
 }
 
@@ -47,31 +48,15 @@
 @property (nonatomic, retain) DBTopic* topic;
 
 /**
- * The User who created this Post. This is a Core Data relationship
- * to the User object with the primary key value contained in the userID property
- */
-@property (nonatomic, retain) DBUser* user;
-
-/**
  * The numeric primary key to the Topic this Post was made to
  */
 @property (nonatomic, retain) NSNumber* topicID;
-
-/**
- * The numeric primary key to the User this Post was created by
- */
-@property (nonatomic, retain) NSNumber* userID;
 
 /**
  * The numeric primary key identifying this Post in the remote backend. This
  * is the value used to uniquely identify this Post within the object store.
  */
 @property (nonatomic, retain) NSNumber* postID;
-
-/**
- * The username of the User who created this Post
- */
-@property (nonatomic, retain) NSString* username;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark File Attachment properties
@@ -105,10 +90,5 @@
  * An accessor for supplying a new image to be attached to this Post
  */
 @property (nonatomic, retain) UIImage* newAttachment;
-
-/**
- * Returns true if the record has not yet been saved/synced with the server.
- */
-- (BOOL)isNewRecord;
 
 @end

@@ -15,4 +15,9 @@
 	DBTopic* _topic;
 }
 
+/**
+ * The Topic that is being viewed
+ */
+@property (nonatomic, readonly) DBTopic* topic;
+
 @end

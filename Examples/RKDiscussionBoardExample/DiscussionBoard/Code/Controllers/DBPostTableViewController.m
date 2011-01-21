@@ -9,8 +9,11 @@
 #import "DBPostTableViewController.h"
 #import <Three20/Three20+Additions.h>
 #import "DBUser.h"
+#import "DBTopic.h"
 
 @implementation DBPostTableViewController
+
+@synthesize post = _post;
 
 - (id)initWithPostID:(NSString*)postID {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
@@ -22,8 +25,10 @@
 
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
-		// TODO: Why are we using topic ID here?
-		_topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
+		DBTopic* topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
+		_post = [[DBPost object] retain];
+		_post.topicID = topic.topicID;
+		_post.topic = topic;
 	}
 
 	return self;
@@ -31,53 +36,44 @@
 
 - (void)dealloc {
 	TT_RELEASE_SAFELY(_post);
-	TT_RELEASE_SAFELY(_topic);
 
 	[super dealloc];
 }
 
-// TODO: Move this into the model
-- (BOOL)isNewRecord {
-	return [[_post postID] intValue] == 0;
-}
-
 - (void)viewDidUnload {
 	TT_RELEASE_SAFELY(_bodyTextEditor);
+	
 	[[TTNavigator navigator].URLMap removeURL:@"db://updateAttachment"];
 }
 
 - (void)loadView {
+	[super loadView];
+	
 	self.tableViewStyle = UITableViewStyleGrouped;
 	self.autoresizesForKeyboard = YES;
 	self.variableHeightRows = YES;
 
-	[[TTNavigator navigator].URLMap from:@"db://updateAttachment" toObject:self selector:@selector(updateAttachment)];
-
-	if (nil == _post) {
-		_post = [[DBPost object] retain];
-		_post.topicID = _topic.topicID;
-	}
-
-	_requiresLoggedInUser = YES;
-
-	[super loadView];
+	[[TTNavigator navigator].URLMap from:@"db://updateAttachment" toObject:self selector:@selector(updateAttachment)];	
 
 	_bodyTextEditor = [[TTTextEditor alloc] initWithFrame:CGRectMake(0, 0, 300, 120)];
 	_bodyTextEditor.font = [UIFont systemFontOfSize:12];
 	_bodyTextEditor.autoresizesToText = NO;
 	_bodyTextEditor.delegate = self;
 	_bodyTextEditor.text = _post.body;
+	
+	// Ensure we are authenticated
+	NSLog(@"All the users are: %@", [DBUser allObjects]);
+	[self presentLoginViewControllerIfNecessary];
 }
 
 - (void)createModel {
-	// TODO: Move this into the model: [self.currentUser canModifyObject:_post]
-	BOOL isAuthorizedUser = [[DBUser currentUser].userID isEqualToNumber:_post.userID] || [self isNewRecord];
-
+	BOOL isAuthorizedUser = [[DBUser currentUser] canModifyObject:_post];
 	NSMutableArray* items = [NSMutableArray array];
 
 	// Attachment item.
 	if (isAuthorizedUser) {
 		[items addObject:[TTTableControlItem itemWithCaption:@"" control:(UIControl*)_bodyTextEditor]];
+		
 		if (_newAttachment) {
 			// has new attachment. show it. allow update.
 			[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:@"" defaultImage:_newAttachment URL:@"db://updateAttachment"]];
@@ -96,7 +92,7 @@
 		[items addObject:[TTTableImageItem itemWithText:@"" imageURL:url URL:nil]];
 	}
 
-	if ([self isNewRecord]) {
+	if ([self.post isNewRecord]) {
 		self.title = @"New Post";
 		[items addObject:[TTTableButton itemWithText:@"Create" delegate:self selector:@selector(createButtonWasPressed:)]];
 	} else {
@@ -108,8 +104,9 @@
 			self.title = @"Post";
 		}
 	}
+	
 	NSString* byLine = @"";
-	if (![self isNewRecord]) {
+	if (![self.post isNewRecord]) {
 		NSString* username = (isAuthorizedUser ? @"me" : _post.username);
 		byLine = [NSString stringWithFormat:@"posted by %@", username];
 	}
@@ -126,19 +123,19 @@
 #pragma mark Actions
 
 - (void)createButtonWasPressed:(id)sender {
-	_post.body = _bodyTextEditor.text;
-	_post.newAttachment = _newAttachment;
-	[[RKObjectManager sharedManager] postObject:_post delegate:self];
+	self.post.body = _bodyTextEditor.text;
+	self.post.newAttachment = _newAttachment;
+	[[RKObjectManager sharedManager] postObject:self.post delegate:self];
 }
 
 - (void)updateButtonWasPressed:(id)sender {
-	_post.body = _bodyTextEditor.text;
-	_post.newAttachment = _newAttachment;
-	[[RKObjectManager sharedManager] putObject:_post delegate:self];
+	self.post.body = _bodyTextEditor.text;
+	self.post.newAttachment = _newAttachment;
+	[[RKObjectManager sharedManager] putObject:self.post delegate:self];
 }
 
 - (void)destroyButtonWasPressed:(id)sender {
-	[[RKObjectManager sharedManager] deleteObject:_post delegate:self];
+	[[RKObjectManager sharedManager] deleteObject:self.post delegate:self];
 }
 
 #pragma mark UIImagePickerControllerDelegate methods
@@ -156,18 +153,20 @@
 #pragma mark RKObjectLoaderDelegate methods
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
-	// TODO: RKLog helpers?
 	NSLog(@"Loaded Objects: %@", objects);
 	NSLog(@"Status Code: %d", objectLoader.response.statusCode);
 	// Post notification telling view controllers to reload.
-	// TODO
+	// TODO: Generalize this notification
 	[[NSNotificationCenter defaultCenter] postNotificationName:kObjectCreatedUpdatedOrDestroyedNotificationName object:objects];
-	// dismiss.
 	[self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	[[[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease] show];
+	[[[[UIAlertView alloc] initWithTitle:@"Error" 
+								 message:[error localizedDescription] 
+								delegate:nil 
+					   cancelButtonTitle:@"OK" 
+					   otherButtonTitles:nil] autorelease] show];
 }
 
 #pragma mark TTTextEditorDelegate methods

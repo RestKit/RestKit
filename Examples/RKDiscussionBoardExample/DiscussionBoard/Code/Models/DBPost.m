@@ -45,7 +45,6 @@
 			@"attachment_path", @"attachmentPath",
 			@"attachment_updated_at", @"attachmentUpdatedAt",
 			@"body", @"body",
-			@"user_login", @"username",
 			nil];
 }
 
@@ -98,10 +97,6 @@
 	}
 
 	return params;
-}
-
-- (BOOL)isNewRecord {
-	return [[self postID] intValue] == 0;
 }
 
 @end

@@ -57,7 +57,9 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	objectManager.objectStore.managedObjectCache = [[DBManagedObjectCache new] autorelease];
 
 	// Set Up Mapper
+	// TODO: Comment
 	RKObjectMapper* mapper =  objectManager.mapper;
+	[mapper registerClass:[DBUser class] forElementNamed:@"user"];
 	[mapper registerClass:[DBTopic class] forElementNamed:@"topic"];
 	[mapper registerClass:[DBPost class] forElementNamed:@"post"];
 

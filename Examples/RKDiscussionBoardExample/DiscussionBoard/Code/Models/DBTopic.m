@@ -12,11 +12,6 @@
 
 @dynamic topicID;
 @dynamic name;
-@dynamic userID;
-@dynamic createdAt;
-@dynamic updatedAt;
-@dynamic username;
-@dynamic user;
 @dynamic posts;
 
 #pragma mark RKObjectMappable methods
@@ -27,12 +22,11 @@
  */
 + (NSDictionary*)elementToPropertyMappings {
 	return [NSDictionary dictionaryWithKeysAndObjects:
-					@"id",@"topicID",
-					@"name",@"name",
-					@"user_id",@"userID",
-					@"created_at",@"createdAt",
-					@"updated_at",@"updatedAt",
-					@"user_login", @"username",
+					@"id", @"topicID",
+					@"name", @"name",
+					@"user_id", @"userID",
+					@"created_at", @"createdAt",
+					@"updated_at", @"updatedAt",
 					nil];
 }
 
@@ -58,10 +52,6 @@
  */
 + (NSString*)primaryKeyProperty {
 	return @"topicID";
-}
-
-- (BOOL)isNewRecord {
-	return [[self topicID] intValue] == 0;
 }
 
 @end

@@ -6,7 +6,6 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "DBResourceListTableViewController.h"
 
 @interface DBTopicsTableViewController : DBResourceListTableViewController {

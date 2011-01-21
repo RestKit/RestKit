@@ -6,17 +6,21 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import <RestKit/Three20/Three20.h>
 #import "DBPostsTableViewController.h"
 #import "DBPost.h"
-#import <RestKit/Three20/Three20.h>
 #import "DBUser.h"
 
 @implementation DBPostsTableViewController
 
+@synthesize topic = _topic;
+
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
-		_topicID = [topicID retain];
+		_topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
+		
 		self.title = @"Posts";
+		
 		_resourcePath = RKMakePathWithObject(@"/topics/(topicID)/posts", self.topic);
 		[_resourcePath retain];
 		_resourceClass = [DBPost class];
@@ -25,7 +29,7 @@
 }
 
 - (void)dealloc {
-	[_topicID release];
+	[_topic release];
 	[super dealloc];
 }
 
@@ -33,12 +37,9 @@
 	[super loadView];
 
 	self.variableHeightRows = YES;
-
-	UIBarButtonItem* newItem = [[[UIBarButtonItem alloc]
-								 initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-								 target:self
-								 action:@selector(addButtonWasPressed:)] autorelease];
-	self.navigationItem.rightBarButtonItem = newItem;
+	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+																							target:self
+																							action:@selector(addButtonWasPressed:)] autorelease];
 }
 
 - (void)addButtonWasPressed:(id)sender {
@@ -47,9 +48,8 @@
 }
 
 - (void)createModel {
-	if (nil == [DBTopic objectWithPrimaryKeyValue:_topicID]) {
-		// TODO: Cleanup???
-		// this topic was deleted or something.
+	if (nil == self.topic) {
+		// No topic was found -- must have been deleted. Pop the view controller
 		[self.navigationController popToRootViewControllerAnimated:YES];
 		return;
 	}
@@ -66,23 +66,19 @@
 		NSMutableArray* topicItems = [NSMutableArray arrayWithCapacity:2];
 
 		[topicItems addObject:[TTTableTextItem itemWithText:self.topic.name]];
-		// only add edit item if there is no current user (lazy login) or
-		// the current user id == topic user id.
-		NSNumber* topicUserId = self.topic.userID;
-		// if topicUserId is nil, the topic has no user for some reason (perhaps they got deleted).
-		// TODO: Permissions pattern
-		if ([DBUser currentUser] == nil ||
-			(topicUserId && [[DBUser currentUser].userID isEqualToNumber:topicUserId])) {
-			NSString* editURL = [NSString stringWithFormat:@"db://topics/%@/edit", _topicID];
+		
+		// Add edit item if there is no current User to trigger lazy login or if the User owns the Topic
+		if (NO == [[DBUser currentUser] isLoggedIn] || [[DBUser currentUser] canModifyObject:self.topic]) {
+			NSString* editURL = RKMakePathWithObject(@"db://topics/(topicID)/edit", self.topic);
 			[topicItems addObject:[TTTableTextItem itemWithText:@"Edit" URL:editURL]];
 		}
 
 		for (DBPost* post in model.objects) {
-			NSString* url = [NSString stringWithFormat:@"db://posts/%@", post.postID];
+			NSString* URL = RKMakePathWithObject(@"db://posts/(postID)", post);
 			NSString* imageURL = post.attachmentPath;
 			TTTableImageItem* item = [TTTableImageItem itemWithText:post.body
 														   imageURL:imageURL
-																URL:url];
+																URL:URL];
 			[postItems addObject:item];
 		}
 
@@ -93,10 +89,6 @@
 		dataSource.model = model;
 		self.dataSource = dataSource;
 	}
-}
-
-- (DBTopic*)topic {
-	return [DBTopic objectWithPrimaryKeyValue:_topicID];
 }
 
 @end

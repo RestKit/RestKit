@@ -14,8 +14,7 @@
  * Displays a table of Posts within a given Topic
  */
 @interface DBPostsTableViewController : DBResourceListTableViewController {
-	// TODO: Just use a Topic
-	NSString* _topicID;
+	DBTopic* _topic;
 }
 
 /**

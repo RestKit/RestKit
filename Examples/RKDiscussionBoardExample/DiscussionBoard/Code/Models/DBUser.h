@@ -10,6 +10,7 @@
 #import <RestKit/CoreData/CoreData.h>
 
 // Declared here and defined below
+@class DBContentObject;
 @protocol DBUserAuthenticationDelegate;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +86,14 @@
  * Logs the User out of the system
  */
 - (void)logout;
+
+/**
+ * Example of implementing a simple client side permissions system on top of
+ * the data model. Any managed object that has a user relationship will be compared
+ * to self to determine if update operations are permitted. Unsaved objects can be modified
+ * as well.
+ */
+- (BOOL)canModifyObject:(DBContentObject*)object;
 
 @end
 

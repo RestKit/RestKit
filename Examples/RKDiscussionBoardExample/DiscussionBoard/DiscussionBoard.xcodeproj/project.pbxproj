@@ -21,6 +21,7 @@
 		25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ECF12E51070008BF33D /* DiscussionBoardAppDelegate.m */; };
 		25359ED712E512BB008BF33D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ED612E512BB008BF33D /* main.m */; };
 		25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */; };
+		253E163412E8BA6500F3E4B0 /* DBContentObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 253E163312E8BA6500F3E4B0 /* DBContentObject.m */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */; };
 		3F255C9812DB70E200AFD2D1 /* DBPostsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255C9312DB70E200AFD2D1 /* DBPostsTableViewController.m */; };
@@ -146,7 +147,7 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* DiscussionBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DiscussionBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DiscussionBoard-Development.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		25359D4212E3E0A4008BF33D /* libThree20.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20.a; sourceTree = "<group>"; };
 		25359D4312E3E0A4008BF33D /* libThree20Core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20Core.a; sourceTree = "<group>"; };
@@ -435,6 +436,8 @@
 		25359ECF12E51070008BF33D /* DiscussionBoardAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DiscussionBoardAppDelegate.m; path = Code/Other/DiscussionBoardAppDelegate.m; sourceTree = SOURCE_ROOT; };
 		25359ED512E512BB008BF33D /* DiscussionBoard_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DiscussionBoard_Prefix.pch; path = Code/Other/DiscussionBoard_Prefix.pch; sourceTree = SOURCE_ROOT; };
 		25359ED612E512BB008BF33D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Code/Other/main.m; sourceTree = SOURCE_ROOT; };
+		253E163212E8BA6500F3E4B0 /* DBContentObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBContentObject.h; sourceTree = "<group>"; };
+		253E163312E8BA6500F3E4B0 /* DBContentObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBContentObject.m; sourceTree = "<group>"; };
 		25FED6E512E7D60600D94325 /* DiscussionBoard-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy.plist"; path = "Resources/DiscussionBoard-Info copy.plist"; sourceTree = "<group>"; };
 		25FED7BC12E7D6EC00D94325 /* DiscussionBoard-Info copy 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy 2.plist"; path = "Resources/DiscussionBoard-Info copy 2.plist"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -534,7 +537,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* DiscussionBoard.app */,
+				1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1011,6 +1014,8 @@
 				3F255C9F12DB70E700AFD2D1 /* DBTopic.m */,
 				3F255CA612DB711900AFD2D1 /* DBUser.h */,
 				3F255CA712DB711900AFD2D1 /* DBUser.m */,
+				253E163212E8BA6500F3E4B0 /* DBContentObject.h */,
+				253E163312E8BA6500F3E4B0 /* DBContentObject.m */,
 			);
 			name = Models;
 			path = ../Code/Models;
@@ -1103,7 +1108,7 @@
 			);
 			name = DiscussionBoard;
 			productName = DiscussionBoard;
-			productReference = 1D6058910D05DD3D006BFB54 /* DiscussionBoard.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1247,6 +1252,7 @@
 				25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */,
 				25359ED712E512BB008BF33D /* main.m in Sources */,
 				25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */,
+				253E163412E8BA6500F3E4B0 /* DBContentObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

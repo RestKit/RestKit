@@ -18,6 +18,7 @@
 		self.autoresizesForKeyboard = YES;
 		self.tableViewStyle = UITableViewStyleGrouped;
 	}
+	
 	return self;
 }
 
@@ -139,6 +140,7 @@
 	} else if (textField == _passwordConfirmationField) {
 		[self loginOrSignup];
 	}
+	
 	return NO;
 }
 
@@ -153,7 +155,6 @@
 }
 
 - (void)user:(DBUser*)user didFailLoginWithError:(NSError*)error {
-//	TTAlert([error localizedDescription]);
 	[[[[UIAlertView alloc] initWithTitle:@"Error"
 								 message:[error localizedDescription]
 								delegate:nil

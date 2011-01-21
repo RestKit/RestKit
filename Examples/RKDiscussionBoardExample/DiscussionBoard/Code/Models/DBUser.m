@@ -7,6 +7,7 @@
 //
 
 #import "DBUser.h"
+#import "DBContentObject.h"
 
 // Constants
 static NSString* const kDBUserCurrentUserIDDefaultsKey = @"kDBUserCurrentUserIDDefaultsKey";
@@ -180,6 +181,16 @@ static DBUser* currentUser = nil;
 
 - (BOOL)isLoggedIn {
 	return self.singleAccessToken != nil;
+}
+
+- (BOOL)canModifyObject:(DBContentObject*)object {
+	if ([object isNewRecord]) {
+		return YES;
+	} else if ([self isLoggedIn] && [self isEqual:object.user]) {
+		return YES;
+	} else {
+		return NO;
+	}
 }
 
 - (void)dealloc {
