@@ -143,7 +143,7 @@
 
 /* Begin PBXFileReference section */
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DiscussionBoard-Development.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D6058910D05DD3D006BFB54 /* Discussion Board.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Discussion Board.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		25359D4212E3E0A4008BF33D /* libThree20.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20.a; sourceTree = "<group>"; };
 		25359D4312E3E0A4008BF33D /* libThree20Core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20Core.a; sourceTree = "<group>"; };
@@ -529,7 +529,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */,
+				1D6058910D05DD3D006BFB54 /* Discussion Board.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1079,9 +1079,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* DiscussionBoard */ = {
+		1D6058900D05DD3D006BFB54 /* Discussion Board */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "DiscussionBoard" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Discussion Board" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -1094,9 +1094,9 @@
 				3F45615212D7E2D900BE25AD /* PBXTargetDependency */,
 				3F2562F912DBA4C800AFD2D1 /* PBXTargetDependency */,
 			);
-			name = DiscussionBoard;
+			name = "Discussion Board";
 			productName = DiscussionBoard;
-			productReference = 1D6058910D05DD3D006BFB54 /* DiscussionBoard-Development.app */;
+			productReference = 1D6058910D05DD3D006BFB54 /* Discussion Board.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1127,7 +1127,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* DiscussionBoard */,
+				1D6058900D05DD3D006BFB54 /* Discussion Board */,
 			);
 		};
 /* End PBXProject section */
@@ -1286,7 +1286,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
 				);
-				PRODUCT_NAME = "DiscussionBoard-Development";
+				PRODUCT_NAME = "Discussion Board";
 			};
 			name = Development;
 		};
@@ -1317,7 +1317,7 @@
 					"-all_load",
 					"-ObjC",
 				);
-				PRODUCT_NAME = DiscussionBoard;
+				PRODUCT_NAME = "Discussion Board";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Production;
@@ -1369,7 +1369,7 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
 				);
-				PRODUCT_NAME = "DiscussionBoard-Staging";
+				PRODUCT_NAME = "Discussion Board";
 			};
 			name = Staging;
 		};
@@ -1417,7 +1417,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "DiscussionBoard" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Discussion Board" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Development */,
