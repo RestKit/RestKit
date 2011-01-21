@@ -51,8 +51,9 @@
 	
 	self.tableViewStyle = UITableViewStyleGrouped;
 	self.autoresizesForKeyboard = YES;
-	self.variableHeightRows = YES;
-
+	self.variableHeightRows = YES;	
+	self.tableView.backgroundView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"background.png"]] autorelease];
+	
 	[[TTNavigator navigator].URLMap from:@"db://updateAttachment" toObject:self selector:@selector(updateAttachment)];	
 
 	_bodyTextEditor = [[TTTextEditor alloc] initWithFrame:CGRectMake(0, 0, 300, 120)];
