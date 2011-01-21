@@ -33,7 +33,7 @@
 			nil];
 }
 
-- (void)itShouldReturnTheColorParamsForSerialization {
+- (void)itShouldReturnTheColorPropertiesForSerialization {
 	self.age = [NSNumber numberWithInt:10];
 	self.favoriteColor = @"blue";
 	
@@ -41,7 +41,7 @@
 									@"myFavoriteColor", @"blue",
 									@"myAge", [NSNumber numberWithInt:10],
 									nil];
-	[expectThat([self paramsForSerialization]) should:be(expectedParams)];
+	[expectThat([self propertiesForSerialization]) should:be(expectedParams)];
 }
 
 @end

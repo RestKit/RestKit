@@ -95,7 +95,7 @@
 
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
 	// By default return a form encoded serializable dictionary
-	return [object paramsForSerialization];
+	return [object propertiesForSerialization];
 }
 
 @end

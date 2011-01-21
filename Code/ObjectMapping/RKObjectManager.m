@@ -194,10 +194,7 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
-// TODO: Need to factor core data stuff out of here...
-// TODO: Use notifications for this???
-// RKObjectManagerWillGETObject / RKObjectManagerWillPOSTObject / RKObjectManagerWillPUTObject / RKObjectManagerWillDELETEObject
-// RKObjectManagerDidGETObject / RKObjectManagerDidPOSTObject / RKObjectManagerDidPUTObject / RKObjectManagerDidDELETEObject
+// TODO: Need to factor core data stuff out of here... Use notifications (probably at RKObjectLoader level) to trigger save of the object store
 - (void)saveObjectStore {
 	if (self.objectStore) {
 		NSError* error = [self.objectStore save];

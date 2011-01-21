@@ -289,4 +289,23 @@
 	}
 }
 
+// Give the target object a chance to modify the request
+- (void)triggerWillSendForTargetObject {
+	if (self.targetObject) {
+		if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
+			[self.targetObject willSendWithObjectLoader:self];
+		}
+	}
+}
+
+- (void)send {
+	[self triggerWillSendForTargetObject];
+	[super send];
+}
+
+- (RKResponse*)sendSynchronously {
+	[self triggerWillSendForTargetObject];
+	return [super sendSynchronously];
+}
+
 @end

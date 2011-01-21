@@ -8,6 +8,7 @@
  */
 
 @protocol RKRequestSerializable;
+@class RKObjectLoader;
 
 /**
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
@@ -41,16 +42,39 @@
 @optional
 
 /**
- * Return a dictionary of values to be serialized for submission to a remote resource. The router
- * will encode these parameters into a serialization format (form encoded, JSON, etc). This is
- * required to use putObject: and postObject: for updating and creating remote object representations.
- */
-- (NSObject<RKRequestSerializable>*)paramsForSerialization;
-
-/**
  * Must return a new autoreleased instance of the model class ready for mapping. Used to initialize the model
  * via any method other than alloc & init.
  */
 + (id)object;
 
+/**
+ * Return a dictionary of values to be serialized for submission to a remote resource. The router
+ * will encode these parameters into a serialization format (form encoded, JSON, etc). This is
+ * required to use putObject: and postObject: for updating and creating remote object representations.
+ */
+- (NSDictionary*)propertiesForSerialization;
+
+/**
+ * Invoked before the mappable object is sent with an Object Loader. This
+ * can be used to completely customize the behavior of an object loader at the 
+ * model level before sending the request. Note that this is invoked after the
+ * router has processed and just before the object loader is sent.
+ *
+ * If you want to customize the behavior of the parameters sent with the request
+ * this is the right place to do so.
+ */
+- (void)willSendWithObjectLoader:(RKObjectLoader*)objectLoader;
+
 @end
+
+/**
+ * Returns a dictionary containing all the mappable properties
+ * and their values for a given mappable object.
+ */
+NSDictionary* RKObjectMappableGetProperties(NSObject<RKObjectMappable>*object);
+
+/**
+ * Returns a dictionary containing all the mappable properties
+ * and their values keyed by the element name. 
+ */
+NSDictionary* RKObjectMappableGetPropertiesByElement(NSObject<RKObjectMappable>*object);

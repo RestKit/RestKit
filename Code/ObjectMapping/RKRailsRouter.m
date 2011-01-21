@@ -28,19 +28,6 @@
 	[_classToModelMappings setObject:modelName forKey:class];
 }
 
-- (NSDictionary*)elementNamesAndPropertyValuesForObject:(NSObject<RKObjectMappable>*)object {
-	NSDictionary* mappings = [[object class] elementToPropertyMappings];
-	NSMutableDictionary* elementsAndPropertyValues = [NSMutableDictionary dictionaryWithCapacity:[mappings count]];
-	// Return all the properties of this model in a dictionary under their element names
-	for (NSString* elementName in mappings) {
-		NSString* propertyName = [mappings valueForKey:elementName];
-		id propertyValue = [object valueForKey:propertyName];
-		[elementsAndPropertyValues setValue:propertyValue forKey:elementName];
-	}
-	
-	return (NSDictionary*) elementsAndPropertyValues;
-}
-
 #pragma mark RKRouter
 
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
@@ -49,7 +36,7 @@
 		return nil;
 	}
 	
-	NSDictionary* elementsAndProperties = [self elementNamesAndPropertyValuesForObject:object];
+	NSDictionary* elementsAndProperties = [object propertiesForSerialization];
 	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:[elementsAndProperties count]];	
 	NSString* modelName = [_classToModelMappings objectForKey:[object class]];
 	if (nil == modelName) {

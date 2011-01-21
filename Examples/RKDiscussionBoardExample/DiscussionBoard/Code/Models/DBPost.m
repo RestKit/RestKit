@@ -75,29 +75,29 @@
 }
 
 /**
- * Return a serializable representation of this object's properties. This
- * serialization will be encoded by the router into a request body and
- * sent to the remote service.
- *
- * A default implementation of paramsForSerialization is provided by the
- * RKObject/RKManagedObject base classes, but can be overloaded in the subclass
- * for customization. This is useful for including things like transient properties
- * in your payloads.
+ * Invoked just before this Post is sent in an object loader request via
+ * getObject, postObject, putObject or deleteObject. Here we can manipulate
+ * the request at will. 
+ * 
+ * The router only has the ability to work with simple dictionaries, so to 
+ * support uploading the attachment we are going to supply our own params
+ * for the request.
  */
-- (NSObject<RKRequestSerializable>*)paramsForSerialization {
-	// TODO: This is broken!
-	// TODO: The Rails router does not respect paramsForSerialization. Need to fix that!
+- (void)willSendWithObjectLoader:(RKObjectLoader *)objectLoader {
 	RKParams* params = [RKParams params];
-	[params setValue:self.body forParam:@"body"];
+	
+	// NOTE - Since we have side-stepped the router, we need to
+	// nest the param names under the model name ourselves
+	[params setValue:self.body forParam:@"post[body]"];
 	NSLog(@"Self Body: %@", self.body);
 	if (_newAttachment) {
 		NSData* data = UIImagePNGRepresentation(_newAttachment);
 		NSLog(@"Data Size: %d", [data length]);
-		RKParamsAttachment* attachment = [params setData:data MIMEType:@"application/octet-stream" forParam:@"attachment"];
+		RKParamsAttachment* attachment = [params setData:data MIMEType:@"application/octet-stream" forParam:@"post[attachment]"];
 		attachment.fileName = @"image.png";
 	}
-
-	return params;
+	
+	objectLoader.params = params;
 }
 
 - (BOOL)hasAttachment {

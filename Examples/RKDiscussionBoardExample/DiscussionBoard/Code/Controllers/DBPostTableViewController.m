@@ -86,8 +86,8 @@
 		}
 	} else {
 		[items addObject:[TTTableLongTextItem itemWithText:_post.body]];
-		NSString* url = _post.attachmentPath;
-		[items addObject:[TTTableImageItem itemWithText:@"" imageURL:url URL:nil]];
+		NSString* imageURL = _post.attachmentPath;
+		[items addObject:[TTTableImageItem itemWithText:@"" imageURL:imageURL URL:nil]];
 	}
 
 	if ([self.post isNewRecord]) {
