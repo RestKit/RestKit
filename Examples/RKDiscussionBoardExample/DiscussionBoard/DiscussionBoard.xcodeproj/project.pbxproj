@@ -53,11 +53,7 @@
 		A755046E12E4E0B8009FC5EC /* background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A755046C12E4E0B8009FC5EC /* background@2x.png */; };
 		A75504AC12E4E975009FC5EC /* navigationBarBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = A75504A712E4E975009FC5EC /* navigationBarBackground.png */; };
 		A75504AD12E4E975009FC5EC /* navigationBarBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A75504A812E4E975009FC5EC /* navigationBarBackground@2x.png */; };
-		A75504AE12E4E975009FC5EC /* tableCellBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = A75504A912E4E975009FC5EC /* tableCellBackground.png */; };
-		A75504AF12E4E975009FC5EC /* tableCellBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A75504AA12E4E975009FC5EC /* tableCellBackground@2x.png */; };
 		A75504B012E4E975009FC5EC /* tableHeaderBackground@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A75504AB12E4E975009FC5EC /* tableHeaderBackground@2x.png */; };
-		A75504BA12E4F30F009FC5EC /* add.png in Resources */ = {isa = PBXBuildFile; fileRef = A75504B812E4F30F009FC5EC /* add.png */; };
-		A75504BB12E4F30F009FC5EC /* add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A75504B912E4F30F009FC5EC /* add@2x.png */; };
 		A7A2D33A12D780DD00683D6F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D33912D780DD00683D6F /* QuartzCore.framework */; };
 		A7A2D3C412D7829E00683D6F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C312D7829E00683D6F /* CFNetwork.framework */; };
 		A7A2D3C612D7829E00683D6F /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3C512D7829E00683D6F /* CoreData.framework */; };
@@ -479,11 +475,7 @@
 		A755046C12E4E0B8009FC5EC /* background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "background@2x.png"; path = "Resources/PNGs/layout/background@2x.png"; sourceTree = SOURCE_ROOT; };
 		A75504A712E4E975009FC5EC /* navigationBarBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = navigationBarBackground.png; path = Resources/PNGs/layout/navigationBarBackground.png; sourceTree = SOURCE_ROOT; };
 		A75504A812E4E975009FC5EC /* navigationBarBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "navigationBarBackground@2x.png"; path = "Resources/PNGs/layout/navigationBarBackground@2x.png"; sourceTree = SOURCE_ROOT; };
-		A75504A912E4E975009FC5EC /* tableCellBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tableCellBackground.png; path = Resources/PNGs/layout/tableCellBackground.png; sourceTree = SOURCE_ROOT; };
-		A75504AA12E4E975009FC5EC /* tableCellBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tableCellBackground@2x.png"; path = "Resources/PNGs/layout/tableCellBackground@2x.png"; sourceTree = SOURCE_ROOT; };
 		A75504AB12E4E975009FC5EC /* tableHeaderBackground@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "tableHeaderBackground@2x.png"; path = "Resources/PNGs/layout/tableHeaderBackground@2x.png"; sourceTree = SOURCE_ROOT; };
-		A75504B812E4F30F009FC5EC /* add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = add.png; path = Resources/PNGs/layout/add.png; sourceTree = SOURCE_ROOT; };
-		A75504B912E4F30F009FC5EC /* add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "add@2x.png"; path = "Resources/PNGs/layout/add@2x.png"; sourceTree = SOURCE_ROOT; };
 		A7A2D33912D780DD00683D6F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../../RestKit.xcodeproj; sourceTree = SOURCE_ROOT; };
 		A7A2D3C312D7829E00683D6F /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -1047,18 +1039,14 @@
 			isa = PBXGroup;
 			children = (
 				A755046B12E4E0B8009FC5EC /* background.png */,
-				A75504B812E4F30F009FC5EC /* add.png */,
-				A75504B912E4F30F009FC5EC /* add@2x.png */,
+				A755046C12E4E0B8009FC5EC /* background@2x.png */,
 				A75504A712E4E975009FC5EC /* navigationBarBackground.png */,
 				A75504A812E4E975009FC5EC /* navigationBarBackground@2x.png */,
-				A75504A912E4E975009FC5EC /* tableCellBackground.png */,
-				A75504AA12E4E975009FC5EC /* tableCellBackground@2x.png */,
-				A75504AB12E4E975009FC5EC /* tableHeaderBackground@2x.png */,
-				A755046C12E4E0B8009FC5EC /* background@2x.png */,
 				A755044312E4DD52009FC5EC /* tableBackground.png */,
 				A755044412E4DD52009FC5EC /* tableBackground@2x.png */,
 				A755040012E4D7CE009FC5EC /* reload.png */,
 				A755040112E4D7CE009FC5EC /* tableHeaderBackground.png */,
+				A75504AB12E4E975009FC5EC /* tableHeaderBackground@2x.png */,
 			);
 			name = layout;
 			path = Resources/PNGs/layout;
@@ -1220,11 +1208,7 @@
 				A755046E12E4E0B8009FC5EC /* background@2x.png in Resources */,
 				A75504AC12E4E975009FC5EC /* navigationBarBackground.png in Resources */,
 				A75504AD12E4E975009FC5EC /* navigationBarBackground@2x.png in Resources */,
-				A75504AE12E4E975009FC5EC /* tableCellBackground.png in Resources */,
-				A75504AF12E4E975009FC5EC /* tableCellBackground@2x.png in Resources */,
 				A75504B012E4E975009FC5EC /* tableHeaderBackground@2x.png in Resources */,
-				A75504BA12E4F30F009FC5EC /* add.png in Resources */,
-				A75504BB12E4F30F009FC5EC /* add@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
