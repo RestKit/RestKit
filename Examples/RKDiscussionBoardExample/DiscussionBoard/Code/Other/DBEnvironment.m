@@ -16,7 +16,3 @@
 #elif DB_ENVIRONMENT == DB_ENVIRONMENT_PRODUCTION
 	NSString* const DBRestKitBaseURL = @"http://discussionboard.heroku.com";
 #endif
-
-// TODO: Eliminate
-NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName = @"kObjectCreatedUpdatedOrDestroyedNotificationName";
-

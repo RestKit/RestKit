@@ -92,12 +92,9 @@
 #pragma mark RKObjectLoaderDelegate methods
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
-	NSLog(@"Loaded Objects: %@", objects);
-	NSLog(@"Status Code: %d", objectLoader.response.statusCode);
 	// Post notification telling view controllers to reload.
-	// TODO: Generalize this notification
-	[[NSNotificationCenter defaultCenter] postNotificationName:kObjectCreatedUpdatedOrDestroyedNotificationName object:objects];
-	// dismiss.
+	[[NSNotificationCenter defaultCenter] postNotificationName:DBContentObjectDidChangeNotification object:[objects lastObject]];
+	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 

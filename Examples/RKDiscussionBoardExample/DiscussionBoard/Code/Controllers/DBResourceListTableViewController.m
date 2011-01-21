@@ -9,6 +9,7 @@
 #import "DBResourceListTableViewController.h"
 #import "DBManagedObjectCache.h"
 #import "DBUser.h"
+#import "DBContentObject.h"
 
 @implementation UINavigationBar (CustomImage)
 
@@ -62,7 +63,7 @@
 	// or the object graph is manipulated
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:DBUserDidLoginNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:DBUserDidLogoutNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:kObjectCreatedUpdatedOrDestroyedNotificationName object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(invalidateModel) name:DBContentObjectDidChangeNotification object:nil];
 }
 
 - (void)viewDidUnload {

@@ -62,7 +62,6 @@
 	_bodyTextEditor.text = _post.body;
 	
 	// Ensure we are authenticated
-	NSLog(@"All the users are: %@", [DBUser allObjects]);
 	[self presentLoginViewControllerIfNecessary];
 }
 
@@ -77,8 +76,7 @@
 		if (_newAttachment) {
 			// has new attachment. show it. allow update.
 			[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:@"" defaultImage:_newAttachment URL:@"db://updateAttachment"]];
-		} else if (![[_post attachmentPath] isWhitespaceAndNewlines]) {
-			// TODO: Create model method to determine if there is an attachment
+		} else if ([_post hasAttachment]) {
 			// Has existing attachment. allow replace
 			NSString* url = _post.attachmentPath;
 			[items addObject:[TTTableImageItem itemWithText:@"Tap to Replace Image" imageURL:url defaultImage:nil URL:@"db://updateAttachment"]];
@@ -153,11 +151,9 @@
 #pragma mark RKObjectLoaderDelegate methods
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
-	NSLog(@"Loaded Objects: %@", objects);
-	NSLog(@"Status Code: %d", objectLoader.response.statusCode);
 	// Post notification telling view controllers to reload.
-	// TODO: Generalize this notification
-	[[NSNotificationCenter defaultCenter] postNotificationName:kObjectCreatedUpdatedOrDestroyedNotificationName object:objects];
+	[[NSNotificationCenter defaultCenter] postNotificationName:DBContentObjectDidChangeNotification object:[objects lastObject]];
+	
 	[self.navigationController popViewControllerAnimated:YES];
 }
 

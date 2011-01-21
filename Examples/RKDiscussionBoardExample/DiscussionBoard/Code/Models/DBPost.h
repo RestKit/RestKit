@@ -91,4 +91,9 @@
  */
 @property (nonatomic, retain) UIImage* newAttachment;
 
+/**
+ * Returns YES when there is already an Image attached to this Post
+ */
+- (BOOL)hasAttachment;
+
 @end

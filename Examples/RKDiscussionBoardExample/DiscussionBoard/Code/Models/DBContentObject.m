@@ -8,6 +8,8 @@
 
 #import "DBContentObject.h"
 
+NSString* const DBContentObjectDidChangeNotification = @"DBContentObjectDidChangeNotification";
+
 @implementation DBContentObject
 
 @dynamic userID;

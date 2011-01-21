@@ -99,4 +99,8 @@
 	return params;
 }
 
+- (BOOL)hasAttachment {
+	return NO == [[self attachmentPath] isWhitespaceAndNewlines];
+}
+
 @end

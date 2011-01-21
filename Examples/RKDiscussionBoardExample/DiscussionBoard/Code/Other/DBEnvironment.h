@@ -17,8 +17,6 @@
  */
 extern NSString* const DBRestKitBaseURL;
 
-// TODO: See if we can eliminate or abstract this further
-extern NSString* const kObjectCreatedUpdatedOrDestroyedNotificationName;
 /**
  * Server Environments for conditional compilation
  */

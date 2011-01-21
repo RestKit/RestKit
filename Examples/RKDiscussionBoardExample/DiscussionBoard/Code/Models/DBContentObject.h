@@ -10,6 +10,9 @@
 #import <RestKit/CoreData/CoreData.h>
 #import "DBUser.h"
 
+// Posted when a content object has changed
+extern NSString* const DBContentObjectDidChangeNotification;
+
 /**
  * Abstract superclass for content models in the Discussion Board. Provides
  * common property & method definitions for the system
