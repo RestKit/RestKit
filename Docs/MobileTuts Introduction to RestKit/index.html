@@ -1,0 +1,387 @@
+<p>RestKit is a powerful library that simplifies interacting with web services for iOS applications. In this article, written by RestKit creator and Two Toasters CTO Blake Watters, we will take a quick tour of RestKit&#8217;s feature set, get familiar with the core concepts presented by the library, and then explore some code samples to get a feel for what working with RestKit is really like.</p>
+
+<h2>What is RestKit?</h2>
+
+<p>RestKit is an Objective-C framework for iOS that aims to make interacting with RESTful web services simple, fast, and fun. It combines a clean, simple HTTP request/response API with a powerful object mapping system that reduces the amount of code you need to write to &#8216;get stuff done&#8217;. RestKit&#8217;s primary goal is to allow the developer to think more in terms of their application&#8217;s data model and worry less about the details of sending requests, parsing responses, and building representations of remote resources.</p>
+
+<h2>What does RestKit provide?</h2>
+
+<ul>
+<li>A simple, high-level HTTP request/response system. RestKit ships with an HTTP client built on top of NSURLConnection and provides a library of helpful methods for inspecting MIME types and status codes. Submitting form data is as simple as providing a dictionary of parameters and a native params object is included for easily creating multi-part submissions. Simple support for the streaming upload of large files (i.e. videos) is also provided.</li>
+<li>Framework level support for switching servers &amp; environments (e.g. development, production, staging). RestKit uses a base URL and resource paths rather than full URL&#8217;s to allow you to switch target servers quickly. Interpolating URL strings and constructing NSURL objects is a thing of the past.</li>
+<li>An object mapping system. RestKit provides a modeling layer for mapping processed data payloads into native Cocoa objects declaratively. This lets the application programmer stop worrying about parsing and simply ask the framework to asynchronously fetch a remote resource and call the delegate with the results. Object mapping is implemented using key-value coding, allowing for quick traversal of the parsed object graph. Reflection is used on the property types to allow for mapping from values that don&#8217;t have direct representations in the encoding format, such as mapping JSON timestamps encoded as a string to NSDate objects.</li>
+<li>Core Data support. Building on top of the object mapping layer, RestKit provides integration with Apple&#8217;s Core Data framework. This support allows RestKit to persist remotely loaded objects directly back into a local store, either as a fast local cache or a primary data store that is periodically synced with the cloud. RestKit can populate Core Data associations for you, allowing natural property based traversal of your data model. It also provides a nice API on top of the Core Data primitives that simplifies configuration and querying use cases.</li>
+<li>Database seeding. When the Core Data object store is used, you can seed a database from a collection of data files. This lets you submit your apps to the App Store with a database in the app bundle that is ready for immediate use.</li>
+<li>Pluggable parsing layer. RestKit currently supports JSON via the SBJSON and YAJL parsers. Parsing is implemented behind a simple interface to allow additional data formats to be handled transparently. </li>
+<li>Rails integration. RestKit was originally designed as an Objective-C answer to Active Resource. Rails has been used as the backend for a number of RestKit powered iOS apps and turn-key support is provided for interacting with a backend Rails application.</li>
+<li>Experimental Three20 integration. RestKit is often used alongside the Three20 framework. An optional module is included in the distribution that allows RestKit to interface with Three20 via the TTModel protocol.</li>
+</ul>
+
+<h2>Getting Up and Running</h2>
+
+<p>RestKit is available as a downloadable binary package, as a versioned snapshot, or as a Git submodule if you wish to track mainline development. For users of the library uninterested in doing development, we recommend using the versioned binary packages for the simplicity of installation. If you wish to install as a submodule or build the library yourself, please refer to the documentation available on Github.</p>
+
+<p>You can install RestKit in a few easy steps:</p>
+
+<ol>
+<li>Head to <a href="http://restkit.org/">restkit.org</a> and download the latest version (v0.9.0 as of this writing).</li>
+<li>Unpack the archive wherever you like to keep libraries (the author recommends a Library subdirectory).</li>
+<li>Drag the RestKit.xcodeproj file to your Xcode project file. It will be added to the <strong>Groups &amp; Files</strong> section in the left pane of the project. Select the appropriate targets and click &#8216;Add&#8217; when the sheet appears.
+<div class="tutorial_image">
+<img src="https://mobiletuts.s3.amazonaws.com/146_RESTKit/add_to_project.png" />
+</div>
+</li>
+<li>Click on the entry for RestKit.xcodeproj in your project&#8217;s <strong>Groups &amp; Files</strong> section. In the right hand pane, find the entries for <strong>libRestKitSupport.a</strong>, <strong>libRestKitObjectMapping.a</strong>, <strong>libRestKitNetwork.a</strong>, and <strong>libRestKitJSONParserYAJL.a</strong> and click the checkboxes on the far right underneath the silver target icon. This will link your project against RestKit. If you wish to use the Core Data support, click the checkbox next to <strong>libRestKitCoreData.a</strong> also. Your project should appear something like the following screenshot:
+<div class="tutorial_image">
+<img src="https://mobiletuts.s3.amazonaws.com/146_RESTKit/linking.png" />
+</div>
+</li>
+<li>Find the target for your application in the <strong>Targets</strong> section of your project. Right click on your app&#8217;s target and select &#8216;Get Info&#8217; from the menu to open the target Info inspector window.
+<div class="tutorial_image">
+<img src="https://mobiletuts.s3.amazonaws.com/146_RESTKit/get_info.png" />
+</div>
+</li>
+<li>You should be looking at the <strong>General</strong> tab of your target&#8217;s inspector. In the top <strong>Direct Dependencies</strong> section, click the plus button and add a direct dependency on the RestKit target.
+<div class="tutorial_image">
+<img src="https://mobiletuts.s3.amazonaws.com/146_RESTKit/dependency.png" />
+</div>
+</li>
+<li>Now look to the bottom of the <strong>General</strong> pane labeled <strong>Linked Libraries</strong>. Click the plus button to open the Frameworks selection sheet. Find and select the following frameworks and click &#8216;Add&#8217;:
+<ol>
+<li><strong>CFNetwork.framework</strong> - Required for networking support.</li>
+<li><strong>SystemConfiguration.framework</strong> - Required for detection of network availability.</li>
+<li><strong>MobileCoreServices.framework</strong> - Required. Provides support for MIME type auto-detection for uploaded files.</li>
+<li><strong>CoreData.framework</strong> - Required. Required for use of the Core Data backed persistent object store.
+</ol>
+<div class="tutorial_image">
+<img src="https://mobiletuts.s3.amazonaws.com/146_RESTKit/frameworks.png" />
+</div>
+</li>
+<li>Switch to the &#8216;Build&#8217; tab in your project inspector. Make sure that your <strong>Configuration</strong> pop-up menu reads <strong>All Configurations</strong> so that your changes will work for all build configurations. </li>
+<li>Find the <strong>Header Search Paths</strong> setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the &#8216;Libraries&#8217; subdirectory of your project, your header path would be &#8216;Libraries/RestKit/Build&#8217;. 
+
+Now find the <strong>Other Linker Flags</strong> setting. Double click it and add entries for <strong>-all_load</strong> and <strong>-ObjC</strong>. Your setting should match the screenshot below.
+<div class="tutorial_image">
+<img src="https://mobiletuts.s3.amazonaws.com/146_RESTKit/build_settings.png" />
+</div>
+</li>
+<li><p>Close out the inspector window.</p></li>
+</ol>
+
+<p>Congratulations, you are now done adding RestKit into your project!</p>
+
+<p>You now only need to add includes for the RestKit libraries at the appropriate places in your application. The relevant includes are:
+<pre name="code" class="c++">  
+    #import &lt;RestKit/RestKit.h&gt;    
+    #import &lt;RestKit/CoreData/CoreData.h&gt;// If you are using Core Data&#8230;
+</pre>
+<p>
+Build the project to ensure everything is working correctly.
+</p>
+
+<p>Once you have verified that you have RestKit linked into your project correctly, you are ready to begin using the library.</p>
+
+<h2 id="usingrestkit">Using RestKit</h2>
+
+<p>RestKit is designed to make common tasks as straightforward and simple as possible. In this section we will run through many common tasks in the library and focus on code samples to help you get started with the library.</p>
+
+<h3 id="sendingrequestsprocessingresponses">Sending requests &amp; processing responses</h3>
+
+<p>All of RestKit&#8217;s higher level functionality is built on top of the network layer. The network layer&#8217;s primary responsibility is the construction and dispatch of requests and the processing of responses. Generally you will dispatch all requests through the RKClient class.</p>
+
+<p>RKClient is a web client object configured to talk to a particular web server. It is initialized with a base URL and allows you to set configuration that is common to the requests in your application, such as HTTP headers and authentication information. While you are free to initialize as many instances of RKClient as is appropriate for your application, there is a shared singleton instance that is globally available. This singleton instance is often configured in your app delegate&#8217;s <code>applicationDidFinishLaunching:withOptions:</code> method:</p>
+
+<pre name="code" class="c++">- (void)applicationDidFinishLaunching:(UIApplication*)application withOptions:(NSDictionary*)options {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+}
+</pre>
+
+<p>The first RKClient that is initialized is automatically configured as the singleton instance and becomes available via the sharedClient singleton method:</p>
+
+<pre name="code" class="c++">
+NSLog(@"I am your RKClient singleton : %@", [RKClient sharedClient]);
+</pre>
+
+<p>Now that you have a client configured, you can send and process HTTP requests through the client. RestKit makes this very easy for you and abstracts the low level details of NSURLConnection away from you. When making a request through the client, you supply the resource path on the remote web server that you wish to interact with. Since the most common action in an iOS application is making an asynchronous request to a remote web service, RestKit provides very straight-forward convenience methods for the HTTP verbs: GET, POST, PUT and DELETE. You only need to declare that your class implements the RKRequestDelegate protocol and then provide an implementation of the <code>request:didLoadResponse:</code> method. Let&#8217;s take a look at an example class that shows the basics:</p>
+
+<pre name="code" class="c++">
+#import &lt;RestKit/RestKit.h&gt;
+
+// Here we declare that we implement the RKRequestDelegate protocol
+// Check out RestKit/Network/RKRequest.h for additional delegate methods
+// that are available.
+@interface RKRequestExamples : NSObject &lt;RKRequestDelegate&gt; {
+}
+
+@end
+
+@implementation RKRequestExamples
+
+- (void)sendRequests {
+  // Perform a simple HTTP GET and call me back with the results
+  [[RKClient sharedClient] get:@"/foo.xml" delegate:self];
+
+  // Send a POST to a remote resource. The dictionary will be transparently
+  // converted into a URL encoded representation and sent along as the request body
+  NSDictionary* params = [NSDictionary dictionaryWithObject:@"RestKit" forKey:@"Sender"];
+  [[RKClient sharedClient] post:@"/other.json" params:params delegate:self];
+
+  // DELETE a remote resource from the server
+  [[RKClient client] delete:@"/missing_resource.txt" delegate:self];
+}
+
+- (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response {  
+  if ([request isGET]) {
+    // Handling GET /foo.xml
+
+    if ([response isOK]) {
+      // Success! Let's take a look at the data
+      NSLog(@"Retrieved XML: %@", [response bodyAsString]);
+    }
+
+  } else if ([request isPOST]) {
+
+    // Handling POST /other.json        
+    if ([response isJSON]) {
+      NSLog(@"Got a JSON response back from our POST!");
+    }
+
+  } else if ([request isDELETE]) {
+
+    // Handling DELETE /missing_resource.txt
+    if ([response isNotFound]) {
+      NSLog(@"The resource path '%@' was not found.", [request resourcePath]);
+    }
+  }
+}
+
+@end
+</pre>
+
+<p>As you can see, the code is extremely succinct and readable. There are a number of helper methods available on RKRequest and RKResponse that make inspecting your request state very easy. Be sure to read the headers and get familiar with what&#8217;s available.</p>
+
+<h3 id="anintroductiontoobjectmapping">An Introduction to Object Mapping</h3>
+
+<p>Sending and receiving HTTP requests with such ease is great and all, but that&#8217;s just the tip of the iceberg. RestKit&#8217;s real power comes not from the network layer, but from the object mapping layer that sits on top of it. Object mapping is RestKit&#8217;s solution to simplifying and DRYing up the overly verbose work-flow of:</p>
+
+<ol>
+<li>Sending a request to a remote web service.</li>
+<li>Getting back an XML or JSON response and parsing it.</li>
+<li>Taking the parsed response and assigning the values inside the payload to objects.</li>
+</ol>
+
+<p>Much as RKClient is your gateway to a simpler life with HTTP, RKObjectManager is your gateway to the world of object mapping. In fact, on projects where object mapping is used extensively you will initialize RKObjectManager instead of RKClient. Much as RKClient seeks to abstract away the gritty details of handling requests, RKObjectManager works hard to shield you from the complexities of transforming data payloads into objects.</p>
+
+<h3 id="modelingloadingremoteobjects">Modeling &amp; Loading Remote Objects</h3>
+
+<p>Object mapping requires that you provide a data model class to represent your remote objects. By implementing the RKObjectMappable protocol, you are configuring RestKit to map attributes within a retrieved payload to properties on your model class. The key to this process is the <code>elementToPropertyMappings</code> method, which defines a dictionary of key paths and property names. The key paths are key-value coding compliant strings for accessing data within a parsed document. The property name is simply the string name of a property on the class to assign the accessed data to. </p>
+
+<p>To illustrate these points, let&#8217;s imagine that our application has a lightweight contact concept containing a name, an e-mail address, and an identifier number. Let&#8217;s imagine that this record lives on our remote server at <code>/contacts/1234</code>. The JSON looks like this:</p>
+
+<pre name="code" class="c++">{'id': 1234,
+ 'name': 'Blake Watters',
+ 'company': 'Two Toasters'}
+</pre>
+
+<p>Let&#8217;s pull together an RKObject class to contain this data:</p>
+
+<pre name="code" class="c++">@interface Contact : RKObject {
+  NSNumber* _identifier;
+  NSString* _name;
+  NSString* _company;
+}
+
+@property (nonatomic, retain) NSNumber* identifier;
+@property (nonatomic, retain) NSString* name;
+@property (nonatomic, retain) NSString* company;
+
+@end
+</pre>
+
+<p>Now we just need to tell RestKit how to map data from the payload to our properties:</p>
+
+<pre name="code" class="c++">@implementation Contact
+
+- (NSDictionary*)elementToPropertyMappings {
+  return [NSDictionary dictionaryWithKeysAndObjects:
+          @"id", @"identifier",
+          @"name", @"name",
+          @"company", @"company", 
+          nil];
+}
+
+@end
+</pre>
+
+<p>We are now all set to load the data. To do this, we set up RKObjectManager and execute a GET on the record. RKObjectManager will construct and configure an asynchronous RKObjectLoader request for you and send it to the remote server for processing. Instead of implementing the low level RKRequestDelegate methods that deal with requests and responses, we will instead implement the RKObjectLoaderDelegate protocol and get called back with a collection of mapped objects or an error. Let&#8217;s take a look at this code:</p>
+
+<pre name="code" class="c++">- (void)loadContact {
+  RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://restkit.org"];
+  [manager loadObjectsAtResourcePath:@"/contacts/1" objectClass:[Contact class] delegate:self]
+}
+
+// RKObjectLoaderDelegate methods
+
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
+  Contact* contact = [objects objectAtIndex:0];
+  NSLog(@"Loaded Contact ID #%@ -&gt; Name: %@, Company: %@", contact.id, contact.name, contact.company);
+}
+
+- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
+  NSLog(@"Encountered an error: %@", error)
+}
+</pre>
+
+<p>As you can see, the entire process is very low ceremony and completely DRY.</p>
+
+<h3 id="settinguproutes">Setting Up Routes</h3>
+
+<p>Loading objects is only half the story. To really interact with a remote web service, you also need to be able to create, update, and delete remote object instances. A confounding factor in these interactions is often that the resource path that an object resides at is specific to each instance. Returning to the contacts example above, imagine that the entire world of Contacts is represented by the following pairs of HTTP verbs and resource paths:</p>
+
+<ul>
+<li><code>GET /contacts</code> returns all Contacts as a collection</li>
+<li><code>POST /contacts</code> creates a new Contact</li>
+<li><code>GET /contacts/&lt;id&gt;</code> returns a particular Contact details</li>
+<li><code>PUT /contacts/&lt;id&gt;</code> updates an existing Contact details</li>
+<li><code>DELETE /contacts/&lt;id&gt;</code> deletes an existing Contact</li>
+</ul>
+
+<p>To avoid littering code with these conventions and resource paths, RestKit offers a routing system that is capable of generating resource paths for an object. Routing is designed to be an extensible system to provide flexibility, but RestKit ships with a very capable implementation in the RKDynamicRouter class. Routing is enabled by assigning an instance of an object implementing the RKRouter protocol to the RKObjectManager and configuring the router appropriately. Let&#8217;s take a look at an example configuration using RKDynamicRouter and our Contact example:</p>
+
+<pre name="code" class="c++">RKDynamicRouter* router = [RKDynamicRouter new];
+
+// Define a default resource path for all unspecified HTTP verbs
+[router routeClass:[Contact class] toResourcePath:@"/contacts/(identifier)"];
+[router routeClass:[Contact class] toResourcePath:@"/contacts" forMethod:RKRequestMethodPOST];
+
+[RKObjectManager sharedManager].router = router;
+</pre>
+
+<p>The notable piece in the configuration is the use of parentheses in the resource path for the default route. Within the parentheses you can specify any instance method on the class being configured and when RestKit generates a resource path for that object, the value returned will be interpolated into the string.</p>
+
+<p>In our example above, we can see that GET, PUT, and DELETE operations will generate /contacts/1234 while POST will generate /contacts.</p>
+
+<h3 id="manipulatingremoteobjects">Manipulating Remote Objects</h3>
+
+<p>Now that we have configured routing, we can manipulate remote object representations at a very high level. Let&#8217;s take a look at some more code and then we&#8217;ll walk through the process:</p>
+
+<pre name="code" class="c++">
+- (void)createObject {
+  Contact* joeBlow = [Contact object];
+  joeBlow.name = @"Joe Blow";
+  joeBlow.company = @"Two Toasters";
+
+  // POST to /contacts
+  [[RKObjectManager sharedManager] postObject:joeBlow delegate:self];
+}
+
+- (void)updateObject {
+  Contact* blake = [Contact object];
+  blake.identifier = [NSNumber numberWithInt:1];
+  blake.name = @"Blake Watters"; 
+  blake.company = @"RestKit";
+
+  // PUT to /contacts/1
+  [[RKObjectManager sharedManager] putObject:blake delegate:self];
+}
+
+- (void)deleteObject {
+  Contact* blake = [Contact object];
+  blake.identififer = [NSNumber numberWithInt:1];
+
+  // DELETE to /contacts/1
+  [[RKObjectManager sharedManager] deleteObject:blake delegate:self];
+}
+</pre>
+
+<p>What we have done here is used the combined power of object mapping and routing to perform very high level manipulations on local and remote objects. Behind the scenes, RestKit has identified the appropriate resource path for your operation, created and dispatched an asynchronous request, and processed the response for you.</p>
+
+<h2 id="reviewofkeyconcepts">Review of Key Concepts</h2>
+
+<ul>
+<li><p><strong>Client and Object Manager.</strong> There are two primary entry points for working with RestKit in your application: RKClient and RKObjectManager. RKClient is the primary entry point when you are working with the Network layer of RestKit and concerns itself with the low level details of building and sending requests. RKObjectManager operates at a higher level of abstraction in the Object Mapping layer and concerns itself with the loading and manipulation of objects that represent remote resources. Depending on what you are trying to accomplish with RestKit, you will be working extensively with one (or both!) of these classes.</p></li>
+<li><p><strong>Base URL&#8217;s and Resource Paths.</strong> RestKit uses the concepts of the &#8216;Base URL&#8217; and &#8216;Resource Path&#8217; to coordinate access to remote object representations. The Base URL is simply the common part of all URL&#8217;s to your remote application and is used to initialize instances of the RKClient and RKObjectManager classes. A resource path is simply the path (or subpath) portion of the full URL to an HTTP resource. Given an RKClient object initialized with &#8216;http://restkit.org&#8217; and a request to GET the content at resource path &#8216;/foo/bar.json&#8217;, RestKit will create and send a request to &#8216;http://restkit.org/foo/bar.json&#8217;. This allows you to easily support development, staging, and production environments in your applications by conditionally compiling different base URL&#8217;s. Most of the time you will think entirely in terms of resource paths once you have moved beyond initializing the library.</p></li>
+</ul>
+
+<p>Example:</p>
+
+<pre name="code" class="c++">RKClient* client = [RKClient clientWithBaseURL:@"http:///restkit.org"];
+[client get:@"/foo/bar.json" delegate:self];
+</pre>
+
+<ul>
+<li><strong>Object Mapping.</strong> When you use RestKit to model remote resources into local objects, you will be interacting with the object mapping layer. Object mapping is the process of taking a remote JSON (or other wire format) payload, parsing it into a graph of key value coding compliant NSObject&#8217;s, and applying a set of mapping rules to transform values inside the parsed object graph into attributes on a model object. RestKit supports advanced mapping beyond what you get from simply decoding a payload, such as parsing a string containing a date into an NSDate property and accessing data via key-value coding operators. Object mapping rules are configured by implementing the <em>elementToPropertyMappings</em> method of the <em>RKObjectMappable</em> protocol:</li>
+</ul>
+
+<p>Example:</p>
+
+<pre name="code" class="c++">
+@implementation MyObject
+
+// Map full_name and street_adddress in JSON payload to
+// local properties fullName and streetAddress
++ (NSDictionary*)elementToPropertyMappings {
+    return [NSDictionary dictionaryWithKeysAndObjects:
+            @"full_name", @"fullName",
+            @"street_address", @"streetAddress",
+            nil];
+}
+
+@end
+</pre>
+
+<ul>
+<li><strong>Routing.</strong> The routing system is responsible for generating resource paths from local object instances. This allows you to manipulate and synchronize your local objects with their remote representations without ever seeing a URL. The routing system is extensible by providing your own implementation of the RKRouter protocol, but RestKit ships with a powerful implementation in the RKDynamicRouter class. The dynamic router allows you to encoded property names inside of simple strings to generate complex resource paths at run time. This is most easily understood through some examples:</li>
+</ul>
+
+<p>Example:</p>
+
+<pre name="code" class="c++">
+RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://restkit.org"];
+RKDynamicRouter* router = [[RKDynamicRouter new] autorelease];
+manager.router = router;
+
+// Send POST requests for instances of Article to '/articles'
+[router routeClass:[Article class] toResourcePath:@"/articles" forMethod:RKRequestMethodPOST];
+
+// Configure a default resource path for Articles. Will send GET, PUT, and DELETE requests to '/articles/XXXX'
+// articleID is a property on the Article class
+[router routeClass:[Article class] toResourcePath:@"/articles/(articleID)"];
+
+// Configure Comments on the Article. Send POST of Comment objects to '/articles/1234/comments'
+// where the Comment has a relationship to an Article.
+[router routeClass:[Comment class] toResourcePath:@"/articles/(article.articleID)/comments" forMethod:RKRequestMethodPOST];
+
+// Let's create an Article
+Article* article = [Article object]; 
+article.title = @"Foo";
+article.body = @"This is the body";
+
+// Send a POST to /articles to create the remote instance
+[[RKObjectManager sharedManager] postObject:article delegate:self];
+
+// Now let's create a Comment on the Article
+Comment* comment = [Comment object];
+comment.article = article;
+comment.body = @"This is the comment!";
+
+// Given Article has an ID of 1234, will send a POST to /articles/1234/comments to create the Comment
+[[RKObjectManager sharedManager] postObject:comment delegate:self];
+
+// Delete the Article. DELETE to /articles/1234
+[[RKObjectManager sharedManager] deleteObject:comment delegate:self];
+</pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>
+This article has explored the basics of working with RestKit. You should now have a firm understanding of the core concepts and feel well prepared to start building your next RESTful iOS app. As we mentioned in the introductory section, RestKit also includes some advanced features which were not explored in this article. We will fully explore the advanced portions of the library including Core Data in our upcoming advanced tutorial. Until then, you can learn more through the example code included with the library and by exploring the resources below.</p>
+
+<h2 id="learningmore">Learning More</h2>
+
+<ul>
+<li><a href="http://restkit.org">RestKit.org</a></li>
+<li><a href="https://github.com/twotoasters/RestKit">Github Project Page</a></li>
+<li><a href="http://groups.google.com/group/restkit">Official Google Group</a></li>
+<li><a href="http://twotoasters.com/">Two Toasters</a></li>
+</ul>
