@@ -8,6 +8,8 @@
 
 #import "RKReachabilityObserver.h"
 #import <UIKit/UIKit.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
 // Constants
 NSString* const RKReachabilityStateChangedNotification = @"RKReachabilityStateChangedNotification";
@@ -43,8 +45,32 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 @implementation RKReachabilityObserver
 
 + (RKReachabilityObserver*)reachabilityObserverWithHostName:(NSString*)hostName {
-	RKReachabilityObserver* observer = nil;	
-	SCNetworkReachabilityRef reachabilityRef = SCNetworkReachabilityCreateWithName(NULL, [hostName UTF8String]);
+	RKReachabilityObserver* observer = nil;
+	SCNetworkReachabilityRef reachabilityRef;
+	
+	// Try to determine if we have an IP address or a hostname
+	struct sockaddr_in sa;
+    char* hostNameOrIPAddress = (char*) [hostName UTF8String];
+	int result = inet_pton(AF_INET, hostNameOrIPAddress, &(sa.sin_addr));
+	
+	if (result != 0) {
+		// IP Address
+		struct sockaddr_in remote_saddr;
+		
+		bzero(&remote_saddr, sizeof(struct sockaddr_in));
+		remote_saddr.sin_len = sizeof(struct sockaddr_in);
+		remote_saddr.sin_family = AF_INET;
+		// inet_aton(hostNameOrIPAddress, &(remote_saddr.sin_addr));
+		remote_saddr.sin_addr.s_addr = htonl(IN_LINKLOCALNETNUM);
+		
+		reachabilityRef = SCNetworkReachabilityCreateWithAddress(CFAllocatorGetDefault(), (struct sockaddr*)&remote_saddr);
+		
+		// We can immediately determine reachability to an IP address
+		hasNetworkAvailabilityBeenDetermined = YES;
+	} else {
+		// Hostname
+		reachabilityRef = SCNetworkReachabilityCreateWithName(CFAllocatorGetDefault(), hostNameOrIPAddress);
+	}
 	
 	if (nil != reachabilityRef) {
 		observer = [[[self alloc] initWithReachabilityRef:reachabilityRef] autorelease];
