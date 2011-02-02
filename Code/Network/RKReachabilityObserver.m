@@ -60,8 +60,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 		bzero(&remote_saddr, sizeof(struct sockaddr_in));
 		remote_saddr.sin_len = sizeof(struct sockaddr_in);
 		remote_saddr.sin_family = AF_INET;
-		// inet_aton(hostNameOrIPAddress, &(remote_saddr.sin_addr));
-		remote_saddr.sin_addr.s_addr = htonl(IN_LINKLOCALNETNUM);
+		inet_aton(hostNameOrIPAddress, &(remote_saddr.sin_addr));
 		
 		reachabilityRef = SCNetworkReachabilityCreateWithAddress(CFAllocatorGetDefault(), (struct sockaddr*)&remote_saddr);
 		
