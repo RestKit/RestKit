@@ -191,6 +191,10 @@
 }
 
 - (void)cancel {
+    if ([_delegate respondsToSelector:@selector(requestDidCancel:)]) {
+        [_delegate requestDidCancel:self];
+    }
+    _delegate = nil;
 	[_connection cancel];
 	[_connection release];
 	_connection = nil;

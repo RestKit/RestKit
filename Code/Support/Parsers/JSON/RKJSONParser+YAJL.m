@@ -12,7 +12,12 @@
 @implementation RKJSONParser
 
 - (NSDictionary*)objectFromString:(NSString*)string {
-	return [string yajl_JSON];
+	NSError* error = nil;
+	NSDictionary* json = [string yajl_JSON:&error];
+	if (error) {
+		NSLog(@"Encountered error: %@ parsing json strong: %@", error, string);
+	}
+	return json;
 }
 
 - (NSString*)stringFromObject:(id)object {

@@ -77,6 +77,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
 	// This makes sure that the Request Queue does not fire off any requests until the Reachability state has been determined.
 	// This prevents the request queue from
 	if ([[[RKClient sharedClient] baseURLReachabilityObserver] networkStatus] == RKReachabilityIndeterminate) {
+    _queueTimer = nil;
 		[self loadNextInQueueDelayed];
 		return;
 	}
@@ -119,7 +120,6 @@ static const NSInteger kMaxConcurrentLoads = 5;
 - (void)cancelRequest:(RKRequest*)request loadNext:(BOOL)loadNext {
 	if ([_requests containsObject:request] && ![request isLoaded]) {
 		[request cancel];
-		request.delegate = nil;
 
 		[_requests removeObject:request];
 		_totalLoading--;

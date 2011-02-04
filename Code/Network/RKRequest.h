@@ -140,7 +140,10 @@ typedef enum RKRequestMethod {
 - (void)didFinishLoad:(RKResponse*)response;
 
 /**
- * Cancels the underlying URL connection
+ * Cancels the underlying URL connection.
+ * This will send the requestDidCancel: delegate method
+ * if your delegate responds to it. It then nils out the delegate
+ * to ensure no more messages are sent to it.
  */
 - (void)cancel;
 
@@ -208,5 +211,10 @@ typedef enum RKRequestMethod {
  * Sent when a request has uploaded data to the remote site
  */
 - (void)request:(RKRequest*)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
+
+/**
+ * In the event the request is canceled, this is the last delegate method you will receive.
+ */
+- (void)requestDidCancel:(RKRequest*)request;
 
 @end
