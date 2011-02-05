@@ -42,6 +42,12 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 - (id)initWithStoreFilename:(NSString*)storeFilename;
 
 /**
+ * Initialize a new managed object store with a SQLite database with the managed object model
+ * specified
+ */
+- (id)initWithStoreFilename:(NSString*)storeFilename managedObjectModel:(NSManagedObjectModel*)managedObjectModel;
+
+/**
  * Save the current contents of the managed object store
  */
 - (NSError*)save;
