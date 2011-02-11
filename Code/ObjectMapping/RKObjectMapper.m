@@ -57,7 +57,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 // public
 
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		_elementToClassMappings = [[NSMutableDictionary alloc] init];
 		_format = RKMappingFormatJSON;
 		_missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
@@ -247,17 +247,23 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Persistent Instance Finders
 
+// TODO: This version does not update properties. Should probably be realigned.
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
 	id object = nil;
-	if ([class respondsToSelector:@selector(primaryKeyElement)]) {
+	if ([class isSubclassOfClass:[RKManagedObject class]]) {
 		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
 		id primaryKeyValue = [elements objectForKey:primaryKeyElement];
 		object = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:class
-																		   withPrimaryKeyValue:primaryKeyValue];
+                                                                                withPrimaryKeyValue:primaryKeyValue];
 	}
 	// instantiate if object is nil
 	if (object == nil) {
-		object = [[[class alloc] init] autorelease];
+        if ([class conformsToProtocol:@protocol(RKObjectMappable)] && [class respondsToSelector:@selector(object)]) {
+            object = [class object];
+        } else {
+            // Allow non-RKObjectMappable objecs to pass through to alloc/init. Do we need this?
+            object = [[[class alloc] init] autorelease];
+        }
 	}
 	
 	return object;
@@ -397,7 +403,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			NSEntityDescription* relationshipDestinationEntity = [[relationshipsByName objectForKey:relationship] destinationEntity];
 			id relationshipDestinationClass = objc_getClass([[relationshipDestinationEntity managedObjectClassName] cStringUsingEncoding:NSUTF8StringEncoding]);
 			RKManagedObject* relationshipValue = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:relationshipDestinationClass
-																											   withPrimaryKeyValue:objectPrimaryKeyValue];			
+                                                                                                                withPrimaryKeyValue:objectPrimaryKeyValue];			
 			if (relationshipValue) {
 				[managedObject setValue:relationshipValue forKey:relationship];
 			}
