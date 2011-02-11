@@ -1,5 +1,4 @@
 # the build
-build
 Build
 
 # temp nibs and swap files
@@ -14,5 +13,7 @@ Build
 *.mode2v3
 *.pbxuser
 *.perspectivev3
+*.xcworkspace
+xcuserdata
 
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*

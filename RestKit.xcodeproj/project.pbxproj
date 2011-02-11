@@ -366,7 +366,7 @@
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(BUILD_DIR)/RestKit";
+			dstPath = "$(SOURCE_ROOT)/Build/RestKit";
 			dstSubfolderSpec = 0;
 			files = (
 				257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */,
@@ -1477,10 +1477,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 25042B7C11F62FF500553519 /* Products */;
-					ProjectRef = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
-				},
-				{
 					ProductGroup = 25956591126DE9CF004BAC4C /* Products */;
 					ProjectRef = 25042C5011F6309000553519 /* OCMock.xcodeproj */;
 				},
@@ -1489,16 +1485,20 @@
 					ProjectRef = 250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */;
 				},
 				{
+					ProductGroup = 25042B7C11F62FF500553519 /* Products */;
+					ProjectRef = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
+				},
+				{
 					ProductGroup = 250BC44C11F6262600F3FE5A /* Products */;
 					ProjectRef = 250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */;
 				},
 				{
-					ProductGroup = 250BC42C11F6260100F3FE5A /* Products */;
-					ProjectRef = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
-				},
-				{
 					ProductGroup = 25956992126DF283004BAC4C /* Products */;
 					ProjectRef = 2595698D126DF283004BAC4C /* UISpec.xcodeproj */;
+				},
+				{
+					ProductGroup = 250BC42C11F6260100F3FE5A /* Products */;
+					ProjectRef = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1860,7 +1860,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				USER_HEADER_SEARCH_PATHS = ../ElementParser/Classes;
+				SYMROOT = "$(SOURCE_ROOT)/Build";
 			};
 			name = Debug;
 		};
@@ -1877,6 +1877,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
+				SYMROOT = "$(SOURCE_ROOT)/Build";
 			};
 			name = Release;
 		};
