@@ -368,7 +368,7 @@
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(BUILD_DIR)/RestKit";
+			dstPath = "$(SOURCE_ROOT)/Build/RestKit";
 			dstSubfolderSpec = 0;
 			files = (
 				257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */,
@@ -1868,7 +1868,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				USER_HEADER_SEARCH_PATHS = ../ElementParser/Classes;
+				SYMROOT = "$(SOURCE_ROOT)/Build";
 			};
 			name = Debug;
 		};
@@ -1885,6 +1885,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
+				SYMROOT = "$(SOURCE_ROOT)/Build";
 			};
 			name = Release;
 		};
