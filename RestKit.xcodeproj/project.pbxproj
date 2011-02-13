@@ -167,6 +167,8 @@
 		25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */; };
 		2596AC9012F7B015004C02F9 /* RKClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596AC8F12F7B015004C02F9 /* RKClientSpec.m */; };
 		25A5B4E912762249003DC8A4 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A5B4E812762249003DC8A4 /* blake.png */; };
+		25DC784E13079FF500447D4E /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DC784C13079FF500447D4E /* RKManagedObjectLoader.h */; };
+		25DC784F13079FF500447D4E /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DC784D13079FF500447D4E /* RKManagedObjectLoader.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -575,6 +577,8 @@
 		25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRailsRouterSpec.m; sourceTree = "<group>"; };
 		2596AC8F12F7B015004C02F9 /* RKClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKClientSpec.m; sourceTree = "<group>"; };
 		25A5B4E812762249003DC8A4 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
+		25DC784C13079FF500447D4E /* RKManagedObjectLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectLoader.h; sourceTree = "<group>"; };
+		25DC784D13079FF500447D4E /* RKManagedObjectLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoader.m; sourceTree = "<group>"; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
@@ -828,6 +832,8 @@
 				253A086412551D8D00976E89 /* RKManagedObjectStore.m */,
 				253A088812551D8D00976E89 /* RKObjectSeeder.h */,
 				253A088912551D8D00976E89 /* RKObjectSeeder.m */,
+				25DC784C13079FF500447D4E /* RKManagedObjectLoader.h */,
+				25DC784D13079FF500447D4E /* RKManagedObjectLoader.m */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -1269,6 +1275,7 @@
 				25431EBB1255640800A315CF /* CoreData.h in Headers */,
 				2543201C1256179900A315CF /* RKObjectSeeder.h in Headers */,
 				7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */,
+				25DC784E13079FF500447D4E /* RKManagedObjectLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1477,10 +1484,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 25042B7C11F62FF500553519 /* Products */;
-					ProjectRef = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
-				},
-				{
 					ProductGroup = 25956591126DE9CF004BAC4C /* Products */;
 					ProjectRef = 25042C5011F6309000553519 /* OCMock.xcodeproj */;
 				},
@@ -1489,16 +1492,20 @@
 					ProjectRef = 250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */;
 				},
 				{
+					ProductGroup = 25042B7C11F62FF500553519 /* Products */;
+					ProjectRef = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
+				},
+				{
 					ProductGroup = 250BC44C11F6262600F3FE5A /* Products */;
 					ProjectRef = 250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */;
 				},
 				{
-					ProductGroup = 250BC42C11F6260100F3FE5A /* Products */;
-					ProjectRef = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
-				},
-				{
 					ProductGroup = 25956992126DF283004BAC4C /* Products */;
 					ProjectRef = 2595698D126DF283004BAC4C /* UISpec.xcodeproj */;
+				},
+				{
+					ProductGroup = 250BC42C11F6260100F3FE5A /* Products */;
+					ProjectRef = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -1728,6 +1735,7 @@
 				253A09251255258500976E89 /* RKManagedObject.m in Sources */,
 				253A09271255258600976E89 /* RKManagedObjectStore.m in Sources */,
 				2543201D1256179900A315CF /* RKObjectSeeder.m in Sources */,
+				25DC784F13079FF500447D4E /* RKManagedObjectLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

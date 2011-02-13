@@ -6,13 +6,10 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-// TODO: Factor core data out...
-#import <CoreData/CoreData.h>
 #import "../Network/Network.h"
 #import "RKObjectMapper.h"
 
 @class RKObjectLoader;
-@class RKManagedObjectStore;
 
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
@@ -46,10 +43,8 @@
 	RKResponse* _response;
 	NSObject<RKObjectMappable>* _targetObject;
 	Class<RKObjectMappable> _objectClass;
-	NSString* _keyPath;
-	RKManagedObjectStore* _managedObjectStore;
-	NSManagedObjectID* _targetObjectID;
-	RKClient* _client;
+	NSString* _keyPath;    
+	RKClient* _client; // TODO: Break linkage to RKClient using notifications
 }
 
 /**
@@ -80,23 +75,19 @@
  */
 @property (nonatomic, copy) NSString* keyPath;
 
-/*
- * In cases where CoreData is used for local object storage/caching, a reference to
- * the managedObjectStore for use in retrieving locally cached objects using the store's
- * managedObjectCache property.
- */
-@property (nonatomic, retain) RKManagedObjectStore* managedObjectStore;
-
 /**
  * Return an auto-released loader with with an object mapper, a request, and a delegate
  */
 + (id)loaderWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+
+// TODO: Eliminate this method...
 + (id)loaderWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Initialize a new object loader with an object mapper, a request, and a delegate
  */
-- (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;									
+- (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;							
+// TODO: Eliminate this method...
 - (id)initWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 @end

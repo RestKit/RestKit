@@ -8,8 +8,8 @@
 
 #import <objc/message.h>
 
-// TODO: Factor out Core Data...
 #import "../CoreData/CoreData.h"
+#import "RKObjectManager.h"
 
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
@@ -380,26 +380,28 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		}
 	}
 	
-	if ([object isKindOfClass:[RKManagedObject class]]) {
-		RKManagedObject* managedObject = (RKManagedObject*)object;
-		NSDictionary* relationshipToPkPropertyMappings = [[managedObject class] relationshipToPrimaryKeyPropertyMappings];
-		for (NSString* relationship in relationshipToPkPropertyMappings) {
-			NSString* primaryKeyPropertyString = [relationshipToPkPropertyMappings objectForKey:relationship];
-			
-			NSNumber* objectPrimaryKeyValue = nil;
-			@try {
-				objectPrimaryKeyValue = [managedObject valueForKeyPath:primaryKeyPropertyString];
-			} @catch (NSException* e) {
-				NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for object:%@", e, primaryKeyPropertyString, managedObject);
-			}
-			
-			NSDictionary* relationshipsByName = [[managedObject entity] relationshipsByName];
-			NSEntityDescription* relationshipDestinationEntity = [[relationshipsByName objectForKey:relationship] destinationEntity];
-			id relationshipDestinationClass = objc_getClass([[relationshipDestinationEntity managedObjectClassName] cStringUsingEncoding:NSUTF8StringEncoding]);
-			RKManagedObject* relationshipValue = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:relationshipDestinationClass
-																											   withPrimaryKeyValue:objectPrimaryKeyValue];			
-			if (relationshipValue) {
-				[managedObject setValue:relationshipValue forKey:relationship];
+	if (nil != NSClassFromString(@"RKManagedObject")) {
+		if ([object isKindOfClass:[RKManagedObject class]]) {
+			RKManagedObject* managedObject = (RKManagedObject*)object;
+			NSDictionary* relationshipToPkPropertyMappings = [[managedObject class] relationshipToPrimaryKeyPropertyMappings];
+			for (NSString* relationship in relationshipToPkPropertyMappings) {
+				NSString* primaryKeyPropertyString = [relationshipToPkPropertyMappings objectForKey:relationship];
+				
+				NSNumber* objectPrimaryKeyValue = nil;
+				@try {
+					objectPrimaryKeyValue = [managedObject valueForKeyPath:primaryKeyPropertyString];
+				} @catch (NSException* e) {
+					NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for object:%@", e, primaryKeyPropertyString, managedObject);
+				}
+				
+				NSDictionary* relationshipsByName = [[managedObject entity] relationshipsByName];
+				NSEntityDescription* relationshipDestinationEntity = [[relationshipsByName objectForKey:relationship] destinationEntity];
+				id relationshipDestinationClass = objc_getClass([[relationshipDestinationEntity managedObjectClassName] cStringUsingEncoding:NSUTF8StringEncoding]);
+				RKManagedObject* relationshipValue = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:relationshipDestinationClass
+																												   withPrimaryKeyValue:objectPrimaryKeyValue];			
+				if (relationshipValue) {
+					[managedObject setValue:relationshipValue forKey:relationship];
+				}
 			}
 		}
 	}
