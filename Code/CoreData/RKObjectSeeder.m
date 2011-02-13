@@ -11,8 +11,12 @@
 
 @implementation RKObjectSeeder
 
++ (RKObjectSeeder*)seederWithObjectManager:(RKObjectManager*)manager {
+    return [[[self alloc] initWithObjectManager:manager] autorelease];
+}
+
 - (id)initWithObjectManager:(RKObjectManager*)manager {
-	if (self = [self init]) {
+	if ((self = [self init])) {
 		_manager = [manager retain];
 	}
 	

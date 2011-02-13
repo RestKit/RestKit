@@ -8,10 +8,19 @@
 
 #import "../ObjectMapping/ObjectMapping.h"
 
-// TODO: This class needs an API scrubbing
+/**
+ * The object seeder provides support for creating a pre-filled Core Data
+ * database suitable for shipping with your application at App Store submission 
+ * time.
+ */
 @interface RKObjectSeeder : NSObject {
 	RKObjectManager* _manager;
 }
+
+/**
+ * Returns a new auto-released object manager
+ */
++ (RKObjectSeeder*)seederWithObjectManager:(RKObjectManager*)manager;
 
 /**
  * Initialize a new object seeder

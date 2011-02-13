@@ -26,7 +26,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 @synthesize managedObjectCache = _managedObjectCache;
 
 - (id)initWithStoreFilename:(NSString*)storeFilename {
-	if (self = [self init]) {
+	if ((self = [self init])) {
 		_storeFilename = [storeFilename retain];
 		_managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];		
 		[self createPersistentStoreCoordinator];

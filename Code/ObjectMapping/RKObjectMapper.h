@@ -14,6 +14,7 @@
 /**
  * Define the object mapping formats
  */
+// TODO: Replace this with MIME Type -> Parser registration
 typedef enum {
 	RKMappingFormatXML = 0,
 	RKMappingFormatJSON
@@ -128,7 +129,7 @@ typedef enum {
  * Sets the properties and relationships serialized in the dictionary into the model instance
  * provided
  */
-- (void)mapObject:(id)model fromDictionary:(NSDictionary*)dictionary;
+- (void)mapObject:(NSObject<RKObjectMappable>*)object fromDictionary:(NSDictionary*)dictionary;
 
 /**
  * Returns mapped model(s) from the data serialized in the dictionary into the model instance
@@ -149,20 +150,17 @@ typedef enum {
  * Map the objects in a given payload string to a particular object class, optionally filtering
  * the parsed result set via a keyPath before mapping the results.
  */
-- (id)mapFromString:(NSString *)string toClass:(Class)class keyPath:(NSString*)keyPath;
+- (NSObject<RKObjectMappable>*)mapFromString:(NSString *)string toClass:(Class<RKObjectMappable>)class keyPath:(NSString*)keyPath;
 
 /**
  * Map an array of object dictionary representations to instances of a particular
  * object class
  */
-- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class)class;
+- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class<RKObjectMappable>)class;
 
 /**
  * Parse a string using the appropriate parser and return the results
  */
 - (id)parseString:(NSString*)string;
-
-///////////////////////////////////////////////////////////////////////////////
-// Sub-classing Hooks
 
 @end
