@@ -10,6 +10,7 @@
 #import "RKObjectMapper.h"
 
 @class RKObjectLoader;
+@class RKManagedObjectStore;
 
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
@@ -43,7 +44,8 @@
 	RKResponse* _response;
 	NSObject<RKObjectMappable>* _targetObject;
 	Class<RKObjectMappable> _objectClass;
-	NSString* _keyPath;    
+	NSString* _keyPath;
+    RKManagedObjectStore* _managedObjectStore;
 	RKClient* _client; // TODO: Break linkage to RKClient using notifications
 }
 
@@ -51,6 +53,13 @@
  * The resource mapper this loader is working with
  */
 @property (nonatomic, readonly) RKObjectMapper* mapper;
+
+/*
+ * In cases where CoreData is used for local object storage/caching, a reference to
+ * the managedObjectStore for use in retrieving locally cached objects using the store's
+ * managedObjectCache property.
+ */
+@property (nonatomic, retain) RKManagedObjectStore* managedObjectStore;
 
 /**
  * The underlying response object for this loader

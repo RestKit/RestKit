@@ -18,6 +18,7 @@
 
 @synthesize mapper = _mapper, response = _response, objectClass = _objectClass, keyPath = _keyPath;
 @synthesize targetObject = _targetObject;
+@synthesize managedObjectStore = _managedObjectStore;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	return [self loaderWithResourcePath:resourcePath client:[RKClient sharedClient] mapper:mapper delegate:delegate];
@@ -48,7 +49,9 @@
 	[_keyPath release];
 	_keyPath = nil;	
 	[_client release];
-	_client = nil;	
+	_client = nil;
+    self.managedObjectStore = nil;
+    
 	[super dealloc];
 }
 

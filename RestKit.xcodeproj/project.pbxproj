@@ -167,7 +167,7 @@
 		25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */; };
 		2596AC9012F7B015004C02F9 /* RKClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596AC8F12F7B015004C02F9 /* RKClientSpec.m */; };
 		25A5B4E912762249003DC8A4 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A5B4E812762249003DC8A4 /* blake.png */; };
-		25DC784E13079FF500447D4E /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DC784C13079FF500447D4E /* RKManagedObjectLoader.h */; };
+		25DC784E13079FF500447D4E /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25DC784C13079FF500447D4E /* RKManagedObjectLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25DC784F13079FF500447D4E /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DC784D13079FF500447D4E /* RKManagedObjectLoader.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };

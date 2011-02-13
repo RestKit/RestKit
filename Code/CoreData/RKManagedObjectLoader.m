@@ -8,6 +8,8 @@
 
 #import "RKManagedObjectLoader.h"
 #import "RKURL.h"
+#import "RKManagedObject.h"
+#import "RKManagedObjectStore.h"
 
 @interface RKObjectLoader (Private)
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
@@ -15,14 +17,11 @@
 
 @implementation RKManagedObjectLoader
 
-@synthesize managedObjectStore = _managedObjectStore;
-
 - (void)dealloc {
     [_targetObject release];
 	_targetObject = nil;
 	[_targetObjectID release];
-	_targetObjectID = nil;
-    self.managedObjectStore = nil;
+	_targetObjectID = nil;    
     
     [super dealloc];
 }
