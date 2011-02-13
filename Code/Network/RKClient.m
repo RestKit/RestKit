@@ -85,17 +85,6 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 	sharedClient = [client retain];
 }
 
-// Deprecated
-+ (RKClient*)client {
-	return sharedClient;
-}
-
-// Deprecated
-+ (void)setClient:(RKClient*)client {
-	[sharedClient release];
-	sharedClient = [client retain];
-}
-
 + (RKClient*)clientWithBaseURL:(NSString*)baseURL {
 	RKClient* client = [[[RKClient alloc] init] autorelease];
 	client.baseURL = baseURL;

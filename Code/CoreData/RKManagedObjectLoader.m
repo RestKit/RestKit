@@ -36,7 +36,7 @@
 }
 
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
-    NSMutableDictionary* newInfo = [NSMutableDictionary dictionaryWithDictionary:dictionary];
+    NSMutableDictionary* newInfo = [[NSMutableDictionary alloc] initWithDictionary:dictionary];
 	NSArray* models = [dictionary objectForKey:@"objects"];
 	[dictionary release];
 	
