@@ -125,8 +125,9 @@ static RKObjectManager* sharedManager = nil;
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
     RKObjectLoader* objectLoader = nil;
     
-    if (NSClassFromString(@"RKManagedObjectLoader")) {
-        objectLoader = [RKManagedObjectLoader loaderWithResourcePath:resourcePath client:self.client mapper:self.mapper delegate:delegate];
+    Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
+    if (managedObjectLoaderClass) {
+        objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath client:self.client mapper:self.mapper delegate:delegate];
         [(RKManagedObjectLoader*)objectLoader setManagedObjectStore:self.objectStore];
     } else {
         objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath client:self.client mapper:self.mapper delegate:delegate];

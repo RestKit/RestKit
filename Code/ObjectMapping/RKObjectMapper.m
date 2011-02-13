@@ -250,7 +250,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 // TODO: This version does not update properties. Should probably be realigned.
 - (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
 	id object = nil;
-	if ([class isSubclassOfClass:[RKManagedObject class]]) {
+    Class managedObjectClass = NSClassFromString(@"RKManagedObject");
+	if (managedObjectClass && [class isSubclassOfClass:managedObjectClass]) {
 		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
 		id primaryKeyValue = [elements objectForKey:primaryKeyElement];
 		object = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:class
@@ -386,7 +387,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		}
 	}
 	
-	if ([object isKindOfClass:[RKManagedObject class]]) {
+    Class managedObjectClass = NSClassFromString(@"RKManagedObject");
+	if (managedObjectClass && [object isKindOfClass:managedObjectClass]) {
 		RKManagedObject* managedObject = (RKManagedObject*)object;
 		NSDictionary* relationshipToPkPropertyMappings = [[managedObject class] relationshipToPrimaryKeyPropertyMappings];
 		for (NSString* relationship in relationshipToPkPropertyMappings) {

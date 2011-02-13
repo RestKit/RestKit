@@ -9,6 +9,10 @@
 #import "RKManagedObjectLoader.h"
 #import "RKURL.h"
 
+@interface RKObjectLoader (Private)
+- (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
+@end
+
 @implementation RKManagedObjectLoader
 
 @synthesize managedObjectStore = _managedObjectStore;
@@ -33,7 +37,8 @@
 }
 
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
-	NSArray* models = [dictionary objectForKey:@"models"];
+    NSMutableDictionary* newInfo = [NSMutableDictionary dictionaryWithDictionary:dictionary];
+	NSArray* models = [dictionary objectForKey:@"objects"];
 	[dictionary release];
 	
 	// NOTE: The models dictionary may contain NSManagedObjectID's from persistent objects
@@ -49,10 +54,10 @@
 			[objects addObject:object];
 		}
 	}
+    
+    [newInfo setObject:objects forKey:@"objects"];
 	
-	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didLoadObjects:[NSArray arrayWithArray:objects]];
-	
-	[self responseProcessingSuccessful:YES withError:nil];
+	[super informDelegateOfObjectLoadWithInfoDictionary:newInfo];
 }
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {

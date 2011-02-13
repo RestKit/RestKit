@@ -89,7 +89,8 @@
 		return YES;
 	} else if ([response isError]) {
 		NSError* error = nil;
-
+        
+        // TODO: Unwind hard coding of JSON specific assumptions
 		if ([response isJSON]) {
 			error = [_mapper parseErrorFromString:[response bodyAsString]];
 			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
@@ -121,6 +122,7 @@
 	return NO;
 }
 
+// NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
 	NSArray* objects = [dictionary objectForKey:@"objects"];
 	[dictionary release];
@@ -145,6 +147,7 @@
 	[self responseProcessingSuccessful:NO withError:rkError];
 }
 
+// NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
