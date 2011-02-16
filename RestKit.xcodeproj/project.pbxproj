@@ -1649,7 +1649,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ${BUILD_ROOT} != ${SRCROOT}/Build ]; then\n    rm -rf ${SRCROOT}/Build/RestKit\n    cp -R ${BUILD_ROOT}/RestKit ${SRCROOT}/Build\n    \n    cd ${SRCROOT}/Build/RestKit\n    find * -name '*.h' | xargs chmod a-w\nfi\n\nexit 0";
+			shellScript = "IFS=$'\\n'\n\nif [ ${BUILD_ROOT} != ${SRCROOT}/Build ]; then\n    rm -rf ${SRCROOT}/Build/RestKit\n    cp -R ${BUILD_ROOT}/RestKit ${SRCROOT}/Build\n    \n    cd ${SRCROOT}/Build/RestKit\n    find * -name '*.h' | xargs chmod a-w\nfi\n\nexit 0";
 		};
 		255DE2B810FFBFBF00A85891 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
