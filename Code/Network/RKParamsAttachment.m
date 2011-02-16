@@ -23,7 +23,7 @@ extern NSString* const kRKStringBoundary;
 @synthesize fileName = _fileName, MIMEType = _MIMEType, name = _name;
 
 - (id)initWithName:(NSString*)name {
-	if (self = [self init]) {
+	if ((self = [self init])) {
 		_name = [name retain];
 	}
 	
@@ -31,7 +31,7 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (id)initWithName:(NSString*)name value:(id<NSObject>)value {
-	if (self = [self initWithName:name]) {
+	if ((self = [self initWithName:name])) {
 		NSMutableData* body = [NSMutableData data];
 		if ([value respondsToSelector:@selector(dataUsingEncoding:)]) {
 			[body appendData:[(NSString*)value dataUsingEncoding:NSUTF8StringEncoding]];
@@ -47,7 +47,7 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (id)initWithName:(NSString*)name data:(NSData*)data {
-	if (self = [self initWithName:name]) {		
+	if ((self = [self initWithName:name])) {		
 		_bodyStream    = [[NSInputStream inputStreamWithData:data] retain];
 		_bodyLength    = [data length];
 	}
@@ -56,7 +56,7 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (id)initWithName:(NSString*)name file:(NSString*)filePath {
-	if (self = [self initWithName:name]) {		
+	if ((self = [self initWithName:name])) {
 		NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:filePath], @"Expected file to exist at path: %@", filePath);
 		_fileName = [[filePath lastPathComponent] retain];
 		_MIMEType = [[self mimeTypeForExtension:[filePath pathExtension]] retain];
