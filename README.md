@@ -61,15 +61,15 @@ Quick Start (aka TL;DR)
 1. Add **Library Search Path** to 
 1. Add direct dependency on the "RestKit" aggregate target
 1. Link against required frameworks:
-  1. **CFNetwork.framework**
-  1. **SystemConfiguration.framework**
-  1. **MobileCoreServices.framework**
-  1. **CoreData.framework**
+    1. **CFNetwork.framework**
+    1. **SystemConfiguration.framework**
+    1. **MobileCoreServices.framework**
+    1. **CoreData.framework**
 1. Link against RestKit static library products:
-  1. **libRestKitSupport.a**
-  1. **libRestKitObjectMapping.a**
-  1. **libRestKitNetwork.a**
-  1. A JSON parser implementation (either **libRestKitSBJSONParser.a** OR **libRestKitYAJLParser.a** but NOT both)
+    1. **libRestKitSupport.a**
+    1. **libRestKitObjectMapping.a**
+    1. **libRestKitNetwork.a**
+    1. A JSON parser implementation (either **libRestKitSBJSONParser.a** OR **libRestKitYAJLParser.a** but NOT both)
 
 Xcode 3.x (Git Submodule)
 -------------------------
@@ -122,15 +122,15 @@ To add RestKit to your project:
 1. Click the disclosure triangles next to the **Target Dependencies** and **Link Binary with Libraries** items.
 1. In the **Target Dependencies** section, click the **+** button to open the Target selection sheet. Click on the **RestKit** aggregate target (it will have the bulls-eye icon) and click the **Add** button to create a dependency.
 1. In the **Link Binary with Libraries** section, click the **+** button to open the Library selection sheet. Here we need to instruct the target to link against all the required RestKit libraries and several system libraries. Select each of the following items (one at a time or while holding down the Command key to select all of them at once) and then click the **Add** button:
-  * **libRestKitCoreData.a**
-  * **libRestKitJSONParserYAJL.a**
-  * **libRestKitNetwork.a**
-  * **libRestKitObjectMapping.a**
-  * **libRestKitSupport.a**
-  * **CFNetwork.framework**
-  * **CoreData.framework**
-  * **MobileCoreServices.framework**
-  * **SystemConfiguration.framework**
+    * **libRestKitCoreData.a**
+    * **libRestKitJSONParserYAJL.a**
+    * **libRestKitNetwork.a**
+    * **libRestKitObjectMapping.a**
+    * **libRestKitSupport.a**
+    * **CFNetwork.framework**
+    * **CoreData.framework**
+    * **MobileCoreServices.framework**
+    * **SystemConfiguration.framework**
 1. Verify that all of the libraries are showing up in the **Link Binary with Libraries** section before continuing.
 
 Congratulations, you are now done adding RestKit into your Xcode 4 based project!
