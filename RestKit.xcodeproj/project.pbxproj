@@ -13,6 +13,7 @@
 			buildPhases = (
 				25956979126DF0E3004BAC4C /* Copy Headers */,
 				25956980126DF159004BAC4C /* Protect Copied Headers */,
+				250D1769130B648100539F86 /* ShellScript */,
 			);
 			dependencies = (
 				2595695A126DF0B4004BAC4C /* PBXTargetDependency */,
@@ -366,7 +367,7 @@
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(SOURCE_ROOT)/Build/RestKit";
+			dstPath = $BUILD_ROOT/RestKit;
 			dstSubfolderSpec = 0;
 			files = (
 				257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */,
@@ -1637,6 +1638,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		250D1769130B648100539F86 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ ${BUILD_ROOT} != ${SRCROOT}/Build ]; then\n    rm -rf ${SRCROOT}/Build/RestKit\n    cp -R ${BUILD_ROOT}/RestKit ${SRCROOT}/Build\n    \n    cd ${SRCROOT}/Build/RestKit\n    find * -name '*.h' | xargs chmod a-w\nfi\n\nexit 0";
+		};
 		255DE2B810FFBFBF00A85891 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
