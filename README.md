@@ -55,22 +55,26 @@ Quick Start (aka TL;DR)
 -----------
 
 1. Add Git submodule to your project: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
-1. Add cross-project reference by dragging RestKit.xcodeproj to your project
+1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
-1. Add **Header Search Path** to the "RestKit/Build" directory
-1. Add **Library Search Path** to 
-1. Add direct dependency on the "RestKit" aggregate target
+1. Add **Header Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build"` directory
+1. Add **Library Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory
+1. Add **Other Linker Flags** for `-ObjC -all_load`
+1. Open target settings editor for the target you want to link RestKit into
+1. Add direct dependency on the **RestKit** aggregate target
 1. Link against required frameworks:
     1. **CFNetwork.framework**
-    1. **SystemConfiguration.framework**
-    1. **MobileCoreServices.framework**
     1. **CoreData.framework**
+    1. **MobileCoreServices.framework**
+    1. **SystemConfiguration.framework**
 1. Link against RestKit static library products:
     1. **libRestKitSupport.a**
     1. **libRestKitObjectMapping.a**
     1. **libRestKitNetwork.a**
     1. A JSON parser implementation (either **libRestKitSBJSONParser.a** OR **libRestKitYAJLParser.a** but NOT both)
-
+1. Import the RestKit headers via `#import <RestKit/RestKit.h>`
+1. Build the project to verify installation is successful.
+    
 Xcode 3.x (Git Submodule)
 -------------------------
 
