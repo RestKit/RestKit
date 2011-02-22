@@ -355,6 +355,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 - (void)setRelationshipsOfModel:(id)object fromElements:(NSDictionary*)elements {
 	NSDictionary* elementToRelationshipMappings = [[object class] elementToRelationshipMappings];
 	for (NSString* elementKeyPath in elementToRelationshipMappings) {
+		
 		NSString* propertyName = [elementToRelationshipMappings objectForKey:elementKeyPath];
 		
 		id relationshipElements = nil;
@@ -376,7 +377,20 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 					[children addObject:child];
 				}
 			}
-			
+
+			// remove children that we don't have in new children NSSet
+			if ([object isKindOfClass:[RKManagedObject class]]) {
+				NSSet* currentChildren = [object valueForKeyPath:propertyName];
+				for (id currentChild in currentChildren) {
+					if (![children containsObject: currentChild]) {
+						if ([currentChild isKindOfClass: [RKManagedObject class]]) {
+
+							[[[[RKObjectManager sharedManager] objectStore] managedObjectContext] deleteObject: currentChild];
+						}
+						
+					}
+				}
+			}
 			[object setValue:children forKey:propertyName];
 		} else if ([relationshipElements isKindOfClass:[NSDictionary class]]) {
 			NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
