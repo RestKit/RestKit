@@ -14,7 +14,7 @@
  * Must be implemented by all classes utilizing the RKModelMapper to map REST
  * responses to domain model classes
  */
-@protocol RKObjectMappable
+@protocol RKObjectMappable <NSObject>
 
 /**
  * Must return a dictionary containing mapping from JSON element names to property accessors

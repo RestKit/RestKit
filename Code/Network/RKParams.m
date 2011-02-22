@@ -41,7 +41,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 }
 
 - (RKParams*)initWithDictionary:(NSDictionary*)dictionary {
-	if (self = [self init]) {
+	if ((self = [self init])) {
 		for (NSString* key in dictionary) {
 			id value = [dictionary objectForKey:key];
 			[self setValue:value forParam:key];

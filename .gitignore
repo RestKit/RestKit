@@ -1,6 +1,7 @@
 # the build
 Build
 build
+DerivedData
 
 # temp nibs and swap files
 *~.nib

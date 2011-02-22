@@ -36,7 +36,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
 }
 
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		_requests = [[NSMutableArray alloc] init];
 		_suspended = NO;
 		_totalLoading = 0;
