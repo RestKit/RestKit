@@ -33,5 +33,19 @@ NSDictionary* RKObjectMappableGetPropertiesByElement(NSObject<RKObjectMappable>*
 		[elementsAndPropertyValues setValue:propertyValue forKey:elementName];
 	}
 	
+	// add in child objects
+	mappings = [[object class] elementToRelationshipMappings];
+	for (NSString* elementName in mappings) {
+		NSString* propertyName = [mappings valueForKey:elementName];
+		
+		NSSet* set = [object valueForKey: propertyName];
+		NSMutableArray* array = [[NSMutableArray alloc] initWithCapacity: [set count]];
+		for (NSObject<RKObjectMappable>*object in set) {
+			[array addObject: RKObjectMappableGetPropertiesByElement(object)];
+		}
+		[elementsAndPropertyValues setValue:array forKey:elementName];
+		[array release];
+	}
+	
 	return [NSDictionary dictionaryWithDictionary:elementsAndPropertyValues];
 }
