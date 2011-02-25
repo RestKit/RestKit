@@ -125,13 +125,19 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	return error;
 }
 
+// Primary entry point for RKObjectLoader
 - (id)mapFromString:(NSString*)string toClass:(Class)class keyPath:(NSString*)keyPath {
 	id object = [self parseString:string];
 	if (keyPath) {
 		object = [object valueForKeyPath:keyPath];
 	}
+    
 	if ([object isKindOfClass:[NSDictionary class]]) {
-		return [self mapObjectFromDictionary:(NSDictionary*)object];
+        if (class) {
+            return [self mapObjectFromDictionary:(NSDictionary*)object toClass:class];
+        } else {
+            return [self mapObjectFromDictionary:(NSDictionary*)object];
+        }
 	} else if ([object isKindOfClass:[NSArray class]]) {
 		if (class) {
 			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object toClass:class];
@@ -193,8 +199,12 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	}
 }
 
-// TODO: Can I make this support keyPath??
+- (id)mapObjectFromDictionary:(NSDictionary*)dictionary toClass:(Class)class {
+	return [self createOrUpdateInstanceOfModelClass:class fromElements:dictionary];
+}
+
 - (id)mapObjectFromDictionary:(NSDictionary*)dictionary {
+    // TODO: Makes assumptions about the structure of the JSON...
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];
 	NSDictionary* elements = [dictionary objectForKey:elementName];
@@ -365,15 +375,24 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
 		}
 		
-		if ([relationshipElements isKindOfClass:[NSArray class]] || [relationshipElements isKindOfClass:[NSSet class]]) {
+        // TODO: Need to send NSSet or NSArray depending on what the property type is...
+        Class collectionClass = [self typeClassForProperty:propertyName ofClass:[object class]];
+//		if ([relationshipElements isKindOfClass:[NSArray class]] || [relationshipElements isKindOfClass:[NSSet class]]) {
+        if ([collectionClass isSubclassOfClass:[NSSet class]] || [collectionClass isSubclassOfClass:[NSArray class]]) {
 			// NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
 			NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
 			Class class = [_elementToClassMappings objectForKey:[componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1]];
-			NSMutableSet* children = [NSMutableSet setWithCapacity:[relationshipElements count]];
+            id children = nil;
+            if ([collectionClass isSubclassOfClass:[NSSet class]]) {
+                children = [NSMutableSet setWithCapacity:[relationshipElements count]];
+            } else if ([collectionClass isSubclassOfClass:[NSArray class]]) {
+                children = [NSMutableArray arrayWithCapacity:[relationshipElements count]];
+            }
+            
 			for (NSDictionary* childElements in relationshipElements) {				
 				id child = [self createOrUpdateInstanceOfModelClass:class fromElements:childElements];		
 				if (child) {
-					[children addObject:child];
+					[(NSMutableArray*)children addObject:child];
 				}
 			}
 			

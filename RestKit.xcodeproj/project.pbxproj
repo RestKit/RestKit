@@ -1662,7 +1662,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "osascript Specs/Support/set_ip_address.scpt";
+			shellScript = "# Disabled - Xcode 4\n#osascript Specs/Support/set_ip_address.scpt";
 		};
 		25956980126DF159004BAC4C /* Protect Copied Headers */ = {
 			isa = PBXShellScriptBuildPhase;

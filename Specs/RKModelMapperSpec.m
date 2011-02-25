@@ -12,6 +12,50 @@
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
 #import "RKObjectMapperSpecModel.h"
+#import "RKObject.h"
+#import "NSDictionary+RKAdditions.h"
+
+@interface RKObjectMapperSpecUser : RKObject {
+@private
+    NSNumber* userID;
+    NSString* encryptedPassword;
+    NSString* name;
+    NSString* salt;
+    NSDate* createdAt;
+    NSDate* updatedAt;
+    NSString* image;
+    NSString* email;
+}
+
+@property (nonatomic, retain) NSNumber* userID;
+@property (nonatomic, retain) NSString* encryptedPassword;
+@property (nonatomic, retain) NSString* name;
+@property (nonatomic, retain) NSString* salt;
+@property (nonatomic, retain) NSDate* createdAt;
+@property (nonatomic, retain) NSDate* updatedAt;
+@property (nonatomic, retain) NSString* image;
+@property (nonatomic, retain) NSString* email;
+
+@end
+
+@implementation RKObjectMapperSpecUser
+
+@synthesize userID, encryptedPassword, name, salt, createdAt, updatedAt, image, email;
+
++ (NSDictionary*)elementToPropertyMappings {
+    return [NSDictionary dictionaryWithKeysAndObjects:
+            @"id", @"userID",
+            @"encrypted_password", @"encryptedPassword",
+            @"name", @"name",
+            @"salt", @"salt",
+            @"created_at", @"createdAt",
+            @"updated_at", @"updatedAt",
+            @"image", @"image",
+            @"email", @"email",
+            nil];
+}
+
+@end
 
 @interface RKObjectMapperSpec : NSObject <UISpec>
 
@@ -21,6 +65,29 @@
 @end
 
 @implementation RKObjectMapperSpec
+
+- (NSString*)userJSON {
+    return @"{\"user\":"
+           @"{\"encrypted_password\":\"68dad82a867c4a61719fec594c119188ed35cd3b7d42eed1647e46d85f2ffdd8\",\"name\":\"mimi\","
+           @"\"salt\":\"809c79c24cbebfe3f9feea2e9bf98255e5af0f0b8514b6c0d71dcc63fa083688\",\"created_at\":\"2011-02-16T23:04:22Z\","
+           @"\"updated_at\":\"2011-02-16T23:04:22Z\",\"id\":"
+           @"10,\"image\":null,\"email\":\"mimi@mimi.com\"}}";
+}
+
+- (void)itShouldMapWhenGivenAClassAndElements {
+    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	mapper.format = RKMappingFormatJSON;
+    RKObjectMapperSpecUser* user = [mapper mapFromString:[self userJSON] toClass:[RKObjectMapperSpecUser class] keyPath:@"user"];
+    [expectThat(user.name) should:be(@"mimi")];
+}
+
+- (void)itShouldMapWhenGivenRegisteredElementsAndASingleObject {
+    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
+	mapper.format = RKMappingFormatJSON;
+    RKObjectMapperSpecUser* user = [mapper mapFromString:[self userJSON] toClass:nil keyPath:nil];
+    [expectThat(user.name) should:be(@"mimi")];
+}
 
 - (void)itShouldMapFromJSON {
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
@@ -114,7 +181,7 @@
 //}
 
 - (void)itShouldNotUpdateNilPropertyToNil {
-	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	[mapper updateModel:model ifNewPropertyValue:nil forPropertyNamed:@"name"];
 	
@@ -122,7 +189,7 @@
 }
 
 - (void)itShouldBeAbleToSetNonNilPropertiesToNil {
-	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	model.age = [NSNumber numberWithInt:0];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	[mapper updateModel:model ifNewPropertyValue:nil forPropertyNamed:@"age"];
@@ -131,7 +198,7 @@
 }
 
 - (void)itShouldBeAbleToSetNilPropertiesToNonNil {
-	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	[mapper updateModel:model ifNewPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
 	
@@ -139,7 +206,7 @@
 }
 
 - (void)itShouldBeAbleToSetNonNilNSStringPropertiesToNonNil {
-	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.name = @"Bob";
@@ -148,16 +215,17 @@
 }
 
 - (void)itShouldBeAbleToSetNonNilNSNumberPropertiesToNonNil {
-	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.age = [NSNumber numberWithInt:16];
 	[mapper updateModel:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
-	[expectThat(model.age) should:be([NSNumber numberWithInt:17])];	
+    NSNumber* expectedAge = [NSNumber numberWithInt:17];
+	[expectThat(model.age) should:be(17)];	
 }
 
 - (void)itShouldBeAbleToSetNonNilNSDatePropertiesToNonNil {
-	RKObjectMapperSpecModel* model = [[RKObjectMapperSpecModel alloc] autorelease];
+	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	
 	model.createdAt = [NSDate date];

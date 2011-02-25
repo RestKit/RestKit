@@ -34,7 +34,7 @@
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	if (self = [self initWithURL:[client URLForResourcePath:resourcePath] delegate:delegate]) {
+	if ((self = [self initWithURL:[client URLForResourcePath:resourcePath] delegate:delegate])) {
 		_mapper = [mapper retain];
 		self.managedObjectStore = nil;
 		_targetObjectID = nil;
