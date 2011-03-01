@@ -168,6 +168,8 @@
 		25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */; };
 		2596AC9012F7B015004C02F9 /* RKClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596AC8F12F7B015004C02F9 /* RKClientSpec.m */; };
 		25A5B4E912762249003DC8A4 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A5B4E812762249003DC8A4 /* blake.png */; };
+		3F02F584131D6682004E1F54 /* RKXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F02F582131D6682004E1F54 /* RKXMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3F02F585131D6682004E1F54 /* RKXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F02F583131D6682004E1F54 /* RKXMLParser.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -577,6 +579,8 @@
 		2596AC8F12F7B015004C02F9 /* RKClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKClientSpec.m; sourceTree = "<group>"; };
 		25A5B4E812762249003DC8A4 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		3F02F582131D6682004E1F54 /* RKXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKXMLParser.h; sourceTree = "<group>"; };
+		3F02F583131D6682004E1F54 /* RKXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKXMLParser.m; sourceTree = "<group>"; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
 		3F032AA610FFBBCD00F35142 /* RKHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHouse.h; sourceTree = "<group>"; };
@@ -925,6 +929,8 @@
 		253A08B41255212300976E89 /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
+				3F02F582131D6682004E1F54 /* RKXMLParser.h */,
+				3F02F583131D6682004E1F54 /* RKXMLParser.m */,
 				253A08B51255212300976E89 /* JSON */,
 				253A08B81255212300976E89 /* RKJSONParser.h */,
 			);
@@ -1255,6 +1261,7 @@
 				253A091A1255250E00976E89 /* NSObject+RKJSONSerialization.h in Headers */,
 				253A091B1255250E00976E89 /* NSString+InflectionSupport.h in Headers */,
 				253A091D1255251600976E89 /* RKJSONParser.h in Headers */,
+				3F02F584131D6682004E1F54 /* RKXMLParser.h in Headers */,
 				253A091E1255251800976E89 /* RKSearchEngine.h in Headers */,
 				253A09F612552BDC00976E89 /* Support.h in Headers */,
 				25432041125618F000A315CF /* RKParser.h in Headers */,
@@ -1732,6 +1739,7 @@
 				253A09191255250C00976E89 /* NSDictionary+RKAdditions.m in Sources */,
 				253A091C1255250F00976E89 /* NSString+InflectionSupport.m in Sources */,
 				253A091F1255251900976E89 /* RKSearchEngine.m in Sources */,
+				3F02F585131D6682004E1F54 /* RKXMLParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2024,6 +2032,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitSupport;
@@ -2039,6 +2048,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitSupport;
