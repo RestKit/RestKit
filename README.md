@@ -1,7 +1,7 @@
 Introduction
 =========================
 
-RestKit is a library for interacting with Restful web services in Objective C. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from JSON payloads back into domain objects. Object mapping functions with normal NSObject derived classes with properties. There is also an object mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
+RestKit is a library for interacting with Restful web services in Objective C. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from JSON (or XML) payloads back into domain objects. Object mapping functions with normal NSObject derived classes with properties. There is also an object mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
 
 RestKit was first publicly introduced in April of 2010 in a blog post on the Two Toasters website:
 [http://twotoasters.com/index.php/2010/04/06/introducing-restkit/](http://twotoasters.com/index.php/2010/04/06/introducing-restkit/)
@@ -67,6 +67,7 @@ Quick Start (aka TL;DR)
     1. **CoreData.framework**
     1. **MobileCoreServices.framework**
     1. **SystemConfiguration.framework**
+    1. **libxml2.dylib**
 1. Link against RestKit static library products:
     1. **libRestKitSupport.a**
     1. **libRestKitObjectMapping.a**
@@ -88,6 +89,7 @@ To add RestKit to your project (you're using git, right?):
  * **SystemConfiguration.framework** - Required for detection of network availability.
  * **MobileCoreServices.framework** - Required. Provides support for MIME type auto-detection for uploaded files.
  * **CoreData.framework** - Required. Currently must be linked into your project even if you are not using Code Data due to dependencies. Provides support for use of the Core Data backed persistent object store.
+ * **libxml2.dylib** - Required. used for XML parsing (RKXMLParser).
 1. Get Info on your target and you should be looking at the **General** tag. In the top **Direct Dependencies** section, click the plus button and add a direct dependency on the RestKit target.
 1. Switch to the 'Build' tab in your project inspector. Make sure that your **Configuration** pop-up menu reads **All Configurations** so that your changes will work for all build configurations. 
 1. Find the **Header Search Paths** setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your header path would be 'Libraries/RestKit/Build'.
@@ -135,6 +137,7 @@ To add RestKit to your project:
     * **CoreData.framework**
     * **MobileCoreServices.framework**
     * **SystemConfiguration.framework**
+    * **libxml2.dylib**
 1. Verify that all of the libraries are showing up in the **Link Binary with Libraries** section before continuing.
 
 Congratulations, you are now done adding RestKit into your Xcode 4 based project!
