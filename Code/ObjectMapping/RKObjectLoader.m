@@ -272,8 +272,10 @@
 	}
 
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
-		// TODO: When other mapping formats are supported, unwind this assumption... Should probably be an expected MIME types array set by client/manager
-		if ([response isSuccessful] && [response isJSON]) {
+        // TODO: Should probably be an expected MIME types array set by client/manager
+        BOOL isAcceptable = (_mapper.format == RKMappingFormatXML && [response isXML]) ||
+                            (_mapper.format == RKMappingFormatJSON && [response isJSON]);
+		if ([response isSuccessful] && isAcceptable) {
 			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 		} else {
 			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", response.statusCode, response.MIMEType);

@@ -14,13 +14,15 @@
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
 #import "RKJSONParser.h"
+#import "RKXMLParser.h"
 #import "Errors.h"
 
 // Default format string for date and time objects from Rails
 // TODO: Rails specifics should probably move elsewhere...
 static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'HH:mm:ss'Z'"; // 2009-08-08T17:23:59Z
 static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
-static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatParser";
+static const NSString* kRKModelMapperJSONMappingFormatParserKey = @"RKJSONMappingFormatParser";
+static const NSString* kRKModelMapperXMLMappingFormatParserKey = @"RKXMLMappingFormatParser";
 
 @interface RKObjectMapper (Private)
 
@@ -85,9 +87,6 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 }
 
 - (void)setFormat:(RKMappingFormat)format {
-	if (format == RKMappingFormatXML) {
-		[NSException raise:@"No XML parser is available" format:@"RestKit does not currently have XML support. Use JSON."];
-	}
 	_format = format;
 }
 
@@ -96,13 +95,24 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 
 - (id)parseString:(NSString*)string {
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-	NSObject<RKParser>* parser = [threadDictionary objectForKey:kRKModelMapperMappingFormatParserKey];
+    
+    Class parserClass;
+    const NSString* parserKey;
+    NSObject<RKParser>* parser = nil;
+    
+    if (_format == RKMappingFormatJSON) {
+        parserClass = [RKJSONParser class];
+        parserKey = kRKModelMapperJSONMappingFormatParserKey;
+    } else {
+        parserClass = [RKXMLParser class];
+        parserKey = kRKModelMapperXMLMappingFormatParserKey;
+    }
+    parser = [threadDictionary objectForKey:parserKey];
+	
 	if (!parser) {
-		if (_format == RKMappingFormatJSON) {
-			parser = [[RKJSONParser alloc] init];
-			[threadDictionary setObject:parser forKey:kRKModelMapperMappingFormatParserKey];
-			[parser release];
-		}
+        parser = [[parserClass alloc] init];
+        [threadDictionary setObject:parser forKey:parserKey];
+        [parser release];
 	}
 	
 	id result = nil;
@@ -356,6 +366,23 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 					propertyValue = [self dateInLocalTime:date];
 				}
 			}
+            
+            // If we know the destination class, the property is not of the correct class, and the property value is not null...
+            if (class && ![propertyValue isKindOfClass:class] && ![propertyValue isKindOfClass:[NSNull class]]) {
+                // Then we must cooerce the element (probably a string) into the correct class.
+                // Currently this only supports NSNumbers (NSDates are handled above).
+                // New cooersions will be added on an as-needed basis.
+                if (class == [NSNumber class]) {
+                    if ([propertyValue isEqualToString:@"true"] ||
+                        [propertyValue isEqualToString:@"false"]) {
+                        propertyValue = [NSNumber numberWithBool:[propertyValue isEqualToString:@"true"]];
+                    } else {
+                        propertyValue = [NSNumber numberWithDouble:[propertyValue doubleValue]];
+                    }
+                } else {
+                    [NSException raise:@"NoElementValueConversionMethod" format:@"Don't know how to convert %@ (%@) to %@", propertyValue, [propertyValue class], class];
+                }
+            }
 			
 			[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
 		}
