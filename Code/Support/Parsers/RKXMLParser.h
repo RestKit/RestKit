@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RKParser.h"
 
 /**
  * This is a dead simple XML parser that uses libxml2 to parse an XML document
@@ -14,7 +15,7 @@
  * It does not save attributes on tags, it only cares about nested content and text.
  */
 
-@interface RKXMLParser : NSObject {
+@interface RKXMLParser : NSObject <RKParser> {
 }
 + (NSDictionary*)parse:(NSString*)xml;
 @end

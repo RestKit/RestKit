@@ -97,4 +97,14 @@
     xmlFreeParserCtxt(ctxt);
     return result;
 }
+
+- (id)objectFromString:(NSString*)string {
+    return [self parse:string];
+}
+
+- (NSString*)stringFromObject:(id)object {
+    [self doesNotRecognizeSelector:_cmd];
+    return nil;
+}
+
 @end
