@@ -13,7 +13,7 @@
 @implementation RKDynamicRouter
 
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		_routes = [[NSMutableDictionary alloc] init];
 	}
 	
@@ -80,11 +80,11 @@
 	NSDictionary* classRoutes = [_routes objectForKey:className];
 	
 	NSString* resourcePath = nil;
-	if (resourcePath = [classRoutes objectForKey:methodName]) {
+	if ((resourcePath = [classRoutes objectForKey:methodName])) {
 		return RKMakePathWithObject(resourcePath, object);
 	}
 	
-	if (resourcePath = [classRoutes objectForKey:@"ANY"]) {
+	if ((resourcePath = [classRoutes objectForKey:@"ANY"])) {
 		return RKMakePathWithObject(resourcePath, object);
 	}
 	
@@ -94,6 +94,13 @@
 }
 
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
+    // Don't return a serialization for a GET request
+    // There is an extensive discussion about this on the ASIHTTPRequest list
+    // See http://groups.google.com/group/asihttprequest/browse_thread/thread/ef79a8333dde6acb
+    if (method == RKRequestMethodGET) {
+        return nil;
+    }
+    
 	// By default return a form encoded serializable dictionary
 	return [object propertiesForSerialization];
 }
