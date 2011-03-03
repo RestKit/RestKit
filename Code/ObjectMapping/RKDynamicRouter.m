@@ -95,13 +95,6 @@
 
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
 	// By default return a form encoded serializable dictionary
-
-	// seletz: return nil if we have a get request
-        // see also http://groups.google.com/group/restkit/browse_thread/thread/0ae69c2cc4136ae0/8c2a8cfef9442f0d?show_docid=8c2a8cfef9442f0d
-	if (method == RKRequestMethodGET)
-		return nil;
-
-
 	return [object propertiesForSerialization];
 }
 
