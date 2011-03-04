@@ -24,14 +24,25 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 	NSObject<RKManagedObjectCache>* _managedObjectCache;
 }
 
+// The filename of the database backing this object store
 @property (nonatomic, readonly) NSString* storeFilename;
+
+// The full path to the database backing this object store
+@property (nonatomic, readonly) NSString* pathToStoreFile;
+
+// Core Data
 @property (nonatomic, readonly) NSManagedObjectModel* managedObjectModel;
 @property (nonatomic, readonly) NSPersistentStoreCoordinator* persistentStoreCoordinator;
+
+/**
+ * Managed object cache provides support for automatic removal of objects pruned
+ * from a server side load. Also used to provide offline object loading
+ */
 @property (nonatomic, retain) NSObject<RKManagedObjectCache>* managedObjectCache;
 
 /*
  * This returns an appropriate managed object context for this object store.
- * Because of the intrecacies of how CoreData works across threads it returns
+ * Because of the intrecacies of how Core Data works across threads it returns
  * a different NSManagedObjectContext for each thread.
  */
 @property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
@@ -40,6 +51,12 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * Initialize a new managed object store with a SQLite database with the filename specified
  */
 - (id)initWithStoreFilename:(NSString*)storeFilename;
+
+/**
+ * Initialize a new managed object store with a SQLite database with the filename specified. If no
+ * database is found to exist, copy a seed database from the app resource bundle.
+ */
+- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabase:(NSString*)seedDatabase;
 
 /**
  * Save the current contents of the managed object store

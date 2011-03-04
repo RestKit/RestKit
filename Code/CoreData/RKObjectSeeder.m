@@ -12,7 +12,8 @@
 @implementation RKObjectSeeder
 
 - (id)initWithObjectManager:(RKObjectManager*)manager {
-	if (self = [self init]) {
+    self = [self init];
+	if (self) {
 		_manager = [manager retain];
 	}
 	

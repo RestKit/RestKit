@@ -26,13 +26,36 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 @synthesize managedObjectCache = _managedObjectCache;
 
 - (id)initWithStoreFilename:(NSString*)storeFilename {
-	if (self = [self init]) {
+	if ((self = [self init])) {
 		_storeFilename = [storeFilename retain];
 		_managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];		
 		[self createPersistentStoreCoordinator];
 	}
 	
 	return self;
+}
+
+- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabase:(NSString*)seedDatabase {
+    NSError* error = nil;
+    
+    if ((self = [self init])) {
+        _storeFilename = [storeFilename retain];
+        if (NO == [[NSFileManager defaultManager] fileExistsAtPath:self.pathToStoreFile]) {            
+            NSString* seedDatabasePath = [[NSBundle mainBundle] pathForResource:seedDatabase ofType:nil];            
+            NSAssert1(seedDatabasePath, @"Unable to find seed database file '%@' in the Main Bundle, aborting...", seedDatabase);
+            NSLog(@"No existing database found, copying from seed path '%@'", seedDatabasePath);
+            [[NSFileManager defaultManager] copyItemAtPath:seedDatabasePath toPath:self.pathToStoreFile error:&error];
+            if (error) {
+                NSLog(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
+            }
+            NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:seedDatabasePath], @"Seed database not found at path '%@'!", seedDatabasePath);
+        }
+        
+        _managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];		
+		[self createPersistentStoreCoordinator];
+    }
+    
+    return self;
 }
 
 - (void)dealloc {
@@ -90,8 +113,12 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return managedObjectContext;
 }
 
+- (NSString*)pathToStoreFile {
+    return [[self applicationDocumentsDirectory] stringByAppendingPathComponent:self.storeFilename];
+}
+
 - (void)createPersistentStoreCoordinator {
-	NSURL *storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent:_storeFilename]];
+	NSURL *storeUrl = [NSURL fileURLWithPath:self.pathToStoreFile];
 	
 	NSError *error;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_managedObjectModel];
@@ -107,7 +134,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 }
 
 - (void)deletePersistantStore {
-	NSURL* storeUrl = [NSURL fileURLWithPath: [[self applicationDocumentsDirectory] stringByAppendingPathComponent:_storeFilename]];
+	NSURL* storeUrl = [NSURL fileURLWithPath:self.pathToStoreFile];
 	NSError* error = nil;
 	NSLog(@"Error removing persistant store: %@", [error localizedDescription]);
 	if (error) {
