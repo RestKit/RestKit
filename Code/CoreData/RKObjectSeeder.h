@@ -9,6 +9,8 @@
 #import "../ObjectMapping/ObjectMapping.h"
 
 // TODO: This class needs an API scrubbing
+// TODO: Should be updated with ability to auto-detect MIME type
+// from the file extension. Does this need a delegate property?
 @interface RKObjectSeeder : NSObject {
 	RKObjectManager* _manager;
 }
