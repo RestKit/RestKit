@@ -13,10 +13,6 @@
 #import "RKTStatus.h"
 #import "RKTUser.h"
 
-@interface RKTwitterAppDelegate (Private)
-- (void)generateSeedDatabase;
-@end
-
 @implementation RKTwitterAppDelegate
 
 #pragma mark -
