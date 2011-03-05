@@ -53,10 +53,11 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 - (id)initWithStoreFilename:(NSString*)storeFilename;
 
 /**
- * Initialize a new managed object store with a SQLite database with the filename specified. If no
- * database is found to exist, copy a seed database from the app resource bundle.
+ * Initialize a new managed object store backed by a SQLite database with the specified filename. If a seed database name is provided
+ * and no existing database is found, initialize the store by copying the seed database from the main bundle. If the managed object model
+ * provided is nil, all models will be merged from the main bundle for you.
  */
-- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabase:(NSString*)seedDatabase;
+- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel;
 
 /**
  * Save the current contents of the managed object store

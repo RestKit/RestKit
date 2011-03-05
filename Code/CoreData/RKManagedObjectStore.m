@@ -14,6 +14,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 
 @interface RKManagedObjectStore (Private)
 - (void)createPersistentStoreCoordinator;
+- (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase;
 - (NSString *)applicationDocumentsDirectory;
 - (NSManagedObjectContext*)newManagedObjectContext;
 @end
@@ -26,40 +27,26 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 @synthesize managedObjectCache = _managedObjectCache;
 
 - (id)initWithStoreFilename:(NSString*)storeFilename {
-	if ((self = [self init])) {
-		_storeFilename = [storeFilename retain];
-		_managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];		
-		[self createPersistentStoreCoordinator];
-	}
-	
-	return self;
+	return self = [self initWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:[NSManagedObjectModel mergedModelFromBundles:nil]];
 }
 
-- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabase:(NSString*)seedDatabase {
-    NSError* error = nil;
-    
-    if ((self = [self init])) {
-        _storeFilename = [storeFilename retain];
-        if (NO == [[NSFileManager defaultManager] fileExistsAtPath:self.pathToStoreFile]) {            
-            NSString* seedDatabasePath = [[NSBundle mainBundle] pathForResource:seedDatabase ofType:nil];            
-            NSAssert1(seedDatabasePath, @"Unable to find seed database file '%@' in the Main Bundle, aborting...", seedDatabase);
-            NSLog(@"No existing database found, copying from seed path '%@'", seedDatabasePath);
-            [[NSFileManager defaultManager] copyItemAtPath:seedDatabasePath toPath:self.pathToStoreFile error:&error];
-            if (error) {
-                NSLog(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
-            }
-            NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:seedDatabasePath], @"Seed database not found at path '%@'!", seedDatabasePath);
+- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel {
+    self = [self init];
+	if (self) {
+		_storeFilename = [storeFilename retain];
+		_managedObjectModel = [nilOrManagedObjectModel retain];
+        if (nilOrNameOfSeedDatabaseInMainBundle) {
+            [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
-        
-        _managedObjectModel = [[NSManagedObjectModel mergedModelFromBundles:nil] retain];		
 		[self createPersistentStoreCoordinator];
-    }
+	}
     
-    return self;
+	return self;
 }
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    
 	[_storeFilename release];
 	_storeFilename = nil;
     [_managedObjectModel release];
@@ -68,6 +55,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	_persistentStoreCoordinator = nil;
 	[_managedObjectCache release];
 	_managedObjectCache = nil;
+    
 	[super dealloc];
 }
 
@@ -115,6 +103,20 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 
 - (NSString*)pathToStoreFile {
     return [[self applicationDocumentsDirectory] stringByAppendingPathComponent:self.storeFilename];
+}
+
+- (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase {
+    NSError* error = nil;
+    if (NO == [[NSFileManager defaultManager] fileExistsAtPath:self.pathToStoreFile]) {
+        NSString* seedDatabasePath = [[NSBundle mainBundle] pathForResource:seedDatabase ofType:nil];
+        NSAssert1(seedDatabasePath, @"Unable to find seed database file '%@' in the Main Bundle, aborting...", seedDatabasePath);
+        NSLog(@"No existing database found, copying from seed path '%@'", seedDatabasePath);
+        [[NSFileManager defaultManager] copyItemAtPath:seedDatabasePath toPath:self.pathToStoreFile error:&error];
+        if (error) {
+            NSLog(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
+        }
+        NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:seedDatabasePath], @"Seed database not found at path '%@'!", seedDatabasePath);
+    }
 }
 
 - (void)createPersistentStoreCoordinator {
