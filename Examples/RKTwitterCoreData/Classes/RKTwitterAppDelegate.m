@@ -28,9 +28,6 @@
 	NSMutableArray* dateFormats = [[[mapper dateFormats] mutableCopy] autorelease];
 	[dateFormats addObject:@"E MMM d HH:mm:ss Z y"];
 	[mapper setDateFormats:dateFormats];
-    
-    // Initialize object store
-	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"RKTwitterData.sqlite"] autorelease];
 	
 	// Add our element to object mappings
 	[mapper registerClass:[RKTUser class] forElementNamed:@"user"];
@@ -42,7 +39,7 @@
     //      This is what triggers the conditional compilation to cause the seed database to be built
     //  2) Source JSON files are added to the 'Generate Seed Database' target to be copied into the bundle. This is required
     //      so that the object seeder can find the files when run in the simulator.
-#ifdef RESTKIT_GENERATE_SEED_DB
+#ifdef RESTKIT_GENERATE_SEED_DB    
     RKManagedObjectSeeder* seeder = [RKManagedObjectSeeder objectSeederWithObjectManager:objectManager];
     
     // Seed the database with instances of RKTStatus from a snapshot of the RestKit Twitter timeline
@@ -57,7 +54,10 @@
     // NOTE: If all of your mapped objects use element -> class registration, you can perform seeding in one line of code:
     // [RKManagedObjectSeeder generateSeedDatabaseWithObjectManager:objectManager fromFiles:@"users.json", nil];
 #endif    	
-
+    
+    // Initialize object store
+    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:RKDefaultSeedDatabaseFileName managedObjectModel:nil];
+    
     // Create Window and View Controllers
 	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 	UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
