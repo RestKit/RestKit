@@ -29,7 +29,7 @@
 	NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:type];
 	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
 	if (nil == error) {
-		return [[_manager mapper] mapFromString:payload];
+		return [[_manager mapper] mapFromString:payload toClass:NSClassFromString(fileName) keyPath:nil];
 	}
 	
 	return nil;
@@ -42,7 +42,7 @@
 		NSLog(@"[RestKit] RKModelSeeder: Seeded %d objects from %@...", [objects count], [NSString stringWithFormat:@"%@.%@", fileName, type]);
 	}
 	
-	[self finalizeSeedingAndExit];
+//	[self finalizeSeedingAndExit];
 }
 
 - (void)seedObjectsFromFile:(NSString*)fileName ofType:(NSString*)type toClass:(Class)theClass keyPath:(NSString*)keyPath {
