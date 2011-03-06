@@ -57,7 +57,7 @@
 
 - (void)loadData {
 	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-	[[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters.json" objectClass:[RKTStatus class] delegate:self] retain];
+	[[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/restkit.json" objectClass:[RKTStatus class] delegate:self] retain];
 }
 
 - (void)reloadButtonWasPressed:(id)sender {

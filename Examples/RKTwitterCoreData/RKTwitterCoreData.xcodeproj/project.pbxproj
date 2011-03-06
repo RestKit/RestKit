@@ -15,6 +15,33 @@
 		2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
 		2538E865123424F000ACB5D7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E864123424F000ACB5D7 /* CoreData.framework */; };
 		2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
+		25F2A1791322D59400A33DE4 /* listbg.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE3FA125B9A6E0083FDCB /* listbg.png */; };
+		25F2A17A1322D59400A33DE4 /* listbg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE3FB125B9A6E0083FDCB /* listbg@2x.png */; };
+		25F2A17B1322D59400A33DE4 /* BG.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40A125B9B450083FDCB /* BG.png */; };
+		25F2A17C1322D59400A33DE4 /* BG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40B125B9B450083FDCB /* BG@2x.png */; };
+		25F2A17D1322D59400A33DE4 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40C125B9B450083FDCB /* Default.png */; };
+		25F2A17E1322D59400A33DE4 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3CE40D125B9B450083FDCB /* Default@2x.png */; };
+		25F2A1801322D59400A33DE4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		25F2A1811322D59400A33DE4 /* RKTwitterAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* RKTwitterAppDelegate.m */; };
+		25F2A1821322D59400A33DE4 /* RKTwitterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */; };
+		25F2A1831322D59400A33DE4 /* RKTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E810123419CA00ACB5D7 /* RKTUser.m */; };
+		25F2A1841322D59400A33DE4 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
+		25F2A1851322D59400A33DE4 /* RKTwitterCoreData.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 3F94E0C6125BA8C0001E8585 /* RKTwitterCoreData.xcdatamodel */; };
+		25F2A1871322D59400A33DE4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
+		25F2A1881322D59400A33DE4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		25F2A1891322D59400A33DE4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
+		25F2A18A1322D59400A33DE4 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E864123424F000ACB5D7 /* CoreData.framework */; };
+		25F2A18B1322D59400A33DE4 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
+		25F2A18C1322D59400A33DE4 /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */; };
+		25F2A18D1322D59400A33DE4 /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */; };
+		25F2A18E1322D59400A33DE4 /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2C7125B93780083FDCB /* libRestKitObjectMapping.a */; };
+		25F2A18F1322D59400A33DE4 /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2CB125B93780083FDCB /* libRestKitJSONParserYAJL.a */; };
+		25F2A1901322D59400A33DE4 /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2C9125B93780083FDCB /* libRestKitSupport.a */; };
+		25F2A1911322D59400A33DE4 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3F8128244D90069F4A9 /* CFNetwork.framework */; };
+		25F2A1921322D59400A33DE4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */; };
+		25F2A1991322D93500A33DE4 /* restkit.json in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A1981322D93500A33DE4 /* restkit.json */; };
+		25F2A19C1322DD1800A33DE4 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A19A1322DCDC00A33DE4 /* users.json */; };
+		25F2A24B1322EADE00A33DE4 /* RKSeedDatabase.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A24A1322EADE00A33DE4 /* RKSeedDatabase.sqlite */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* RKTwitterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */; };
 		3F3CE34C125B95F60083FDCB /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */; };
@@ -47,6 +74,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 3F6C39A510FE5C95008F47C5;
 			remoteInfo = UISpec;
+		};
+		25F2A1771322D59400A33DE4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 25956956126DF0A8004BAC4C;
+			remoteInfo = RestKit;
 		};
 		3F3CE2C4125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -112,6 +146,10 @@
 		2538E813123419EC00ACB5D7 /* RKTStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTStatus.m; sourceTree = "<group>"; };
 		2538E864123424F000ACB5D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2538E8661234250100ACB5D7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		25F2A1961322D59400A33DE4 /* Generate Seed Database.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Generate Seed Database.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		25F2A1981322D93500A33DE4 /* restkit.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = restkit.json; sourceTree = SOURCE_ROOT; };
+		25F2A19A1322DCDC00A33DE4 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = users.json; path = ../users.json; sourceTree = "<group>"; };
+		25F2A24A1322EADE00A33DE4 /* RKSeedDatabase.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = RKSeedDatabase.sqlite; sourceTree = SOURCE_ROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28D7ACF60DDB3853001CB0EB /* RKTwitterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitterViewController.h; sourceTree = "<group>"; };
 		28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterViewController.m; sourceTree = "<group>"; };
@@ -149,6 +187,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		25F2A1861322D59400A33DE4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25F2A1871322D59400A33DE4 /* Foundation.framework in Frameworks */,
+				25F2A1881322D59400A33DE4 /* UIKit.framework in Frameworks */,
+				25F2A1891322D59400A33DE4 /* CoreGraphics.framework in Frameworks */,
+				25F2A18A1322D59400A33DE4 /* CoreData.framework in Frameworks */,
+				25F2A18B1322D59400A33DE4 /* SystemConfiguration.framework in Frameworks */,
+				25F2A18C1322D59400A33DE4 /* libRestKitCoreData.a in Frameworks */,
+				25F2A18D1322D59400A33DE4 /* libRestKitNetwork.a in Frameworks */,
+				25F2A18E1322D59400A33DE4 /* libRestKitObjectMapping.a in Frameworks */,
+				25F2A18F1322D59400A33DE4 /* libRestKitJSONParserYAJL.a in Frameworks */,
+				25F2A1901322D59400A33DE4 /* libRestKitSupport.a in Frameworks */,
+				25F2A1911322D59400A33DE4 /* CFNetwork.framework in Frameworks */,
+				25F2A1921322D59400A33DE4 /* MobileCoreServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -171,6 +228,7 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* RKTwitter.app */,
+				25F2A1961322D59400A33DE4 /* Generate Seed Database.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -215,6 +273,9 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				25F2A24A1322EADE00A33DE4 /* RKSeedDatabase.sqlite */,
+				25F2A19A1322DCDC00A33DE4 /* users.json */,
+				25F2A1981322D93500A33DE4 /* restkit.json */,
 				3F3CE40A125B9B450083FDCB /* BG.png */,
 				3F3CE40B125B9B450083FDCB /* BG@2x.png */,
 				3F3CE40C125B9B450083FDCB /* Default.png */,
@@ -262,6 +323,24 @@
 			productReference = 1D6058910D05DD3D006BFB54 /* RKTwitter.app */;
 			productType = "com.apple.product-type.application";
 		};
+		25F2A1751322D59400A33DE4 /* Generate Seed Database */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 25F2A1931322D59400A33DE4 /* Build configuration list for PBXNativeTarget "Generate Seed Database" */;
+			buildPhases = (
+				25F2A1781322D59400A33DE4 /* Resources */,
+				25F2A17F1322D59400A33DE4 /* Sources */,
+				25F2A1861322D59400A33DE4 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				25F2A1761322D59400A33DE4 /* PBXTargetDependency */,
+			);
+			name = "Generate Seed Database";
+			productName = RKTwitter;
+			productReference = 25F2A1961322D59400A33DE4 /* Generate Seed Database.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -288,6 +367,7 @@
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* RKTwitter */,
+				25F2A1751322D59400A33DE4 /* Generate Seed Database */,
 			);
 		};
 /* End PBXProject section */
@@ -362,6 +442,22 @@
 				3F3CE40F125B9B450083FDCB /* BG@2x.png in Resources */,
 				3F3CE410125B9B450083FDCB /* Default.png in Resources */,
 				3F3CE411125B9B450083FDCB /* Default@2x.png in Resources */,
+				25F2A24B1322EADE00A33DE4 /* RKSeedDatabase.sqlite in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		25F2A1781322D59400A33DE4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25F2A19C1322DD1800A33DE4 /* users.json in Resources */,
+				25F2A1791322D59400A33DE4 /* listbg.png in Resources */,
+				25F2A17A1322D59400A33DE4 /* listbg@2x.png in Resources */,
+				25F2A17B1322D59400A33DE4 /* BG.png in Resources */,
+				25F2A17C1322D59400A33DE4 /* BG@2x.png in Resources */,
+				25F2A17D1322D59400A33DE4 /* Default.png in Resources */,
+				25F2A17E1322D59400A33DE4 /* Default@2x.png in Resources */,
+				25F2A1991322D93500A33DE4 /* restkit.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,9 +477,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		25F2A17F1322D59400A33DE4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25F2A1801322D59400A33DE4 /* main.m in Sources */,
+				25F2A1811322D59400A33DE4 /* RKTwitterAppDelegate.m in Sources */,
+				25F2A1821322D59400A33DE4 /* RKTwitterViewController.m in Sources */,
+				25F2A1831322D59400A33DE4 /* RKTUser.m in Sources */,
+				25F2A1841322D59400A33DE4 /* RKTStatus.m in Sources */,
+				25F2A1851322D59400A33DE4 /* RKTwitterCoreData.xcdatamodel in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		25F2A1761322D59400A33DE4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RestKit;
+			targetProxy = 25F2A1771322D59400A33DE4 /* PBXContainerItemProxy */;
+		};
 		3F3CE2E4125B93EB0083FDCB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RestKit;
@@ -431,6 +545,47 @@
 			};
 			name = Release;
 		};
+		25F2A1941322D59400A33DE4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Debug;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
+				HEADER_SEARCH_PATHS = ../../Build;
+				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "Generate Seed Database";
+			};
+			name = Debug;
+		};
+		25F2A1951322D59400A33DE4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
+				HEADER_SEARCH_PATHS = ../../Build;
+				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "Generate Seed Database";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -468,6 +623,15 @@
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,
 				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		25F2A1931322D59400A33DE4 /* Build configuration list for PBXNativeTarget "Generate Seed Database" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				25F2A1941322D59400A33DE4 /* Debug */,
+				25F2A1951322D59400A33DE4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

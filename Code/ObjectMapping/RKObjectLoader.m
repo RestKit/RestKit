@@ -151,7 +151,7 @@
 	for (id object in models) {
 		if ([object isKindOfClass:[NSManagedObjectID class]]) {
 			id obj = [self.managedObjectStore objectWithID:(NSManagedObjectID*)object];
-			NSLog(@"OBJ: %@", obj);
+//			NSLog(@"OBJ: %@", obj);
 			[objects addObject:obj];
 		} else {
 			[objects addObject:object];
@@ -167,7 +167,8 @@
 	NSError* error = [dictionary objectForKey:@"error"];
 	[dictionary release];
 
-	NSLog(@"[RestKit] RKObjectLoader: Error saving managed object context: error=%@ userInfo=%@", error, error.userInfo);
+	//NSLog(@"[RestKit] RKObjectLoader: Error saving managed object context: error=%@ userInfo=%@", error, error.userInfo);
+	NSLog(@"[RestKit] RKObjectLoader: Error saving managed object context: error=%@", [error localizedDescription]);
 
 	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
 							  [error localizedDescription], NSLocalizedDescriptionKey,
@@ -177,6 +178,7 @@
 	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:rkError];
 
 	[self responseProcessingSuccessful:NO withError:rkError];
+
 }
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
