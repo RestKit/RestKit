@@ -41,7 +41,7 @@
 		25F2A1921322D59400A33DE4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */; };
 		25F2A1991322D93500A33DE4 /* restkit.json in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A1981322D93500A33DE4 /* restkit.json */; };
 		25F2A19C1322DD1800A33DE4 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A19A1322DCDC00A33DE4 /* users.json */; };
-		25F2A24B1322EADE00A33DE4 /* RKSeedDatabase.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A24A1322EADE00A33DE4 /* RKSeedDatabase.sqlite */; };
+		25F2A2D913240CEC00A33DE4 /* RKSeedDatabase.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 25F2A2D813240CEC00A33DE4 /* RKSeedDatabase.sqlite */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* RKTwitterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */; };
 		3F3CE34C125B95F60083FDCB /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */; };
@@ -149,7 +149,7 @@
 		25F2A1961322D59400A33DE4 /* Generate Seed Database.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Generate Seed Database.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25F2A1981322D93500A33DE4 /* restkit.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = restkit.json; sourceTree = SOURCE_ROOT; };
 		25F2A19A1322DCDC00A33DE4 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = users.json; path = ../users.json; sourceTree = "<group>"; };
-		25F2A24A1322EADE00A33DE4 /* RKSeedDatabase.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = RKSeedDatabase.sqlite; sourceTree = SOURCE_ROOT; };
+		25F2A2D813240CEC00A33DE4 /* RKSeedDatabase.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = RKSeedDatabase.sqlite; sourceTree = SOURCE_ROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28D7ACF60DDB3853001CB0EB /* RKTwitterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitterViewController.h; sourceTree = "<group>"; };
 		28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterViewController.m; sourceTree = "<group>"; };
@@ -273,7 +273,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				25F2A24A1322EADE00A33DE4 /* RKSeedDatabase.sqlite */,
+				25F2A2D813240CEC00A33DE4 /* RKSeedDatabase.sqlite */,
 				25F2A19A1322DCDC00A33DE4 /* users.json */,
 				25F2A1981322D93500A33DE4 /* restkit.json */,
 				3F3CE40A125B9B450083FDCB /* BG.png */,
@@ -442,7 +442,7 @@
 				3F3CE40F125B9B450083FDCB /* BG@2x.png in Resources */,
 				3F3CE410125B9B450083FDCB /* Default.png in Resources */,
 				3F3CE411125B9B450083FDCB /* Default@2x.png in Resources */,
-				25F2A24B1322EADE00A33DE4 /* RKSeedDatabase.sqlite in Resources */,
+				25F2A2D913240CEC00A33DE4 /* RKSeedDatabase.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

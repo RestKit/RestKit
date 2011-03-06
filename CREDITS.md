@@ -29,3 +29,4 @@ Contributors
 * Pat Shields
 * Tim Kerchmar
 * Rachit Shukla
+* Adam Hinz
