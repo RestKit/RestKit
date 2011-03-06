@@ -50,15 +50,20 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified
  */
-- (id)initWithStoreFilename:(NSString*)storeFilename;
-- (id)initWithStoreFilename:(NSString*)storeFilename model:(NSManagedObjectModel *)storeModel;
++ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename;
 
 /**
- * Initialize a new managed object store with a SQLite database with the filename specified. If no
- * database is found to exist, copy a seed database from the app resource bundle.
+ * Initialize a new managed object store backed by a SQLite database with the specified filename. If a seed database name is provided
+ * and no existing database is found, initialize the store by copying the seed database from the main bundle. If the managed object model
+ * provided is nil, all models will be merged from the main bundle for you.
  */
-- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabase:(NSString*)seedDatabase  model:(NSManagedObjectModel *)storeModel;
++ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel;
 
+/**
+ * Initialize a new managed object store with a SQLite database with the filename specified
+ * @deprecated
+ */
+- (id)initWithStoreFilename:(NSString*)storeFilename DEPRECATED_ATTRIBUTE;
 
 /**
  * Save the current contents of the managed object store
@@ -89,6 +94,5 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * and returned.
  */
 - (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue;
-
 
 @end
