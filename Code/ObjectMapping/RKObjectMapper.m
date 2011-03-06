@@ -390,7 +390,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
             NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
             NSLog(@"   parent class   : %@", [object class]);
             NSLog(@"   elements to map: %@", elements);
-            NSLog(@"maybe you want to register your model with the object mapper or you want to pluralize the keypath?");
+            NSLog(@"maybe you need to register your model with the object mapper or you want to pluralize the keypath?");
             break;
         }   
         
