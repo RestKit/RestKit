@@ -378,17 +378,15 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
         NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
         NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
         Class modelClass = [_elementToClassMappings objectForKey:className];
-        if (![modelClass isKindOfClass: [NSNull class]]) {
+        if ([modelClass isKindOfClass: [NSNull class]]) {
             NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
             NSLog(@"   parent class   : %@", [object class]);
             NSLog(@"   elements to map: %@", elements);
             NSLog(@"maybe you want to register your model with the object mapper or you want to pluralize the keypath?");
             break;
-        }   
+        }
         
-        // TODO: Need to send NSSet or NSArray depending on what the property type is...
         Class collectionClass = [self typeClassForProperty:propertyName ofClass:[object class]];
-        //		if ([relationshipElements isKindOfClass:[NSArray class]] || [relationshipElements isKindOfClass:[NSSet class]])
         if ([collectionClass isSubclassOfClass:[NSSet class]] || [collectionClass isSubclassOfClass:[NSArray class]])
         {
             id children = nil;
