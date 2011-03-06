@@ -11,22 +11,23 @@ the terms of the Apache License (see LICENSE for details).
 
 Original Author
 ---------------
-* Blake Watters   github.com/blakewatters @blakewatters
+* Blake Watters   (blakewatters)  @blakewatters
 
 Core Team
 ---------
-* Jeremy Ellison
-* Daniel Hammond
-* Jeff Arena
+* Jeremy Ellison (jeremyellison)
+* Daniel Hammond (danielrhammond)
+* Jeff Arena     (jeffarena)
 
 Web Designer
 ------------
-* Adit Shukla
+* Adit Shukla    (aditshukla)
 
 Contributors
 ------------
-* Marc Weil
-* Pat Shields
-* Tim Kerchmar
-* Rachit Shukla
-* Adam Hinz
+* Marc Weil         (aspir)
+* Pat Shields       (pashields)
+* Tim Kerchmar      (timkerchmar)
+* Rachit Shukla     (rachitshukla)
+* Adam Hinz         (ahinz)
+* Stefan Eletzhofer (seletz)
