@@ -25,7 +25,6 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 @interface RKObjectMapper (Private)
 
 - (id)parseString:(NSString*)string;
-- (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 
 - (Class)typeClassForProperty:(NSString*)property ofClass:(Class)class;
 - (NSDictionary*)elementToPropertyMappingsForModel:(id)model;
@@ -34,9 +33,9 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 - (id)createOrUpdateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
 
 - (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName; // Rename!
+- (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 - (void)setPropertiesOfModel:(id)model fromElements:(NSDictionary*)elements;
 - (void)setRelationshipsOfModel:(id)object fromElements:(NSDictionary*)elements;
-- (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
 
 - (NSDate*)parseDateFromString:(NSString*)string;
 - (NSDate*)dateInLocalTime:(NSDate*)date;
@@ -314,6 +313,14 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@ (%@)", propertyName, [propertyValue class]];
 		}
 		
+		if (![currentValue isKindOfClass:[propertyValue class]])
+		{
+			if (![currentValue isEqual:propertyValue] || ![[currentValue description] isEqualToString:[propertyValue description]]) {
+				[model setValue:propertyValue forKey:propertyName];
+				return;
+			}
+			
+		}
 		// Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
 		// Original code courtesy of Greg Parker
 		// This is necessary because isEqualToNumber will return negative integer values that aren't coercable directly to BOOL's without help [sbw]
@@ -374,7 +381,19 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 		@catch (NSException* e) {
 			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
 		}
-		
+        
+        // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
+        NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
+        NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
+        Class modelClass = [_elementToClassMappings objectForKey:className];
+        if (![modelClass isKindOfClass: [NSNull class]]) {
+            NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
+            NSLog(@"   parent class   : %@", [object class]);
+            NSLog(@"   elements to map: %@", elements);
+            NSLog(@"maybe you need to register your model with the object mapper or you want to pluralize the keypath?");
+            break;
+        }   
+        
         // TODO: Need to send NSSet or NSArray depending on what the property type is...
         Class collectionClass = [self typeClassForProperty:propertyName ofClass:[object class]];
 //		if ([relationshipElements isKindOfClass:[NSArray class]] || [relationshipElements isKindOfClass:[NSSet class]]) {
