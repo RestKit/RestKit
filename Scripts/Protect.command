@@ -4,7 +4,7 @@
 # Ignore whitespace characters in paths
 IFS=$'\n'
 
-cd ${CONFIGURATION_BUILD_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}
+cd ${TARGET_BUILD_DIR}/${PRODUCT_NAME}
 
 find * -name '*.h' | xargs chmod a-w
 
