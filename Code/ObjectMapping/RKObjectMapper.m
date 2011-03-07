@@ -386,7 +386,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
         NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
         NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
         Class modelClass = [_elementToClassMappings objectForKey:className];
-        if (![modelClass isKindOfClass: [NSNull class]]) {
+        if (!modelClass || [modelClass isKindOfClass: [NSNull class]]) {
             NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
             NSLog(@"   parent class   : %@", [object class]);
             NSLog(@"   elements to map: %@", elements);
