@@ -184,20 +184,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		25042B8211F62FF500553519 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = OCMock;
-		};
-		25042B8411F62FF500553519 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 03BF2D3708F1C69500978C59;
-			remoteInfo = OCMockTests;
-		};
 		250BC43211F6260100F3FE5A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
@@ -218,55 +204,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = C7D4F29310BDA39C00B00019;
 			remoteInfo = Specs;
-		};
-		250BC45211F6262600F3FE5A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = OCMock;
-		};
-		250BC45411F6262600F3FE5A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 03BF2D3708F1C69500978C59;
-			remoteInfo = OCMockTests;
-		};
-		250BC4E311F62D4400F3FE5A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = OCMock;
-		};
-		250BC4E511F62D4400F3FE5A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 03BF2D3708F1C69500978C59;
-			remoteInfo = OCMockTests;
-		};
-		257EA42D11F6319800DB04C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3F45512511E4BCD700AE56A6;
-			remoteInfo = "OCMock-iPhone";
-		};
-		257EA43211F6319800DB04C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3F45512511E4BCD700AE56A6;
-			remoteInfo = "OCMock-iPhone";
-		};
-		257EA43711F6319800DB04C3 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 3F45512511E4BCD700AE56A6;
-			remoteInfo = "OCMock-iPhone";
 		};
 		25956959126DF0B4004BAC4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -380,11 +317,7 @@
 /* Begin PBXFileReference section */
 		250429A711F62E0200553519 /* UISpec+UISpecRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UISpec+UISpecRunner.h"; sourceTree = "<group>"; };
 		250429A811F62E0200553519 /* UISpec+UISpecRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UISpec+UISpecRunner.m"; sourceTree = "<group>"; };
-		25042A9511F62F2400553519 /* OCMock.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OCMock.xcodeproj; path = /Users/blake/Projects/two_toasters/InMotion/Libraries/RestKit/Specs/Support/OCMock/Source/OCMock.xcodeproj; sourceTree = "<absolute>"; };
-		25042C5011F6309000553519 /* OCMock.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OCMock.xcodeproj; path = /Users/blake/Projects/two_toasters/RestKit/Specs/Support/OCMock/Source/OCMock.xcodeproj; sourceTree = "<absolute>"; };
 		250BC22A11F621B400F3FE5A /* RKDynamicRouterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouterSpec.m; sourceTree = "<group>"; };
-		250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OCMock.xcodeproj; path = /Users/blake/Projects/two_toasters/InMotion/Libraries/RestKit/Specs/Support/OCMock/Source/OCMock.xcodeproj; sourceTree = "<absolute>"; };
-		250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OCMock.xcodeproj; path = /Users/blake/Projects/two_toasters/InMotion/Libraries/RestKit/Specs/Support/OCMock/Source/OCMock.xcodeproj; sourceTree = "<absolute>"; };
 		250BC4ED11F62D6B00F3FE5A /* CallCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallCache.h; sourceTree = "<group>"; };
 		250BC4EE11F62D6B00F3FE5A /* NSNumberCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSNumberCreator.h; sourceTree = "<group>"; };
 		250BC4EF11F62D6B00F3FE5A /* Recordable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recordable.h; sourceTree = "<group>"; };
@@ -717,42 +650,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		25042B7C11F62FF500553519 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				25042B8311F62FF500553519 /* OCMock */,
-				25042B8511F62FF500553519 /* OCMockTests.octest */,
-				257EA42E11F6319800DB04C3 /* libOCMock-iPhone.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		250BC42C11F6260100F3FE5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				250BC43311F6260100F3FE5A /* UISpec_Simulator.a */,
 				250BC43511F6260100F3FE5A /* UISpec_Device.a */,
 				250BC43711F6260100F3FE5A /* Specs.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		250BC44C11F6262600F3FE5A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				250BC45311F6262600F3FE5A /* OCMock */,
-				250BC45511F6262600F3FE5A /* OCMockTests.octest */,
-				257EA43811F6319800DB04C3 /* libOCMock-iPhone.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		250BC4DD11F62D4400F3FE5A /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				250BC4E411F62D4400F3FE5A /* OCMock */,
-				250BC4E611F62D4400F3FE5A /* OCMockTests.octest */,
-				257EA43311F6319800DB04C3 /* libOCMock-iPhone.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1134,13 +1037,6 @@
 			path = GTM;
 			sourceTree = "<group>";
 		};
-		25956591126DE9CF004BAC4C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		25956593126DE9DF004BAC4C /* OCMock */ = {
 			isa = PBXGroup;
 			children = (
@@ -1478,22 +1374,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 25956591126DE9CF004BAC4C /* Products */;
-					ProjectRef = 25042C5011F6309000553519 /* OCMock.xcodeproj */;
-				},
-				{
-					ProductGroup = 250BC4DD11F62D4400F3FE5A /* Products */;
-					ProjectRef = 250BC43F11F6261700F3FE5A /* OCMock.xcodeproj */;
-				},
-				{
-					ProductGroup = 25042B7C11F62FF500553519 /* Products */;
-					ProjectRef = 25042A9511F62F2400553519 /* OCMock.xcodeproj */;
-				},
-				{
-					ProductGroup = 250BC44C11F6262600F3FE5A /* Products */;
-					ProjectRef = 250BC36211F625DF00F3FE5A /* OCMock.xcodeproj */;
-				},
-				{
 					ProductGroup = 25956992126DF283004BAC4C /* Products */;
 					ProjectRef = 2595698D126DF283004BAC4C /* UISpec.xcodeproj */;
 				},
@@ -1518,20 +1398,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		25042B8311F62FF500553519 /* OCMock */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = OCMock;
-			remoteRef = 25042B8211F62FF500553519 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		25042B8511F62FF500553519 /* OCMockTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = OCMockTests.octest;
-			remoteRef = 25042B8411F62FF500553519 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		250BC43311F6260100F3FE5A /* UISpec_Simulator.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1551,55 +1417,6 @@
 			fileType = wrapper.application;
 			path = Specs.app;
 			remoteRef = 250BC43611F6260100F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250BC45311F6262600F3FE5A /* OCMock */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = OCMock;
-			remoteRef = 250BC45211F6262600F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250BC45511F6262600F3FE5A /* OCMockTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = OCMockTests.octest;
-			remoteRef = 250BC45411F6262600F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250BC4E411F62D4400F3FE5A /* OCMock */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = OCMock;
-			remoteRef = 250BC4E311F62D4400F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250BC4E611F62D4400F3FE5A /* OCMockTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = OCMockTests.octest;
-			remoteRef = 250BC4E511F62D4400F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		257EA42E11F6319800DB04C3 /* libOCMock-iPhone.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libOCMock-iPhone.a";
-			remoteRef = 257EA42D11F6319800DB04C3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		257EA43311F6319800DB04C3 /* libOCMock-iPhone.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libOCMock-iPhone.a";
-			remoteRef = 257EA43211F6319800DB04C3 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		257EA43811F6319800DB04C3 /* libOCMock-iPhone.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libOCMock-iPhone.a";
-			remoteRef = 257EA43711F6319800DB04C3 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		25956999126DF283004BAC4C /* UISpec_Simulator.a */ = {
