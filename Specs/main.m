@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "UISpec.h"
 #import "UISpec+UISpecRunner.h"
 
 int main(int argc, char *argv[]) {

@@ -995,7 +995,7 @@
 		25956992126DF283004BAC4C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				25956999126DF283004BAC4C /* UISpec_Simulator.a */,
+				25956999126DF283004BAC4C /* libUISpec.a */,
 				2595699D126DF283004BAC4C /* Specs.app */,
 			);
 			name = Products;
@@ -1342,10 +1342,10 @@
 			remoteRef = 250BC43611F6260100F3FE5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		25956999126DF283004BAC4C /* UISpec_Simulator.a */ = {
+		25956999126DF283004BAC4C /* libUISpec.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = UISpec_Simulator.a;
+			path = libUISpec.a;
 			remoteRef = 25956998126DF283004BAC4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1925,7 +1925,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/Specs/Support/UISpec/bin/UISpec\"",
 					"\"$(SRCROOT)/Specs/Support/OCMock\"",
 					"\"$(SRCROOT)\"",
 				);
@@ -1965,7 +1964,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/Specs/Support/UISpec/bin/UISpec\"",
 					"\"$(SRCROOT)/Specs/Support/OCMock\"",
 					"\"$(SRCROOT)\"",
 				);
