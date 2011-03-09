@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "UISpec.h"
 
+// Define protocols for Unit and Integration specs
+@protocol UISpecUnit <NSObject>
+@end
+@protocol UISpecIntegration <NSObject>
+@end
+
 @interface UISpec (UISpecRunner)
 
 /**
