@@ -287,7 +287,7 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 ///////////////////////////////////////////////////////////////////////////////
 // Property & Relationship Manipulation
 
-- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {	
+- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {    
 	id currentValue = [model valueForKey:propertyName];
 	if (nil == currentValue && nil == propertyValue) {
 		// Don't set the property, both are nil

@@ -18,7 +18,8 @@
 @synthesize timeout = _timeout;
 
 - (id)init {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		_timeout = 100;
 		_awaitingResponse = NO;
 	}

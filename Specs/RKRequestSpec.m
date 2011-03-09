@@ -23,7 +23,7 @@
  * `ruby Specs/server.rb`
  */
 - (void)itShouldSendMultiPartRequests {
-	NSString* URLString = [NSString stringWithFormat:@"http://%s:4567/photo", getenv("RESTKIT_IP_ADDRESS")];
+	NSString* URLString = [NSString stringWithFormat:@"http://127.0.0.1:4567/photo"];
 	NSURL* URL = [NSURL URLWithString:URLString];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
 	RKParams* params = [[RKParams params] retain];

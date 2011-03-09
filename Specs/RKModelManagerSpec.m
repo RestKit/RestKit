@@ -29,7 +29,7 @@
 @implementation RKObjectManagerSpec
 
 - (void)beforeAll {
-	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3000", "localhost"]; //getenv("RESTKIT_IP_ADDRESS")
+	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:4567", "localhost"]; //getenv("RESTKIT_IP_ADDRESS")
 	NSLog(@"Local Base URL: %@", localBaseURL);
 	_modelManager = [[RKObjectManager objectManagerWithBaseURL:localBaseURL] retain];
 	_modelManager.objectStore = [[RKManagedObjectStore alloc] initWithStoreFilename:@"RKSpecs.sqlite"];
@@ -50,14 +50,6 @@
 	[expectThat([_modelManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
 }
 
-- (void)itShouldHandleConnectionFailures {
-	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:3001", getenv("RESTKIT_IP_ADDRESS")];
-	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
-	[modelManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
-	[_responseLoader waitForResponse];
-	[expectThat(_responseLoader.success) should:be(NO)];
-}
-
 - (void)itShouldLoadAHuman {
 	NSLog(@"Model manager baase url: %@", [_modelManager.client baseURL]);
 	[_modelManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
@@ -75,7 +67,12 @@
 	[expectThat([[humans objectAtIndex:0] class]) should:be([RKHuman class])];
 }
 
-- (void)itShouldLoadHumansInPages {
+- (void)itShouldHandleConnectionFailures {
+	NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
+	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
+	[modelManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
+	[_responseLoader waitForResponse];
+	[expectThat(_responseLoader.success) should:be(NO)];
 }
 
 @end

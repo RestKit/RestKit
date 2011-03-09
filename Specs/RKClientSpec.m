@@ -19,14 +19,14 @@
 
 - (void)itShouldDetectNetworkStatusWithAHostname {
 	RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; // Let the runloop cycle
+	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
 	RKReachabilityNetworkStatus status = [client.baseURLReachabilityObserver networkStatus];
 	[expectThat(status) shouldNot:be(RKReachabilityIndeterminate)];	
 }
 
 - (void)itShouldDetectNetworkStatusWithAnIPAddressBaseName {
-	RKClient* client = [RKClient clientWithBaseURL:@"http://192.168.1.177"];
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; // Let the runloop cycle
+	RKClient* client = [RKClient clientWithBaseURL:@"http://173.45.234.197"];
+	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
 	RKReachabilityNetworkStatus status = [client.baseURLReachabilityObserver networkStatus];
 	[expectThat(status) shouldNot:be(RKReachabilityIndeterminate)];	
 }
