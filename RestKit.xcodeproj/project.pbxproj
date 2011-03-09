@@ -31,7 +31,6 @@
 /* Begin PBXBuildFile section */
 		250429A911F62E0200553519 /* UISpec+UISpecRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 250429A811F62E0200553519 /* UISpec+UISpecRunner.m */; };
 		250BC22B11F621B400F3FE5A /* RKDynamicRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250BC22A11F621B400F3FE5A /* RKDynamicRouterSpec.m */; };
-		250BC51111F62D6B00F3FE5A /* UISpec.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 250BC50A11F62D6B00F3FE5A /* UISpec.bundle */; };
 		2520776E113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
 		2524CB5D1278930200D1314C /* RKParamsAttachmentSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2524CB5C1278930200D1314C /* RKParamsAttachmentSpec.m */; };
@@ -164,10 +163,11 @@
 		25956985126DF1AE004BAC4C /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A07FC1255161B00976E89 /* libRestKitNetwork.a */; };
 		25956986126DF1AE004BAC4C /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A08031255162C00976E89 /* libRestKitObjectMapping.a */; };
 		25956987126DF1AE004BAC4C /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A080C12551D3000976E89 /* libRestKitSupport.a */; };
-		259569D5126DF464004BAC4C /* UISpec_1_0.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250BC51011F62D6B00F3FE5A /* UISpec_1_0.a */; };
 		25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */; };
 		2596AC9012F7B015004C02F9 /* RKClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596AC8F12F7B015004C02F9 /* RKClientSpec.m */; };
 		25A5B4E912762249003DC8A4 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A5B4E812762249003DC8A4 /* blake.png */; };
+		25F48FF61327DA3400F6B59F /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25F48FF51327DA3400F6B59F /* libUISpec.a */; };
+		25F48FF81327DAB300F6B59F /* UISpec.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 25F48FF71327DAB300F6B59F /* UISpec.bundle */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -261,19 +261,19 @@
 			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
 			remoteInfo = UISpec_Simulator;
 		};
-		2595699A126DF283004BAC4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2595698D126DF283004BAC4C /* UISpec.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C76EB5DA0F7458C100EF8398;
-			remoteInfo = UISpec_Device;
-		};
 		2595699C126DF283004BAC4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2595698D126DF283004BAC4C /* UISpec.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C7D4F29310BDA39C00B00019;
 			remoteInfo = Specs;
+		};
+		25F48FF31327DA2300F6B59F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2595698D126DF283004BAC4C /* UISpec.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
+			remoteInfo = UISpec;
 		};
 		3F4BC8F212DE4C7F00048E71 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -292,15 +292,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		255DE48A110112F500A85891 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(BUILT_PRODUCTS_DIR)";
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -318,37 +309,6 @@
 		250429A711F62E0200553519 /* UISpec+UISpecRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UISpec+UISpecRunner.h"; sourceTree = "<group>"; };
 		250429A811F62E0200553519 /* UISpec+UISpecRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UISpec+UISpecRunner.m"; sourceTree = "<group>"; };
 		250BC22A11F621B400F3FE5A /* RKDynamicRouterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouterSpec.m; sourceTree = "<group>"; };
-		250BC4ED11F62D6B00F3FE5A /* CallCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallCache.h; sourceTree = "<group>"; };
-		250BC4EE11F62D6B00F3FE5A /* NSNumberCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSNumberCreator.h; sourceTree = "<group>"; };
-		250BC4EF11F62D6B00F3FE5A /* Recordable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recordable.h; sourceTree = "<group>"; };
-		250BC4F011F62D6B00F3FE5A /* ReturnCacher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReturnCacher.h; sourceTree = "<group>"; };
-		250BC4F111F62D6B00F3FE5A /* UIBug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBug.h; sourceTree = "<group>"; };
-		250BC4F211F62D6B00F3FE5A /* UIChildren.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIChildren.h; sourceTree = "<group>"; };
-		250BC4F311F62D6B00F3FE5A /* UIConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIConsole.h; sourceTree = "<group>"; };
-		250BC4F411F62D6B00F3FE5A /* UIConsoleLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIConsoleLog.h; sourceTree = "<group>"; };
-		250BC4F511F62D6B00F3FE5A /* UIDescendants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDescendants.h; sourceTree = "<group>"; };
-		250BC4F611F62D6B00F3FE5A /* UIExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIExpectation.h; sourceTree = "<group>"; };
-		250BC4F711F62D6B00F3FE5A /* UIFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIFilter.h; sourceTree = "<group>"; };
-		250BC4F811F62D6B00F3FE5A /* UIInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIInspector.h; sourceTree = "<group>"; };
-		250BC4F911F62D6B00F3FE5A /* UILog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UILog.h; sourceTree = "<group>"; };
-		250BC4FA11F62D6B00F3FE5A /* UIMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIMatcher.h; sourceTree = "<group>"; };
-		250BC4FB11F62D6B00F3FE5A /* UIParents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIParents.h; sourceTree = "<group>"; };
-		250BC4FC11F62D6B00F3FE5A /* UIProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIProxy.h; sourceTree = "<group>"; };
-		250BC4FD11F62D6B00F3FE5A /* UIQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQuery.h; sourceTree = "<group>"; };
-		250BC4FE11F62D6B00F3FE5A /* UIQueryAll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQueryAll.h; sourceTree = "<group>"; };
-		250BC4FF11F62D6B00F3FE5A /* UIQueryExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQueryExpectation.h; sourceTree = "<group>"; };
-		250BC50011F62D6B00F3FE5A /* UIQuerySearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQuerySearchBar.h; sourceTree = "<group>"; };
-		250BC50111F62D6B00F3FE5A /* UIQuerySegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQuerySegmentedControl.h; sourceTree = "<group>"; };
-		250BC50211F62D6B00F3FE5A /* UIQueryTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQueryTabBar.h; sourceTree = "<group>"; };
-		250BC50311F62D6B00F3FE5A /* UIQueryTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQueryTableView.h; sourceTree = "<group>"; };
-		250BC50411F62D6B00F3FE5A /* UIQueryTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQueryTableViewCell.h; sourceTree = "<group>"; };
-		250BC50511F62D6B00F3FE5A /* UIQueryWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIQueryWebView.h; sourceTree = "<group>"; };
-		250BC50611F62D6B00F3FE5A /* UIRedoer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIRedoer.h; sourceTree = "<group>"; };
-		250BC50711F62D6B00F3FE5A /* UISpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UISpec.h; sourceTree = "<group>"; };
-		250BC50811F62D6B00F3FE5A /* ViewFilterSwizzler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewFilterSwizzler.h; sourceTree = "<group>"; };
-		250BC50911F62D6B00F3FE5A /* WaitUntilIdle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaitUntilIdle.h; sourceTree = "<group>"; };
-		250BC50A11F62D6B00F3FE5A /* UISpec.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = UISpec.bundle; sourceTree = "<group>"; };
-		250BC51011F62D6B00F3FE5A /* UISpec_1_0.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = UISpec_1_0.a; sourceTree = "<group>"; };
 		2520776D113587BE00382018 /* NSDictionary+RKRequestSerializationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+RKRequestSerializationSpec.m"; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2524CB5C1278930200D1314C /* RKParamsAttachmentSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKParamsAttachmentSpec.m; sourceTree = "<group>"; };
@@ -510,6 +470,8 @@
 		2596AC8F12F7B015004C02F9 /* RKClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKClientSpec.m; sourceTree = "<group>"; };
 		25A5B4E812762249003DC8A4 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		25F48FF51327DA3400F6B59F /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
+		25F48FF71327DAB300F6B59F /* UISpec.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = UISpec.bundle; path = Specs/Support/UISpec/src/UISpec.bundle; sourceTree = SOURCE_ROOT; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
 		3F032AA610FFBBCD00F35142 /* RKHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHouse.h; sourceTree = "<group>"; };
@@ -588,6 +550,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25F48FF61327DA3400F6B59F /* libUISpec.a in Frameworks */,
 				3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */,
 				3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */,
 				255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */,
@@ -598,7 +561,6 @@
 				25956985126DF1AE004BAC4C /* libRestKitNetwork.a in Frameworks */,
 				25956986126DF1AE004BAC4C /* libRestKitObjectMapping.a in Frameworks */,
 				25956987126DF1AE004BAC4C /* libRestKitSupport.a in Frameworks */,
-				259569D5126DF464004BAC4C /* UISpec_1_0.a in Frameworks */,
 				3F1912A712DF6B4800C077AD /* CFNetwork.framework in Frameworks */,
 				3F1912AF12DF6B6200C077AD /* MobileCoreServices.framework in Frameworks */,
 			);
@@ -663,49 +625,12 @@
 		250BC4EB11F62D6B00F3FE5A /* UISpec */ = {
 			isa = PBXGroup;
 			children = (
+				25F48FF71327DAB300F6B59F /* UISpec.bundle */,
+				25F48FF51327DA3400F6B59F /* libUISpec.a */,
 				2595698D126DF283004BAC4C /* UISpec.xcodeproj */,
-				250BC4EC11F62D6B00F3FE5A /* Headers */,
-				250BC50A11F62D6B00F3FE5A /* UISpec.bundle */,
-				250BC51011F62D6B00F3FE5A /* UISpec_1_0.a */,
 			);
 			name = UISpec;
 			path = UISpec/bin/UISpec;
-			sourceTree = "<group>";
-		};
-		250BC4EC11F62D6B00F3FE5A /* Headers */ = {
-			isa = PBXGroup;
-			children = (
-				250BC4ED11F62D6B00F3FE5A /* CallCache.h */,
-				250BC4EE11F62D6B00F3FE5A /* NSNumberCreator.h */,
-				250BC4EF11F62D6B00F3FE5A /* Recordable.h */,
-				250BC4F011F62D6B00F3FE5A /* ReturnCacher.h */,
-				250BC4F111F62D6B00F3FE5A /* UIBug.h */,
-				250BC4F211F62D6B00F3FE5A /* UIChildren.h */,
-				250BC4F311F62D6B00F3FE5A /* UIConsole.h */,
-				250BC4F411F62D6B00F3FE5A /* UIConsoleLog.h */,
-				250BC4F511F62D6B00F3FE5A /* UIDescendants.h */,
-				250BC4F611F62D6B00F3FE5A /* UIExpectation.h */,
-				250BC4F711F62D6B00F3FE5A /* UIFilter.h */,
-				250BC4F811F62D6B00F3FE5A /* UIInspector.h */,
-				250BC4F911F62D6B00F3FE5A /* UILog.h */,
-				250BC4FA11F62D6B00F3FE5A /* UIMatcher.h */,
-				250BC4FB11F62D6B00F3FE5A /* UIParents.h */,
-				250BC4FC11F62D6B00F3FE5A /* UIProxy.h */,
-				250BC4FD11F62D6B00F3FE5A /* UIQuery.h */,
-				250BC4FE11F62D6B00F3FE5A /* UIQueryAll.h */,
-				250BC4FF11F62D6B00F3FE5A /* UIQueryExpectation.h */,
-				250BC50011F62D6B00F3FE5A /* UIQuerySearchBar.h */,
-				250BC50111F62D6B00F3FE5A /* UIQuerySegmentedControl.h */,
-				250BC50211F62D6B00F3FE5A /* UIQueryTabBar.h */,
-				250BC50311F62D6B00F3FE5A /* UIQueryTableView.h */,
-				250BC50411F62D6B00F3FE5A /* UIQueryTableViewCell.h */,
-				250BC50511F62D6B00F3FE5A /* UIQueryWebView.h */,
-				250BC50611F62D6B00F3FE5A /* UIRedoer.h */,
-				250BC50711F62D6B00F3FE5A /* UISpec.h */,
-				250BC50811F62D6B00F3FE5A /* ViewFilterSwizzler.h */,
-				250BC50911F62D6B00F3FE5A /* WaitUntilIdle.h */,
-			);
-			path = Headers;
 			sourceTree = "<group>";
 		};
 		253A085F12551D8D00976E89 /* Code */ = {
@@ -1071,7 +996,6 @@
 			isa = PBXGroup;
 			children = (
 				25956999126DF283004BAC4C /* UISpec_Simulator.a */,
-				2595699B126DF283004BAC4C /* UISpec_Device.a */,
 				2595699D126DF283004BAC4C /* Specs.app */,
 			);
 			name = Products;
@@ -1337,12 +1261,11 @@
 				3F6C39A110FE5C95008F47C5 /* Resources */,
 				3F6C39A210FE5C95008F47C5 /* Sources */,
 				3F6C39A310FE5C95008F47C5 /* Frameworks */,
-				255DE2B810FFBFBF00A85891 /* ShellScript */,
-				255DE48A110112F500A85891 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				25F48FF41327DA2300F6B59F /* PBXTargetDependency */,
 				3F4BC8F312DE4C7F00048E71 /* PBXTargetDependency */,
 				25956982126DF182004BAC4C /* PBXTargetDependency */,
 			);
@@ -1426,13 +1349,6 @@
 			remoteRef = 25956998126DF283004BAC4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2595699B126DF283004BAC4C /* UISpec_Device.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = UISpec_Device.a;
-			remoteRef = 2595699A126DF283004BAC4C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		2595699D126DF283004BAC4C /* Specs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1447,8 +1363,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				250BC51111F62D6B00F3FE5A /* UISpec.bundle in Resources */,
 				25A5B4E912762249003DC8A4 /* blake.png in Resources */,
+				25F48FF81327DAB300F6B59F /* UISpec.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1467,19 +1383,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "IFS=$'\\n'\n\nif [ ${BUILD_ROOT} != ${SRCROOT}/Build ]; then\n    rm -rf ${SRCROOT}/Build/RestKit\n    cp -R ${BUILD_ROOT}/RestKit ${SRCROOT}/Build\n\n    cd ${SRCROOT}/Build/RestKit\n    find * -name '*.h' | xargs chmod a-w\nfi\n\nexit 0";
-		};
-		255DE2B810FFBFBF00A85891 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Disabled - Xcode 4\n#osascript Specs/Support/set_ip_address.scpt";
 		};
 		25956980126DF159004BAC4C /* Protect Copied Headers */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1663,6 +1566,11 @@
 			isa = PBXTargetDependency;
 			target = 25956956126DF0A8004BAC4C /* RestKit */;
 			targetProxy = 25956981126DF182004BAC4C /* PBXContainerItemProxy */;
+		};
+		25F48FF41327DA2300F6B59F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UISpec;
+			targetProxy = 25F48FF31327DA2300F6B59F /* PBXContainerItemProxy */;
 		};
 		3F4BC8F312DE4C7F00048E71 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2010,6 +1918,7 @@
 				HEADER_SEARCH_PATHS = (
 					Build,
 					Specs/Support/OCMock/Headers,
+					Specs/Support/UISpec/headers,
 				);
 				INFOPLIST_FILE = "Specs/UISpec-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -2018,6 +1927,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/Specs/Support/UISpec/bin/UISpec\"",
 					"\"$(SRCROOT)/Specs/Support/OCMock\"",
+					"\"$(SRCROOT)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-force_load",
@@ -2048,6 +1958,7 @@
 				HEADER_SEARCH_PATHS = (
 					Build,
 					Specs/Support/OCMock/Headers,
+					Specs/Support/UISpec/headers,
 				);
 				INFOPLIST_FILE = "Specs/UISpec-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -2056,6 +1967,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/Specs/Support/UISpec/bin/UISpec\"",
 					"\"$(SRCROOT)/Specs/Support/OCMock\"",
+					"\"$(SRCROOT)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-force_load",
