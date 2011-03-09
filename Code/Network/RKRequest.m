@@ -66,7 +66,7 @@
 }
 
 - (void)setRequestBody {
-	if (_params) {
+	if (_params && (_method != RKRequestMethodGET)) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
 			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
