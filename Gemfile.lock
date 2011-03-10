@@ -1,12 +1,20 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    daemons (1.0.10)
+    eventmachine (0.12.10)
     open4 (1.0.1)
     rack (1.2.1)
     rake (0.8.7)
+    shotgun (0.9)
+      rack (>= 1.0)
     sinatra (1.2.0)
       rack (~> 1.1)
       tilt (>= 1.2.2, < 2.0)
+    thin (1.2.8)
+      daemons (>= 1.0.9)
+      eventmachine (>= 0.12.6)
+      rack (>= 1.0.0)
     tilt (1.2.2)
     uispecrunner (0.4.0)
       open4 (= 1.0.1)
@@ -17,7 +25,9 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.0.0)
   rake
+  shotgun (>= 0.9)
   sinatra (>= 1.2.0)
+  thin (>= 1.2.8)
   uispecrunner (>= 0.4.0)
 
 METADATA

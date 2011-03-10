@@ -1,3 +1,5 @@
+# RestKit Spec Server
+
 require 'rubygems'
 require 'sinatra'
 require 'json'
