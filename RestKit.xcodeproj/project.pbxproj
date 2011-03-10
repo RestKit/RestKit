@@ -157,7 +157,7 @@
 		259D511F1328547000897272 /* RKRequestSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51121328547000897272 /* RKRequestSpec.m */; };
 		259D51201328547000897272 /* RKResponseSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51131328547000897272 /* RKResponseSpec.m */; };
 		259D51211328547000897272 /* RKDynamicRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51151328547000897272 /* RKDynamicRouterSpec.m */; };
-		259D51221328547000897272 /* RKModelMapperSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51161328547000897272 /* RKModelMapperSpec.m */; };
+		259D51221328547000897272 /* RKObjectMapperSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51161328547000897272 /* RKObjectMapperSpec.m */; };
 		259D51231328547000897272 /* RKObjectManagerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51171328547000897272 /* RKObjectManagerSpec.m */; };
 		259D51241328547000897272 /* RKObjectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51181328547000897272 /* RKObjectSpec.m */; };
 		259D51251328547000897272 /* RKRailsRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D51191328547000897272 /* RKRailsRouterSpec.m */; };
@@ -166,7 +166,6 @@
 		259D53B7132854A900897272 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 259D5132132854A700897272 /* libOCMock.a */; };
 		259D53B8132854A900897272 /* RKSpecResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D5135132854A700897272 /* RKSpecResponseLoader.m */; };
 		259D5535132854A900897272 /* UISpec+UISpecRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D53A2132854A800897272 /* UISpec+UISpecRunner.m */; };
-		259D5536132854A900897272 /* UISpec-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 259D53A3132854A800897272 /* UISpec-Info.plist */; };
 		259D5558132856D800897272 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 259D5557132856D700897272 /* libUISpec.a */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
@@ -450,7 +449,7 @@
 		259D51121328547000897272 /* RKRequestSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestSpec.m; sourceTree = "<group>"; };
 		259D51131328547000897272 /* RKResponseSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKResponseSpec.m; sourceTree = "<group>"; };
 		259D51151328547000897272 /* RKDynamicRouterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouterSpec.m; sourceTree = "<group>"; };
-		259D51161328547000897272 /* RKModelMapperSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKModelMapperSpec.m; sourceTree = "<group>"; };
+		259D51161328547000897272 /* RKObjectMapperSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapperSpec.m; sourceTree = "<group>"; };
 		259D51171328547000897272 /* RKObjectManagerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectManagerSpec.m; sourceTree = "<group>"; };
 		259D51181328547000897272 /* RKObjectSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectSpec.m; sourceTree = "<group>"; };
 		259D51191328547000897272 /* RKRailsRouterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRailsRouterSpec.m; sourceTree = "<group>"; };
@@ -462,7 +461,6 @@
 		259D5135132854A700897272 /* RKSpecResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSpecResponseLoader.m; sourceTree = "<group>"; };
 		259D53A1132854A800897272 /* UISpec+UISpecRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UISpec+UISpecRunner.h"; sourceTree = "<group>"; };
 		259D53A2132854A800897272 /* UISpec+UISpecRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UISpec+UISpecRunner.m"; sourceTree = "<group>"; };
-		259D53A3132854A800897272 /* UISpec-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "UISpec-Info.plist"; sourceTree = "<group>"; };
 		259D5548132856A400897272 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<group>"; };
 		259D5557132856D700897272 /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -927,7 +925,7 @@
 			isa = PBXGroup;
 			children = (
 				259D51151328547000897272 /* RKDynamicRouterSpec.m */,
-				259D51161328547000897272 /* RKModelMapperSpec.m */,
+				259D51161328547000897272 /* RKObjectMapperSpec.m */,
 				259D51171328547000897272 /* RKObjectManagerSpec.m */,
 				259D51181328547000897272 /* RKObjectSpec.m */,
 				259D51191328547000897272 /* RKRailsRouterSpec.m */,
@@ -954,7 +952,6 @@
 				259D5135132854A700897272 /* RKSpecResponseLoader.m */,
 				259D53A1132854A800897272 /* UISpec+UISpecRunner.h */,
 				259D53A2132854A800897272 /* UISpec+UISpecRunner.m */,
-				259D53A3132854A800897272 /* UISpec-Info.plist */,
 				259D5557132856D700897272 /* libUISpec.a */,
 			);
 			path = Runner;
@@ -1338,7 +1335,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				259D5536132854A900897272 /* UISpec-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1492,7 +1488,7 @@
 				259D511F1328547000897272 /* RKRequestSpec.m in Sources */,
 				259D51201328547000897272 /* RKResponseSpec.m in Sources */,
 				259D51211328547000897272 /* RKDynamicRouterSpec.m in Sources */,
-				259D51221328547000897272 /* RKModelMapperSpec.m in Sources */,
+				259D51221328547000897272 /* RKObjectMapperSpec.m in Sources */,
 				259D51231328547000897272 /* RKObjectManagerSpec.m in Sources */,
 				259D51241328547000897272 /* RKObjectSpec.m in Sources */,
 				259D51251328547000897272 /* RKRailsRouterSpec.m in Sources */,

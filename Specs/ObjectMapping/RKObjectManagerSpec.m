@@ -8,11 +8,12 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKObjectManager.h"
+#import "RKManagedObjectStore.h"
 #import "RKSpecResponseLoader.h"
 #import "RKHuman.h"
 
 @interface RKObjectManagerSpec : NSObject <UISpec> {
-	RKObjectManager* _modelManager;
+	RKObjectManager* _objectManager;
 	RKSpecResponseLoader* _responseLoader;
 }
 
@@ -31,28 +32,28 @@
 - (void)beforeAll {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://%s:4567", "localhost"]; //getenv("RESTKIT_IP_ADDRESS")
 	NSLog(@"Local Base URL: %@", localBaseURL);
-	_modelManager = [[RKObjectManager objectManagerWithBaseURL:localBaseURL] retain];
-	_modelManager.objectStore = [[RKManagedObjectStore alloc] initWithStoreFilename:@"RKSpecs.sqlite"];
-	[_modelManager registerClass:[RKHuman class] forElementNamed:@"human"];
+	_objectManager = [[RKObjectManager objectManagerWithBaseURL:localBaseURL] retain];
+	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
+	[_objectManager registerClass:[RKHuman class] forElementNamed:@"human"];
 	
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];
 }
 
 - (void)itShouldDefaultToAnXMLMappingFormat {	
-	[expectThat(_modelManager.format) should:be(RKMappingFormatJSON)];
+	[expectThat(_objectManager.format) should:be(RKMappingFormatJSON)];
 }
 
 - (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
 	// TODO: re-enable when we implement XML support.
-//	_modelManager.format = RKMappingFormatXML;
-//	[expectThat([_modelManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/xml")];
-	_modelManager.format = RKMappingFormatJSON;
-	[expectThat([_modelManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
+//	_objectManager.format = RKMappingFormatXML;
+//	[expectThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/xml")];
+	_objectManager.format = RKMappingFormatJSON;
+	[expectThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
 }
 
 - (void)itShouldLoadAHuman {
-	NSLog(@"Model manager baase url: %@", [_modelManager.client baseURL]);
-	[_modelManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
+	NSLog(@"Model manager baase url: %@", [_objectManager.client baseURL]);
+	[_objectManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	RKHuman* blake = (RKHuman*)[_responseLoader.response objectAtIndex:0];;
 	NSLog(@"Blake: %@", blake);
@@ -60,7 +61,7 @@
 }
 
 - (void)itShouldLoadAllHumans {
-	[_modelManager loadObjectsAtResourcePath:@"/humans" delegate:_responseLoader];
+	[_objectManager loadObjectsAtResourcePath:@"/humans" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	NSArray* humans = (NSArray*) _responseLoader.response;
 	[expectThat([humans count]) should:be(4)];

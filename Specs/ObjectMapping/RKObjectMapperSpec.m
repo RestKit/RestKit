@@ -8,12 +8,15 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKObjectMapper.h"
-
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
 #import "RKObjectMapperSpecModel.h"
 #import "RKObject.h"
 #import "NSDictionary+RKAdditions.h"
+
+@interface RKObjectMapper (Private)
+- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName;
+@end
 
 @interface RKObjectMapperSpecUser : RKObject {
 @private
@@ -220,7 +223,6 @@
 	
 	model.age = [NSNumber numberWithInt:16];
 	[mapper updateModel:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
-    NSNumber* expectedAge = [NSNumber numberWithInt:17];
 	[expectThat(model.age) should:be(17)];	
 }
 
@@ -232,11 +234,6 @@
 	[mapper updateModel:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
 	[expectThat(model.createdAt) should:be([NSDate dateWithTimeIntervalSince1970:0])];	
 }
-
-
-@end
-
-@implementation RKObjectMapperSpec (Private)
 
 - (NSString*)jsonString {
 	return
