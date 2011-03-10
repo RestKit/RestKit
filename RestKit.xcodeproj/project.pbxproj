@@ -977,12 +977,12 @@
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
-				259D5127132854A700897272 /* Runner */,
 				259D510D1328547000897272 /* CoreData */,
 				259D510F1328547000897272 /* Network */,
 				259D51141328547000897272 /* ObjectMapping */,
 				259D511A1328547000897272 /* Support */,
 				255DE05B10FFA04200A85891 /* Models */,
+				259D5127132854A700897272 /* Runner */,
 			);
 			path = Specs;
 			sourceTree = "<group>";

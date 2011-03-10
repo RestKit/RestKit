@@ -47,6 +47,5 @@ end
 
 get '/humans' do
   content_type 'application/json'
-  humans = (1..4).map { Human.new.to_hash }
-  JSON.generate(:humans => humans)
+  JSON.generate([{:human => Human.new(:name => 'Blake Watters').to_hash}, {:human => Human.new(:name => "Other").to_hash}])
 end
