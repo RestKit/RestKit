@@ -165,7 +165,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	// Clear the current managed object context. Will be re-created next time it is accessed.
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
     if ([threadDictionary objectForKey:kRKManagedObjectContextKey]) {
-        [threadDictionary setNilValueForKey:kRKManagedObjectContextKey];
+        [threadDictionary removeObjectForKey:kRKManagedObjectContextKey];
     }
 	
 	[self createPersistentStoreCoordinator];

@@ -25,6 +25,7 @@
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://localhost:4567"]; //getenv("RESTKIT_IP_ADDRESS")
 	_objectManager = [[RKObjectManager objectManagerWithBaseURL:localBaseURL] retain];
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
+    [_objectManager.objectStore deletePersistantStore];
 	[_objectManager registerClass:[RKHuman class] forElementNamed:@"human"];
     [_objectManager registerClass:[RKHuman class] forElementNamed:@"humans"];
 	
