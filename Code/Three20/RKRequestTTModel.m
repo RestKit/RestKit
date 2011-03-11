@@ -41,6 +41,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		defaultLoadedTime = [NSDate dateWithTimeIntervalSinceNow:-defaultRefreshRate];
 		[[NSUserDefaults standardUserDefaults] setObject:defaultLoadedTime forKey:kDefaultLoadedTimeKey];
 	}
+    
 	return defaultLoadedTime;
 }
 
@@ -244,8 +245,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
 	}
 	
-	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded ||
-		([cachedObjects count] == 0 && [[RKObjectManager sharedManager] isOnline])) {
+	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded || [cachedObjects count] == 0) {
 		RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self];
 		objectLoader.method = self.method;
 		objectLoader.objectClass = _objectClass;
@@ -255,7 +255,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		_isLoading = YES;
 		[self didStartLoad];
 		[objectLoader send];
-		
 	} else if (cacheFetchRequests && !_cacheLoaded) {
 		_cacheLoaded = YES;
 		[self modelsDidLoad:cachedObjects];
