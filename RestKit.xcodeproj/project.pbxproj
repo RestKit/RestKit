@@ -367,8 +367,8 @@
 		25956979126DF0E3004BAC4C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = RestKit;
-			dstSubfolderSpec = 12;
+			dstPath = $BUILD_ROOT/RestKit;
+			dstSubfolderSpec = 0;
 			files = (
 				257FF0C2126F441700424BC0 /* RestKit.h in Copy Headers */,
 			);
@@ -1649,7 +1649,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "IFS=$'\\n'\n\nif [ \"${DEPLOYMENT_LOCATION}\" == \"YES\" ]\n    then\n        ln -s \"${TARGET_BUILD_DIR}/${PRODUCT_NAME}\" \"${BUILT_PRODUCTS_DIR}/\"\nfi\n";
+			shellScript = "IFS=$'\\n'\n\nif [ ${BUILD_ROOT} != ${SRCROOT}/Build ]; then\n    rm -rf ${SRCROOT}/Build/RestKit\n    cp -R ${BUILD_ROOT}/RestKit ${SRCROOT}/Build\n\n    cd ${SRCROOT}/Build/RestKit\n    find * -name '*.h' | xargs chmod a-w\nfi\n\nexit 0";
 		};
 		255DE2B810FFBFBF00A85891 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1871,11 +1871,10 @@
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(TARGET_BUILD_DIR)";
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
+				SYMROOT = "$(SOURCE_ROOT)/Build";
 			};
 			name = Debug;
 		};
@@ -1889,11 +1888,10 @@
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(TARGET_BUILD_DIR)";
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
+				SYMROOT = "$(SOURCE_ROOT)/Build";
 			};
 			name = Release;
 		};
@@ -1922,7 +1920,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitThree20;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Three20;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Three20;
 				USER_HEADER_SEARCH_PATHS = "";
 			};
 			name = Debug;
@@ -1951,7 +1949,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitThree20;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Three20;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Three20;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1967,7 +1965,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitNetwork;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Network;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Network;
 			};
 			name = Debug;
 		};
@@ -1982,7 +1980,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitNetwork;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Network;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Network;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1998,7 +1996,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitObjectMapping;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/ObjectMapping;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/ObjectMapping;
 			};
 			name = Debug;
 		};
@@ -2013,7 +2011,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitObjectMapping;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/ObjectMapping;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/ObjectMapping;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2029,7 +2027,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitSupport;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Support;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Support;
 			};
 			name = Debug;
 		};
@@ -2044,7 +2042,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitSupport;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Support;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Support;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2059,7 +2057,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitCoreData;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/CoreData;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/CoreData;
 			};
 			name = Debug;
 		};
@@ -2073,7 +2071,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitCoreData;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/CoreData;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/CoreData;
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2096,7 +2094,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitJSONParserYAJL;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Support/JSON/YAJL;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Support/JSON/YAJL;
 				YAJL_GENERAL_OTHER_CFLAGS = "-Wdiv-by-zero -Wbad-function-cast -Wnested-externs -Wold-style-definition";
 			};
 			name = Debug;
@@ -2119,7 +2117,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitJSONParserYAJL;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Support/JSON/YAJL;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Support/JSON/YAJL;
 				YAJL_GENERAL_OTHER_CFLAGS = "-Wdiv-by-zero -Wbad-function-cast -Wnested-externs -Wold-style-definition";
 				ZERO_LINK = NO;
 			};
@@ -2136,7 +2134,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitJSONParserSBJSON;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Support/JSON/SBJSON;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Support/JSON/SBJSON;
 			};
 			name = Debug;
 		};
@@ -2151,7 +2149,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PREBINDING = NO;
 				PRODUCT_NAME = RestKitJSONParserSBJSON;
-				PUBLIC_HEADERS_FOLDER_PATH = RestKit/Support/JSON/SBJSON;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/Support/JSON/SBJSON;
 				ZERO_LINK = NO;
 			};
 			name = Release;
