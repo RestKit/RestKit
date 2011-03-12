@@ -1895,7 +1895,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Specs/Runner/OCMock\"",
 				);
 				OTHER_LDFLAGS = (
@@ -1934,7 +1933,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Specs/Runner/OCMock\"",
 				);
 				OTHER_LDFLAGS = (
