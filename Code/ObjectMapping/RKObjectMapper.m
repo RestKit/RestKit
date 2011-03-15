@@ -206,10 +206,20 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
     // TODO: Makes assumptions about the structure of the JSON...
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];
-	NSDictionary* elements = [dictionary objectForKey:elementName];
+	id elements = [dictionary objectForKey:elementName];
 	
-	id model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
-	[self updateModel:model fromElements:elements];
+    // Support case where elements is an Array of objects
+    id model = nil;
+    if ([elements isKindOfClass:[NSDictionary class]]) {
+        model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
+        [self updateModel:model fromElements:elements];        
+    } else if ([elements isKindOfClass:[NSArray class]]) {
+        model = [self mapObjectsFromArrayOfDictionaries:elements toClass:class];
+    } else {
+        // TODO: Do we want to blow up or log???
+        NSLog(@"Unable to determine how to map object: %@", elements);
+    }
+    
 	return model;
 }
 

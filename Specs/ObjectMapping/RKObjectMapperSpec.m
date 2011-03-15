@@ -138,6 +138,24 @@
 	[expectThat([[result hasMany] count]) should:be(2)];
 }
 
+- (NSString*)arrayOfHashesJSON {
+    return @"{\"user\":"
+    @"[{\"encrypted_password\":\"68dad82a867c4a61719fec594c119188ed35cd3b7d42eed1647e46d85f2ffdd8\",\"name\":\"mimi\","
+    @"\"salt\":\"809c79c24cbebfe3f9feea2e9bf98255e5af0f0b8514b6c0d71dcc63fa083688\",\"created_at\":\"2011-02-16T23:04:22Z\","
+    @"\"updated_at\":\"2011-02-16T23:04:22Z\",\"id\":"
+    @"10,\"image\":null,\"email\":\"mimi@mimi.com\"}]}";
+}
+
+- (void)itShouldMapAnArrayOfHashes {
+    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	mapper.format = RKMappingFormatJSON;
+    [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
+    NSArray* array = [mapper mapFromString:[self arrayOfHashesJSON]];
+    [expectThat([array isKindOfClass:[NSArray class]]) should:be(YES)];
+    [expectThat([array count]) should:be(1)];
+    [expectThat([[array lastObject] name]) should:be(@"mimi")];
+}
+
 // TODO: re-implement these specs when we re-implement xml parsing.
 //- (void)itShouldMapFromXML {
 //	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
