@@ -38,6 +38,17 @@
                 NSDictionary* elem = [NSDictionary dictionaryWithObject:val forKey:nodeName];
                 [nodes addObject:elem];
             }
+            xmlElement* element = (xmlElement*)currentNode;
+            xmlAttribute* currentAttribute = NULL;
+            for (currentAttribute = (xmlAttribute*)element->attributes; currentAttribute; currentAttribute = (xmlAttribute*)currentAttribute->next) {
+                NSString* name = [NSString stringWithCString:(char*)currentAttribute->name encoding:NSUTF8StringEncoding];
+                NSString* val = [NSString stringWithCString:(char*)xmlNodeGetContent((xmlNode*)currentAttribute) encoding:NSUTF8StringEncoding];
+                [attrs setValue:val forKey:name];
+                // Only add attributes to nodes if there actually is one.
+                if (![nodes containsObject:attrs]) {
+                    [nodes addObject:attrs];
+                }
+            }
         } else if (currentNode->type == XML_TEXT_NODE) {
             const char* str = xmlNodeGetContent(currentNode);
             NSString* part = [NSString stringWithCString:str encoding:NSUTF8StringEncoding];
