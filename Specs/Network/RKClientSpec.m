@@ -7,7 +7,6 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import <RestKit/RestKit.h>
 
 @interface RKClientSpec : NSObject <UISpec> {
 }

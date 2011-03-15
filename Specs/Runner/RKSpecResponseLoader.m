@@ -17,10 +17,14 @@
 @synthesize success = _success;
 @synthesize timeout = _timeout;
 
++ (RKSpecResponseLoader*)responseLoader {
+    return [[[self alloc] init] autorelease];
+}
+
 - (id)init {
     self = [super init];
 	if (self) {
-		_timeout = 100;
+		_timeout = 3;
 		_awaitingResponse = NO;
 	}
 	
@@ -54,16 +58,29 @@
 	_success = YES;
 }
 
+- (void)loadError:(NSError*)error {
+    NSLog(@"Error: %@", error);
+    _awaitingResponse = NO;
+	_success = NO;
+	_failureError = [error retain];
+}
+
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
+    NSLog(@"Loaded response: %@", response);
+    [self loadResponse:response];
+}
+
+- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
+    [self loadError:error];
+}
+
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
 	NSLog(@"Response: %@", [objectLoader.response bodyAsString]);
 	[self loadResponse:objects];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error; {
-	NSLog(@"Error: %@", error);
-	_awaitingResponse = NO;
-	_success = NO;
-	_failureError = [error retain];
+- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error; {	
+	[self loadError:error];
 }
 
 @end

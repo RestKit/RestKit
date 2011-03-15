@@ -32,6 +32,9 @@
 
 @property (nonatomic, assign)	NSTimeInterval timeout;
 
+// Return a new auto-released loader
++ (RKSpecResponseLoader*)responseLoader;
+
 // Wait for a response to load
 - (void)waitForResponse;
 - (void)loadResponse:(id)response;

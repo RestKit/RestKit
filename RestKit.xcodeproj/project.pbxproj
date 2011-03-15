@@ -167,6 +167,8 @@
 		259D53B8132854A900897272 /* RKSpecResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D5135132854A700897272 /* RKSpecResponseLoader.m */; };
 		259D5535132854A900897272 /* UISpec+UISpecRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D53A2132854A800897272 /* UISpec+UISpecRunner.m */; };
 		259D5558132856D800897272 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 259D5557132856D700897272 /* libUISpec.a */; };
+		259D56B5132E706D00897272 /* RKAuthenticationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D56B4132E706D00897272 /* RKAuthenticationSpec.m */; };
+		259D56BC132E84B300897272 /* RKSpecEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D56BB132E84B300897272 /* RKSpecEnvironment.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -463,6 +465,8 @@
 		259D53A2132854A800897272 /* UISpec+UISpecRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UISpec+UISpecRunner.m"; sourceTree = "<group>"; };
 		259D5548132856A400897272 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<group>"; };
 		259D5557132856D700897272 /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
+		259D56B4132E706D00897272 /* RKAuthenticationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKAuthenticationSpec.m; sourceTree = "<group>"; };
+		259D56BB132E84B300897272 /* RKSpecEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSpecEnvironment.m; sourceTree = "<group>"; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
@@ -917,6 +921,7 @@
 				259D51111328547000897272 /* RKParamsAttachmentSpec.m */,
 				259D51121328547000897272 /* RKRequestSpec.m */,
 				259D51131328547000897272 /* RKResponseSpec.m */,
+				259D56B4132E706D00897272 /* RKAuthenticationSpec.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -953,6 +958,7 @@
 				259D53A1132854A800897272 /* UISpec+UISpecRunner.h */,
 				259D53A2132854A800897272 /* UISpec+UISpecRunner.m */,
 				259D5557132856D700897272 /* libUISpec.a */,
+				259D56BB132E84B300897272 /* RKSpecEnvironment.m */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -1496,6 +1502,8 @@
 				259D53B6132854A900897272 /* main.m in Sources */,
 				259D53B8132854A900897272 /* RKSpecResponseLoader.m in Sources */,
 				259D5535132854A900897272 /* UISpec+UISpecRunner.m in Sources */,
+				259D56B5132E706D00897272 /* RKAuthenticationSpec.m in Sources */,
+				259D56BC132E84B300897272 /* RKSpecEnvironment.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1886,9 +1894,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
 				HEADER_SEARCH_PATHS = (
-					Build,
 					Specs/Runner/OCMock/Headers,
 					Specs/Runner/UISpec/headers,
+					Build,
 				);
 				INFOPLIST_FILE = "Specs/Runner/UISpec-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -1924,9 +1932,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
 				HEADER_SEARCH_PATHS = (
-					Build,
 					Specs/Runner/OCMock/Headers,
 					Specs/Runner/UISpec/headers,
+					Build,
 				);
 				INFOPLIST_FILE = "Specs/Runner/UISpec-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";

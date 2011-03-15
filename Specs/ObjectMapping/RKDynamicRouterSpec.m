@@ -7,10 +7,7 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKDynamicRouter.h"
 #import "RKHuman.h"
-#import "RKObjectManager.h"
-#import "RKManagedObjectStore.h"
 
 @interface RKDynamicRouterSpec : NSObject <UISpec> {
 }
