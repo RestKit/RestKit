@@ -3,20 +3,8 @@ module RestKit
     class Authentication < Sinatra::Base
       AUTH_USERNAME = 'restkit'
       AUTH_PASSWORD = 'authentication'
-      
-      helpers do
-        def protected!
-            unless authorized?
-              response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-              throw(:halt, [401, "Not authorized\n"])
-            end
-          end
-
-          def authorized?
-            @auth ||= Rack::Auth::Basic::Request.new(request.env)
-            @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == ['admin', 'admin']
-          end
-      end
+      AUTH_REALM    = 'RestKit'
+      AUTH_OPAQUE   = '7e7e7e7e7e'
       
       get '/authentication/none' do
         "Success!"
@@ -25,26 +13,23 @@ module RestKit
       get '/authentication/basic' do
         @auth ||= Rack::Auth::Basic::Request.new(request.env)
         unless @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [AUTH_USERNAME, AUTH_PASSWORD]
-          response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+          response['WWW-Authenticate'] = %(Basic realm="#{AUTH_REALM}")
           throw(:halt, [401, "Not authorized\n"])
         end
       end
-
+      
       get '/authentication/digest' do
-        # TODO..
-        @auth = Rack::Auth::Digest::Request.new(request.env)
-        unless @auth.provided? && @auth.digest? && @auth.credentials && @auth.credentials == [AUTH_USERNAME, AUTH_PASSWORD]
-          response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-          throw(:halt, [401, "Not authorized\n"])
+        app = lambda do |env|
+          [ 200, {'Content-Type' => 'text/plain'}, ["Hi #{env['REMOTE_USER']}"] ]
         end
-        
-        # do |username|
-        #  username == 'Alice' ? Digest::MD5.hexdigest("Alice:#{realm}:correct-password") : nil
-        #end
-        # app.realm = realm
-        # app.opaque = 'this-should-be-secret'
-        # app.passwords_hashed = true
-      end
+        auth = Rack::Auth::Digest::MD5.new(app) do |username|
+          username == AUTH_USERNAME ? Digest::MD5.hexdigest("#{AUTH_USERNAME}:#{AUTH_REALM}:#{AUTH_PASSWORD}") : nil
+        end
+        auth.realm = AUTH_REALM
+        auth.opaque = AUTH_OPAQUE
+        auth.passwords_hashed = true
+        auth.call(request.env)
+      end            
     end
   end
 end
