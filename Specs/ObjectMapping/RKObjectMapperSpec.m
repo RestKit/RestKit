@@ -156,6 +156,26 @@
     [expectThat([[array lastObject] name]) should:be(@"mimi")];
 }
 
+- (void)itShouldMapAnArrayOfStringsToAProperty {
+/*
+ 'tags' =>
+ array (
+ 'url' => 'http://localhost/~David/gallery3/rest/item_tags/1?
+ output=html',
+ 'members' =>
+ array (
+ 0 => 'http://localhost/~David/gallery3/rest/tag_item/379,1?
+ output=html',
+ 1 => 'http://localhost/~David/gallery3/rest/tag_item/380,1?
+ output=html',
+ 2 => 'http://localhost/~David/gallery3/rest/tag_item/381,1?
+ output=html',
+ ),
+ )
+*/
+    // TODO: IMPLEMENT ME
+}
+
 // TODO: re-implement these specs when we re-implement xml parsing.
 //- (void)itShouldMapFromXML {
 //	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
@@ -386,6 +406,130 @@
 	@"</test_serialization_class>"
 	@"</test_serialization_classes>";
 	return xml;
+}
+
+@end
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
+// This class is a thin model around
+@interface RKPath : RKObject {
+@private
+    NSNumber* _label;
+    NSArray*  _route; // An array of hashes
+}
+
+@property (nonatomic, retain) NSNumber* label;
+@property (nonatomic, retain) NSArray* route;
+@end
+
+@implementation RKPath
+
+@synthesize label = _label;
+@synthesize route = _route;
+
++ (NSDictionary*)elementToPropertyMappings {
+    return [NSDictionary dictionaryWithKeysAndObjects:            
+            @"label", @"label",
+            @"route", @"route",
+            nil];
+}
+
+@end
+
+@interface RKModeledPath : RKObject {
+@private
+    NSNumber* _label;
+    NSArray*  _route; // An array of RKPoint objects
+}
+
+@property (nonatomic, retain) NSNumber* label;
+@property (nonatomic, retain) NSArray* route;
+@end
+
+@implementation RKModeledPath
+
+@synthesize label = _label;
+@synthesize route = _route;
+
++ (NSDictionary*)elementToPropertyMappings {
+    return [NSDictionary dictionaryWithKeysAndObjects:            
+            @"label", @"label",
+            nil];
+}
+
++ (NSDictionary*)elementToRelationshipMappings {
+    return [NSDictionary dictionaryWithKeysAndObjects:
+            @"route", @"route",
+            nil];
+}
+
+@end
+
+@interface RKPoint : RKObject {
+    NSNumber* _latitude;
+    NSNumber* _longitude;    
+}
+
+@property (nonatomic, retain) NSNumber* latitude;
+@property (nonatomic, retain) NSNumber* longitude;
+
+@end
+
+
+@implementation RKPoint
+
+@synthesize latitude = _latitude;
+@synthesize longitude = _longitude;
+
++ (NSDictionary*) elementToPropertyMappings {    
+    return [NSDictionary dictionaryWithKeysAndObjects:            
+            @"LATITUDE", @"latitude",            
+            @"LONGITUDE", @"longitude",            
+            nil];
+}
+
+- (NSString*)description {
+    return [NSString stringWithFormat:@"RKPoint : latitude = %@, longitude = %@", self.latitude, self.longitude];
+}
+
+@end
+
+@interface RKObjectMapperRegisteredClassWithArraySpec : NSObject <UISpec> {
+@private
+}
+@end
+
+@implementation RKObjectMapperRegisteredClassWithArraySpec
+
+- (NSString*)JSON {
+    // TODO: Should create a JSON factory that can read these from a fixtures directory where we can format them nicely.
+    return @"[{\"route\":[{\"LATITUDE\":\"32.224519\",\"LONGITUDE\":\"-110.947325\"},{\"LATITUDE\":\"32.224542\",\"LONGITUDE\":\"-110.943861\"},{\"LATITUDE\":\"32.221431\",\"LONGITUDE\":\"-110.943930\"}],\"label\":7174},{\"route\":[{\"LATITUDE\":\"32.224519\",\"LONGITUDE\":\"-110.947325\"},{\"LATITUDE\":\"32.221402\",\"LONGITUDE\":\"-110.947293\"},{\"LATITUDE\":\"32.221431\",\"LONGITUDE\":\"-110.943930\"}],\"label\":7079},{\"route\":[{\"LATITUDE\":\"32.224519\",\"LONGITUDE\":\"-110.947325\"},{\"LATITUDE\":\"32.227820\",\"LONGITUDE\":\"-110.947293\"},{\"LATITUDE\":\"32.227843\",\"LONGITUDE\":\"-110.943865\"},{\"LATITUDE\":\"32.227879\",\"LONGITUDE\":\"-110.939531\"},{\"LATITUDE\":\"32.224599\",\"LONGITUDE\":\"-110.939495\"},{\"LATITUDE\":\"32.221476\",\"LONGITUDE\":\"-110.939496\"},{\"LATITUDE\":\"32.221431\",\"LONGITUDE\":\"-110.943930\"}],\"label\":23775}]";
+}
+
+- (void)itShouldMapAnArrayOfRoutes {
+    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	mapper.format = RKMappingFormatJSON;
+    
+    NSArray* array = [mapper mapFromString:[self JSON] toClass:[RKPath class] keyPath:nil];
+    [expectThat([array isKindOfClass:[NSArray class]]) should:be(YES)];
+    [expectThat([array count]) should:be(3)];
+    NSLog(@"Array is %@", array);
+    NSLog(@"First object is: %@", [array objectAtIndex:0]);
+    NSLog(@"Route on first object is: %@", [[array objectAtIndex:0] route]);
+}
+
+- (void)itShouldMapRouteToAnArrayOfPoints {
+    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	mapper.format = RKMappingFormatJSON;
+    [mapper registerClass:[RKPoint class] forElementNamed:@"route"];
+    
+    NSArray* array = [mapper mapFromString:[self JSON] toClass:[RKModeledPath class] keyPath:nil];
+    [expectThat([array isKindOfClass:[NSArray class]]) should:be(YES)];
+    [expectThat([array count]) should:be(3)];
+    NSLog(@"[Modeled] Array is %@", array);
+    NSLog(@"[Modeled] First object is: %@", [array objectAtIndex:0]);
+    NSLog(@"[Modeled] Route on first object is: %@", [[array objectAtIndex:0] route]);
 }
 
 @end
