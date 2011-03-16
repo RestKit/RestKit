@@ -101,6 +101,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		_isLoaded = NO;
 		_isLoading = NO;
 		_resourcePath = nil;
+		_emptyReloadAttempted = NO;
 	}
 	return self;
 }
@@ -136,6 +137,10 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 
 - (BOOL)isOutdated {
 	NSTimeInterval sinceNow = [self.loadedTime timeIntervalSinceNow];
+	if (![self isLoading] && !_emptyReloadAttempted && _objects && [_objects count] == 0) {
+		_emptyReloadAttempted = YES;
+		return YES;
+	}
 	return (![self isLoading] && (-sinceNow > _refreshRate));
 }
 
@@ -239,13 +244,11 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (void)load {
 	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
 	NSArray* cacheFetchRequests = nil;
-	NSArray* cachedObjects = nil;
 	if (store.managedObjectCache) {
 		cacheFetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
-		cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
 	}
 
-	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded || [cachedObjects count] == 0) {
+	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded) {
 		RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self];
 		objectLoader.method = self.method;
 		objectLoader.objectClass = _objectClass;
@@ -257,7 +260,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		[objectLoader send];
 	} else if (cacheFetchRequests && !_cacheLoaded) {
 		_cacheLoaded = YES;
-		[self modelsDidLoad:cachedObjects];
+		[self modelsDidLoad:[RKManagedObject objectsWithFetchRequests:cacheFetchRequests]];
 	}
 }
 

@@ -10,7 +10,7 @@
 #import "../RestKit.h"
 
 /**
- * Generic class for loading a remote model using a RestKit request and supplying the model to a 
+ * Generic class for loading a remote model using a RestKit request and supplying the model to a
  * TTListDataSource subclass
  */
 @interface RKRequestTTModel : TTModel <RKObjectLoaderDelegate> {
@@ -18,6 +18,7 @@
 	BOOL _isLoaded;
 	BOOL _isLoading;
 	BOOL _cacheLoaded;
+	BOOL _emptyReloadAttempted;
 
 	NSString* _resourcePath;
 	NSDictionary* _params;
