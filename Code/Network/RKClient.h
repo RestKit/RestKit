@@ -58,6 +58,8 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 	NSString* _username;
 	NSString* _password;
 	NSMutableDictionary* _HTTPHeaders;
+	NSMutableSet *_additionalRootCertificates;
+	BOOL _disableCertificateValidation;
 	RKReachabilityObserver* _baseURLReachabilityObserver;
 	NSString* _serviceUnavailableAlertTitle;
 	NSString* _serviceUnavailableAlertMessage;
@@ -83,6 +85,18 @@ NSString* RKMakePathWithObject(NSString* path, id object);
  * A dictionary of headers to be sent with each request
  */
 @property(nonatomic, readonly) NSDictionary* HTTPHeaders;
+
+/**
+ * A set of additional certificates to be used in evaluating self-signed
+ * SSL certificates.
+ */
+@property(nonatomic, readonly) NSSet* additionalRootCertificates;
+
+/**
+ * Accept all SSL certificates. This is a potential security exposure,
+ * and should be used ONLY while debugging in a controlled environment.
+ */
+@property(nonatomic, assign) BOOL disableCertificateValidation;
 
 /**
  * The RKReachabilityObserver used to monitor whether or not the client has a connection
@@ -147,6 +161,11 @@ NSString* RKMakePathWithObject(NSString* path, id object);
  * Adds an HTTP header to each request dispatched through the Rest client
  */
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
+
+/**
+ * Adds an additional certificate that will be used to evaluate self-signed SSL certs
+ */
+- (void)addRootCertificate:(SecCertificateRef)cert;
 
 /**
  * Returns a resource path with a dictionary of query parameters URL encoded and appended

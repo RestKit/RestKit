@@ -8,6 +8,7 @@
 
 #import "RKResponse.h"
 #import "RKNotifications.h"
+#import "RKClient.h"
 #import "RKJSONParser.h"
 
 @implementation RKResponse
@@ -55,18 +56,75 @@
 	[super dealloc];
 }
 
-// Handle basic auth
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    if ([challenge previousFailureCount] == 0) {
-        NSURLCredential *newCredential;
-        newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                 password:[NSString stringWithFormat:@"%@", _request.password]
-                                              persistence:NSURLCredentialPersistenceNone];
-        [[challenge sender] useCredential:newCredential
-               forAuthenticationChallenge:challenge];
-    } else {
-        [[challenge sender] cancelAuthenticationChallenge:challenge];
+- (BOOL)isServerTrusted:(SecTrustRef)trust {
+  RKClient* client = [RKClient sharedClient];
+  BOOL proceed = NO;
+  
+  if( client.disableCertificateValidation ) {
+    proceed = YES;
+  }
+  else if( [client.additionalRootCertificates count] > 0 ) {
+    CFArrayRef rootCerts = (CFArrayRef)[client.additionalRootCertificates allObjects];
+    SecTrustResultType result;
+    OSStatus returnCode;
+    
+    if( rootCerts && CFArrayGetCount(rootCerts) ) {
+      // this could fail, but the trust evaluation will proceed (it's likely to fail, of course)
+      SecTrustSetAnchorCertificates(trust, rootCerts);
     }
+    
+    returnCode = SecTrustEvaluate(trust, &result);
+    
+    if( returnCode == errSecSuccess ) {
+      proceed = (result == kSecTrustResultProceed || result == kSecTrustResultConfirm || result == kSecTrustResultUnspecified);
+      if( result == kSecTrustResultRecoverableTrustFailure ) {
+        // TODO: should try to recover here
+        // call SecTrustGetCssmResult() for more information about the failure
+      }
+    }
+  }
+  
+  return proceed;
+}
+
+// Handle basic auth & SSL certificate validation
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		SecTrustRef trust = [[challenge protectionSpace] serverTrust];
+		if ([self isServerTrusted:trust]) {
+			[challenge.sender useCredential:[NSURLCredential credentialForTrust:trust] forAuthenticationChallenge:challenge];
+		} else {
+			[[challenge sender] cancelAuthenticationChallenge:challenge];
+		}
+		return;
+	}
+	if ([challenge previousFailureCount] == 0) {
+		NSURLCredential *newCredential;
+		newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+		                                         password:[NSString stringWithFormat:@"%@", _request.password]
+		                                      persistence:NSURLCredentialPersistenceNone];
+		[[challenge sender] useCredential:newCredential
+		       forAuthenticationChallenge:challenge];
+	} else {
+		[[challenge sender] cancelAuthenticationChallenge:challenge];
+	}
+}
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)space { 
+	if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		// server is using an SSL certificate that the OS can't validate
+		// see whether the client settings allow validation here
+		RKClient* client = [RKClient sharedClient];
+		if ([client.additionalRootCertificates count] > 0 || client.disableCertificateValidation) {
+			return YES;
+		} else { 
+			return NO;
+		} 
+		}
+	
+	// If no other authentication is required, return NO for everything 
+	// Otherwise maybe YES for NSURLAuthenticationMethodDefault and etc. 
+	return NO; 
 }
 
 - (void)dispatchRequestDidStartLoadIfNecessary {

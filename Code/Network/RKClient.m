@@ -71,6 +71,8 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 @synthesize username = _username;
 @synthesize password = _password;
 @synthesize HTTPHeaders = _HTTPHeaders;
+@synthesize additionalRootCertificates = _additionalRootCertificates;
+@synthesize disableCertificateValidation = _disableCertificateValidation;
 @synthesize baseURLReachabilityObserver = _baseURLReachabilityObserver;
 @synthesize serviceUnavailableAlertTitle = _serviceUnavailableAlertTitle;
 @synthesize serviceUnavailableAlertMessage = _serviceUnavailableAlertMessage;
@@ -115,8 +117,9 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 }
 
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
+		_additionalRootCertificates = [[NSMutableSet alloc] init];
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
 		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
@@ -132,6 +135,7 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 	self.serviceUnavailableAlertTitle = nil;
 	self.serviceUnavailableAlertMessage = nil;
 	[_HTTPHeaders release];
+	[_additionalRootCertificates release];
 	[super dealloc];
 }
 
@@ -170,6 +174,10 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header {
 	[_HTTPHeaders setValue:value forKey:header];
+}
+
+- (void)addRootCertificate:(SecCertificateRef)cert {
+  [_additionalRootCertificates addObject:(id)cert];
 }
 
 - (void)setBaseURL:(NSString*)baseURL {
