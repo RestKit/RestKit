@@ -210,6 +210,20 @@
 			remoteGlobalIDString = 2523360411E79F090048F9B4;
 			remoteInfo = RestKitThree20;
 		};
+		250F884413337F89002F4590 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259D5548132856A400897272 /* UISpec.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
+			remoteInfo = UISpec;
+		};
+		250F884813337F89002F4590 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259D5548132856A400897272 /* UISpec.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C7D4F29310BDA39C00B00019;
+			remoteInfo = Specs;
+		};
 		25956959126DF0B4004BAC4C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -955,7 +969,7 @@
 			isa = PBXGroup;
 			children = (
 				259D5552132856A400897272 /* libUISpec.a */,
-				259D5554132856A400897272 /* Specs.app */,
+				250F884913337F89002F4590 /* Specs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1222,6 +1236,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				250F884513337F89002F4590 /* PBXTargetDependency */,
 				259D5556132856B700897272 /* PBXTargetDependency */,
 				3F4BC8F312DE4C7F00048E71 /* PBXTargetDependency */,
 				25956982126DF182004BAC4C /* PBXTargetDependency */,
@@ -1300,17 +1315,18 @@
 			remoteRef = 250BC43611F6260100F3FE5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		250F884913337F89002F4590 /* Specs.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Specs.app;
+			remoteRef = 250F884813337F89002F4590 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		259D5552132856A400897272 /* libUISpec.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libUISpec.a;
 			remoteRef = 259D5551132856A400897272 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		259D5554132856A400897272 /* Specs.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = Specs.app;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1488,6 +1504,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		250F884513337F89002F4590 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UISpec;
+			targetProxy = 250F884413337F89002F4590 /* PBXContainerItemProxy */;
+		};
 		2595695A126DF0B4004BAC4C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 253A07FB1255161B00976E89 /* RestKitNetwork */;
