@@ -21,6 +21,7 @@
 				2595695E126DF0B4004BAC4C /* PBXTargetDependency */,
 				25956960126DF0B4004BAC4C /* PBXTargetDependency */,
 				25956962126DF0B4004BAC4C /* PBXTargetDependency */,
+				73057FDB1331ADE9001908EE /* PBXTargetDependency */,
 				25956964126DF0B4004BAC4C /* PBXTargetDependency */,
 			);
 			name = RestKit;
@@ -176,6 +177,9 @@
 		3F1912AF12DF6B6200C077AD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */; };
 		3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A2D10FE749C008F47C5 /* Foundation.framework */; };
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		73057FD61331AD5E001908EE /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 73057FC71331AA3D001908EE /* JSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		73057FD71331AD67001908EE /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC81331AA3D001908EE /* JSONKit.m */; };
+		73057FD91331AD99001908EE /* RKJSONParser+JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC41331A8F6001908EE /* RKJSONParser+JSONKit.m */; };
 		7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7377FBE11268E96300868752 /* RKManagedObjectCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */; };
@@ -281,6 +285,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
 			remoteInfo = UISpec;
+		};
+		73057FDA1331ADE9001908EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 73057FD01331AD2E001908EE;
+			remoteInfo = "RestKitJSONParser+JSONKit";
 		};
 		73FE56A8126CB83400E0F30B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -480,6 +491,10 @@
 		3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = /Users/blake/Projects/two_toasters/InMotion/Libraries/UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<absolute>"; };
 		3F6C3A2D10FE749C008F47C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3F6C3A9510FE7524008F47C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		73057FC41331A8F6001908EE /* RKJSONParser+JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKJSONParser+JSONKit.m"; sourceTree = "<group>"; };
+		73057FC71331AA3D001908EE /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSONKit.h; path = Vendor/JSONKit/JSONKit.h; sourceTree = "<group>"; };
+		73057FC81331AA3D001908EE /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSONKit.m; path = Vendor/JSONKit/JSONKit.m; sourceTree = "<group>"; };
+		73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserJSONKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7377FBE11268E96300868752 /* RKManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCache.h; sourceTree = "<group>"; };
 		73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKReachabilityObserver.h; sourceTree = "<group>"; };
 		73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKReachabilityObserver.m; sourceTree = "<group>"; };
@@ -559,6 +574,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		73057FCF1331AD2E001908EE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -573,6 +595,7 @@
 				253A080C12551D3000976E89 /* libRestKitSupport.a */,
 				253A081412551D5300976E89 /* libRestKitCoreData.a */,
 				3F6C39A510FE5C95008F47C5 /* UISpec.app */,
+				73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -748,6 +771,7 @@
 			children = (
 				253A08B61255212300976E89 /* RKJSONParser+SBJSON.m */,
 				253A08B71255212300976E89 /* RKJSONParser+YAJL.m */,
+				73057FC41331A8F6001908EE /* RKJSONParser+JSONKit.m */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -785,6 +809,7 @@
 		2590E6711252357200531FA8 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				73057FC61331AA28001908EE /* JSONKit */,
 				2590E69A1252372800531FA8 /* YAJL */,
 				2590E673125235C200531FA8 /* SBJSON */,
 			);
@@ -993,6 +1018,15 @@
 			path = Specs;
 			sourceTree = "<group>";
 		};
+		73057FC61331AA28001908EE /* JSONKit */ = {
+			isa = PBXGroup;
+			children = (
+				73057FC71331AA3D001908EE /* JSONKit.h */,
+				73057FC81331AA3D001908EE /* JSONKit.m */,
+			);
+			name = JSONKit;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1106,6 +1140,14 @@
 				2590E684125235C200531FA8 /* SBJsonBase.h in Headers */,
 				2590E686125235C200531FA8 /* SBJsonParser.h in Headers */,
 				2590E688125235C200531FA8 /* SBJsonWriter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		73057FCD1331AD2E001908EE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73057FD61331AD5E001908EE /* JSONKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1253,6 +1295,23 @@
 			productReference = 3F6C39A510FE5C95008F47C5 /* UISpec.app */;
 			productType = "com.apple.product-type.application";
 		};
+		73057FD01331AD2E001908EE /* RestKitJSONParser+JSONKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 73057FD81331AD85001908EE /* Build configuration list for PBXNativeTarget "RestKitJSONParser+JSONKit" */;
+			buildPhases = (
+				73057FCD1331AD2E001908EE /* Headers */,
+				73057FCE1331AD2E001908EE /* Sources */,
+				73057FCF1331AD2E001908EE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RestKitJSONParser+JSONKit";
+			productName = "RestKitJSONParser+JSONKit";
+			productReference = 73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1293,6 +1352,7 @@
 				253A080B12551D3000976E89 /* RestKitSupport */,
 				2590E64E125231F600531FA8 /* RestKitJSONParser+YAJL */,
 				2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */,
+				73057FD01331AD2E001908EE /* RestKitJSONParser+JSONKit */,
 				253A081312551D5300976E89 /* RestKitCoreData */,
 				2523360411E79F090048F9B4 /* RestKitThree20 */,
 				3F6C39A410FE5C95008F47C5 /* UISpec */,
@@ -1509,6 +1569,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		73057FCE1331AD2E001908EE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73057FD71331AD67001908EE /* JSONKit.m in Sources */,
+				73057FD91331AD99001908EE /* RKJSONParser+JSONKit.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1560,6 +1629,11 @@
 			isa = PBXTargetDependency;
 			target = 2523360411E79F090048F9B4 /* RestKitThree20 */;
 			targetProxy = 250F87761333725C002F4590 /* PBXContainerItemProxy */;
+		};
+		73057FDB1331ADE9001908EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 73057FD01331AD2E001908EE /* RestKitJSONParser+JSONKit */;
+			targetProxy = 73057FDA1331ADE9001908EE /* PBXContainerItemProxy */;
 		};
 		73FE56A9126CB83400E0F30B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1991,6 +2065,33 @@
 			};
 			name = Release;
 		};
+		73057FD21331AD2E001908EE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PREBINDING = NO;
+				PRODUCT_NAME = RestKitJSONParserJSONKit;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		73057FD31331AD2E001908EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PREBINDING = NO;
+				PRODUCT_NAME = RestKitJSONParserJSONKit;
+				SDKROOT = iphoneos;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2080,6 +2181,15 @@
 			buildConfigurations = (
 				3F6C39A810FE5C95008F47C5 /* Debug */,
 				3F6C39A910FE5C95008F47C5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		73057FD81331AD85001908EE /* Build configuration list for PBXNativeTarget "RestKitJSONParser+JSONKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73057FD21331AD2E001908EE /* Debug */,
+				73057FD31331AD2E001908EE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
