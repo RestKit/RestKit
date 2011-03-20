@@ -130,6 +130,9 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 	if (keyPath) {
 		object = [object valueForKeyPath:keyPath];
 	}
+    
+    // TODO: Calling into mapObjectFromDictionary here causes registration lookup even if class is populated
+    // TODO: need mapInstanceOfClass: fromDictionary:
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		return [self mapObjectFromDictionary:(NSDictionary*)object];
 	} else if ([object isKindOfClass:[NSArray class]]) {
@@ -193,6 +196,8 @@ static const NSString* kRKModelMapperMappingFormatParserKey = @"RKMappingFormatP
 }
 
 // TODO: Can I make this support keyPath??
+// Lookup an object type using the element to class mappings and map its attributes
+// Expects an object of the form {"registered_type": {"attribute1": "value", "attribute2": "value"}
 - (NSObject<RKObjectMappable>*)mapObjectFromDictionary:(NSDictionary*)dictionary {
 	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
 	Class class = [_elementToClassMappings objectForKey:elementName];

@@ -241,4 +241,15 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return object;
 }
 
+- (NSArray*)objectsForResourcePath:(NSString *)resourcePath {
+    NSArray* cachedObjects = nil;
+    
+    if (self.managedObjectCache) {
+        NSArray* cacheFetchRequests = [self.managedObjectCache fetchRequestsForResourcePath:resourcePath];
+        cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
+    }
+    
+    return cachedObjects;
+}
+
 @end

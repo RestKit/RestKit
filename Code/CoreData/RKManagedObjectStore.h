@@ -31,7 +31,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 
 /*
  * This returns an appropriate managed object context for this object store.
- * Because of the intrecacies of how CoreData works across threads it returns
+ * Because of the intrecacies of how Core Data works across threads it returns
  * a different NSManagedObjectContext for each thread.
  */
 @property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
@@ -71,5 +71,12 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  */
 - (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue;
 
+/**
+ * Returns an array of objects that the 'live' at the specified resource path. Usage of this
+ * method requires that you have provided an implementation of the managed object cache
+ *
+ * See managedObjectCache above
+ */
+- (NSArray*)objectsForResourcePath:(NSString*)resourcePath;
 
 @end
