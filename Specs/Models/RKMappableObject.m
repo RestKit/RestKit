@@ -7,7 +7,7 @@
 //
 
 #import "RKMappableObject.h"
-#import "NSDictionary+RKRequestSerialization.h"
+#import "NSDictionary+RKAdditions.h"
 
 @implementation RKMappableObject
 

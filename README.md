@@ -97,19 +97,17 @@ To add RestKit to your project (you're using git, right?):
 Xcode 4.x (Git Submodule)
 -------------------------
 
-Xcode 4 has introduced significant changes to the build process that make building and linking against a static library more complicated than under Xcode 3. In
-particular, Xcode now favors the use of an external "Derived Data" directory rather than individual per-project build paths. This causes pain with RestKit because
-it is difficult to know exactly what path the static libraries and headers will wind up being built to ahead of time. These install instructions are designed to
-work if you are using an external DerivedData directory or using the per-target build settings (see "File" menu > "Project Settings" in Xcode).
+XCode 4 has introduced significant changes to the build process and how cross-project references work. RestKit has been updated to take advantage of
+the flexibility offered in Xcode 4. This has introduced a forked world between how projects are configured. You need to determine if you are going to
+utilize the "Derived Data" Build Location support introduced in Xcode 4. To do so, open the Project/Workspace setting via the "File" menu > "Project Settings" 
+in Xcode.
 
-**NOTE** - These install instructions assume you have checked out the submodule to the root directory of your project. Paths that read "$(SOURCE_ROOT)/RestKit" reflect this assumption. If you have changed the checkout path, be sure to update the paths appropriately or your will have header include and/or linking errors. The paths to pay attention to are:
+    * If your "Build Location" is set to "Place build products in derived data location", read the instructions below.
+    * If you "Build Location" is set to "Place build products in locations specified by targets", follow the Xcode 3.x instructions above.
 
-  * Header Search Path: `"$(SOURCE_ROOT)/RestKit/Build"`
-  * Library Search Path: `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"`
+*Derived Data is the recommended & preferred installation method for Xcode 4 projects!*
 
-For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your Header Search Path would be `"$(SOURCE_ROOT)/Libraries/RestKit/Build"` and your Library Search Path would be `"$(SOURCE_ROOT)/Libraries/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"`
-
-To add RestKit to your project:
+To add RestKit to a Derived Data project:
 
 1. Add the submodule: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
 1. Open the project you wish to add RestKit to in Xcode.
@@ -118,8 +116,6 @@ To add RestKit to your project:
 1. Drag the RestKit.xcodeproj file from the RestKit project window and drop it on your "<Your Project's Name>".xcodeproj. A dialog will appear -- make sure "Copy items" is unchecked and "Reference Type" is "Relative to Project" before clicking "Add".
 1. Click on your project's name in the sidebar on the left to open the project settings view in the right pane of the window.
 1. In the middle pain you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
-1. Find the **Header Search Paths** entry and double click it. Use the **+** button to add a new path. Enter the following path, including the quotes: `"$(SOURCE_ROOT)/RestKit/Build"`. Dismiss the editor with the **Done** button.
-1. Find the **Library Search Paths** entry and double click it. Use the **+** button to add a new path. Enter the following path, including the quotes: `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"`. Dismiss the editor with the **Done** button.
 1. Find the **Other Linker Flags** entry and double click it. Use the **+** button to add a new entry and enter `-ObjC -all_load`. Dismiss the editor with the **Done** button.
 1. Locate the target you wish to add RestKit to in the **TARGETS** list in the middle of the editor pane. Select it to open the target settings editor in the right pane of the window.
 1. Click the **Build Phases** tab along the top of the window to open the Build Phases editor.
@@ -145,6 +141,14 @@ You now only need to add includes for the RestKit libraries at the appropriate p
     #import <RestKit/CoreData/CoreData.h>
 
 Please see the Examples/ directory for details on utilizing the library.
+
+Upgrading to Xcode 4.x Derived Data Installation
+--------------------------------------------------
+
+If you are upgrading an existing RestKit project to Xcode 4 derived data builds, you need to remove the RestKit header search path
+from your project/targets. Failure to do so will result in redefinition errors from the header imports during build time.
+
+Be sure to completely clear your build directory when performing an update as Xcode is easily confused.
 
 Contributing
 -------------------------

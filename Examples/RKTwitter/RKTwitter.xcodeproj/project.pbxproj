@@ -434,6 +434,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
+				SYMROOT = Build;
 			};
 			name = Debug;
 		};
@@ -449,6 +450,7 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
+				SYMROOT = Build;
 			};
 			name = Release;
 		};

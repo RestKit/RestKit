@@ -168,8 +168,12 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 
 	[_baseURLReachabilityObserver release];
 	_baseURLReachabilityObserver = nil;
-	NSURL* URL = [NSURL URLWithString:baseURL];
-	_baseURLReachabilityObserver = [[RKReachabilityObserver reachabilityObserverWithHostName:[URL host]] retain];
+    
+    // Don't crash if baseURL is nil'd out (i.e. dealloc)
+    if (baseURL) {
+        NSURL* URL = [NSURL URLWithString:baseURL];
+        _baseURLReachabilityObserver = [[RKReachabilityObserver reachabilityObserverWithHostName:[URL host]] retain];
+    }
 }
 
 - (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {

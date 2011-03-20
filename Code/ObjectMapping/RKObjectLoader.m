@@ -34,7 +34,7 @@
 
 - (id)initWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	if ((self = [self initWithURL:[client URLForResourcePath:resourcePath] delegate:delegate])) {
-		_mapper = [mapper retain];		
+		_mapper = [mapper retain];
 		_client = [client retain];
 		[_client setupRequest:self];
 	}

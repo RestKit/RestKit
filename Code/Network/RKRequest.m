@@ -66,7 +66,7 @@
 }
 
 - (void)setRequestBody {
-	if (_params) {
+	if (_params && (_method != RKRequestMethodGET)) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
 			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
@@ -180,6 +180,12 @@
 		_isLoading = YES;
 		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
 		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+        
+        if (error) {
+            [self didFailLoadWithError:error];
+        } else {
+            [self didFinishLoad:response];
+        }
 	} else {
 		NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
 		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:

@@ -93,6 +93,13 @@
 }
 
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
+    // Don't return a serialization for a GET request
+    // There is an extensive discussion about this on the ASIHTTPRequest list
+    // See http://groups.google.com/group/asihttprequest/browse_thread/thread/ef79a8333dde6acb
+    if (method == RKRequestMethodGET) {
+        return nil;
+    }
+    
 	// By default return a form encoded serializable dictionary
 	return [object propertiesForSerialization];
 }

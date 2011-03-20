@@ -49,9 +49,20 @@ typedef enum {
 + (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL;
 
 /**
+ * Create and initialize a new object manager. If this is the first instance created
+ * it will be set as the shared instance
+ */
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
+
+/**
  * Initialize a new model manager instance
  */
 - (id)initWithBaseURL:(NSString*)baseURL;
+
+/**
+ * Initialize a new model manager instance
+ */
+- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
 
 /**
  * The wire format to use for communications. Either RKMappingFormatXML or RKMappingFormatJSON.

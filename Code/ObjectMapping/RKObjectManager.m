@@ -29,10 +29,15 @@ static RKObjectManager* sharedManager = nil;
 @synthesize router = _router;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
-	if ((self = [super init])) {
-		_mapper = [[RKObjectMapper alloc] init];
-		_router = [[RKDynamicRouter alloc] init];
+	return self = [self initWithBaseURL:baseURL objectMapper:[[[RKObjectMapper alloc] init] autorelease] router:[[[RKDynamicRouter alloc] init] autorelease]];
+}
+
+- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
+	if (self = [super init]) {
+		_mapper = [mapper retain];
+		_router = [router retain];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
+
 		self.format = RKMappingFormatJSON;
 		_onlineState = RKObjectManagerOnlineStateUndetermined;
 		[[NSNotificationCenter defaultCenter] addObserver:self
@@ -63,6 +68,14 @@ static RKObjectManager* sharedManager = nil;
 	[manager retain];
 	[sharedManager release];
 	sharedManager = manager;
+}
+
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
+	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL objectMapper:mapper router:router] autorelease];
+	if (nil == sharedManager) {
+		[RKObjectManager setSharedManager:manager];
+	}
+	return manager;
 }
 
 + (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL {
