@@ -8,6 +8,7 @@
 
 #import "../ObjectMapping/RKObjectLoader.h"
 
+// Handles object loads when Core Data is being utilized
 @interface RKManagedObjectLoader : RKObjectLoader {
     NSManagedObjectID* _targetObjectID;	
 }

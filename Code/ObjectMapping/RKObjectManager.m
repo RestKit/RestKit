@@ -33,7 +33,8 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		_mapper = [mapper retain];
 		_router = [router retain];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
@@ -140,10 +141,9 @@ static RKObjectManager* sharedManager = nil;
     
     Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
     if (managedObjectLoaderClass) {
-        objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath client:self.client mapper:self.mapper delegate:delegate];
-        [(RKManagedObjectLoader*)objectLoader setManagedObjectStore:self.objectStore];
+        objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
     } else {
-        objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath client:self.client mapper:self.mapper delegate:delegate];
+        objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
     }	
 
 	return objectLoader;

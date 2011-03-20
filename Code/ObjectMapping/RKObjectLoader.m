@@ -14,47 +14,54 @@
 #import "Errors.h"
 #import "RKNotifications.h"
 
+// Private Interfaces - Proxy access to RKObjectManager for convenience
+@interface RKObjectLoader (Private)
+
+@property (nonatomic, readonly) RKClient* client;
+@property (nonatomic, readonly) RKObjectMapper* objectMapper;
+
+@end
+
 @implementation RKObjectLoader
 
-@synthesize mapper = _mapper, response = _response, objectClass = _objectClass, keyPath = _keyPath;
+@synthesize objectManager = _objectManager, response = _response, objectClass = _objectClass, keyPath = _keyPath;
 @synthesize targetObject = _targetObject;
-@synthesize managedObjectStore = _managedObjectStore;
 
-+ (id)loaderWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	return [self loaderWithResourcePath:resourcePath client:[RKClient sharedClient] mapper:mapper delegate:delegate];
++ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+    return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
 }
 
-+ (id)loaderWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	return [[[self alloc] initWithResourcePath:resourcePath client:client mapper:mapper delegate:delegate] autorelease];
-}
-
-- (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	return [self initWithResourcePath:resourcePath client:[RKClient sharedClient] mapper:mapper delegate:delegate];
-}
-
-- (id)initWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	if ((self = [self initWithURL:[client URLForResourcePath:resourcePath] delegate:delegate])) {
-		_mapper = [mapper retain];
-		_client = [client retain];
-		[_client setupRequest:self];
+- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+	if ((self = [super initWithURL:[objectManager.client URLForResourcePath:resourcePath] delegate:delegate])) {		
+        _objectManager = objectManager;
+        
+        [self.objectManager.client setupRequest:self];
 	}
+    
 	return self;
 }
 
 - (void)dealloc {
-	[_mapper release];
-	_mapper = nil;
+    // Weak reference
+    _objectManager = nil;
+    
 	[_response release];
 	_response = nil;
 	[_keyPath release];
-	_keyPath = nil;	
-	[_client release];
-	_client = nil;
-    self.managedObjectStore = nil;
+	_keyPath = nil;
     
 	[super dealloc];
 }
 
+#pragma mark - RKObjectManager Proxy Methods
+
+- (RKClient*)client {
+    return self.objectManager.client;
+}
+
+- (RKObjectMapper*)objectMapper {
+    return self.objectManager.mapper;
+}
 
 #pragma mark Response Processing
 
@@ -95,17 +102,17 @@
         
         // TODO: Unwind hard coding of JSON specific assumptions
 		if ([response isJSON]) {
-			error = [_mapper parseErrorFromString:[response bodyAsString]];
+			error = [self.objectMapper parseErrorFromString:[response bodyAsString]];
 			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 
-		} else if ([response isServiceUnavailable] && [_client serviceUnavailableAlertEnabled]) {
+		} else if ([response isServiceUnavailable] && [self.client serviceUnavailableAlertEnabled]) {
 			// TODO: Break link with the client by using notifications
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}
 
-			UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[_client serviceUnavailableAlertTitle]
-																message:[_client serviceUnavailableAlertMessage]
+			UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[self.client serviceUnavailableAlertTitle]
+																message:[self.client serviceUnavailableAlertMessage]
 															   delegate:nil
 													  cancelButtonTitle:NSLocalizedString(@"OK", nil)
 													  otherButtonTitles:nil];
@@ -161,10 +168,10 @@
 	 */
 	NSArray* results = nil;
 	if (self.targetObject) {
-        [_mapper mapObject:self.targetObject fromString:[response bodyAsString]];
+        [self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString]];
         results = [NSArray arrayWithObject:self.targetObject];
 	} else {
-		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
+		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {

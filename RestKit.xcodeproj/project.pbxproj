@@ -29,6 +29,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		251D14AC133597B800959061 /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 251D14AA133597B800959061 /* RKManagedObjectLoader.h */; };
+		251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 251D14AB133597B800959061 /* RKManagedObjectLoader.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
 		2538C05C12A6C44A0006903C /* RKRequestQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2538C05A12A6C44A0006903C /* RKRequestQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2538C05D12A6C44A0006903C /* RKRequestQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538C05B12A6C44A0006903C /* RKRequestQueue.m */; };
@@ -304,6 +306,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		251D14AA133597B800959061 /* RKManagedObjectLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectLoader.h; sourceTree = "<group>"; };
+		251D14AB133597B800959061 /* RKManagedObjectLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoader.m; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2538C05A12A6C44A0006903C /* RKRequestQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestQueue.h; sourceTree = "<group>"; };
 		2538C05B12A6C44A0006903C /* RKRequestQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestQueue.m; sourceTree = "<group>"; };
@@ -633,6 +637,8 @@
 				7377FBE11268E96300868752 /* RKManagedObjectCache.h */,
 				253A086312551D8D00976E89 /* RKManagedObjectStore.h */,
 				253A086412551D8D00976E89 /* RKManagedObjectStore.m */,
+				251D14AA133597B800959061 /* RKManagedObjectLoader.h */,
+				251D14AB133597B800959061 /* RKManagedObjectLoader.m */,
 				253A088812551D8D00976E89 /* RKManagedObjectSeeder.h */,
 				253A088912551D8D00976E89 /* RKManagedObjectSeeder.m */,
 			);
@@ -1061,6 +1067,7 @@
 				25431EBB1255640800A315CF /* CoreData.h in Headers */,
 				2543201C1256179900A315CF /* RKManagedObjectSeeder.h in Headers */,
 				7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */,
+				251D14AC133597B800959061 /* RKManagedObjectLoader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1434,6 +1441,7 @@
 				253A09251255258500976E89 /* RKManagedObject.m in Sources */,
 				253A09271255258600976E89 /* RKManagedObjectStore.m in Sources */,
 				2543201D1256179900A315CF /* RKManagedObjectSeeder.m in Sources */,
+				251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

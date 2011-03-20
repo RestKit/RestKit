@@ -12,6 +12,10 @@
 #import "RKManagedObjectStore.h"
 
 @interface RKObjectLoader (Private)
+
+@property (nonatomic, readonly) RKManagedObjectStore* objectStore;
+@property (nonatomic, readonly) RKObjectMapper* mapper;
+
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
 @end
 
@@ -35,6 +39,14 @@
 	_targetObjectID = nil;
 }
 
+- (RKManagedObjectStore*)objectStore {
+    return [self.objectManager objectStore];
+}
+
+- (RKObjectMapper*)mapper {
+    return [self.objectManager mapper];
+}
+
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
     NSMutableDictionary* newInfo = [[NSMutableDictionary alloc] initWithDictionary:dictionary];
 	NSArray* models = [dictionary objectForKey:@"objects"];
@@ -46,8 +58,7 @@
 	NSMutableArray* objects = [NSMutableArray arrayWithCapacity:[models count]];
 	for (id object in models) {
 		if ([object isKindOfClass:[NSManagedObjectID class]]) {
-			id obj = [self.managedObjectStore objectWithID:(NSManagedObjectID*)object];
-			NSLog(@"OBJ: %@", obj);
+			id obj = [self.objectStore objectWithID:(NSManagedObjectID*)object];
 			[objects addObject:obj];
 		} else {
 			[objects addObject:object];
@@ -61,7 +72,6 @@
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	RKManagedObjectStore* objectStore = self.managedObjectStore;
     
 	/**
 	 * If this loader is bound to a particular object, then we map
@@ -71,19 +81,19 @@
 	NSArray* results = nil;
 	if (self.targetObject) {
 		if (_targetObjectID) {
-			NSManagedObject* backgroundThreadModel = [self.managedObjectStore objectWithID:_targetObjectID];
+			NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];
 			if (self.method == RKRequestMethodDELETE) {
-				[[objectStore managedObjectContext] deleteObject:backgroundThreadModel];
+				[[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
 			} else {
-				[_mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
+				[self.mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
 				results = [NSArray arrayWithObject:backgroundThreadModel];
 			}
 		} else {
-			[_mapper mapObject:self.targetObject fromString:[response bodyAsString]];
+			[self.mapper mapObject:self.targetObject fromString:[response bodyAsString]];
 			results = [NSArray arrayWithObject:self.targetObject];
 		}
 	} else {
-		id result = [_mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
+		id result = [self.mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {
@@ -92,16 +102,16 @@
 			results = [NSArray arrayWithObjects:result, nil];
 		}
 		
-		if (objectStore && [objectStore managedObjectCache]) {
+		if (self.objectStore && [self.objectStore managedObjectCache]) {
 			if ([self.URL isKindOfClass:[RKURL class]]) {
 				RKURL* rkURL = (RKURL*)self.URL;
 				
-				NSArray* fetchRequests = [[objectStore managedObjectCache] fetchRequestsForResourcePath:rkURL.resourcePath];
+				NSArray* fetchRequests = [[self.objectStore managedObjectCache] fetchRequestsForResourcePath:rkURL.resourcePath];
 				NSArray* cachedObjects = [RKManagedObject objectsWithFetchRequests:fetchRequests];
 				for (id object in cachedObjects) {
 					if ([object isKindOfClass:[RKManagedObject class]]) {
 						if (NO == [results containsObject:object]) {
-							[[objectStore managedObjectContext] deleteObject:object];
+							[[self.objectStore managedObjectContext] deleteObject:object];
 						}
 					}
 				}
@@ -111,7 +121,7 @@
     
 	// Before looking up NSManagedObjectIDs, need to save to ensure we do not have
 	// temporary IDs for new objects prior to handing the objectIDs across threads
-	NSError* error = [objectStore save];
+	NSError* error = [self.objectStore save];
 	if (nil != error) {
 		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
 		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
@@ -144,7 +154,7 @@
 			// into an error where the object context cannot be saved. We do this
 			// right before send to avoid sequencing issues where the target object is
 			// set before the managed object store.
-			[self.managedObjectStore save];
+			[self.objectStore save];
 			_targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
 		}
 		
