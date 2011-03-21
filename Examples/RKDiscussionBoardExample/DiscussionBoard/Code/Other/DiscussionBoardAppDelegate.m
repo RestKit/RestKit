@@ -45,7 +45,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 
 	// Set the default refresh rate to 1. This means we should always hit the web if we can.
 	// If the server is unavailable, we will load from the Core Data cache.
-//	[RKRequestTTModel setDefaultRefreshRate:1];
+	[RKRequestTTModel setDefaultRefreshRate:1];
 
 	// Set nil for any attributes we expect to appear in the payload, but do not
 	objectManager.mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
