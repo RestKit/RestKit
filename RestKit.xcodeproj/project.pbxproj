@@ -1739,6 +1739,235 @@
 			};
 			name = Release;
 		};
+		253216491338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ADDITIONAL_SDKS = "";
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				BUILD_STYLE = Release;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				SYMROOT = Build;
+			};
+			name = Distribution;
+		};
+		2532164A1338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = RestKit;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		2532164B1338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Network/Private;
+				PRODUCT_NAME = RestKitNetwork;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Network;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		2532164C1338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/ObjectMapping/Private;
+				PRODUCT_NAME = RestKitObjectMapping;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/ObjectMapping;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		2532164D1338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/Private;
+				PRODUCT_NAME = RestKitSupport;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		2532164E1338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ADDITIONAL_SDKS = "";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				HEADER_SEARCH_PATHS = "Vendor/YAJL/yajl-1.0.9/src/api";
+				OTHER_CFLAGS = "$(YAJL_GENERAL_OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/YAJL/Private;
+				PRODUCT_NAME = RestKitJSONParserYAJL;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/YAJL;
+				SKIP_INSTALL = YES;
+				YAJL_GENERAL_OTHER_CFLAGS = "-Wdiv-by-zero -Wbad-function-cast -Wnested-externs -Wold-style-definition";
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		2532164F1338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/SBJSON/Private;
+				PRODUCT_NAME = RestKitJSONParserSBJSON;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/SBJSON;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		253216501338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit/Private;
+				PRODUCT_NAME = RestKitJSONParserJSONKit;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit;
+				SDKROOT = iphoneos;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		253216511338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/CoreData/Private;
+				PRODUCT_NAME = RestKitCoreData;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/CoreData;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		253216521338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ADDITIONAL_SDKS = "";
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				HEADER_SEARCH_PATHS = (
+					../three20/Build/Products/three20,
+					Examples/RKDiscussionBoardExample/DiscussionBoard/Libraries/three20,
+				);
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Three20/Private;
+				PRODUCT_NAME = RestKitThree20;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Three20;
+				SKIP_INSTALL = YES;
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
+		253216531338CA940099A5DB /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_STYLE = Release;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				HEADER_SEARCH_PATHS = (
+					Build,
+					Specs/Runner/OCMock/Headers,
+					Specs/Runner/UISpec/headers,
+				);
+				INFOPLIST_FILE = "Specs/Runner/UISpec-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/Specs/Runner/OCMock\"",
+				);
+				OTHER_LDFLAGS = (
+					"-force_load",
+					"$(PROJECT_DIR)/Specs/Runner/OCMock/libOCMock.a",
+					"-ObjC",
+					"-all_load",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = UISpec;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+			};
+			name = Distribution;
+		};
 		253A07FD1255161B00976E89 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2104,6 +2333,7 @@
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,
 				1DEB922408733DC00010E9CD /* Release */,
+				253216491338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2113,6 +2343,7 @@
 			buildConfigurations = (
 				2523360611E79F0A0048F9B4 /* Debug */,
 				2523360711E79F0A0048F9B4 /* Release */,
+				253216521338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2122,6 +2353,7 @@
 			buildConfigurations = (
 				253A07FD1255161B00976E89 /* Debug */,
 				253A07FE1255161B00976E89 /* Release */,
+				2532164B1338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2131,6 +2363,7 @@
 			buildConfigurations = (
 				253A08041255162D00976E89 /* Debug */,
 				253A08051255162D00976E89 /* Release */,
+				2532164C1338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2140,6 +2373,7 @@
 			buildConfigurations = (
 				253A080D12551D3100976E89 /* Debug */,
 				253A080E12551D3100976E89 /* Release */,
+				2532164D1338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2149,6 +2383,7 @@
 			buildConfigurations = (
 				253A081512551D5400976E89 /* Debug */,
 				253A081612551D5400976E89 /* Release */,
+				253216511338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2158,6 +2393,7 @@
 			buildConfigurations = (
 				2590E650125231F600531FA8 /* Debug */,
 				2590E651125231F600531FA8 /* Release */,
+				2532164E1338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2167,6 +2403,7 @@
 			buildConfigurations = (
 				2590E66C1252353800531FA8 /* Debug */,
 				2590E66D1252353800531FA8 /* Release */,
+				2532164F1338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2176,6 +2413,7 @@
 			buildConfigurations = (
 				25956957126DF0A8004BAC4C /* Debug */,
 				25956958126DF0A8004BAC4C /* Release */,
+				2532164A1338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2185,6 +2423,7 @@
 			buildConfigurations = (
 				3F6C39A810FE5C95008F47C5 /* Debug */,
 				3F6C39A910FE5C95008F47C5 /* Release */,
+				253216531338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -2194,6 +2433,7 @@
 			buildConfigurations = (
 				73057FD21331AD2E001908EE /* Debug */,
 				73057FD31331AD2E001908EE /* Release */,
+				253216501338CA940099A5DB /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
