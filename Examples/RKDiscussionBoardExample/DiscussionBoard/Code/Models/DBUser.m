@@ -101,8 +101,7 @@ static DBUser* currentUser = nil;
 	RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/login" delegate:self];
 	objectLoader.method = RKRequestMethodPOST;
 	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"user[username]", username, @"user[password]", password, nil];	
-	objectLoader.targetObject = self;	
-	objectLoader.managedObjectStore = [RKObjectManager sharedManager].objectStore;	
+	objectLoader.targetObject = self;
 	[objectLoader send];
 }
 

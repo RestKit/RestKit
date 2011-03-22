@@ -13,7 +13,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		2538E811123419CA00ACB5D7 /* RKTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E810123419CA00ACB5D7 /* RKTUser.m */; };
 		2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
-		2538E865123424F000ACB5D7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E864123424F000ACB5D7 /* CoreData.framework */; };
 		2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* RKTwitterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */; };
@@ -29,7 +28,6 @@
 		84F524B812824D2F00C370EA /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2C9125B93780083FDCB /* libRestKitSupport.a */; };
 		84F524C212824D5000C370EA /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84F524C112824D5000C370EA /* CFNetwork.framework */; };
 		84F524C612824D5B00C370EA /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84F524C512824D5B00C370EA /* MobileCoreServices.framework */; };
-		84F524D012824D8800C370EA /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,14 +133,12 @@
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
-				2538E865123424F000ACB5D7 /* CoreData.framework in Frameworks */,
 				2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */,
 				84F524B612824D2D00C370EA /* libRestKitNetwork.a in Frameworks */,
 				84F524B712824D2E00C370EA /* libRestKitObjectMapping.a in Frameworks */,
 				84F524B812824D2F00C370EA /* libRestKitSupport.a in Frameworks */,
 				84F524C212824D5000C370EA /* CFNetwork.framework in Frameworks */,
 				84F524C612824D5B00C370EA /* MobileCoreServices.framework in Frameworks */,
-				84F524D012824D8800C370EA /* libRestKitCoreData.a in Frameworks */,
 				3FECA57512D2413B0023437F /* libRestKitJSONParserSBJSON.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -438,6 +434,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
+				SYMROOT = Build;
 			};
 			name = Debug;
 		};
@@ -453,6 +450,7 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
+				SYMROOT = Build;
 			};
 			name = Release;
 		};

@@ -4,8 +4,12 @@
 # Ignore whitespace characters in paths
 IFS=$'\n'
 
-cd ${CONFIGURATION_BUILD_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}
+if [ -d "${CONFIGURATION_BUILD_DIR}/include/RestKit" ]; then
+    cd ${CONFIGURATION_BUILD_DIR}/include/RestKit
 
-find * -name '*.h' | xargs chmod a-w
+    find * -name '*.h' | xargs chmod a-w    
+else
+    echo "Configuration include path does not exist, likely perform a Build & Archive operation..."
+fi
 
 exit 0

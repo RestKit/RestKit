@@ -59,7 +59,6 @@ typedef enum RKRequestMethod {
 /**
  * A serializable collection of parameters sent as the HTTP Body of the request
  */
-// TODO: Should I be copy?
 @property(nonatomic, retain) NSObject<RKRequestSerializable>* params;
 
 /**

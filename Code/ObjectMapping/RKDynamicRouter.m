@@ -40,7 +40,6 @@
 	[classRoutes setValue:resourcePath forKey:methodName];
 }
 
-// TODO: Should be RKStringFromRequestMethod and RKRequestMethodFromString
 - (NSString*)HTTPVerbForMethod:(RKRequestMethod)method {
 	switch (method) {
 		case RKRequestMethodGET:

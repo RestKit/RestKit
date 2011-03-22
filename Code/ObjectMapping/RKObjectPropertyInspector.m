@@ -13,7 +13,7 @@
 @implementation RKObjectPropertyInspector
 
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		_cachedPropertyNamesAndTypes = [[NSMutableDictionary alloc] init];
 	}
 	
@@ -58,7 +58,6 @@
 		int i;
 		NSString *propName;
 		for (i = 0; i < outCount; i++) {
-			// TODO: Add support for custom getter and setter methods
 			// property_getAttributes() returns everything we need to implement this...
 			// See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
 			objc_property_t* prop = propList + i;
@@ -68,7 +67,6 @@
 			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
 				const char* className = [[self propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
 				Class class = objc_getClass(className);
-				// TODO: Use an id type if unable to get the class??
 				if (class) {
 					[propertyNames setObject:class forKey:propName];
 				}
