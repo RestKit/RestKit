@@ -1894,7 +1894,7 @@
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				PRIVATE_HEADERS_FOLDER_PATH = ../include/RestKit/Support/JSON/YAJL/Private;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/YAJL/Private;
 				PRODUCT_NAME = RestKitJSONParserYAJL;
 				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/YAJL;
 				SKIP_INSTALL = YES;
@@ -1919,7 +1919,7 @@
 					"-ObjC",
 				);
 				PREBINDING = NO;
-				PRIVATE_HEADERS_FOLDER_PATH = ../include/RestKit/Support/JSON/YAJL/Private;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/YAJL/Private;
 				PRODUCT_NAME = RestKitJSONParserYAJL;
 				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/YAJL;
 				SKIP_INSTALL = YES;
@@ -2073,7 +2073,9 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit/Private;
 				PRODUCT_NAME = RestKitJSONParserJSONKit;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2086,7 +2088,9 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PREBINDING = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit/Private;
 				PRODUCT_NAME = RestKitJSONParserJSONKit;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit;
 				SDKROOT = iphoneos;
 				ZERO_LINK = NO;
 			};
