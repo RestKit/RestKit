@@ -113,7 +113,7 @@ To add RestKit to a Derived Data project:
 1. Open the project you wish to add RestKit to in Xcode.
 1. Open the RestKit.xcodeproj from the submodule you checked out.
 1. Focus your project and select the "View" menu > "Navigators" > "Project" to bring the project file list into view.
-1. Drag the RestKit.xcodeproj file from the RestKit project window and drop it on your "<Your Project's Name>".xcodeproj. A dialog will appear -- make sure "Copy items" is unchecked and "Reference Type" is "Relative to Project" before clicking "Add".
+1. Drag the RestKit.xcodeproj file from the RestKit project window and drop it on your "<Your Project's Name>".xcodeproj.
 1. Click on your project's name in the sidebar on the left to open the project settings view in the right pane of the window.
 1. In the middle pain you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
 1. Find the **Other Linker Flags** entry and double click it. Use the **+** button to add a new entry and enter `-ObjC -all_load`. Dismiss the editor with the **Done** button.
