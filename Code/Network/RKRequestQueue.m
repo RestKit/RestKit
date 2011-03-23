@@ -80,10 +80,13 @@ static const NSInteger kMaxConcurrentLoads = 5;
 		[self loadNextInQueueDelayed];
 		return;
 	}
+	
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
 	_queueTimer = nil;
 
-	for (RKRequest* request in _requests) {
+	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
+	for (RKRequest* request in requestsCopy) {
 		if (![request isLoading] && ![request isLoaded] && _totalLoading < kMaxConcurrentLoads) {
 			++_totalLoading;
 			[self dispatchRequest:request];
@@ -93,6 +96,8 @@ static const NSInteger kMaxConcurrentLoads = 5;
 	if (_requests.count && !_suspended) {
 		[self loadNextInQueueDelayed];
 	}
+	
+	[pool drain];
 }
 
 - (void)setSuspended:(BOOL)isSuspended {
@@ -130,19 +135,23 @@ static const NSInteger kMaxConcurrentLoads = 5;
 }
 
 - (void)cancelRequestsWithDelegate:(NSObject<RKRequestDelegate>*)delegate {
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
 	for (RKRequest* request in requestsCopy) {
 		if (request.delegate && request.delegate == delegate) {
 			[self cancelRequest:request];
 		}
 	}
+	[pool drain];
 }
 
 - (void)cancelAllRequests {
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
 	for (RKRequest* request in requestsCopy) {
 		[self cancelRequest:request loadNext:NO];
 	}
+	[pool drain];
 }
 
 /**
