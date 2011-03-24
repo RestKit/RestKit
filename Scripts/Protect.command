@@ -4,12 +4,12 @@
 # Ignore whitespace characters in paths
 IFS=$'\n'
 
-if [ -d "${CONFIGURATION_BUILD_DIR}/include/RestKit" ]; then
-    cd ${CONFIGURATION_BUILD_DIR}/include/RestKit
+if [ -d "${TARGET_BUILD_DIR}/include/RestKit" ]; then
+    cd ${TARGET_BUILD_DIR}/include/RestKit
 
     find * -name '*.h' | xargs chmod a-w    
 else
-    echo "Configuration include path does not exist, likely perform a Build & Archive operation..."
+    echo "Target Build Directory '${TARGET_BUILD_DIR}' do not exist, skipping..."
 fi
 
 exit 0

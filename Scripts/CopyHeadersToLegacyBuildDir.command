@@ -4,8 +4,8 @@
 # 3 projects and Xcode 4 projects not using derived data
 
 IFS=$'\n'
-if [ -d "${CONFIGURATION_BUILD_DIR}/include/RestKit" ]; then
-    rsync -av --delete "${CONFIGURATION_BUILD_DIR}/include/RestKit" "${SOURCE_ROOT}/Build"
+if [ -d "${TARGET_BUILD_DIR}/include/RestKit" ]; then
+    rsync -av --delete "${TARGET_BUILD_DIR}/include/RestKit" "${SOURCE_ROOT}/Build"
 else
-    echo "Configuration include path does not exist, likely perform a Build & Archive operation..."
+    echo "Target Build Directory '${TARGET_BUILD_DIR}' do not exist, skipping..."
 fi
