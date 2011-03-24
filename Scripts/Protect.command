@@ -4,8 +4,12 @@
 # Ignore whitespace characters in paths
 IFS=$'\n'
 
-cd ${CONFIGURATION_BUILD_DIR}/${PUBLIC_HEADERS_FOLDER_PATH}
+if [ -d "${TARGET_BUILD_DIR}/include/RestKit" ]; then
+    cd ${TARGET_BUILD_DIR}/include/RestKit
 
-find * -name '*.h' | xargs chmod a-w
+    find * -name '*.h' | xargs chmod a-w    
+else
+    echo "Target Build Directory '${TARGET_BUILD_DIR}' do not exist, skipping..."
+fi
 
 exit 0

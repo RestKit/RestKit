@@ -95,4 +95,12 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  */
 - (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue;
 
+/**
+ * Returns an array of objects that the 'live' at the specified resource path. Usage of this
+ * method requires that you have provided an implementation of the managed object cache
+ *
+ * See managedObjectCache above
+ */
+- (NSArray*)objectsForResourcePath:(NSString*)resourcePath;
+
 @end

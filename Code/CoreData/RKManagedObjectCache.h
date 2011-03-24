@@ -12,6 +12,7 @@
  * map to a given request URL.
  */
 @protocol RKManagedObjectCache
+@required
 
 /**
  * Must return an array containing NSFetchRequests for use in retrieving locally
