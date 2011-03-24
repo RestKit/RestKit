@@ -52,6 +52,13 @@
 			remoteGlobalIDString = 3F6C39A510FE5C95008F47C5;
 			remoteInfo = UISpec;
 		};
+		25AE0F65133B9F8A00671AD7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25AE0F5B133B9F8900671AD7;
+			remoteInfo = RestKit;
+		};
 		3F3CE2C4125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
@@ -98,7 +105,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 25956956126DF0A8004BAC4C;
+			remoteGlobalIDString = 25AE0F5A133B9F8900671AD7;
 			remoteInfo = RestKit;
 		};
 /* End PBXContainerItemProxy section */
@@ -179,6 +186,7 @@
 		2538E800123417E500ACB5D7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				25AE0F66133B9F8A00671AD7 /* libRestKit.a */,
 				3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */,
 				3F3CE2C7125B93780083FDCB /* libRestKitObjectMapping.a */,
 				3F3CE2C9125B93780083FDCB /* libRestKitSupport.a */,
@@ -313,6 +321,13 @@
 			fileType = wrapper.application;
 			path = UISpec.app;
 			remoteRef = 2538E809123417E500ACB5D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25AE0F66133B9F8A00671AD7 /* libRestKit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKit.a;
+			remoteRef = 25AE0F65133B9F8A00671AD7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */ = {

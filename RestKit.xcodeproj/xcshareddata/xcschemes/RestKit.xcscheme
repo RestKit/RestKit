@@ -14,8 +14,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "25956956126DF0A8004BAC4C"
-               BuildableName = "RestKit"
-               BlueprintName = "RestKit"
+               BuildableName = "RestKit Old"
+               BlueprintName = "RestKit Old"
                ReferencedContainer = "container:RestKit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

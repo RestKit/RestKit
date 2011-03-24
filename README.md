@@ -108,7 +108,7 @@ Xcode 4.x (Git Submodule)
 1. Locate the target you wish to add RestKit to in the **TARGETS** list in the middle of the editor pane. Select it to open the target settings editor in the right pane of the window.
 1. Click the **Build Phases** tab along the top of the window to open the Build Phases editor.
 1. Click the disclosure triangles next to the **Target Dependencies** and **Link Binary with Libraries** items.
-1. In the **Target Dependencies** section, click the **+** button to open the Target selection sheet. Click on the **RestKit** aggregate target (it will have the bulls-eye icon) and click the **Add** button to create a dependency.
+1. In the **Target Dependencies** section, click the **+** button to open the Target selection sheet. Click on the **RestKit** target and click the **Add** button to create a dependency.
 1. In the **Link Binary with Libraries** section, click the **+** button to open the Library selection sheet. Here we need to instruct the target to link against all the required RestKit libraries and several system libraries. Select each of the following items (one at a time or while holding down the Command key to select all of them at once) and then click the **Add** button:
     * **libRestKitCoreData.a**
     * **libRestKitJSONParserYAJL.a**
