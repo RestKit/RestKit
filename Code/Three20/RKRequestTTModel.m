@@ -38,10 +38,10 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 + (NSDate*)defaultLoadedTime {
 	NSDate* defaultLoadedTime = [[NSUserDefaults standardUserDefaults] objectForKey:kDefaultLoadedTimeKey];
 	if (defaultLoadedTime == nil) {
-		defaultLoadedTime = [NSDate dateWithTimeIntervalSinceNow:-defaultRefreshRate];
+		defaultLoadedTime = [NSDate date];
 		[[NSUserDefaults standardUserDefaults] setObject:defaultLoadedTime forKey:kDefaultLoadedTimeKey];
 	}
-    
+
 	return defaultLoadedTime;
 }
 
@@ -63,7 +63,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params {
 	if (self = [self initWithResourcePath:resourcePath]) {
 		self.params = [params retain];
-	}	
+	}
 	return self;
 }
 
@@ -179,7 +179,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
 	_isLoading = NO;
-	
+
 	// TODO: Passing a nil error here does nothing for Three20.  Need to construct our
 	// own error here to make Three20 happy??
 	[self didFailLoadWithError:nil];
@@ -226,10 +226,10 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	[models retain];
 	[_objects release];
 	_objects = nil;
-	
+
 	_objects = models;
 	_isLoaded = YES;
-	
+
 	[self didFinishLoad];
 }
 
@@ -244,14 +244,14 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		cacheFetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
 		cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
 	}
-	
+
 	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded || [cachedObjects count] == 0) {
 		RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self];
 		objectLoader.method = self.method;
 		objectLoader.objectClass = _objectClass;
 		objectLoader.keyPath = _keyPath;
 		objectLoader.params = self.params;
-		
+
 		_isLoading = YES;
 		[self didStartLoad];
 		[objectLoader send];
