@@ -1444,7 +1444,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp \"${SOURCE_ROOT}/Code/RestKit.h\" \"${TARGET_BUILD_DIR}/include/RestKit\"";
+			shellScript = "rm -f \"${TARGET_BUILD_DIR}/include/RestKit/RestKit.h\"\ncp \"${SOURCE_ROOT}/Code/RestKit.h\" \"${TARGET_BUILD_DIR}/include/RestKit\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
