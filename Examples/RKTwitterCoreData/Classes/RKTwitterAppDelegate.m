@@ -53,7 +53,7 @@
     
     // NOTE: If all of your mapped objects use element -> class registration, you can perform seeding in one line of code:
     // [RKManagedObjectSeeder generateSeedDatabaseWithObjectManager:objectManager fromFiles:@"users.json", nil];
-#endif    	
+#endif
     
     // Initialize object store
     objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:RKDefaultSeedDatabaseFileName managedObjectModel:nil];
