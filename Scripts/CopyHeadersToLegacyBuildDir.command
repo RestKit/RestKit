@@ -2,6 +2,7 @@
 # build directory to their legacy location at Build/RestKit
 # under the project root. This is the include path for Xcode
 # 3 projects and Xcode 4 projects not using derived data
+# TODO: May only want to do this optionally if the BUILT_PRODUCTS_DIR is not a sub-directory of the SOURCE_ROOT
 
 IFS=$'\n'
 if [ -d "${CONFIGURATION_BUILD_DIR}/include/RestKit" ]; then
