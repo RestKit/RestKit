@@ -44,7 +44,7 @@
 - (void)itShouldLoadAHuman {
 	[_objectManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
-	RKHuman* blake = (RKHuman*)[_responseLoader.response objectAtIndex:0];
+	RKHuman* blake = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
 	NSLog(@"Blake: %@ (name = %@)", blake, blake.name);
 	[expectThat(blake.name) should:be(@"Blake Watters")];
 }
@@ -52,7 +52,7 @@
 - (void)itShouldLoadAllHumans {
 	[_objectManager loadObjectsAtResourcePath:@"/humans" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
-	NSArray* humans = (NSArray*) _responseLoader.response;
+	NSArray* humans = (NSArray*) _responseLoader.objects;
 	[expectThat([humans count]) should:be(2)];
 	[expectThat([[humans objectAtIndex:0] class]) should:be([RKHuman class])];
 }

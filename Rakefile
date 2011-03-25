@@ -33,7 +33,8 @@ namespace :uispec do
   desc "Run the Spec server via Shotgun"
   task :server do
     server_path = File.dirname(__FILE__) + '/Specs/Server/server.rb'
-    system("shotgun --port 4567 #{server_path}")
+    #system("shotgun --port 4567 #{server_path}")
+    system("ruby #{server_path}")
   end
 end
 

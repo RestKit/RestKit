@@ -62,12 +62,12 @@
          <EnvironmentVariable
             key = "UISPEC_SPEC"
             value = "RKClientSpec"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
             value = "10.0.1.4"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>

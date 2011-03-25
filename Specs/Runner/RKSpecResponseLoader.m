@@ -12,6 +12,7 @@
 @implementation RKSpecResponseLoader
 
 @synthesize response = _response;
+@synthesize objects = _objects;
 @synthesize failureError = _failureError;
 @synthesize errorMessage = _errorMessage;
 @synthesize success = _success;
@@ -51,13 +52,6 @@
 	}
 }
 
-- (void)loadResponse:(id)response {
-	NSLog(@"The response: %@", response);
-	_response = [response retain];
-	_awaitingResponse = NO;
-	_success = YES;
-}
-
 - (void)loadError:(NSError*)error {
     NSLog(@"Error: %@", error);
     _awaitingResponse = NO;
@@ -67,7 +61,9 @@
 
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     NSLog(@"Loaded response: %@", response);
-    [self loadResponse:response];
+	_response = [response retain];
+	_awaitingResponse = NO;
+	_success = YES;
 }
 
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
@@ -76,7 +72,10 @@
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
 	NSLog(@"Response: %@", [objectLoader.response bodyAsString]);
-	[self loadResponse:objects];
+	NSLog(@"Loaded objects: %@", objects);
+	_objects = [objects retain];
+	_awaitingResponse = NO;
+	_success = YES;
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error; {	

@@ -12,14 +12,18 @@
 @interface RKSpecResponseLoader : NSObject <RKObjectLoaderDelegate> {
 	BOOL _awaitingResponse;
 	BOOL _success;
-	id _response;
+	RKResponse* _response;
+    NSArray* _objects;
 	NSError* _failureError;
 	NSString* _errorMessage;
 	NSTimeInterval _timeout;
 }
 
-// The object that was loaded from the web request
-@property (nonatomic, readonly) id response;
+// The response that was loaded from the web request
+@property (nonatomic, readonly) RKResponse* response;
+
+// The objects that were loaded (if any)
+@property (nonatomic, readonly) NSArray* objects;
 
 // True when the response is success
 @property (nonatomic, readonly) BOOL success;
