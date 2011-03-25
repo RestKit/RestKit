@@ -1,8 +1,0 @@
-- Factor Core Data dependencies out of object mapper
-- Doxygen markup & generation
-- Static library builds
-- New object mapper configuration DSL
-- Offline write support
-- Three20 Integration Cleanup
-- Expanded spec coverage
-- Continuous Integration

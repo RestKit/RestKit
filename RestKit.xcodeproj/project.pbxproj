@@ -287,12 +287,12 @@
 			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
 			remoteInfo = UISpec;
 		};
-		73FE56A8126CB83400E0F30B /* PBXContainerItemProxy */ = {
+		25E5F2BD133C2EA500C33091 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 253A080B12551D3000976E89;
-			remoteInfo = RestKitSupport;
+			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
+			remoteInfo = RestKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -379,6 +379,7 @@
 		256FD650112C7B780077F340 /* RKMappableAssociation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappableAssociation.m; sourceTree = "<group>"; };
 		256FDE53112DB0B90077F340 /* RKObjectMapperSpecModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapperSpecModel.h; sourceTree = "<group>"; };
 		256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapperSpecModel.m; sourceTree = "<group>"; };
+		258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */ = {isa = PBXFileReference; lastKnownFileType = text; path = CopyHeadersToLegacyBuildDir.command; sourceTree = "<group>"; };
 		2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserYAJL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserSBJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E674125235C200531FA8 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -589,7 +590,6 @@
 				3F6C3A9210FE750E008F47C5 /* Specs */,
 				253A0A8D1255300000976E89 /* Scripts */,
 				2590E6711252357200531FA8 /* Vendor */,
-				25AE0F5D133B9F8900671AD7 /* RestKit */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
 			);
@@ -762,6 +762,7 @@
 		253A0A8D1255300000976E89 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */,
 				253A0A8E1255300000976E89 /* Protect.command */,
 			);
 			path = Scripts;
@@ -990,22 +991,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		25AE0F5D133B9F8900671AD7 /* RestKit */ = {
-			isa = PBXGroup;
-			children = (
-				25AE0F5E133B9F8900671AD7 /* Supporting Files */,
-			);
-			path = RestKit;
-			sourceTree = "<group>";
-		};
-		25AE0F5E133B9F8900671AD7 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				25AE0F5F133B9F8900671AD7 /* RestKit-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1162,11 +1147,12 @@
 				2523360111E79F090048F9B4 /* Headers */,
 				2523360211E79F090048F9B4 /* Sources */,
 				2523360311E79F090048F9B4 /* Frameworks */,
+				25E5F253133C2B5900C33091 /* Copy Headers to Legacy Build Location */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				73FE56A9126CB83400E0F30B /* PBXTargetDependency */,
+				25E5F2BE133C2EA500C33091 /* PBXTargetDependency */,
 			);
 			name = RestKitThree20;
 			productName = "Three20 Support";
@@ -1451,6 +1437,20 @@
 			shellPath = /bin/sh;
 			shellScript = "rm -f \"${TARGET_BUILD_DIR}/include/RestKit/RestKit.h\"\ncp \"${SOURCE_ROOT}/Code/RestKit.h\" \"${TARGET_BUILD_DIR}/include/RestKit\"";
 		};
+		25E5F253133C2B5900C33091 /* Copy Headers to Legacy Build Location */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Headers to Legacy Build Location";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh Scripts/CopyHeadersToLegacyBuildDir.command";
+			shellScript = "";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1641,15 +1641,15 @@
 			isa = PBXTargetDependency;
 			name = UISpec;
 		};
+		25E5F2BE133C2EA500C33091 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 255B7588133BABBF00ED76AD /* RestKit */;
+			targetProxy = 25E5F2BD133C2EA500C33091 /* PBXContainerItemProxy */;
+		};
 		3F4BC8F312DE4C7F00048E71 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2523360411E79F090048F9B4 /* RestKitThree20 */;
 			targetProxy = 250F87761333725C002F4590 /* PBXContainerItemProxy */;
-		};
-		73FE56A9126CB83400E0F30B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 253A080B12551D3000976E89 /* RestKitSupport */;
-			targetProxy = 73FE56A8126CB83400E0F30B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
