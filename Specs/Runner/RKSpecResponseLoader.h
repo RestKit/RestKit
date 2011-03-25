@@ -41,6 +41,5 @@
 
 // Wait for a response to load
 - (void)waitForResponse;
-- (void)loadResponse:(id)response;
 
 @end

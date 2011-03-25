@@ -80,7 +80,7 @@
 - (void)itShouldMapWhenGivenAClassAndElements {
     RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
-    RKObjectMapperSpecUser* user = [mapper mapFromString:[self userJSON] toClass:[RKObjectMapperSpecUser class] keyPath:@"user"];
+    RKObjectMapperSpecUser* user = (RKObjectMapperSpecUser*) [mapper mapFromString:[self userJSON] toClass:[RKObjectMapperSpecUser class] keyPath:@"user"];
     [expectThat(user.name) should:be(@"mimi")];
 }
 
@@ -88,7 +88,7 @@
     RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
 	mapper.format = RKMappingFormatJSON;
-    RKObjectMapperSpecUser* user = [mapper mapFromString:[self userJSON] toClass:nil keyPath:nil];
+    RKObjectMapperSpecUser* user = (RKObjectMapperSpecUser*) [mapper mapFromString:[self userJSON] toClass:nil keyPath:nil];
     [expectThat(user.name) should:be(@"mimi")];
 }
 
@@ -511,7 +511,7 @@
     RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
     
-    NSArray* array = [mapper mapFromString:[self JSON] toClass:[RKPath class] keyPath:nil];
+    NSArray* array = (NSArray*) [mapper mapFromString:[self JSON] toClass:[RKPath class] keyPath:nil];
     [expectThat([array isKindOfClass:[NSArray class]]) should:be(YES)];
     [expectThat([array count]) should:be(3)];
     NSLog(@"Array is %@", array);
@@ -524,7 +524,7 @@
 	mapper.format = RKMappingFormatJSON;
     [mapper registerClass:[RKPoint class] forElementNamed:@"route"];
     
-    NSArray* array = [mapper mapFromString:[self JSON] toClass:[RKModeledPath class] keyPath:nil];
+    NSArray* array = (NSArray*) [mapper mapFromString:[self JSON] toClass:[RKModeledPath class] keyPath:nil];
     [expectThat([array isKindOfClass:[NSArray class]]) should:be(YES)];
     [expectThat([array count]) should:be(3)];
     NSLog(@"[Modeled] Array is %@", array);
