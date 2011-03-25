@@ -101,6 +101,7 @@
 		256FD651112C7B780077F340 /* RKMappableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FD64F112C7B780077F340 /* RKMappableObject.m */; };
 		256FD652112C7B780077F340 /* RKMappableAssociation.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FD650112C7B780077F340 /* RKMappableAssociation.m */; };
 		256FDE55112DB0B90077F340 /* RKObjectMapperSpecModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */; };
+		258C6688133C377A004388A4 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 258C6687133C377A004388A4 /* libUISpec.a */; };
 		2590E67F125235C200531FA8 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E674125235C200531FA8 /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E680125235C200531FA8 /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E675125235C200531FA8 /* NSObject+SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E681125235C200531FA8 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E676125235C200531FA8 /* NSObject+SBJSON.m */; };
@@ -168,7 +169,6 @@
 		259D53B7132854A900897272 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 259D5132132854A700897272 /* libOCMock.a */; };
 		259D53B8132854A900897272 /* RKSpecResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D5135132854A700897272 /* RKSpecResponseLoader.m */; };
 		259D5535132854A900897272 /* UISpec+UISpecRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D53A2132854A800897272 /* UISpec+UISpecRunner.m */; };
-		259D5558132856D800897272 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 259D5557132856D700897272 /* libUISpec.a */; };
 		259D56B5132E706D00897272 /* RKAuthenticationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D56B4132E706D00897272 /* RKAuthenticationSpec.m */; };
 		259D56BC132E84B300897272 /* RKSpecEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 259D56BB132E84B300897272 /* RKSpecEnvironment.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
@@ -216,13 +216,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 2523360411E79F090048F9B4;
 			remoteInfo = RestKitThree20;
-		};
-		250F884413337F89002F4590 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259D5548132856A400897272 /* UISpec.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
-			remoteInfo = UISpec;
 		};
 		250F884813337F89002F4590 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -279,6 +272,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 253A081312551D5300976E89;
 			remoteInfo = RestKitCoreData;
+		};
+		258C6685133C3761004388A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 259D5548132856A400897272 /* UISpec.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
+			remoteInfo = UISpec;
 		};
 		259D5551132856A400897272 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -380,6 +380,7 @@
 		256FDE53112DB0B90077F340 /* RKObjectMapperSpecModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapperSpecModel.h; sourceTree = "<group>"; };
 		256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapperSpecModel.m; sourceTree = "<group>"; };
 		258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */ = {isa = PBXFileReference; lastKnownFileType = text; path = CopyHeadersToLegacyBuildDir.command; sourceTree = "<group>"; };
+		258C6687133C377A004388A4 /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
 		2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserYAJL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserSBJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E674125235C200531FA8 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -541,7 +542,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				259D5558132856D800897272 /* libUISpec.a in Frameworks */,
+				258C6688133C377A004388A4 /* libUISpec.a in Frameworks */,
 				3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */,
 				3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */,
 				255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */,
@@ -607,6 +608,7 @@
 				255DE0E110FFABA500A85891 /* CoreData.framework */,
 				25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */,
 				255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */,
+				258C6687133C377A004388A4 /* libUISpec.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1272,9 +1274,9 @@
 			buildRules = (
 			);
 			dependencies = (
-				250F884513337F89002F4590 /* PBXTargetDependency */,
-				259D5556132856B700897272 /* PBXTargetDependency */,
 				3F4BC8F312DE4C7F00048E71 /* PBXTargetDependency */,
+				258C6686133C3761004388A4 /* PBXTargetDependency */,
+				259D5556132856B700897272 /* PBXTargetDependency */,
 			);
 			name = UISpec;
 			productName = "UI Spec";
@@ -1597,11 +1599,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		250F884513337F89002F4590 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UISpec;
-			targetProxy = 250F884413337F89002F4590 /* PBXContainerItemProxy */;
-		};
 		255B758F133BABCD00ED76AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 253A07FB1255161B00976E89 /* RestKitNetwork */;
@@ -1636,6 +1633,11 @@
 			isa = PBXTargetDependency;
 			target = 253A081312551D5300976E89 /* RestKitCoreData */;
 			targetProxy = 255B759A133BABCD00ED76AD /* PBXContainerItemProxy */;
+		};
+		258C6686133C3761004388A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UISpec;
+			targetProxy = 258C6685133C3761004388A4 /* PBXContainerItemProxy */;
 		};
 		259D5556132856B700897272 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2218,6 +2220,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Specs/Runner/OCMock\"",
+					"\"$(SRCROOT)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-force_load",
@@ -2256,6 +2259,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Specs/Runner/OCMock\"",
+					"\"$(SRCROOT)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-force_load",
