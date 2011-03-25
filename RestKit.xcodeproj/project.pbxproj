@@ -285,12 +285,12 @@
 			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
 			remoteInfo = UISpec;
 		};
-		73FE56A8126CB83400E0F30B /* PBXContainerItemProxy */ = {
+		25E5F2BD133C2EA500C33091 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 253A080B12551D3000976E89;
-			remoteInfo = RestKitSupport;
+			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
+			remoteInfo = RestKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -1162,7 +1162,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				73FE56A9126CB83400E0F30B /* PBXTargetDependency */,
+				25E5F2BE133C2EA500C33091 /* PBXTargetDependency */,
 			);
 			name = RestKitThree20;
 			productName = "Three20 Support";
@@ -1649,15 +1649,15 @@
 			isa = PBXTargetDependency;
 			name = UISpec;
 		};
+		25E5F2BE133C2EA500C33091 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 255B7588133BABBF00ED76AD /* RestKit */;
+			targetProxy = 25E5F2BD133C2EA500C33091 /* PBXContainerItemProxy */;
+		};
 		3F4BC8F312DE4C7F00048E71 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2523360411E79F090048F9B4 /* RestKitThree20 */;
 			targetProxy = 250F87761333725C002F4590 /* PBXContainerItemProxy */;
-		};
-		73FE56A9126CB83400E0F30B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 253A080B12551D3000976E89 /* RestKitSupport */;
-			targetProxy = 73FE56A8126CB83400E0F30B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
