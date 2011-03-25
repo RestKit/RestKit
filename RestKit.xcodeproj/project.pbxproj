@@ -377,6 +377,7 @@
 		256FD650112C7B780077F340 /* RKMappableAssociation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappableAssociation.m; sourceTree = "<group>"; };
 		256FDE53112DB0B90077F340 /* RKObjectMapperSpecModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapperSpecModel.h; sourceTree = "<group>"; };
 		256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapperSpecModel.m; sourceTree = "<group>"; };
+		258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */ = {isa = PBXFileReference; lastKnownFileType = text; path = CopyHeadersToLegacyBuildDir.command; sourceTree = "<group>"; };
 		2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserYAJL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserSBJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E674125235C200531FA8 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -456,7 +457,6 @@
 		259D53A2132854A800897272 /* UISpec+UISpecRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UISpec+UISpecRunner.m"; sourceTree = "<group>"; };
 		259D5548132856A400897272 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<group>"; };
 		259D5557132856D700897272 /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
-		25AE0F5F133B9F8900671AD7 /* RestKit-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RestKit-Prefix.pch"; sourceTree = "<group>"; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
@@ -586,7 +586,6 @@
 				3F6C3A9210FE750E008F47C5 /* Specs */,
 				253A0A8D1255300000976E89 /* Scripts */,
 				2590E6711252357200531FA8 /* Vendor */,
-				25AE0F5D133B9F8900671AD7 /* RestKit */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
 			);
@@ -759,6 +758,7 @@
 		253A0A8D1255300000976E89 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */,
 				253A0A8E1255300000976E89 /* Protect.command */,
 			);
 			path = Scripts;
@@ -983,22 +983,6 @@
 				250F884913337F89002F4590 /* Specs.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		25AE0F5D133B9F8900671AD7 /* RestKit */ = {
-			isa = PBXGroup;
-			children = (
-				25AE0F5E133B9F8900671AD7 /* Supporting Files */,
-			);
-			path = RestKit;
-			sourceTree = "<group>";
-		};
-		25AE0F5E133B9F8900671AD7 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				25AE0F5F133B9F8900671AD7 /* RestKit-Prefix.pch */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
