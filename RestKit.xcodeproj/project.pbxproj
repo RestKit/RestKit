@@ -21,6 +21,7 @@
 				2595695E126DF0B4004BAC4C /* PBXTargetDependency */,
 				25956960126DF0B4004BAC4C /* PBXTargetDependency */,
 				25956962126DF0B4004BAC4C /* PBXTargetDependency */,
+				25F3C13B134023BF00A7EACC /* PBXTargetDependency */,
 				25956964126DF0B4004BAC4C /* PBXTargetDependency */,
 			);
 			name = RestKit;
@@ -166,6 +167,7 @@
 		25957826126E3BE9004BAC4C /* RKRailsRouterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25957825126E3BE9004BAC4C /* RKRailsRouterSpec.m */; };
 		2596AC9012F7B015004C02F9 /* RKClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596AC8F12F7B015004C02F9 /* RKClientSpec.m */; };
 		25A5B4E912762249003DC8A4 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25A5B4E812762249003DC8A4 /* blake.png */; };
+		25F3C1391340237900A7EACC /* RKXMLParser+libXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F3C1381340237900A7EACC /* RKXMLParser+libXML.m */; };
 		25F48FF61327DA3400F6B59F /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25F48FF51327DA3400F6B59F /* libUISpec.a */; };
 		25F48FF81327DAB300F6B59F /* UISpec.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 25F48FF71327DAB300F6B59F /* UISpec.bundle */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
@@ -177,7 +179,6 @@
 		3F6C3A9410FE7519008F47C5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6C3A9310FE7519008F47C5 /* main.m */; };
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
 		3F76235D133A316800EEAAA7 /* RKXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F76235B133A316800EEAAA7 /* RKXMLParser.h */; };
-		3F76235E133A316800EEAAA7 /* RKXMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F76235C133A316800EEAAA7 /* RKXMLParser.m */; };
 		3F762365133A32BB00EEAAA7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A2D10FE749C008F47C5 /* Foundation.framework */; };
 		7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7377FBE11268E96300868752 /* RKManagedObjectCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -270,6 +271,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = C7D4F29310BDA39C00B00019;
 			remoteInfo = Specs;
+		};
+		25F3C13A134023BF00A7EACC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3F762363133A32BB00EEAAA7;
+			remoteInfo = "RestKitXMLParser+LibXML";
 		};
 		25F48FF31327DA2300F6B59F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -473,6 +481,7 @@
 		2596AC8F12F7B015004C02F9 /* RKClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKClientSpec.m; sourceTree = "<group>"; };
 		25A5B4E812762249003DC8A4 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		25F3C1381340237900A7EACC /* RKXMLParser+libXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKXMLParser+libXML.m"; sourceTree = "<group>"; };
 		25F48FF51327DA3400F6B59F /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
 		25F48FF71327DAB300F6B59F /* UISpec.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = UISpec.bundle; path = Specs/Support/UISpec/src/UISpec.bundle; sourceTree = SOURCE_ROOT; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
@@ -491,9 +500,7 @@
 		3F6C3A9510FE7524008F47C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		3F6C3AD010FE76C1008F47C5 /* RKModelMapperSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKModelMapperSpec.m; sourceTree = "<group>"; };
 		3F76235B133A316800EEAAA7 /* RKXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKXMLParser.h; sourceTree = "<group>"; };
-		3F76235C133A316800EEAAA7 /* RKXMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKXMLParser.m; sourceTree = "<group>"; };
 		3F762364133A32BB00EEAAA7 /* libRestKitLibXMLParser.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitLibXMLParser.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		3F762368133A32BB00EEAAA7 /* RestKitLibXMLParser-Prefix.pch */ = {isa = PBXFileReference; path = "RestKitLibXMLParser-Prefix.pch"; sourceTree = "<group>"; };
 		7377FBE11268E96300868752 /* RKManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCache.h; sourceTree = "<group>"; };
 		73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKReachabilityObserver.h; sourceTree = "<group>"; };
 		73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKReachabilityObserver.m; sourceTree = "<group>"; };
@@ -607,7 +614,6 @@
 				3F6C3A9210FE750E008F47C5 /* Specs */,
 				253A0A8D1255300000976E89 /* Scripts */,
 				2590E6711252357200531FA8 /* Vendor */,
-				3F762366133A32BB00EEAAA7 /* RestKitLibXMLParser */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
 			);
@@ -770,10 +776,10 @@
 		253A08B41255212300976E89 /* Parsers */ = {
 			isa = PBXGroup;
 			children = (
-				3F76235B133A316800EEAAA7 /* RKXMLParser.h */,
-				3F76235C133A316800EEAAA7 /* RKXMLParser.m */,
-				253A08B51255212300976E89 /* JSON */,
 				253A08B81255212300976E89 /* RKJSONParser.h */,
+				3F76235B133A316800EEAAA7 /* RKXMLParser.h */,
+				253A08B51255212300976E89 /* JSON */,
+				25F3C1371340237900A7EACC /* XML */,
 			);
 			path = Parsers;
 			sourceTree = "<group>";
@@ -1020,6 +1026,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		25F3C1371340237900A7EACC /* XML */ = {
+			isa = PBXGroup;
+			children = (
+				25F3C1381340237900A7EACC /* RKXMLParser+libXML.m */,
+			);
+			path = XML;
+			sourceTree = "<group>";
+		};
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
@@ -1033,22 +1047,6 @@
 				3F6C39A710FE5C95008F47C5 /* UISpec-Info.plist */,
 			);
 			path = Specs;
-			sourceTree = "<group>";
-		};
-		3F762366133A32BB00EEAAA7 /* RestKitLibXMLParser */ = {
-			isa = PBXGroup;
-			children = (
-				3F762367133A32BB00EEAAA7 /* Supporting Files */,
-			);
-			path = RestKitLibXMLParser;
-			sourceTree = "<group>";
-		};
-		3F762367133A32BB00EEAAA7 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				3F762368133A32BB00EEAAA7 /* RestKitLibXMLParser-Prefix.pch */,
-			);
-			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1317,9 +1315,9 @@
 			productReference = 3F6C39A510FE5C95008F47C5 /* UISpec.app */;
 			productType = "com.apple.product-type.application";
 		};
-		3F762363133A32BB00EEAAA7 /* RestKitLibXMLParser */ = {
+		3F762363133A32BB00EEAAA7 /* RestKitXMLParser+LibXML */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3F762369133A32BB00EEAAA7 /* Build configuration list for PBXNativeTarget "RestKitLibXMLParser" */;
+			buildConfigurationList = 3F762369133A32BB00EEAAA7 /* Build configuration list for PBXNativeTarget "RestKitXMLParser+LibXML" */;
 			buildPhases = (
 				3F762360133A32BB00EEAAA7 /* Sources */,
 				3F762361133A32BB00EEAAA7 /* Frameworks */,
@@ -1329,7 +1327,7 @@
 			);
 			dependencies = (
 			);
-			name = RestKitLibXMLParser;
+			name = "RestKitXMLParser+LibXML";
 			productName = RestKitLibXMLParser;
 			productReference = 3F762364133A32BB00EEAAA7 /* libRestKitLibXMLParser.a */;
 			productType = "com.apple.product-type.library.static";
@@ -1373,10 +1371,10 @@
 				253A080B12551D3000976E89 /* RestKitSupport */,
 				2590E64E125231F600531FA8 /* RestKitJSONParser+YAJL */,
 				2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */,
+				3F762363133A32BB00EEAAA7 /* RestKitXMLParser+LibXML */,
 				253A081312551D5300976E89 /* RestKitCoreData */,
 				2523360411E79F090048F9B4 /* RestKitThree20 */,
 				3F6C39A410FE5C95008F47C5 /* UISpec */,
-				3F762363133A32BB00EEAAA7 /* RestKitLibXMLParser */,
 			);
 		};
 /* End PBXProject section */
@@ -1513,7 +1511,6 @@
 				253A09191255250C00976E89 /* NSDictionary+RKAdditions.m in Sources */,
 				253A091C1255250F00976E89 /* NSString+InflectionSupport.m in Sources */,
 				253A091F1255251900976E89 /* RKSearchEngine.m in Sources */,
-				3F76235E133A316800EEAAA7 /* RKXMLParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1524,6 +1521,7 @@
 				253A09251255258500976E89 /* RKManagedObject.m in Sources */,
 				253A09271255258600976E89 /* RKManagedObjectStore.m in Sources */,
 				2543201D1256179900A315CF /* RKManagedObjectSeeder.m in Sources */,
+				25F3C1391340237900A7EACC /* RKXMLParser+libXML.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1635,6 +1633,11 @@
 			isa = PBXTargetDependency;
 			target = 25956956126DF0A8004BAC4C /* RestKit */;
 			targetProxy = 25956981126DF182004BAC4C /* PBXContainerItemProxy */;
+		};
+		25F3C13B134023BF00A7EACC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3F762363133A32BB00EEAAA7 /* RestKitXMLParser+LibXML */;
+			targetProxy = 25F3C13A134023BF00A7EACC /* PBXContainerItemProxy */;
 		};
 		25F48FF41327DA2300F6B59F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2059,7 +2062,6 @@
 				DSTROOT = /tmp/RestKitLibXMLParser.dst;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "RestKitLibXMLParser/RestKitLibXMLParser-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
@@ -2076,7 +2078,6 @@
 				DSTROOT = /tmp/RestKitLibXMLParser.dst;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "RestKitLibXMLParser/RestKitLibXMLParser-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = "-ObjC";
@@ -2177,13 +2178,14 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3F762369133A32BB00EEAAA7 /* Build configuration list for PBXNativeTarget "RestKitLibXMLParser" */ = {
+		3F762369133A32BB00EEAAA7 /* Build configuration list for PBXNativeTarget "RestKitXMLParser+LibXML" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3F76236A133A32BB00EEAAA7 /* Debug */,
 				3F76236B133A32BB00EEAAA7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
