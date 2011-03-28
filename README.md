@@ -133,14 +133,6 @@ You now only need to add includes for the RestKit libraries at the appropriate p
 
 Please see the Examples/ directory for details on utilizing the library.
 
-Upgrading to Xcode 4.x Derived Data Installation
---------------------------------------------------
-
-If you are upgrading an existing RestKit project to Xcode 4 derived data builds, you need to remove the RestKit header search path
-from your project/targets. Failure to do so will result in redefinition errors from the header imports during build time.
-
-Be sure to completely clear your build directory when performing an update as Xcode is easily confused.
-
 Contributing
 -------------------------
 
