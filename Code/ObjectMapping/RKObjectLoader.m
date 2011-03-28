@@ -206,6 +206,7 @@
 
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
         // TODO: Should probably be an expected MIME types array set by client/manager
+        // if ([self.objectMapper hasParserForMIMEType:[response MIMEType]) canMapFromMIMEType:
         BOOL isAcceptable = (self.objectMapper.format == RKMappingFormatXML && [response isXML]) ||
                             (self.objectMapper.format == RKMappingFormatJSON && [response isJSON]);
 		if ([response isSuccessful] && isAcceptable) {

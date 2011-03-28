@@ -88,7 +88,7 @@ To add RestKit to your project (you're using git, right?):
  * **SystemConfiguration.framework** - Required for detection of network availability.
  * **MobileCoreServices.framework** - Required. Provides support for MIME type auto-detection for uploaded files.
  * **CoreData.framework** - Optional. Provides support for use of the Core Data backed persistent object store.
- **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParser+libxml.a into your app.
+ **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParserLibxml.a into your app.
 1. Get Info on your target and you should be looking at the **General** tag. In the top **Direct Dependencies** section, click the plus button and add a direct dependency on the RestKit target.
 1. Switch to the 'Build' tab in your project inspector. Make sure that your **Configuration** pop-up menu reads **All Configurations** so that your changes will work for all build configurations. 
 1. Find the **Header Search Paths** setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your header path would be 'Libraries/RestKit/Build'.
@@ -121,7 +121,7 @@ Xcode 4.x (Git Submodule)
     * **CoreData.framework** - Optional. Only necessary if you are using Core Data
     * **MobileCoreServices.framework**
     * **SystemConfiguration.framework**
-    * **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParser+libxml.a into your app.
+    * **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParserLibxml.a into your app.
 1. Verify that all of the libraries are showing up in the **Link Binary with Libraries** section before continuing.
 
 Congratulations, you are now done adding RestKit into your Xcode 4 based project!
