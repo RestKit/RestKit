@@ -36,7 +36,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 }
 
 - (id)initWithStoreFilename:(NSString*)storeFilename {
-	return self = [self initWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil];
+	return [self initWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil];
 }
 
 - (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel {
@@ -165,7 +165,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	// Clear the current managed object context. Will be re-created next time it is accessed.
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
     if ([threadDictionary objectForKey:kRKManagedObjectContextKey]) {
-        [threadDictionary setNilValueForKey:kRKManagedObjectContextKey];
+        [threadDictionary removeObjectForKey:kRKManagedObjectContextKey];
     }
 	
 	[self createPersistentStoreCoordinator];
@@ -282,6 +282,17 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		}
 	}
 	return object;
+}
+
+- (NSArray*)objectsForResourcePath:(NSString *)resourcePath {
+    NSArray* cachedObjects = nil;
+    
+    if (self.managedObjectCache) {
+        NSArray* cacheFetchRequests = [self.managedObjectCache fetchRequestsForResourcePath:resourcePath];
+        cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
+    }
+    
+    return cachedObjects;
 }
 
 @end

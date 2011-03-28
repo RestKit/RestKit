@@ -19,14 +19,16 @@
 @implementation RKRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
-			params = _params, userData = _userData, username = _username, password = _password, method = _method;
+			params = _params, userData = _userData, username = _username, password = _password, method = _method,
+            authenticationScheme = _authenticationScheme;
 
 + (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
 	return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
 }
 
 - (id)initWithURL:(NSURL*)URL {
-	if (self = [self init]) {
+    self = [self init];
+	if (self) {
 		_URL = [URL retain];
 		_URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
 		_connection = nil;
@@ -37,7 +39,8 @@
 }
 
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate {
-	if (self = [self initWithURL:URL]) {
+    self = [self initWithURL:URL];
+	if (self) {
 		_delegate = delegate;
 	}
 	return self;
@@ -58,6 +61,7 @@
 	_params = nil;
 	[_additionalHTTPHeaders release];
 	_additionalHTTPHeaders = nil;
+    [_authenticationScheme release];
 	[_username release];
 	_username = nil;
 	[_password release];
@@ -66,7 +70,7 @@
 }
 
 - (void)setRequestBody {
-	if (_params) {
+	if (_params && (_method != RKRequestMethodGET)) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
 			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
@@ -93,8 +97,8 @@
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
 	}
-
-    if (_username != nil) {
+    
+    if (_username != nil && [_authenticationScheme isEqualToString:(NSString*)kCFHTTPAuthenticationSchemeBasic]) {
         // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
         CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
         CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password, kCFHTTPAuthenticationSchemeBasic, FALSE);
@@ -105,6 +109,7 @@
         CFRelease(dummyRequest);
         CFRelease(authorizationString);
     }
+    
 	NSLog(@"Headers: %@", [_URLRequest allHTTPHeaderFields]);
 }
 

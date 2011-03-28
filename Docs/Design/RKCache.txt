@@ -1,0 +1,92 @@
+RestKit Cache Design
+====================
+
+This document outlines the design for a lightweight cache implementation for the RestKit framework. The goals
+of the cache are:
+* Provide support for offline access to data payloads
+* Provide storage of last modification times for etags
+* Provide cache policies at the client and request level
+* RKResponse should be able to answer - (BOOL)wasLoadedFromCache
+* Each RKClient has its own cache (path initialized by Base URL somehow?)
+* RKCache should have a storage policy. This should be settable to session (store for the run of the app) or permanently.
+
+Needs to store:
+* Key/values
+* Settable via NSURL (not resource path)
+
+Concerns:
+* Does this need to be harmonized with the managed object cache? Can it be?
+* Don't love how tightly coupled cacheing is in Three20. Want something more orthogonal.
+* How are we going to unit test this? Need to identify test cases...
+* Where does the cache loading logic go? Request queue? Client? Inside of RKRequest? New class?
+
+References:
+* TTURLCache
+* ASIDownloadCache
+
+ETags:
+* http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+* Comes across as either "ETag" or "Etag" header
+* Should be contained to RKRequest / RKResponse (don't bleed through into the cache)
+* Needs to be added on load via If-None-Match
+
+Request cache policies:
+* RKClient should have a default cache policy that gets passed through to requests
+* RKRequest will have a cache policy property. This determines when and how to utilize the cache.
+* You should be able to bitwise | these together, i.e. RKRequestCachePolicyLoadIfOffline | RKRequestCachePolicyEtag
+typedef enum {
+    RKRequestCachePolicyNone = 0,  // Never use the cache
+    RKRequestCachePolicyLoadIfOffline, // Load from the cache when we are offline
+    RKRequestCachePolicyLoadOnError, // Load from the cache if we encounter an error
+    RKRequestCachePolicyEtag, // Load from the cache if we have data stored and the server returns a 304 (not modified) response
+    RKRequestCachePolicyDefault = RKRequestCachePolicyEtag;
+} RKRequestCachePolicy;
+
+###################################################################################
+// Proposed Interface
+
+// Returns a cache key for a URL (md5 the full URL after coercing to a string)
+// This will let you work with the cache via URL's pretty easily
+- (NSString*)RKCacheKeyForURL:(NSURL*)URL;
+
+// Storage policy. Determines if we clear the cache out when the app is shut down. Cache
+// instance needs to register for 
+typedef enum {
+    RKCacheStoragePolicyDisabled, // The cache has been disabled. Attempts to store data will silently fail
+    RKCacheStoragePolicyForDurationOfSession, // Cache data for the length of the session. Clear cache at app exit.
+    RKCacheStoragePolicyPermanently // Cache data permanently, until explicitly expired or flushed
+} RKCacheStoragePolicy;
+
+@interface RKCache : NSObject {
+    NSString* _cachePath;
+    RKCacheStoragePolicy _storagePolicy;
+}
+
+@property (nonatomic, readonly) NSString* cachePath; // Full path to the cache
+@property (nonatomic, assign) RKCacheStoragePolicy storagePolicy; // User can change storage policy.
+
+// Should be initialized with the full path to store it. RKClient should
+// figure out the appropriate path when initializing.
+- (id)initWithCachePath:(NSString*)cachePath storagePolicy:(RKCacheStoragePolicy)storagePolicy;
+
+// Key/value storage
+- (NSString*)pathForKey:(NSString*)key;
+- (BOOL)hasDataForKey:(NSString*)key;
+- (void)storeData:(NSData*)data forKey:(NSString*)key;
+- (NSData*)dataForKey:(NSString*)key;
+- (NSData*)dataForKey:(NSString*)key expires:(NSTimeInterval)expirationAge
+           timestamp:(NSDate**)timestamp;
+
+// Cache Invalidation
+- (void)invalidateKey:(NSString*)key;
+- (void)invalidateAll;
+
+@end
+
+// RKRequest
+Get new properties:
+NSString* cacheKey; // When GET, defaults to RKCacheKeyForURL. For POST/PUT, md5 of the serialization data.
+RKRequestCachePolicy cachePolicy; // Cache policy inherited from RKClient.
+
+// RKResponse
+BOOL wasLoadedFromCache; // YES when the response was built from cached data

@@ -132,13 +132,6 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 + (RKClient*)clientWithBaseURL:(NSString*)baseURL username:(NSString*)username password:(NSString*)password;
 
 /**
- * Deprecated global instance accessors. Use sharedClient & setSharedClient
- * @deprecated
- */
-+ (RKClient*)client DEPRECATED_ATTRIBUTE;
-+ (void)setClient:(RKClient*)client DEPRECATED_ATTRIBUTE;
-
-/**
  *  Will check for network connectivity (to google.com)
  */
 - (BOOL)isNetworkAvailable;
@@ -151,6 +144,7 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 /**
  * Returns a resource path with a dictionary of query parameters URL encoded and appended
  */
+// TODO: Move this to a function instead of an RKClient method
 - (NSString*)resourcePath:(NSString*)resourcePath withQueryParams:(NSDictionary*)queryParams;
 
 /**

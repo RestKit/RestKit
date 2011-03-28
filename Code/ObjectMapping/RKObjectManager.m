@@ -8,6 +8,7 @@
 
 #import "RKObjectManager.h"
 #import "../CoreData/RKManagedObjectStore.h"
+#import "../CoreData/RKManagedObjectLoader.h"
 
 NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
 NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
@@ -32,7 +33,8 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		_mapper = [mapper retain];
 		_router = [router retain];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
@@ -135,10 +137,16 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	RKObjectLoader* loader = [RKObjectLoader loaderWithResourcePath:resourcePath client:self.client mapper:self.mapper delegate:delegate];
-	loader.managedObjectStore = self.objectStore;
+    RKObjectLoader* objectLoader = nil;
+    
+    Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
+    if (managedObjectLoaderClass) {
+        objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
+    } else {
+        objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
+    }	
 
-	return loader;
+	return objectLoader;
 }
 
 /////////////////////////////////////////////////////////////
@@ -198,7 +206,6 @@ static RKObjectManager* sharedManager = nil;
 	loader.params = params;
 	loader.targetObject = object;
 	loader.objectClass = [object class];
-	loader.managedObjectStore = self.objectStore;
 
 	return loader;
 }

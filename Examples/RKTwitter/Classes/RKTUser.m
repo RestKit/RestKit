@@ -24,4 +24,12 @@
 			nil];
 }
 
+- (void)dealloc {
+    [_userID release];
+	[_name release];
+	[_screenName release];
+    
+    [super dealloc];
+}
+
 @end

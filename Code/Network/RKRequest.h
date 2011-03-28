@@ -32,6 +32,7 @@ typedef enum RKRequestMethod {
 	NSObject<RKRequestSerializable>* _params;
 	NSObject<RKRequestDelegate>* _delegate;
 	id _userData;
+    NSString* _authenticationScheme;
 	NSString* _username;
 	NSString* _password;
 	RKRequestMethod _method;
@@ -59,7 +60,6 @@ typedef enum RKRequestMethod {
 /**
  * A serializable collection of parameters sent as the HTTP Body of the request
  */
-// TODO: Should I be copy?
 @property(nonatomic, retain) NSObject<RKRequestSerializable>* params;
 
 /**
@@ -83,6 +83,10 @@ typedef enum RKRequestMethod {
 /**
  * Credentials for HTTP AUTH Challenge
  */
+
+// The authentication scheme to use. When set to kCFHTTPAuthenticationSchemeBasic, authentication will
+// be setup before a challenge occurs
+@property(nonatomic, retain) NSString* authenticationScheme;
 @property(nonatomic, retain) NSString* username;
 @property(nonatomic, retain) NSString* password;
 

@@ -81,15 +81,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	if (self = [self init]) {
 		_reachabilityRef = reachabilityRef;
 		[self scheduleObserver];
-		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(scheduleObserver)
-													 name:UIApplicationDidBecomeActiveNotification
-												   object:nil];
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(unscheduleObserver)
-													 name:UIApplicationWillResignActiveNotification
-												   object:nil];
 	}
 	return self;
 }
