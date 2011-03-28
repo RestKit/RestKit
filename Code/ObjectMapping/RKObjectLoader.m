@@ -206,8 +206,8 @@
 
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
         // TODO: Should probably be an expected MIME types array set by client/manager
-        BOOL isAcceptable = (_mapper.format == RKMappingFormatXML && [response isXML]) ||
-                            (_mapper.format == RKMappingFormatJSON && [response isJSON]);
+        BOOL isAcceptable = (self.objectMapper.format == RKMappingFormatXML && [response isXML]) ||
+                            (self.objectMapper.format == RKMappingFormatJSON && [response isJSON]);
 		if ([response isSuccessful] && isAcceptable) {
 			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 		} else {

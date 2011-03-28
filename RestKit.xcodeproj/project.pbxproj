@@ -176,6 +176,7 @@
 		259DF7861340294400233DF4 /* RKXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 259DF7831340294400233DF4 /* RKXMLParser.h */; };
 		259DF7871340294400233DF4 /* RKXMLParser+libXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 259DF7851340294400233DF4 /* RKXMLParser+libXML.m */; };
 		259DF7881340299900233DF4 /* RKXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 259DF7831340294400233DF4 /* RKXMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		259DF78C13402E4D00233DF4 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 259DF78B13402E4D00233DF4 /* libxml2.dylib */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -477,6 +478,7 @@
 		259DF77A1340290600233DF4 /* libRestKitXMLParser+libxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRestKitXMLParser+libxml.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		259DF7831340294400233DF4 /* RKXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKXMLParser.h; sourceTree = "<group>"; };
 		259DF7851340294400233DF4 /* RKXMLParser+libXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKXMLParser+libXML.m"; sourceTree = "<group>"; };
+		259DF78B13402E4D00233DF4 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
@@ -557,6 +559,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				259DF78C13402E4D00233DF4 /* libxml2.dylib in Frameworks */,
 				259DF77B1340290600233DF4 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -611,6 +614,7 @@
 		0867D691FE84028FC02AAC07 /* OTRestFramework */ = {
 			isa = PBXGroup;
 			children = (
+				259DF78B13402E4D00233DF4 /* libxml2.dylib */,
 				253A085F12551D8D00976E89 /* Code */,
 				3F6C3A9210FE750E008F47C5 /* Specs */,
 				253A0A8D1255300000976E89 /* Scripts */,
@@ -2281,6 +2285,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2295,6 +2300,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2309,6 +2315,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
