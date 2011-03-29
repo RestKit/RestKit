@@ -82,7 +82,7 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 /**
  * A dictionary of headers to be sent with each request
  */
-@property(nonatomic, readonly) NSDictionary* HTTPHeaders;
+@property(nonatomic, readonly) NSMutableDictionary* HTTPHeaders;
 
 /**
  * The RKReachabilityObserver used to monitor whether or not the client has a connection

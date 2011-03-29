@@ -16,3 +16,11 @@ NSString* RKSpecGetBaseURL() {
     
     return [NSString stringWithFormat:@"http://%s:4567", ipAddress];
 }
+
+void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
+    RKClient* client = [RKClient sharedClient];
+    if (client) {
+        id mockClient = [OCMockObject partialMockForObject:client];
+        [[[mockClient stub] andReturnValue:OCMOCK_VALUE(isNetworkAvailable)] isNetworkAvailable];
+    }
+}

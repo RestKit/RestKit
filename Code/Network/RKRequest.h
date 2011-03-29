@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import <UIKit/UIKit.h>
 #import "RKRequestSerializable.h"
 #import "RKJSONSerialization.h"
 
@@ -20,6 +21,21 @@ typedef enum RKRequestMethod {
 	RKRequestMethodPUT,
 	RKRequestMethodDELETE
 } RKRequestMethod;
+
+/**
+ * Background Request Policy
+ *
+ * On iOS 4.x and higher, UIKit provides
+ * support for continueing activities for a limited amount
+ * of time in the background. RestKit provides simple
+ * support for continuing a request when in the background.
+ */
+typedef enum RKRequestBackgroundPolicy {
+    RKRequestBackgroundPolicyNone = 0,      // Take no action with regards to backgrounding
+    RKRequestBackgroundPolicyCancel,        // Cancel the request on transition to the background
+    RKRequestBackgroundPolicyContinue,      // Continue the request in the background until time expires
+    RKRequestBackgroundPolicyRequeue        // Stop the request and place it back on the queue. It will fire when the app reopens
+} RKRequestBackgroundPolicy;
 
 @class RKResponse;
 @protocol RKRequestDelegate;
@@ -37,6 +53,8 @@ typedef enum RKRequestMethod {
 	RKRequestMethod _method;
 	BOOL _isLoading;
 	BOOL _isLoaded;
+    RKRequestBackgroundPolicy _backgroundPolicy;
+    UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
 }
 
 /**
@@ -80,6 +98,14 @@ typedef enum RKRequestMethod {
 @property(nonatomic, retain) id userData;
 
 /**
+ * The policy to take on transition to the background (iOS 4.x and higher only)
+ *
+ * Default: RKRequestBackgroundPolicyCancel
+ */
+@property(nonatomic, assign) RKRequestBackgroundPolicy backgroundPolicy;
+@property(nonatomic, readonly) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+
+/**
  * Credentials for HTTP AUTH Challenge
  */
 
@@ -121,6 +147,11 @@ typedef enum RKRequestMethod {
  * dispatched as soon as possible.
  */
 - (void)send;
+
+/**
+ * Immediately dispatch a request asynchronously, skipping the request queue
+ */
+- (void)sendAsynchronously;
 
 /**
  * Send the request synchronously and return a hydrated response object
@@ -186,8 +217,6 @@ typedef enum RKRequestMethod {
 
 /**
  * Lifecycle events for RKRequests
- *
- * Modeled off of TTURLRequest
  */
 @protocol RKRequestDelegate
 @optional
@@ -213,8 +242,14 @@ typedef enum RKRequestMethod {
 - (void)request:(RKRequest*)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 
 /**
- * In the event the request is canceled, this is the last delegate method you will receive.
+ * Sent to the delegate when a request was cancelled
  */
-- (void)requestDidCancel:(RKRequest*)request;
+- (void)requestDidCancelLoad:(RKRequest*)request;
+
+/**
+ * Sent to the delegate when a request has timed out. This is sent when a
+ * backgrounded request expired before completion.
+ */
+- (void)requestDidTimeout:(RKRequest*)request;
 
 @end

@@ -200,10 +200,6 @@
 - (void)didFinishLoad:(RKResponse*)response {
 	_response = [response retain];
 
-	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
-		[_delegate request:self didLoadResponse:response];
-	}
-
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
         // TODO: Should probably be an expected MIME types array set by client/manager
         // if ([self.objectMapper hasParserForMIMEType:[response MIMEType]) canMapFromMIMEType:
@@ -219,6 +215,8 @@
 			[self responseProcessingSuccessful:NO withError:nil];
 		}
 	}
+    
+    [super didFinishLoad:response];
 }
 
 @end

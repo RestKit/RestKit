@@ -17,6 +17,7 @@
 @synthesize errorMessage = _errorMessage;
 @synthesize success = _success;
 @synthesize timeout = _timeout;
+@synthesize wasCancelled = _wasCancelled;
 
 + (RKSpecResponseLoader*)responseLoader {
     return [[[self alloc] init] autorelease];
@@ -68,6 +69,12 @@
 
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
     [self loadError:error];
+}
+
+- (void)requestDidCancelLoad:(RKRequest *)request {
+    _awaitingResponse = NO;
+    _success = NO;
+    _wasCancelled = YES;
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {

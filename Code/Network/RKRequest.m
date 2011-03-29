@@ -19,7 +19,8 @@
 @implementation RKRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
-			params = _params, userData = _userData, username = _username, password = _password, method = _method;
+      			params = _params, userData = _userData, username = _username, password = _password, method = _method,
+      			backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
 
 + (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
 	return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
@@ -34,37 +35,68 @@
 		_isLoading = NO;
 		_isLoaded = NO;
 	}
+    
 	return self;
 }
 
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate {
     self = [self initWithURL:URL];
 	if (self) {
-		_delegate = delegate;
+		_delegate = delegate;        
 	}
 	return self;
 }
 
-- (void)dealloc {
-	self.delegate = nil;
-	[_connection cancel];
-	[_connection release];
-	_connection = nil;
-	[_userData release];
-	_userData = nil;
-	[_URL release];
-	_URL = nil;
-	[_URLRequest release];
-	_URLRequest = nil;
-	[_params release];
-	_params = nil;
-	[_additionalHTTPHeaders release];
-	_additionalHTTPHeaders = nil;
-	[_username release];
-	_username = nil;
-	[_password release];
-	_password = nil;
-	[super dealloc];
+- (id)init {
+    self = [super init];
+    if (self) {
+        _backgroundPolicy = RKRequestBackgroundPolicyNone;
+        _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+    }
+    
+    return self;
+}
+
+- (void)cleanupBackgroundTask {
+    if (UIBackgroundTaskInvalid == self.backgroundTaskIdentifier) {
+        return;
+    }
+    
+    NSLog(@"Cleaning up background task...");
+    
+    UIApplication* app = [UIApplication sharedApplication];
+    if ([app respondsToSelector:@selector(beginBackgroundTaskWithExpirationHandler:)]) {
+    		[app endBackgroundTask:_backgroundTaskIdentifier];
+    		_backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+    }
+}
+
+- (void)dealloc {    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+  	self.delegate = nil;
+  	[_connection cancel];
+  	[_connection release];
+  	_connection = nil;
+  	[_userData release];
+  	_userData = nil;
+  	[_URL release];
+  	_URL = nil;
+  	[_URLRequest release];
+  	_URLRequest = nil;
+  	[_params release];
+  	_params = nil;
+  	[_additionalHTTPHeaders release];
+  	_additionalHTTPHeaders = nil;
+  	[_username release];
+  	_username = nil;
+  	[_password release];
+  	_password = nil;
+    
+    // Cleanup a background task if there is any
+    [self cleanupBackgroundTask];
+     
+	  [super dealloc];
 }
 
 - (void)setRequestBody {
@@ -104,6 +136,17 @@
 	[self addHeadersToRequest];
 }
 
+- (void)cancelAndInformDelegate:(BOOL)informDelegate {
+	[_connection cancel];
+	[_connection release];
+	_connection = nil;
+	_isLoading = NO;
+    
+    if (informDelegate && [_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
+        [_delegate requestDidCancelLoad:self];
+    }
+}
+
 - (NSString*)HTTPMethod {
 	switch (_method) {
 		case RKRequestMethodGET:
@@ -129,18 +172,54 @@
 }
 
 - (void)fireAsynchronousRequest {
-	if ([[RKClient sharedClient] isNetworkAvailable]) {
-		[self prepareURLRequest];
-		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-		NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-		[body release];
-		NSDate* sentAt = [NSDate date];
-		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:userInfo];
+    [self prepareURLRequest];
+    NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
+    NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+    [body release];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
+    
+    _isLoading = YES;
+    RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
+    _connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+}
 
-		_isLoading = YES;
-		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-		_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+- (BOOL)shouldDispatchRequest {
+    return [RKClient sharedClient] == nil || [[RKClient sharedClient] isNetworkAvailable];
+}
+
+- (void)sendAsynchronously {
+	if ([self shouldDispatchRequest]) {
+        // Background Request Policy support
+        UIApplication* app = [UIApplication sharedApplication];
+        if (self.backgroundPolicy == RKRequestBackgroundPolicyNone || 
+            NO == [app respondsToSelector:@selector(beginBackgroundTaskWithExpirationHandler:)]) {
+            // No support for background (iOS 3.x) or the policy is none -- just fire the request
+            [self fireAsynchronousRequest];
+        } else if (self.backgroundPolicy == RKRequestBackgroundPolicyCancel || self.backgroundPolicy == RKRequestBackgroundPolicyRequeue) {
+            // For cancel or requeue behaviors, we watch for background transition notifications
+            [[NSNotificationCenter defaultCenter] addObserver:self 
+                                                     selector:@selector(appDidEnterBackgroundNotification:) 
+                                                         name:UIApplicationDidEnterBackgroundNotification 
+                                                       object:nil];
+        } else if (self.backgroundPolicy == RKRequestBackgroundPolicyContinue) {
+            NSLog(@"Beginning background task to perform processing...");
+            
+            // Fork a background task for continueing a long-running request
+            _backgroundTaskIdentifier = [app beginBackgroundTaskWithExpirationHandler:^{
+                NSLog(@"Background request time expired, canceling request.");
+                
+                [self cancelAndInformDelegate:NO];
+                [self cleanupBackgroundTask];
+                
+                if ([_delegate respondsToSelector:@selector(requestDidTimeout:)]) {
+                    [_delegate requestDidTimeout:self];
+                }
+            }];
+            
+            // Start the potentially long-running request
+            [self fireAsynchronousRequest];
+        }
 	} else {
 		NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
 		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -157,14 +236,13 @@
 	NSData* payload = nil;
 	RKResponse* response = nil;
 
-	if ([[RKClient sharedClient] isNetworkAvailable]) {
+	if ([self shouldDispatchRequest]) {
 		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
 		NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
-		NSDate* sentAt = [NSDate date];
-		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:userInfo];
+
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 
 		_isLoading = YES;
 		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
@@ -191,14 +269,7 @@
 }
 
 - (void)cancel {
-    if ([_delegate respondsToSelector:@selector(requestDidCancel:)]) {
-        [_delegate requestDidCancel:self];
-    }
-    _delegate = nil;
-	[_connection cancel];
-	[_connection release];
-	_connection = nil;
-	_isLoading = NO;
+    [self cancelAndInformDelegate:YES];
 }
 
 - (void)didFailLoadWithError:(NSError*)error {
@@ -208,34 +279,32 @@
 		[_delegate request:self didFailLoadWithError:error];
 	}
 
-	NSDate* receivedAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod",
-							  [self URL], @"URL", receivedAt, @"receivedAt", error, @"error", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification object:self userInfo:userInfo];
+	[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification object:self userInfo:nil];
 }
 
 - (void)didFinishLoad:(RKResponse*)response {
-	_isLoading = NO;
-	_isLoaded = YES;
+  	_isLoading = NO;
+  	_isLoaded = YES;
 
-	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
-		[_delegate request:self didLoadResponse:response];
-	}
+  	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
+  		[_delegate request:self didLoadResponse:response];
+  	}
+  
+	  NSDictionary* userInfo = [NSDictionary dictionaryWithObject:response forKey:@"response"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification object:self userInfo:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];
+    
+    // TODO: Should be factored out in favor of notification. UIKit specific.
+  	if ([response isServiceUnavailable] && [[RKClient sharedClient] serviceUnavailableAlertEnabled]) {
+  		UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[RKClient sharedClient] serviceUnavailableAlertTitle]
+  															message:[[RKClient sharedClient] serviceUnavailableAlertMessage]
+  														   delegate:nil
+  												  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+  												  otherButtonTitles:nil];
+  		[alertView show];
+  		[alertView release];
 
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:response forKey:@"response"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification object:self userInfo:userInfo];
-	[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];    
-
-	if ([response isServiceUnavailable] && [[RKClient sharedClient] serviceUnavailableAlertEnabled]) {
-		UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[RKClient sharedClient] serviceUnavailableAlertTitle]
-															message:[[RKClient sharedClient] serviceUnavailableAlertMessage]
-														   delegate:nil
-												  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-												  otherButtonTitles:nil];
-		[alertView show];
-		[alertView release];
-
-	}
+  	}
 }
 
 - (BOOL)isGET {
@@ -273,6 +342,17 @@
 
 - (BOOL)wasSentToResourcePath:(NSString*)resourcePath {
 	return [[self resourcePath] isEqualToString:resourcePath];
+}
+
+- (void)appDidEnterBackgroundNotification:(NSNotification*)notification {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    if (self.backgroundPolicy == RKRequestBackgroundPolicyCancel) {
+        [self cancel];
+    } else if (self.backgroundPolicy == RKRequestBackgroundPolicyRequeue) {
+        // Cancel the existing request
+        [self cancelAndInformDelegate:NO];
+        [self send];
+    }
 }
 
 @end

@@ -24,3 +24,6 @@
 
 // The Base URL for the Spec server. See Specs/Server/
 NSString* RKSpecGetBaseURL();
+
+// Stub out the return value of the Shared Client instance's isNetworkAvailable method
+void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable);

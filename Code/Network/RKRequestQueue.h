@@ -60,4 +60,9 @@
  */
 - (void)cancelAllRequests;
 
+/**
+ * Returns YES when a Request is on the queue
+ */
+- (BOOL)containsRequest:(RKRequest*)request;
+
 @end
