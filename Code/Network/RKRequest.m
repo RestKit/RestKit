@@ -19,8 +19,7 @@
 @implementation RKRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
-			params = _params, userData = _userData, username = _username, password = _password, method = _method,
-            authenticationScheme = _authenticationScheme;
+			params = _params, userData = _userData, username = _username, password = _password, method = _method;
 
 + (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
 	return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
@@ -61,7 +60,6 @@
 	_params = nil;
 	[_additionalHTTPHeaders release];
 	_additionalHTTPHeaders = nil;
-    [_authenticationScheme release];
 	[_username release];
 	_username = nil;
 	[_password release];
@@ -97,20 +95,6 @@
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
 	}
-    
-    if (_username != nil && [_authenticationScheme isEqualToString:(NSString*)kCFHTTPAuthenticationSchemeBasic]) {
-        // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
-        CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
-        CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password, kCFHTTPAuthenticationSchemeBasic, FALSE);
-        CFStringRef authorizationString = CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
-
-        [_URLRequest setValue:(NSString *)authorizationString forHTTPHeaderField:@"Authorization"];
-
-        CFRelease(dummyRequest);
-        CFRelease(authorizationString);
-    }
-    
-	NSLog(@"Headers: %@", [_URLRequest allHTTPHeaderFields]);
 }
 
 // Setup the NSURLRequest. The request must be prepared right before dispatching
@@ -152,7 +136,7 @@
 		[body release];
 		NSDate* sentAt = [NSDate date];
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:userInfo];
 
 		_isLoading = YES;
 		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
@@ -180,7 +164,7 @@
 		[body release];
 		NSDate* sentAt = [NSDate date];
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestSentNotification object:self userInfo:userInfo];
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:userInfo];
 
 		_isLoading = YES;
 		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
@@ -223,7 +207,7 @@
 	NSDate* receivedAt = [NSDate date];
 	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod",
 							  [self URL], @"URL", receivedAt, @"receivedAt", error, @"error", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification object:self userInfo:userInfo];
+	[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification object:self userInfo:userInfo];
 }
 
 - (void)didFinishLoad:(RKResponse*)response {
@@ -234,9 +218,9 @@
 		[_delegate request:self didLoadResponse:response];
 	}
 
-	NSDate* receivedAt = [NSDate date];
-	NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", receivedAt, @"receivedAt", nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification object:response userInfo:userInfo];
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:response forKey:@"response"];
+	[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification object:self userInfo:userInfo];
+	[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];    
 
 	if ([response isServiceUnavailable] && [[RKClient sharedClient] serviceUnavailableAlertEnabled]) {
 		UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[RKClient sharedClient] serviceUnavailableAlertTitle]

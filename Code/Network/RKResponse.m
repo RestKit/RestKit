@@ -9,6 +9,7 @@
 #import "RKResponse.h"
 #import "RKNotifications.h"
 #import "RKJSONParser.h"
+#import "RKNetwork.h"
 
 @implementation RKResponse
 
@@ -62,9 +63,9 @@
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     if ([challenge previousFailureCount] == 0) {
         NSURLCredential *newCredential;
-        newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                 password:[NSString stringWithFormat:@"%@", _request.password]
-                                              persistence:NSURLCredentialPersistenceNone];
+        newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+                                                   password:[NSString stringWithFormat:@"%@", _request.password]
+                                                persistence:RKNetworkGetGlobalCredentialPersistence()];
         [[challenge sender] useCredential:newCredential
                forAuthenticationChallenge:challenge];
     } else {

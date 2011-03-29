@@ -75,7 +75,7 @@
 								  [self URL], @"URL",
 								  receivedAt, @"receivedAt",
 								  nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:kRKResponseReceivedNotification
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification
 															object:_response
 														  userInfo:userInfo];
 	} else {
@@ -84,7 +84,7 @@
 								  receivedAt, @"receivedAt",
 								  error, @"error",
 								  nil];
-		[[NSNotificationCenter defaultCenter] postNotificationName:kRKRequestFailedWithErrorNotification
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification
 															object:self
 														  userInfo:userInfo];
 	}

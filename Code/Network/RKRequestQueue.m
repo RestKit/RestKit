@@ -42,11 +42,11 @@ static const NSInteger kMaxConcurrentLoads = 5;
 		_totalLoading = 0;
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(responseDidLoad:)
-													 name:kRKResponseReceivedNotification
+													 name:RKResponseReceivedNotification
 												   object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(responseDidLoad:)
-													 name:kRKRequestFailedWithErrorNotification
+													 name:RKRequestFailedWithErrorNotification
 												   object:nil];
 	}
 	return self;

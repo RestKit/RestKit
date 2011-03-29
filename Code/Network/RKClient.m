@@ -6,10 +6,11 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
+#import <SystemConfiguration/SCNetworkReachability.h>
 #import "RKClient.h"
 #import "RKObjectLoader.h"
 #import "RKURL.h"
-#import <SystemConfiguration/SCNetworkReachability.h>
+#import "RKNotifications.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
@@ -104,7 +105,8 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 }
 
 - (id)init {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
@@ -121,6 +123,7 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 	self.serviceUnavailableAlertTitle = nil;
 	self.serviceUnavailableAlertMessage = nil;
 	[_HTTPHeaders release];
+    
 	[super dealloc];
 }
 

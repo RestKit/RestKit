@@ -21,8 +21,6 @@
 // TODO: Rails specifics should probably move elsewhere...
 static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'HH:mm:ss'Z'"; // 2009-08-08T17:23:59Z
 static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
-static const NSString* kRKModelMapperJSONMappingFormatParserKey = @"RKJSONMappingFormatParser";
-static const NSString* kRKModelMapperXMLMappingFormatParserKey = @"RKXMLMappingFormatParser";
 
 @interface RKObjectMapper (Private)
 
@@ -93,27 +91,23 @@ static const NSString* kRKModelMapperXMLMappingFormatParserKey = @"RKXMLMappingF
 // Mapping from a string
 
 - (id)parseString:(NSString*)string {
-	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-    
     Class parserClass;
-    const NSString* parserKey;
+    NSString* className = nil;
     NSObject<RKParser>* parser = nil;
     
     if (_format == RKMappingFormatJSON) {
-        parserClass = [RKJSONParser class];
-        parserKey = kRKModelMapperJSONMappingFormatParserKey;
-    } else {
-        parserClass = [RKXMLParser class];
-        parserKey = kRKModelMapperXMLMappingFormatParserKey;
+        className = @"RKJSONParser";
+    } else if (_format == RKMappingFormatXML) {
+        className = @"RKXMLParser";
     }
-    parser = [threadDictionary objectForKey:parserKey];
+    
+    parserClass = NSClassFromString(className);
+    if (nil == parserClass) {
+        [NSException raise:@"Unable to find an appropriate parser." 
+                    format:@"The object mapper attempted to process a payload via the '%@' parser, but it was not found.", className];
+    }
 	
-	if (!parser) {
-        parser = [[parserClass alloc] init];
-        [threadDictionary setObject:parser forKey:parserKey];
-        [parser release];
-	}
-	
+    parser = [[parserClass alloc] init];
 	id result = nil;
 	@try {
 		result = [parser objectFromString:string];
@@ -121,6 +115,8 @@ static const NSString* kRKModelMapperXMLMappingFormatParserKey = @"RKXMLMappingF
 	@catch (NSException* e) {
 		NSLog(@"[RestKit] RKObjectMapper:parseString: Exception (%@) parsing error from string: %@", [e reason], string);
 	}
+    [parser release];
+    
 	return result;
 }
 

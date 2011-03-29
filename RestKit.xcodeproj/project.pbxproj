@@ -31,6 +31,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		250C29FD134185D2000A3551 /* RKNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 250C29FB134185CE000A3551 /* RKNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		250C29FE134185D2000A3551 /* RKNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C29FC134185D0000A3551 /* RKNetwork.m */; };
 		251D14AC133597B800959061 /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 251D14AA133597B800959061 /* RKManagedObjectLoader.h */; };
 		251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 251D14AB133597B800959061 /* RKManagedObjectLoader.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
@@ -309,6 +311,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		250C29FB134185CE000A3551 /* RKNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKNetwork.h; sourceTree = "<group>"; };
+		250C29FC134185D0000A3551 /* RKNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKNetwork.m; sourceTree = "<group>"; };
 		251D14AA133597B800959061 /* RKManagedObjectLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectLoader.h; sourceTree = "<group>"; };
 		251D14AB133597B800959061 /* RKManagedObjectLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoader.m; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -705,6 +709,8 @@
 				73FE56C5126CB91600E0F30B /* RKURL.m */,
 				2538C05A12A6C44A0006903C /* RKRequestQueue.h */,
 				2538C05B12A6C44A0006903C /* RKRequestQueue.m */,
+				250C29FB134185CE000A3551 /* RKNetwork.h */,
+				250C29FC134185D0000A3551 /* RKNetwork.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -1076,9 +1082,10 @@
 				253A08DD125522E100976E89 /* RKRequest.h in Headers */,
 				253A08DF125522E300976E89 /* RKRequestSerializable.h in Headers */,
 				253A08E0125522E300976E89 /* RKResponse.h in Headers */,
-				73FE56C7126CB91600E0F30B /* RKURL.h in Headers */,
 				73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */,
+				73FE56C7126CB91600E0F30B /* RKURL.h in Headers */,
 				2538C05C12A6C44A0006903C /* RKRequestQueue.h in Headers */,
+				250C29FD134185D2000A3551 /* RKNetwork.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1541,6 +1548,7 @@
 				73FE56C8126CB91600E0F30B /* RKURL.m in Sources */,
 				73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */,
 				2538C05D12A6C44A0006903C /* RKRequestQueue.m in Sources */,
+				250C29FE134185D2000A3551 /* RKNetwork.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

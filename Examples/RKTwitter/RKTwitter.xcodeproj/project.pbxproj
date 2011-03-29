@@ -11,6 +11,7 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		251E0D31134187F80017A6DA /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 251E0D30134187F80017A6DA /* libRestKitXMLParserLibxml.a */; };
 		2538E811123419CA00ACB5D7 /* RKTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E810123419CA00ACB5D7 /* RKTUser.m */; };
 		2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
 		2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
@@ -52,6 +53,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 3F6C39A510FE5C95008F47C5;
 			remoteInfo = UISpec;
+		};
+		25BD44171340331700DBACDD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25BD43BD1340315800DBACDD;
+			remoteInfo = "RestKitXMLParser+Libxml";
 		};
 		3F3CE2C4125B93780083FDCB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -110,6 +118,7 @@
 		1D3623250D0F684500981E51 /* RKTwitterAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterAppDelegate.m; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* RKTwitter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RKTwitter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		251E0D30134187F80017A6DA /* libRestKitXMLParserLibxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitXMLParserLibxml.a; sourceTree = SOURCE_ROOT; };
 		2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../RestKit.xcodeproj; sourceTree = SOURCE_ROOT; };
 		2538E80F123419CA00ACB5D7 /* RKTUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTUser.h; sourceTree = "<group>"; };
 		2538E810123419CA00ACB5D7 /* RKTUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTUser.m; sourceTree = "<group>"; };
@@ -139,6 +148,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				251E0D31134187F80017A6DA /* libRestKitXMLParserLibxml.a in Frameworks */,
 				3F02F592131D683A004E1F54 /* libxml2.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -188,6 +198,7 @@
 				3F3CE2CB125B93780083FDCB /* libRestKitJSONParserYAJL.a */,
 				3F3CE2CD125B93780083FDCB /* libRestKitJSONParserSBJSON.a */,
 				25321673133988730099A5DB /* libRestKitJSONParserJSONKit.a */,
+				25BD44181340331700DBACDD /* libRestKitXMLParserLibxml.a */,
 				3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */,
 				2538E808123417E500ACB5D7 /* libRestKitThree20.a */,
 				2538E80A123417E500ACB5D7 /* UISpec.app */,
@@ -198,7 +209,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				3F02F591131D683A004E1F54 /* libxml2.dylib */,
 				2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -235,6 +245,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				251E0D30134187F80017A6DA /* libRestKitXMLParserLibxml.a */,
+				3F02F591131D683A004E1F54 /* libxml2.dylib */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765A40DF7441C002DB57D /* CoreGraphics.framework */,
@@ -317,6 +329,13 @@
 			fileType = wrapper.application;
 			path = UISpec.app;
 			remoteRef = 2538E809123417E500ACB5D7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25BD44181340331700DBACDD /* libRestKitXMLParserLibxml.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitXMLParserLibxml.a;
+			remoteRef = 25BD44171340331700DBACDD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */ = {
@@ -415,6 +434,10 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -433,6 +456,10 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
