@@ -61,12 +61,17 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKClientSpec"
+            value = "RKObjectMapperSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
             value = "10.0.1.4"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UISPEC_EXAMPLE"
+            value = "itShouldNotCrashWhenAttemptingToMapWithAMissingElement"
             isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>

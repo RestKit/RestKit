@@ -346,7 +346,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 - (void)setPropertiesOfModel:(NSObject<RKObjectMappable>*)model fromElements:(NSDictionary*)elements {
 	NSDictionary* elementToPropertyMappings = [self elementToPropertyMappingsForModel:model];
 	for (NSString* elementKeyPath in elementToPropertyMappings) {		
-		id elementValue = nil;		
+		id elementValue = nil;
 		BOOL setValue = YES;
 		
 		@try {
@@ -357,8 +357,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 			setValue = NO;
 		}
 		
-		// TODO: Need a way to differentiate between a keyPath that exists, but contains a nil
-		// value and one that is not present in the payload. Causes annoying problems!
+		// nil is returned when the collection does not contain the element
 		if (nil == elementValue) {
 			setValue = (_missingElementMappingPolicy == RKSetNilForMissingElementMappingPolicy);
 		}
@@ -374,8 +373,9 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 				}
 			}
             
-            // If we know the destination class, the property is not of the correct class, and the property value is not null...
-            if (class && ![propertyValue isKindOfClass:class] && ![propertyValue isKindOfClass:[NSNull class]]) {
+            // If we know the destination class, the property is not of the correct class, and the property value is not null or nil...
+            // if (class && propertyValue && ![propertyValue isKindOfClass:class] && ![propertyValue isEqual:[NSNull null]]) {
+            if (class && propertyValue && ![propertyValue isKindOfClass:class] && ![propertyValue isEqual:[NSNull null]]) {
                 // Then we must cooerce the element (probably a string) into the correct class.
                 // Currently this only supports NSNumbers (NSDates are handled above).
                 // New cooersions will be added on an as-needed basis.
