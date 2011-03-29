@@ -172,7 +172,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		return;
 	} else {
 		[NSException raise:@"Unable to map from requested string"
-					format:@"The object was serialized into a %@. A dictionary of elements was expected.", [object class]];
+					format:@"The object was serialized into a %@. A dictionary of elements was expected. (Object: %@) [Payload: %@]", [object class], object, string];
 	}
 }
 
