@@ -35,3 +35,20 @@ NSDictionary* RKObjectMappableGetPropertiesByElement(NSObject<RKObjectMappable>*
 	
 	return [NSDictionary dictionaryWithDictionary:elementsAndPropertyValues];
 }
+
+// Return all the serialzable mapped relationships of object in a dictionary under their element names
+NSDictionary* RKObjectMappableGetRelationshipsByElement(NSObject<RKObjectMappable>*object)
+{
+    NSArray* relationshipsToSerialize = [[object class] relationshipsToSerialize];
+    NSDictionary* mappings = [[object class] elementToRelationshipMappings];
+    NSMutableDictionary* elementsAndRelationships = [NSMutableDictionary dictionaryWithCapacity:[relationshipsToSerialize count]];
+	for (NSString* elementName in mappings) {
+		NSString* propertyName = [mappings valueForKey:elementName];
+        if ([relationshipsToSerialize containsObject:propertyName]) {
+            id propertyValue = [object valueForKey:propertyName];
+            [elementsAndRelationships setValue:propertyValue forKey:elementName];
+        }
+	}
+	
+	return [NSDictionary dictionaryWithDictionary:elementsAndRelationships];
+}

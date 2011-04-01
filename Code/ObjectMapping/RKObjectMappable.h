@@ -39,6 +39,11 @@
  */
 + (NSDictionary*)elementToRelationshipMappings;
 
+/**
+ * Must return an array containing names of relationship properties to serialize
+ */
++ (NSArray*)relationshipsToSerialize;
+
 @optional
 
 /**
@@ -53,6 +58,13 @@
  * required to use putObject: and postObject: for updating and creating remote object representations.
  */
 - (NSDictionary*)propertiesForSerialization;
+
+/**
+ * Return a dictionary of relationships to be serialized for submission to a remote resource. The router
+ * will encode these parameters into a serialization format (form encoded, JSON, etc). This is
+ * required to use putObject: and postObject: for updating and creating remote object representations.
+ */
+- (NSDictionary*)relationshipsForSerialization;
 
 /**
  * Invoked before the mappable object is sent with an Object Loader. This
@@ -78,3 +90,8 @@ NSDictionary* RKObjectMappableGetProperties(NSObject<RKObjectMappable>*object);
  * and their values keyed by the element name. 
  */
 NSDictionary* RKObjectMappableGetPropertiesByElement(NSObject<RKObjectMappable>*object);
+
+/**
+ * Return all the serialzable mapped relationships of object in a dictionary under their element names
+ */
+NSDictionary* RKObjectMappableGetRelationshipsByElement(NSObject<RKObjectMappable>*object);

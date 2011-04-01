@@ -15,6 +15,10 @@
 	return nil;
 }
 
++ (NSArray*)relationshipsToSerialize {
+	return [NSArray array];
+}
+
 + (NSDictionary*)elementToRelationshipMappings {
 	return [NSDictionary dictionary];
 }
@@ -25,6 +29,10 @@
 
 - (NSDictionary*)propertiesForSerialization {
 	return RKObjectMappableGetPropertiesByElement(self);
+}
+
+- (NSDictionary*)relationshipsForSerialization {
+	return RKObjectMappableGetRelationshipsByElement(self);
 }
 
 @end

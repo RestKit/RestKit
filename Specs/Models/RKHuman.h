@@ -8,6 +8,7 @@
 
 #import "RKManagedObject.h"
 
+@class RKCat;
 
 @interface RKHuman : RKManagedObject {	
 }
@@ -21,4 +22,13 @@
 @property (nonatomic, retain) NSDate* createdAt;
 @property (nonatomic, retain) NSDate* updatedAt;
 
+@property (nonatomic, retain) NSSet* cats;
+
+@end
+
+@interface RKHuman (CoreDataGeneratedAccessors)
+- (void)addCatsObject:(RKCat *)value;
+- (void)removeCatsObject:(RKCat *)value;
+- (void)addCats:(NSSet *)value;
+- (void)removeCats:(NSSet *)value;
 @end
