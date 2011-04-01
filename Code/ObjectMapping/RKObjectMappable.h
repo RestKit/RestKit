@@ -78,3 +78,17 @@ NSDictionary* RKObjectMappableGetProperties(NSObject<RKObjectMappable>*object);
  * and their values keyed by the element name. 
  */
 NSDictionary* RKObjectMappableGetPropertiesByElement(NSObject<RKObjectMappable>*object);
+
+/**
+ * Returns a dictionary containing all the mappable properties
+ * and their values keyed by the element name. 
+ * ...without the primaryKey attribute
+ */
+NSDictionary* RKObjectMappableGetPropertiesByElementWithoutPrimary(NSObject<RKObjectMappable>*object);
+
+/**
+ * Serialize keys or attributes for one-many relationships 
+ * - if a relationship's primaryKey value is set, include the primary key value
+ * - if a relationship's primaryKey value not is set, include child attributes
+ */
+NSDictionary* serializeRelationshipsOfModel(NSObject<RKObjectMappable>*object);
