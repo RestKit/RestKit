@@ -225,51 +225,6 @@
     // TODO: IMPLEMENT ME
 }
 
-// TODO: re-implement these specs when we re-implement xml parsing.
-//- (void)itShouldMapFromXML {
-//	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
-//	mapper.format = RKMappingFormatXML;
-//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
-//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
-//	id result = [mapper mapFromString:[self xmlString]];
-//	
-//	[expectThat(result) shouldNot:be(nil)];
-//	[expectThat([result dateTest]) shouldNot:be(nil)];
-//	[expectThat([result numberTest]) should:be(2)];
-//	[expectThat([result stringTest]) should:be(@"SomeString")];
-//	
-//	[expectThat([result hasOne]) shouldNot:be(nil)];
-//	[expectThat([[result hasOne] testString]) should:be(@"A String")];
-//	
-//	[expectThat([result hasMany]) shouldNot:be(nil)];
-//	[expectThat([[result hasMany] count]) should:be(2)];
-//}
-//
-//- (void)itShouldMapObjectsFromXML {
-//	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
-//	mapper.format = RKMappingFormatXML;
-//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-//	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
-//	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
-//	NSArray* results = [mapper mapFromString:[self xmlCollectionString]];
-//	[expectThat([results count]) should:be(2)];
-//	
-//	RKMappableObject* result = (RKMappableObject*) [results objectAtIndex:0];
-//	[expectThat(result) shouldNot:be(nil)];
-//	[expectThat([result dateTest]) shouldNot:be(nil)];
-//	[expectThat([result numberTest]) should:be(2)];
-//	[expectThat([result stringTest]) should:be(@"SomeString")];
-//	
-//	[expectThat([result hasOne]) shouldNot:be(nil)];
-//	[expectThat([[result hasOne] testString]) should:be(@"A String")];
-//	
-//	[expectThat([result hasMany]) shouldNot:be(nil)];
-//	[expectThat([[result hasMany] count]) should:be(2)];
-//}
-
 - (void)itShouldNotUpdateNilPropertyToNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
@@ -315,12 +270,40 @@
 
 - (void)itShouldBeAbleToSetNonNilNSDatePropertiesToNonNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKObjectMapper* mapper = [[[RKObjectMapper alloc] init] autorelease];
 	
 	model.createdAt = [NSDate date];
 	[mapper updateModel:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
-	[expectThat(model.createdAt) should:be([NSDate dateWithTimeIntervalSince1970:0])];	
+	[expectThat(model.createdAt) should:be([NSDate dateWithTimeIntervalSince1970:0])];
 }
+
+- (void)itShouldIgnoreMissingElementPropertyWhenMappingRelationships {
+    RKMappableObject* object = [[RKMappableObject new] autorelease];
+    RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
+    object.hasOne = association;
+    object.hasMany = [NSSet setWithObject:object];
+    RKObjectMapper* mapper = [[[RKObjectMapper alloc] init] autorelease];
+    mapper.missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
+    NSString* JSON = @"{ \"string_test\": \"woot!\" }";
+    [mapper mapObject:object fromString:JSON];
+    [expectThat(object.hasOne) shouldNot:be(nil)];
+    [expectThat(object.hasMany) shouldNot:be(nil)];
+}
+
+- (void)itShouldSetNilMissingElementPropertyWhenMappingRelationships {
+    RKMappableObject* object = [[RKMappableObject new] autorelease];
+    RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
+    object.hasOne = association;
+    object.hasMany = [NSSet setWithObject:object];
+    RKObjectMapper* mapper = [[[RKObjectMapper alloc] init] autorelease];
+    mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
+    NSString* JSON = @"{ \"string_test\": \"woot!\" }";
+    [mapper mapObject:object fromString:JSON];
+    [expectThat(object.hasOne) should:be(nil)];
+    [expectThat(object.hasMany) should:be(nil)];
+}
+
+// TODO: Factor these payloads out somehow to improve test clarity...
 
 - (NSString*)jsonString {
 	return
