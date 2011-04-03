@@ -15,8 +15,8 @@
 #pragma mark -
 #pragma mark NSManagedObject helper methods
 
-// TODO: The managedObjectContext should be settable at the class level to ease coupling with
-// singleton object manager
+// TODO: The object store should be settable at the class level to ease coupling with
+// shared object manager
 + (NSManagedObjectContext*)managedObjectContext {
 	return [[[RKObjectManager sharedManager] objectStore] managedObjectContext];
 }

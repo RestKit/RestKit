@@ -1,1 +1,0 @@
-require 'seed-fu'

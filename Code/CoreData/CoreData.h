@@ -10,5 +10,5 @@
 #import "../ObjectMapping/ObjectMapping.h"
 #import "RKManagedObject.h"
 #import "RKManagedObjectStore.h"
-#import "RKObjectSeeder.h"
+#import "RKManagedObjectSeeder.h"
 #import "RKManagedObjectCache.h"

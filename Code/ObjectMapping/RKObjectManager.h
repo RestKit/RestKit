@@ -21,8 +21,6 @@ typedef enum {
 	RKObjectManagerOnlineStateConnected
 } RKObjectManagerOnlineState;
 
-// TODO: Factor out into a protocol...
-// insertObject:, deleteObject:, save, etc.
 @class RKManagedObjectStore;
 
 @interface RKObjectManager : NSObject {
@@ -45,17 +43,16 @@ typedef enum {
 + (void)setSharedManager:(RKObjectManager*)manager;
 
 /**
- * Deprecated global instance accessors. Use sharedManager & setSharedManager
- * @deprecated
+ * Create and initialize a new object manager. If this is the first instance created
+ * it will be set as the shared instance
  */
-+ (RKObjectManager*)globalManager DEPRECATED_ATTRIBUTE;
-+ (void)setGlobalManager:(RKObjectManager*)manager DEPRECATED_ATTRIBUTE;
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL;
 
 /**
  * Create and initialize a new object manager. If this is the first instance created
  * it will be set as the shared instance
  */
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL;
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
 
 /**
  * Initialize a new model manager instance
@@ -63,10 +60,16 @@ typedef enum {
 - (id)initWithBaseURL:(NSString*)baseURL;
 
 /**
+ * Initialize a new model manager instance
+ */
+- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
+
+/**
  * The wire format to use for communications. Either RKMappingFormatXML or RKMappingFormatJSON.
  *
  * Defaults to RKMappingFormatJSON
  */
+// TODO: Replace this with setParser:forMIMEType: method. 
 @property(nonatomic, assign) RKMappingFormat format;
 
 /**

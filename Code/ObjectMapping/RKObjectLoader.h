@@ -6,13 +6,11 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-// TODO: Factor core data out...
-#import <CoreData/CoreData.h>
 #import "../Network/Network.h"
-#import "RKObjectMapper.h"
+#import "RKObjectMappable.h"
 
+@class RKObjectManager;
 @class RKObjectLoader;
-@class RKManagedObjectStore;
 
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
@@ -40,22 +38,24 @@
 
 /**
  * Wraps a request/response cycle and loads a remote object representation into local domain objects
+ *
+ * NOTE: When Core Data is linked into the application, the object manager will return instances of
+ * RKManagedObjectLoader instead of RKObjectLoader. RKManagedObjectLoader is a descendent class that 
+ * includes Core Data specific mapping logic.
  */
-@interface RKObjectLoader : RKRequest {
-	RKObjectMapper* _mapper;
+@interface RKObjectLoader : RKRequest {	
+    RKObjectManager* _objectManager;
 	RKResponse* _response;
 	NSObject<RKObjectMappable>* _targetObject;
 	Class<RKObjectMappable> _objectClass;
 	NSString* _keyPath;
-	RKManagedObjectStore* _managedObjectStore;
-	NSManagedObjectID* _targetObjectID;
-	RKClient* _client;
 }
 
 /**
- * The resource mapper this loader is working with
+ * The object manager that initialized this loader. The object manager is responsible
+ * for supplying the mapper and object store used after HTTP transport is completed
  */
-@property (nonatomic, readonly) RKObjectMapper* mapper;
+@property (nonatomic, readonly) RKObjectManager* objectManager;
 
 /**
  * The underlying response object for this loader
@@ -80,23 +80,16 @@
  */
 @property (nonatomic, copy) NSString* keyPath;
 
-/*
- * In cases where CoreData is used for local object storage/caching, a reference to
- * the managedObjectStore for use in retrieving locally cached objects using the store's
- * managedObjectCache property.
- */
-@property (nonatomic, retain) RKManagedObjectStore* managedObjectStore;
-
 /**
- * Return an auto-released loader with with an object mapper, a request, and a delegate
+ * Initialize and return an object loader for a resource path against an object manager. The resource path
+ * specifies the remote location to load data from, while the object manager is responsible for supplying
+ * mapping and persistence details.
  */
-+ (id)loaderWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
-+ (id)loaderWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
++ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Initialize a new object loader with an object mapper, a request, and a delegate
  */
-- (id)initWithResourcePath:(NSString*)resourcePath mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;									
-- (id)initWithResourcePath:(NSString*)resourcePath client:(RKClient*)client mapper:(RKObjectMapper*)mapper delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;				
 
 @end

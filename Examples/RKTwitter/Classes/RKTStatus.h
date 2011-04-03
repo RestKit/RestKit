@@ -15,7 +15,7 @@
 	NSString* _text;
 	NSString* _urlString;
 	NSString* _inReplyToScreenName;
-	BOOL _isFavorited;	
+	NSNumber* _isFavorited;	
 	RKTUser* _user;
 }
 
@@ -47,7 +47,7 @@
 /**
  * Is this status a favorite?
  */
-@property (nonatomic, assign) BOOL isFavorited;
+@property (nonatomic, retain) NSNumber* isFavorited;
 
 /**
  * The User who posted this status

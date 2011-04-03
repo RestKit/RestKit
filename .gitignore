@@ -1,5 +1,6 @@
 # the build
 Build
+build
 DerivedData
 
 # temp nibs and swap files
@@ -14,7 +15,6 @@ DerivedData
 *.mode2v3
 *.pbxuser
 *.perspectivev3
-*.xcworkspace
-xcuserdata
+*.xcuserdatad
 
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*

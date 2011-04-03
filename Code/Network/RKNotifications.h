@@ -16,6 +16,7 @@
  * This is useful for doing things like generating automatic logging
  * for all your requests or sending the response times 
  */
-extern NSString* const kRKRequestSentNotification;
-extern NSString* const kRKResponseReceivedNotification;
-extern NSString* const kRKRequestFailedWithErrorNotification;
+extern NSString* const RKRequestSentNotification;
+extern NSString* const RKRequestDidLoadResponseNotification;
+extern NSString* const RKResponseReceivedNotification;
+extern NSString* const RKRequestFailedWithErrorNotification;

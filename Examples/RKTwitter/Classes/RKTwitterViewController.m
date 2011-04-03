@@ -15,15 +15,28 @@
 
 @implementation RKTwitterViewController
 
+- (void)loadTimeline {
+  // Load the object model via RestKit	
+	RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    if (objectManager.format == RKMappingFormatJSON) {
+        [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters" objectClass:[RKTStatus class] delegate:self];
+    } else {
+        RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/status/user_timeline/twotoasters" delegate:self];
+        loader.objectClass = [RKTStatus class];
+        loader.keyPath = @"statuses.status";
+        [loader send];
+    }
+}
+
 - (void)loadView {
     [super loadView];
 	
-	// Setup View and Table View
-	
-	self.title = @"Two Toasters Tweets";
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
-	[self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
-	
+	// Setup View and Table View	
+	self.title = @"RestKit Tweets";
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleBlackTranslucent;
+    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
+	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(loadTimeline)] autorelease];
+    
 	UIImageView* imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
 	imageView.frame = CGRectOffset(imageView.frame, 0, -64);
 	
@@ -31,17 +44,13 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStylePlain];
 	_tableView.dataSource = self;
-	_tableView.delegate = self;
-	[self.view addSubview:_tableView];
-	
+	_tableView.delegate = self;		
 	_tableView.backgroundColor = [UIColor clearColor];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.view addSubview:_tableView];
 	
-	// Load the object model via RestKit	
-	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-	[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters.json" objectClass:[RKTStatus class] delegate:self];
+	[self loadTimeline];
 }
-
 
 - (void)dealloc {
 	[_tableView release];
@@ -51,8 +60,12 @@
 
 #pragma mark RKObjectLoaderDelegate methods
 
+- (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response {
+    NSLog(@"Loaded payload: %@", [response bodyAsString]);
+}
+
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
-	NSLog(@"Loaded statuses: %@", objects);
+	NSLog(@"Loaded statuses: %@", objects);    
 	[_statuses release];
 	_statuses = [objects retain];
 	[_tableView reloadData];

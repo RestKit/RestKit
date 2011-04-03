@@ -1,7 +1,7 @@
 Introduction
 =========================
 
-RestKit is a library for interacting with Restful web services in Objective C. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from JSON payloads back into domain objects. Object mapping functions with normal NSObject derived classes with properties. There is also an object mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
+RestKit is a library for interacting with Restful web services in Objective C. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from JSON (or XML) payloads back into domain objects. Object mapping functions with normal NSObject derived classes with properties. There is also an object mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
 
 RestKit was first publicly introduced in April of 2010 in a blog post on the Two Toasters website:
 [http://twotoasters.com/index.php/2010/04/06/introducing-restkit/](http://twotoasters.com/index.php/2010/04/06/introducing-restkit/)
@@ -57,8 +57,7 @@ Quick Start (aka TL;DR)
 1. Add Git submodule to your project: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
 1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
-1. Add **Header Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build"` directory
-1. Add **Library Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory
+1. Add **Header Search Path** to the `"RestKit/Build"` directory
 1. Add **Other Linker Flags** for `-ObjC -all_load`
 1. Open target settings editor for the target you want to link RestKit into
 1. Add direct dependency on the **RestKit** aggregate target
@@ -67,11 +66,12 @@ Quick Start (aka TL;DR)
     1. **CoreData.framework**
     1. **MobileCoreServices.framework**
     1. **SystemConfiguration.framework**
+    1. **libxml2.dylib**
 1. Link against RestKit static library products:
     1. **libRestKitSupport.a**
     1. **libRestKitObjectMapping.a**
     1. **libRestKitNetwork.a**
-    1. A JSON parser implementation (either **libRestKitSBJSONParser.a** OR **libRestKitYAJLParser.a** but NOT both)
+    1. A JSON parser implementation (either **libRestKitJSONParserJSONKit.a** OR ****libRestKitJSONParserYAJL.a** OR **libRestKitJSONParserSBJSON.a** but NOT more than ONE). We recommend JSONKit or YAJL.
 1. Import the RestKit headers via `#import <RestKit/RestKit.h>`
 1. Build the project to verify installation is successful.
     
@@ -87,7 +87,8 @@ To add RestKit to your project (you're using git, right?):
  * **CFNetwork.framework** - Required for networking support.
  * **SystemConfiguration.framework** - Required for detection of network availability.
  * **MobileCoreServices.framework** - Required. Provides support for MIME type auto-detection for uploaded files.
- * **CoreData.framework** - Required. Currently must be linked into your project even if you are not using Code Data due to dependencies. Provides support for use of the Core Data backed persistent object store.
+ * **CoreData.framework** - Optional. Provides support for use of the Core Data backed persistent object store.
+ **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParserLibxml.a into your app.
 1. Get Info on your target and you should be looking at the **General** tag. In the top **Direct Dependencies** section, click the plus button and add a direct dependency on the RestKit target.
 1. Switch to the 'Build' tab in your project inspector. Make sure that your **Configuration** pop-up menu reads **All Configurations** so that your changes will work for all build configurations. 
 1. Find the **Header Search Paths** setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your header path would be 'Libraries/RestKit/Build'.
@@ -97,29 +98,14 @@ To add RestKit to your project (you're using git, right?):
 Xcode 4.x (Git Submodule)
 -------------------------
 
-Xcode 4 has introduced significant changes to the build process that make building and linking against a static library more complicated than under Xcode 3. In
-particular, Xcode now favors the use of an external "Derived Data" directory rather than individual per-project build paths. This causes pain with RestKit because
-it is difficult to know exactly what path the static libraries and headers will wind up being built to ahead of time. These install instructions are designed to
-work if you are using an external DerivedData directory or using the per-target build settings (see "File" menu > "Project Settings" in Xcode).
-
-**NOTE** - These install instructions assume you have checked out the submodule to the root directory of your project. Paths that read "$(SOURCE_ROOT)/RestKit" reflect this assumption. If you have changed the checkout path, be sure to update the paths appropriately or your will have header include and/or linking errors. The paths to pay attention to are:
-
-  * Header Search Path: `"$(SOURCE_ROOT)/RestKit/Build"`
-  * Library Search Path: `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"`
-
-For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your Header Search Path would be `"$(SOURCE_ROOT)/Libraries/RestKit/Build"` and your Library Search Path would be `"$(SOURCE_ROOT)/Libraries/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"`
-
-To add RestKit to your project:
-
 1. Add the submodule: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
 1. Open the project you wish to add RestKit to in Xcode.
 1. Open the RestKit.xcodeproj from the submodule you checked out.
 1. Focus your project and select the "View" menu > "Navigators" > "Project" to bring the project file list into view.
-1. Drag the RestKit.xcodeproj file from the RestKit project window and drop it on your "<Your Project's Name>".xcodeproj. A dialog will appear -- make sure "Copy items" is unchecked and "Reference Type" is "Relative to Project" before clicking "Add".
+1. Drag the RestKit.xcodeproj file from the RestKit project window and drop it on your "<Your Project's Name>".xcodeproj.
 1. Click on your project's name in the sidebar on the left to open the project settings view in the right pane of the window.
-1. In the middle pain you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
-1. Find the **Header Search Paths** entry and double click it. Use the **+** button to add a new path. Enter the following path, including the quotes: `"$(SOURCE_ROOT)/RestKit/Build"`. Dismiss the editor with the **Done** button.
-1. Find the **Library Search Paths** entry and double click it. Use the **+** button to add a new path. Enter the following path, including the quotes: `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"`. Dismiss the editor with the **Done** button.
+1. In the middle pane you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
+1. Find the **Header Search Paths** setting. Double click and add a new entry. Add a search path to the RestKit/Build directory you have added to your project. For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your header path would be 'Libraries/RestKit/Build'. **DO NOT** check the `Recursive` checkbox.
 1. Find the **Other Linker Flags** entry and double click it. Use the **+** button to add a new entry and enter `-ObjC -all_load`. Dismiss the editor with the **Done** button.
 1. Locate the target you wish to add RestKit to in the **TARGETS** list in the middle of the editor pane. Select it to open the target settings editor in the right pane of the window.
 1. Click the **Build Phases** tab along the top of the window to open the Build Phases editor.
@@ -132,9 +118,10 @@ To add RestKit to your project:
     * **libRestKitObjectMapping.a**
     * **libRestKitSupport.a**
     * **CFNetwork.framework**
-    * **CoreData.framework**
+    * **CoreData.framework** - Optional. Only necessary if you are using Core Data
     * **MobileCoreServices.framework**
     * **SystemConfiguration.framework**
+    * **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParserLibxml.a into your app.
 1. Verify that all of the libraries are showing up in the **Link Binary with Libraries** section before continuing.
 
 Congratulations, you are now done adding RestKit into your Xcode 4 based project!

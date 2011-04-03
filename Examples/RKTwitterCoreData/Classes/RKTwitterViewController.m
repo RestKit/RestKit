@@ -14,12 +14,12 @@
 - (void)loadView {
     [super loadView];
 	
-	// Setup View and Table View
-	
-	self.title = @"Two Toasters Tweets";
-	[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
-	[self.navigationController.navigationBar setTintColor:[UIColor blackColor]];
-	
+	// Setup View and Table View	
+	self.title = @"RestKit Tweets";
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleBlackTranslucent;
+    self.navigationController.navigationBar.tintColor = [UIColor blackColor];
+	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadButtonWasPressed:)] autorelease];
+    
 	UIImageView* imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
 	imageView.frame = CGRectOffset(imageView.frame, 0, -64);
 	
@@ -27,19 +27,14 @@
 	
 	_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStylePlain];
 	_tableView.dataSource = self;
-	_tableView.delegate = self;
-	[self.view addSubview:_tableView];
-	
+	_tableView.delegate = self;		
 	_tableView.backgroundColor = [UIColor clearColor];
 	_tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-	
-	UIBarButtonItem* reloadItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadButtonWasPressed:)] autorelease];
-	[self.navigationItem setRightBarButtonItem:reloadItem];
+    [self.view addSubview:_tableView];
 	
 	// Load statuses from core data
 	[self loadObjectsFromDataStore];
 }
-
 
 - (void)dealloc {
 	[_tableView release];
@@ -57,7 +52,7 @@
 
 - (void)loadData {
 	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-	[[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters.json" objectClass:[RKTStatus class] delegate:self] retain];
+	[[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/restkit.json" objectClass:[RKTStatus class] delegate:self] retain];
 }
 
 - (void)reloadButtonWasPressed:(id)sender {
