@@ -151,6 +151,10 @@
 	return [NSDictionary dictionary];
 }
 
++ (NSArray*)relationshipsToSerialize {
+	return [NSArray array];
+}
+
 #pragma mark Helpers
 
 - (id)primaryKeyValue {
@@ -159,6 +163,10 @@
 
 - (NSDictionary*)propertiesForSerialization {
 	return RKObjectMappableGetPropertiesByElement(self);
+}
+
+- (NSDictionary*)relationshipsForSerialization {
+	return RKObjectMappableGetRelationshipsByElement(self);
 }
 
 - (BOOL)isNew {
