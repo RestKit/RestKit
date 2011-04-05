@@ -32,24 +32,24 @@
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	if ((self = [super initWithURL:[objectManager.client URLForResourcePath:resourcePath] delegate:delegate])) {		
+	if ((self = [super initWithURL:[objectManager.client URLForResourcePath:resourcePath] delegate:delegate])) {
         _objectManager = objectManager;
-        
+
         [self.objectManager.client setupRequest:self];
 	}
-    
+
 	return self;
 }
 
 - (void)dealloc {
     // Weak reference
     _objectManager = nil;
-    
+
 	[_response release];
 	_response = nil;
 	[_keyPath release];
 	_keyPath = nil;
-    
+
 	[super dealloc];
 }
 
@@ -99,7 +99,7 @@
 		return YES;
 	} else if ([response isError]) {
 		NSError* error = nil;
-        
+
         // TODO: Unwind hard coding of JSON specific assumptions
 		if ([response isJSON]) {
 			error = [self.objectMapper parseErrorFromString:[response bodyAsString]];
@@ -188,17 +188,34 @@
 }
 
 - (void)didFailLoadWithError:(NSError*)error {
-	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
-		[_delegate request:self didFailLoadWithError:error];
+	if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
+		[[[RKClient sharedClient] cache] hasDataForKey:[self cacheKey]]) {
+
+		_cachedData = [[[RKClient sharedClient] cache] dataForKey:[self cacheKey]];
+		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
+		[self didFinishLoad:response];
+
+	} else {
+		if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
+			[_delegate request:self didFailLoadWithError:error];
+		}
+
+		[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+
+		[self responseProcessingSuccessful:NO withError:error];
 	}
-
-	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
-
-	[self responseProcessingSuccessful:NO withError:error];
 }
 
 - (void)didFinishLoad:(RKResponse*)response {
 	_response = [response retain];
+
+	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
+		_cachedData = [[[RKClient sharedClient] cache] dataForKey:[self cacheKey]];
+	}
+
+	if (![response wasLoadedFromCache] && [response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
+		[[[RKClient sharedClient] cache] storeData:response.body forKey:[self cacheKey]];
+	}
 
 	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
 		[_delegate request:self didLoadResponse:response];

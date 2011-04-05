@@ -11,6 +11,7 @@
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKReachabilityObserver.h"
+#import "RKCache.h"
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -62,6 +63,8 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 	NSString* _serviceUnavailableAlertTitle;
 	NSString* _serviceUnavailableAlertMessage;
 	BOOL _serviceUnavailableAlertEnabled;
+	RKCache* _cache;
+	RKRequestCachePolicy _cachePolicy;
 }
 
 /**
@@ -110,6 +113,10 @@ NSString* RKMakePathWithObject(NSString* path, id object);
  * Defaults to NO.
  */
 @property(nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
+
+@property (nonatomic, retain) RKCache* cache;
+
+@property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
 
 /**
  * Return the configured singleton instance of the Rest client

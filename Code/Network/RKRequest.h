@@ -10,6 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "RKRequestSerializable.h"
 #import "RKJSONSerialization.h"
+#import "RKCache.h"
 
 /**
  * HTTP methods for requests
@@ -20,6 +21,25 @@ typedef enum RKRequestMethod {
 	RKRequestMethodPUT,
 	RKRequestMethodDELETE
 } RKRequestMethod;
+
+/**
+ * Cache policy for determining how to use RKCache
+ */
+typedef enum {
+	// Never use the cache
+    RKRequestCachePolicyNone = 0,
+
+	// Load from the cache when we are offline
+    RKRequestCachePolicyLoadIfOffline = 1 << 0,
+
+	// Load from the cache if we encounter an error
+    RKRequestCachePolicyLoadOnError = 1 << 1,
+
+	// Load from the cache if we have data stored and the server returns a 304 (not modified) response
+    RKRequestCachePolicyEtag = 1 << 2,
+
+    RKRequestCachePolicyDefault = RKRequestCachePolicyEtag
+} RKRequestCachePolicy;
 
 @class RKResponse;
 @protocol RKRequestDelegate;
@@ -37,6 +57,8 @@ typedef enum RKRequestMethod {
 	RKRequestMethod _method;
 	BOOL _isLoading;
 	BOOL _isLoaded;
+	RKRequestCachePolicy _cachePolicy;
+	NSData* _cachedData;
 }
 
 /**
@@ -97,6 +119,12 @@ typedef enum RKRequestMethod {
  * The HTTP method as a string used for this request
  */
 @property(nonatomic, readonly) NSString* HTTPMethod;
+
+@property (nonatomic, readonly) NSString* cacheKey;
+
+@property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
+
+@property (nonatomic, readonly) NSData* cachedData;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

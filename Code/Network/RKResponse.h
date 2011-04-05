@@ -88,6 +88,11 @@
 - (NSString*)failureErrorDescription;
 
 /**
+ * Indicates whether the response was loaded from RKCache
+ */
+- (BOOL)wasLoadedFromCache;
+
+/**
  * Indicates that the connection failed to reach the remote server. The details of the failure
  * are available on the failureError reader.
  */
@@ -137,6 +142,11 @@
  * Indicates an HTTP response code of 201
  */
 - (BOOL)isCreated;
+
+/**
+ * Indicates an HTTP response code of 304
+ */
+- (BOOL)isNotModified;
 
 /**
  * Indicates an HTTP response code of 401

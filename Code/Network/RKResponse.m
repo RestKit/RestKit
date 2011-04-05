@@ -108,7 +108,7 @@
 // callbacks get called in the correct order.
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
 	[self dispatchRequestDidStartLoadIfNecessary];
-	
+
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 	}
@@ -116,6 +116,13 @@
 
 - (NSString*)localizedStatusCodeString {
 	return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];
+}
+
+- (NSData*)body {
+	if (_request.cachedData) {
+		return _request.cachedData;
+	}
+	return _body;
 }
 
 - (NSString*)bodyAsString {
@@ -132,6 +139,10 @@
 	} else {
 		return nil;
 	}
+}
+
+- (BOOL)wasLoadedFromCache {
+	return ([_request cachedData] != nil);
 }
 
 - (NSURL*)URL {
@@ -167,7 +178,7 @@
 }
 
 - (BOOL)isSuccessful {
-	return ([self statusCode] >= 200 && [self statusCode] < 300);
+	return (([self statusCode] >= 200 && [self statusCode] < 300) || [self wasLoadedFromCache]);
 }
 
 - (BOOL)isRedirection {
@@ -192,6 +203,10 @@
 
 - (BOOL)isCreated {
 	return ([self statusCode] == 201);
+}
+
+- (BOOL)isNotModified {
+	return ([self statusCode] == 304);
 }
 
 - (BOOL)isUnauthorized {
@@ -236,23 +251,32 @@
 
 - (BOOL)isHTML {
 	NSString* contentType = [self contentType];
-	return contentType && ([contentType rangeOfString:@"text/html" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 ||
-						   [self isXHTML]);
+	return (contentType && ([contentType rangeOfString:@"text/html"
+											   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 ||
+						   [self isXHTML]));
 }
 
 - (BOOL)isXHTML {
 	NSString* contentType = [self contentType];
-	return contentType && [contentType rangeOfString:@"application/xhtml+xml" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+	return (contentType &&
+			[contentType rangeOfString:@"application/xhtml+xml"
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
 - (BOOL)isXML {
 	NSString* contentType = [self contentType];
-	return contentType && [contentType rangeOfString:@"application/xml" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+	return ((contentType &&
+			[contentType rangeOfString:@"application/xml"
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0) ||
+			[self wasLoadedFromCache]);
 }
 
 - (BOOL)isJSON {
 	NSString* contentType = [self contentType];
-	return contentType && [contentType rangeOfString:@"application/json" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+	return ((contentType &&
+			[contentType rangeOfString:@"application/json"
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0) ||
+			[self wasLoadedFromCache]);
 }
 
 @end

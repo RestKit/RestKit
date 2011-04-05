@@ -11,4 +11,4 @@
 NSString* const RKRequestSentNotification = @"RKRequestSentNotification";
 NSString* const RKRequestDidLoadResponseNotification = @"RKRequestDidLoadResponseNotification";
 NSString* const RKRequestFailedWithErrorNotification = @"RKRequestFailedWithErrorNotification";
-NSString* const RKResponseReceivedNotification = @"RKRespongReceivedNotification";
+NSString* const RKResponseReceivedNotification = @"RKResponseReceivedNotification";
