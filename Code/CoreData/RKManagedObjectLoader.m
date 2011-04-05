@@ -54,8 +54,8 @@
 
 	NSArray* objects = nil;
 	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
-	if (store.managedObjectCache) {
-		NSArray* fetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
+	NSArray* fetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
+	if (store.managedObjectCache && fetchRequests) {
 		objects = [RKManagedObject objectsWithFetchRequests:fetchRequests];
 
 	} else {
@@ -78,13 +78,15 @@
 	[super informDelegateOfObjectLoadWithInfoDictionary:newInfo];
 }
 
-- (void)processLoadModelsInBackground:(RKResponse *)response {
+- (void)processLoadModelsInBackground:(RKResponse*)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
 	NSArray* results = nil;
 	NSError* error = nil;
+	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
+	NSArray* fetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
 
-	if (![response wasLoadedFromCache]) {
+	if (![response wasLoadedFromCache] || store == nil || fetchRequests == nil) {
 		/**
 		 * If this loader is bound to a particular object, then we map
 		 * the results back into the instance. This is used for loading and updating

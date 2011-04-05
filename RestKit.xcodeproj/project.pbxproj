@@ -1419,12 +1419,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 259D5549132856A400897272 /* Products */;
-					ProjectRef = 259D5548132856A400897272 /* UISpec.xcodeproj */;
-				},
-				{
 					ProductGroup = 250BC42C11F6260100F3FE5A /* Products */;
 					ProjectRef = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+				},
+				{
+					ProductGroup = 259D5549132856A400897272 /* Products */;
+					ProjectRef = 259D5548132856A400897272 /* UISpec.xcodeproj */;
 				},
 			);
 			projectRoot = "";

@@ -116,6 +116,10 @@ static NSDateFormatter* __rfc1123DateFormatter;
 - (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request {
 	[_cacheLock lock];
 
+	if ([self hasResponseForRequest:request]) {
+		[self invalidateRequest:request];
+	}
+
 	if (_storagePolicy != RKRequestCacheStoragePolicyDisabled) {
 		NSString* cachePath = [self pathForRequest:request];
 		if (cachePath) {
