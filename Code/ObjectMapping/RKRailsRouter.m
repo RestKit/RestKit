@@ -77,13 +77,13 @@
                         id primaryKeyValue = [child valueForKey:primaryKey]; 
                         NSString* primaryKeyValueString = [NSString stringWithFormat:@"%@", primaryKeyValue];
                         if (primaryKeyValue == nil || [primaryKeyValueString isEqualToString:@"0"]) { 
-                            // include child attributes, except id
+                            // add child attributes, excluding id
                             NSMutableDictionary* childAttributes = [RKObjectMappableGetPropertiesByElement(child) mutableCopy];
                             [childAttributes removeObjectForKey:@"id"];
                             [children addObject:[NSDictionary dictionaryWithDictionary:childAttributes]];
                         } else { 
-                            // include the primary key value
-                            [children addObject:primaryKeyValue];  
+                            // add child attributes, including id
+                            [children addObject:RKObjectMappableGetPropertiesByElement(child)];
                         } 
                     } else { 
                         NSLog(@"ERROR: expected %@ to respond to primaryKeyProperty", child); 

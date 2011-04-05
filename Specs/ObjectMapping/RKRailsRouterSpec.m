@@ -11,6 +11,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKRailsRouter.h"
 #import "RKHuman.h"
+#import "RKCat.h"
 
 @interface RKRailsRouterSpec : NSObject <UISpec> {
 }
@@ -47,6 +48,56 @@
 	NSObject<RKRequestSerializable>* serialization = [router serializationForObject:human method:RKRequestMethodPOST];
 	[expectThat(serialization) shouldNot:be(nil)];
 	NSLog(@"Serialization is %@", serialization);
+}
+
+- (void)itShouldNotSerializeIDForChildrenWithoutPrimaryKeys
+{
+    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
+	[router setModelName:@"Human" forClass:[RKHuman class]];
+    RKHuman* human = [[RKHuman object] autorelease];
+	human.name = @"Peter";
+	human.age = [NSNumber numberWithInt:25];
+    RKCat* cat1 = [[RKCat object] autorelease];
+    cat1.name = @"Zeus";
+    cat1.birthYear = [NSNumber numberWithInt:1982];
+    [human addCatsObject:cat1];
+    RKCat* cat2 = [[RKCat object] autorelease];
+    cat2.name = @"Nala";
+    cat2.birthYear = [NSNumber numberWithInt:2003];
+    [human addCatsObject:cat2];
+    
+    NSObject<RKRequestSerializable>* serialization = [router serializationForObject:human method:RKRequestMethodPOST];
+    NSArray* serializedCats = [serialization objectForKey:@"human[cats_attributes]"];
+    for (NSDictionary *catDict in serializedCats) {
+        [expectThat([catDict objectForKey:@"name"]) shouldNot:be(nil)];
+        [expectThat([catDict objectForKey:@"id"]) should:be(nil)];
+    }
+}
+
+- (void)itShouldSerializeAllAttributesForChildrenWithPrimaryKeys
+{
+    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
+	[router setModelName:@"Human" forClass:[RKHuman class]];
+    RKHuman* human = [[RKHuman object] autorelease];
+	human.name = @"Peter";
+	human.age = [NSNumber numberWithInt:25];
+    RKCat* cat1 = [[RKCat object] autorelease];
+    cat1.name = @"Zeus";
+    cat1.birthYear = [NSNumber numberWithInt:1982];
+    cat1.railsID = [NSNumber numberWithInt:1];
+    [human addCatsObject:cat1];
+    RKCat* cat2 = [[RKCat object] autorelease];
+    cat2.name = @"Nala";
+    cat2.birthYear = [NSNumber numberWithInt:2003];
+    cat2.railsID = [NSNumber numberWithInt:2];
+    [human addCatsObject:cat2];
+    
+    NSObject<RKRequestSerializable>* serialization = [router serializationForObject:human method:RKRequestMethodPOST];
+    NSArray* serializedCats = [serialization objectForKey:@"human[cats_attributes]"];
+    for (NSDictionary *catDict in serializedCats) {
+        [expectThat([catDict objectForKey:@"name"]) shouldNot:be(nil)];
+        [expectThat([catDict objectForKey:@"id"]) shouldNot:be(nil)];
+    }
 }
 
 @end
