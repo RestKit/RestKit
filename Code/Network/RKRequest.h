@@ -10,7 +10,6 @@
 #import <CoreData/CoreData.h>
 #import "RKRequestSerializable.h"
 #import "RKJSONSerialization.h"
-#import "RKCache.h"
 
 /**
  * HTTP methods for requests
@@ -58,7 +57,6 @@ typedef enum {
 	BOOL _isLoading;
 	BOOL _isLoaded;
 	RKRequestCachePolicy _cachePolicy;
-	NSData* _cachedData;
 }
 
 /**
@@ -123,8 +121,6 @@ typedef enum {
 @property (nonatomic, readonly) NSString* cacheKey;
 
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
-
-@property (nonatomic, readonly) NSData* cachedData;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

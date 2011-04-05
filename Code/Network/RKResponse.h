@@ -15,6 +15,7 @@
 	NSMutableData* _body;
 	NSError* _failureError;
 	BOOL _loading;
+	NSDictionary* _responseHeaders;
 }
 
 /**
@@ -61,6 +62,11 @@
  * Initialize a new response object for a REST request
  */
 - (id)initWithRequest:(RKRequest*)request;
+
+/**
+ * Initialize a new response object from a cached request
+ */
+- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers;
 
 /**
  * Initializes a response object from the results of a synchronous request

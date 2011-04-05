@@ -16,6 +16,7 @@
 #import "RKURL.h"
 #import <UIKit/UIKit.h>
 #import "NSData+MD5.h"
+#import "NSString+MD5.h"
 
 @implementation RKRequest
 
@@ -36,7 +37,6 @@
 		_isLoading = NO;
 		_isLoaded = NO;
 		_cachePolicy = RKRequestCachePolicyDefault;
-		_cachedData = nil;
 	}
 	return self;
 }
@@ -68,8 +68,6 @@
 	_username = nil;
 	[_password release];
 	_password = nil;
-	[_cachedData release];
-	_cachedData = nil;
 	[super dealloc];
 }
 
@@ -100,6 +98,11 @@
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
+	}
+
+	NSString* etag = [[[RKClient sharedClient] cache] etagForRequest:self];
+	if (etag) {
+		[_URLRequest setValue:etag forHTTPHeaderField:@"If-None-Match"];
 	}
 }
 
@@ -149,14 +152,10 @@
 		_connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
 	} else {
 		if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
-			[[[RKClient sharedClient] cache] hasDataForKey:[self cacheKey]]) {
-
-			_cachedData = [[[[RKClient sharedClient] cache] dataForKey:[self cacheKey]] retain];
+			[[[RKClient sharedClient] cache] hasResponseForRequest:self]) {
 
 			_isLoading = YES;
-			RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-			[self didFinishLoad:response];
-//			[self performSelector:@selector(didFinishLoad:) withObject:response afterDelay:0.2];
+			[self didFinishLoad:[[[RKClient sharedClient] cache] responseForRequest:self]];
 
 		} else {
 			NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
@@ -195,10 +194,9 @@
         }
 	} else {
 		if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
-			[[[RKClient sharedClient] cache] hasDataForKey:[self cacheKey]]) {
+			[[[RKClient sharedClient] cache] hasResponseForRequest:self]) {
 
-			_cachedData = [[[[RKClient sharedClient] cache] dataForKey:[self cacheKey]] retain];
-			response = [[[RKResponse alloc] initWithRequest:self] autorelease];
+			response = [[[RKClient sharedClient] cache] responseForRequest:self];
 
 		} else {
 			NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
@@ -225,12 +223,9 @@
 
 - (void)didFailLoadWithError:(NSError*)error {
 	if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
-		[[[RKClient sharedClient] cache] hasDataForKey:[self cacheKey]]) {
+		[[[RKClient sharedClient] cache] hasResponseForRequest:self]) {
 
-		_cachedData = [[[[RKClient sharedClient] cache] dataForKey:[self cacheKey]] retain];
-		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-		[self didFinishLoad:response];
-
+		[self didFinishLoad:[[[RKClient sharedClient] cache] responseForRequest:self]];
 	} else {
 		_isLoading = NO;
 
@@ -249,21 +244,23 @@
 	_isLoading = NO;
 	_isLoaded = YES;
 
+	RKResponse* finalResponse = response;
+
 	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
-		_cachedData = [[[[RKClient sharedClient] cache] dataForKey:[self cacheKey]] retain];
+		finalResponse = [[[RKClient sharedClient] cache] responseForRequest:self];
 	}
 
 	if (![response wasLoadedFromCache] && [response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
-		[[[RKClient sharedClient] cache] storeData:response.body forKey:[self cacheKey]];
+		[[[RKClient sharedClient] cache] storeResponse:response forRequest:self];
 	}
 
 	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
-		[_delegate request:self didLoadResponse:response];
+		[_delegate request:self didLoadResponse:finalResponse];
 	}
 
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:response forKey:@"response"];
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:finalResponse forKey:@"response"];
 	[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification object:self userInfo:userInfo];
-	[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:finalResponse userInfo:nil];
 
 	if ([response isServiceUnavailable] && [[RKClient sharedClient] serviceUnavailableAlertEnabled]) {
 		UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[[RKClient sharedClient] serviceUnavailableAlertTitle]
@@ -317,7 +314,7 @@
 - (NSString*)cacheKey {
 	switch (_method) {
 		case RKRequestMethodGET:
-			return RKCacheKeyForURL(self.URL);
+			return [[self.URL absoluteString] MD5];
 			break;
 		case RKRequestMethodPOST:
 		case RKRequestMethodPUT:
@@ -329,9 +326,5 @@
 			break;
 	}
 }
-
- - (NSData*)cachedData {
-	 return _cachedData;
- }
 
 @end

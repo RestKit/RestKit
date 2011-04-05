@@ -11,7 +11,7 @@
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKReachabilityObserver.h"
-#import "RKCache.h"
+#import "RKRequestCache.h"
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +63,7 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 	NSString* _serviceUnavailableAlertTitle;
 	NSString* _serviceUnavailableAlertMessage;
 	BOOL _serviceUnavailableAlertEnabled;
-	RKCache* _cache;
+	RKRequestCache* _cache;
 	RKRequestCachePolicy _cachePolicy;
 }
 
@@ -114,7 +114,7 @@ NSString* RKMakePathWithObject(NSString* path, id object);
  */
 @property(nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
 
-@property (nonatomic, retain) RKCache* cache;
+@property (nonatomic, retain) RKRequestCache* cache;
 
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
 

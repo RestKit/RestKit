@@ -21,6 +21,7 @@
 		_body = [[NSMutableData alloc] init];
 		_failureError = nil;
 		_loading = NO;
+		_responseHeaders = nil;
 	}
 
 	return self;
@@ -32,6 +33,18 @@
 		// We don't retain here as we're letting RKRequestQueue manage
 		// request ownership
 		_request = request;
+	}
+
+	return self;
+}
+
+- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers {
+	self = [self initWithRequest:request];
+	if (self) {
+		[_body release];
+		_body = nil;
+		_body = [body retain];
+		_responseHeaders = [headers retain];
 	}
 
 	return self;
@@ -54,8 +67,13 @@
 
 - (void)dealloc {
 	[_httpURLResponse release];
+	_httpURLResponse = nil;
 	[_body release];
+	_body = nil;
 	[_failureError release];
+	_failureError = nil;
+	[_responseHeaders release];
+	_responseHeaders = nil;
 	[super dealloc];
 }
 
@@ -119,9 +137,6 @@
 }
 
 - (NSData*)body {
-	if (_request.cachedData) {
-		return _request.cachedData;
-	}
 	return _body;
 }
 
@@ -142,7 +157,7 @@
 }
 
 - (BOOL)wasLoadedFromCache {
-	return ([_request cachedData] != nil);
+	return (_responseHeaders != nil);
 }
 
 - (NSURL*)URL {
@@ -158,6 +173,9 @@
 }
 
 - (NSDictionary*)allHeaderFields {
+	if ([self wasLoadedFromCache]) {
+		return _responseHeaders;
+	}
 	return [_httpURLResponse allHeaderFields];
 }
 
@@ -178,7 +196,7 @@
 }
 
 - (BOOL)isSuccessful {
-	return (([self statusCode] >= 200 && [self statusCode] < 300) || [self wasLoadedFromCache]);
+	return (([self statusCode] >= 200 && [self statusCode] < 300) || ([self wasLoadedFromCache]));
 }
 
 - (BOOL)isRedirection {
@@ -265,18 +283,16 @@
 
 - (BOOL)isXML {
 	NSString* contentType = [self contentType];
-	return ((contentType &&
+	return (contentType &&
 			[contentType rangeOfString:@"application/xml"
-							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0) ||
-			[self wasLoadedFromCache]);
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
 - (BOOL)isJSON {
 	NSString* contentType = [self contentType];
-	return ((contentType &&
+	return (contentType &&
 			[contentType rangeOfString:@"application/json"
-							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0) ||
-			[self wasLoadedFromCache]);
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
 @end

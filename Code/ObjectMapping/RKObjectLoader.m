@@ -189,12 +189,9 @@
 
 - (void)didFailLoadWithError:(NSError*)error {
 	if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
-		[[[RKClient sharedClient] cache] hasDataForKey:[self cacheKey]]) {
+		[[[RKClient sharedClient] cache] hasResponseForRequest:self]) {
 
-		_cachedData = [[[RKClient sharedClient] cache] dataForKey:[self cacheKey]];
-		RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-		[self didFinishLoad:response];
-
+		[self didFinishLoad:[[[RKClient sharedClient] cache] responseForRequest:self]];
 	} else {
 		if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 			[_delegate request:self didFailLoadWithError:error];
@@ -210,26 +207,28 @@
 	_response = [response retain];
 
 	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
-		_cachedData = [[[RKClient sharedClient] cache] dataForKey:[self cacheKey]];
+		[_response release];
+		_response = nil;
+		_response = [[[[RKClient sharedClient] cache] responseForRequest:self] retain];
 	}
 
-	if (![response wasLoadedFromCache] && [response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
-		[[[RKClient sharedClient] cache] storeData:response.body forKey:[self cacheKey]];
+	if (![_response wasLoadedFromCache] && [_response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
+		[[[RKClient sharedClient] cache] storeResponse:_response forRequest:self];
 	}
 
 	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
-		[_delegate request:self didLoadResponse:response];
+		[_delegate request:self didLoadResponse:_response];
 	}
 
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
         // TODO: Should probably be an expected MIME types array set by client/manager
         // if ([self.objectMapper hasParserForMIMEType:[response MIMEType]) canMapFromMIMEType:
-        BOOL isAcceptable = (self.objectMapper.format == RKMappingFormatXML && [response isXML]) ||
-                            (self.objectMapper.format == RKMappingFormatJSON && [response isJSON]);
-		if ([response isSuccessful] && isAcceptable) {
-			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
+        BOOL isAcceptable = (self.objectMapper.format == RKMappingFormatXML && [_response isXML]) ||
+                            (self.objectMapper.format == RKMappingFormatJSON && [_response isJSON]);
+		if ([_response isSuccessful] && isAcceptable) {
+			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:_response];
 		} else {
-			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", response.statusCode, response.MIMEType);
+			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", _response.statusCode, _response.MIMEType);
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}

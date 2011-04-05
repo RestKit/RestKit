@@ -94,8 +94,8 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 								   [[NSURL URLWithString:baseURL] host]];
 	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
 						   stringByAppendingPathComponent:cacheDirForClient];
-	client.cache = [[RKCache alloc] initWithCachePath:cachePath
-										storagePolicy:RKCacheStoragePolicyPermanently];
+	client.cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+											   storagePolicy:RKRequestCacheStoragePolicyPermanently];
 	client.cachePolicy = RKRequestCachePolicyDefault;
 	client.baseURL = baseURL;
 	if (sharedClient == nil) {

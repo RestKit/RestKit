@@ -192,8 +192,8 @@
 		73057FD71331AD67001908EE /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC81331AA3D001908EE /* JSONKit.m */; };
 		73057FD91331AD99001908EE /* RKJSONParser+JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC41331A8F6001908EE /* RKJSONParser+JSONKit.m */; };
 		7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7377FBE11268E96300868752 /* RKManagedObjectCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7379D152134A3C7B00893BA6 /* RKCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7379D150134A3C7B00893BA6 /* RKCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7379D153134A3C7B00893BA6 /* RKCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 7379D151134A3C7B00893BA6 /* RKCache.m */; };
+		7379D152134A3C7B00893BA6 /* RKRequestCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7379D150134A3C7B00893BA6 /* RKRequestCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7379D153134A3C7B00893BA6 /* RKRequestCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 7379D151134A3C7B00893BA6 /* RKRequestCache.m */; };
 		7379D161134A41DE00893BA6 /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 7379D15F134A41DE00893BA6 /* NSString+MD5.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7379D162134A41DE00893BA6 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 7379D160134A41DE00893BA6 /* NSString+MD5.m */; };
 		7379D1B2134A60E000893BA6 /* NSData+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 7379D1B0134A60E000893BA6 /* NSData+MD5.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -510,8 +510,8 @@
 		73057FC81331AA3D001908EE /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSONKit.m; path = Vendor/JSONKit/JSONKit.m; sourceTree = "<group>"; };
 		73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserJSONKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7377FBE11268E96300868752 /* RKManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCache.h; sourceTree = "<group>"; };
-		7379D150134A3C7B00893BA6 /* RKCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCache.h; sourceTree = "<group>"; };
-		7379D151134A3C7B00893BA6 /* RKCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCache.m; sourceTree = "<group>"; };
+		7379D150134A3C7B00893BA6 /* RKRequestCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestCache.h; sourceTree = "<group>"; };
+		7379D151134A3C7B00893BA6 /* RKRequestCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestCache.m; sourceTree = "<group>"; };
 		7379D15F134A41DE00893BA6 /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
 		7379D160134A41DE00893BA6 /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
 		7379D1B0134A60E000893BA6 /* NSData+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+MD5.h"; sourceTree = "<group>"; };
@@ -730,8 +730,8 @@
 				2538C05B12A6C44A0006903C /* RKRequestQueue.m */,
 				250C29FB134185CE000A3551 /* RKNetwork.h */,
 				250C29FC134185D0000A3551 /* RKNetwork.m */,
-				7379D150134A3C7B00893BA6 /* RKCache.h */,
-				7379D151134A3C7B00893BA6 /* RKCache.m */,
+				7379D150134A3C7B00893BA6 /* RKRequestCache.h */,
+				7379D151134A3C7B00893BA6 /* RKRequestCache.m */,
 				7379D15F134A41DE00893BA6 /* NSString+MD5.h */,
 				7379D160134A41DE00893BA6 /* NSString+MD5.m */,
 				7379D1B0134A60E000893BA6 /* NSData+MD5.h */,
@@ -1112,7 +1112,7 @@
 				73FE56C7126CB91600E0F30B /* RKURL.h in Headers */,
 				2538C05C12A6C44A0006903C /* RKRequestQueue.h in Headers */,
 				250C29FD134185D2000A3551 /* RKNetwork.h in Headers */,
-				7379D152134A3C7B00893BA6 /* RKCache.h in Headers */,
+				7379D152134A3C7B00893BA6 /* RKRequestCache.h in Headers */,
 				7379D161134A41DE00893BA6 /* NSString+MD5.h in Headers */,
 				7379D1B2134A60E000893BA6 /* NSData+MD5.h in Headers */,
 			);
@@ -1578,7 +1578,7 @@
 				73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */,
 				2538C05D12A6C44A0006903C /* RKRequestQueue.m in Sources */,
 				250C29FE134185D2000A3551 /* RKNetwork.m in Sources */,
-				7379D153134A3C7B00893BA6 /* RKCache.m in Sources */,
+				7379D153134A3C7B00893BA6 /* RKRequestCache.m in Sources */,
 				7379D162134A41DE00893BA6 /* NSString+MD5.m in Sources */,
 				7379D1B3134A60E000893BA6 /* NSData+MD5.m in Sources */,
 			);
