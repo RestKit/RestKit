@@ -14,7 +14,6 @@
 static RKRequestQueue* gSharedQueue = nil;
 
 static const NSTimeInterval kFlushDelay = 0.3;
-static const NSTimeInterval kTimeout = 300.0;
 static const NSInteger kMaxConcurrentLoads = 5;
 
 @implementation RKRequestQueue

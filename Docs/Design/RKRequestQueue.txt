@@ -1,0 +1,25 @@
+This document details an extension to the RKRequest queue to make it more general purpose:
+
+1) RestKit currently implements a hard limit on 5 concurrent requests on a queue basis. This should be exposed as a property called concurrentRequestsLimit
+2) The sendRequest: method is poorly named. It should probably be called addRequest: or enqueueRequest:
+3) You'll probably want delegate methods to keep track of what's going on in the Queue. I've sketched them below.
+4) We may want to make freshly alloc'd queues start in the suspended state.
+
+RKRequestQueue* queue = [[RKRequestQueue alloc] init];
+queue.concurrentRequestsLimit = 1;
+queue.delegate = self;
+RKObjectLoader* loader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/whatever" delegate:self];
+[queue addRequest:loader];
+RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/another" delegate:self];
+[queue addRequest:request];
+[queue start];
+
+// Delegate methods
+@optional
+- (void)requestQueueDidStart:(RKRequestQueue*)queue; // Sent when queue starts running
+- (void)requestQueueDidFinish:(RKRequestQueue*)queue; // Sent when its emptied
+- (void)requestQueue:(RKRequestQueue*)queue willSendRequest:(RKRequest*)request;
+- (void)requestQueue:(RKRequestQueue*)queue didSendRequest:(RKRequest*)request;
+- (void)requestQueue:(RKRequestQueue*)queue didLoadResponse:(RKResponse*)response;
+- (void)requestQueue:(RKRequestQueue*)queue didCancelRequest:(RKRequest*)request;
+- (void)requestQueue:(RKRequestQueue*)queue didFailRequest:(RKRequest*)request withError:(NSError*)error;

@@ -442,7 +442,7 @@ First, we need to actually get RestKit and Core Data initialized. Open RKCDAppDe
     #import <RestKit/CoreData/CoreData.h>
     
     RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://restkit.org"];
-    manager.objectStore = [RKManagedObjectStore objectStoreWithFilename:@"RKCoreDataExamples.sqlite"]; // TODO: Update API in Framework... objectStoreAtPath also?
+    manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKCoreDataExamples.sqlite"]; // TODO: Update API in Framework... objectStoreAtPath also?
 
 What we have done here is instantiated an instance of the object manager and an instance of the managed object store. Within the internals of RKManagedObject, an NSManagedObjectModel and NSPersistentStoreCoordinator has been created for you. A persistent store file is created or reopened for you within the application's documents directory and is configured to use SQLite as the backing technology. From here you have a working Core Data environment ready to go.
 
@@ -458,7 +458,7 @@ Now let's take a look at the rather anemic model in Code/Models/RKCDArticle.m:
                 nil];
       }
     
-      - (NSString*)primaryKeyProperty {
+      + (NSString*)primaryKeyProperty {
         return @"objectID";
       }
     

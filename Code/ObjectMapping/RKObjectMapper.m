@@ -409,6 +409,16 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
 		}
         
+        // Handle missing elements for the relationship
+        if (relationshipElements == nil) {
+            if (self.missingElementMappingPolicy == RKSetNilForMissingElementMappingPolicy) {
+                [object setValue:nil forKey:propertyName];
+                continue;
+            } else if(self.missingElementMappingPolicy == RKIgnoreMissingElementMappingPolicy) {
+                continue;
+            }
+        }
+        
         // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
         NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
         NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
@@ -422,8 +432,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
         }
         
         Class collectionClass = [self typeClassForProperty:propertyName ofClass:[object class]];
-        if ([collectionClass isSubclassOfClass:[NSSet class]] || [collectionClass isSubclassOfClass:[NSArray class]])
-        {
+        if ([collectionClass isSubclassOfClass:[NSSet class]] || [collectionClass isSubclassOfClass:[NSArray class]]) {
             id children = nil;
             if ([collectionClass isSubclassOfClass:[NSSet class]]) {
                 children = [NSMutableSet setWithCapacity:[relationshipElements count]];
@@ -443,9 +452,9 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
             id child = [self createOrUpdateInstanceOfModelClass:modelClass fromElements:relationshipElements];		
             [object setValue:child forKey:propertyName];
         }
-        
     }
     
+    // Connect relationships by primary key
     Class managedObjectClass = NSClassFromString(@"RKManagedObject");
     if (managedObjectClass && [object isKindOfClass:managedObjectClass]) {
         RKManagedObject* managedObject = (RKManagedObject*)object;
