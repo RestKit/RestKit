@@ -450,7 +450,7 @@ Now let's take a look at the rather anemic model in Code/Models/RKCDArticle.m:
 
     @implementation RKCDArticle
     
-      - (NSDictionary*)elementToPropertyMappings {
+      + (NSDictionary*)elementToPropertyMappings {
         return [NSDictionary dictionaryWithKeysAndObjects:
                 @"id", @"objectID",
                 @"title", @"title",
