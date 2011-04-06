@@ -371,6 +371,9 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 					NSDate* date = [self parseDateFromString:(propertyValue)];
 					propertyValue = [self dateInLocalTime:date];
 				}
+                else if ([class isEqual:[NSDecimalNumber class]]) {
+                    propertyValue = [NSDecimalNumber decimalNumberWithString:propertyValue];
+                }
 			}
             
             // If we know the destination class, the property is not of the correct class, and the property value is not null or nil...

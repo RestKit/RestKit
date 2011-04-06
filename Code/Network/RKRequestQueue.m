@@ -19,6 +19,8 @@ static const NSInteger kMaxConcurrentLoads = 5;
 
 @implementation RKRequestQueue
 
+@synthesize delegate = _delegate;
+@synthesize concurrentRequestsLimit = _concurrentRequestsLimit;
 @synthesize suspended = _suspended;
 
 + (RKRequestQueue*)sharedQueue {
@@ -96,20 +98,38 @@ static const NSInteger kMaxConcurrentLoads = 5;
 
 	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
 	for (RKRequest* request in requestsCopy) {
-		if (![request isLoading] && ![request isLoaded] && _totalLoading < kMaxConcurrentLoads) {
-			++_totalLoading;
+		if (![request isLoading] && ![request isLoaded] && _totalLoading < kMaxConcurrentLoads) {            
+            if ([_delegate respondsToSelector:@selector(requestQueue:willSendRequest:)]) {
+                [_delegate requestQueue:self willSendRequest:request];
+            }
+            
+            ++_totalLoading;
             [request sendAsynchronously];
+            
+            if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
+                [_delegate requestQueue:self didSendRequest:request];
+            }
 		}
 	}
 
 	if (_requests.count && !_suspended) {
 		[self loadNextInQueueDelayed];
 	}
+    
+    if (!_requests.count) {
+        if ([_delegate respondsToSelector:@selector(requestQueueDidFinish:)]) {
+            [_delegate requestQueueDidFinish:self];
+        }
+    }
 	
 	[pool drain];
 }
 
 - (void)setSuspended:(BOOL)isSuspended {
+    if (_suspended && !isSuspended && [_delegate respondsToSelector:@selector(requestQueueDidStart:)]) {
+		[_delegate requestQueueDidStart:self];
+	}
+    
 	_suspended = isSuspended;
 
 	if (!_suspended) {
@@ -120,7 +140,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
 	}
 }
 
-- (void)sendRequest:(RKRequest*)request {
+- (void)addRequest:(RKRequest*)request {
 	[_requests addObject:request];
 	[self loadNextInQueue];
 }
@@ -129,6 +149,10 @@ static const NSInteger kMaxConcurrentLoads = 5;
 	if ([_requests containsObject:request] && ![request isLoaded]) {
 		[request cancel];
 
+        if ([_delegate respondsToSelector:@selector(requestQueue:didCancelRequest:)]) {
+            [_delegate requestQueue:self didCancelRequest:request];
+        }
+        
 		[_requests removeObject:request];
 		_totalLoading--;
 
@@ -166,6 +190,10 @@ static const NSInteger kMaxConcurrentLoads = 5;
     return [_requests containsObject:request];
 }
 
+- (void)start {
+    [self setSuspended:NO];
+}
+
 /**
  * Invoked via observation when a request has loaded a response. Remove
  * the completed request from the queue and continue processing
@@ -177,14 +205,28 @@ static const NSInteger kMaxConcurrentLoads = 5;
 			RKRequest* request = [(RKResponse*)notification.object request];
 			[_requests removeObject:request];
 			_totalLoading--;
-
-		// Our RKRequest failed and we're notified with the original RKRequest object
+            
+            if ([_delegate respondsToSelector:@selector(requestQueue:didLoadResponse:)]) {
+                [_delegate requestQueue:self didLoadResponse:(RKResponse*)notification.object];
+            }
+            
+            // Our RKRequest failed and we're notified with the original RKRequest object
 		} else if ([notification.object isKindOfClass:[RKRequest class]]) {
 			RKRequest* request = (RKRequest*)notification.object;
 			[_requests removeObject:request];
 			_totalLoading--;
+            
+            NSDictionary* userInfo = [notification userInfo];
+            NSError* error = nil;
+            if (userInfo) {
+                error = [userInfo objectForKey:@"error"];
+            }
+            
+            if ([_delegate respondsToSelector:@selector(requestQueue:didFailRequest:withError:)]) {
+                [_delegate requestQueue:self didFailRequest:request withError:error];
+            }
 		}
-
+        
 		[self loadNextInQueue];
 	}
 }

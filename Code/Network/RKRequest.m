@@ -168,7 +168,7 @@
 }
 
 - (void)send {
-	[[RKRequestQueue sharedQueue] sendRequest:self];
+	[[RKRequestQueue sharedQueue] addRequest:self];
 }
 
 - (void)fireAsynchronousRequest {
