@@ -9,16 +9,41 @@
 #import <Foundation/Foundation.h>
 #import "RKRequest.h"
 
+@protocol RKRequestQueueDelegate;
+
 /**
  * A lightweight queue implementation responsible
  * for dispatching and managing RKRequest objects
  */
 @interface RKRequestQueue : NSObject {
 	NSMutableArray* _requests;
-	NSInteger		_totalLoading;
-	NSTimer*        _queueTimer;
-	BOOL			_suspended;
+    NSObject<RKRequestQueueDelegate>* _delegate;
+	NSInteger _totalLoading;
+    NSInteger _concurrentRequestsLimit;
+	NSUInteger _requestTimeout;
+	NSTimer*  _queueTimer;
+	BOOL _suspended;
 }
+
+/**
+ * The delegate to inform when the request queue state machine changes
+ *
+ * If the object implements the RKRequestQueueDelegate protocol,
+ * it will receive request lifecycle event messages.
+ */
+@property(nonatomic, assign) NSObject<RKRequestQueueDelegate>* delegate;
+
+/**
+ * The number of current requests supported by this queue
+ * Defaults to 5
+ */
+@property (nonatomic) NSInteger concurrentRequestsLimit;
+
+/**
+ * Request timeout value used by the queue
+ * Defaults to 5 minutes (300 seconds)
+ */
+@property (nonatomic, assign) NSUInteger requestTimeout;
 
 /**
  * Gets the flag that determines if new load requests are allowed to reach the network.
@@ -43,7 +68,7 @@
  * Add an asynchronous request to the queue and send it as
  * as soon as possible
  */
-- (void)sendRequest:(RKRequest*)request;
+- (void)addRequest:(RKRequest*)request;
 
 /**
  * Cancel a request that is in progress
@@ -61,8 +86,52 @@
 - (void)cancelAllRequests;
 
 /**
- * Returns YES when a Request is on the queue
+ * Start checking for and processing requests
  */
-- (BOOL)containsRequest:(RKRequest*)request;
+- (void)start;
+
+@end
+
+/**
+ * Lifecycle events for RKRequestQueue
+ *
+ */
+@protocol RKRequestQueueDelegate
+@optional
+
+/**
+ * Sent when queue starts running
+ */
+- (void)requestQueueDidStart:(RKRequestQueue*)queue;
+
+/**
+ * Sent when queue is emptied
+ */
+- (void)requestQueueDidFinish:(RKRequestQueue*)queue;
+
+/**
+ * Sent before queue sends a request
+ */
+- (void)requestQueue:(RKRequestQueue*)queue willSendRequest:(RKRequest*)request;
+
+/**
+ * Sent after queue has sent a request
+ */
+- (void)requestQueue:(RKRequestQueue*)queue didSendRequest:(RKRequest*)request;
+
+/**
+ * Sent when queue received a response for a request
+ */
+- (void)requestQueue:(RKRequestQueue*)queue didLoadResponse:(RKResponse*)response;
+
+/**
+ * Sent when queue has canceled a request
+ */
+- (void)requestQueue:(RKRequestQueue*)queue didCancelRequest:(RKRequest*)request;
+
+/**
+ * Sent when an attempted request fails
+ */
+- (void)requestQueue:(RKRequestQueue*)queue didFailRequest:(RKRequest*)request withError:(NSError*)error;
 
 @end
