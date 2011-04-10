@@ -6,7 +6,10 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
+
 #import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "RKNotifications.h"
@@ -40,7 +43,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
 		_requests = [[NSMutableArray alloc] init];
 		_suspended = NO;
 		_totalLoading = 0;
-        
+
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(responseDidLoad:)
 													 name:RKResponseReceivedNotification
@@ -49,6 +52,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
 												 selector:@selector(responseDidLoad:)
 													 name:RKRequestFailedWithErrorNotification
 												   object:nil];
+#if TARGET_OS_IPHONE
         [[NSNotificationCenter defaultCenter] addObserver:self 
                                                  selector:@selector(willTransitionToBackground) 
                                                      name:UIApplicationDidEnterBackgroundNotification 
@@ -57,6 +61,7 @@ static const NSInteger kMaxConcurrentLoads = 5;
                                                  selector:@selector(willTransitionToForeground) 
                                                      name:UIApplicationWillEnterForegroundNotification 
                                                    object:nil];
+#endif
 	}
 	return self;
 }

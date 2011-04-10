@@ -91,14 +91,14 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 @property(nonatomic, readonly) RKReachabilityObserver* baseURLReachabilityObserver;
 
 /**
- * The title to use in the UIAlertView shown when a request encounters a
+ * The title to use in the alert shown when a request encounters a
  * ServiceUnavailable (503) response.
  * If not provided, the default is: "Service Unavailable"
  */
 @property(nonatomic, retain) NSString* serviceUnavailableAlertTitle;
 
 /**
- * The message to use in the UIAlertView shown when a request encounters a
+ * The message to use in the alert shown when a request encounters a
  * ServiceUnavailable (503) response.
  * If not provided, the default is: "The remote resource is unavailable. Please try again later."
  */

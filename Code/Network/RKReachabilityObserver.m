@@ -6,8 +6,11 @@
 //  Copyright 2010 RestKit. All rights reserved.
 //
 
-#import "RKReachabilityObserver.h"
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
+
+#import "RKReachabilityObserver.h"
 #include <netdb.h>
 #include <arpa/inet.h>
 
@@ -128,13 +131,16 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 				status = RKReachabilityReachableViaWiFi;
 			}
 		}
-		
+        
+#if TARGET_OS_IPHONE
 		if ((flags & kSCNetworkReachabilityFlagsIsWWAN) == kSCNetworkReachabilityFlagsIsWWAN) {
 			// ... but WWAN connections are OK if the calling application
 			//     is using the CFNetwork (CFSocketStream?) APIs.
 			status = RKReachabilityReachableViaWWAN;
 		}
+#endif
 	}
+    
 	return status;	
 }
 

@@ -11,6 +11,7 @@
 #import "RKObjectLoader.h"
 #import "RKURL.h"
 #import "RKNotifications.h"
+#import "RKAlert.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
@@ -111,6 +112,10 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
 		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
+        [[NSNotificationCenter defaultCenter] addObserver:self 
+                                                 selector:@selector(serviceDidBecomeUnavailableNotification:) 
+                                                     name:RKServiceDidBecomeUnavailableNotification 
+                                                   object:nil];
 	}
 
 	return self;
@@ -221,6 +226,12 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 
 - (RKRequest*)delete:(NSString*)resourcePath delegate:(id)delegate {
 	return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate];
+}
+
+- (void)serviceDidBecomeUnavailableNotification:(NSNotification*)notification {
+    if (self.serviceUnavailableAlertEnabled) {
+        RKAlertWithTitle(self.serviceUnavailableAlertMessage, self.serviceUnavailableAlertTitle);
+    }
 }
 
 @end

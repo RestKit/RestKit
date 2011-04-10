@@ -7,7 +7,7 @@
 //
 
 #import "RKManagedObjectStore.h"
-#import <UIKit/UIKit.h>
+#import "RKAlert.h"
 
 NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";

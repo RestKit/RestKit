@@ -6,9 +6,12 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
+
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import <UIKit/UIKit.h>
 #import "RKRequestSerializable.h"
 #import "RKJSONSerialization.h"
 
@@ -54,7 +57,10 @@ typedef enum RKRequestBackgroundPolicy {
 	BOOL _isLoading;
 	BOOL _isLoaded;
     RKRequestBackgroundPolicy _backgroundPolicy;
+    
+    #if TARGET_OS_IPHONE
     UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
+    #endif
 }
 
 /**
@@ -102,8 +108,10 @@ typedef enum RKRequestBackgroundPolicy {
  *
  * Default: RKRequestBackgroundPolicyCancel
  */
+#if TARGET_OS_IPHONE
 @property(nonatomic, assign) RKRequestBackgroundPolicy backgroundPolicy;
 @property(nonatomic, readonly) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
+#endif
 
 /**
  * Credentials for HTTP AUTH Challenge

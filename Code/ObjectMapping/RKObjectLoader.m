@@ -6,9 +6,6 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-// TODO: Factor this dependency out...
-#import <UIKit/UIKit.h>
-
 #import "RKObjectLoader.h"
 #import "RKObjectManager.h"
 #import "Errors.h"
@@ -35,7 +32,7 @@
 	if ((self = [super initWithURL:[objectManager.client URLForResourcePath:resourcePath] delegate:delegate])) {		
         _objectManager = objectManager;
         
-        [self.objectManager.client setupRequest:self];
+        [self.client setupRequest:self];
 	}
     
 	return self;
@@ -104,22 +101,11 @@
 		if ([response isJSON]) {
 			error = [self.objectMapper parseErrorFromString:[response bodyAsString]];
 			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
-
-		} else if ([response isServiceUnavailable] && [self.client serviceUnavailableAlertEnabled]) {
-			// TODO: Break link with the client by using notifications
-			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
-				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
-			}
-
-			UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:[self.client serviceUnavailableAlertTitle]
-																message:[self.client serviceUnavailableAlertMessage]
-															   delegate:nil
-													  cancelButtonTitle:NSLocalizedString(@"OK", nil)
-													  otherButtonTitles:nil];
-			[alertView show];
-			[alertView release];
-
 		} else {
+            if ([response isServiceUnavailable]) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
+            }
+            
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}
@@ -216,6 +202,7 @@
 			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
 				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
 			}
+            
 			[self responseProcessingSuccessful:NO withError:nil];
 		}
 	}

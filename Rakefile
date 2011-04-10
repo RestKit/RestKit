@@ -40,3 +40,9 @@ end
 
 desc "Run all specs"
 task :default => 'uispec:all'
+
+desc "Build RestKit for iOS and Mac OS X"
+task :build do
+  system("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos4.3")
+  system("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk macosx10.6")
+end
