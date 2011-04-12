@@ -13,7 +13,7 @@ NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectS
 static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 
 @interface RKManagedObjectStore (Private)
-- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel;
+- (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel;
 - (void)createPersistentStoreCoordinator;
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase;
 - (NSString *)applicationDocumentsDirectory;
@@ -24,6 +24,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 
 @synthesize delegate = _delegate;
 @synthesize storeFilename = _storeFilename;
+@synthesize pathToStoreFile = _pathToStoreFile;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize managedObjectCache = _managedObjectCache;
@@ -33,24 +34,40 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 }
 
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel {
-    return [[[self alloc] initWithStoreFilename:storeFilename usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel] autorelease];
+    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel] autorelease];
+}
+
++ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel {
+    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:directory usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel] autorelease];
 }
 
 - (id)initWithStoreFilename:(NSString*)storeFilename {
-	return [self initWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil];
+	return [self initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nil managedObjectModel:nil];
 }
 
-- (id)initWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel {
+- (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel {
     self = [self init];
 	if (self) {
 		_storeFilename = [storeFilename retain];
+		
+		if( nilOrDirectoryPath == nil ) {
+			nilOrDirectoryPath = [self applicationDocumentsDirectory];
+		}
+		else {
+			BOOL isDir;
+			NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:nilOrDirectoryPath isDirectory:&isDir] && isDir == YES, @"Specified storage directory exists", nilOrDirectoryPath);
+		}
+		_pathToStoreFile = [[nilOrDirectoryPath stringByAppendingPathComponent:_storeFilename] retain];
+		
         if (nilOrManagedObjectModel == nil) {
             nilOrManagedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
         }
-		_managedObjectModel = [nilOrManagedObjectModel retain];        
+		_managedObjectModel = [nilOrManagedObjectModel retain];
+		
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
+		
 		[self createPersistentStoreCoordinator];
 	}
     
@@ -62,6 +79,8 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     
 	[_storeFilename release];
 	_storeFilename = nil;
+	[_pathToStoreFile release];
+	_pathToStoreFile = nil;
     [_managedObjectModel release];
 	_managedObjectModel = nil;
     [_persistentStoreCoordinator release];
@@ -112,10 +131,6 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 												 name:NSManagedObjectContextObjectsDidChangeNotification
 											   object:managedObjectContext];
 	return managedObjectContext;
-}
-
-- (NSString*)pathToStoreFile {
-    return [[self applicationDocumentsDirectory] stringByAppendingPathComponent:self.storeFilename];
 }
 
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase {
