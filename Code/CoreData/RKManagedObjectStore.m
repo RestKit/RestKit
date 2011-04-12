@@ -271,7 +271,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 			NSFetchRequest* fetchRequest = [class fetchRequest];
 			[fetchRequest setReturnsObjectsAsFaults:NO];			
 			objects = [class objectsWithFetchRequest:fetchRequest];
-			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
+			NSLog(@"Caching all %d %@ objects to thread local storage", [objects count], class);
 			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
 			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
 			for (id theObject in objects) {			
