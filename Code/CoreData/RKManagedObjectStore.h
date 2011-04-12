@@ -10,6 +10,8 @@
 #import "RKManagedObject.h"
 #import "RKManagedObjectCache.h"
 
+@class RKManagedObjectStore;
+
 /**
  * Notifications
  */
@@ -17,12 +19,31 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 
 ///////////////////////////////////////////////////////////////////
 
+@protocol RKManagedObjectStoreDelegate
+@optional
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCreatePersistentStoreCoordinatorWithError:(NSError *)error;
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToDeletePersistentStore:(NSString *)pathToStoreFile error:(NSError *)error;
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCopySeedDatabase:(NSString *)seedDatabase error:(NSError *)error;
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToSaveContext:(NSManagedObjectContext *)context error:(NSError *)error exception:(NSException *)exception;
+
+@end
+
+///////////////////////////////////////////////////////////////////
+
 @interface RKManagedObjectStore : NSObject {
-	NSString* _storeFilename;	
+	NSObject<RKManagedObjectStoreDelegate>* _delegate;
+	NSString* _storeFilename;
     NSManagedObjectModel* _managedObjectModel;
 	NSPersistentStoreCoordinator* _persistentStoreCoordinator;
 	NSObject<RKManagedObjectCache>* _managedObjectCache;
 }
+
+// The delegate for this object store
+@property (nonatomic, assign) NSObject<RKManagedObjectStoreDelegate>* delegate;
 
 // The filename of the database backing this object store
 @property (nonatomic, readonly) NSString* storeFilename;
