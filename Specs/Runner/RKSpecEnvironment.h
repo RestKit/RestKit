@@ -12,6 +12,7 @@
 #import "UIExpectation.h"
 
 #import <OCMock/OCMock.h>
+#import <OCMock/NSNotificationCenter+OCMAdditions.h>
 
 #import "RestKit.h"
 #import "RKSpecResponseLoader.h"
