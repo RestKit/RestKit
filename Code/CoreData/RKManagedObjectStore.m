@@ -22,6 +22,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 
 @implementation RKManagedObjectStore
 
+@synthesize delegate = _delegate;
 @synthesize storeFilename = _storeFilename;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
@@ -76,28 +77,28 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
  message to the application's managed object context.
  */
 - (NSError*)save {
-    NSError *error = nil;
+	NSManagedObjectContext* moc = [self managedObjectContext];
+    NSError *error;
+	
 	@try {
-		[[self managedObjectContext] save:&error];
-	}
-	@catch (NSException* e) {
-		// TODO: This needs to be reworked into a delegation pattern
-		NSString* errorMessage = [NSString stringWithFormat:@"An unrecoverable error was encountered while trying to save the database: %@", [e reason]];
-		UIAlertView* alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Ruh roh.", nil) 
-														message:errorMessage
-													   delegate:nil 
-											  cancelButtonTitle:NSLocalizedString(@"OK", nil) 
-											  otherButtonTitles:nil];
-		[alert show];
-		[alert release];
-	} 
-	@finally {
-		if (error) {
+		if (![moc save:&error]) {
+			if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
+				[self.delegate managedObjectStore:self didFailToSaveContext:moc error:error exception:nil];
+			}
+			
 			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:@"error"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
 		}
-		return error;
 	}
+	@catch (NSException* e) {
+		if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
+			[self.delegate managedObjectStore:self didFailToSaveContext:moc error:nil exception:e];
+		}
+		else {
+			@throw;
+		}
+	}
+	return nil;
 }
 
 - (NSManagedObjectContext*)newManagedObjectContext {
@@ -118,14 +119,18 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 }
 
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase {
-    NSError* error = nil;
     if (NO == [[NSFileManager defaultManager] fileExistsAtPath:self.pathToStoreFile]) {
         NSString* seedDatabasePath = [[NSBundle mainBundle] pathForResource:seedDatabase ofType:nil];
         NSAssert1(seedDatabasePath, @"Unable to find seed database file '%@' in the Main Bundle, aborting...", seedDatabase);
         NSLog(@"No existing database found, copying from seed path '%@'", seedDatabasePath);
-        [[NSFileManager defaultManager] copyItemAtPath:seedDatabasePath toPath:self.pathToStoreFile error:&error];
-        if (error) {
-            NSLog(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
+		
+		NSError* error;
+        if (![[NSFileManager defaultManager] copyItemAtPath:seedDatabasePath toPath:self.pathToStoreFile error:&error]) {
+			if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToCopySeedDatabase:error:)]) {
+				[self.delegate managedObjectStore:self didFailToCopySeedDatabase:seedDatabase error:error];
+			} else {
+				NSLog(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
+			}
         }
         NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:seedDatabasePath], @"Seed database not found at path '%@'!", seedDatabasePath);
     }
@@ -143,24 +148,30 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 							 [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
 	
 	if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:options error:&error]) {
-		// TODO: Needs to be handled with delegation... Allow the application to handle migration.
+		if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToCreatePersistentStoreCoordinatorWithError:)]) {
+			[self.delegate managedObjectStore:self didFailToCreatePersistentStoreCoordinatorWithError:error];
+		}
+		else {
+			NSAssert(NO, @"Managed object store failed to create persistent store coordinator: %@", error);
+		}
     }
 }
 
 - (void)deletePersistantStore {
 	NSURL* storeUrl = [NSURL fileURLWithPath:self.pathToStoreFile];
-	NSError* error = nil;
-	NSLog(@"Error removing persistant store: %@", [error localizedDescription]);
-	if (error) {
-		//Handle error
-	}
-	error = nil;
-	[[NSFileManager defaultManager] removeItemAtPath:storeUrl.path error:&error];
-	if (error) {
-		//Handle error
+	
+	NSError* error;
+	if (![[NSFileManager defaultManager] removeItemAtPath:storeUrl.path error:&error]) {
+		if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
+			[self.delegate managedObjectStore:self didFailToDeletePersistentStore:self.pathToStoreFile error:error];
+		}
+		else {
+			NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
+		}
 	}
 	
 	[_persistentStoreCoordinator release];
+	_persistentStoreCoordinator = nil;
 	
 	// Clear the current managed object context. Will be re-created next time it is accessed.
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
@@ -260,7 +271,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 			NSFetchRequest* fetchRequest = [class fetchRequest];
 			[fetchRequest setReturnsObjectsAsFaults:NO];			
 			objects = [class objectsWithFetchRequest:fetchRequest];
-			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
+			NSLog(@"Caching all %d %@ objects to thread local storage", [objects count], class);
 			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
 			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
 			for (id theObject in objects) {			
