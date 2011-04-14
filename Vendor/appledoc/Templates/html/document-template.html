@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>{{page/title}}</title>
+		<meta http-equiv="Content-Type" content="application/xhtml+xml;charset=utf-8" />
+		<meta id="xcode-display" name="xcode-display" content="render"/>
+		<meta name="viewport" content="width=550" />
+		<link rel="stylesheet" type="text/css" href="{{page/cssPath}}" />
+		{{#strings/appledocData}}<meta name="generator" content="{{tool}} {{version}} (build {{build}})" />{{/strings/appledocData}}
+	</head>
+	<body>
+		<article>
+			<a title="{{page/title}}" name="top"></a>
+			<div id="container">	
+				{{#object/comment}}{{#longDescription}}{{>GBCommentComponentsList}}{{/longDescription}}{{/object/comment}}
+			</div>
+		</article>
+	</body>
+</html>
+
+
+Section GBCommentComponentsList
+{{#components}}{{>GBCommentComponent}}{{/components}}
+EndSection
+
+Section GBCommentComponent
+{{&htmlValue}}
+EndSection
