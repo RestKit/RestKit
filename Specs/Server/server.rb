@@ -26,6 +26,10 @@ class RestKit::SpecServer < Sinatra::Base
     set :dump_errors, true
   end
   
+  get '/' do
+    "OK"
+  end
+  
   post '/photo' do
     content_type 'application/json'
     "OK"

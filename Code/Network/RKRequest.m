@@ -209,6 +209,7 @@
                                                      selector:@selector(appDidEnterBackgroundNotification:) 
                                                          name:UIApplicationDidEnterBackgroundNotification 
                                                        object:nil];
+            [self fireAsynchronousRequest];
         } else if (self.backgroundPolicy == RKRequestBackgroundPolicyContinue) {
             NSLog(@"Beginning background task to perform processing...");
             

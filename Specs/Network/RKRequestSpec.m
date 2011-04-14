@@ -96,4 +96,48 @@
     [expectThat(request.backgroundTaskIdentifier) shouldNot:be(UIBackgroundTaskInvalid)];
 }
 
+- (void)itShouldSendTheRequestWhenBackgroundPolicyIsNone {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.backgroundPolicy = RKRequestBackgroundPolicyNone;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    [expectThat([loader success]) should:be(YES)];
+}
+
+- (void)itShouldSendTheRequestWhenBackgroundPolicyIsContinue {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.backgroundPolicy = RKRequestBackgroundPolicyContinue;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    [expectThat([loader success]) should:be(YES)];
+}
+
+- (void)itShouldSendTheRequestWhenBackgroundPolicyIsCancel {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.backgroundPolicy = RKRequestBackgroundPolicyCancel;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    [expectThat([loader success]) should:be(YES)];
+}
+
+- (void)itShouldSendTheRequestWhenBackgroundPolicyIsRequeue {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.backgroundPolicy = RKRequestBackgroundPolicyRequeue;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    [expectThat([loader success]) should:be(YES)];
+}
+
 @end
