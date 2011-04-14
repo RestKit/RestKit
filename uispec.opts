@@ -1,1 +1,1 @@
---workspace RestKit.xcodeproj/project.xcworkspace
+--workspace RestKit.xcodeproj/project.xcworkspace --scheme UISpec --sdk 4.3

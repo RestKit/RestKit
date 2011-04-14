@@ -63,12 +63,21 @@
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     NSLog(@"Loaded response: %@", response);
 	_response = [response retain];
-	_awaitingResponse = NO;
-	_success = YES;
+    
+    // If request is an Object Loader, then objectLoader:didLoadObjects:
+    // will be sent after didLoadResponse:
+    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
+        _awaitingResponse = NO;
+        _success = YES;
+    }
 }
 
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
-    [self loadError:error];
+    // If request is an Object Loader, then objectLoader:didFailWithError:
+    // will be sent after didFailLoadWithError:
+    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
+        [self loadError:error];
+    }
 }
 
 - (void)requestDidCancelLoad:(RKRequest *)request {
