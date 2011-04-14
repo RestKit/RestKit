@@ -46,3 +46,13 @@ task :build do
   system("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos4.3")
   system("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk macosx10.6")
 end
+
+desc "Generate documentation via appledoc"
+task :docs do
+  # TODO: Read the version
+  # TODO: Build doc-set
+  # TODO: Customize the 
+  system("Vendor/appledoc/appledoc -o Docs/API -p RestKit -v 0.9 -h --no-create-docset -c \"Two Toasters\" -h " +
+         "--warn-undocumented-object --warn-undocumented-member  --warn-empty-description  --warn-unknown-directive " +
+         "--warn-invalid-crossref --warn-missing-arg Code/")
+end

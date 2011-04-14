@@ -48,7 +48,7 @@
 
 /**
  * Must return a new autoreleased instance of the model class ready for mapping. Used to initialize the model
- * via any method other than alloc & init.
+ * via any method other than alloc &amp; init.
  */
 + (id)object;
 

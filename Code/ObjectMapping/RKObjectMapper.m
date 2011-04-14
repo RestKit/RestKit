@@ -29,8 +29,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 - (Class)typeClassForProperty:(NSString*)property ofClass:(Class)class;
 - (NSDictionary*)elementToPropertyMappingsForModel:(id)model;
 
-- (id)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
-- (id)createOrUpdateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
+- (NSObject<RKObjectMappable>*)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
+- (NSObject<RKObjectMappable>*)createOrUpdateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
 
 - (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName; // Rename!
 - (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
@@ -203,7 +203,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	}
 }
 
-- (NSObject<RKObjectMappable>*)mapObjectFromDictionary:(NSDictionary*)dictionary toClass:(Class)class {
+- (id)mapObjectFromDictionary:(NSDictionary*)dictionary toClass:(Class)class {
 	return [self createOrUpdateInstanceOfModelClass:class fromElements:dictionary];
 }
 

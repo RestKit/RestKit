@@ -192,7 +192,7 @@ typedef enum {
 
 /**
  * Returns an object loader configured for transmitting an object instance across the wire. A request will be constructed
- * for you with the resource path & object serialization configured for you by the Router. This is the best place to
+ * for you with the resource path &amp; object serialization configured for you by the Router. This is the best place to
  * begin work if you need a slightly different interaction with the server than what is provided for you by get/post/put/delete
  * object family of methods. Note that this should be used for one-off changes. If you need to substantially modify all your
  * object loads, you are better off subclassing or implementing your own RKRouter for dryness.

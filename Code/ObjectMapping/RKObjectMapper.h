@@ -135,7 +135,7 @@ typedef enum {
  * Returns mapped model(s) from the data serialized in the dictionary into the model instance
  * provided
  */
-- (id)mapObjectFromDictionary:(NSDictionary*)dictionary;
+- (NSObject<RKObjectMappable>*)mapObjectFromDictionary:(NSDictionary*)dictionary;
 
 /**
  * Constructs an array of mapped model objects from an array of dictionaries
@@ -150,7 +150,7 @@ typedef enum {
  * Map the objects in a given payload string to a particular object class, optionally filtering
  * the parsed result set via a keyPath before mapping the results.
  */
-- (NSObject<RKObjectMappable>*)mapFromString:(NSString *)string toClass:(Class<RKObjectMappable>)class keyPath:(NSString*)keyPath;
+- (id)mapFromString:(NSString *)string toClass:(Class<RKObjectMappable>)class keyPath:(NSString*)keyPath;
 
 /**
  * Map a dictionary of elements to an instance of a particular class

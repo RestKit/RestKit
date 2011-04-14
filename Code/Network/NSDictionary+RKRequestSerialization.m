@@ -8,12 +8,18 @@
 
 #import "NSDictionary+RKRequestSerialization.h"
 
-// private helper function to convert any object to its string representation
+/**
+ * private helper function to convert any object to its string representation
+ * @private
+ */
 static NSString *toString(id object) {
 	return [NSString stringWithFormat: @"%@", object];
 }
 
-// private helper function to convert string to UTF-8 and URL encode it
+/**
+ * private helper function to convert string to UTF-8 and URL encode it
+ * @private
+ */
 static NSString *urlEncode(id object) {
 	NSString *string = toString(object);
 	NSString *encodedString = (NSString*)CFURLCreateStringByAddingPercentEscapes(NULL,

@@ -6,17 +6,16 @@
 //
 
 #import "RKXMLParser.h"
-//#import <libxml/parser.h>
 #import <libxml2/libxml/parser.h>
 
 @interface RKXMLParser (Private)
-- (NSDictionary*)parse:(NSString*)xml;
+- (NSDictionary*)parseXML:(NSString*)xml;
 @end
 
 @implementation RKXMLParser
 
 + (NSDictionary*)parse:(NSString*)xml {
-    return [[[self new] autorelease] parse:xml];
+    return [[[self new] autorelease] parseXML:xml];
 }
 
 - (id)parseNode:(xmlNode*)node {
@@ -74,7 +73,7 @@
     return nodes;
 }
 
-- (NSDictionary*)parse:(NSString*)xml {
+- (NSDictionary*)parseXML:(NSString*)xml {
     xmlParserCtxtPtr ctxt; /* the parser context */
     xmlDocPtr doc; /* the resulting document tree */
     id result = nil;;
@@ -110,7 +109,7 @@
 }
 
 - (id)objectFromString:(NSString*)string {
-    return [self parse:string];
+    return [self parseXML:string];
 }
 
 - (NSString*)stringFromObject:(id)object {

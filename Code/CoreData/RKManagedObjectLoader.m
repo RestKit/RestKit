@@ -76,7 +76,7 @@
 	/**
 	 * If this loader is bound to a particular object, then we map
 	 * the results back into the instance. This is used for loading and updating
-	 * individual object instances via getObject & friends.
+	 * individual object instances via getObject and friends.
 	 */
 	NSArray* results = nil;
 	if (self.targetObject) {
