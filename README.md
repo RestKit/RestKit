@@ -51,7 +51,7 @@ Documentation and example code is being added as quickly as possible. Please che
 RestKit has API documentation available on the web. You can access the documentation in several ways:
 
 1. Online in your web browser. Visit http://restkit.org/api/
-1. Directly within Xcode. Visit your Xcode Preferences and view the Documentation tab. Click + and add the RestKit feed: http://restkit.org/api/org.restkit.RestKit.atom
+1. Directly within Xcode. Visit your Xcode Preferences and view the Documentation tab. Click + and add the RestKit feed: feed://restkit.org/api/org.restkit.RestKit.atom
 1. Generate the documentation directly from the project source code. Run `rake docs` to generate and `rake docs:install` to install into Xcode
 
 Installation
