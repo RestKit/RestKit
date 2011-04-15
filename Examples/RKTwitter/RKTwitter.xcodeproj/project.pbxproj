@@ -11,14 +11,14 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		250AC4C11358C7B5006F084F /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250AC4BC1358C7B5006F084F /* libRestKitJSONParserJSONKit.a */; };
-		250AC4C21358C7B5006F084F /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250AC4BD1358C7B5006F084F /* libRestKitNetwork.a */; };
-		250AC4C31358C7B5006F084F /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250AC4BE1358C7B5006F084F /* libRestKitObjectMapping.a */; };
-		250AC4C41358C7B5006F084F /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250AC4BF1358C7B5006F084F /* libRestKitSupport.a */; };
-		250AC4C51358C7B5006F084F /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250AC4C01358C7B5006F084F /* libRestKitXMLParserLibxml.a */; };
 		2538E811123419CA00ACB5D7 /* RKTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E810123419CA00ACB5D7 /* RKTUser.m */; };
 		2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
 		2538E8671234250100ACB5D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2538E8661234250100ACB5D7 /* SystemConfiguration.framework */; };
+		25CAF1311358CB8C00F53AF5 /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25CAF12C1358CB8C00F53AF5 /* libRestKitJSONParserYAJL.a */; };
+		25CAF1321358CB8C00F53AF5 /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25CAF12D1358CB8C00F53AF5 /* libRestKitNetwork.a */; };
+		25CAF1331358CB8C00F53AF5 /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25CAF12E1358CB8C00F53AF5 /* libRestKitObjectMapping.a */; };
+		25CAF1341358CB8C00F53AF5 /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25CAF12F1358CB8C00F53AF5 /* libRestKitSupport.a */; };
+		25CAF1351358CB8C00F53AF5 /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25CAF1301358CB8C00F53AF5 /* libRestKitXMLParserLibxml.a */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		28D7ACF80DDB3853001CB0EB /* RKTwitterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */; };
 		3F02F592131D683A004E1F54 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F02F591131D683A004E1F54 /* libxml2.dylib */; };
@@ -130,6 +130,11 @@
 		2538E813123419EC00ACB5D7 /* RKTStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTStatus.m; sourceTree = "<group>"; };
 		2538E864123424F000ACB5D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2538E8661234250100ACB5D7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		25CAF12C1358CB8C00F53AF5 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitJSONParserYAJL.a; path = "/Users/blake/Projects/two_toasters/BiteHunter-iOS/Libraries/RestKit/Build/Debug-iphoneos/libRestKitJSONParserYAJL.a"; sourceTree = "<absolute>"; };
+		25CAF12D1358CB8C00F53AF5 /* libRestKitNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitNetwork.a; path = "/Users/blake/Projects/two_toasters/BiteHunter-iOS/Libraries/RestKit/Build/Debug-iphoneos/libRestKitNetwork.a"; sourceTree = "<absolute>"; };
+		25CAF12E1358CB8C00F53AF5 /* libRestKitObjectMapping.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitObjectMapping.a; path = "/Users/blake/Projects/two_toasters/BiteHunter-iOS/Libraries/RestKit/Build/Debug-iphoneos/libRestKitObjectMapping.a"; sourceTree = "<absolute>"; };
+		25CAF12F1358CB8C00F53AF5 /* libRestKitSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitSupport.a; path = "/Users/blake/Projects/two_toasters/BiteHunter-iOS/Libraries/RestKit/Build/Debug-iphoneos/libRestKitSupport.a"; sourceTree = "<absolute>"; };
+		25CAF1301358CB8C00F53AF5 /* libRestKitXMLParserLibxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitXMLParserLibxml.a; path = "/Users/blake/Projects/two_toasters/BiteHunter-iOS/Libraries/RestKit/Build/Debug-iphoneos/libRestKitXMLParserLibxml.a"; sourceTree = "<absolute>"; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28D7ACF60DDB3853001CB0EB /* RKTwitterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTwitterViewController.h; sourceTree = "<group>"; };
 		28D7ACF70DDB3853001CB0EB /* RKTwitterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTwitterViewController.m; sourceTree = "<group>"; };
@@ -152,11 +157,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				250AC4C11358C7B5006F084F /* libRestKitJSONParserJSONKit.a in Frameworks */,
-				250AC4C21358C7B5006F084F /* libRestKitNetwork.a in Frameworks */,
-				250AC4C31358C7B5006F084F /* libRestKitObjectMapping.a in Frameworks */,
-				250AC4C41358C7B5006F084F /* libRestKitSupport.a in Frameworks */,
-				250AC4C51358C7B5006F084F /* libRestKitXMLParserLibxml.a in Frameworks */,
+				25CAF1321358CB8C00F53AF5 /* libRestKitNetwork.a in Frameworks */,
+				25CAF1311358CB8C00F53AF5 /* libRestKitJSONParserYAJL.a in Frameworks */,
+				25CAF1331358CB8C00F53AF5 /* libRestKitObjectMapping.a in Frameworks */,
+				25CAF1341358CB8C00F53AF5 /* libRestKitSupport.a in Frameworks */,
+				25CAF1351358CB8C00F53AF5 /* libRestKitXMLParserLibxml.a in Frameworks */,
 				3F02F592131D683A004E1F54 /* libxml2.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -249,6 +254,11 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25CAF12C1358CB8C00F53AF5 /* libRestKitJSONParserYAJL.a */,
+				25CAF12D1358CB8C00F53AF5 /* libRestKitNetwork.a */,
+				25CAF12E1358CB8C00F53AF5 /* libRestKitObjectMapping.a */,
+				25CAF12F1358CB8C00F53AF5 /* libRestKitSupport.a */,
+				25CAF1301358CB8C00F53AF5 /* libRestKitXMLParserLibxml.a */,
 				250AC4BC1358C7B5006F084F /* libRestKitJSONParserJSONKit.a */,
 				250AC4BD1358C7B5006F084F /* libRestKitNetwork.a */,
 				250AC4BE1358C7B5006F084F /* libRestKitObjectMapping.a */,
@@ -442,11 +452,7 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../Build/Debug-iphoneos\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -465,11 +471,7 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/../../Build/Debug-iphoneos\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-all_load",
 					"-ObjC",
@@ -488,6 +490,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 				SYMROOT = Build;
@@ -503,6 +506,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
