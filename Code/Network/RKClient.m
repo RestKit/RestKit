@@ -184,7 +184,7 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
     }
 }
 
-- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(id)delegate {
+- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate>*)delegate {
 	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate];
 	[self setupRequest:request];
 	[request autorelease];
