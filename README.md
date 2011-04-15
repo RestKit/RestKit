@@ -98,8 +98,8 @@ To add RestKit to your project (you're using git, right?):
  **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParserLibxml.a into your app.
 1. Get Info on your target and you should be looking at the **General** tag. In the top **Direct Dependencies** section, click the plus button and add a direct dependency on the RestKit target.
 1. Switch to the 'Build' tab in your project inspector. Make sure that your **Configuration** pop-up menu reads **All Configurations** so that your changes will work for all build configurations. 
-1. Find the **Header Search Paths** setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out to the 'Libraries' subdirectory of your project, your header path would be "$(SOURCE_ROOT)/Libraries/RestKit/Build".
-1. Find the **Library Search Paths** setting. Double click and add a new entry. Add a search path to your RestKit build directory such as "$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"
+1. Find the **Header Search Paths** setting. Double click and add a new entry. When RestKit is compiled, it will copy all relevant headers to the appropriate location under the /Build directory within the RestKit checkout. You need to add a path to the /Build directory of RestKit, relative to your project file. For example, if you checked the submodule out in the root directory of your project, your header path would be `"$(SOURCE_ROOT)/RestKit/Build"`.
+1. Find the **Library Search Paths** setting. Double click and add a new entry. Add a search path to your RestKit build directory such as `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"`
 1. Now find the **Other Linker Flags** setting. Double click it and add entries for -all_load and -ObjC.
 1. You may now close out the inspector window.
 
@@ -113,7 +113,7 @@ Xcode 4.x (Git Submodule)
 1. Click on your project's name in the sidebar on the left to open the project settings view in the right pane of the window.
 1. In the middle pane you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
 1. Find the **Header Search Paths** setting. Double click and add a new entry. Add a search path to the `"$(SOURCE_ROOT)/RestKit/Build"` directory you have added to your project. **DO NOT** check the `Recursive` checkbox.
-1. Find the **Library Search Paths** setting. Double click and add a new entry. Add a search path to the `"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory you have added to your project.
+1. Find the **Library Search Paths** setting. Double click and add a new entry. Add a search path to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory you have added to your project.
 1. Find the **Other Linker Flags** entry and double click it. Use the **+** button to add a new entry and enter `-ObjC -all_load`. Dismiss the editor with the **Done** button.
 1. Locate the target you wish to add RestKit to in the **TARGETS** list in the middle of the editor pane. Select it to open the target settings editor in the right pane of the window.
 1. Click the **Build Phases** tab along the top of the window to open the Build Phases editor.
