@@ -459,7 +459,6 @@
 		2590E85B1252515400531FA8 /* GHNSBundle+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GHNSBundle+Utils.m"; sourceTree = "<group>"; };
 		2590E85D1252515400531FA8 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
 		2590E85E1252515400531FA8 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
-		2591E6101356674E00EAD8CE /* GenerateDocumentation.command */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = GenerateDocumentation.command; sourceTree = "<group>"; };
 		259562E2126D3B36004BAC4C /* RKDynamicRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicRouter.h; sourceTree = "<group>"; };
 		259562E3126D3B36004BAC4C /* RKDynamicRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouter.m; sourceTree = "<group>"; };
 		259562E6126D3B43004BAC4C /* RKRailsRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRailsRouter.h; sourceTree = "<group>"; };
@@ -818,7 +817,6 @@
 		253A0A8D1255300000976E89 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
-				2591E6101356674E00EAD8CE /* GenerateDocumentation.command */,
 				258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */,
 				253A0A8E1255300000976E89 /* Protect.command */,
 			);
