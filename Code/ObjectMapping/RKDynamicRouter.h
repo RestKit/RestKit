@@ -25,11 +25,11 @@
  * (i.e. /this/is/the/path) or dynamic (i.e. /users/(userID)/(username)). Dynamic routes are
  * evaluated against the object being routed using Key-Value coding and coerced into a string.
  */
-- (void)routeClass:(Class<RKObjectMappable>)class toResourcePath:(NSString*)resourcePath;
+- (void)routeClass:(Class<RKObjectMappable>)cls toResourcePath:(NSString*)resourcePath;
 
 /**
  * Register a mapping from an object class to a resource path for a specific HTTP method.
  */
-- (void)routeClass:(Class<RKObjectMappable>)class toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
+- (void)routeClass:(Class<RKObjectMappable>)cls toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
 
 @end

@@ -150,18 +150,18 @@ typedef enum {
  * Map the objects in a given payload string to a particular object class, optionally filtering
  * the parsed result set via a keyPath before mapping the results.
  */
-- (NSObject<RKObjectMappable>*)mapFromString:(NSString *)string toClass:(Class<RKObjectMappable>)class keyPath:(NSString*)keyPath;
+- (NSObject<RKObjectMappable>*)mapFromString:(NSString *)string toClass:(Class<RKObjectMappable>)cls keyPath:(NSString*)keyPath;
 
 /**
  * Map a dictionary of elements to an instance of a particular class
  */
-- (id)mapObjectFromDictionary:(NSDictionary*)dictionary toClass:(Class)class;
+- (id)mapObjectFromDictionary:(NSDictionary*)dictionary toClass:(Class)cls;
 
 /**
  * Map an array of object dictionary representations to instances of a particular
  * object class
  */
-- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class<RKObjectMappable>)class;
+- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class<RKObjectMappable>)cls;
 
 /**
  * Parse a string using the appropriate parser and return the results
