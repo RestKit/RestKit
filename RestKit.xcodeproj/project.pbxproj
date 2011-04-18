@@ -628,7 +628,8 @@
 				25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
+			path = ../..;
+			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0867D691FE84028FC02AAC07 /* OTRestFramework */ = {
 			isa = PBXGroup;

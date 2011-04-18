@@ -16,6 +16,6 @@
 /**
  * Returns a dictionary of names and types for the properties of a given class
  */
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)class;
+- (NSDictionary *)propertyNamesAndTypesForClass:(Class)objectClass;
 
 @end

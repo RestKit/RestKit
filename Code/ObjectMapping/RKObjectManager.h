@@ -85,7 +85,7 @@ typedef enum {
 /**
  * Register a resource mapping from a domain model class to a JSON/XML element name
  */
-- (void)registerClass:(Class<RKObjectMappable>)class forElementNamed:(NSString*)elementName;
+- (void)registerClass:(Class<RKObjectMappable>)objectClass forElementNamed:(NSString*)elementName;
 
 /**
  * Mapper object responsible for mapping remote HTTP resources to Cocoa objects
