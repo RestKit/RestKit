@@ -19,9 +19,9 @@
   // Load the object model via RestKit	
 	RKObjectManager* objectManager = [RKObjectManager sharedManager];
     if (objectManager.format == RKMappingFormatJSON) {
-        [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters" objectClass:[RKTStatus class] delegate:self];
+        [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" objectClass:[RKTStatus class] delegate:self];
     } else {
-        RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/status/user_timeline/twotoasters" delegate:self];
+        RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/status/user_timeline/RestKit" delegate:self];
         loader.objectClass = [RKTStatus class];
         loader.keyPath = @"statuses.status";
         [loader send];
