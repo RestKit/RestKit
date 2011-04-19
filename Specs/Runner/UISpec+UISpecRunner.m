@@ -36,8 +36,10 @@
 -(void)onFinish:(int)count {
     [super onFinish:count];
     
-    if (self.exitOnFinish) {
-        exit(errors.count);
+    if (self.exitOnFinish) {        
+        int exitStatus = [errors count] > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+        NSLog(@"Exiting with status code: %d", exitStatus);
+        exit(exitStatus);
     }
 }
 
