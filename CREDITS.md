@@ -32,3 +32,4 @@ Contributors
 * Adam Hinz         (ahinz)
 * Stefan Eletzhofer (seletz)
 * Peter Marks       (tassock)
+* Chad Podoski      (chadpod)
