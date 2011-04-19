@@ -51,6 +51,9 @@ end
 def run(command)
   puts "Executing: `#{command}`"
   system(command)
+  if $? != 0
+    puts "[!] Failed with exit code #{$?} while running: `#{command}`"
+  end
 end
 
 desc "Run all specs"

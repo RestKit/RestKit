@@ -65,6 +65,7 @@
  */
 @property (nonatomic, readonly) NSUInteger count;
 
+#if TARGET_OS_IPHONE
 /**
  * When YES, this queue will spin the network activity in the menu bar when it is processing
  * requests
@@ -75,6 +76,7 @@
  * will manipulate the activity indicator indepedently of all others.
  */
 @property (nonatomic) BOOL showsNetworkActivityIndicatorWhenBusy;
+#endif
 
 /**
  * Return the global queue

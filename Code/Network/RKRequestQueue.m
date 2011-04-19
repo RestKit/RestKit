@@ -32,7 +32,10 @@ static const NSTimeInterval kFlushDelay = 0.3;
 @synthesize requestTimeout = _requestTimeout;
 @synthesize suspended = _suspended;
 @synthesize loadingCount = _loadingCount;
+
+#if TARGET_OS_IPHONE
 @synthesize showsNetworkActivityIndicatorWhenBusy = _showsNetworkActivityIndicatorWhenBusy;
+#endif
 
 + (RKRequestQueue*)sharedQueue {
 	if (!gSharedQueue) {
@@ -100,19 +103,23 @@ static const NSTimeInterval kFlushDelay = 0.3;
         if ([_delegate respondsToSelector:@selector(requestQueueDidBeginLoading:)]) {
             [_delegate requestQueueDidBeginLoading:self];
         }
-        
+
+#if TARGET_OS_IPHONE        
         if (self.showsNetworkActivityIndicatorWhenBusy) {
             [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         }
+#endif
     } else if (_loadingCount > 0 && count == 0) {
         // Transition from processing to empty
         if ([_delegate respondsToSelector:@selector(requestQueueDidFinishLoading:)]) {
             [_delegate requestQueueDidFinishLoading:self];
         }
         
+#if TARGET_OS_IPHONE
         if (self.showsNetworkActivityIndicatorWhenBusy) {
             [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         }
+#endif
     }
     
     _loadingCount = count;
