@@ -23,7 +23,10 @@ typedef enum {
 
 /**
  * Provides a notification based interface for monitoring changes
- * to network status
+ * to network status8
+ *
+ * Portions of this software are derived from the Apple Reachability
+ * code sample: http://developer.apple.com/library/ios/#samplecode/Reachability/Listings/Classes_Reachability_m.html
  */
 @interface RKReachabilityObserver : NSObject {
 	SCNetworkReachabilityRef _reachabilityRef;	
