@@ -23,6 +23,7 @@
 	NSUInteger _requestTimeout;
 	NSTimer*  _queueTimer;
 	BOOL _suspended;
+    BOOL _showsNetworkActivityIndicatorWhenBusy;
 }
 
 /**
@@ -63,6 +64,17 @@
  * Returns the number of requests in the queue
  */
 @property (nonatomic, readonly) NSUInteger count;
+
+/**
+ * When YES, this queue will spin the network activity in the menu bar when it is processing
+ * requests
+ *
+ * *Default*: NO
+ *
+ * @bug Currently, this implementation does not work across queues at the moment. Each queue
+ * will manipulate the activity indicator indepedently of all others.
+ */
+@property (nonatomic) BOOL showsNetworkActivityIndicatorWhenBusy;
 
 /**
  * Return the global queue

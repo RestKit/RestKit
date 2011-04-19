@@ -32,6 +32,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 @synthesize requestTimeout = _requestTimeout;
 @synthesize suspended = _suspended;
 @synthesize loadingCount = _loadingCount;
+@synthesize showsNetworkActivityIndicatorWhenBusy = _showsNetworkActivityIndicatorWhenBusy;
 
 + (RKRequestQueue*)sharedQueue {
 	if (!gSharedQueue) {
@@ -55,6 +56,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 		_loadingCount = 0;
 		_concurrentRequestsLimit = 5;
 		_requestTimeout = 300;
+        _showsNetworkActivityIndicatorWhenBusy = NO;
 
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(responseDidLoad:)
@@ -98,10 +100,18 @@ static const NSTimeInterval kFlushDelay = 0.3;
         if ([_delegate respondsToSelector:@selector(requestQueueDidBeginLoading:)]) {
             [_delegate requestQueueDidBeginLoading:self];
         }
+        
+        if (self.showsNetworkActivityIndicatorWhenBusy) {
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+        }
     } else if (_loadingCount > 0 && count == 0) {
         // Transition from processing to empty
         if ([_delegate respondsToSelector:@selector(requestQueueDidFinishLoading:)]) {
             [_delegate requestQueueDidFinishLoading:self];
+        }
+        
+        if (self.showsNetworkActivityIndicatorWhenBusy) {
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         }
     }
     

@@ -84,4 +84,13 @@
     [queue release];
 }
 
+- (void)itShouldBeginSpinningTheNetworkActivityIfAsked {
+    RKRequestQueue* queue = [RKRequestQueue new];
+    queue.showsNetworkActivityIndicatorWhenBusy = YES;
+    [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(NO)];
+    [queue setValue:[NSNumber numberWithInt:1] forKey:@"loadingCount"];
+    [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(YES)];
+    [queue release];
+}
+
 @end

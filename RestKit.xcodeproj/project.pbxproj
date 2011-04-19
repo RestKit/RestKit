@@ -179,6 +179,7 @@
 		259DF7861340294400233DF4 /* RKXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 259DF7831340294400233DF4 /* RKXMLParser.h */; };
 		259DF7871340294400233DF4 /* RKXMLParser+libXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 259DF7851340294400233DF4 /* RKXMLParser+libXML.m */; };
 		259DF7881340299900233DF4 /* RKXMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 259DF7831340294400233DF4 /* RKXMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25CAF335135DCB0500F53AF5 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25CAF334135DCB0500F53AF5 /* blake.png */; };
 		25D6390713517D8B000879B1 /* RKAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = 25D6390513517D8B000879B1 /* RKAlert.h */; };
 		25D6390813517D8B000879B1 /* RKAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 25D6390613517D8B000879B1 /* RKAlert.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
@@ -488,6 +489,7 @@
 		259DF7831340294400233DF4 /* RKXMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKXMLParser.h; sourceTree = "<group>"; };
 		259DF7851340294400233DF4 /* RKXMLParser+libXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKXMLParser+libXML.m"; sourceTree = "<group>"; };
 		25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitXMLParserLibxml.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		25CAF334135DCB0500F53AF5 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blake.png; path = Specs/Server/public/blake.png; sourceTree = SOURCE_ROOT; };
 		25D638DE1351268D000879B1 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		25D638E11351268D000879B1 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		25D638E21351268D000879B1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1008,6 +1010,7 @@
 		259D511A1328547000897272 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				25CAF334135DCB0500F53AF5 /* blake.png */,
 				259D511B1328547000897272 /* NSDictionary+RKRequestSerializationSpec.m */,
 				3F4EAF57134205CF00F944E4 /* RKXMLParserSpec.m */,
 			);
@@ -1492,6 +1495,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25CAF335135DCB0500F53AF5 /* blake.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
