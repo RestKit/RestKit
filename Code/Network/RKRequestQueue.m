@@ -19,12 +19,19 @@ static RKRequestQueue* gSharedQueue = nil;
 
 static const NSTimeInterval kFlushDelay = 0.3;
 
+@interface RKRequestQueue (Private)
+
+// Declare the loading count read-write
+@property (nonatomic, readwrite) NSUInteger loadingCount;
+@end
+
 @implementation RKRequestQueue
 
 @synthesize delegate = _delegate;
 @synthesize concurrentRequestsLimit = _concurrentRequestsLimit;
 @synthesize requestTimeout = _requestTimeout;
 @synthesize suspended = _suspended;
+@synthesize loadingCount = _loadingCount;
 
 + (RKRequestQueue*)sharedQueue {
 	if (!gSharedQueue) {
@@ -45,7 +52,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	if ((self = [super init])) {
 		_requests = [[NSMutableArray alloc] init];
 		_suspended = YES;
-		_totalLoading = 0;
+		_loadingCount = 0;
 		_concurrentRequestsLimit = 5;
 		_requestTimeout = 300;
 
@@ -81,6 +88,26 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	[super dealloc];
 }
 
+- (NSUInteger)count {
+    return [_requests count];
+}
+
+- (void)setLoadingCount:(NSUInteger)count {
+    if (_loadingCount == 0 && count > 0) {
+        // Transitioning from empty to processing
+        if ([_delegate respondsToSelector:@selector(requestQueueDidBeginLoading:)]) {
+            [_delegate requestQueueDidBeginLoading:self];
+        }
+    } else if (_loadingCount > 0 && count == 0) {
+        // Transition from processing to empty
+        if ([_delegate respondsToSelector:@selector(requestQueueDidFinishLoading:)]) {
+            [_delegate requestQueueDidFinishLoading:self];
+        }
+    }
+    
+    _loadingCount = count;
+}
+
 - (void)loadNextInQueueDelayed {
 	if (!_queueTimer) {
 		_queueTimer = [NSTimer scheduledTimerWithTimeInterval:kFlushDelay
@@ -106,12 +133,12 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	
 	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
 	for (RKRequest* request in requestsCopy) {
-		if (![request isLoading] && ![request isLoaded] && _totalLoading < _concurrentRequestsLimit) {            
+		if (![request isLoading] && ![request isLoaded] && self.loadingCount < _concurrentRequestsLimit) {            
             if ([_delegate respondsToSelector:@selector(requestQueue:willSendRequest:)]) {
                 [_delegate requestQueue:self willSendRequest:request];
             }
             
-            ++_totalLoading;
+            self.loadingCount = self.loadingCount + 1;
             [request sendAsynchronously];
 
             if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
@@ -124,19 +151,23 @@ static const NSTimeInterval kFlushDelay = 0.3;
 		[self loadNextInQueueDelayed];
 	}
 
-    if (!_requests.count) {
-        if ([_delegate respondsToSelector:@selector(requestQueueDidFinish:)]) {
-            [_delegate requestQueueDidFinish:self];
-        }
-    }
-
 	[pool drain];
 }
 
-- (void)setSuspended:(BOOL)isSuspended {
-    if (_suspended && !isSuspended && [_delegate respondsToSelector:@selector(requestQueueDidStart:)]) {
-		[_delegate requestQueueDidStart:self];
-	}
+- (void)setSuspended:(BOOL)isSuspended {    
+    if (_suspended != isSuspended) {
+        if (isSuspended) {
+            // Becoming suspended
+            if ([_delegate respondsToSelector:@selector(requestQueueWasSuspended:)]) {
+                [_delegate requestQueueWasSuspended:self];
+            }
+        } else {
+            // Becoming unsupended
+            if ([_delegate respondsToSelector:@selector(requestQueueWasUnsuspended:)]) {
+                [_delegate requestQueueWasUnsuspended:self];
+            }
+        }
+    }
 
 	_suspended = isSuspended;
 	
@@ -153,6 +184,10 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	[self loadNextInQueue];
 }
 
+- (BOOL)containsRequest:(RKRequest*)request {
+    return [_requests containsObject:request];
+}
+
 - (void)cancelRequest:(RKRequest*)request loadNext:(BOOL)loadNext {
 	if ([_requests containsObject:request] && ![request isLoaded]) {
 		[request cancel];
@@ -163,7 +198,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
     }
 
 		[_requests removeObject:request];
-		_totalLoading--;
+		self.loadingCount = self.loadingCount - 1;
 		
 		if (loadNext) {
 			[self loadNextInQueue];
@@ -195,10 +230,6 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	[pool drain];
 }
 
-- (BOOL)containsRequest:(RKRequest*)request {
-    return [_requests containsObject:request];
-}
-
 - (void)start {
     [self setSuspended:NO];
 }
@@ -222,7 +253,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         if (request != nil && [self containsRequest:request]) { 
             if ([notification.object isKindOfClass:[RKResponse class]]) {
                 [_requests removeObject:request];
-                _totalLoading--;
+                self.loadingCount = self.loadingCount - 1;
                 
                 if ([_delegate respondsToSelector:@selector(requestQueue:didLoadResponse:)]) {
                     [_delegate requestQueue:self didLoadResponse:(RKResponse*)notification.object];
@@ -231,7 +262,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 				// Our RKRequest failed and we're notified with the original RKRequest object
             } else if ([notification.object isKindOfClass:[RKRequest class]]) {
                 [_requests removeObject:request];
-                _totalLoading--;
+                self.loadingCount = self.loadingCount - 1;
                 
                 NSDictionary* userInfo = [notification userInfo];
                 NSError* error = nil;

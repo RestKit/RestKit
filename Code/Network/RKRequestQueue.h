@@ -18,8 +18,8 @@
 @interface RKRequestQueue : NSObject {
 	NSMutableArray* _requests;
     NSObject<RKRequestQueueDelegate>* _delegate;
-	NSInteger _totalLoading;
-    NSInteger _concurrentRequestsLimit;
+	NSUInteger _loadingCount;
+    NSUInteger _concurrentRequestsLimit;
 	NSUInteger _requestTimeout;
 	NSTimer*  _queueTimer;
 	BOOL _suspended;
@@ -37,7 +37,7 @@
  * The number of current requests supported by this queue
  * Defaults to 5
  */
-@property (nonatomic) NSInteger concurrentRequestsLimit;
+@property (nonatomic) NSUInteger concurrentRequestsLimit;
 
 /**
  * Request timeout value used by the queue
@@ -53,6 +53,16 @@
  * suspended becomes false again they are executed.
  */
 @property (nonatomic) BOOL suspended;
+
+/**
+ * Returns the total number of requests that are currently loading
+ */
+@property (nonatomic, readonly) NSUInteger loadingCount;
+
+/**
+ * Returns the number of requests in the queue
+ */
+@property (nonatomic, readonly) NSUInteger count;
 
 /**
  * Return the global queue
@@ -90,6 +100,11 @@
  */
 - (void)start;
 
+/**
+ * Returns YES if the specified request is in this queue
+ */
+- (BOOL)containsRequest:(RKRequest*)request;
+
 @end
 
 /**
@@ -100,14 +115,24 @@
 @optional
 
 /**
- * Sent when queue starts running
+ * Sent when the queue has been suspended and request processing has been halted
  */
-- (void)requestQueueDidStart:(RKRequestQueue*)queue;
+- (void)requestQueueWasSuspended:(RKRequestQueue*)queue;
 
 /**
- * Sent when queue is emptied
+ * Sent when the queue has been unsuspended and request processing has resumed
  */
-- (void)requestQueueDidFinish:(RKRequestQueue*)queue;
+- (void)requestQueueWasUnsuspended:(RKRequestQueue*)queue;
+
+/**
+ * Sent when the queue transitions from an empty state to processing requests
+ */
+- (void)requestQueueDidBeginLoading:(RKRequestQueue*)queue;
+
+/**
+ * Sent when queue transitions from a processing state to an empty start
+ */
+- (void)requestQueueDidFinishLoading:(RKRequestQueue*)queue;
 
 /**
  * Sent before queue sends a request

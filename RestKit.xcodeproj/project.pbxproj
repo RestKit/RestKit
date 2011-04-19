@@ -2065,8 +2065,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
 				HEADER_SEARCH_PATHS = (
-					Specs/Runner/UISpec/headers,
-					Specs/Runner/OCMock/Headers,
+					"$(SRCROOT)/Specs/Runner/UISpec/headers",
+					"$(SRCROOT)/Specs/Runner/OCMock/Headers",
 					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "Specs/Runner/UISpec-Info.plist";
@@ -2389,8 +2389,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
 				HEADER_SEARCH_PATHS = (
-					Specs/Runner/UISpec/headers,
-					Specs/Runner/OCMock/Headers,
+					"$(SRCROOT)/Specs/Runner/UISpec/headers",
+					"$(SRCROOT)/Specs/Runner/OCMock/Headers",
 					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "Specs/Runner/UISpec-Info.plist";
@@ -2428,8 +2428,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
 				HEADER_SEARCH_PATHS = (
-					Specs/Runner/UISpec/headers,
-					Specs/Runner/OCMock/Headers,
+					"$(SRCROOT)/Specs/Runner/UISpec/headers",
+					"$(SRCROOT)/Specs/Runner/OCMock/Headers",
 					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = "Specs/Runner/UISpec-Info.plist";
