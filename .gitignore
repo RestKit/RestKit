@@ -19,3 +19,6 @@ Docs/API
 *.xcuserdatad
 
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*
+
+# UISpecRunner cached build path
+.uispec.app
