@@ -105,6 +105,7 @@
 	[expectThat([result dateTest]) shouldNot:be(nil)];
 	[expectThat([result numberTest]) should:be(2)];
 	[expectThat([result stringTest]) should:be(@"SomeString")];
+	[expectThat([result urlTest]) should:be([NSURL URLWithString:@"https://github.com/twotoasters/RestKit"])];
 	
 	[expectThat([result hasOne]) shouldNot:be(nil)];
 	[expectThat([[result hasOne] testString]) should:be(@"A String")];
@@ -329,6 +330,7 @@
 	@"      \"date_test\":\"2009-08-17T19:24:40Z\","
 	@"      \"number_test\":2,"
 	@"      \"string_test\":\"SomeString\","
+	@"      \"url_test\":\"https://github.com/twotoasters/RestKit\","
 	@"      \"has_one\":{"
 	@"         \"test_string\":\"A String\""
 	@"      },"
