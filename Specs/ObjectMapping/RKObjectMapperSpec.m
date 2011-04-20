@@ -84,6 +84,25 @@
     [expectThat(user.name) should:be(@"mimi")];
 }
 
+- (void)itShouldMapATargetObjectWithNamespacedJSON {
+    RKObjectMapper* mapper = [[RKObjectMapper new] autorelease];
+    [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
+	mapper.format = RKMappingFormatJSON;
+    RKObjectMapperSpecUser* user = [[RKObjectMapperSpecUser new] autorelease];
+    [mapper mapObject:user fromString:[self userJSON]];    
+    [expectThat(user.name) should:be(@"mimi")];
+}
+
+- (void)itShouldMapCorrectlyWithObjectClassSpecifiedAndElementRegistered {
+    RKObjectMapper* mapper = [[RKObjectMapper new] autorelease];
+    [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
+	mapper.format = RKMappingFormatJSON;
+    NSString* JSON = [NSString stringWithFormat:@"[%@]", [self userJSON]];
+    NSArray* objects = [mapper mapFromString:JSON toClass:[RKObjectMapperSpecUser class] keyPath:nil];
+    RKObjectMapperSpecUser* user = [objects lastObject];
+    [expectThat(user.name) should:be(@"mimi")];
+}
+
 - (void)itShouldMapWhenGivenRegisteredElementsAndASingleObject {
     RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];

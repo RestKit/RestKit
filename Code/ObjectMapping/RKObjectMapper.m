@@ -247,11 +247,34 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	return (NSArray*)objects;
 }
 
-- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class<RKObjectMappable>)class {
+- (NSDictionary*)mappableElementsForDictionary:(NSDictionary*)elements withObjectClass:(Class<RKObjectMappable>)objectClass {
+    NSArray* elementNames = [_elementToClassMappings allKeysForObject:objectClass];
+	if ([elementNames count] > 0) {		
+		for (NSString* elementName in elementNames) {
+			if ([[elements allKeys] containsObject:elementName]) {
+				return [elements objectForKey:elementName];
+			}
+		}
+	}
+    
+    // Assume that this dictionary is not namespaced and return it
+    return elements;
+}
+
+- (NSArray*)mappableElementsForArrayOfDictionaries:(NSArray*)dictionaries withObjectClass:(Class<RKObjectMappable>)objectClass {
+    NSMutableArray* arrayOfElements = [NSMutableArray arrayWithCapacity:[dictionaries count]];
+    for (NSDictionary* elements in dictionaries) {
+        [arrayOfElements addObject:[self mappableElementsForDictionary:elements withObjectClass:objectClass]];
+    }
+    
+    return arrayOfElements;
+}
+
+- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class<RKObjectMappable>)objectClass {
 	NSMutableArray* objects = [NSMutableArray array];
-	for (NSDictionary* dictionary in array) {
-		if (![dictionary isKindOfClass:[NSNull class]]) {
-			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:dictionary];
+    for (NSDictionary* elements in [self mappableElementsForArrayOfDictionaries:array withObjectClass:objectClass]) {
+		if (![elements isKindOfClass:[NSNull class]]) {
+			id object = [self createOrUpdateInstanceOfModelClass:objectClass fromElements:elements];
 			[objects addObject:object];
 		}
 	}
