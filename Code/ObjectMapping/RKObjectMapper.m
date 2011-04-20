@@ -389,6 +389,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
                     } else {
                         propertyValue = [NSNumber numberWithDouble:[propertyValue doubleValue]];
                     }
+                } else if (class == [NSURL class] && [propertyValue isKindOfClass:[NSString class]]) {
+                    propertyValue = [NSURL URLWithString:propertyValue];
                 } else {
                     [NSException raise:@"NoElementValueConversionMethod" format:@"Don't know how to convert %@ (%@) to %@", propertyValue, [propertyValue class], class];
                 }
