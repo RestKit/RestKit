@@ -66,7 +66,7 @@
     cat2.birthYear = [NSNumber numberWithInt:2003];
     [human addCatsObject:cat2];
     
-    NSObject<RKRequestSerializable>* serialization = [router serializationForObject:human method:RKRequestMethodPOST];
+    NSDictionary* serialization = (NSDictionary*) [router serializationForObject:human method:RKRequestMethodPOST];
     NSArray* serializedCats = [serialization objectForKey:@"human[cats_attributes]"];
     for (NSDictionary *catDict in serializedCats) {
         [expectThat([catDict objectForKey:@"name"]) shouldNot:be(nil)];
@@ -92,7 +92,7 @@
     cat2.railsID = [NSNumber numberWithInt:2];
     [human addCatsObject:cat2];
     
-    NSObject<RKRequestSerializable>* serialization = [router serializationForObject:human method:RKRequestMethodPOST];
+    NSDictionary* serialization = (NSDictionary*) [router serializationForObject:human method:RKRequestMethodPOST];
     NSArray* serializedCats = [serialization objectForKey:@"human[cats_attributes]"];
     for (NSDictionary *catDict in serializedCats) {
         [expectThat([catDict objectForKey:@"name"]) shouldNot:be(nil)];

@@ -7,6 +7,7 @@
 //
 
 #import "RKHuman.h"
+#import "NSDictionary+RKAdditions.h"
 
 @implementation RKHuman
 

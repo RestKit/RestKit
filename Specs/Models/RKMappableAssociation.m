@@ -20,4 +20,8 @@
 	return [NSDictionary dictionary];
 }
 
++ (NSArray*)relationshipsToSerialize {
+    return [NSArray array];
+}
+
 @end

@@ -28,4 +28,8 @@ hasOne = _hasOne, hasMany = _hasMany;
 			nil];
 }
 
++ (NSArray*)relationshipsToSerialize {
+    return [NSArray array];
+}
+
 @end
