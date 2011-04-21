@@ -181,13 +181,18 @@
     [self prepareURLRequest];
     NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
     NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-    [body release];
+    [body release];        
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
+    _isLoading = YES;    
     
-    _isLoading = YES;
+    if ([self.delegate respondsToSelector:@selector(requestDidStartLoad:)]) {
+        [self.delegate requestDidStartLoad:self];
+    }
+    
     RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
     _connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
 
 - (BOOL)shouldDispatchRequest {
@@ -256,6 +261,10 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 
 		_isLoading = YES;
+        if ([self.delegate respondsToSelector:@selector(requestDidStartLoad:)]) {
+            [self.delegate requestDidStartLoad:self];
+        }
+        
 		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
 		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
         

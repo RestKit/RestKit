@@ -20,7 +20,6 @@
 	if (self) {
 		_body = [[NSMutableData alloc] init];
 		_failureError = nil;
-		_loading = NO;
 	}
 
 	return self;
@@ -46,7 +45,6 @@
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
 		_body = [body retain];
-		_loading = NO;
 	}
 
 	return self;
@@ -73,21 +71,11 @@
     }
 }
 
-- (void)dispatchRequestDidStartLoadIfNecessary {
-	if (NO == _loading) {
-		_loading = YES;
-		if ([[_request delegate] respondsToSelector:@selector(requestDidStartLoad:)]) {
-			[[_request delegate] requestDidStartLoad:_request];
-		}
-	}
-}
-
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	[_body appendData:data];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
-	[self dispatchRequestDidStartLoadIfNecessary];
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {	
 	_httpURLResponse = [response retain];
 }
 
@@ -107,7 +95,6 @@
 // in connection:didReceiveResponse: to ensure that the RKRequestDelegate
 // callbacks get called in the correct order.
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	[self dispatchRequestDidStartLoadIfNecessary];
 	
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];

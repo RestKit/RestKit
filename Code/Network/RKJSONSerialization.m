@@ -17,7 +17,8 @@
 }
 
 - (id)initWithObject:(NSObject*)object {
-	if (self = [self init]) {
+    self = [self init];
+	if (self) {
 		_object = [object retain];
 	}
 	

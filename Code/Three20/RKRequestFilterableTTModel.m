@@ -16,7 +16,8 @@
 @synthesize sortSelector = _sortSelector;
 
 - (id)init {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		self.predicate = nil;
 		self.sortDescriptors = nil;
 		self.searchEngine = nil;

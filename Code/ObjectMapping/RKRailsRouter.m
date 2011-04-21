@@ -12,7 +12,8 @@
 @implementation RKRailsRouter
 
 - (id)init {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		_classToModelMappings = [[NSMutableDictionary alloc] init];
 	}
 	

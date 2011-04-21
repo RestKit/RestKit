@@ -14,7 +14,6 @@
 	NSHTTPURLResponse* _httpURLResponse;
 	NSMutableData* _body;
 	NSError* _failureError;
-	BOOL _loading;
 }
 
 /**

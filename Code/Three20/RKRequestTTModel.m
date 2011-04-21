@@ -54,35 +54,40 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath {
-	if (self = [self init]) {
+    self = [self init];
+	if (self) {
 		_resourcePath = [resourcePath retain];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params {
-	if (self = [self initWithResourcePath:resourcePath]) {
+    self = [self initWithResourcePath:resourcePath]
+	if (self) {
 		self.params = [params retain];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass {
-	if (self = [self initWithResourcePath:resourcePath params:params]) {
+    self = [self initWithResourcePath:resourcePath params:params];
+	if (self) {
 		_objectClass = [klass retain];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params objectClass:(Class)klass keyPath:(NSString*)keyPath {
-	if (self = [self initWithResourcePath:resourcePath params:params objectClass:klass]) {
+    self = [self initWithResourcePath:resourcePath params:params objectClass:klass];
+	if (self) {
 		_keyPath = [keyPath retain];
 	}
 	return self;
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params method:(RKRequestMethod)method {
-	if (self = [self initWithResourcePath:resourcePath params:params]) {
+    self = [self initWithResourcePath:resourcePath params:params];
+	if (self) {
 		_method = method;
 	}
 	return self;
@@ -92,7 +97,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 // NSObject
 
 - (id)init {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		self.method = RKRequestMethodGET;
 		self.refreshRate = [RKRequestTTModel defaultRefreshRate];
 		self.params = nil;
