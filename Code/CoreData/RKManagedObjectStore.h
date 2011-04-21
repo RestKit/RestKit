@@ -93,7 +93,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * Core Data for optimal performance. If an existing object is not found, a new object is created
  * and returned.
  */
-- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue;
+- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)cls withPrimaryKeyValue:(id)primaryKeyValue;
 
 /**
  * Returns an array of objects that the 'live' at the specified resource path. Usage of this

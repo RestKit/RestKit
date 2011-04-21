@@ -40,15 +40,15 @@
 	return type;
 }
 
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)class {
-	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:class];
+- (NSDictionary *)propertyNamesAndTypesForClass:(Class)cls {
+	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:cls];
 	if (propertyNames) {
 		return propertyNames;
 	}
 	propertyNames = [NSMutableDictionary dictionary];
 	
 	//include superclass properties
-	Class currentClass = class;
+	Class currentClass = cls;
 	while (currentClass != nil) {
 		// Get the raw list of properties
 		unsigned int outCount;
@@ -66,9 +66,9 @@
 			
 			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
 				const char* className = [[self propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
-				Class class = objc_getClass(className);
-				if (class) {
-					[propertyNames setObject:class forKey:propName];
+				Class cls = objc_getClass(className);
+				if (cls) {
+					[propertyNames setObject:cls forKey:propName];
 				}
 			}
 		}
@@ -77,7 +77,7 @@
 		currentClass = [currentClass superclass];
 	}
 	
-	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:class];	
+	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:cls];	
 	return propertyNames;
 }
 

@@ -23,6 +23,6 @@
  * Registers the remote model name for a local domain class. This model name will
  * be used when serializing parameters before dispatching the request
  */
-- (void)setModelName:(NSString*)modelName forClass:(Class<RKObjectMappable>)class;
+- (void)setModelName:(NSString*)modelName forClass:(Class<RKObjectMappable>)cls;
 
 @end

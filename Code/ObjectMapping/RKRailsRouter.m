@@ -24,8 +24,8 @@
 	[super dealloc];
 }
 
-- (void)setModelName:(NSString*)modelName forClass:(Class<RKObjectMappable>)class {
-	[_classToModelMappings setObject:modelName forKey:class];
+- (void)setModelName:(NSString*)modelName forClass:(Class<RKObjectMappable>)cls {
+	[_classToModelMappings setObject:modelName forKey:cls];
 }
 
 #pragma mark RKRouter

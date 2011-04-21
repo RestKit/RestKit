@@ -132,8 +132,8 @@ static RKObjectManager* sharedManager = nil;
 
 #pragma mark Object Loading
 
-- (void)registerClass:(Class<RKObjectMappable>)class forElementNamed:(NSString*)elementName {
-	[_mapper registerClass:class forElementNamed:elementName];
+- (void)registerClass:(Class<RKObjectMappable>)cls forElementNamed:(NSString*)elementName {
+	[_mapper registerClass:cls forElementNamed:elementName];
 }
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {

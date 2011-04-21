@@ -211,11 +211,11 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	
 	for (NSManagedObject* object in insertedObjects) {
 		if ([object respondsToSelector:@selector(primaryKeyProperty)]) {
-			Class class = [object class];
-			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
+			Class cls = [object class];
+			NSString* primaryKey = [cls performSelector:@selector(primaryKeyProperty)];
 			id primaryKeyValue = [object valueForKey:primaryKey];
 			
-			NSMutableDictionary* classCache = [threadDictionary objectForKey:class];
+			NSMutableDictionary* classCache = [threadDictionary objectForKey:cls];
 			if (classCache && primaryKeyValue && [classCache objectForKey:primaryKeyValue] == nil) {
 				[classCache setObject:object forKey:primaryKeyValue];
 			}
@@ -250,19 +250,19 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return objectArray;
 }
 
-- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue {
+- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)cls withPrimaryKeyValue:(id)primaryKeyValue {
 	RKManagedObject* object = nil;
-	if ([class respondsToSelector:@selector(allObjects)]) {
+	if ([cls respondsToSelector:@selector(allObjects)]) {
 		NSArray* objects = nil;
 		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
 		
-		if (nil == [threadDictionary objectForKey:class]) {
-			NSFetchRequest* fetchRequest = [class fetchRequest];
+		if (nil == [threadDictionary objectForKey:cls]) {
+			NSFetchRequest* fetchRequest = [cls fetchRequest];
 			[fetchRequest setReturnsObjectsAsFaults:NO];			
-			objects = [class objectsWithFetchRequest:fetchRequest];
-			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], class);
+			objects = [cls objectsWithFetchRequest:fetchRequest];
+			NSLog(@"Cacheing all %d %@ objects to thread local storage", [objects count], cls);
 			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
+			NSString* primaryKey = [cls performSelector:@selector(primaryKeyProperty)];
 			for (id theObject in objects) {			
 				id primaryKeyValue = [theObject valueForKey:primaryKey];
 				if (primaryKeyValue) {
@@ -270,14 +270,14 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 				}
 			}
 			
-			[threadDictionary setObject:dictionary forKey:class];
+			[threadDictionary setObject:dictionary forKey:cls];
 		}
 		
-		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
+		NSMutableDictionary* dictionary = [threadDictionary objectForKey:cls];
 		object = [dictionary objectForKey:primaryKeyValue];
 		
-		if (object == nil && primaryKeyValue && [class respondsToSelector:@selector(object)]) {
-			object = [class object];
+		if (object == nil && primaryKeyValue && [cls respondsToSelector:@selector(object)]) {
+			object = [cls object];
 			[dictionary setObject:object forKey:primaryKeyValue];
 		}
 	}

@@ -16,7 +16,7 @@
 
 - (NSString *)deCamelizeWith:(NSString *)delimiter {
 	
-	unichar *buffer = calloc([self length], sizeof(unichar));
+	unichar *buffer = (unichar*)calloc([self length], sizeof(unichar));
 	[self getCharacters:buffer ];
 	NSMutableString *underscored = [NSMutableString string];
 	
@@ -53,7 +53,7 @@
 
 - (NSString *)camelize {
 	
-	unichar *buffer = calloc([self length], sizeof(unichar));
+	unichar *buffer = (unichar*)calloc([self length], sizeof(unichar));
 	[self getCharacters:buffer ];
 	NSMutableString *underscored = [NSMutableString string];
 	

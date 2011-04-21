@@ -25,8 +25,8 @@
 	[super dealloc];
 }
 
-- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethodName:(NSString*)methodName {
-	NSString* className = NSStringFromClass(class);
+- (void)routeClass:(Class)cls toResourcePath:(NSString*)resourcePath forMethodName:(NSString*)methodName {
+	NSString* className = NSStringFromClass(cls);
 	if (nil == [_routes objectForKey:className]) {
 		NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
 		[_routes setObject:dictionary forKey:className];		 
@@ -62,13 +62,13 @@
 
 // Public
 
-- (void)routeClass:(Class<RKObjectMappable>)class toResourcePath:(NSString*)resourcePath {
-	[self routeClass:class toResourcePath:resourcePath forMethodName:@"ANY"];
+- (void)routeClass:(Class<RKObjectMappable>)cls toResourcePath:(NSString*)resourcePath {
+	[self routeClass:cls toResourcePath:resourcePath forMethodName:@"ANY"];
 }
 
-- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method {
+- (void)routeClass:(Class)cls toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method {
 	NSString* methodName = [self HTTPVerbForMethod:method];
-	[self routeClass:class toResourcePath:resourcePath forMethodName:methodName];
+	[self routeClass:cls toResourcePath:resourcePath forMethodName:methodName];
 }
 
 #pragma mark RKRouter
