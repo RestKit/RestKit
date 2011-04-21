@@ -173,6 +173,25 @@
 	[pool drain];
 }
 
+// Give the target object a chance to modify the request
+- (void)handleTargetObject {
+	if (self.targetObject) {
+		if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
+			[self.targetObject willSendWithObjectLoader:self];
+		}
+	}
+}
+
+- (void)send {
+	[self handleTargetObject];
+	[super send];
+}
+
+- (RKResponse*)sendSynchronously {
+	[self handleTargetObject];
+	return [super sendSynchronously];
+}
+
 - (void)didFailLoadWithError:(NSError*)error {
 	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 		[_delegate request:self didFailLoadWithError:error];
