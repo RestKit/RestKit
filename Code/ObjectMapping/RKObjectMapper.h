@@ -121,6 +121,7 @@ typedef enum {
  * provided
  */
 - (void)mapObject:(id)model fromString:(NSString*)string;
+- (void)mapObject:(id)model fromString:(NSString*)string keyPath:(NSString*)keyPath;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Object Mapping API

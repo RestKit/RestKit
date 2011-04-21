@@ -154,7 +154,7 @@
 	 */
 	NSArray* results = nil;
 	if (self.targetObject) {
-        [self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString]];
+		[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:_keyPath];
         results = [NSArray arrayWithObject:self.targetObject];
 	} else {
 		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
