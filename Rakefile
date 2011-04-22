@@ -53,6 +53,7 @@ def run(command)
   system(command)
   if $? != 0
     puts "[!] Failed with exit code #{$?} while running: `#{command}`"
+    exit($?)
   end
 end
 
@@ -61,8 +62,10 @@ task :default => 'uispec:all'
 
 desc "Build RestKit for iOS and Mac OS X"
 task :build do
-  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos4.3 clean build")
+  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos4.3 clean build")  
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk macosx10.6 clean build")
+  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKitThree20 -sdk iphoneos4.3 clean build")
+  run("xcodebuild -workspace Examples/RKCatalog/RKCatalog.xcodeproj/project.xcworkspace -scheme RKCatalog -sdk iphoneos4.3 clean build")
 end
 
 desc "Generate documentation via appledoc"

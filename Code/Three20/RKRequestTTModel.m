@@ -62,7 +62,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (id)initWithResourcePath:(NSString*)resourcePath params:(NSDictionary*)params {
-    self = [self initWithResourcePath:resourcePath]
+    self = [self initWithResourcePath:resourcePath];
 	if (self) {
 		self.params = [params retain];
 	}
