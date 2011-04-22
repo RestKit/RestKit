@@ -1,3 +1,6 @@
 [submodule "Specs/Runner/UISpec"]
 	path = Specs/Runner/UISpec
 	url = git://github.com/twotoasters/UISpec.git
+[submodule "Examples/RKCatalog/Server"]
+	path = Examples/RKCatalog/Server
+	url = git://github.com/twotoasters/RKCatalog-Server.git
