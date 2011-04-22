@@ -716,8 +716,8 @@ The Three20 support lies at the top of a large pyramid of technology and relies 
 We hope that you have found learning about RestKit fun and rewarding. At this point we have reviewed the vast majority of framework and you should be prepared to utilize RestKit in your next RESTful iOS application. The framework is maturing quickly and iterating rapidly, so please be sure to join the mailing list or follow @RestKit on Twitter to keep up with the latest developments. Happy coding!
 
 ## Learning More
-* RestKit: http://restkit.org
-* Github: https://github.com/twotoasters/RestKit
-* API Docs: http://restkit.org/api/
-* Google Group: http://groups.google.com/group/restkit
-* Brought to you by Two Toasters: http://twotoasters.com/
+* RestKit: [http://restkit.org]()
+* Github: [https://github.com/twotoasters/RestKit]()
+* API Docs: [http://restkit.org/api/]()
+* Google Group: [http://groups.google.com/group/restkit]()
+* Brought to you by Two Toasters: [http://twotoasters.com/]()
