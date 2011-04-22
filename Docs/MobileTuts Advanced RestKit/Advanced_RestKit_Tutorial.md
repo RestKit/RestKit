@@ -10,6 +10,12 @@ In this article we will continue our exploration of RestKit, an iOS framework fo
 * Core Data: Integration between the object mapper and Apple's Core Data persistence framework are discussed at length. This includes configuration, relationship management, database seeding, etc.
 * Integration Layers: We'll briefly touch on the integration points exposed by the library for working with Ruby on Rails backends and interaction with Facebook's Three20 framework.
 
+## Companion Example Code
+
+To aid the reader in following the concepts presented here, an accompanying example application is provided with the RestKit distribution. Each section of the tutorial will refer you to a specific example in the __RKCatalog__ example, found in the RestKit/Examples/RKCatalog directory. 
+
+At the time of this writing, RestKit is currently at version *0.9.2*. Library source and example code can be downloaded from the [RestKit Downloads Page](https://github.com/twotoasters/RestKit/downloads).
+
 ## Advanced Networking
 
 We've already been introduced to the key players in the RestKit Network layer: RKClient, RKRequest, and RKResponse. These three classes provide a simple, clean API for making requests to a remote web service. In this section we'll see how RestKit scales up when things get more complicated.
@@ -61,11 +67,9 @@ Now that we understand how RestKit coerces arbitrary objects into serializable r
     // Send a Request!
     [[RKClient sharedClient] post:@"/uploadImages" params:params delegate:self];
 
-    // TODO: Users have requested we attach code samples with this article. Will create a working project!
-
-TODO: Move this sample code into RKParamsExample
-
 Essentially what we are doing here is creating a stack of RKParamsAttachment objects that are contained within the RKParams instance. With every call to `setValue`, `setFile`, or `setData` we are instantiating a new instance of RKParamsAttachment and adding it to the stack. Each of these methods returns the RKParamsAttachment object it has created for you so that you can further customize it if need be. We see this used to set the `MIMEType` and `fileName` properties for image. When we assign the params object to the RKRequest, it is serialized into a multipart/form-data document and read as a stream by the underlying NSURLConnection. This streaming behavior allows RKParams to be used for reading very large files off of disk without exhausting memory on an iOS device.
+
+**Example Code** - See [RKParamsExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKParamsExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
 ### The Request Queue
 
@@ -88,7 +92,7 @@ Notice that there isn't a single call to retain, release or autorelease anywhere
 
 In addition to retaining & releasing RKRequest instances, RKRequestQueue also serves as a gatekeeper to the network access itself. When the application is first launched or returns from a background state, RestKit uses its integration with the System Configuration Reachability API's to determine if any network access is available. When talking to a remote server by hostname, there can be a delay between launch and the determination of network availability. During this time, RestKit is in an indeterminate reachability state and RKRequestQueue will defer sending any requests until network reachability can be determined. Once reachability is determined, RKRequestQueue prevents the network from becoming overburdened by limiting the number of concurrent requests to five.
 
-Once your user interfaces begin spanning multiple controllers and users are navigating the controller stack quickly, you may begin generating a number of requests that do not need to be completed because the user has dismissed the view. Here we turn to RKRequest as well. Let's imagine that we have a controller that immediately begins loading some data when the view appears. But the controller also has a number of buttons that the user can quickly access to change perspectives, making the request we kicked off no longer of interest. We can either hold on to the instances of RKRequest that we generate or we can let RKRequest queue do the work for us. Let's see how this would work:
+Once your user interfaces begin spanning multiple controllers and users are navigating the controller stack quickly, you may begin generating a number of requests that do not need to be completed because the user has dismissed the view. Here we turn to ___RKRequestQueue___ as well. Let's imagine that we have a controller that immediately begins loading some data when the view appears. But the controller also has a number of buttons that the user can quickly access to change perspectives, making the request we kicked off no longer of interest. We can either hold on to the instances of RKRequest that we generate or we can let ___RKRequestQueue___ do the work for us. Let's see how this would work:
 
     - (void)viewWillAppear:(BOOL)animated {
       /**
@@ -109,9 +113,30 @@ Once your user interfaces begin spanning multiple controllers and users are navi
       [[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
     }
 
-TODO: Move this sample code into RKRequestQueueExample
-
 Rather than managing the request ourselves and doing the housekeeping, we can just ask RKRequestQueue to cancel any requests that we are the delegate for. If there are none currently processing, no action will be taken.
+
+A sharedQueue singleton instance is created for you at framework initialization time. It is also possible to create additional ad-hoc queues to manage groups of requests
+more granularly. For example, an ad-hoc queue could be useful for downloading or uploading content in the background, while keeping the main shared queue free for responding to user actions. Let's take a look at an example of using an ad-hoc queue:
+
+    - (IBAction)queueRequests {
+        RKRequestQueue* queue = [[RKRequestQueue alloc] init];
+        queue.delegate = self;
+        queue.concurrentRequestsLimit = 1;
+        queue.showsNetworkActivityIndicatorWhenBusy = YES;
+
+        // Queue up 4 requests
+        [queue addRequest:[[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample" delegate:self]];
+        [queue addRequest:[[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample" delegate:self]];
+        [queue addRequest:[[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample" delegate:self]];
+        [queue addRequest:[[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample" delegate:self]];
+
+        // Start processing!
+        [queue start];
+    }
+
+In this example we have created an ad-hoc queue that dispatches one request at a time and spins the system network activity indicator. There are a number of delegate methods available for the request queue to make managing groups of requests easier. Check out the RKRequestQueue example in RKCatalog for detailed examples. 
+
+**Example Code** - See [RKRequestQueueExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKRequestQueueExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
 ### Reachability
 
@@ -154,10 +179,10 @@ Now that we've seen how to initialize and work with RKReachabilityObserver, it's
 
     - (id)init {
       if ((self = [super init])) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-        										 selector:@selector(reachabilityChanged:)
-        											 name:RKReachabilityStateChangedNotification
-        										   object:nil];
+          [[NSNotificationCenter defaultCenter] addObserver:self
+                                                    selector:@selector(reachabilityChanged:)
+                                                    name:RKReachabilityStateChangedNotification
+                                                    object:nil];
       }
 
       return self;
@@ -175,7 +200,7 @@ Now that we've seen how to initialize and work with RKReachabilityObserver, it's
 
     @end
 
-TODO: Move this sample code into RKReachabilityExample
+**Example Code** - See [RKReachabilityExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKReachabilityExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
 We'll explore how RestKit leverages Reachability internally to provide transparent offline access in the Core Data object caching section.
 
@@ -185,17 +210,17 @@ With iOS 4.0, Apple introduced multi-tasking support for applications. The multi
 
 RestKit seeks to ease this burden on the developer by providing simple, transparent support for background tasks during the request cycle. Let's take a look at some code:
 
-    // TODO - Update this code sample
     - (void)backgroundUpload {
       RKRequest* request = [[RKClient sharedClient] post:@"somewhere" delegate:self];
+      request.backgroundPolicy = RKRequestBackgroundPolicyNone; // Take no action with regard to backgrounding
       request.backgroundPolicy = RKRequestBackgroundPolicyCancel; // If the app switches to the background, cancel the request
       request.backgroundPolicy = RKRequestBackgroundPolicyContinue; // Continue the request in the background
       request.backgroundPolicy = RKRequestBackgroundPolicyRequeue; // Cancel the request and place it back on the queue for next activation
     }
 
-The default policy is to continue the request in the background. Once you have set your policy and sent your request, RestKit handles the rest -- switching in and out of the app will cause the appropriate action to happen.
+The default policy is RKRequestBackgroundPolicyNone. Once you have set your policy and sent your request, RestKit handles the rest -- switching in and out of the app will cause the appropriate action to happen.
 
-// TODO: RKBackgroundRequestExample
+**Example Code** - See [RKBackgroundRequestExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKBackgroundRequestExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
 ## Advanced Object Mapping
 
@@ -203,7 +228,7 @@ In part one of our series, we introduced the concept of Object Mapping -- the Re
 
 RestKit also provides support for mapping hierarchies of objects expressed through relationships. This is a powerful feature for importing a large amount of data via a single HTTP request. In this section we'll explore relationship mapping in detail and look at how RestKit supports non-idiomatic JSON structures via key-value coding.
 
-### Mapping Nested Data / Dealing with Alternate JSON Structures / KVC Mapping (TODO: Best section title?)
+### Dealing with Alternate JSON Structures
 
 Most of the object mapping examples we have examined so far have performed simple mappings from one field to another (i.e. created_at becomes createdAt). If you have complete control over the JSON output of the backend system or are exactly modeling the server side output, this may be all that you ever need to do. But sometimes the realities of the backend system we need to integrate with do not fit so neatly with RestKit's view of the world. If your target JSON contains nested data that you wish to access without decomposing the structures into multiple object types, you will need to leverage the power of key-value coding in your mappings.
 
@@ -251,7 +276,7 @@ We are going to use key-value coding to access some information within the paylo
               @"balance", @"balance",
               @"transactions.@count", @"transactionsCount",
               @"transactions.@avg.amount", @"averageTransactionAmount",
-              @"transactions.@distinctUnionOfObjects.payee",
+              @"transactions.@distinctUnionOfObjects.payee", @"distinctPayees",
               nil];
     }
     
@@ -280,13 +305,13 @@ Now things are getting interesting. Note the new syntax utilized after the balan
 
 Taking advantage of key-value coding in your mappings becomes very useful when working with large, complex JSON payloads where you only care about a subset of the data. But sometimes we actually do care about all that extra information -- we just wish it was available in a more accessible format. In these circumstances we can instead turn to the use of relationship modeling to help RestKit transform a big data payload into an object graph.
 
+**Example Code** - See [RKKeyValueMappingExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKKeyValueMappingExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
+
 ### Modeling Relationships
 
-Relationship modeling is expressed via the `elementToPropertyMappings` method on the RKObjectMappable protocol. This method instructs the mapper to take a nested JSON dictionary, perform mapping operations, and assign the result object (or objects) to the property with the given name. This is process is repeated for each mapping operation, allowing object graphs of arbitrary depth to be constructed.
+Relationship modeling is expressed via the ___elementToRelationshipMappings___ method on the RKObjectMappable protocol. This method instructs the mapper to take a nested JSON dictionary, perform mapping operations, and assign the result object (or objects) to the property with the given name. This is process is repeated for each mapping operation, allowing object graphs of arbitrary depth to be constructed.
 
-To understand how this works, let's take a look at an example. We are going to walk through the implementation of a simple application called RKTaskList that illustrates the principles of relationship modeling. Please download the code from <INSERT URL HERE> and follow along in Xcode as we walk through it.
-
-Within RKTaskList, there are three data models that are related to one another: Users, Projects, and Tasks. Users are people working within the system. Projects contain a discrete set of steps that work toward a concrete goal that can be completed. Tasks represent each of these concrete steps within a Project. The relationships between them are:
+To understand how this works, let's take a look at an example. We are going to walk through the implementation of a Task List data model to illustrate the principles of relationship modeling. The task list example code is contained within the RKRelationshipMappingExample code in the RKCatalog application. Within RKRelationshipMappingExample, there are three data models that are related to one another: Users, Projects, and Tasks. Users are people working within the system. Projects contain a discrete set of steps that work toward a concrete goal that can be completed. Tasks represent each of these concrete steps within a Project. The relationships between them are:
 
 * User has many Projects
 * Each Project belongs to a single User
@@ -297,9 +322,7 @@ The data models can be found in the Code/Models directory of the sample applicat
 
 Our application is very simple from a user interface standpoint. We have a single table view that shows all the Projects in the system and the name of the User who created the Project. Clicking on the Project pushes a secondary table view into view that shows all the Tasks contained in the Project. Rather than making multiple requests to individual resource collections to build the view, we are going to request the entire object graph from a single resource path '/task_list'. The JSON returned by the resource path looks like:
 
-// TODO: Do we want to paste this inline? Can we put in a scrollable frame to make it less verbose?
-
-      [{
+      [{"project": {
           "id": 123,
           "name": "Produce RestKit Sample Code",
           "description": "We need more sample code!",
@@ -309,13 +332,13 @@ Our application is very simple from a user interface standpoint. We have a singl
               "email": "blake@twotoasters.com"
           },
           "tasks": [
-          {"id": 1, "name": "Identify samples to write", "assigned_user_id": 1},
-          {"id": 2, "name": "Write the code", "assigned_user_id": 1},
-          {"id": 3, "name": "Push to Github", "assigned_user_id": 1},
-          {"id": 4, "name": "Update the mailing list", "assigned_user_id": 1}
+              {"id": 1, "name": "Identify samples to write", "assigned_user_id": 1},
+              {"id": 2, "name": "Write the code", "assigned_user_id": 1},
+              {"id": 3, "name": "Push to Github", "assigned_user_id": 1},
+              {"id": 4, "name": "Update the mailing list", "assigned_user_id": 1}
           ]
-      },
-      {
+      }},
+      {"project": {
           "id": 456,
           "name": "Document Object Mapper",
           "description": "The object mapper could really use some docs!",
@@ -325,13 +348,13 @@ Our application is very simple from a user interface standpoint. We have a singl
               "email": "jeremy@twotoasters.com"
           },
           "tasks": [
-          {"id": 5, "name": "Mark up methods with Doxygen markup", "assigned_user_id": 2},
-          {"id": 6, "name": "Generate docs and review formatting", "assigned_user_id": 2},
-          {"id": 7, "name": "Review docs for accuracy and completeness", "assigned_user_id": 1},
-          {"id": 8, "name": "Publish to Github", "assigned_user_id": 2}
+              {"id": 5, "name": "Mark up methods with Doxygen markup", "assigned_user_id": 2},
+              {"id": 6, "name": "Generate docs and review formatting", "assigned_user_id": 2},
+              {"id": 7, "name": "Review docs for accuracy and completeness", "assigned_user_id": 1},
+              {"id": 8, "name": "Publish to Github", "assigned_user_id": 2}
           ]
-      },
-      {
+      }},
+      {"project": {
           "id": 789,
           "name": "Wash the Cat",
           "description": "Mr. Fluffy is looking like Mr. Scruffy! Time for a bath!",
@@ -341,11 +364,12 @@ Our application is very simple from a user interface standpoint. We have a singl
               "email": "rachit@twotoasters.com"
           },
           "tasks": [
-          {"id": 5, "name": "Place cat in bathtub", "assigned_user_id": 3},
-          {"id": 5, "name": "Run water", "assigned_user_id": 3},
-          {"id": 5, "name": "Try not to get scratched", "assigned_user_id": 3}
+              {"id": 9, "name": "Place cat in bathtub", "assigned_user_id": 3},
+              {"id": 10, "name": "Run water", "assigned_user_id": 3},
+              {"id": 11, "name": "Try not to get scratched", "assigned_user_id": 3}
           ]
-      }]
+      }}]
+
 
 This JSON collection is oriented around an array of Project models, with nested relationship structures. Let's look at the implementation of our Project class:
 
@@ -386,7 +410,7 @@ This JSON collection is oriented around an array of Project models, with nested 
 
 Here we see the new invocation to elementToRelationshipMappings. If you glance back at the JSON structure, you can see that the declaration is instructing the object mapper to take the data contained in 'user' and 'tasks' sub-dictionaries, map them into objects, and assign the User and array of Task objects to the Project. When all of this has been completed, the object mapper will return the results and the complete object graph will be sent to your object loader delegate for processing.
 
-// TODO: Bundle up sample code!
+**Example Code** - See [RKRelationshipMappingExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKRelationshipMappingExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
 ## Persistence with Core Data
 
@@ -395,8 +419,9 @@ Here we see the new invocation to elementToRelationshipMappings. If you glance b
 Perhaps the most powerful weapon in RestKit's arsenal is the seamless integration with Apple's Core Data technology. Core Data provides a queryable, object persistence framework that is available on OS X and iOS. Building on the foundation of object mapping, RestKit enables the developer to create a persistent mirror of data contained within a remote backend system with very little code. There are a lot of moving pieces involved in providing such a high level of abstraction, so let's meet the key players before diving into the details:
 
 * **RKManagedObjectStore** - The object store wraps the initialization and configuration of internal Core Data classes including NSManagedObjectModel, NSPersistentStoreCoordinator, and NSManagedObjectContext. The object store is also responsible for managing object contexts for each thread and managing changes between threads. In general, the object store seeks to remove as much boilerplate Core Data code as possible from the main application.
-* **RKManagedObject** - The superclass of all RestKit persistent objects. RKManagedObject inherits from NSManagedObject and extends the API with a number of helpful methods. This is an RKObjectMappable class and is configured for mapping just its transient siblings.
-* **RKManagedObjectLoader** - When Core Data support has been linked into your application, this descendant of RKObjectLoader handles the processing of object load requests. It knows how to uniquely identify Core Data backed objects and hides the complexities of passing NSManagedObject's across threads. It is also responsible for deleting objects from the local store when a DELETE is processed successfully. // TODO: This gets removed! Move Core Data specifics to a non-inherited class for simplicity.
+* **RKManagedObject** - The superclass of all RestKit persistent objects. RKManagedObject inherits from NSManagedObject and extends the API with a number of helpful methods. This is an RKObjectMappable class and is configured for mapping in the same way as transient RKObject instances.
+* **RKManagedObjectLoader** - When Core Data support has been linked into your application, this descendant of
+RKObjectLoader handles the processing of object load requests. It knows how to uniquely identify Core Data backed objects and hides the complexities of passing NSManagedObject's across threads. Also responsible for deleting objects from the local store when a DELETE is processed successfully.
 * **RKManagedObjectCache** - The object cache protocol defines a single method for mapping resource paths to a collection of fetch requests for pulling local copies of objects that 'live' at a given resource path. We'll cover this in detail below.
 * **RKManagedObjectSeeder** - The object seeder provides an interface for creating a SQLite database that is loaded with local copies of remote objects. This can be used to bootstrap a large local database so that no lengthy synchronization process is necessary when the app is first downloaded from the App Store. Seeding is covered in detail below as well.
 
@@ -407,30 +432,29 @@ It is worth noting that there is nothing special about RestKit's utilization of 
 Enabling persistent object mapping is a relatively straight-forward process. It differs from transient object mapping in only a few ways:
 
 1. libRKCoreData.a must be linked into your target
-2. Apple's CoreData.framework must be linked to your target
-3. A Data Model Resource must be added to your target and configured within Xcode
-4. The RestKit Core Data headers must be imported via `#import <RestKit/CoreData/CoreData.h>`
-5. An instance of RKManagedObjectStore must be configured and assigned to the object manager
-6. Persistent models inherit from RKManagedObject rather than RKObject
-7. A Primary Key property must be defined on each persistent model by implementing the `primaryKeyProperty` method
-8. Implementation for properties on managed objects are generated via @dynamic rather than @synthesize
+1. Apple's CoreData.framework must be linked to your target
+1. A Data Model Resource must be added to your target and configured within Xcode
+1. The RestKit Core Data headers must be imported via `#import <RestKit/CoreData/CoreData.h>`
+1. An instance of RKManagedObjectStore must be configured and assigned to the object manager
+1. Persistent models inherit from RKManagedObject rather than RKObject
+1. A Primary Key property must be defined on each persistent model by implementing the `primaryKeyProperty` method
+1. Implementation for properties on managed objects are generated via @dynamic rather than @synthesize
 
 Once these configuration changes have been completed, RestKit will load & map payloads into Core Data backed classes. 
 
 There are a couple of common gotchas and things to keep in mind when working with Core Data:
 
-1. You can utilize a mix of persistent and transient models within the application -- even within the same JSON payload. RestKit will determine if the target object is backed by Core Data at runtime and will return managed and unmanaged objects as appropriate.
-2. RestKit expects that each instance of an object be uniquely identifiable via a single primary key that is present in the payload. This allows the mapper to differentiate between new, updated and removed objects.
-3. When configuring your Data Model resource, care must be taken to ensure that the destination class is set to your desired model class. It defaults to NSManagedObject and must be updated appropriately. Failure to do this will result in exceptions from within the mapper when RestKit methods are invoked on an instance of NSManagedObject.
-4. Use of threading in Core Data requires some special care. You cannot safely pass managed object instances across thread boundaries. They must be serialized to NSManagedObjectID and handed off between threads and then refetched from the managed object context. RKObjectLoader performs JSON parsing and object mapping on background threads and handles the thread jumping & object fetching for you. But you must take care if you introduce threading (including the use of performSelector:withDelay:) in your application code.
-5. Apple recommends utilizing one managed object context instance per thread. When you retrieve a managed object context from RKManagedObjectStore, a new instance is created and stored onto thread local storage if the calling thread is not the main thread. You don't need to worry about managing the life-cycle of the managed object contexts or merging changes -- the object store observes these thread-local contexts and handles merging changes back into the main object context.
-6. RestKit makes some blanket assumptions about how you are using Core Data that may not be appropriate for your application. This includes the merge policy used on object contexts, the options provided during initialization of the persistent store coordinator, etc. If you need more flexibility than is provided out of the box, reach out to the team and we'll help loosen up these assumptions.
-7. RestKit assumes that you use an entity with the same name as your model class in the data model. 
-8. There is not currently any framework level help for working with store migrations.
+1. You can utilize a mix of persistent and transient models within the application -- even within the same JSON payload. RestKit will determine if the target object is backed by Core Data at runtime and will
+return managed and unmanaged objects as appropriate.
+1. RestKit expects that each instance of an object be uniquely identifiable via a single primary key that is present in the payload. This allows the mapper to differentiate between new, updated and removed objects.
+1. When configuring your Data Model resource, care must be taken to ensure that the destination class is set to your desired model class. It defaults to NSManagedObject and must be updated appropriately. Failure to do this will result in exceptions from within the mapper when RestKit methods are invoked on an instance of NSManagedObject.
+1. Use of threading in Core Data requires some special care. You cannot safely pass managed object instances across thread boundaries. They must be serialized to NSManagedObjectID and handed off between threads and then refetched from the managed object context. RKObjectLoader performs JSON parsing and object mapping on background threads and handles the thread jumping & object fetching for you. But you must take care if you introduce threading (including the use of performSelector:withDelay:) in your application code.
+1. Apple recommends utilizing one managed object context instance per thread. When you retrieve a managed object context from RKManagedObjectStore, a new instance is created and stored onto thread local storage if the calling thread is not the main thread. You don't need to worry about managing the life-cycle of the managed object contexts or merging changes -- the object store observes these thread-local contexts and handles merging changes back into the main object context.
+1. RestKit makes some blanket assumptions about how you are using Core Data that may not be appropriate for your application. This includes the merge policy used on object contexts, the options provided during initialization of the persistent store coordinator, etc. If you need more flexibility than is provided out of the box, reach out to the team and we'll help loosen up these assumptions.
+1. RestKit assumes that you use an entity with the same name as your model class in the data model.
+1. There is not currently any framework level help for working with store migrations.
 
 For help getting started with Core Data, please refer to the RKTwitter and RKTwitterCoreData projects in the Examples/ directory of the RestKit distribution. These projects provide identical implementations of a simple modeling of the Twitter timeline except that one is persistently backed by Core Data.
-
-// TODO: Is this not enough hand-holding? Do I need to expand this section?
 
 ### Working with Core Data
 
@@ -442,97 +466,96 @@ First, we need to actually get RestKit and Core Data initialized. Open RKCDAppDe
     #import <RestKit/CoreData/CoreData.h>
     
     RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://restkit.org"];
-    manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKCoreDataExamples.sqlite"]; // TODO: Update API in Framework... objectStoreAtPath also?
+    manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKCoreDataExamples.sqlite"];
 
 What we have done here is instantiated an instance of the object manager and an instance of the managed object store. Within the internals of RKManagedObject, an NSManagedObjectModel and NSPersistentStoreCoordinator has been created for you. A persistent store file is created or reopened for you within the application's documents directory and is configured to use SQLite as the backing technology. From here you have a working Core Data environment ready to go.
 
-Now let's take a look at the rather anemic model in Code/Models/RKCDArticle.m:
+Now let's take a look at the rather anemic model in Examples/RKCatalog/Examples/RKCoreDataExample/RKCoreDataExample.m:
 
-    @implementation RKCDArticle
+    @implementation Article
     
       + (NSDictionary*)elementToPropertyMappings {
         return [NSDictionary dictionaryWithKeysAndObjects:
-                @"id", @"objectID",
+                @"id", @"articleID",
                 @"title", @"title",
                 @"body", @"body",
                 nil];
       }
     
       + (NSString*)primaryKeyProperty {
-        return @"objectID";
+        return @"articleID";
       }
     
     @end
 
-Here we see the familiar elementToPropertyMappings method from RKObjectMappable. The only thing new here is the implementation of a method indicating the primary key. This allows the object mapper to know that when working with instances of RKCDArticle, it should consult the `objectID` property to obtain the primary key value for the instance. This allows RestKit to update the properties for this object no matter what resource path it is loaded from.
+Here we see the familiar elementToPropertyMappings method from RKObjectMappable. The only thing new here is the implementation of a method indicating the primary key. This allows the object mapper to know that when working with instances of Article, it should consult the `articleID` property to obtain the primary key value for the instance. This allows RestKit to update the properties for this object no matter what resource path it is loaded from.
 
-Now let's explore some of the API's exposed via RKManagedObject. Pop open RKCDExampleController.m and let's walk through some of the examples:
+Now let's explore some of the API's exposed via RKManagedObject. Loading all objects of a given type is trivial:
 
     - (void)loadAllObjects {
-      NSArray* objects = [RKCDArticle allObjects];
-      NSLog(@"We loaded %d objects", objects);
+        NSArray* objects = [Article allObjects];
+        NSLog(@"We loaded %d objects", [objects count]);
     }
 
 Here we are retrieving all the objects for a given class from Core Data. This wraps the initialization, configuration and execution of a fetch request targeting the entity for our class. We can also configure our own fetch requests or utilize a number of helper methods to quickly perform common tasks:
 
     - (void)funWithFetchRequests {
-      // Grab a fetch request configured to target the RKCDArticle entity
-      NSFetchRequest* fetchRequest = [RKCDArticle fetchRequest];
-      NSLog(@"My fetch request is: %@", fetchRequest);
-  
-      // Configure a fetch request to sort the results by title
-      NSFetchRequest* sortedRequest = [RKCDArticle fetchRequest];
-      NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:YES];
-      [sortedRequest setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
-      NSArray* sortedObjects = [RKCDArticle objectsWithFetchRequests:fetchRequest];
-      NSLog(@"Here are the objects sorted: %@");
-      
-      // Fetch an object by primary key
-      RKCDArticle* firstArticle = [RKCDArticle objectWithPrimaryKeyValue:[NSNumber numberWithInt:1]];
-      NSLog(@"This is the Article with ID 1: %@", firstArticle);
-      
-      // Find Articles where the body contains the word 'something' case insensitively
-      NSPredicate* predicate = [NSPredicate predicateWithFormat:@"body CONTAINS[c] %@", @"something"];
-      NSArray* matches = [RKCDArticle objectsWithPredicate:predicate];
-      NSLog(@"Found the following Articles that match: %@", matches);
+        // Grab a fetch request configured to target the Article entity
+        NSFetchRequest* fetchRequest = [Article fetchRequest];
+        NSLog(@"My fetch request is: %@", fetchRequest);
+
+        // Configure a fetch request to sort the results by title
+        NSFetchRequest* sortedRequest = [Article fetchRequest];
+        NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"title" ascending:YES];
+        [sortedRequest setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+        NSArray* sortedObjects = [Article objectsWithFetchRequest:fetchRequest];
+        NSLog(@"Here are the objects sorted: %@", sortedObjects);
+
+        // Fetch an object by primary key
+        Article* firstArticle = [Article objectWithPrimaryKeyValue:[NSNumber numberWithInt:1]];
+        NSLog(@"This is the Article with ID 1: %@", firstArticle);
+
+        // Find Articles where the body contains the word 'something' case insensitively
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"body CONTAINS[c] %@", @"something"];
+        NSArray* matches = [Article objectsWithPredicate:predicate];
+        NSLog(@"Found the following Articles that match: %@", matches);
     }
 
 All of these methods are defined on RKManagedObject and provide short-cuts for features provided directly by Core Data. You can certainly configure your own fetch request entirely:
 
-    - (void)constructMyOwnFetchRequest {
+    - (NSFetchRequest*)constructMyOwnFetchRequest {
         NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-      	NSEntityDescription *entity = [RKCDArticle entity]; // The entity is available via RKManagedObject helper method...
+      	NSEntityDescription *entity = [Article entity]; // The entity is available via RKManagedObject helper method...
       	[fetchRequest setEntity:entity];
       	return fetchRequest;
     }
 
-// TODO: Extract into RKCoreDataBasics
+These Core Data helpers methods are used to drive a simple table view in the RKCoreDataExample in RKCatalog.
+
+**Example Code** - See [RKCoreDataExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKCoreDataExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
 ### Automagic Relationship Management
 
 One of nicest benefits of using Core Data with RestKit is that you wind up with a nicely hydrated object graph that let's you traverse object relationships naturally. Relationship population is handled through the use of the `elementToRelationshipMappings` method we introduced in the previous section on modeling relationships. Recall that `elementToRelationshipMappings` instructs
 the mapper to look for associated objects nested as a sub-dictionary within the JSON payload. But this can present a problem for a Core Data backed app -- if you do not return all the relationships you have modeled within your payload, the graph can become stale and out of sync with the server. And not to mention that returning all relationships is often incorrect from an API design or performance perspective. So what are we to do?
 
-RestKit solves this problem by introducing a new mapper configuration directive specific to Core Data objects: `relationshipToPrimaryKeyPropertyMappings`. The relationship to primary key mappings definition instructs the mapper to connect a Core Data relationship by using the value stored in another property to lookup the target object. This is easily understood by returning to the RKTaskList application we explored earlier. Recall that the JSON for an individual task looked like this:
+RestKit solves this problem by introducing a new mapper configuration directive specific to Core Data objects: `relationshipToPrimaryKeyPropertyMappings`. The relationship to primary key mappings definition instructs the mapper to connect a Core Data relationship by using the value stored in another property to lookup the target object. This is easily understood by returning to the Task List data model we explored earlier. Recall that the JSON for an individual task looked like this:
 
     {"id": 5, "name": "Place cat in bathtub", "assigned_user_id": 3}
 
 Note the `assigned_user_id` element in the payload -- this is the primary key value for the User object that the Task has been assigned to. Let's look at the code:
     
     @interface Task : RKManagedObject {
-      NSNumber* _taskID;
-      NSString* _name;
-      NSString* _assignedUserID;
-      User* _assignedUser;
     }
 
     @property (nonatomic, retain) NSNumber* taskID;
     @property (nonatomic, retain) NSString* name;
+    @property (nonatomic, retain) NSNumber* assignedUserID;
     @property (nonatomic, retain) User* assignedUser;
 
     @end
 
-    @implementation Project
+    @implementation Task
 
     + (NSDictionary*)elementToPropertyMappings {
       return [NSDictionary dictionaryWithKeysAndObjects:
@@ -543,12 +566,14 @@ Note the `assigned_user_id` element in the payload -- this is the primary key va
     }
 
     + (NSDictionary*)relationshipToPrimaryKeyPropertyMappings {
-      return [NSDictionary dictionaryWithObject:@"assignedUserID" forKey:@"assignedUser"]
+      return [NSDictionary dictionaryWithObject:@"assignedUserID" forKey:@"assignedUser"];
     }
 
     @end
 
 Note the definition of `relationshipToPrimaryKeyPropertyMappings` -- we have informed the mapper that the `assignedUserID` property contains the value of the primary key for the `assignedUser` relationship. When the mapper sees this, it will reflect on the relationship to determine it's type (in this case, a User) and assign `object.user = User.findByPrimaryKeyValue(object.assignedUserID)`. The target object must exist within the local data store or the relationship will be set to nil.
+
+**Example Code** - See [RKRelationshipMappingExample](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog/Examples/RKRelationshipMappingExample) in [RKCatalog](https://github.com/twotoasters/RestKit/blob/master/Examples/RKCatalog)
 
 ### Going Offline: Using the Object Cache
 
@@ -606,7 +631,8 @@ In a Core Data backed application, it can be highly desirable to ship your appli
 1. View the Build Settings for your target and find the GCC - Preprocessing section.
 1. In the section named "Preprocessor Macros", add new preprocessor macro: `RESTKIT_GENERATE_SEED_DB`. This value will be defined when we build and run the seeder target.
 1. Add your JSON dump files to the "Generate Seed Database" target and ensure they are copied into the application bundle.
-1. Update your application delegate to check for `RESTKIT_GENERATE_SEED_DB` and instantiate an instance of `RKObjectSeeder`
+1. Update your application delegate to check for `RESTKIT_GENERATE_SEED_DB` and instantiate an instance of `RKObjectSeeder`.
+1. Initialize an instance of `RKObjectSeeder` with your fully configured instance of `RKObjectManager`
 1. Invoke the appropriate methods on the `RKObjectSeeder` instance for each of your JSON dump files.
 1. When finished, invoke the `finalizeSeedingAndExit` method on the `RKObjectSeeder` instance.
 
@@ -657,6 +683,8 @@ The attribute nesting is understood simply with an example. Imagine that we have
 
     RKRailsRouter* router = [[RKRailsRouter alloc] init];
     [router setModelName:@"article" forClass:[Article class]];
+    [router routeClass:[Article class] toResourcePath:@"/articles/(articleID)"];
+    [router routeClass:[Article class] toResourcePath:@"/articles" forMethod:RKRequestMethodPOST];
     
     Article* article = [Article object];
     article.title = @"This is the title";
@@ -670,8 +698,6 @@ When the object is serialized for the POST request, RestKit will nest the attrib
     article[body]=This is the body
 
 This matches the format Rail's controllers expect attributes to be delivered in. The changes to the DELETE payload are self-explanatory -- Rails simply expects the params to be empty during DELETE requests and the Rails router abides.
-
-// TODO: Extract this code to RKRailsExample
     
 ### Three20 Support
 
@@ -692,5 +718,6 @@ We hope that you have found learning about RestKit fun and rewarding. At this po
 ## Learning More
 * RestKit: http://restkit.org
 * Github: https://github.com/twotoasters/RestKit
+* API Docs: http://restkit.org/api/
 * Google Group: http://groups.google.com/group/restkit
 * Brought to you by Two Toasters: http://twotoasters.com/
