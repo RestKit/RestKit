@@ -24,7 +24,7 @@ NSString* gRKCatalogBaseURL = nil;
     
     
     // gRKCatalogBaseURL = [@"http://localhost:4567" retain];
-    gRKCatalogBaseURL = [@"http://rkcatalog.heroku.com/" retain];
+    gRKCatalogBaseURL = [@"http://rkcatalog.heroku.com" retain];
     
     return YES;
 }
