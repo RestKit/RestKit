@@ -310,13 +310,16 @@
   		[_delegate request:self didLoadResponse:response];
   	}
   
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:response forKey:@"response"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification object:self userInfo:userInfo];
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];
-    
     if ([response isServiceUnavailable]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
     }
+    
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:response forKey:@"response"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification object:self userInfo:userInfo];
+    
+    // NOTE: This notification must be posted last as the request queue releases the request when it
+    // receives the notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];
 }
 
 - (BOOL)isGET {
