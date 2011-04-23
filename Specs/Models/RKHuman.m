@@ -20,37 +20,15 @@
 @dynamic createdAt;
 @dynamic updatedAt;
 
+@dynamic favoriteCat;
 @dynamic cats;
-
-+ (NSDictionary*)elementToRelationshipMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"cats", @"cats",
-            nil];
-}
 
 + (NSArray*)relationshipsToSerialize {
     return [NSArray arrayWithObject:@"cats"];
 }
 
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-			@"name", @"name",
-			@"nickName", @"nick-name",
-			@"birthday", @"birthday",
-			@"sex", @"sex",
-			@"age", @"age",
-			@"createdAt", @"created-at",
-			@"updatedAt", @"updated-at",
-			@"railsID", @"id",
-			nil];
-}
-
 - (NSString*)polymorphicResourcePath {
 	return @"/this/is/the/path";
-}
-
-+ (NSString*)primaryKeyProperty {
-	return @"railsID";
 }
 
 @end

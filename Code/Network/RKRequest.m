@@ -14,6 +14,7 @@
 #import "RKClient.h"
 #import "../Support/Support.h"
 #import "RKURL.h"
+#import "Logging.h"
 
 @implementation RKRequest
 
@@ -200,6 +201,7 @@
 }
 
 - (void)sendAsynchronously {
+    _sentSynchronously = NO;
 	if ([self shouldDispatchRequest]) {        
 #if TARGET_OS_IPHONE
         // Background Request Policy support
@@ -251,6 +253,7 @@
 	NSError* error;
 	NSData* payload = nil;
 	RKResponse* response = nil;
+    _sentSynchronously = YES;
 
 	if ([self shouldDispatchRequest]) {
 		[self prepareURLRequest];
@@ -307,6 +310,8 @@
 - (void)didFinishLoad:(RKResponse*)response {
   	_isLoading = NO;
   	_isLoaded = YES;
+    
+    RKLOG_NETWORK(RKLogLevelInfo, @"Body: %@", [response bodyAsString]);
 
   	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
   		[_delegate request:self didLoadResponse:response];

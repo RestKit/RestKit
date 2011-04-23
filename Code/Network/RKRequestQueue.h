@@ -73,7 +73,7 @@
  * *Default*: NO
  *
  * @bug Currently, this implementation does not work across queues at the moment. Each queue
- * will manipulate the activity indicator indepedently of all others.
+ * will manipulate the activity indicator independently of all others.
  */
 @property (nonatomic) BOOL showsNetworkActivityIndicatorWhenBusy;
 #endif

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		25354DDF138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25354DDE138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a */; };
+		25354DE1138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25354DE0138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a */; };
 		25359E6512E3E0A5008BF33D /* libThree20.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25359D4212E3E0A4008BF33D /* libThree20.a */; };
 		25359E6612E3E0A5008BF33D /* libThree20Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25359D4312E3E0A4008BF33D /* libThree20Core.a */; };
 		25359E6712E3E0A5008BF33D /* libThree20Network.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25359D4412E3E0A4008BF33D /* libThree20Network.a */; };
@@ -35,7 +37,6 @@
 		3F3239E112DBB9C600AB2F6E /* DBPostTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */; };
 		3F3239ED12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */; };
 		3F45615B12D7E31100BE25AD /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */; };
-		3F45615D12D7E31600BE25AD /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */; };
 		3F45615E12D7E31700BE25AD /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */; };
 		3F45615F12D7E31700BE25AD /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */; };
 		3F45616012D7E31800BE25AD /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */; };
@@ -64,6 +65,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		250647E7138EE4A30002F2FE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 73057FD01331AD2E001908EE;
+			remoteInfo = "RestKitJSONParser+JSONKit";
+		};
 		25825AF31337CEAC00C0E3D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
@@ -91,13 +99,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
 			remoteInfo = RestKit;
-		};
-		3F45615112D7E2D900BE25AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 253A08021255162C00976E89;
-			remoteInfo = RestKitObjectMapping;
 		};
 		A7A2D3AA12D7822D00683D6F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -161,6 +162,8 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* Discussion Board.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Discussion Board.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		25354DDE138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitJSONParserJSONKit.a; sourceTree = SOURCE_ROOT; };
+		25354DE0138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitJSONParserYAJL.a; sourceTree = SOURCE_ROOT; };
 		25359D4212E3E0A4008BF33D /* libThree20.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20.a; sourceTree = "<group>"; };
 		25359D4312E3E0A4008BF33D /* libThree20Core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20Core.a; sourceTree = "<group>"; };
 		25359D4412E3E0A4008BF33D /* libThree20Network.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20Network.a; sourceTree = "<group>"; };
@@ -450,6 +453,9 @@
 		25359ED612E512BB008BF33D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Code/Other/main.m; sourceTree = SOURCE_ROOT; };
 		253E163212E8BA6500F3E4B0 /* DBContentObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBContentObject.h; sourceTree = "<group>"; };
 		253E163312E8BA6500F3E4B0 /* DBContentObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBContentObject.m; sourceTree = "<group>"; };
+		25DE017C138EE6EA006769D4 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitJSONParserYAJL.a; path = "/Users/blake/Projects/two_toasters/RestKit-object-mapping-2.0/Build/Release-iphoneos/libRestKitJSONParserYAJL.a"; sourceTree = "<absolute>"; };
+		25DE017E138EE6F2006769D4 /* libRestKitJSONParserSBJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitJSONParserSBJSON.a; path = "/Users/blake/Projects/two_toasters/RestKit-object-mapping-2.0/Build/Release-iphoneos/libRestKitJSONParserSBJSON.a"; sourceTree = "<absolute>"; };
+		25DE0182138EE79B006769D4 /* libRestKitJSONParserJSONKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitJSONParserJSONKit.a; sourceTree = SOURCE_ROOT; };
 		25FED6E512E7D60600D94325 /* DiscussionBoard-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy.plist"; path = "Resources/DiscussionBoard-Info copy.plist"; sourceTree = "<group>"; };
 		25FED7BC12E7D6EC00D94325 /* DiscussionBoard-Info copy 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy 2.plist"; path = "Resources/DiscussionBoard-Info copy 2.plist"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -517,11 +523,12 @@
 				A7A2D3C812D7829E00683D6F /* MobileCoreServices.framework in Frameworks */,
 				A7A2D3CA12D7829E00683D6F /* SystemConfiguration.framework in Frameworks */,
 				3F45615B12D7E31100BE25AD /* libRestKitCoreData.a in Frameworks */,
-				3F45615D12D7E31600BE25AD /* libRestKitJSONParserYAJL.a in Frameworks */,
 				3F45615E12D7E31700BE25AD /* libRestKitNetwork.a in Frameworks */,
 				3F45615F12D7E31700BE25AD /* libRestKitObjectMapping.a in Frameworks */,
 				3F45616012D7E31800BE25AD /* libRestKitSupport.a in Frameworks */,
 				3F45616112D7E31900BE25AD /* libRestKitThree20.a in Frameworks */,
+				25354DDF138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a in Frameworks */,
+				25354DE1138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a in Frameworks */,
 				25359E6512E3E0A5008BF33D /* libThree20.a in Frameworks */,
 				25359E6612E3E0A5008BF33D /* libThree20Core.a in Frameworks */,
 				25359E6712E3E0A5008BF33D /* libThree20Network.a in Frameworks */,
@@ -957,7 +964,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				3F8CF773131D78D70023C5EA /* libxml2.dylib */,
 				080E96DDFE201D6D7F000001 /* Code */,
 				A7A2D21612D77FEF00683D6F /* Libraries */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -1078,6 +1084,12 @@
 			children = (
 				25359D4112E3E0A4008BF33D /* three20 */,
 				A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */,
+				25354DE0138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a */,
+				25354DDE138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a */,
+				25DE0182138EE79B006769D4 /* libRestKitJSONParserJSONKit.a */,
+				25DE017E138EE6F2006769D4 /* libRestKitJSONParserSBJSON.a */,
+				25DE017C138EE6EA006769D4 /* libRestKitJSONParserYAJL.a */,
+				3F8CF773131D78D70023C5EA /* libxml2.dylib */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1113,8 +1125,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				250647E8138EE4A30002F2FE /* PBXTargetDependency */,
 				3F45614C12D7E2C500BE25AD /* PBXTargetDependency */,
-				3F45615212D7E2D900BE25AD /* PBXTargetDependency */,
 				3F2562F912DBA4C800AFD2D1 /* PBXTargetDependency */,
 			);
 			name = "Discussion Board";
@@ -1281,6 +1293,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		250647E8138EE4A30002F2FE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "RestKitJSONParser+JSONKit";
+			targetProxy = 250647E7138EE4A30002F2FE /* PBXContainerItemProxy */;
+		};
 		3F2562F912DBA4C800AFD2D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RestKitThree20;
@@ -1291,15 +1308,10 @@
 			name = RestKit;
 			targetProxy = 3F45614B12D7E2C500BE25AD /* PBXContainerItemProxy */;
 		};
-		3F45615212D7E2D900BE25AD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RestKitObjectMapping;
-			targetProxy = 3F45615112D7E2D900BE25AD /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Development */ = {
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1320,15 +1332,14 @@
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
+					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "Discussion Board";
 			};
-			name = Development;
+			name = Debug;
 		};
-		1D6058950D05DD3E006BFB54 /* Production */ = {
+		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1347,9 +1358,8 @@
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
+					"\"$(SRCROOT)\"",
 				);
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -1358,60 +1368,9 @@
 				PRODUCT_NAME = "Discussion Board";
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Production;
+			name = Release;
 		};
-		25FED7DA12E7D78E00D94325 /* Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				BUILD_STYLE = Staging;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20/Build/Products/three20,
-				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
-				PREBINDING = NO;
-				SDKROOT = iphoneos;
-			};
-			name = Staging;
-		};
-		25FED7DB12E7D78E00D94325 /* Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUILD_STYLE = Staging;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Code/Other/DiscussionBoard_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DB_ENVIRONMENT=1",
-					"DEBUG=1",
-				);
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20,
-				);
-				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/Libraries/three20\"",
-				);
-				PRODUCT_NAME = "Discussion Board";
-			};
-			name = Staging;
-		};
-		C01FCF4F08A954540054247B /* Development */ = {
+		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -1431,9 +1390,9 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
-			name = Development;
+			name = Debug;
 		};
-		C01FCF5008A954540054247B /* Production */ = {
+		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
@@ -1450,7 +1409,7 @@
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
-			name = Production;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1458,22 +1417,20 @@
 		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Discussion Board" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Development */,
-				25FED7DB12E7D78E00D94325 /* Staging */,
-				1D6058950D05DD3E006BFB54 /* Production */,
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Production;
+			defaultConfigurationName = Release;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "DiscussionBoard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Development */,
-				25FED7DA12E7D78E00D94325 /* Staging */,
-				C01FCF5008A954540054247B /* Production */,
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Production;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

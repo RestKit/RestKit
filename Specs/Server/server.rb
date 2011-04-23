@@ -22,12 +22,39 @@ class RestKit::SpecServer < Sinatra::Base
   end
   
   get '/' do
-    "OK"
+    content_type 'application/json'
+    {'status' => 'ok'}.to_json
   end
   
   post '/photo' do
     content_type 'application/json'
     "OK"
+  end
+  
+  get '/errors.json' do
+    status 401
+    content_type 'application/json'
+    send_file 'Specs/Server/../Fixtures/JSON/errors.json'
+  end
+  
+  post '/humans' do
+    status 201
+    content_type 'application/json'
+    puts "Got params: #{params.inspect}"
+    {:human => {:name => "My Name", :id => 1, :website => "http://restkit.org/"}}.to_json
+  end
+  
+  get '/humans/1' do
+    status 200
+    content_type 'application/json'
+    puts "Got params: #{params.inspect}"
+    {:human => {:name => "Blake Watters", :id => 1}}.merge(params).to_json
+  end
+  
+  delete '/humans/1' do
+    status 200
+    content_type 'application/json'
+    "{}"
   end
   
   # start the server if ruby file executed directly

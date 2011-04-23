@@ -61,8 +61,8 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKUserRailsJSONMappingSpec"
-            isEnabled = "YES">
+            value = "RKObjectMappingNextGenSpec"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -71,7 +71,32 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapToAnEmptyObjectAndLogAWarningWhenExplicitlyGivenAnObjectClassAndThePayloadIsNotMappable"
+            value = "itShouldCreateANewManagedObjectWhenThePrimaryKeyIsNSNull"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UISPEC_EXIT_ON_FINISH"
+            value = "NO"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "NSZombieEnabled"
+            value = "YES"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UISPEC_SPEC"
+            value = "RKManagedObjectFactorySpec"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UISPEC_EXAMPLE"
+            value = "itShouldFindExistingManagedObjectsByPrimaryKey"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "NSAutoreleaseHaltOnNoPool"
+            value = "YES"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

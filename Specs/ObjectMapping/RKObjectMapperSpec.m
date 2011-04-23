@@ -7,14 +7,14 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKObjectMapper.h"
+#import "RKOldObjectMapper.h"
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
 #import "RKObjectMapperSpecModel.h"
 #import "RKObject.h"
 #import "NSDictionary+RKAdditions.h"
 
-@interface RKObjectMapper (Private)
+@interface RKOldObjectMapper (Private)
 - (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName;
 @end
 
@@ -81,14 +81,14 @@
 }
 
 - (void)itShouldMapWhenGivenAClassAndElements {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
     RKObjectMapperSpecUser* user = (RKObjectMapperSpecUser*) [mapper mapFromString:[self userJSON] toClass:[RKObjectMapperSpecUser class] keyPath:@"user"];
     [expectThat(user.name) should:be(@"mimi")];
 }
 
 - (void)itShouldMapATargetObjectWithNamespacedJSON {
-    RKObjectMapper* mapper = [[RKObjectMapper new] autorelease];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper new] autorelease];
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
 	mapper.format = RKMappingFormatJSON;
     RKObjectMapperSpecUser* user = [[RKObjectMapperSpecUser new] autorelease];
@@ -97,7 +97,7 @@
 }
 
 - (void)itShouldMapCorrectlyWithObjectClassSpecifiedAndElementRegistered {
-    RKObjectMapper* mapper = [[RKObjectMapper new] autorelease];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper new] autorelease];
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
 	mapper.format = RKMappingFormatJSON;
     NSString* JSON = [NSString stringWithFormat:@"[%@]", [self userJSON]];
@@ -107,7 +107,7 @@
 }
 
 - (void)itShouldMapWhenGivenRegisteredElementsAndASingleObject {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
 	mapper.format = RKMappingFormatJSON;
     RKObjectMapperSpecUser* user = (RKObjectMapperSpecUser*) [mapper mapFromString:[self userJSON] toClass:nil keyPath:nil];
@@ -115,7 +115,7 @@
 }
 
 - (void)itShouldMapFromJSON {
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
@@ -136,7 +136,7 @@
 }
 
 - (void)itShouldLogAWarningWhenMultipleKeyPathsMatchForADictionary {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"test_serialization_class.has_one"];
@@ -146,7 +146,7 @@
 }
 
 - (void)itShouldMapObjectsFromJSON {
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
@@ -179,7 +179,7 @@
 }
 
 - (void)itShouldMapAnArrayOfHashes {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
     NSArray* array = [mapper mapFromString:[self arrayOfHashesJSON]];
@@ -198,7 +198,7 @@
 }
 
 - (void)itShouldNotCrashWhenAttemptingToMapWithAMissingElement {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
     mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
 	mapper.format = RKMappingFormatJSON;
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
@@ -216,7 +216,7 @@
 - (void)itShouldNotNilOutWhenAttemptingToMapWithAMissingElementIfConfiguredNotTo {
     RKObjectMapperSpecUser* user = [RKObjectMapperSpecUser object];
     user.email = @"foo@bar.com";
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
     mapper.missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
 	mapper.format = RKMappingFormatJSON;
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
@@ -228,7 +228,7 @@
 - (void)itShouldNilOutWhenAttemptingToMapWithAMissingElementIfConfiguredToDoSo {
     RKObjectMapperSpecUser* user = [RKObjectMapperSpecUser object];
     user.email = @"foo@bar.com";
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
     mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
 	mapper.format = RKMappingFormatJSON;
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
@@ -247,7 +247,7 @@
 
 - (void)itShouldMapAnArrayOfStringsToAProperty {
     RKObjectMapperSpecUser* user = [RKObjectMapperSpecUser object];
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
     [mapper registerClass:[RKObjectMapperSpecUser class] forElementNamed:@"user"];
     
@@ -258,7 +258,7 @@
 
 - (void)itShouldNotUpdateNilPropertyToNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	[mapper updateModel:model ifNewPropertyValue:nil forPropertyNamed:@"name"];
 	
 	[expectThat(model.name) should:be(nil)];
@@ -267,7 +267,7 @@
 - (void)itShouldBeAbleToSetNonNilPropertiesToNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
 	model.age = [NSNumber numberWithInt:0];
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	[mapper updateModel:model ifNewPropertyValue:nil forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be(nil)];
@@ -275,7 +275,7 @@
 
 - (void)itShouldBeAbleToSetNilPropertiesToNonNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	[mapper updateModel:model ifNewPropertyValue:[NSNumber numberWithInt:0] forPropertyNamed:@"age"];
 	
 	[expectThat(model.age) should:be([NSNumber numberWithInt:0])];
@@ -283,7 +283,7 @@
 
 - (void)itShouldBeAbleToSetNonNilNSStringPropertiesToNonNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	
 	model.name = @"Bob";
 	[mapper updateModel:model ifNewPropertyValue:@"Will" forPropertyNamed:@"name"];
@@ -292,7 +292,7 @@
 
 - (void)itShouldBeAbleToSetNonNilNSNumberPropertiesToNonNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
-	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	
 	model.age = [NSNumber numberWithInt:16];
 	[mapper updateModel:model ifNewPropertyValue:[NSNumber numberWithInt:17] forPropertyNamed:@"age"];
@@ -301,7 +301,7 @@
 
 - (void)itShouldBeAbleToSetNonNilNSDatePropertiesToNonNil {
 	RKObjectMapperSpecModel* model = [[[RKObjectMapperSpecModel alloc] init] autorelease];
-	RKObjectMapper* mapper = [[[RKObjectMapper alloc] init] autorelease];
+	RKOldObjectMapper* mapper = [[[RKOldObjectMapper alloc] init] autorelease];
 	
 	model.createdAt = [NSDate date];
 	[mapper updateModel:model ifNewPropertyValue:[NSDate dateWithTimeIntervalSince1970:0] forPropertyNamed:@"createdAt"];
@@ -313,7 +313,7 @@
     RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
     object.hasOne = association;
     object.hasMany = [NSSet setWithObject:object];
-    RKObjectMapper* mapper = [[[RKObjectMapper alloc] init] autorelease];
+    RKOldObjectMapper* mapper = [[[RKOldObjectMapper alloc] init] autorelease];
     mapper.missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
     NSString* JSON = @"{ \"string_test\": \"woot!\" }";
     [mapper mapObject:object fromString:JSON];
@@ -326,7 +326,7 @@
     RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
     object.hasOne = association;
     object.hasMany = [NSSet setWithObject:object];
-    RKObjectMapper* mapper = [[[RKObjectMapper alloc] init] autorelease];
+    RKOldObjectMapper* mapper = [[[RKOldObjectMapper alloc] init] autorelease];
     mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
     NSString* JSON = @"{ \"string_test\": \"woot!\" }";
     [mapper mapObject:object fromString:JSON];
@@ -572,7 +572,7 @@
 }
 
 - (void)itShouldMapAnArrayOfRoutes {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
     
     NSArray* array = (NSArray*) [mapper mapFromString:[self JSON] toClass:[RKPath class] keyPath:nil];
@@ -584,7 +584,7 @@
 }
 
 - (void)itShouldMapRouteToAnArrayOfPoints {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
     [mapper registerClass:[RKPoint class] forElementNamed:@"route"];
     
@@ -743,7 +743,7 @@
 }
 
 - (void)itShouldMapOverlappingNamesUsingKeyPaths {
-    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+    RKOldObjectMapper* mapper = [[RKOldObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
     
     [mapper registerClass:[RKFoursquareUser class] forElementNamed:@"user"];

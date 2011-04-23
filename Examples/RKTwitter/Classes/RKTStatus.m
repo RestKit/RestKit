@@ -18,25 +18,6 @@
 @synthesize isFavorited = _isFavorited;	
 @synthesize user = _user;
 
-#pragma mark RKObjectMappable methods
-
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id", @"statusID",
-			@"created_at", @"createdAt",
-			@"text", @"text",
-			@"url", @"urlString",
-			@"in_reply_to_screen_name", @"inReplyToScreenName",
-			@"favorited", @"isFavorited",
-			nil];
-}
-
-+ (NSDictionary*)elementToRelationshipMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"user", @"user",
-			nil];
-}
-
 - (NSString*)description {
 	return [NSString stringWithFormat:@"%@ (ID: %@)", self.text, self.statusID];
 }

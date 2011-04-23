@@ -8,6 +8,7 @@
 
 #import "RKRequestTTModel.h"
 #import "RKManagedObjectStore.h"
+#import "NSManagedObject+ActiveRecord.h"
 #import "../Network/Network.h"
 
 
@@ -172,6 +173,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	return loadedTime;
 }
 
+
+
 #pragma mark RKModelLoaderDelegate
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
@@ -191,9 +194,9 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
 	_isLoading = NO;
 
-	// TODO: Passing a nil error here does nothing for Three20.  Need to construct our
-	// own error here to make Three20 happy??
-	[self didFailLoadWithError:nil];
+    // TODO: pass error message?
+    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestUnexpectedResponseError userInfo:nil];
+	[self didFailLoadWithError:error];
 }
 
 
@@ -257,8 +260,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded) {
 		RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self];
 		objectLoader.method = self.method;
-		objectLoader.objectClass = _objectClass;
-		objectLoader.keyPath = _keyPath;
 		objectLoader.params = self.params;
 
 		_isLoading = YES;
@@ -266,7 +267,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		[objectLoader send];
 	} else if (cacheFetchRequests && !_cacheLoaded) {
 		_cacheLoaded = YES;
-		[self modelsDidLoad:[RKManagedObject objectsWithFetchRequests:cacheFetchRequests]];
+		[self modelsDidLoad:[NSManagedObject objectsWithFetchRequests:cacheFetchRequests]];
 	}
 }
 

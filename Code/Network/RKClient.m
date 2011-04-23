@@ -43,6 +43,7 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 			}
 			if ([scanner scanUpToString:@")" intoString:&keyPath]) {
 				NSString* searchString = [NSString stringWithFormat:@"(%@)", keyPath];
+                // TODO: Add warning when the value generated a nil? Only for paths values (i.e. contaning '.')?
 				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
 				[substitutions setObject:propertyStringValue forKey:searchString];
 			}

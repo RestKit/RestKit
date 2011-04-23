@@ -33,13 +33,14 @@ static NSString *urlEncode(id object) {
 
 @implementation NSDictionary (RKRequestSerialization)
 
+// TODO: Need a more robust, recursive implementation of URLEncoding...
 - (NSString*)URLEncodedString {
 	NSMutableArray *parts = [NSMutableArray array];
 	for (id key in self) {
 		id value = [self objectForKey:key];
 		if ([value isKindOfClass:[NSArray class]]) {
 			for (id item in value) {
-                if ([item isKindOfClass:[NSDictionary class]]) {
+                if ([item isKindOfClass:[NSDictionary class]] || [item isKindOfClass:[NSMutableDictionary class]]) {
                     // Handle nested object one level deep
                     for( NSString *nKey in [item allKeys] ) {
                         id nValue = [item objectForKey:nKey];
@@ -54,7 +55,14 @@ static NSString *urlEncode(id object) {
                     [parts addObject:part];
                 }
 			}
-		} else {
+		} else if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]]) {
+            for ( NSString *nKey in [value allKeys] ) {
+                id nValue = [value objectForKey:nKey];
+                NSString *part = [NSString stringWithFormat: @"%@[%@]=%@",
+                                  urlEncode(key), urlEncode(nKey), urlEncode(nValue)];
+                [parts addObject:part];
+            }
+        } else {
 			NSString *part = [NSString stringWithFormat: @"%@=%@",
 							  urlEncode(key), urlEncode(value)];
 			[parts addObject:part];

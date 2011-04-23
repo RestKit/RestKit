@@ -9,7 +9,11 @@
 // The error domain for RestKit generated errors
 extern NSString* const RKRestKitErrorDomain;
 
+extern NSString* const RKObjectMapperErrorObjectsKey;
+
 typedef enum {
 	RKObjectLoaderRemoteSystemError = 1,
-	RKRequestBaseURLOfflineError
+	RKRequestBaseURLOfflineError,
+    RKRequestUnexpectedResponseError,
+    RKObjectLoaderUnexpectedResponseError
 } RKRestKitError;

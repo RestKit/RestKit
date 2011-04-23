@@ -6,10 +6,17 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
+#import <MobileCoreServices/UTType.h>
+#endif
+
 #import "RKManagedObjectSeeder.h"
 #import "RKManagedObjectStore.h"
+#import "RKManagedObjectFactory.h"
+#import "../ObjectMapping/RKParserRegistry.h"
 
 @interface RKManagedObjectSeeder (Private)
+- (NSString *)mimeTypeForExtension:(NSString *)extension;
 - (id)initWithObjectManager:(RKObjectManager*)manager;
 - (void)seedObjectsFromFileNames:(NSArray*)fileNames;
 @end
@@ -33,7 +40,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     
     // Seed the files
     for (NSString* fileName in fileNames) {
-        [seeder seedObjectsFromFile:fileName toClass:nil keyPath:nil];
+        [seeder seedObjectsFromFile:fileName withObjectMapping:nil];
     }
     
     [seeder finalizeSeedingAndExit];
@@ -79,36 +86,48 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     va_end(args);
     
     for (NSString* fileName in fileNames) {
-        [self seedObjectsFromFile:fileName toClass:nil keyPath:nil];
+        [self seedObjectsFromFile:fileName withObjectMapping:nil];
     }
 }
 
-- (void)seedObjectsFromFile:(NSString*)fileName toClass:(Class<RKObjectMappable>)nilOrMppableClass keyPath:(NSString*)nilOrKeyPath {
+- (void)seedObjectsFromFile:(NSString*)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping {
     NSError* error = nil;
-    NSArray* mappedObjects;
 	NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
 	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
     
-	if (payload != nil) {
-        // TODO: When we support multiple parsers, we should auto-detect the MIME Type from the file extension
-        // and pass it through to the mapper
-		id objects = [_manager.mapper parseString:payload];
-		NSAssert1(objects != nil, @"Unable to parse data from file %@", filePath);
-        if (nilOrKeyPath) {
-            objects = [objects valueForKeyPath:nilOrKeyPath];
+	if (payload) {
+        NSString* MIMEType = [self mimeTypeForExtension:[fileName pathExtension]];
+        if (MIMEType == nil) {
+            // Default the MIME type to the value of the Accept header if we couldn't detect it...
+            MIMEType = _manager.acceptMIMEType;
         }
-		NSAssert1([objects isKindOfClass:[NSArray class]], @"Expected an NSArray of objects, got %@", objects);
-		NSAssert1([[objects objectAtIndex:0] isKindOfClass:[NSDictionary class]], @"Expected an array of NSDictionaries, got %@", [objects objectAtIndex:0]);
-		
-        if (nilOrMppableClass) {
-            mappedObjects = [_manager.mapper mapObjectsFromArrayOfDictionaries:objects toClass:nilOrMppableClass];
+        id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
+        NSAssert1(parser, @"Could not find a parser for the MIME Type '%@'", MIMEType);
+        id parsedData = [parser objectFromString:payload error:&error];        
+        NSAssert(parsedData, @"Cannot perform object load without data for mapping");
+        
+        RKObjectMappingProvider* mappingProvider = nil;
+        if (nilOrObjectMapping) {
+            mappingProvider = [[RKObjectMappingProvider new] autorelease];
+            [mappingProvider setMapping:nilOrObjectMapping forKeyPath:@""];
         } else {
-            mappedObjects = [_manager.mapper mapObjectsFromArrayOfDictionaries:objects];
+            mappingProvider = _manager.mappingProvider;
         }
+        
+        RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+        mapper.objectFactory = [RKManagedObjectFactory objectFactoryWithObjectStore:_manager.objectStore];
+        RKObjectMappingResult* result = [mapper performMapping];
+        if (result == nil) {
+            NSLog(@"Database seeding from file '%@' failed due to object mapping errors: %@", fileName, mapper.errors);
+            return;
+        }
+        
+        NSArray* mappedObjects = [result asCollection];
+		NSAssert1([mappedObjects isKindOfClass:[NSArray class]], @"Expected an NSArray of objects, got %@", mappedObjects);
         
         // Inform the delegate
         if (self.delegate) {
-            for (NSObject<RKObjectMappable>* object in mappedObjects) {
+            for (NSManagedObject* object in mappedObjects) {
                 [self.delegate didSeedObject:object fromFile:fileName];
             }
         }
@@ -134,6 +153,23 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
           destinationPath, basePath, storeFileName);
 	
 	exit(1);
+}
+
+- (NSString *)mimeTypeForExtension:(NSString *)extension {
+	if (NULL != UTTypeCreatePreferredIdentifierForTag) {
+		CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)extension, NULL);
+		if (uti != NULL) {
+			CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+			CFRelease(uti);
+			if (mime != NULL) {
+				NSString *type = [NSString stringWithString:(NSString *)mime];
+				CFRelease(mime);
+				return type;
+			}
+		}
+	}
+	
+    return nil;
 }
 
 @end

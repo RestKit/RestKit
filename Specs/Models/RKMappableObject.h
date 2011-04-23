@@ -7,10 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMappable.h"
 #import "RKMappableAssociation.h"
 
-@interface RKMappableObject : NSObject <RKObjectMappable> {
+@interface RKMappableObject : NSObject {
 	NSDate* _dateTest;
 	NSNumber* _numberTest;
 	NSString* _stringTest;

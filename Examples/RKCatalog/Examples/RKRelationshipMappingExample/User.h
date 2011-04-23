@@ -8,7 +8,7 @@
 
 #import "RKCatalog.h"
 
-@interface User : RKManagedObject {
+@interface User : NSManagedObject {
 }
 
 @property (nonatomic, retain) NSNumber* userID;

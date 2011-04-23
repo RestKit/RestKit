@@ -7,6 +7,7 @@
 //
 
 #import "RKSpecEnvironment.h"
+#import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectStore.h"
 #import "RKHuman.h"
 #import "RKCat.h"
@@ -19,12 +20,11 @@
 @implementation RKDynamicRouterSpec
 
 - (void)beforeAll {
-	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:@"http://localhost:4567"];
-	objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RestKitSpecs.sqlite"];
+    RKSpecNewManagedObjectStore();
 }
 
 -(void)itShouldThrowAnExceptionWhenAskedForAPathForAnUnregisteredClassAndMethod {
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	NSException* exception = nil;
 	@try {
 		[router resourcePathForObject:[RKHuman object] method:RKRequestMethodPOST];
@@ -36,7 +36,7 @@
 }
 
 -(void)itShouldThrowAnExceptionWhenAskedForAPathForARegisteredClassButUnregisteredMethod {
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
 	NSException* exception = nil;
 	@try {
@@ -49,14 +49,14 @@
 }
 
 -(void)itShouldReturnPathsRegisteredForSpecificRequestMethods {
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
 	NSString* path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodGET];
 	[expectThat(path) should:be(@"/HumanService.asp")];		
 }
 
 -(void)itShouldReturnPathsRegisteredForTheClassAsAWhole {
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp"];
 	NSString* path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodGET];
 	[expectThat(path) should:be(@"/HumanService.asp")];
@@ -65,7 +65,7 @@
 }
 
 -(void)itShouldFavorSpecificMethodsWhenClassAndSpecificMethodsAreRegistered {
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp"];
 	[router routeClass:[RKHuman class] toResourcePath:@"/HumanServiceForPUT.asp" forMethod:RKRequestMethodPUT];
 	NSString* path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodGET];
@@ -77,7 +77,7 @@
 }
 
 -(void)itShouldRaiseAnExceptionWhenAttemptIsMadeToRegisterOverAnExistingRoute {
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
 	NSException* exception = nil;
 	@try {
@@ -93,7 +93,7 @@
 	RKHuman* blake = [RKHuman object];
 	blake.name = @"blake";
 	blake.railsID = [NSNumber numberWithInt:31337];
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"/humans/(railsID)/(name)" forMethod:RKRequestMethodGET];
 	
 	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
@@ -104,7 +104,7 @@
 	RKHuman* blake = [RKHuman object];
 	blake.name = @"blake";
 	blake.railsID = [NSNumber numberWithInt:31337];
-	RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"(polymorphicResourcePath)" forMethod:RKRequestMethodGET];
 	
 	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];

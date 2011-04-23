@@ -2,171 +2,60 @@
 //  RKObjectMapper.h
 //  RestKit
 //
-//  Created by Blake Watters on 3/4/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//  Created by Blake Watters on 5/6/11.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMappable.h"
-#import "RKObjectPropertyInspector.h"
-#import "../Support/RKParser.h"
+#import "RKObjectMapping.h"
+#import "RKObjectMappingOperation.h"
+#import "RKObjectMappingResult.h"
+#import "RKObjectMappingProvider.h"
+#import "RKObjectFactory.h"
+#import "../Support/Support.h"
 
 /**
- * Define the object mapping formats
+ Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
+ for an external object mapping operation.
  */
-// TODO: Replace this with MIME Type -> Parser registration
-typedef enum {
-	RKMappingFormatXML = 0,
-	RKMappingFormatJSON
-} RKMappingFormat;
+@class RKObjectMapper;
 
-/**
- * The policy to use when a payload returned from the remote service
- * does not contain values for all elements specified in the 
- * elementToPropertyMappings definition. 
- *
- * When the ignore policy (RKIgnoreMissingElementMappingPolicy) is selected, the mapper 
- * will leave the current value assigned to the corresponding object property as is.
- *
- * When the set nil policy (RKSetNilForMissingElementMappingPolicy) is selected, the mapper
- * will set the value for the mapped property target to nil to clear its value.
- */
-typedef enum {
-	RKIgnoreMissingElementMappingPolicy = 0,
-	RKSetNilForMissingElementMappingPolicy
-} RKMissingElementMappingPolicy;
+@protocol RKObjectMapperDelegate <NSObject>
 
-@interface RKObjectMapper : NSObject {	
-	NSMutableDictionary* _elementToClassMappings;
-	RKMappingFormat _format;
-	RKMissingElementMappingPolicy _missingElementMappingPolicy;
-	RKObjectPropertyInspector* _inspector;
-	NSArray* _dateFormats;
-	NSTimeZone* _remoteTimeZone;
-	NSTimeZone* _localTimeZone;
-	NSString* _errorsKeyPath;
-	NSString* _errorsConcatenationString;
+@optional
+
+- (void)objectMapperWillBeginMapping:(RKObjectMapper*)objectMapper;
+- (void)objectMapperDidFinishMapping:(RKObjectMapper*)objectMapper;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didAddError:(NSError*)error;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didNotFindMappableObjectAtKeyPath:(NSString*)keyPath;
+
+- (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
+@end
+
+@interface RKObjectMapper : NSObject {
+    id _sourceObject;
+    id _targetObject;
+    RKObjectMappingProvider* _mappingProvider;
+    id<RKObjectMapperDelegate> _delegate;
+    id<RKObjectFactory> _objectFactory;
+    NSMutableArray* _errors;
 }
 
-/**
- * The format the mapper is using
- */
-@property(nonatomic, assign) RKMappingFormat format;
+@property (nonatomic, readonly) id sourceObject;
+@property (nonatomic, assign) id targetObject;
+@property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
+@property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
+@property (nonatomic, assign) id<RKObjectFactory> objectFactory;
+@property (nonatomic, readonly) NSArray* errors;
 
-/**
- * The policy to use when the mapper encounters a payload that does not
- * have property values specified for all elements. See the description
- * about the available mapping policies above for more information.
- *
- * @default RKIgnoreMissingElementMappingPolicy
- */
-@property(nonatomic, assign) RKMissingElementMappingPolicy missingElementMappingPolicy;
++ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider;
+- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider;
 
-/**
- * An array of date format strings to attempt to parse mapped date properties with
- *
- * Initialized with a default pair of timestamp and date strings suitable for
- * parseing time and date objects returned from Rails applications
- */
-@property(nonatomic, retain) NSArray* dateFormats;
-
-/**
- * The time zone of the remote system. Date strings pulled from the remote source
- * will be considered to be local to this time zone when mapping.
- *
- * Defaults to UTC
- */
-@property(nonatomic, retain) NSTimeZone* remoteTimeZone;
-
-/**
- * The target time zone to map dates to.
- *
- * Defaults to the local time zone
- */
-@property(nonatomic, retain) NSTimeZone* localTimeZone;
-
-/*
- * This defines the key path to look for errors in a string. defaults to @"errors"
- */
-@property (nonatomic, copy) NSString* errorsKeyPath;
-
-/*
- * This string is used to concatenate the errors returned in a string. defaults to @", "
- */
-@property (nonatomic, copy) NSString* errorsConcatenationString;
-
-/**
- * Register a mapping for a given class for an XML element with the given tag name
- * will blow up if the class does not respond to elementToPropertyMappings and elementToRelationshipMappings
- */
-- (void)registerClass:(Class<RKObjectMappable>)aClass forElementNamed:(NSString*)elementName;
-
-///////////////////////////////////////////////////////////////////////////////
-// Core Mapping API
-
-/**
- * Digests a string into an object graph and returns mapped model objects from the objects
- * serialized in the string
- */
-- (id)mapFromString:(NSString*)string;
-
-/**
- * Digests a string (such as an error response body) in to an NSError.
- * It should only be called for a string you know contains an error.
- */
-- (NSError*)parseErrorFromString:(NSString*)string;
-
-/**
- * Sets the properties and relationships serialized in the string into the model instance
- * provided
- */
-- (void)mapObject:(id)model fromString:(NSString*)string;
-- (void)mapObject:(id)model fromString:(NSString*)string keyPath:(NSString*)keyPath;
-
-///////////////////////////////////////////////////////////////////////////////
-// Object Mapping API
-
-/**
- * Sets the properties and relationships serialized in the dictionary into the model instance
- * provided
- */
-- (void)mapObject:(NSObject<RKObjectMappable>*)object fromDictionary:(NSDictionary*)dictionary;
-
-/**
- * Returns mapped model(s) from the data serialized in the dictionary into the model instance
- * provided
- */
-- (NSObject<RKObjectMappable>*)mapObjectFromDictionary:(NSDictionary*)dictionary;
-
-/**
- * Constructs an array of mapped model objects from an array of dictionaries
- * containing serialized objects
- */
-- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array;
-
-///////////////////////////////////////////////////////////////////////////////
-// Non-element based object mapping
-
-/**
- * Map the objects in a given payload string to a particular object class, optionally filtering
- * the parsed result set via a keyPath before mapping the results.
- */
-- (id)mapFromString:(NSString *)string toClass:(Class<RKObjectMappable>)objectClass keyPath:(NSString*)keyPath;
-
-/**
- * Map a dictionary of elements to an instance of a particular class
- */
-- (id)mapObjectFromDictionary:(NSDictionary*)dictionary toClass:(Class)objectClass;
-
-/**
- * Map an array of object dictionary representations to instances of a particular
- * object class
- */
-- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class<RKObjectMappable>)objectClass;
-
-/**
- * Parse a string using the appropriate parser and return the results
- */
-- (id)parseString:(NSString*)string;
+// Primary entry point for the mapper. Examines the type of object and processes it appropriately...
+- (RKObjectMappingResult*)performMapping;
+- (NSUInteger)errorCount;
 
 @end

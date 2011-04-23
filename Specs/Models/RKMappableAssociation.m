@@ -11,17 +11,12 @@
 @implementation RKMappableAssociation
 
 @synthesize testString = _testString;
+@synthesize date = _date;
 
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithObjectsAndKeys:@"testString", @"test_string", nil];
-}
-
-+ (NSDictionary*)elementToRelationshipMappings {
-	return [NSDictionary dictionary];
-}
-
-+ (NSArray*)relationshipsToSerialize {
-    return [NSArray array];
+- (void)dealloc {
+    [_testString release];
+    [_date release];
+    [super dealloc];
 }
 
 @end

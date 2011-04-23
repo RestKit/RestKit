@@ -15,22 +15,4 @@
 @dynamic email;
 @dynamic tasks;
 
-+ (NSDictionary*)elementToPropertyMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"id", @"userID",
-            @"name", @"name",
-            @"email", @"email",
-            nil];
-}
-
-+ (NSString*)primaryKeyProperty {
-    return @"userID";
-}
-
-+ (NSDictionary*)elementToRelationshipMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"tasks", @"tasks",
-            nil];
-}
-
 @end

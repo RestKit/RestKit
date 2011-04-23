@@ -10,6 +10,7 @@
 #import <Three20/Three20+Additions.h>
 #import "DBUser.h"
 #import "DBTopic.h"
+#import "DBPost.h"
 
 @implementation DBPostTableViewController
 
@@ -17,7 +18,7 @@
 
 - (id)initWithPostID:(NSString*)postID {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
-		_post = [[DBPost objectWithPrimaryKeyValue:postID] retain];
+        _post = [[DBPost findFirstByAttribute:@"postID" withValue:postID] retain];
 	}
 
 	return self;
@@ -25,7 +26,7 @@
 
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
-		DBTopic* topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
+		DBTopic* topic = [[DBTopic findFirstByAttribute:@"topicID" withValue:topicID] retain];
 		_post = [[DBPost object] retain];
 		_post.topicID = topic.topicID;
 		_post.topic = topic;

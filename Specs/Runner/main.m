@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 	
 	// Run the specs
-	[UISpec runSpecsFromEnvironmentAfterDelay:0.5];
+    [UISpec runSpecsFromEnvironmentAfterDelay:0.5];
 	
     int retVal = UIApplicationMain(argc, argv, nil, nil);
     [pool release];

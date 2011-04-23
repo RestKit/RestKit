@@ -8,6 +8,7 @@
 
 #import "RKManagedObjectStore.h"
 #import "RKAlert.h"
+#import "NSManagedObject+ActiveRecord.h"
 
 NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
@@ -97,7 +98,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
  */
 - (NSError*)save {
 	NSManagedObjectContext* moc = [self managedObjectContext];
-    NSError *error;
+    NSError *error = nil;
 	
 	@try {
 		if (![moc save:&error]) {
@@ -285,37 +286,43 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return objectArray;
 }
 
-- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue {
-	RKManagedObject* object = nil;
-	if ([class respondsToSelector:@selector(allObjects)]) {
-		NSArray* objects = nil;
-		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-		
-		if (nil == [threadDictionary objectForKey:class]) {
-			NSFetchRequest* fetchRequest = [class fetchRequest];
-			[fetchRequest setReturnsObjectsAsFaults:NO];			
-			objects = [class objectsWithFetchRequest:fetchRequest];
-			NSLog(@"Caching all %d %@ objects to thread local storage", [objects count], class);
-			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
-			for (id theObject in objects) {			
-				id primaryKeyValue = [theObject valueForKey:primaryKey];
-				if (primaryKeyValue) {
-					[dictionary setObject:theObject forKey:primaryKeyValue];
-				}
-			}
-			
-			[threadDictionary setObject:dictionary forKey:class];
-		}
-		
-		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
-		object = [dictionary objectForKey:primaryKeyValue];
-		
-		if (object == nil && primaryKeyValue && [class respondsToSelector:@selector(object)]) {
-			object = [class object];
-			[dictionary setObject:object forKey:primaryKeyValue];
-		}
-	}
+- (NSManagedObject*)findOrCreateInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue {
+    NSAssert(entity, @"Cannot instantiate managed object without a target class");
+    NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without a primary key attribute");
+    NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
+	NSManagedObject* object = nil;
+        
+    NSArray* objects = nil;
+    NSString* entityName = entity.name;
+    NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+    
+    // Construct the cache if necessary
+    if (nil == [threadDictionary objectForKey:entityName]) {
+        NSFetchRequest* fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
+        [fetchRequest setEntity:entity];
+        [fetchRequest setReturnsObjectsAsFaults:NO];			
+        objects = [NSManagedObject executeFetchRequest:fetchRequest];
+        NSLog(@"Caching all %d %@ objects to thread local storage", [objects count], entity.name);
+        NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+        for (id theObject in objects) {			
+            id primaryKeyValue = [theObject valueForKey:primaryKeyAttribute];
+            if (primaryKeyValue) {
+                [dictionary setObject:theObject forKey:primaryKeyValue];
+            }
+        }
+        
+        [threadDictionary setObject:dictionary forKey:entityName];
+    }
+    
+    NSMutableDictionary* dictionary = [threadDictionary objectForKey:entityName];
+    NSAssert1(dictionary, @"Thread local cache of %@ objects should not be nil", entityName);
+    object = [dictionary objectForKey:primaryKeyValue];
+    
+    if (object == nil) {
+        object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
+        [dictionary setObject:object forKey:primaryKeyValue];
+    }
+        
 	return object;
 }
 
@@ -324,7 +331,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     
     if (self.managedObjectCache) {
         NSArray* cacheFetchRequests = [self.managedObjectCache fetchRequestsForResourcePath:resourcePath];
-        cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
+        cachedObjects = [NSManagedObject objectsWithFetchRequests:cacheFetchRequests];
     }
     
     return cachedObjects;

@@ -20,9 +20,29 @@
     if (self) {
         RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:gRKCatalogBaseURL];
         objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
-        [objectManager registerClass:[User class] forElementNamed:@"user"];
-        [objectManager registerClass:[Project class] forElementNamed:@"project"];
-        [objectManager registerClass:[Task class] forElementNamed:@"tasks"];
+        
+        RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+        
+        RKObjectMapping* taskMapping = [RKObjectMapping mappingForClass:[Task class]];
+        [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
+        [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
+        [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
+        [provider setMapping:taskMapping forKeyPath:@"task"];
+        
+        RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[User class]];
+        [userMapping mapAttributes:@"name", @"email", nil];
+        [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
+        [userMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
+        [provider setMapping:userMapping forKeyPath:@"user"];
+        
+        RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
+        [projectMapping mapKeyPath:@"id" toAttribute:@"projectID"];
+        [projectMapping mapAttributes:@"name", @"description", nil];
+        [projectMapping mapRelationship:@"user" withObjectMapping:userMapping];
+        [projectMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
+        [provider setMapping:projectMapping forKeyPath:@"project"];
+        
+        objectManager.mappingProvider = provider;
     }
     
     return self;

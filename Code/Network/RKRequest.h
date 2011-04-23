@@ -13,7 +13,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "RKRequestSerializable.h"
-#import "RKJSONSerialization.h"
 
 /**
  * HTTP methods for requests
@@ -56,6 +55,7 @@ typedef enum RKRequestBackgroundPolicy {
 	RKRequestMethod _method;
 	BOOL _isLoading;
 	BOOL _isLoaded;
+    BOOL _sentSynchronously;
     RKRequestBackgroundPolicy _backgroundPolicy;
     
     #if TARGET_OS_IPHONE

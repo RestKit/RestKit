@@ -1,5 +1,5 @@
 //
-//  MyClass.m
+//  RKNetwork.m
 //  RestKit
 //
 //  Created by Blake Watters on 3/28/11.

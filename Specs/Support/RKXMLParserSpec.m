@@ -1,5 +1,5 @@
 //
-//  RKXMLParserSpec.m
+//  RKXMLParserLibXMLSpec.m
 //  RestKit
 //
 //  Created by Jeremy Ellison on 3/29/11.
@@ -7,19 +7,20 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKXMLParser.h"
+#import "RKXMLParserLibXML.h"
 
-@interface RKXMLParserSpec : NSObject <UISpec> {
+@interface RKXMLParserLibXMLSpec : NSObject <UISpec> {
     
 }
 
 @end
 
-@implementation RKXMLParserSpec
+@implementation RKXMLParserLibXMLSpec
 
 - (void)itShouldMapASingleXMLObjectPayloadToADictionary {
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<hash>\n  <float type=\"float\">2.4</float>\n  <string>string</string>\n  <number type=\"integer\">1</number>\n</hash>\n";
-    id result = [RKXMLParser parse:data];
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    id result = [parser parseXML:data];
     [expectThat(NSStringFromClass([result class])) should:be(@"__NSCFDictionary")];
     [expectThat([[result valueForKeyPath:@"hash.float"] floatValue]) should:be(2.4f)];
     [expectThat([[result valueForKeyPath:@"hash.number"] intValue]) should:be(1)];
@@ -30,7 +31,8 @@
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records type=\"array\">\n  <record>\n    <float type=\"float\">2.4</float>\n    <string>string</string>\n    <number type=\"integer\">1</number>\n  </record>\n  <record>\n    <another-number type=\"integer\">1</another-number>\n  </record>\n</records>\n";
     {
         // Parse Raw Data
-        id result = [RKXMLParser parse:data];
+        RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+        id result = [parser parseXML:data];
         NSArray* records = (NSArray*)[result valueForKeyPath:@"records"];
         [expectThat([records count]) should:be(2)];
         id result1 = [records objectAtIndex:0];
@@ -43,7 +45,8 @@
     }
     {
         // Simulate using a keypath to extract records array
-        NSArray* result = (NSArray*)[[RKXMLParser parse:data] valueForKeyPath:@"records.record"];
+        RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+        id result = [[parser parseXML:data] valueForKeyPath:@"records.record"];
         [expectThat([result count]) should:be(2)];
         id result1 = [result objectAtIndex:0];
         [expectThat(NSStringFromClass([result1 class])) should:be(@"__NSCFDictionary")];

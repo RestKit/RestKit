@@ -6,12 +6,11 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKManagedObject.h"
-
+#import "NSManagedObject+ActiveRecord.h"
 
 @class RKHuman;
 
-@interface RKCat : RKManagedObject {
+@interface RKCat : NSManagedObject {
 
 }
 

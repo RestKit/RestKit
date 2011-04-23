@@ -9,7 +9,7 @@
 #import "RKCatalog.h"
 #import "User.h"
 
-@interface Task : RKManagedObject {
+@interface Task : NSManagedObject {
 }
 
 @property (nonatomic, retain) NSString* name;

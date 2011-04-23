@@ -15,20 +15,4 @@
 @dynamic assignedUserID;
 @dynamic assignedUser;
 
-+ (NSDictionary*)elementToPropertyMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"id", @"taskID",
-            @"name", @"name",
-            @"assigned_user_id", @"assignedUserID",
-            nil];
-}
-
-+ (NSString*)primaryKeyProperty {
-    return @"taskID";
-}
-
-+ (NSDictionary*)relationshipToPrimaryKeyPropertyMappings {
-    return [NSDictionary dictionaryWithObject:@"assignedUserID" forKey:@"assignedUser"];
-}
-
 @end

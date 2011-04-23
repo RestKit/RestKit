@@ -7,10 +7,9 @@
 //
 
 #import <RestKit/RestKit.h>
-#import "RKTUser.h"
 #import <RestKit/CoreData/CoreData.h>
 
-@interface RKTStatus : RKManagedObject {
+@interface RKTStatus : NSManagedObject {
 }
 
 /**
@@ -46,6 +45,6 @@
 /**
  * The User who posted this status
  */
-@property (nonatomic, retain) RKTUser* user;
+@property (nonatomic, retain) NSManagedObject* user;
 
 @end

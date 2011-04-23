@@ -26,26 +26,6 @@
 @synthesize newAttachment = _newAttachment;
 
 /**
- * The property mapping dictionary. This method declares how elements in the JSON
- * are mapped to properties on the object
- */
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id",@"postID",
-			@"topic_id",@"topicID",
-			@"user_id",@"userID",
-			@"created_at",@"createdAt",
-			@"updated_at",@"updatedAt",
-			@"attachment_content_type", @"attachmentContentType",
-			@"attachment_file_name", @"attachmentFileName",
-			@"attachment_file_size", @"attachmentFileSize",
-			@"attachment_path", @"attachmentPath",
-			@"attachment_updated_at", @"attachmentUpdatedAt",
-			@"body", @"body",
-			nil];
-}
-
-/**
  * Informs RestKit which property contains the primary key for identifying
  * this object. This is used to ensure that existing objects are updated during mapping
  */

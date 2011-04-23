@@ -6,9 +6,10 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import <RestKit/CoreData/CoreData.h>
 #import "RKCoreDataExample.h"
 
-@interface Article : RKManagedObject {
+@interface Article : NSManagedObject {
 }
 
 @property (nonatomic, retain) NSNumber* articleID;
@@ -22,18 +23,6 @@
 @dynamic articleID;
 @dynamic title;
 @dynamic body;
-
-+ (NSDictionary*)elementToPropertyMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"id", @"articleID",
-            @"title", @"title",
-            @"body", @"body",
-            nil];
-}
-
-+ (NSString*)primaryKeyProperty {
-    return @"articleID";
-}
 
 @end
 
@@ -113,8 +102,8 @@
         
         // By ID
         case 3:
-            // Duplicates functionality of [Article objectWithPrimaryKeyValue:[NSNumber numberWithInt:3]];
-            predicate = [NSPredicate predicateWithFormat:@"%K = %d", [Article primaryKeyProperty], 3];
+            // Duplicates functionality of [Article findByAttribute:@"articleID" withValue:[NSNumber numberWithInt:3]];
+            predicate = [NSPredicate predicateWithFormat:@"%K = %d", @"articleID", 3];
             [fetchRequest setPredicate:predicate];
             break;
             

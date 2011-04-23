@@ -1,0 +1,38 @@
+//
+//  RKRequestSerialization.h
+//  RestKit
+//
+//  Created by Blake Watters on 5/18/11.
+//  Copyright 2011 Two Toasters. All rights reserved.
+//
+
+#import "../Network/RKRequestSerializable.h"
+
+/**
+ A simple implementation of the RKRequestSerializable protocol suitable
+ for wrapping a MIME Type string and HTTP Body into a format that
+ can be sent as the params of an RKRequest
+ 
+ @see RKRequestSerializable
+ */
+@interface RKRequestSerialization : NSObject <RKRequestSerializable> {
+    NSData* _data;
+    NSString* _MIMEType;
+}
+
+/**
+ The data enclosed in this serialization
+ */
+@property (nonatomic, readonly) NSData* data;
+
+/**
+ The MIME type of the data in this serialization
+ */
+@property (nonatomic, readonly) NSString* MIMEType;
+
+/**
+ Return a new serialization enclosing an NSData object with the specified MIME Type
+ */
++ (id)serializationWithData:(NSData*)data MIMEType:(NSString*)MIMEType;
+
+@end
