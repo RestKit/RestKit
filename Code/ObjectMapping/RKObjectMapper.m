@@ -163,8 +163,12 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	return [self mapFromString:string toClass:nil keyPath:nil];
 }
 
-- (void)mapObject:(NSObject<RKObjectMappable>*)model fromString:(NSString*)string {
+- (void)mapObject:(NSObject<RKObjectMappable>*)model fromString:(NSString*)string keyPath:(NSString*)keyPath {
 	id object = [self parseString:string];
+	if (keyPath) {
+		object = [object valueForKeyPath:keyPath];
+	}
+	
 	if ([object isKindOfClass:[NSDictionary class]]) {
 		[self mapObject:model fromDictionary:object];
 	} else if (nil == object) {
@@ -174,6 +178,10 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		[NSException raise:@"Unable to map from requested string"
 					format:@"The object was serialized into a %@. A dictionary of elements was expected. (Object: %@) [Payload: %@]", [object class], object, string];
 	}
+}
+
+- (void)mapObject:(NSObject<RKObjectMappable>*)model fromString:(NSString*)string {
+	[self mapObject:model fromString:string keyPath:nil];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
