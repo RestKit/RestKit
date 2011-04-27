@@ -65,6 +65,10 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 	return [NSString stringWithString:interpolatedPath];
 }
 
+NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryParams) {
+    return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation RKClient
@@ -144,7 +148,7 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 }
 
 - (NSString*)resourcePath:(NSString*)resourcePath withQueryParams:(NSDictionary*)queryParams {
-	return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+	return RKPathAppendQueryParams(resourcePath, queryParams);
 }
 
 - (NSURL*)URLForResourcePath:(NSString*)resourcePath {
@@ -156,7 +160,7 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 }
 
 - (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams {
-	return [self URLForResourcePath:[self resourcePath:resourcePath withQueryParams:queryParams]];
+	return [self URLForResourcePath:RKPathAppendQueryParams(resourcePath, queryParams)];
 }
 
 - (void)setupRequest:(RKRequest*)request {

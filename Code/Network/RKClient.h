@@ -49,6 +49,21 @@ NSString* RKMakeURLPath(NSString* resourcePath);
  */
 NSString* RKMakePathWithObject(NSString* path, id object);
 
+/**
+ * Returns a resource path with a dictionary of query parameters URL encoded and appended
+ *
+ * This is a convenience method for constructing a new resource path that includes a query. For example,
+ * when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
+ * will return /contacts?foo=bar&color=red
+ *
+ * *NOTE* - Assumes that the resource path does not already contain any query parameters.
+ *
+ * @param resourcePath The resource path to append the query parameters onto
+ * @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
+ * @return A new resource path with the query parameters appended
+ */
+NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryParams);
+
 /////////////////////////////////////////////////////////////////////////
 
 /**
@@ -262,30 +277,32 @@ NSString* RKMakePathWithObject(NSString* path, id object);
 /**
  * Returns a resource path with a dictionary of query parameters URL encoded and appended
  *
- * This is a convience method for constructing a new resource path that includes a query. For example,
+ * This is a convenience method for constructing a new resource path that includes a query. For example,
  * when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
  * will return /contacts?foo=bar&color=red
  *
  * *NOTE* - Assumes that the resource path does not already contain any query parameters.
  *
  * @param resourcePath The resource path to append the query parameters onto
- * @param queryParams A dicitonary of query parameters to be URL encoded and appened to the resource path
+ * @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
  * @return A new resource path with the query parameters appended
+ *
+ * @see RKPathAppendQueryParams()
+ * @deprecated Use RKPathAppendQueryParams instead
  */
-// TODO: Move this to a function instead of an RKClient method
-- (NSString*)resourcePath:(NSString*)resourcePath withQueryParams:(NSDictionary*)queryParams;
+- (NSString*)resourcePath:(NSString*)resourcePath withQueryParams:(NSDictionary*)queryParams DEPRECATED_ATTRIBUTE;
 
 /**
  * Returns a NSURL by adding a resource path to the base URL and appending a URL encoded set of query parameters
  *
- * This is a convience method for constructing a new resource path that includes a query. For example,
+ * This is a convenience method for constructing a new resource path that includes a query. For example,
  * when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
  * will return /contacts?foo=bar&color=red
  *
  * *NOTE* - Assumes that the resource path does not already contain any query parameters.
  *
  * @param resourcePath The resource path to append the query parameters onto
- * @param queryParams A dicitonary of query parameters to be URL encoded and appened to the resource path
+ * @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
  * @return A URL constructed by concatenating the baseURL and the resourcePath with the query parameters appended
  */
 - (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams;
