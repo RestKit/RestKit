@@ -84,8 +84,12 @@ typedef enum {
 
 /**
  * Register a resource mapping from a domain model class to a JSON/XML element name
+ *
+ * Configures the mapper by indicating that elements with the specified name or keyPath value map
+ * to the specified class. The mapper will appropriately map to a single object or a collection, depending
+ * on the type of object in the payload.
  */
-- (void)registerClass:(Class<RKObjectMappable>)objectClass forElementNamed:(NSString*)elementName;
+- (void)registerClass:(Class<RKObjectMappable>)objectClass forElementNamed:(NSString*)elementNameOrKeyPath;
 
 /**
  * Mapper object responsible for mapping remote HTTP resources to Cocoa objects

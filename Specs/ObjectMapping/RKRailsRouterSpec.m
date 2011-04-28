@@ -23,6 +23,7 @@
 - (void)beforeAll {
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:@"http://localhost:4567"];
 	objectManager.objectStore = [[RKManagedObjectStore alloc] initWithStoreFilename:@"RestKitSpecs.sqlite"];
+    [RKObjectManager setSharedManager:objectManager];
 }
 
 - (void)itShouldRaiseErrorWhenAskedToRouteAnUnregisteredModel {

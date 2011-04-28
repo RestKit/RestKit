@@ -70,22 +70,13 @@
 	NSDate* receivedAt = [NSDate date];
 	if (successful) {
 		_isLoaded = YES;
-		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod",
-								  [self URL], @"URL",
-								  receivedAt, @"receivedAt",
-								  nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification
 															object:_response
-														  userInfo:userInfo];
+														  userInfo:nil];
 	} else {
-		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod",
-								  [self URL], @"URL",
-								  receivedAt, @"receivedAt",
-								  error, @"error",
-								  nil];
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification
 															object:self
-														  userInfo:userInfo];
+														  userInfo:nil];
 	}
 }
 

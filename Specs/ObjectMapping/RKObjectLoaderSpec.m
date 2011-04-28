@@ -51,6 +51,8 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
+// TODO: These specs need to be executed against the RKManagedObjectLoader and RKObjectLoader
+// until we can collapse the functionality somehow...
 @interface RKObjectLoaderSpec : NSObject <UISpec> {
 }
 
@@ -65,7 +67,9 @@
     [queue release];
 }
 
-- (void)itShouldLoadAComplexUserObject {
+#pragma mark - Complex JSON
+
+- (void)itShouldLoadAComplexUserObjectWithTargetObject {
     RKSpecComplexUser* user = [RKSpecComplexUser object];
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
@@ -81,6 +85,39 @@
     
     [expectThat(user.firstname) should:be(@"Diego")];
 }
+
+- (void)itShouldLoadAComplexUserObjectWithoutTargetObject {    
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/complex_nested_user" delegate:responseLoader];
+    objectLoader.method = RKRequestMethodGET;
+    objectLoader.keyPath = @"data.STUser";
+    objectLoader.objectClass = [RKSpecComplexUser class];
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    [expectThat([responseLoader.objects count]) should:be(1)];
+    RKSpecComplexUser* user = [responseLoader.objects lastObject];
+    
+    [expectThat(user.firstname) should:be(@"Diego")];
+}
+
+- (void)itShouldLoadAComplexUserObjectUsingRegisteredKeyPath {
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    [objectManager registerClass:[RKSpecComplexUser class] forElementNamed:@"data.STUser"];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/complex_nested_user" delegate:responseLoader];
+    objectLoader.method = RKRequestMethodGET;
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    [expectThat([responseLoader.objects count]) should:be(1)];
+    RKSpecComplexUser* user = [responseLoader.objects lastObject];
+    
+    [expectThat(user.firstname) should:be(@"Diego")];
+}
+
+#pragma mark - willSendWithObjectLoader:
 
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSend {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];

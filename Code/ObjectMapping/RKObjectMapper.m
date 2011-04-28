@@ -218,21 +218,40 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 // Lookup an object type using the element to class mappings and map its attributes
 // Expects an object of the form {"registered_type": {"attribute1": "value", "attribute2": "value"}
 - (NSObject<RKObjectMappable>*)mapObjectFromDictionary:(NSDictionary*)dictionary {
-  // TODO: Makes assumptions about the structure of the JSON...
-	NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
-	Class class = [_elementToClassMappings objectForKey:elementName];
-	id elements = [dictionary objectForKey:elementName];
+    // NOTE: This will only map the first matching object in the dictionary will map
+    // Here we have a dictionary that may contain a mappable object. We do not know the
+    // type or keyPath the object or how many will match.
+    // TODO: Move this logic into a more reusable place
+    Class objectClass = nil;
+    NSString* matchedKeyPath = nil;
+    for (NSString* keyPath in [_elementToClassMappings allKeys]) {
+        NSLog(@"Checking for keyPath %@ in %@", keyPath, dictionary);
+        if ([dictionary valueForKeyPath:keyPath]) {
+            if (objectClass) {
+                // TODO: Factor out this log warning and use a self.logger so that we can unit test logging...
+                NSLog(@"WARNING: Multiple mapping targets match in dictionary, using the first match: '%@' => [%@ class]. [Dictionary: %@]", 
+                      matchedKeyPath, NSStringFromClass(objectClass), dictionary);
+            } else {
+                matchedKeyPath = [keyPath copy];
+                objectClass = [_elementToClassMappings valueForKeyPath:keyPath];
+            }
+        }
+    }
+    
+    if (!objectClass) {
+        NSLog(@"Unable to find registered mapping keyPath in payload, returning nil...");
+        return nil;
+    }
+    
+	id elements = [dictionary valueForKeyPath:matchedKeyPath];
 	
     // Support case where elements is an Array of objects
     id model = nil;
     if ([elements isKindOfClass:[NSDictionary class]]) {
-        model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
+        model = [self findOrCreateInstanceOfModelClass:objectClass fromElements:elements];
         [self updateModel:model fromElements:elements];        
     } else if ([elements isKindOfClass:[NSArray class]]) {
-        model = [self mapObjectsFromArrayOfDictionaries:elements toClass:class];
-    } else {
-        // TODO: Do we want to blow up or log???
-        NSLog(@"Unable to determine how to map object: %@", elements);
+        model = [self mapObjectsFromArrayOfDictionaries:elements toClass:objectClass];
     }
     
 	return model;
@@ -244,7 +263,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		if (![dictionary isKindOfClass:[NSNull class]]) {
 			// TODO: Makes assumptions about the structure of the JSON...
 			NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
-			Class class = [_elementToClassMappings objectForKey:elementName];
+			Class class = [_elementToClassMappings valueForKeyPath:elementName];
 			NSAssert(class != nil, @"Unable to perform object mapping without a destination class");
 			NSDictionary* elements = [dictionary objectForKey:elementName];
 			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
@@ -458,7 +477,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
         // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
         NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
         NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
-        Class modelClass = [_elementToClassMappings objectForKey:className];
+        Class modelClass = [_elementToClassMappings valueForKeyPath:className];
         if ([modelClass isKindOfClass: [NSNull class]]) {
             NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
             NSLog(@"   parent class   : %@", [object class]);

@@ -118,7 +118,6 @@
 	RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
 	mapper.format = RKMappingFormatJSON;
 	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
-	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_many"];
 	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"has_one"];
 	id result = [mapper mapFromString:[self jsonString]];
@@ -134,6 +133,16 @@
 	
 	[expectThat([result hasMany]) shouldNot:be(nil)];
 	[expectThat([[result hasMany] count]) should:be(2)];
+}
+
+- (void)itShouldLogAWarningWhenMultipleKeyPathsMatchForADictionary {
+    RKObjectMapper* mapper = [[RKObjectMapper alloc] init];
+	mapper.format = RKMappingFormatJSON;
+	[mapper registerClass:[RKMappableObject class] forElementNamed:@"test_serialization_class"];
+	[mapper registerClass:[RKMappableAssociation class] forElementNamed:@"test_serialization_class.has_one"];
+	[mapper mapFromString:[self jsonString]];
+    // TODO: Cannot unit test here -- need to factor NSLog out to allow mock object injection
+    NSLog(@">> PENDING");
 }
 
 - (void)itShouldMapObjectsFromJSON {
