@@ -61,8 +61,8 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKRequestSpec"
-            isEnabled = "NO">
+            value = "RKObjectLoaderSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -71,8 +71,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldSendTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyNone"
-            isEnabled = "NO">
+            value = "itShouldInvokeWillSendWithObjectLoader"
+            isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>

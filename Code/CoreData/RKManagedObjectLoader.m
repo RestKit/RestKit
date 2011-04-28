@@ -14,8 +14,9 @@
 @interface RKObjectLoader (Private)
 
 @property (nonatomic, readonly) RKManagedObjectStore* objectStore;
-@property (nonatomic, readonly) RKObjectMapper* mapper;
+@property (nonatomic, readonly) RKObjectMapper* objectMapper;
 
+- (void)handleTargetObject;
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
 @end
 
@@ -37,14 +38,6 @@
     
 	[_targetObjectID release];
 	_targetObjectID = nil;
-}
-
-- (RKManagedObjectStore*)objectStore {
-    return [self.objectManager objectStore];
-}
-
-- (RKObjectMapper*)mapper {
-    return [self.objectManager mapper];
 }
 
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
@@ -85,15 +78,15 @@
 			if (self.method == RKRequestMethodDELETE) {
 				[[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
 			} else {
-				[self.mapper mapObject:backgroundThreadModel fromString:[response bodyAsString]];
+				[self.objectMapper mapObject:backgroundThreadModel fromString:[response bodyAsString] keyPath:self.keyPath];
 				results = [NSArray arrayWithObject:backgroundThreadModel];
 			}
 		} else {
-			[self.mapper mapObject:self.targetObject fromString:[response bodyAsString]];
+			[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:self.keyPath];
 			results = [NSArray arrayWithObject:self.targetObject];
 		}
 	} else {
-		id result = [self.mapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
+		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:self.keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {
@@ -145,7 +138,7 @@
 	[pool drain];
 }
 
-// Give the target object a chance to modify the request
+// Give the target object a chance to modify the request. This is invoked during prepareURLRequest right before it hits the wire
 - (void)handleTargetObject {
 	if (self.targetObject) {
 		if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
@@ -158,20 +151,12 @@
 			_targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
 		}
 		
-		if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
-			[self.targetObject willSendWithObjectLoader:self];
-		}
+		[super handleTargetObject];
 	}
 }
 
-- (void)send {
-	[self handleTargetObject];
-	[super send];
-}
-
-- (RKResponse*)sendSynchronously {
-	[self handleTargetObject];
-	return [super sendSynchronously];
+- (RKManagedObjectStore*)objectStore {
+    return self.objectManager.objectStore;
 }
 
 @end

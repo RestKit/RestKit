@@ -2,7 +2,6 @@
 # RestKit Spec Server
 
 require 'rubygems'
-#require 'sinatra'
 require 'sinatra/base'
 require 'json'
 require 'ruby-debug'
@@ -20,6 +19,7 @@ end
 class RestKit::SpecServer < Sinatra::Base
   self.app_file = __FILE__
   use RestKit::Network::Authentication
+  use RestKit::ObjectMapping::JSON
   
   configure do
     set :logging, true

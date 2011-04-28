@@ -17,6 +17,8 @@
 @property (nonatomic, readonly) RKClient* client;
 @property (nonatomic, readonly) RKObjectMapper* objectMapper;
 
+- (void)prepareURLRequest;
+
 @end
 
 @implementation RKObjectLoader
@@ -154,10 +156,10 @@
 	 */
 	NSArray* results = nil;
 	if (self.targetObject) {
-		[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:_keyPath];
+		[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:self.keyPath];
         results = [NSArray arrayWithObject:self.targetObject];
 	} else {
-		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
+		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:self.keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {
@@ -182,14 +184,10 @@
 	}
 }
 
-- (void)send {
-	[self handleTargetObject];
-	[super send];
-}
-
-- (RKResponse*)sendSynchronously {
-	[self handleTargetObject];
-	return [super sendSynchronously];
+// Invoked just before request hits the network
+- (void)prepareURLRequest {
+    [self handleTargetObject];
+    [super prepareURLRequest];
 }
 
 - (void)didFailLoadWithError:(NSError*)error {

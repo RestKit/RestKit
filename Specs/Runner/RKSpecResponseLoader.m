@@ -98,4 +98,10 @@
 	[self loadError:error];
 }
 
+- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
+    NSLog(@"*** Loaded unexpected response in spec response loader");
+    _success = NO;
+    _awaitingResponse = NO;
+}
+
 @end
