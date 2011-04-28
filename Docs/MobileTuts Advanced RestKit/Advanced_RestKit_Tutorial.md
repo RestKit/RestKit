@@ -191,7 +191,7 @@ Now that we've seen how to initialize and work with RKReachabilityObserver, it's
     - (void)reachabilityChanged:(NSNotification*)notification {
       RKReachabilityObserver* observer = (RKReachabilityObserver*)[notification object];
 
-      if ([observer isNetworkAvailable]) {
+      if ([observer isNetworkReachable]) {
         NSLog(@"We're online!");
       } else {
         NSLog(@"We've gone offline!");
