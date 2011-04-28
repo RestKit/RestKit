@@ -154,7 +154,7 @@
 	 */
 	NSArray* results = nil;
 	if (self.targetObject) {
-        [self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString]];
+		[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:_keyPath];
         results = [NSArray arrayWithObject:self.targetObject];
 	} else {
 		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:_keyPath];
@@ -171,6 +171,25 @@
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
 
 	[pool drain];
+}
+
+// Give the target object a chance to modify the request
+- (void)handleTargetObject {
+	if (self.targetObject) {
+		if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
+			[self.targetObject willSendWithObjectLoader:self];
+		}
+	}
+}
+
+- (void)send {
+	[self handleTargetObject];
+	[super send];
+}
+
+- (RKResponse*)sendSynchronously {
+	[self handleTargetObject];
+	return [super sendSynchronously];
 }
 
 - (void)didFailLoadWithError:(NSError*)error {
