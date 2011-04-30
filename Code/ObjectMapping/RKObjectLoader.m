@@ -177,7 +177,7 @@
 // Invoked just before request hits the network
 - (void)prepareURLRequest {
     [self handleTargetObject];
-    [super prepareURLRequest];
+    [self prepareURLRequest];
 }
 
 - (void)didFailLoadWithError:(NSError*)error {
