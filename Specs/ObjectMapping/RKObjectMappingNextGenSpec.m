@@ -110,27 +110,27 @@
 
 @interface RKObjectMappingOperation : NSObject {
     NSDictionary* _dictionary;
-    RKObjectMapping* _mapping;
+    RKObjectMapping* _objectMapping;
 }
 
 @property (nonatomic, readonly) NSDictionary* dictionary;
-@property (nonatomic, readonly) RKObjectMapping* mapping;
+@property (nonatomic, readonly) RKObjectMapping* objectMapping;
 
-- (id)initWithDictionary:(NSDictionary*)dictionary andMapping:(RKObjectMapping*)mapping;
+- (id)initWithDictionary:(NSDictionary*)dictionary andObjectMapping:(RKObjectMapping*)objectMapping;
 
 @end
 
 @implementation RKObjectMappingOperation
 
 @synthesize dictionary = _dictionary;
-@synthesize mapping = _mapping;
+@synthesize objectMapping = _objectMapping;
 
 // TODO: objectMapping instead of mapping!!!
-- (id)initWithDictionary:(NSDictionary*)dictionary andMapping:(RKObjectMapping*)mapping {
+- (id)initWithDictionary:(NSDictionary*)dictionary andObjectMapping:(RKObjectMapping*)objectMapping {
     self = [super init];
     if (self) {
         _dictionary = [dictionary retain];
-        _mapping = [mapping retain];
+        _objectMapping = [objectMapping retain];
     }
     
     return self;
@@ -138,15 +138,15 @@
 
 - (void)dealloc {
     [_dictionary release];
-    [_mapping release];
+    [_objectMapping release];
     
     [super dealloc];
 }
 
 - (id)performMapping {
-    id object = [self.mapping.objectClass new];
+    id object = [self.objectMapping.objectClass new];
     for (NSString* element in [_dictionary allKeys]) {
-        RKObjectElementMapping* elementMapping = [self.mapping mappingForElement:element];
+        RKObjectElementMapping* elementMapping = [self.objectMapping mappingForElement:element];
         if (elementMapping) {
             // element is the name
             id value = [_dictionary valueForKey:element];
@@ -184,7 +184,7 @@
 //    for (NSString* element in [elements allKeys]) {
 //        RKObjectElementMapping* mapping = [mapping mappingForElement:element];
 //        if (element) {
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithDictionary:elements andMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithDictionary:elements andObjectMapping:mapping];
     return [operation performMapping];
 //        }
 //    }
