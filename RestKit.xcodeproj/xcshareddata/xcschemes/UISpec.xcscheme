@@ -61,7 +61,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKUserRailsJSONMappingSpec"
+            value = "RKObjectMappingNextGenSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -71,8 +71,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapToAnEmptyObjectAndLogAWarningWhenExplicitlyGivenAnObjectClassAndThePayloadIsNotMappable"
-            isEnabled = "YES">
+            value = "itShouldDetermineTheObjectMappingByConsultingTheMappingProviderWhenThereIsATargetObject"
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>

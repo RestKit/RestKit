@@ -9,3 +9,4 @@
 #import "RKObjectManager.h"
 #import "RKObject.h"
 #import "RKObjectLoader.h"
+#import "RKObjectMapping.h"
