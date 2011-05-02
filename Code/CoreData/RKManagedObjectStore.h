@@ -106,6 +106,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * This deletes and recreates the managed object context and 
  * persistant store, effectively clearing all data
  */
+- (void)deletePersistantStoreUsingSeedDatabaseName:(NSString *)seedFile;
 - (void)deletePersistantStore;
 
 /**
