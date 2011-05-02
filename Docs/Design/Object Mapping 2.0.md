@@ -1,35 +1,82 @@
-# Object Mapping 2.0
+# Object Mapping
 
+This document details the design of object mapping in RestKit. 
 
 ## Goals
-- Support arbitrary JSON structures
-- Provide hooks into the mapping process for easier tracing and debugging
-- Simplify the mapping operations. Clean up the code in RKObjectMapper thoroughly
-- Allow mapping directly to NSObject and NSManagedObject??? _Maybe._
+- Support arbitrarily complex mapping operations
+- Enable full transparency and insight into the mapping operation
+- Provide a clean, clear mapping API that is easy to work on and extend
+- Reduce the API foot-print of object mapping
+- Enable mapping onto vanilla NSObject and NSManagedObject classes
+- Enable mapping from model objects back into dictionaries and arrays (support for serialization)
+- Provide simple hooks for customizing the mapping decisions
+- Fully embrace key-value coding and organize the API around keyPaths
+- Support mapping multiple keyPaths from a dictionary and returning a dictionary instead of requiring encapsulation
+via relationships
 
-## New Classes
-- RKObjectMappable -> Returns an + (RKObjectMapping*)objectMapping defining how to transform a dictionary into an instance of the type
-- RKObjectMapping
-- RKObjectMapper -> No longer a singleton instance. A new mapper is created to process each dictionary encountered.
-- RKObjectLoader
+## Discussion
+
+Object mapping is the process RestKit uses to transform objects between representations. Object mapping
+leverages key-value coding conventions to determine how to map keyPaths between object instances and
+attributes. The process is composed of four steps:
+1. 
+
+## Class Hierarchy
+- **RKObjectManager** - The external client interface for performing object mapping operations on resources
+loaded from the network. The object manager is responsible for creating object loaders and brokering interactions
+between the application and object mapping subsystem.
+- **RKObjectLoader** - A subclass of RKRequest that sends an HTTP request and performs an object mapping operation
+on the resulting payload. Responsible for parsing the payload appropriately and initializing an `RKObjectMapper`.
+- **RKObjectMappingProvider** - A protocol defining an interface for determining what object mapping is 
+appropriate for a particular keyPath. A provider is required for all object mapping invocations.
+- **RKObjectKeyPathMappingProvider** - A concrete implementation of `RKObjectMappingProvider` that simply registers
+mappings for a particular keyPath. This is the default mapping provider configured at `RKObjectManager#mappingProvider`.
+- **RKObjectMapping** - A definition of an object mapping for a particular class. Contains a collection of attribute mappings
+defining how attributes in a particular mappable object should be mapped onto the target class.
+- **RKObjectAttributeMapping** - Defines a mapping from a source keyPath to a destination keyPath within an object mapping
+definition. For example, defines a rule that the NSString attribute at the `created_at` keyPath maps to the NSString property at 
+the `createdAt` keyPath on the destination object.
+- **RKObjectRelationshipMapping** - A subclass of `RKObjectAttributeMapping` that defines a mapping to a related mappable object.
+Includes an objectMapping property defining the rules for mapping the related object. Used for transforming nested arrays and dictionaries.
+- **RKObjectMapper** - The interface for performing object mapping on a mappable object. The mapper evaluates the type of the object
+and obtains the appropriate object mapping from an `RKObjectMappingProvider` and applies it by creating instances of `RKObjectMappingOperation`.
+- **RKObjectMappingOperation** - Responsible for applying an object mapping to a particular mappable dictionary. Evaluates the attribute mappings
+contained in the `RKObjectMapping` against the mappable dictionary and assigns the results to the target object. 
 
 ## Tasks
 
 ### Initialize the object manager
+```objc
     RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
-    [objectManager setParser:[RKJSONKitParser class] forMIMEType:@"application/json"]; // TODO: Should this be settable on the object loader??
+    [objectManager setParser:[RKJSONKitParser class] forMIMEType:@"application/json"];
+```
 
-### Registering an Explicit Mapping
+### Configuring an Object Mapping
+```objc
     // In this use-case Article could be an NSObject or NSManagedObject class. Take RestKit out of the inheritance hierarchy.
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[Article class]];
-    [mapping mapElements:@"title", @"body", nil];
-    [mapping mapElementsToProperties:@"created_at", @"createdAt", nil];
+    RKObjectAttributeMapping* titleMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"title" toKeyPath:@"title"];
+    [mapping addAttributeMapping:titleMapping];
+    
+    // TODO: Couple of different ways we could grab object mappings, what's best?
+    RKObjectMapping* commentsMapping = [Comment objectMapping]; // Informal protocol???
+    RKObjectMapping* commentsMapping = [[RKObjectManager sharedManager] objectMappingForClass:[Comment class]];
+    RKObjectRelationshipMapping* articleCommentsMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"comments" withObjectMapping:commentsMapping];
+    [mapping addRelationshipMapping:articleCommentsMapping];
+    
+    // TODO: Improve these...
+    [mapping mapAttributes:@"title", @"body", nil];
+    [mapping mapAttributesWithKeyPathPairs:@"created_at", @"createdAt", nil]; // TODO: Better method signature...
     [mapping mapElement:@"comments" toMany:[Comment class]];
     [mapping mapElement:@"author" toOne:[User class] withPrimaryKey:@"author_id"];
     [mapping serializeRelationships:@"comments", nil];
-    [objectManager registerMapping:mapping forElement:@"article"]; // TODO: forKeyPath: instead of forElement: / forElementNamed:
+    
+    // Register the mapping with the object manager
+    [objectManager setMapping:mapping forKeyPath:@"article"];
+```
 
 ### Configure a Mappable class. 
+```objc
     // In this use case the mapping is returned from the class and registered with the object manager.
     @interface Article : RKObject {        
     }
@@ -39,7 +86,7 @@
     
     + (RKObjectMapping*)objectMapping {
         return [RKObjectMapping mappingForClass:self withBlock:^(RKObjectMapping* article) {
-            [article mapElements:@"title", @"body", nil];
+            [article mapAttributes:@"title", @"body", nil];
             [article belongsTo:@"user" objectClass:[User class] andPrimaryKey:@"user_id"];
             [article hasMany:@"comments" withClass:[Comment class]];
         }];
@@ -47,50 +94,53 @@
     
     @end
     
-    [objectManager registerMappable:[RKArticle class] forElement:@"article"];
+    [objectManager setMapping:[RKArticle objectMapping] forKeyPath:@"article"];
+```
 
 ### Automatic Mapping Generation
+```objc
     // This method will generate a mapping for a class defining element to property mappings for the public properties
+    // TODO: Do we want to bother with this?
     RKObjectMapping* mapping = [RKObjectMapping generateMappingForClass:[Article class]];
-    [objectManager registerMapping:mapping forElement:@"article"];
+    [objectManager setMapping:mapping forKeyPath:@"article"];
+```
 
 ### Load Mapping from a Property List
+```objc
     // TODO: Do we want to support this?
     NSArray* mappings = [RKObjectMapping loadMappingsFromPropertyList:@"article.plist"];
+```
 
 ### Performing a Mapping
+```objc
     // RKObjectMapper always returns a single mapped structure from a dictionary. Arrays are handled by iterating and returning 
     @implementation RKObjectLoader
     
     - (void)didFinishLoad {
         id payload = [self.parser parseString:[self bodyAsString]];
-        if ([payload isKindOfClass:[NSArray class]]) {
-            for (id object in payload) {
-                [RKObjectMapper initWithDictionary:object mapping:self.mapping];
-            }
-        } else if ([payload isKindOfClass:[NSDictionary class]]) {
-            RKObjectMapper* mapper = [RKObjectMapper initWithDictionary:object mapping:self.mapping];
-            mapper.delegate = self.mappingDelegate;
-            id results = [mapper performMapping];
-            return results;
-        }
-    }    
+        RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:payload atKeyPath:nil mappingProvider:self.objectManager.mappingProvider];
+        id mappingResults = [mapper performMapping];
+            
+       [self.delegate didLoadObjects:mappingResults];
+    }
+```
 
-### Loading Using Registered Mapping
+### Tracing a Mapping
+```objc
+    RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:payload atKeyPath:nil mappingProvider:self.objectManager.mappingProvider];
+    mapper.tracingEnabled = YES;
+    id mappingResults = [mapper performMapping];
+    // Generates log output informing you of what happened within the mapper and mapping operations
+```
+
+### Loading Using KeyPath Mapping Lookup
+```objc
     RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" delegate:self];
-
-### Loading to a Registered Class
-    // TODO: Do we need this? Just call `[Article objectMapping]` instead???
-    RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" toClass:[Article class] delegate:self];
+    // The object mapper will try to determine the mappings by examining keyPaths
+```
 
 ### Load using an explicit mapping
-    RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" withMapping:mapping delegate:self];
+```objc
+    RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" withMapping:[RKArticle objectMapping] delegate:self];
     loader.mappingDelegate = self;
-
-## RKObjectLoader Changes
-- keyPath -> Can we eliminate this?
-- MIMETypesToParserMappings -> Copied down from the object manager, settable on a per-object basis (YAGNI???)
-- resourcePath
-- mapping (or nil). If nil, the payload is parsed and each element name is looked up and mapped.
-- mappingDelegate / mapperDelegate. A delegate to assign to the mapper as processing happens
-    
+```
