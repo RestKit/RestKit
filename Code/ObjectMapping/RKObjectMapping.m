@@ -21,31 +21,30 @@
 - (id)init {
     self = [super init];
     if (self) {
-        _elementMappings = [NSMutableArray new];
+        _keyPathMappings = [NSMutableArray new];
     }
     
     return self;
 }
 
 - (void)dealloc {
-    [_elementMappings release];
+    [_keyPathMappings release];
     [super dealloc];
 }
 
-- (void)addElementMapping:(RKObjectElementMapping*)elementMapping {
-    NSAssert1([_elementMappings containsObject:elementMapping] == NO, @"Unable to add mapping for element %@, one already exists...", elementMapping.element);
-    // TODO: Assert that there is only one mapping per element
-    [_elementMappings addObject:elementMapping];
+- (void)addKeyPathMapping:(RKObjectKeyPathMapping*)mapping {
+    NSAssert1([_keyPathMappings containsObject:mapping] == NO, @"Unable to add mapping for keyPath %@, one already exists...", mapping.sourceKeyPath);
+    [_keyPathMappings addObject:mapping];
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"RKObjectMapping class => %@: element mappings => %@", NSStringFromClass(self.objectClass), _elementMappings];
+    return [NSString stringWithFormat:@"RKObjectMapping class => %@: keyPath mappings => %@", NSStringFromClass(self.objectClass), _keyPathMappings];
 }
 
-- (RKObjectElementMapping*)mappingForElement:(NSString*)element {
-    for (RKObjectElementMapping* elementMapping in _elementMappings) {
-        if ([elementMapping.element isEqualToString:element]) {
-            return elementMapping;
+- (RKObjectKeyPathMapping*)mappingForKeyPath:(NSString*)keyPath {
+    for (RKObjectKeyPathMapping* mapping in _keyPathMappings) {
+        if ([mapping.sourceKeyPath isEqualToString:keyPath]) {
+            return mapping;
         }
     }
     

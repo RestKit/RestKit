@@ -7,14 +7,14 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKObjectElementMapping.h"
+#import "RKObjectKeyPathMapping.h"
 
 @class RKObjectMappingOperation;
 
 @protocol RKObjectMappingOperationDelegate  <NSObject>
 
 @required
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectElementMapping *)elementMapping forKeyPath:(NSString *)keyPath;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectKeyPathMapping *)elementMapping forKeyPath:(NSString *)keyPath;
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forProperty:(NSString *)property;
 

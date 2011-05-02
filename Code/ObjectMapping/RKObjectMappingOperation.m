@@ -47,14 +47,14 @@
 
 - (void)performMapping {
     for (NSString* keyPath in [self.dictionary allKeys]) {
-        RKObjectElementMapping* elementMapping = [self.objectMapping mappingForElement:keyPath];        
+        RKObjectKeyPathMapping* elementMapping = [self.objectMapping mappingForKeyPath:keyPath];        
         if (elementMapping) {
             [self.delegate objectMappingOperation:self didFindMapping:elementMapping forKeyPath:keyPath];
             id value = [self.dictionary valueForKeyPath:keyPath];
             // TODO: Handle relationships and collections by evaluating the type of the elementMapping???
             // didSetValue:forKeyPath:fromKeyPath:
-            [self.delegate objectMappingOperation:self didSetValue:value forProperty:elementMapping.property];
-            [self.object setValue:value forKey:elementMapping.property];
+            [self.delegate objectMappingOperation:self didSetValue:value forProperty:elementMapping.destinationKeyPath];
+            [self.object setValue:value forKey:elementMapping.destinationKeyPath];
         } else {
             [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:keyPath];
         }

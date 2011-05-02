@@ -12,7 +12,7 @@
 #import "RKJSONParser.h"
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
-#import "RKObjectElementMapping.h"
+#import "RKObjectKeyPathMapping.h"
 
 /*!
  Responsible for providing object mappings to an instance of the object mapper
@@ -80,7 +80,7 @@ typedef enum RKObjectMapperErrors {
 
 @implementation RKObjectMapperTracingDelegate
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectElementMapping *)elementMapping forKeyPath:(NSString *)keyPath {
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectKeyPathMapping *)elementMapping forKeyPath:(NSString *)keyPath {
     NSLog(@"Found mapping for keyPath '%@': %@", keyPath, elementMapping);
 }
 
@@ -348,6 +348,7 @@ typedef enum RKObjectMapperErrors {
     NSAssert(self.object != nil, @"Cannot perform object mapping without an object to map");
     NSAssert(self.mappingProvider != nil, @"Cannot perform object mapping without an object mapping provider");        
     
+    // TODO: Delegate invocation
     NSLog(@"Self.object is %@", self.object);
     if ([self.object isKindOfClass:[NSArray class]] || [self.object isKindOfClass:[NSSet class]]) {        
         return [self performMappingForCollection];
@@ -399,6 +400,8 @@ typedef enum RKObjectMapperErrors {
         // TODO: Need to examine the type of elements and behave appropriately...
         if ([elements isKindOfClass:[NSDictionary class]]) {            
             // TODO: Memory management...             
+            // TODO: Should this be a sub-mapper?
+            // [self childMapperForKeyPath:withObject:
             id mappableObject = [self createInstanceOfClassForMapping:mapping.objectClass];
             NSObject* mappedObject = [self mapObject:mappableObject fromDictionary:elements usingMapping:mapping];
             [mappedObjects addObject:mappedObject];
@@ -449,36 +452,36 @@ typedef enum RKObjectMapperErrors {
 
 @implementation RKObjectMappingNextGenSpec
 
-#pragma mark - RKObjectElementMapping Specs
+#pragma mark - RKObjectKeyPathMapping Specs
 
 - (void)itShouldDefineElementToPropertyMapping {
-    RKObjectElementMapping* elementMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [expectThat(elementMapping.element) should:be(@"id")];
-    [expectThat(elementMapping.property) should:be(@"userID")];
+    RKObjectKeyPathMapping* elementMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [expectThat(elementMapping.sourceKeyPath) should:be(@"id")];
+    [expectThat(elementMapping.destinationKeyPath) should:be(@"userID")];
 }
 
 - (void)itShouldDescribeElementMappings {
-    RKObjectElementMapping* elementMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [expectThat([elementMapping description]) should:be(@"RKObjectElementMapping: id => userID")];
+    RKObjectKeyPathMapping* elementMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [expectThat([elementMapping description]) should:be(@"RKObjectKeyPathMapping: id => userID")];
 }
 
 #pragma mark - RKObjectMapping Specs
 
 - (void)itShouldDefineMappingFromAnElementToAProperty {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    [expectThat([mapping mappingForElement:@"id"]) should:be(idMapping)];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    [expectThat([mapping mappingForKeyPath:@"id"]) should:be(idMapping)];
 }
 
 #pragma mark - RKNewObjectMapper Specs
 
 - (void)itShouldPerformBasicMapping {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     
     // Map that shit
     RKNewObjectMapper* mapper = [RKNewObjectMapper new];
@@ -490,10 +493,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldTraceMapping {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     
     // Produce logging instead of results...
     RKNewObjectMapper* mapper = [RKNewObjectMapper new];
@@ -504,10 +507,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldMapACollectionOfSimpleObjectDictionaries {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
    
     RKNewObjectMapper* mapper = [RKNewObjectMapper new];
     id userInfo = RKSpecParseFixtureJSON(@"users.json");
@@ -532,10 +535,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldMapToATargetObject {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     [[[mockProvider expect] andReturn:mapping] objectMappingForClass:[RKExampleUser class] atKeyPath:nil];
@@ -575,10 +578,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldMapWithoutATargetMapping {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
     
@@ -591,10 +594,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldMapACollectionOfObjects {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
     
@@ -610,10 +613,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldObtainAMappableRepresentationOfAnObjectFromTheDelegateWhenMappingArbitraryTypes {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
     
@@ -630,10 +633,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldBeAbleToMapFromAUserObjectToADictionary {    
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
     
@@ -666,10 +669,10 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldMapRegisteredSubKeyPathsOfAnUnmappableDictionaryAndReturnTheResults {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
     [[[mockProvider stub] andReturn:nil] objectMappingForKeyPath:nil];
     [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:@"user"];
@@ -688,10 +691,10 @@ typedef enum RKObjectMapperErrors {
 // TODO: Change to an error...
 - (void)itShouldRaiseAnExceptionWhenYouTryToMapAnArrayToATargetObject {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectElementMapping* idMapping = [RKObjectElementMapping mappingFromElement:@"id" toProperty:@"userID"];
-    [mapping addElementMapping:idMapping];
-    RKObjectElementMapping* nameMapping = [RKObjectElementMapping mappingFromElement:@"name" toProperty:@"name"];
-    [mapping addElementMapping:nameMapping];
+    RKObjectKeyPathMapping* idMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addKeyPathMapping:idMapping];
+    RKObjectKeyPathMapping* nameMapping = [RKObjectKeyPathMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addKeyPathMapping:nameMapping];
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
     

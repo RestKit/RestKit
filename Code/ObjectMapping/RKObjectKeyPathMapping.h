@@ -15,18 +15,17 @@
 
 // Defines the rules for mapping a particular element
 // TODO: This is probably a private class that is created via calls to the object mapping?
-@interface RKObjectElementMapping : NSObject {
-    NSString* _element;
-    NSString* _property;
+@interface RKObjectKeyPathMapping : NSObject {
+    NSString* _sourceKeyPath;
+    NSString* _destinationKeyPath;
 }
 
-@property (nonatomic, retain) NSString* element;
-@property (nonatomic, retain) NSString* property;
+@property (nonatomic, retain) NSString* sourceKeyPath;
+@property (nonatomic, retain) NSString* destinationKeyPath;
 
 /*!
- Defines a mapping from an element to a particular property within an object mapping
+ Defines a mapping from one keyPath to another within an object mapping
  */
-// TODO: could be toKeyPath:
-+ (RKObjectElementMapping*)mappingFromElement:(NSString*)element toProperty:(NSString*)property;
++ (RKObjectKeyPathMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath;
 
 @end
