@@ -67,8 +67,8 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
     // TODO: Improve these...
     [mapping mapAttributes:@"title", @"body", nil];
     [mapping mapAttributesWithKeyPathPairs:@"created_at", @"createdAt", nil]; // TODO: Better method signature...
-    [mapping mapElement:@"comments" toMany:[Comment class]];
-    [mapping mapElement:@"author" toOne:[User class] withPrimaryKey:@"author_id"];
+    [mapping hasMany:@"comments" withMapping:[Comment objectMapping]];
+    [mapping belongsTo:@"author" withObjectMapping:[User objectMapping] andPrimaryKey:@"author_id"];
     [mapping serializeRelationships:@"comments", nil];
     
     // Register the mapping with the object manager
@@ -87,8 +87,8 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
     + (RKObjectMapping*)objectMapping {
         return [RKObjectMapping mappingForClass:self withBlock:^(RKObjectMapping* article) {
             [article mapAttributes:@"title", @"body", nil];
-            [article belongsTo:@"user" objectClass:[User class] andPrimaryKey:@"user_id"];
-            [article hasMany:@"comments" withClass:[Comment class]];
+            [article belongsTo:@"user" withObjectMapping:[User objectMapping] andPrimaryKey:@"user_id"];
+            [article hasMany:@"comments" withObjectMapping:[Comment objectMapping]];
         }];
     }
     
@@ -99,7 +99,7 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
 
 ### Automatic Mapping Generation
 ```objc
-    // This method will generate a mapping for a class defining element to property mappings for the public properties
+    // This method will generate a mapping for a class defining attribute + relationship mappings for the public properties
     // TODO: Do we want to bother with this?
     RKObjectMapping* mapping = [RKObjectMapping generateMappingForClass:[Article class]];
     [objectManager setMapping:mapping forKeyPath:@"article"];
