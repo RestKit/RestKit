@@ -19,7 +19,21 @@ via relationships
 Object mapping is the process RestKit uses to transform objects between representations. Object mapping
 leverages key-value coding conventions to determine how to map keyPaths between object instances and
 attributes. The process is composed of four steps:
-1. 
+
+1. Identification: An `RKObjectMapper` is initialized with an arbitrary collection of key-value coding
+compliant data, a keyPath the object resides at (can be nil), and a mapping provider. The mapper inspects the
+type of object and attempts to find mappable objects with the data.
+1. Processing of Mappable Objects: If a dictionary or array is found and a corresponding object mapping is
+available for the keyPath, an `RKObjectMappingOperation` is created to process the data. 
+1. Attribute & Relationship Mapping: Each mapping within the object mapping definition is evaluated against the
+mappable data and the result is set on the target object.
+1. Sub-keyPath Mapping: If an entire dictionary is not mappable, but contains keyPaths that are mappable, these
+keyPaths are mapped using a new object mapper targeted at the nested mappable data. The results of this mapping is
+assigned to a results dictionary with a key set to the keyPath that was mapped. 
+```
+i.e. { "user": { // user data here}, "status": { // status data here } } 
+=> { "user": user // RKUser instance, "status": status // RKStatus instance}
+```
 
 ## Class Hierarchy
 - **RKObjectManager** - The external client interface for performing object mapping operations on resources
@@ -121,7 +135,7 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
         RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:payload atKeyPath:nil mappingProvider:self.objectManager.mappingProvider];
         id mappingResults = [mapper performMapping];
             
-       [self.delegate didLoadObjects:mappingResults];
+        [self.delegate didLoadObjects:mappingResults];
     }
 ```
 
@@ -143,4 +157,19 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
 ```objc
     RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" withMapping:[RKArticle objectMapping] delegate:self];
     loader.mappingDelegate = self;
+```
+
+### Serialization from an object to a Dictionary
+// TODO: Design here is not totally fleshed out...
+```objc
+    RKUser* user = [User new];
+    user.firstName = @"Blake";
+    user.lastName = @"Watters";
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    [mapping mapAttributes:@"firstName", @"lastName", nil];
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithObject:dictionary andDictionary:user atKeyPath:nil usingObjectMapping:mapping];
+    [operation performMapping];
+    
+    // TODO: Figure out how to get to JSON / form encoded... These are object mapping operations
 ```
