@@ -172,7 +172,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     }
 }
 
-- (void)deletePersistantStore {
+- (void)deletePersistantStoreUsingSeedDatabaseName:(NSString *)seedFile {
 	NSURL* storeUrl = [NSURL fileURLWithPath:self.pathToStoreFile];
 	
 	NSError* error;
@@ -194,7 +194,14 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
         [threadDictionary removeObjectForKey:kRKManagedObjectContextKey];
     }
 	
+	if (seedFile)
+		[self createStoreIfNecessaryUsingSeedDatabase:seedFile];
+
 	[self createPersistentStoreCoordinator];
+}
+
+- (void)deletePersistantStore {
+	[self deletePersistantStoreUsingSeedDatabaseName:nil];
 }
 
 /**
