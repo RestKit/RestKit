@@ -14,8 +14,8 @@
 @protocol RKObjectMappingOperationDelegate  <NSObject>
 
 @required
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectElementMapping *)elementMapping forElement:(NSString *)element;
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForElement:(NSString *)element;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectElementMapping *)elementMapping forKeyPath:(NSString *)keyPath;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forProperty:(NSString *)property;
 
 @end
@@ -27,7 +27,7 @@
 @interface RKObjectMappingOperation : NSObject {
     id _object;
     NSString* _keyPath;
-    NSDictionary* _elements;
+    NSDictionary* _dictionary;
     RKObjectMapping* _objectMapping;
     
     id<RKObjectMappingOperationDelegate> _delegate;
@@ -48,7 +48,7 @@
 /*!
  A dictionary of mappable elements containing simple values or nested object structures.
  */
-@property (nonatomic, readonly) NSDictionary* elements;
+@property (nonatomic, readonly) NSDictionary* dictionary;
 
 /*!
  The object mapping defining how values contained in elements should be applied to the target object via key-value coding
@@ -63,7 +63,7 @@
 /*!
  Initialize a mapping operation for an object and set of data at a particular key path with an object mapping definition
  */
-- (id)initWithObject:(id)object andElements:(NSDictionary*)elements atKeyPath:(NSString*)keyPath usingObjectMapping:(RKObjectMapping*)objectMapping;
+- (id)initWithObject:(id)object andDictionary:(NSDictionary*)dictionary atKeyPath:(NSString*)keyPath usingObjectMapping:(RKObjectMapping*)objectMapping;
 
 /*!
  Process all mappable values from the element dictionary and assign them to the target object

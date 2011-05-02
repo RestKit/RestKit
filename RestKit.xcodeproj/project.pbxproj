@@ -165,6 +165,7 @@
 		25952DFA136C9E7C00D04F93 /* RKObjectElementMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952DF8136C9E7C00D04F93 /* RKObjectElementMapping.m */; };
 		25952E02136CA34500D04F93 /* user.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952E00136CA34500D04F93 /* user.json */; };
 		25952E03136CA34500D04F93 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952E01136CA34500D04F93 /* users.json */; };
+		25952E05136E149B00D04F93 /* nested_user.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952E04136E149B00D04F93 /* nested_user.json */; };
 		259562E4126D3B36004BAC4C /* RKDynamicRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKDynamicRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259562E5126D3B36004BAC4C /* RKDynamicRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E3126D3B36004BAC4C /* RKDynamicRouter.m */; };
 		259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E6126D3B43004BAC4C /* RKRailsRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -494,6 +495,7 @@
 		25952DF8136C9E7C00D04F93 /* RKObjectElementMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectElementMapping.m; sourceTree = "<group>"; };
 		25952E00136CA34500D04F93 /* user.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user.json; sourceTree = "<group>"; };
 		25952E01136CA34500D04F93 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = users.json; sourceTree = "<group>"; };
+		25952E04136E149B00D04F93 /* nested_user.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nested_user.json; sourceTree = "<group>"; };
 		259562E2126D3B36004BAC4C /* RKDynamicRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicRouter.h; sourceTree = "<group>"; };
 		259562E3126D3B36004BAC4C /* RKDynamicRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouter.m; sourceTree = "<group>"; };
 		259562E6126D3B43004BAC4C /* RKRailsRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRailsRouter.h; sourceTree = "<group>"; };
