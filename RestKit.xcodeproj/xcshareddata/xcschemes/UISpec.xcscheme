@@ -71,7 +71,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldPerformBasicMapping"
+            value = "itShouldNotifyTheDelegateWhenItFailedToMapAnObject"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

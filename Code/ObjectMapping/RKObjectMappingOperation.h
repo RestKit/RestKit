@@ -17,6 +17,7 @@
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)mapping forKeyPath:(NSString *)keyPath;
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping*)mapping;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFailWithError:(NSError*)error;
 
 @end
 
@@ -61,6 +62,11 @@
 @property (nonatomic, assign) id<RKObjectMappingOperationDelegate> delegate;
 
 /*!
+ An error that failed the mapping operation
+ */
+//@property (nonatomic, readonly) NSError* error;
+
+/*!
  Initialize a mapping operation for an object and set of data at a particular key path with an object mapping definition
  */
 - (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject keyPath:(NSString*)keyPath objectMapping:(RKObjectMapping*)objectMapping;
@@ -69,6 +75,6 @@
  Process all mappable values from the mappable dictionary and assign them to the target object
  according to the rules expressed in the object mapping definition
  */
-- (void)performMapping;
+- (id)performMappingWithError:(NSError**)error;
 
 @end

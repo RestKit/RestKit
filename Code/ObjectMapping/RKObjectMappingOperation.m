@@ -7,6 +7,7 @@
 //
 
 #import "RKObjectMappingOperation.h"
+#import "Errors.h"
 
 @implementation RKObjectMappingOperation
 
@@ -46,23 +47,57 @@
     return NSStringFromClass([self.destinationObject class]);
 }
 
-- (void)performMapping {
+// Return YES if we mapped any attributes
+- (BOOL)applyAttributeMappings {
+    BOOL appliedMappings = NO;
+    
     for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.mappings) {
         // TODO: Catch exceptions here... valueForUndefinedKey
+        // TODO: Handle nil's and NSNull
         id value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         // TODO: Replace this logging...
         NSLog(@"Asking self.sourceObject %@ for valueForKeyPath: %@. Got %@", self.sourceObject, attributeMapping.sourceKeyPath, value);
         if (value) {
+            appliedMappings = YES;
             [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
             // TODO: didFindMappableValue:atKeyPath:
             // TODO: Handle relationships and collections by evaluating the type of the elementMapping???
             // didSetValue:forKeyPath:fromKeyPath:            
             [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
             [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+            // didMapValue:fromValue:usingMapping
         } else {
             [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
             // TODO: didNotFindMappableValue:forKeyPath:
         }
+    }
+    
+    return appliedMappings;
+}
+
+- (BOOL)applyRelationshipMappings {
+    return NO;
+}
+
+- (id)performMappingWithError:(NSError**)error {
+    BOOL mappedAttributes = [self applyAttributeMappings];
+    BOOL mappedRelationships = [self applyRelationshipMappings];
+    
+    // Return the destination object if we were successful
+    if (mappedAttributes || mappedRelationships) {
+        return self.destinationObject;
+    } else {
+        NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  @"", NSLocalizedDescriptionKey,
+                                  @"RKObjectMapperKeyPath", self.keyPath,
+                                  nil];
+        int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
+        NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];        
+        [self.delegate objectMappingOperation:self didFailWithError:unmappableError];
+        if (error) {
+            *error = unmappableError;
+        }
+        return nil;
     }
 }
 
