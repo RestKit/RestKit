@@ -10,22 +10,22 @@
 
 @implementation RKObjectMappingOperation
 
-@synthesize object = _object;
+@synthesize sourceObject = _sourceObject;
+@synthesize destinationObject = _destinationObject;
 @synthesize keyPath = _keyPath;
-@synthesize dictionary = _dictionary;
 @synthesize objectMapping = _objectMapping;
 @synthesize delegate = _delegate;
 
-- (id)initWithObject:(id)object andDictionary:(NSDictionary*)dictionary atKeyPath:(NSString*)keyPath usingObjectMapping:(RKObjectMapping*)objectMapping {
-    NSAssert(object != nil, @"Cannot perform a mapping operation without a target object");
-    NSAssert(dictionary != nil, @"Cannot perform a mapping operation without elements");
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject keyPath:(NSString*)keyPath objectMapping:(RKObjectMapping*)objectMapping {
+    NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
+    NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
     NSAssert(keyPath != nil, @"Cannot perform a mapping operation without a keyPath context");
     NSAssert(objectMapping != nil, @"Cannot perform a mapping operation without an object mapping to apply");
     
     self = [super init];
     if (self) {
-        _object = [object retain];
-        _dictionary = [dictionary retain];
+        _sourceObject = [sourceObject retain];
+        _destinationObject = [destinationObject retain];
         _keyPath = [keyPath retain];
         _objectMapping = [objectMapping retain];
     }
@@ -34,7 +34,8 @@
 }
 
 - (void)dealloc {
-    [_dictionary release];
+    [_sourceObject release];
+    [_destinationObject release];
     [_keyPath release];
     [_objectMapping release];
     
@@ -42,28 +43,32 @@
 }
 
 - (NSString*)objectClassName {
-    return NSStringFromClass([self.object class]);
+    return NSStringFromClass([self.destinationObject class]);
 }
 
 - (void)performMapping {
-    for (NSString* keyPath in [self.dictionary allKeys]) {
-        RKObjectAttributeMapping* elementMapping = [self.objectMapping mappingForKeyPath:keyPath];        
-        if (elementMapping) {
-            [self.delegate objectMappingOperation:self didFindMapping:elementMapping forKeyPath:keyPath];
-            id value = [self.dictionary valueForKeyPath:keyPath];
+    for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.mappings) {
+        // TODO: Catch exceptions here... valueForUndefinedKey
+        id value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        // TODO: Replace this logging...
+        NSLog(@"Asking self.sourceObject %@ for valueForKeyPath: %@. Got %@", self.sourceObject, attributeMapping.sourceKeyPath, value);
+        if (value) {
+            [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+            // TODO: didFindMappableValue:atKeyPath:
             // TODO: Handle relationships and collections by evaluating the type of the elementMapping???
-            // didSetValue:forKeyPath:fromKeyPath:
-            [self.delegate objectMappingOperation:self didSetValue:value forProperty:elementMapping.destinationKeyPath];
-            [self.object setValue:value forKey:elementMapping.destinationKeyPath];
+            // didSetValue:forKeyPath:fromKeyPath:            
+            [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
+            [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         } else {
-            [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:keyPath];
+            [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
+            // TODO: didNotFindMappableValue:forKeyPath:
         }
     }
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object at 'keyPath': %@. Mapping values from dictionary => %@ to object %@ with object mapping %@",
-            [self objectClassName], self.keyPath, self.dictionary, self.objectMapping];
+    return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object at 'keyPath': %@. Mapping values from object %@ to object %@ with object mapping %@",
+            [self objectClassName], self.keyPath, self.sourceObject, self.destinationObject];
 }
 
 @end

@@ -16,7 +16,7 @@
 @required
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)mapping forKeyPath:(NSString *)keyPath;
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value usingMapping:(RKObjectAttributeMapping*)mapping;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping*)mapping;
 
 @end
 
@@ -25,19 +25,24 @@
  and setting the mapped values onto a target object.
  */
 @interface RKObjectMappingOperation : NSObject {
-    id _object;
+    id _sourceObject;
+    id _destinationObject;
     NSString* _keyPath;
-    NSDictionary* _dictionary;
     RKObjectMapping* _objectMapping;
     
     id<RKObjectMappingOperationDelegate> _delegate;
 }
 
 /*!
+ A dictionary of mappable elements containing simple values or nested object structures.
+ */
+@property (nonatomic, readonly) id sourceObject;
+
+/*!
  The target object for this operation. Mappable values in elements will be applied to object
  using key-value coding.
  */
-@property (nonatomic, readonly) id object;
+@property (nonatomic, readonly) id destinationObject;
 
 /*!
  The current keyPath this operation is occuring at. This our current scope in
@@ -46,12 +51,7 @@
 @property (nonatomic, readonly) NSString* keyPath;
 
 /*!
- A dictionary of mappable elements containing simple values or nested object structures.
- */
-@property (nonatomic, readonly) NSDictionary* dictionary;
-
-/*!
- The object mapping defining how values contained in elements should be applied to the target object via key-value coding
+ The object mapping defining how values contained in the source object should be transformed to the destination object via key-value coding
  */
 @property (nonatomic, readonly) RKObjectMapping* objectMapping;
 
@@ -63,7 +63,7 @@
 /*!
  Initialize a mapping operation for an object and set of data at a particular key path with an object mapping definition
  */
-- (id)initWithObject:(id)object andDictionary:(NSDictionary*)dictionary atKeyPath:(NSString*)keyPath usingObjectMapping:(RKObjectMapping*)objectMapping;
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject keyPath:(NSString*)keyPath objectMapping:(RKObjectMapping*)objectMapping;
 
 /*!
  Process all mappable values from the mappable dictionary and assign them to the target object

@@ -12,13 +12,17 @@
 // Defines the mapping rules for a given target class
 @interface RKObjectMapping : NSObject {
     Class _objectClass;
-    NSMutableArray* _keyPathMappings;
+    NSMutableArray* _mappings;
 }
 
 @property (nonatomic, assign) Class objectClass;
+@property (nonatomic, readonly) NSArray* mappings;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass;
 - (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping;
 - (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath;
+
+- (NSArray*)mappedKeyPaths;
+// TODO: mappedAttributes: mappedRelationships???
 
 @end

@@ -11,6 +11,7 @@
 @implementation RKObjectMapping
 
 @synthesize objectClass = _objectClass;
+@synthesize mappings = _mappings;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [RKObjectMapping new];
@@ -21,28 +22,32 @@
 - (id)init {
     self = [super init];
     if (self) {
-        _keyPathMappings = [NSMutableArray new];
+        _mappings = [NSMutableArray new];
     }
     
     return self;
 }
 
 - (void)dealloc {
-    [_keyPathMappings release];
+    [_mappings release];
     [super dealloc];
 }
 
+- (NSArray*)mappedKeyPaths {
+    return [_mappings valueForKey:@"destinationKeyPath"];
+}
+
 - (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping {
-    NSAssert1([_keyPathMappings containsObject:mapping] == NO, @"Unable to add mapping for keyPath %@, one already exists...", mapping.sourceKeyPath);
-    [_keyPathMappings addObject:mapping];
+    NSAssert1([[self mappedKeyPaths] containsObject:mapping.destinationKeyPath] == NO, @"Unable to add mapping for keyPath %@, one already exists...", mapping.destinationKeyPath);
+    [_mappings addObject:mapping];
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"RKObjectMapping class => %@: keyPath mappings => %@", NSStringFromClass(self.objectClass), _keyPathMappings];
+    return [NSString stringWithFormat:@"RKObjectMapping class => %@: keyPath mappings => %@", NSStringFromClass(self.objectClass), _mappings];
 }
 
 - (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath {
-    for (RKObjectAttributeMapping* mapping in _keyPathMappings) {
+    for (RKObjectAttributeMapping* mapping in _mappings) {
         if ([mapping.sourceKeyPath isEqualToString:keyPath]) {
             return mapping;
         }
