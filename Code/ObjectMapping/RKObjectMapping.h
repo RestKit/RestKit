@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectKeyPathMapping.h"
+#import "RKObjectAttributeMapping.h"
 
 // Defines the mapping rules for a given target class
 @interface RKObjectMapping : NSObject {
@@ -18,7 +18,7 @@
 @property (nonatomic, assign) Class objectClass;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass;
-- (void)addKeyPathMapping:(RKObjectKeyPathMapping*)mapping;
-- (RKObjectKeyPathMapping*)mappingForKeyPath:(NSString*)element;
+- (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping;
+- (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath;
 
 @end

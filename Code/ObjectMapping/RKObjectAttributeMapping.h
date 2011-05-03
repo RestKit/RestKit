@@ -15,7 +15,7 @@
 
 // Defines the rules for mapping a particular element
 // TODO: This is probably a private class that is created via calls to the object mapping?
-@interface RKObjectKeyPathMapping : NSObject {
+@interface RKObjectAttributeMapping : NSObject {
     NSString* _sourceKeyPath;
     NSString* _destinationKeyPath;
 }
@@ -26,6 +26,6 @@
 /*!
  Defines a mapping from one keyPath to another within an object mapping
  */
-+ (RKObjectKeyPathMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath;
++ (RKObjectAttributeMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath;
 
 @end

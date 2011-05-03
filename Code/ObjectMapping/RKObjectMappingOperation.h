@@ -7,16 +7,16 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKObjectKeyPathMapping.h"
+#import "RKObjectAttributeMapping.h"
 
 @class RKObjectMappingOperation;
 
 @protocol RKObjectMappingOperationDelegate  <NSObject>
 
 @required
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectKeyPathMapping *)elementMapping forKeyPath:(NSString *)keyPath;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)mapping forKeyPath:(NSString *)keyPath;
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forProperty:(NSString *)property;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value usingMapping:(RKObjectAttributeMapping*)mapping;
 
 @end
 
@@ -66,7 +66,7 @@
 - (id)initWithObject:(id)object andDictionary:(NSDictionary*)dictionary atKeyPath:(NSString*)keyPath usingObjectMapping:(RKObjectMapping*)objectMapping;
 
 /*!
- Process all mappable values from the element dictionary and assign them to the target object
+ Process all mappable values from the mappable dictionary and assign them to the target object
  according to the rules expressed in the object mapping definition
  */
 - (void)performMapping;

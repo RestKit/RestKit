@@ -32,7 +32,7 @@
     [super dealloc];
 }
 
-- (void)addKeyPathMapping:(RKObjectKeyPathMapping*)mapping {
+- (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping {
     NSAssert1([_keyPathMappings containsObject:mapping] == NO, @"Unable to add mapping for keyPath %@, one already exists...", mapping.sourceKeyPath);
     [_keyPathMappings addObject:mapping];
 }
@@ -41,8 +41,8 @@
     return [NSString stringWithFormat:@"RKObjectMapping class => %@: keyPath mappings => %@", NSStringFromClass(self.objectClass), _keyPathMappings];
 }
 
-- (RKObjectKeyPathMapping*)mappingForKeyPath:(NSString*)keyPath {
-    for (RKObjectKeyPathMapping* mapping in _keyPathMappings) {
+- (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath {
+    for (RKObjectAttributeMapping* mapping in _keyPathMappings) {
         if ([mapping.sourceKeyPath isEqualToString:keyPath]) {
             return mapping;
         }

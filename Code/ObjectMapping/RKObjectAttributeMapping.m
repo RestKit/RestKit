@@ -6,9 +6,9 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKObjectKeyPathMapping.h"
+#import "RKObjectAttributeMapping.h"
 
-@implementation RKObjectKeyPathMapping
+@implementation RKObjectAttributeMapping
 
 @synthesize sourceKeyPath = _sourceKeyPath;
 @synthesize destinationKeyPath = _destinationKeyPath;
@@ -39,8 +39,8 @@
     return [NSString stringWithFormat:@"RKObjectKeyPathMapping: %@ => %@", self.sourceKeyPath, self.destinationKeyPath];
 }
 
-+ (RKObjectKeyPathMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath {
-    RKObjectKeyPathMapping* mapping = [[RKObjectKeyPathMapping alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
++ (RKObjectAttributeMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath {
+    RKObjectAttributeMapping* mapping = [[RKObjectAttributeMapping alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
     return [mapping autorelease];
 }
 

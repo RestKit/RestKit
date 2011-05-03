@@ -47,7 +47,7 @@
 
 - (void)performMapping {
     for (NSString* keyPath in [self.dictionary allKeys]) {
-        RKObjectKeyPathMapping* elementMapping = [self.objectMapping mappingForKeyPath:keyPath];        
+        RKObjectAttributeMapping* elementMapping = [self.objectMapping mappingForKeyPath:keyPath];        
         if (elementMapping) {
             [self.delegate objectMappingOperation:self didFindMapping:elementMapping forKeyPath:keyPath];
             id value = [self.dictionary valueForKeyPath:keyPath];

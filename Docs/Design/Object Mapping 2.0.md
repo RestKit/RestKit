@@ -3,6 +3,7 @@
 This document details the design of object mapping in RestKit. 
 
 ## Goals
+- Take parsing responsibilities out of the mapper entirely
 - Support arbitrarily complex mapping operations
 - Enable full transparency and insight into the mapping operation
 - Provide a clean, clear mapping API that is easy to work on and extend
@@ -160,8 +161,9 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
 ```
 
 ### Serialization from an object to a Dictionary
-// TODO: Design here is not totally fleshed out...
+
 ```objc
+    // TODO: Design here is not totally fleshed out...
     RKUser* user = [User new];
     user.firstName = @"Blake";
     user.lastName = @"Watters";
