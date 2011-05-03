@@ -27,15 +27,6 @@
  */
 - (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
 
-/*!
- Returns the object mapping for an instance of a class occuring at a particular keyPath
- 
- This method is consulted by the object mapper when the destination class for an object is known (i.e. targetObject is set)
- */
-- (RKObjectMapping*)objectMappingForClass:(Class)class atKeyPath:(NSString*)keyPath;
-
-//- (id)objectForMappingAtKeyPath;
-
 @end
 
 @class RKNewObjectMapper;
@@ -45,7 +36,8 @@
  for an external object mapping operation.
  */
 typedef enum RKObjectMapperErrors {
-    RKObjectMapperErrorClassMappingNotFound
+    RKObjectMapperErrorClassMappingNotFound,
+    RKObjectMapperErrorClassMappingMismatch
 } RKObjectMapperErrorCode;
 
 @protocol RKObjectMapperDelegate <NSObject>
@@ -90,10 +82,6 @@ typedef enum RKObjectMapperErrors {
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forProperty:(NSString *)property {
     NSLog(@"Set '%@' to '%@' on object %@ at keyPath '%@'", property, value, operation.object, operation.keyPath);
-}
-
-- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath {
-    return nil;
 }
 
 - (void)objectMapper:(RKNewObjectMapper *)objectMapper didAddError:(NSError *)error {
@@ -243,21 +231,13 @@ typedef enum RKObjectMapperErrors {
     return nil;
 }
 
-- (RKObjectMapping*)mappingForKeyPath:(NSString*)keyPath withClass:(Class)objectClass {
-    RKObjectMapping* mapping = nil;
+- (RKObjectMapping*)mappingForKeyPath:(NSString*)keyPath {
     if ([self.delegate respondsToSelector:@selector(objectMapper:willAttemptMappingForKeyPath:)]) {
         [self.delegate objectMapper:self willAttemptMappingForKeyPath:keyPath];
     }
     [_tracer objectMapper:self willAttemptMappingForKeyPath:keyPath];
     
-    // Obtain the mapping from the provider
-    if (objectClass) {        
-        mapping = [self.mappingProvider objectMappingForClass:objectClass atKeyPath:keyPath];
-    } else {
-        mapping = [self.mappingProvider objectMappingForKeyPath:keyPath];
-    }
-    
-    return mapping;
+    return [self.mappingProvider objectMappingForKeyPath:keyPath];
 }
 
 // Attempts to map each sub keyPath for a mappable collection and returns the result as a dictionary
@@ -266,7 +246,7 @@ typedef enum RKObjectMapperErrors {
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     for (NSString* subKeyPath in [self.object allKeys]) {
         NSString* keyPath = self.keyPath ? [NSString stringWithFormat:@"%@.%@", self.keyPath, subKeyPath] : subKeyPath;
-        RKObjectMapping* mapping = [self mappingForKeyPath:keyPath withClass:nil];
+        RKObjectMapping* mapping = [self mappingForKeyPath:keyPath];
         if (mapping) {
             // This is a mappable sub keyPath. Initialize a new object mapper targeted at the subObject
             id subObject = [self.object valueForKey:keyPath];
@@ -299,10 +279,17 @@ typedef enum RKObjectMapperErrors {
     if (self.targetObject) {
         // If we find a mapping for this type and keyPath, map the entire dictionary to the target object
         destinationObject = self.targetObject;
-        objectMapping = [self mappingForKeyPath:self.keyPath withClass:[self.targetObject class]];
+        objectMapping = [self mappingForKeyPath:self.keyPath];
+        if (objectMapping && NO == [[self.targetObject class] isSubclassOfClass:objectMapping.objectClass]) {
+            NSString* errorMessage = [NSString stringWithFormat:
+                                      @"Expected an object mapping for class of type '%@', provider returned one for '%@'", 
+                                      NSStringFromClass([self.targetObject class]), NSStringFromClass(objectMapping.objectClass)];            
+            [self addErrorWithCode:RKObjectMapperErrorClassMappingMismatch message:errorMessage keyPath:self.keyPath userInfo:nil];
+            return nil;
+        }
     } else {
         // Otherwise map to a new object instance
-        objectMapping = [self mappingForKeyPath:self.keyPath withClass:nil];
+        objectMapping = [self mappingForKeyPath:self.keyPath];
         destinationObject = [self createInstanceOfClassForMapping:objectMapping.objectClass];
     }
         
@@ -325,7 +312,7 @@ typedef enum RKObjectMapperErrors {
 - (id)performMappingForMappableObject {
     NSAssert([[self.object class] respondsToSelector:@selector(mappableKeyPaths)], @"Expected self.object to RKObjectMappable");
     
-    RKObjectMapping* mapping = [self mappingForKeyPath:self.keyPath withClass:nil];
+    RKObjectMapping* mapping = [self mappingForKeyPath:self.keyPath];
     if (mapping) {        
         NSDictionary* mappableDictionary = [self.delegate mappableDictionaryForObject:self.object];
         if (mappableDictionary) {
@@ -523,7 +510,7 @@ typedef enum RKObjectMapperErrors {
 - (void)itShouldDetermineTheObjectMappingByConsultingTheMappingProviderWhenThereIsATargetObject {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForClass:[RKExampleUser class] atKeyPath:nil];
+    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
         
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
@@ -531,6 +518,18 @@ typedef enum RKObjectMapperErrors {
     [mapper performMapping];
     
     [mockProvider verify];
+}
+
+- (void)itShouldAddAnErrorWhenTheKeyPathMappingAndObjectClassDoNotAgree {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
+    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
+    
+    id userInfo = RKSpecParseFixtureJSON(@"user.json");
+    RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    mapper.targetObject = [NSDictionary new];
+    [mapper performMapping];
+    [expectThat([mapper errorCount]) should:be(1)];
 }
 
 - (void)itShouldMapToATargetObject {
@@ -541,7 +540,7 @@ typedef enum RKObjectMapperErrors {
     [mapping addAttributeMapping:nameMapping];
     
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForClass:[RKExampleUser class] atKeyPath:nil];
+    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];

@@ -149,13 +149,6 @@
 		2590E8601252515400531FA8 /* GHNSBundle+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85B1252515400531FA8 /* GHNSBundle+Utils.m */; };
 		2590E8611252515400531FA8 /* GTMBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E85D1252515400531FA8 /* GTMBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E8621252515400531FA8 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85E1252515400531FA8 /* GTMBase64.m */; };
-		25952EE1136F563E00D04F93 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25952ED8136F563E00D04F93 /* blake.png */; };
-		25952EE2136F563E00D04F93 /* ComplexNestedUser.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDA136F563E00D04F93 /* ComplexNestedUser.json */; };
-		25952EE3136F563E00D04F93 /* Foursquare.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDB136F563E00D04F93 /* Foursquare.json */; };
-		25952EE4136F563E00D04F93 /* 1.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDD136F563E00D04F93 /* 1.json */; };
-		25952EE5136F563E00D04F93 /* all.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDE136F563E00D04F93 /* all.json */; };
-		25952EE6136F563E00D04F93 /* RailsUser.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDF136F563E00D04F93 /* RailsUser.json */; };
-		25952EE7136F563E00D04F93 /* SameKeyDifferentTargetClasses.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EE0136F563E00D04F93 /* SameKeyDifferentTargetClasses.json */; };
 		25952DEA136C8F3500D04F93 /* RKObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952DE8136C8F3500D04F93 /* RKObjectMappingOperation.h */; };
 		25952DEB136C8F3500D04F93 /* RKObjectMappingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952DE9136C8F3500D04F93 /* RKObjectMappingOperation.m */; };
 		25952DF0136C8F9C00D04F93 /* RKObjectMappingOperationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952DEF136C8F9C00D04F93 /* RKObjectMappingOperationSpec.m */; };
@@ -163,9 +156,16 @@
 		25952DF6136C8FD500D04F93 /* RKObjectMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952DF4136C8FD500D04F93 /* RKObjectMapping.m */; };
 		25952DF9136C9E7C00D04F93 /* RKObjectAttributeMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952DF7136C9E7C00D04F93 /* RKObjectAttributeMapping.h */; };
 		25952DFA136C9E7C00D04F93 /* RKObjectAttributeMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952DF8136C9E7C00D04F93 /* RKObjectAttributeMapping.m */; };
-		25952E02136CA34500D04F93 /* user.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952E00136CA34500D04F93 /* user.json */; };
-		25952E03136CA34500D04F93 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952E01136CA34500D04F93 /* users.json */; };
-		25952E05136E149B00D04F93 /* nested_user.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952E04136E149B00D04F93 /* nested_user.json */; };
+		25952EE1136F563E00D04F93 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25952ED8136F563E00D04F93 /* blake.png */; };
+		25952EE2136F563E00D04F93 /* ComplexNestedUser.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDA136F563E00D04F93 /* ComplexNestedUser.json */; };
+		25952EE3136F563E00D04F93 /* Foursquare.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDB136F563E00D04F93 /* Foursquare.json */; };
+		25952EE4136F563E00D04F93 /* 1.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDD136F563E00D04F93 /* 1.json */; };
+		25952EE5136F563E00D04F93 /* all.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDE136F563E00D04F93 /* all.json */; };
+		25952EE6136F563E00D04F93 /* RailsUser.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EDF136F563E00D04F93 /* RailsUser.json */; };
+		25952EE7136F563E00D04F93 /* SameKeyDifferentTargetClasses.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952EE0136F563E00D04F93 /* SameKeyDifferentTargetClasses.json */; };
+		25952F0D136F8F7700D04F93 /* nested_user.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952F0A136F8F7700D04F93 /* nested_user.json */; };
+		25952F0E136F8F7700D04F93 /* user.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952F0B136F8F7700D04F93 /* user.json */; };
+		25952F0F136F8F7700D04F93 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952F0C136F8F7700D04F93 /* users.json */; };
 		259562E4126D3B36004BAC4C /* RKDynamicRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKDynamicRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259562E5126D3B36004BAC4C /* RKDynamicRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E3126D3B36004BAC4C /* RKDynamicRouter.m */; };
 		259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E6126D3B43004BAC4C /* RKRailsRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -478,13 +478,6 @@
 		2590E85B1252515400531FA8 /* GHNSBundle+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GHNSBundle+Utils.m"; sourceTree = "<group>"; };
 		2590E85D1252515400531FA8 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
 		2590E85E1252515400531FA8 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
-		25952ED8136F563E00D04F93 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
-		25952EDA136F563E00D04F93 /* ComplexNestedUser.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ComplexNestedUser.json; sourceTree = "<group>"; };
-		25952EDB136F563E00D04F93 /* Foursquare.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Foursquare.json; sourceTree = "<group>"; };
-		25952EDD136F563E00D04F93 /* 1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 1.json; sourceTree = "<group>"; };
-		25952EDE136F563E00D04F93 /* all.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = all.json; sourceTree = "<group>"; };
-		25952EDF136F563E00D04F93 /* RailsUser.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = RailsUser.json; sourceTree = "<group>"; };
-		25952EE0136F563E00D04F93 /* SameKeyDifferentTargetClasses.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SameKeyDifferentTargetClasses.json; sourceTree = "<group>"; };
 		25952DE8136C8F3500D04F93 /* RKObjectMappingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingOperation.h; sourceTree = "<group>"; };
 		25952DE9136C8F3500D04F93 /* RKObjectMappingOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingOperation.m; sourceTree = "<group>"; };
 		25952DEE136C8F9C00D04F93 /* RKObjectMappingOperationSpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingOperationSpec.h; sourceTree = "<group>"; };
@@ -493,9 +486,16 @@
 		25952DF4136C8FD500D04F93 /* RKObjectMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapping.m; sourceTree = "<group>"; };
 		25952DF7136C9E7C00D04F93 /* RKObjectAttributeMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectAttributeMapping.h; sourceTree = "<group>"; };
 		25952DF8136C9E7C00D04F93 /* RKObjectAttributeMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectAttributeMapping.m; sourceTree = "<group>"; };
-		25952E00136CA34500D04F93 /* user.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user.json; sourceTree = "<group>"; };
-		25952E01136CA34500D04F93 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = users.json; sourceTree = "<group>"; };
-		25952E04136E149B00D04F93 /* nested_user.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nested_user.json; sourceTree = "<group>"; };
+		25952ED8136F563E00D04F93 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
+		25952EDA136F563E00D04F93 /* ComplexNestedUser.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ComplexNestedUser.json; sourceTree = "<group>"; };
+		25952EDB136F563E00D04F93 /* Foursquare.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Foursquare.json; sourceTree = "<group>"; };
+		25952EDD136F563E00D04F93 /* 1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 1.json; sourceTree = "<group>"; };
+		25952EDE136F563E00D04F93 /* all.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = all.json; sourceTree = "<group>"; };
+		25952EDF136F563E00D04F93 /* RailsUser.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = RailsUser.json; sourceTree = "<group>"; };
+		25952EE0136F563E00D04F93 /* SameKeyDifferentTargetClasses.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SameKeyDifferentTargetClasses.json; sourceTree = "<group>"; };
+		25952F0A136F8F7700D04F93 /* nested_user.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = nested_user.json; sourceTree = "<group>"; };
+		25952F0B136F8F7700D04F93 /* user.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user.json; sourceTree = "<group>"; };
+		25952F0C136F8F7700D04F93 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = users.json; sourceTree = "<group>"; };
 		259562E2126D3B36004BAC4C /* RKDynamicRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicRouter.h; sourceTree = "<group>"; };
 		259562E3126D3B36004BAC4C /* RKDynamicRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouter.m; sourceTree = "<group>"; };
 		259562E6126D3B43004BAC4C /* RKRailsRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRailsRouter.h; sourceTree = "<group>"; };
@@ -1038,6 +1038,9 @@
 		25952ED9136F563E00D04F93 /* JSON */ = {
 			isa = PBXGroup;
 			children = (
+				25952F0A136F8F7700D04F93 /* nested_user.json */,
+				25952F0B136F8F7700D04F93 /* user.json */,
+				25952F0C136F8F7700D04F93 /* users.json */,
 				25952EDA136F563E00D04F93 /* ComplexNestedUser.json */,
 				25952EDB136F563E00D04F93 /* Foursquare.json */,
 				25952EDC136F563E00D04F93 /* humans */,
@@ -1591,6 +1594,9 @@
 				25952EE5136F563E00D04F93 /* all.json in Resources */,
 				25952EE6136F563E00D04F93 /* RailsUser.json in Resources */,
 				25952EE7136F563E00D04F93 /* SameKeyDifferentTargetClasses.json in Resources */,
+				25952F0D136F8F7700D04F93 /* nested_user.json in Resources */,
+				25952F0E136F8F7700D04F93 /* user.json in Resources */,
+				25952F0F136F8F7700D04F93 /* users.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

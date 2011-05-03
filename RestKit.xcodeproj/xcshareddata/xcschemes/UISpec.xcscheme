@@ -71,8 +71,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldAttemptToMapEachSubKeyPathOfAnUnmappableDictionary"
-            isEnabled = "NO">
+            value = "itShouldDetermineTheObjectMappingByConsultingTheMappingProviderWhenThereIsATargetObject"
+            isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>
