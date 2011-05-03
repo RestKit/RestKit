@@ -43,7 +43,7 @@
 }
 
 - (void)itShouldLoadAHuman {
-	[_objectManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
+	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	RKHuman* blake = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
 	NSLog(@"Blake: %@ (name = %@)", blake, blake.name);
@@ -51,7 +51,7 @@
 }
 
 - (void)itShouldLoadAllHumans {
-	[_objectManager loadObjectsAtResourcePath:@"/humans" delegate:_responseLoader];
+	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	NSArray* humans = (NSArray*) _responseLoader.objects;
 	[expectThat([humans count]) should:be(2)];
@@ -61,7 +61,7 @@
 - (void)itShouldHandleConnectionFailures {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
 	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
-	[modelManager loadObjectsAtResourcePath:@"/humans/1" delegate:_responseLoader];
+	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	[expectThat(_responseLoader.success) should:be(NO)];
 }

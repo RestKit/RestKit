@@ -9,21 +9,16 @@ Debugger.start
 
 # Import the RestKit Spec server
 $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
-require 'restkit'
-
-# TODO: Factor me out...
-class Human < Model
-  attributes :id, :name, :sex, :age, :birthday, :created_at, :updated_at
-end
+require 'restkit/network/authentication'
 
 class RestKit::SpecServer < Sinatra::Base
   self.app_file = __FILE__
   use RestKit::Network::Authentication
-  use RestKit::ObjectMapping::JSON
   
   configure do
     set :logging, true
     set :dump_errors, true
+    set :public, Proc.new { File.join(root, '../Fixtures') }
   end
   
   get '/' do
@@ -33,17 +28,6 @@ class RestKit::SpecServer < Sinatra::Base
   post '/photo' do
     content_type 'application/json'
     "OK"
-  end
-
-  # TODO: Move to object_mapping dir
-  get '/humans/1' do
-    content_type 'application/json'
-    JSON.generate(:human => Human.new(:name => 'Blake Watters').to_hash)
-  end
-
-  get '/humans' do
-    content_type 'application/json'
-    JSON.generate([{:human => Human.new(:name => 'Blake Watters').to_hash}, {:human => Human.new(:name => "Other").to_hash}])
   end
   
   # start the server if ruby file executed directly

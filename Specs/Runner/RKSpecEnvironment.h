@@ -28,3 +28,12 @@ NSString* RKSpecGetBaseURL();
 
 // Stub out the return value of the Shared Client instance's isNetworkAvailable method
 void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable);
+
+// Helpers for returning new instances that clear global state
+RKClient* RKSpecNewClient();
+RKObjectManager* RKSpecNewObjectManager();
+RKRequestQueue* RKSpecNewRequestQueue();
+
+// Read the contents of a fixture file from the app bundle
+NSString* RKSpecReadFixture(NSString* fileName);
+id RKSpecParseFixtureJSON(NSString* fileName);

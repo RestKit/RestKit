@@ -140,7 +140,7 @@ static RKObjectManager* sharedManager = nil;
     RKObjectLoader* objectLoader = nil;
     
     Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
-    if (managedObjectLoaderClass) {
+    if (self.objectStore && managedObjectLoaderClass) {
         objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
     } else {
         objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];

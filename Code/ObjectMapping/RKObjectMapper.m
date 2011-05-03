@@ -394,6 +394,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 }
 
 - (void)setPropertiesOfModel:(NSObject<RKObjectMappable>*)model fromElements:(NSDictionary*)elements {
+    BOOL anyValuesSet = NO;
 	NSDictionary* elementToPropertyMappings = [self elementToPropertyMappingsForModel:model];
 	for (NSString* elementKeyPath in elementToPropertyMappings) {		
 		id elementValue = nil;
@@ -413,6 +414,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		}
 		
 		if (setValue) {
+            anyValuesSet = YES;
 			id propertyValue = elementValue;
 			NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];
 			Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
@@ -449,6 +451,10 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 			[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
 		}
 	}
+    
+    if (anyValuesSet == NO) {
+        NSLog(@"WARNING: RestKit did not find any mappable values for the specified object. If you have specified an explicit objectClass for mapping, be sure that the keyPath has been set to target your mappable data.");
+    }
 }
 
 - (void)setRelationshipsOfModel:(NSObject<RKObjectMappable>*)object fromElements:(NSDictionary*)elements {

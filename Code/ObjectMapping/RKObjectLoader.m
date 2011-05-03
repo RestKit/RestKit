@@ -67,7 +67,6 @@
 - (void)responseProcessingSuccessful:(BOOL)successful withError:(NSError*)error {
 	_isLoading = NO;
 
-	NSDate* receivedAt = [NSDate date];
 	if (successful) {
 		_isLoaded = YES;
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification
