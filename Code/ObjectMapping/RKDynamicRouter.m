@@ -92,6 +92,20 @@
 	return nil;
 }
 
+- (void)handlePrimaryKeyWithClass:(Class)objectClass andAttributes:(NSMutableDictionary*)attributes forObject:(id)object {
+    if ([objectClass respondsToSelector:@selector(primaryKeyProperty)]) { 
+        NSString *primaryKey = [objectClass performSelector:@selector(primaryKeyProperty)]; 
+        id primaryKeyValue = [object valueForKey:primaryKey]; 
+        NSString* primaryKeyValueString = [NSString stringWithFormat:@"%@", primaryKeyValue];
+        
+        // Primary key value isn't defined
+        if (primaryKeyValue == nil || [primaryKeyValueString isEqualToString:@"0"]) { 
+            // Exclude id
+            [attributes removeObjectForKey:@"id"];
+        }
+    }
+}
+
 - (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
     // Don't return a serialization for a GET request
     // There is an extensive discussion about this on the ASIHTTPRequest list
@@ -118,20 +132,6 @@
 		}
 	}
     
-    void (^handlePrimaryKey)(Class, NSMutableDictionary *, id) = ^(Class blockClass, NSMutableDictionary *attributes, id object) {
-        if ([blockClass respondsToSelector:@selector(primaryKeyProperty)]) { 
-            NSString *primaryKey = [blockClass performSelector:@selector(primaryKeyProperty)]; 
-            id primaryKeyValue = [object valueForKey:primaryKey]; 
-            NSString* primaryKeyValueString = [NSString stringWithFormat:@"%@", primaryKeyValue];
-            
-            // Primary key value isn't defined
-            if (primaryKeyValue == nil || [primaryKeyValueString isEqualToString:@"0"]) { 
-                // Exclude id
-                [attributes removeObjectForKey:@"id"];
-            }
-        }
-    };
-    
     // add nested relationships
     for (NSString* elementName in [relationships allKeys]) {
         NSObject *relationship = [relationships objectForKey:elementName];
@@ -142,9 +142,8 @@
             NSMutableArray *children = [NSMutableArray array]; 
             for (id child in (NSEnumerator *)relationship) { 
                 Class class = [child class];
-                NSMutableDictionary* childAttributes = [RKObjectMappableGetPropertiesByElement(child) mutableCopy];
-                
-                handlePrimaryKey(class, childAttributes, child);
+                NSMutableDictionary* childAttributes = [RKObjectMappableGetPropertiesByElement(child) mutableCopy];                
+                [self handlePrimaryKeyWithClass:class andAttributes:childAttributes forObject:child];
                 
                 [children addObject:[NSDictionary dictionaryWithDictionary:childAttributes]];
             } 
@@ -155,9 +154,7 @@
         } else {
             Class class = [relationship class];
             NSMutableDictionary* childAttributes = [RKObjectMappableGetPropertiesByElement(relationship) mutableCopy];
-            
-            handlePrimaryKey(class, childAttributes, relationship);
-            
+            [self handlePrimaryKeyWithClass:class andAttributes:childAttributes forObject:relationship];
             [resourceParams setValue:childAttributes 
                               forKey:relationshipPath]; 
         }
