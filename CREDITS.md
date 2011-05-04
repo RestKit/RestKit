@@ -33,3 +33,4 @@ Contributors
 * Stefan Eletzhofer (seletz)
 * Peter Marks       (tassock)
 * Chad Podoski      (chadpod)
+* Andras Hatvani    (andrashatvani)
