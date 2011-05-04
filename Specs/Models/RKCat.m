@@ -41,4 +41,14 @@
 	return @"railsID";
 }
 
++ (NSDictionary*)elementToRelationshipMappings {
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+            @"human", @"human",
+            nil];
+}
+
++ (NSArray*)relationshipsToSerialize {
+    return [NSArray arrayWithObject:@"human"];
+}
+
 @end

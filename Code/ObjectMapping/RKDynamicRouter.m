@@ -100,8 +100,72 @@
         return nil;
     }
     
-	// By default return a form encoded serializable dictionary
-	return [object propertiesForSerialization];
+	// set up dictionary containers
+	NSDictionary* elementsAndProperties = [object propertiesForSerialization];
+    NSDictionary* relationships = [object relationshipsForSerialization];
+    int propertyCount = [elementsAndProperties count];
+    int relationshipCount = [relationships count];
+    int entryCount = propertyCount + relationshipCount;
+	NSMutableDictionary* resourceParams = [NSMutableDictionary dictionaryWithCapacity:entryCount];	
+	
+    // add elements and properties
+	for (NSString* elementName in [elementsAndProperties allKeys]) {
+		id value = [elementsAndProperties valueForKey:elementName];
+		NSString* attributeName = [elementName stringByReplacingOccurrencesOfString:@"-" withString:@"_"];
+		if (![attributeName isEqualToString:@"id"]) {
+			NSString* keyName = [NSString stringWithFormat:@"%@", attributeName];
+			[resourceParams setValue:value forKey:keyName];
+		}
+	}
+    
+    void (^handlePrimaryKey)(Class, NSMutableDictionary *, id) = ^(Class blockClass, NSMutableDictionary *attributes, id object) {
+        if ([blockClass respondsToSelector:@selector(primaryKeyProperty)]) { 
+            NSString *primaryKey = [blockClass performSelector:@selector(primaryKeyProperty)]; 
+            id primaryKeyValue = [object valueForKey:primaryKey]; 
+            NSString* primaryKeyValueString = [NSString stringWithFormat:@"%@", primaryKeyValue];
+            
+            // Primary key value isn't defined
+            if (primaryKeyValue == nil || [primaryKeyValueString isEqualToString:@"0"]) { 
+                // Exclude id
+                [attributes removeObjectForKey:@"id"];
+            }
+        }
+    };
+    
+    // add nested relationships
+    for (NSString* elementName in [relationships allKeys]) {
+        NSObject *relationship = [relationships objectForKey:elementName];
+        NSString *relationshipPath = [NSString stringWithFormat:@"%@", elementName];
+        // to-many relation 
+        if ([relationship isKindOfClass:[NSArray class]] || 
+            [relationship isKindOfClass:[NSSet class]]) { 
+            NSMutableArray *children = [NSMutableArray array]; 
+            for (id child in (NSEnumerator *)relationship) { 
+                Class class = [child class];
+                NSMutableDictionary* childAttributes = [RKObjectMappableGetPropertiesByElement(child) mutableCopy];
+                
+                handlePrimaryKey(class, childAttributes, child);
+                
+                [children addObject:[NSDictionary dictionaryWithDictionary:childAttributes]];
+            } 
+            
+            [resourceParams setValue:children 
+                              forKey:relationshipPath]; 
+        // to-one relation
+        } else {
+            Class class = [relationship class];
+            NSMutableDictionary* childAttributes = [RKObjectMappableGetPropertiesByElement(relationship) mutableCopy];
+            
+            handlePrimaryKey(class, childAttributes, relationship);
+            
+            [resourceParams setValue:childAttributes 
+                              forKey:relationshipPath]; 
+        }
+        
+	}
+
+	return resourceParams;
+
 }
 
 @end
