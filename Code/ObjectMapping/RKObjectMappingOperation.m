@@ -49,9 +49,10 @@
     return NSStringFromClass([self.destinationObject class]);
 }
 
-// TODO: Figure out where these live
+// TODO: Figure out where these live. Maybe they go on the object mapping?
+// TODO: Move these into constants?
 - (NSArray*)dateFormats {
-    return [NSArray arrayWithObjects:@"M/d/Y", nil];
+    return [NSArray arrayWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
 }
 
 - (NSDate*)parseDateFromString:(NSString*)string {

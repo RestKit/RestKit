@@ -61,10 +61,7 @@
  */
 @property (nonatomic, assign) id<RKObjectMappingOperationDelegate> delegate;
 
-/*!
- An error that failed the mapping operation
- */
-//@property (nonatomic, readonly) NSError* error;
+// TODO: mappingOperationFromObject:toObject:withObjectMapping:keyPath: // TODO: This is the new 
 
 /*!
  Initialize a mapping operation for an object and set of data at a particular key path with an object mapping definition
