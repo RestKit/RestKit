@@ -9,6 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKManagedObjectStore.h"
 #import "RKHuman.h"
+#import "RKCat.h"
 
 @interface RKDynamicRouterSpec : NSObject <UISpec> {
 }
@@ -108,6 +109,108 @@
 	
 	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
 	[expectThat(resourcePath) should:be(@"/this/is/the/path")];
+}
+
+- (void)itShouldSerializeToOneRelationWithoutId
+{
+    RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+    
+    RKHuman* human = [[RKHuman object] autorelease];
+    RKCat* cat = [[RKCat object] autorelease];
+    
+    cat.name = @"Cat";
+    human.name = @"Owner";
+    cat.human = human;
+    
+    NSDictionary* serialization = (NSDictionary*) [router serializationForObject:cat method:RKRequestMethodPOST];
+    NSDictionary* serializedRelation = [serialization objectForKey:@"human"];
+    [expectThat([serializedRelation objectForKey:@"name"]) should:be(@"Owner")]; 
+}
+
+- (void)itShouldSerializeToOneRelationWithId
+{
+    RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+    
+    RKHuman* human = [[RKHuman object] autorelease];
+    RKCat* cat = [[RKCat object] autorelease];
+    
+    cat.name = @"Cat";
+    human.railsID = [NSNumber numberWithInt:1];
+    human.name = @"Owner";
+    cat.human = human;
+    
+    NSDictionary* serialization = (NSDictionary*) [router serializationForObject:cat method:RKRequestMethodPOST];
+    NSDictionary* serializedRelation = [serialization objectForKey:@"human"];
+    [expectThat([serializedRelation objectForKey:@"name"]) should:be(@"Owner")]; 
+}
+
+
+- (void)itShouldSerializeToManyRelationWithoutId
+{
+    RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+    
+    RKHuman* human = [[RKHuman object] autorelease];
+	human.name = @"Owner";
+    RKCat* cat1 = [[RKCat object] autorelease];
+    cat1.name = @"Cat1";
+    [human addCatsObject:cat1];
+    RKCat* cat2 = [[RKCat object] autorelease];
+    cat2.name = @"Cat2";
+    [human addCatsObject:cat2];
+    
+    NSDictionary* serialization = (NSDictionary*) [router serializationForObject:human method:RKRequestMethodPOST];
+    NSArray* serializedCats = [serialization objectForKey:@"cats"];
+    
+    NSDictionary *serCat1 = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithInt:0], @"age",
+                             [NSNumber numberWithInt:0], @"birth_year",
+                             @"Cat1", @"name",
+                             nil];
+    
+    NSDictionary *serCat2 = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithInt:0], @"age",
+                             [NSNumber numberWithInt:0], @"birth_year",
+                             @"Cat2", @"name",
+                             nil];
+    [expectThat([serializedCats count]) should:be(2)];
+    [expectThat([serializedCats containsObject:serCat1]) should:be(TRUE)];
+    [expectThat([serializedCats containsObject:serCat2]) should:be(TRUE)];
+}
+
+- (void)itShouldSerializeToManyRelationWithId
+{
+    RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+    
+    RKHuman* human = [[RKHuman object] autorelease];
+	human.name = @"Owner";
+    RKCat* cat1 = [[RKCat object] autorelease];
+    cat1.name = @"Cat1";
+    cat1.railsID = [NSNumber numberWithInt:1];
+    [human addCatsObject:cat1];
+    RKCat* cat2 = [[RKCat object] autorelease];
+    cat2.name = @"Cat2";
+    cat2.railsID = [NSNumber numberWithInt:2];
+    [human addCatsObject:cat2];
+    
+    NSDictionary* serialization = (NSDictionary*) [router serializationForObject:human method:RKRequestMethodPOST];
+    NSArray* serializedCats = [serialization objectForKey:@"cats"];
+    
+    NSDictionary *serCat1 = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithInt:0], @"age",
+                             [NSNumber numberWithInt:0], @"birth_year",
+                             [NSNumber numberWithInt:1], @"id",
+                             @"Cat1", @"name",
+                             nil];
+    
+    NSDictionary *serCat2 = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithInt:0], @"age",
+                             [NSNumber numberWithInt:0], @"birth_year",
+                             [NSNumber numberWithInt:2], @"id",
+                             @"Cat2", @"name",
+                             nil];
+    [expectThat([serializedCats count]) should:be(2)];
+    [expectThat([serializedCats containsObject:serCat1]) should:be(TRUE)];
+    [expectThat([serializedCats containsObject:serCat2]) should:be(TRUE)];
 }
 
 @end
