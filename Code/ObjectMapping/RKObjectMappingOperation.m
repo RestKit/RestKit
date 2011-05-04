@@ -55,8 +55,6 @@
         // TODO: Catch exceptions here... valueForUndefinedKey
         // TODO: Handle nil's and NSNull
         id value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
-        // TODO: Replace this logging...
-        NSLog(@"Asking self.sourceObject %@ for valueForKeyPath: %@. Got %@", self.sourceObject, attributeMapping.sourceKeyPath, value);
         if (value) {
             appliedMappings = YES;
             [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];

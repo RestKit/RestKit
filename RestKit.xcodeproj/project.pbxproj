@@ -168,6 +168,9 @@
 		25952F0F136F8F7700D04F93 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952F0C136F8F7700D04F93 /* users.json */; };
 		25952F12136F97B300D04F93 /* RKObjectSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952F10136F97B300D04F93 /* RKObjectSerializer.h */; };
 		25952F13136F97B300D04F93 /* RKObjectSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952F11136F97B300D04F93 /* RKObjectSerializer.m */; };
+		25952FDD1370959900D04F93 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25952FD81370959900D04F93 /* LICENSE.txt */; };
+		25952FDE1370959900D04F93 /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952FDA1370959900D04F93 /* LoggerClient.m */; };
+		25952FDF1370959900D04F93 /* README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 25952FDC1370959900D04F93 /* README.markdown */; };
 		259562E4126D3B36004BAC4C /* RKDynamicRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKDynamicRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259562E5126D3B36004BAC4C /* RKDynamicRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E3126D3B36004BAC4C /* RKDynamicRouter.m */; };
 		259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E6126D3B43004BAC4C /* RKRailsRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -500,6 +503,11 @@
 		25952F0C136F8F7700D04F93 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = users.json; sourceTree = "<group>"; };
 		25952F10136F97B300D04F93 /* RKObjectSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectSerializer.h; sourceTree = "<group>"; };
 		25952F11136F97B300D04F93 /* RKObjectSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectSerializer.m; sourceTree = "<group>"; };
+		25952FD81370959900D04F93 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		25952FD91370959900D04F93 /* LoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerClient.h; sourceTree = "<group>"; };
+		25952FDA1370959900D04F93 /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggerClient.m; sourceTree = "<group>"; };
+		25952FDB1370959900D04F93 /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerCommon.h; sourceTree = "<group>"; };
+		25952FDC1370959900D04F93 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 		259562E2126D3B36004BAC4C /* RKDynamicRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicRouter.h; sourceTree = "<group>"; };
 		259562E3126D3B36004BAC4C /* RKDynamicRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouter.m; sourceTree = "<group>"; };
 		259562E6126D3B43004BAC4C /* RKRailsRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRailsRouter.h; sourceTree = "<group>"; };
@@ -900,6 +908,7 @@
 		2590E6711252357200531FA8 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				25952FD71370959900D04F93 /* NSLogger */,
 				73057FC61331AA28001908EE /* JSONKit */,
 				2590E69A1252372800531FA8 /* YAJL */,
 				2590E673125235C200531FA8 /* SBJSON */,
@@ -1063,6 +1072,19 @@
 				25952EDE136F563E00D04F93 /* all.json */,
 			);
 			path = humans;
+			sourceTree = "<group>";
+		};
+		25952FD71370959900D04F93 /* NSLogger */ = {
+			isa = PBXGroup;
+			children = (
+				25952FD81370959900D04F93 /* LICENSE.txt */,
+				25952FD91370959900D04F93 /* LoggerClient.h */,
+				25952FDA1370959900D04F93 /* LoggerClient.m */,
+				25952FDB1370959900D04F93 /* LoggerCommon.h */,
+				25952FDC1370959900D04F93 /* README.markdown */,
+			);
+			name = NSLogger;
+			path = Vendor/NSLogger;
 			sourceTree = "<group>";
 		};
 		259D510D1328547000897272 /* CoreData */ = {
@@ -1604,6 +1626,8 @@
 				25952F0D136F8F7700D04F93 /* nested_user.json in Resources */,
 				25952F0E136F8F7700D04F93 /* user.json in Resources */,
 				25952F0F136F8F7700D04F93 /* users.json in Resources */,
+				25952FDD1370959900D04F93 /* LICENSE.txt in Resources */,
+				25952FDF1370959900D04F93 /* README.markdown in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1817,6 +1841,7 @@
 				25D1984313697FEF0090B617 /* RKManagedObjectLoaderSpec.m in Sources */,
 				25D1994E136BE7E00090B617 /* RKObjectMappingNextGenSpec.m in Sources */,
 				25952DF0136C8F9C00D04F93 /* RKObjectMappingOperationSpec.m in Sources */,
+				25952FDE1370959900D04F93 /* LoggerClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2183,6 +2208,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Specs/Runner/UISpec/headers",
 					"$(SRCROOT)/Specs/Runner/OCMock/Headers",
@@ -2507,6 +2533,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Specs/Runner/UISpec/headers",
 					"$(SRCROOT)/Specs/Runner/OCMock/Headers",
@@ -2546,6 +2573,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/UIKit.framework/Headers/UIKit.h";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/Specs/Runner/UISpec/headers",
 					"$(SRCROOT)/Specs/Runner/OCMock/Headers",
