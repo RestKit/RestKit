@@ -13,31 +13,9 @@
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
 #import "RKObjectAttributeMapping.h"
-
-// Import the logger
-#import "LoggerClient.h"
-
-// Logging levels for use with the logger
-enum RKLogLevels {
-    RKLogLevelError = 0,
-    RKLogLevelWarning,    
-    RKLogLevelInfo,
-    RKLogLevelDebug
-};
+#import "Logging.h"
 
 #define RKFAILMAPPING() NSAssert(nil != nil, @"Failed mapping operation!!!")
-#ifdef DEBUG
-    #define RKLOG_NETWORK(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"Network",level,__VA_ARGS__)
-    #define RKLOG_MAPPING(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"ObjectMapping",level,__VA_ARGS__)
-    #define RKLOG_GENERAL(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"General",level,__VA_ARGS__)
-#else
-    #define RKLOG_NETWORK(...)    do{}while(0)
-    #define RKLOG_MAPPING(...)    do{}while(0)
-    #define RKLOG_GRAPHICS(...)   do{}while(0)
-#endif
-
-// TODO: Could put convenience macros like this in place....
-// #define RKLOG_DEBUG(...)
 
 /*!
  Responsible for providing object mappings to an instance of the object mapper
@@ -92,7 +70,7 @@ typedef enum RKObjectMapperErrors {
 }
 @end
 
-// TODO: This guy should indent based on keyPath maybe?
+// TODO: We can probably just ditch tracing in favor of NSLogger
 @implementation RKObjectMapperTracingDelegate
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)elementMapping forKeyPath:(NSString *)keyPath {
@@ -442,10 +420,24 @@ typedef enum RKObjectMapperErrors {
 @interface RKExampleUser : NSObject {
     NSNumber* _userID;
     NSString* _name;
+    NSDate* _birthDate;
+    NSArray* _favoriteColors;
+    NSDictionary* _address;
+    NSURL* _website;
+    NSNumber* _isDeveloper;
+    NSNumber* _luckyNumber;
+    NSDecimalNumber* _weight;
 }
 
 @property (nonatomic, retain) NSNumber* userID;
 @property (nonatomic, retain) NSString* name;
+@property (nonatomic, retain) NSDate* birthDate;
+@property (nonatomic, retain) NSArray* favoriteColors;
+@property (nonatomic, retain) NSDictionary* address;
+@property (nonatomic, retain) NSURL* website;
+@property (nonatomic, retain) NSNumber* isDeveloper;
+@property (nonatomic, retain) NSNumber* luckyNumber;
+@property (nonatomic, retain) NSDecimalNumber* weight;
 
 @end
 
@@ -453,6 +445,13 @@ typedef enum RKObjectMapperErrors {
 
 @synthesize userID = _userID;
 @synthesize name = _name;
+@synthesize birthDate = _birthDate;
+@synthesize favoriteColors = _favoriteColors;
+@synthesize address = _address;
+@synthesize website = _website;
+@synthesize isDeveloper = _isDeveloper;
+@synthesize luckyNumber = _luckyNumber;
+@synthesize weight = _weight;
 
 + (RKExampleUser*)user {
     return [[self new] autorelease];
@@ -473,8 +472,8 @@ typedef enum RKObjectMapperErrors {
 @implementation RKObjectMappingNextGenSpec
 
 - (void)beforeAll {
-//    LoggerSetViewerHost(NULL, (CFStringRef) @"localhost", 50000);
-//    LoggerStart(LoggerGetDefaultLogger());
+    LoggerSetViewerHost(NULL, (CFStringRef) @"localhost", 50000);
+    LoggerStart(LoggerGetDefaultLogger());
     LoggerSetOptions(NULL,						// configure the default logger
 //                     kLoggerOption_LogToConsole | 
                      kLoggerOption_BufferLogsUntilConnection |
@@ -595,10 +594,10 @@ typedef enum RKObjectMapperErrors {
     RKExampleUser* userReference = [mapper performMapping];
     
     [mockProvider verify];
-    [expectThat(user == userReference) should:be(YES)];
-//    [expectThat(user) shouldNot:be(nil)];
+    [expectThat(user) shouldNot:be(nil)];
+    [expectThat(user == userReference) should:be(YES)];    
 //    [expectThat(@"1234") should:be(user)];
-//    [expectThat(userReference) should:be(user)]; // TODO: Believe this is causing Zombie crash... prove it.
+//    [expectThat(userReference) should:be(user)]; // TODO: This kind of invocation of the be() matcher causes UISpec to fuck up memory management
     [expectThat(user.name) should:be(@"Blake Watters")];
 }
 
@@ -666,6 +665,11 @@ typedef enum RKObjectMapperErrors {
     [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:nil];
     [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"id"];
     [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"name"];
+    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"website"];    
+    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"birthdate"];
+    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"is_developer"];
+    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"weight"];
+    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"lucky_number"];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
@@ -948,7 +952,7 @@ typedef enum RKObjectMapperErrors {
 }
 
 - (void)itShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent {
-    // TODO: Pending, this spec is crashing at [mockDeegate verify];
+    // TODO: Pending, this spec is crashing at [mockDelegate verify];
     return;
     // TODO: WTF?
     id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
@@ -991,7 +995,112 @@ typedef enum RKObjectMapperErrors {
     [operation release];
 }
 
-// TODO: Delegate specs
+// TODO: RKObjectMappingOperationDelegate specs
+
+#pragma mark - Attribute Mapping
+
+// TODO: Figure out how to pass in date format strings...
+- (void)itShouldMapAStringToADateAttribute {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
+    [mapping addAttributeMapping:birthDateMapping];
+    
+    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMappingWithError:&error];
+    
+    NSDateFormatter* dateFormatter = [[NSDateFormatter new] autorelease];
+    [dateFormatter setDateFormat:@"M/d/Y"];    
+    [expectThat([dateFormatter stringFromDate:user.birthDate]) should:be(@"11/27/1982")];
+}
+
+- (void)itShouldMapStringToURL {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"website" toKeyPath:@"website"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMappingWithError:&error];
+    
+    [expectThat(user.website) shouldNot:be(nil)];
+    [expectThat([user.website isKindOfClass:[NSURL class]]) should:be(YES)];
+    [expectThat([user.website absoluteString]) should:be(@"http://restkit.org/")];
+}
+
+- (void)itShouldMapAStringToANumberBool {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"is_developer" toKeyPath:@"isDeveloper"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMappingWithError:&error];
+    
+    [expectThat([[user isDeveloper] boolValue]) should:be(YES)]; 
+}
+
+- (void)itShouldMapAStringToANumber {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"lucky_number" toKeyPath:@"luckyNumber"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMappingWithError:&error];
+    
+    [expectThat(user.luckyNumber) should:be(187)]; 
+}
+
+- (void)itShouldMapAStringToADecimalNumber {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"weight" toKeyPath:@"weight"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMappingWithError:&error];
+    
+    NSDecimalNumber* weight = user.weight;
+    [expectThat([weight isKindOfClass:[NSDecimalNumber class]]) should:be(YES)];
+    [expectThat([weight compare:[NSDecimalNumber decimalNumberWithString:@"131.3"]]) should:be(NSOrderedSame)];
+}
+
+- (void)itShouldMapANestedKeyPathToAnAttribute {
+    
+}
+
+- (void)itShouldMapANestedArrayOfStringsToAnAttribute {
+    
+}
+
+- (void)itShouldMapANestedDictionaryToAnAttribute {
+    
+}
+
+// TODO: Handle nil
+// TODO: Handle NSNull
+
+#pragma mark - Relationship Mapping
+
+- (void)itShouldMapANestedObject {
+    
+}
+
+- (void)itShouldMapANestedObjectCollection {
+    
+}
+
 // TODO: Relationship specs
 // TODO: Value transformation specs
 // TODO: Map an array of strings back to the object

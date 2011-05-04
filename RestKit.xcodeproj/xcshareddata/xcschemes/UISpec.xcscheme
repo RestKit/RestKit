@@ -71,7 +71,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapToATargetObject"
+            value = "itShouldMapAStringToADateAttribute"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

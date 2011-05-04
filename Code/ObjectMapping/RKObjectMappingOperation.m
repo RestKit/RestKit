@@ -8,6 +8,8 @@
 
 #import "RKObjectMappingOperation.h"
 #import "Errors.h"
+#import "RKObjectPropertyInspector.h"
+#import "Logging.h"
 
 @implementation RKObjectMappingOperation
 
@@ -47,6 +49,58 @@
     return NSStringFromClass([self.destinationObject class]);
 }
 
+// TODO: Figure out where these live
+- (NSArray*)dateFormats {
+    return [NSArray arrayWithObjects:@"M/d/Y", nil];
+}
+
+- (NSDate*)parseDateFromString:(NSString*)string {
+    RKLOG_MAPPING(RKLogLevelDebug, @"Transforming string value '%@' to NSDate...");
+    
+	NSDate* date = nil;
+	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    formatter.timeZone = [NSTimeZone localTimeZone];
+	for (NSString* formatString in self.dateFormats) {
+		[formatter setDateFormat:formatString];
+		date = [formatter dateFromString:string];
+		if (date) {
+			break;
+		}
+	}
+	
+	[formatter release];
+	return date;
+}
+
+- (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType {
+    RKLOG_MAPPING(RKLogLevelInfo, @"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", NSStringFromClass([value class]), NSStringFromClass(destinationType));
+    Class sourceType = [value class];
+    
+    if ([sourceType isSubclassOfClass:[NSString class]]) {
+        if ([destinationType isSubclassOfClass:[NSDate class]]) {
+            // String -> Date
+            return [self parseDateFromString:(NSString*)value];
+        } else if ([destinationType isSubclassOfClass:[NSURL class]]) {
+            // String -> URL
+            return [NSURL URLWithString:(NSString*)value];
+        } else if ([destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
+            // String -> Decimal Number
+            return [NSDecimalNumber decimalNumberWithString:(NSString*)value];
+        } else if ([destinationType isSubclassOfClass:[NSNumber class]]) {
+            // String -> Number
+            NSString* lowercasedString = [(NSString*)value lowercaseString];
+            if ([lowercasedString isEqualToString:@"true"] || [lowercasedString isEqualToString:@"false"]) {
+                // Handle booleans encoded as Strings
+                return [NSNumber numberWithBool:[lowercasedString isEqualToString:@"true"]];
+            } else {
+                return [NSNumber numberWithDouble:[(NSString*)value doubleValue]];
+            }
+        }
+    }
+    
+    return nil;
+}
+
 // Return YES if we mapped any attributes
 - (BOOL)applyAttributeMappings {
     BOOL appliedMappings = NO;
@@ -60,7 +114,12 @@
             [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
             // TODO: didFindMappableValue:atKeyPath:
             // TODO: Handle relationships and collections by evaluating the type of the elementMapping???
-            // didSetValue:forKeyPath:fromKeyPath:            
+            // didSetValue:forKeyPath:fromKeyPath:
+            // Inspect the property type to handle any value transformations
+            Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:attributeMapping.destinationKeyPath ofClass:[self.destinationObject class]];
+            if (type && NO == [[value class] isSubclassOfClass:type]) {
+                value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
+            }
             [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
             [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
             // didMapValue:fromValue:usingMapping
@@ -85,6 +144,7 @@
     if (mappedAttributes || mappedRelationships) {
         return self.destinationObject;
     } else {
+        // TODO: No error message...
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                   @"", NSLocalizedDescriptionKey,
                                   @"RKObjectMapperKeyPath", self.keyPath,

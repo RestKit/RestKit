@@ -34,6 +34,7 @@
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
 		250C29FD134185D2000A3551 /* RKNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 250C29FB134185CE000A3551 /* RKNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250C29FE134185D2000A3551 /* RKNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C29FC134185D0000A3551 /* RKNetwork.m */; };
+		251899FC1370F4E00092B049 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 251899FB1370F4E00092B049 /* Logging.h */; };
 		251D14AC133597B800959061 /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 251D14AA133597B800959061 /* RKManagedObjectLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 251D14AB133597B800959061 /* RKManagedObjectLoader.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
@@ -344,6 +345,7 @@
 		250C296B13411E60000A3551 /* RKRequestQueueSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestQueueSpec.m; sourceTree = "<group>"; };
 		250C29FB134185CE000A3551 /* RKNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKNetwork.h; sourceTree = "<group>"; };
 		250C29FC134185D0000A3551 /* RKNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKNetwork.m; sourceTree = "<group>"; };
+		251899FB1370F4E00092B049 /* Logging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logging.h; sourceTree = "<group>"; };
 		251D14AA133597B800959061 /* RKManagedObjectLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectLoader.h; sourceTree = "<group>"; };
 		251D14AB133597B800959061 /* RKManagedObjectLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoader.m; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -837,6 +839,7 @@
 				253A09F512552BDC00976E89 /* Support.h */,
 				25D6390513517D8B000879B1 /* RKAlert.h */,
 				25D6390613517D8B000879B1 /* RKAlert.m */,
+				251899FB1370F4E00092B049 /* Logging.h */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1277,6 +1280,7 @@
 				259DF7881340299900233DF4 /* RKXMLParser.h in Headers */,
 				253A09F612552BDC00976E89 /* Support.h in Headers */,
 				25D6390713517D8B000879B1 /* RKAlert.h in Headers */,
+				251899FC1370F4E00092B049 /* Logging.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
