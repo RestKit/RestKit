@@ -72,6 +72,6 @@
  Process all mappable values from the mappable dictionary and assign them to the target object
  according to the rules expressed in the object mapping definition
  */
-- (id)performMappingWithError:(NSError**)error;
+- (BOOL)performMapping:(NSError**)error;
 
 @end

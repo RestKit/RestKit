@@ -56,4 +56,9 @@
     return nil;
 }
 
+// TODO: This is a stub. Need to figure out where the real behavior lives...
+- (BOOL)shouldSetNilForMissingAttributes {
+    return YES;
+}
+
 @end

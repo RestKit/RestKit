@@ -6,6 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import <objc/message.h>
 #import "RKObjectMappingOperation.h"
 #import "Errors.h"
 #import "RKObjectPropertyInspector.h"
@@ -43,10 +44,6 @@
     [_objectMapping release];
     
     [super dealloc];
-}
-
-- (NSString*)objectClassName {
-    return NSStringFromClass([self.destinationObject class]);
 }
 
 // TODO: Figure out where these live. Maybe they go on the object mapping?
@@ -97,9 +94,61 @@
                 return [NSNumber numberWithDouble:[(NSString*)value doubleValue]];
             }
         }
+    } else if (value == [NSNull null] || [value isEqual:[NSNull null]]) {
+        // Transform NSNull -> nil for simplicity
+        return nil;
     }
     
     return nil;
+}
+
+- (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue {
+    NSAssert(sourceValue, @"Expected sourceValue not to be nil");
+    NSAssert(destinationValue, @"Expected destinationValue not to be nil");
+    NSAssert([destinationValue isKindOfClass:[sourceValue class]], @"Expected sourceValue and destinationValue to be of the same type");
+    
+    SEL comparisonSelector;
+    if ([sourceValue isKindOfClass:[NSString class]]) {
+        comparisonSelector = @selector(isEqualToString:);
+    } else if ([sourceValue isKindOfClass:[NSNumber class]]) {
+        comparisonSelector = @selector(isEqualToNumber:);
+    } else if ([sourceValue isKindOfClass:[NSDate class]]) {
+        comparisonSelector = @selector(isEqualToDate:);
+    } else if ([sourceValue isKindOfClass:[NSArray class]]) {
+        comparisonSelector = @selector(isEqualToArray:);
+    } else if ([sourceValue isKindOfClass:[NSDictionary class]]) {
+        comparisonSelector = @selector(isEqualToDictionary:);
+    } else {
+        [NSException raise:@"NoComparisonSelectorFound" format:@"Unable to compare values of type %@", NSStringFromClass([sourceValue class])];
+    }
+    
+    // Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
+    // Original code courtesy of Greg Parker
+    // This is necessary because isEqualToNumber will return negative integer values that aren't coercable directly to BOOL's without help [sbw]
+    BOOL (*ComparisonSender)(id, SEL, id) = (BOOL (*)(id, SEL, id)) objc_msgSend;
+    return ComparisonSender(sourceValue, comparisonSelector, destinationValue);
+}
+
+- (BOOL)shouldSetValue:(id)value atKeyPath:(NSString*)keyPath {
+    // TODO: Logging...
+    
+    id currentValue = [self.destinationObject valueForKey:keyPath];
+    if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
+        currentValue = nil;
+    }
+    
+	if (nil == currentValue && nil == value) {
+		// Both are nil
+        // TODO: Debug logging...
+        return NO;
+	} else if (nil == value || nil == currentValue) {
+		// One is nil and the other is not
+        return YES;
+	} else {
+		return NO == [self isValue:value equalToValue:currentValue];
+	}
+    
+    return YES;
 }
 
 // Return YES if we mapped any attributes
@@ -108,25 +157,34 @@
     
     for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.mappings) {
         // TODO: Catch exceptions here... valueForUndefinedKey
-        // TODO: Handle nil's and NSNull
         id value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if (value) {
             appliedMappings = YES;
             [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
-            // TODO: didFindMappableValue:atKeyPath:
-            // TODO: Handle relationships and collections by evaluating the type of the elementMapping???
-            // didSetValue:forKeyPath:fromKeyPath:
+            
             // Inspect the property type to handle any value transformations
             Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:attributeMapping.destinationKeyPath ofClass:[self.destinationObject class]];
             if (type && NO == [[value class] isSubclassOfClass:type]) {
                 value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
             }
+            
+            // Ensure that the value is different
+            if (NO == [self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
+                // TODO: Debug log that it was skipped
+                continue;
+            }
+            
             [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
             [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
             // didMapValue:fromValue:usingMapping
         } else {
             [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
             // TODO: didNotFindMappableValue:forKeyPath:
+            
+            // Optionally set nil for missing values
+            if ([self.objectMapping shouldSetNilForMissingAttributes]) {
+                [self.destinationObject setValue:nil forKey:attributeMapping.destinationKeyPath];
+            }
         }
     }
     
@@ -137,17 +195,13 @@
     return NO;
 }
 
-- (id)performMappingWithError:(NSError**)error {
-    BOOL mappedAttributes = [self applyAttributeMappings];
-    BOOL mappedRelationships = [self applyRelationshipMappings];
-    
-    // Return the destination object if we were successful
-    if (mappedAttributes || mappedRelationships) {
-        return self.destinationObject;
+- (BOOL)performMapping:(NSError**)error {    
+    if ([self applyAttributeMappings] || [self applyRelationshipMappings]) {
+        return YES;
     } else {
-        // TODO: No error message...
+        // TODO: Improve error message...
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  @"", NSLocalizedDescriptionKey,
+                                  @"Unable to identify any mappable content", NSLocalizedDescriptionKey,
                                   @"RKObjectMapperKeyPath", self.keyPath,
                                   nil];
         int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
@@ -156,13 +210,14 @@
         if (error) {
             *error = unmappableError;
         }
-        return nil;
+        
+        return NO;
     }
 }
 
 - (NSString*)description {
     return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object at 'keyPath': %@. Mapping values from object %@ to object %@ with object mapping %@",
-            [self objectClassName], self.keyPath, self.sourceObject, self.destinationObject];
+            NSStringFromClass([self.destinationObject class]), self.keyPath, self.sourceObject, self.destinationObject];
 }
 
 @end

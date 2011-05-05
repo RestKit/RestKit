@@ -25,4 +25,6 @@
 - (NSArray*)mappedKeyPaths;
 // TODO: mappedAttributes: mappedRelationships???
 
+- (BOOL)shouldSetNilForMissingAttributes;
+
 @end
