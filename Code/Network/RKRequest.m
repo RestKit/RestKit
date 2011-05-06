@@ -15,6 +15,7 @@
 #import "../Support/Support.h"
 #import "RKURL.h"
 #import <UIKit/UIKit.h>
+#import "CLog.h"
 
 @implementation RKRequest
 
@@ -132,7 +133,7 @@
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
 		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-		NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+		CLogDebug(@"REST_KIT", @"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
 		NSDate* sentAt = [NSDate date];
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
@@ -160,7 +161,7 @@
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
 		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-		NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+		CLogDebug(@"REST_KIT", @"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
 		NSDate* sentAt = [NSDate date];
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[self HTTPMethod], @"HTTPMethod", [self URL], @"URL", sentAt, @"sentAt", nil];
