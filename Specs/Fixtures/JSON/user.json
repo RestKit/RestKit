@@ -11,15 +11,18 @@
         "Running" 
     ],
     "address": {
+        "id": 1234,
         "city": "Carrboro",
         "state": "North Carolina",
         "country": "USA" 
     },
     "friends": [
         {
+            "id": 187,
             "name": "Jeremy Ellison" 
         },
         {
+            "id": 7,
             "name": "Rachit Shukla" 
         }
     ]

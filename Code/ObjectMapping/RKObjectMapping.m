@@ -88,4 +88,8 @@
     return YES;
 }
 
+- (BOOL)shouldSetNilForMissingRelationships {
+    return YES;
+}
+
 @end

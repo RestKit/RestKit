@@ -419,11 +419,13 @@ typedef enum RKObjectMapperErrors {
 ////////////////////////////////////////////////////////////////////////////////
 
 @interface RKSpecAddress : NSObject {
+    NSNumber* _addressID;
     NSString* _city;
     NSString* _state;
     NSString* _country;
 }
 
+@property (nonatomic, retain) NSNumber* addressID;
 @property (nonatomic, retain) NSString* city;
 @property (nonatomic, retain) NSString* state;
 @property (nonatomic, retain) NSString* country;
@@ -432,12 +434,23 @@ typedef enum RKObjectMapperErrors {
 
 @implementation RKSpecAddress
 
+@synthesize addressID = _addressID;
 @synthesize city = _city;
 @synthesize state = _state;
 @synthesize country = _country;
 
 + (RKSpecAddress*)address {
     return [[self new] autorelease];
+}
+
+// isEqual: is consulted by the mapping operation
+// to determine if assocation values should be set
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[RKSpecAddress class]]) {
+        return [[(RKSpecAddress*)object addressID] isEqualToNumber:self.addressID];
+    } else {
+        return NO;
+    }
 }
 
 @end
@@ -496,6 +509,16 @@ typedef enum RKObjectMapperErrors {
 
 + (RKExampleUser*)user {
     return [[self new] autorelease];
+}
+
+// isEqual: is consulted by the mapping operation
+// to determine if assocation values should be set
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[RKExampleUser class]]) {
+        return [[(RKExampleUser*)object userID] isEqualToNumber:self.userID];
+    } else {
+        return NO;
+    }
 }
 
 @end
@@ -1187,6 +1210,7 @@ typedef enum RKObjectMapperErrors {
     NSDictionary* address = [NSDictionary dictionaryWithKeysAndObjects:
                              @"city", @"Carrboro",
                              @"state", @"North Carolina",
+                             @"id", [NSNumber numberWithInt:1234],
                              @"country", @"USA", nil];
     [expectThat(user.addressDictionary) should:be(address)];
 }
@@ -1340,6 +1364,117 @@ typedef enum RKObjectMapperErrors {
     [expectThat([user.friendsSet count]) should:be(2)];
     NSSet* names = [NSSet setWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
     [expectThat([user.friendsSet valueForKey:@"name"]) should:be(names)];
+}
+
+- (void)itShouldNotSetThePropertyWhenTheNestedObjectIsIdentical {
+    RKExampleUser* user = [RKExampleUser user];
+    RKSpecAddress* address = [RKSpecAddress address];
+    address.addressID = [NSNumber numberWithInt:1234];
+    user.address = address;
+    id mockUser = [OCMockObject partialMockForObject:user];
+    [[mockUser reject] setAddress:OCMOCK_ANY];
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"addressID"];
+    [addressMapping addAttributeMapping:idMapping];
+    
+    RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"address" objectMapping:addressMapping];
+    [userMapping addRelationshipMapping:hasOneMapping];
+    
+    RKNewObjectMapper* mapper = [RKNewObjectMapper new];
+    id userInfo = RKSpecParseFixtureJSON(@"user.json");
+    [mapper mapObject:mockUser fromObject:userInfo usingMapping:userMapping];
+    [mapper release];
+    [mockUser verify];
+}
+
+- (void)itShouldNotSetThePropertyWhenTheNestedObjectCollectionIsIdentical {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:idMapping];
+    [userMapping addAttributeMapping:nameMapping];
+    
+    RKObjectRelationshipMapping* hasManyMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friends" toKeyPath:@"friends" objectMapping:userMapping];
+    [userMapping addRelationshipMapping:hasManyMapping];
+    
+    RKNewObjectMapper* mapper = [RKNewObjectMapper new];
+    id userInfo = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    
+    // Set the friends up
+    RKExampleUser* jeremy = [RKExampleUser user];
+    jeremy.name = @"Jeremy Ellison";
+    jeremy.userID = [NSNumber numberWithInt:187];
+    RKExampleUser* rachit = [RKExampleUser user];
+    rachit.name = @"Rachit Shukla"; 
+    rachit.userID = [NSNumber numberWithInt:7];
+    user.friends = [NSArray arrayWithObjects:jeremy, rachit, nil];
+    
+    id mockUser = [OCMockObject partialMockForObject:user];
+    [[mockUser reject] setFriends:OCMOCK_ANY];    
+    [mapper mapObject:mockUser fromObject:userInfo usingMapping:userMapping];
+    [mapper release];
+    [mockUser verify];
+}
+
+- (void)itShouldOptionallyNilOutTheRelationshipIfItIsMissing {
+    RKExampleUser* user = [RKExampleUser user];
+    RKSpecAddress* address = [RKSpecAddress address];
+    address.addressID = [NSNumber numberWithInt:1234];
+    user.address = address;
+    id mockUser = [OCMockObject partialMockForObject:user];
+    [[mockUser expect] setAddress:nil];
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"addressID"];
+    [addressMapping addAttributeMapping:idMapping];
+    RKObjectRelationshipMapping* relationshipMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"address" objectMapping:addressMapping];
+    [userMapping addRelationshipMapping:relationshipMapping];
+    
+    NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    [dictionary removeObjectForKey:@"address"];    
+    id mockMapping = [OCMockObject partialMockForObject:userMapping];
+    BOOL returnValue = YES;
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingRelationships];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser objectMapping:mockMapping];
+    
+    NSError* error = nil;
+    [operation performMapping:&error];
+    [mockUser verify];
+}
+
+- (void)itShouldNotNilOutTheRelationshipIfItIsMissingAndCurrentlyNilOnTheTargetObject {
+    RKExampleUser* user = [RKExampleUser user];
+    user.address = nil;
+    id mockUser = [OCMockObject partialMockForObject:user];
+    [[mockUser reject] setAddress:nil];
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"addressID"];
+    [addressMapping addAttributeMapping:idMapping];
+    RKObjectRelationshipMapping* relationshipMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"address" objectMapping:addressMapping];
+    [userMapping addRelationshipMapping:relationshipMapping];
+    
+    NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    [dictionary removeObjectForKey:@"address"];    
+    id mockMapping = [OCMockObject partialMockForObject:userMapping];
+    BOOL returnValue = YES;
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingRelationships];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser objectMapping:mockMapping];
+    
+    NSError* error = nil;
+    [operation performMapping:&error];
+    [mockUser verify];
 }
 
 #pragma mark - Unidentified Components

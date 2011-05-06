@@ -116,7 +116,8 @@
 - (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue {
     NSAssert(sourceValue, @"Expected sourceValue not to be nil");
     NSAssert(destinationValue, @"Expected destinationValue not to be nil");
-    NSAssert([destinationValue isKindOfClass:[sourceValue class]], @"Expected sourceValue and destinationValue to be of the same type");
+    // TODO: Disabled, comparison of mutable to immutable arrays fails the assertion
+    //NSAssert2([destinationValue isKindOfClass:[sourceValue class]], @"Expected sourceValue and destinationValue to be of the same type. %@ != %@", NSStringFromClass([sourceValue class]), NSStringFromClass([destinationValue class]));
     
     SEL comparisonSelector;
     if ([sourceValue isKindOfClass:[NSString class]]) {
@@ -129,8 +130,10 @@
         comparisonSelector = @selector(isEqualToArray:);
     } else if ([sourceValue isKindOfClass:[NSDictionary class]]) {
         comparisonSelector = @selector(isEqualToDictionary:);
+    } else if ([sourceValue isKindOfClass:[NSSet class]]) {
+        comparisonSelector = @selector(isEqualToSet:);
     } else {
-        [NSException raise:@"NoComparisonSelectorFound" format:@"Unable to compare values of type %@", NSStringFromClass([sourceValue class])];
+        comparisonSelector = @selector(isEqual:);
     }
     
     // Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
@@ -208,8 +211,9 @@
     NSError* error = nil;
     
     RKObjectMappingOperation* subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withObjectMapping:mapping.objectMapping];
+    subOperation.delegate = self.delegate;
     if (NO == [subOperation performMapping:&error]) {
-        // TODO: Bubble the error up
+        // TODO: Log the error. Warning?
     }
     
     return YES;
@@ -222,10 +226,13 @@
     for (RKObjectRelationshipMapping* mapping in self.objectMapping.relationshipMappings) {
         id value = [self.sourceObject valueForKeyPath:mapping.sourceKeyPath];
         if (value == nil || value == [NSNull null] || [value isEqual:[NSNull null]]) {
+            // Optionally nil out the property
+            if ([self.objectMapping shouldSetNilForMissingRelationships] && [self shouldSetValue:nil atKeyPath:mapping.destinationKeyPath]) {
+                [self.destinationObject setValue:nil forKey:mapping.destinationKeyPath];
+            }
+            
             // TODO: Log messages here...
             continue;
-        } else {
-            // TODO: Optionally nil out the property?
         }
                 
         if ([self isValueACollection:value]) {
@@ -240,7 +247,6 @@
             }
             
             // Transform from NSSet <-> NSArray if necessary
-            // Inspect the property type to handle any value transformations
             Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:mapping.destinationKeyPath ofClass:[self.destinationObject class]];
             if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
                 destinationObject = [self transformValue:destinationObject atKeyPath:mapping.sourceKeyPath toType:type];
@@ -253,9 +259,11 @@
                 // TODO: Logging
             }
         }
-                
-        // TODO: Check for differences
-        [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
+        
+        // If the relationship has changed, set it
+        if ([self shouldSetValue:destinationObject atKeyPath:mapping.destinationKeyPath]) {
+            [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
+        }
     }
     
     return appliedMappings;

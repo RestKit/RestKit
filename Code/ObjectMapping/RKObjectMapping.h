@@ -21,6 +21,7 @@
 @property (nonatomic, readonly) NSArray* mappings;
 @property (nonatomic, readonly) NSArray* attributeMappings;
 @property (nonatomic, readonly) NSArray* relationshipMappings;
+@property (nonatomic, readonly) NSArray* mappedKeyPaths;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass;
 - (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping;
@@ -28,9 +29,8 @@
 
 - (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath;
 
-- (NSArray*)mappedKeyPaths;
-// TODO: mappedAttributes: mappedRelationships???
-
+// TODO: Probably become properties...
 - (BOOL)shouldSetNilForMissingAttributes;
+- (BOOL)shouldSetNilForMissingRelationships;
 
 @end
