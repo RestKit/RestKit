@@ -160,14 +160,11 @@
     results = [mapper performMapping];
         
     // TODO: do we still want to cooerce everyting into an array? jbe
-    
-//		if ([result isKindOfClass:[NSArray class]]) {
-//			results = (NSArray*)result;
-//		} else {
-//			// Using arrayWithObjects: instead of arrayWithObject:
-//			// so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
-//			results = [NSArray arrayWithObjects:result, nil];
-//		}
+    if (![results isKindOfClass:[NSArray class]]) {
+        // Using arrayWithObjects: instead of arrayWithObject:
+        // so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
+        results = [NSArray arrayWithObjects:results, nil];
+    }
 
     NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", results, @"objects", nil] retain];
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
