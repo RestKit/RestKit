@@ -7,6 +7,7 @@
 //
 
 #import "RKObjectMapping.h"
+#import "RKObjectRelationshipMapping.h"
 
 @implementation RKObjectMapping
 
@@ -37,9 +38,35 @@
     return [_mappings valueForKey:@"destinationKeyPath"];
 }
 
+- (NSArray*)attributeMappings {
+    NSMutableArray* mappings = [NSMutableArray array];
+    for (RKObjectAttributeMapping* mapping in self.mappings) {
+        if ([mapping isMemberOfClass:[RKObjectAttributeMapping class]]) {
+            [mappings addObject:mapping];
+        }
+    }
+    
+    return mappings;
+}
+
+- (NSArray*)relationshipMappings {
+    NSMutableArray* mappings = [NSMutableArray array];
+    for (RKObjectAttributeMapping* mapping in self.mappings) {
+        if ([mapping isMemberOfClass:[RKObjectRelationshipMapping class]]) {
+            [mappings addObject:mapping];
+        }
+    }
+    
+    return mappings;
+}
+
 - (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping {
     NSAssert1([[self mappedKeyPaths] containsObject:mapping.destinationKeyPath] == NO, @"Unable to add mapping for keyPath %@, one already exists...", mapping.destinationKeyPath);
     [_mappings addObject:mapping];
+}
+
+- (void)addRelationshipMapping:(RKObjectRelationshipMapping*)mapping {
+    [self addAttributeMapping:mapping];
 }
 
 - (NSString*)description {

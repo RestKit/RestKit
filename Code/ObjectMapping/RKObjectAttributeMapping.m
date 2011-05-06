@@ -40,7 +40,7 @@
 }
 
 + (RKObjectAttributeMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath {
-    RKObjectAttributeMapping* mapping = [[RKObjectAttributeMapping alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
+    RKObjectAttributeMapping* mapping = [[self alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
     return [mapping autorelease];
 }
 

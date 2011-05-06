@@ -141,6 +141,7 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
 ```
 
 ### Tracing a Mapping
+// TODO: Believe we are getting rid of the tracing concept in favor of logging macros...
 ```objc
     RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:payload atKeyPath:nil mappingProvider:self.objectManager.mappingProvider];
     mapper.tracingEnabled = YES;
@@ -169,7 +170,7 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
     user.lastName = @"Watters";
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping mapAttributes:@"firstName", @"lastName", nil];
-    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];    
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithObject:dictionary andDictionary:user atKeyPath:nil usingObjectMapping:mapping];
     [operation performMapping];
     

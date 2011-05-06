@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "RKObjectAttributeMapping.h"
 
+@class RKObjectRelationshipMapping;
+
 // Defines the mapping rules for a given target class
 @interface RKObjectMapping : NSObject {
     Class _objectClass;
@@ -17,9 +19,13 @@
 
 @property (nonatomic, assign) Class objectClass;
 @property (nonatomic, readonly) NSArray* mappings;
+@property (nonatomic, readonly) NSArray* attributeMappings;
+@property (nonatomic, readonly) NSArray* relationshipMappings;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass;
 - (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping;
+- (void)addRelationshipMapping:(RKObjectRelationshipMapping*)mapping;
+
 - (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath;
 
 - (NSArray*)mappedKeyPaths;

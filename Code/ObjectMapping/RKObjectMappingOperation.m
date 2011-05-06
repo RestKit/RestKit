@@ -11,26 +11,28 @@
 #import "Errors.h"
 #import "RKObjectPropertyInspector.h"
 #import "Logging.h"
+#import "RKObjectRelationshipMapping.h"
 
 @implementation RKObjectMappingOperation
 
 @synthesize sourceObject = _sourceObject;
 @synthesize destinationObject = _destinationObject;
-@synthesize keyPath = _keyPath;
 @synthesize objectMapping = _objectMapping;
 @synthesize delegate = _delegate;
 
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject keyPath:(NSString*)keyPath objectMapping:(RKObjectMapping*)objectMapping {
++ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withObjectMapping:(RKObjectMapping*)objectMapping {
+    return [[[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:objectMapping] autorelease];
+}
+
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject objectMapping:(RKObjectMapping*)objectMapping {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
-    NSAssert(keyPath != nil, @"Cannot perform a mapping operation without a keyPath context");
     NSAssert(objectMapping != nil, @"Cannot perform a mapping operation without an object mapping to apply");
     
     self = [super init];
     if (self) {
         _sourceObject = [sourceObject retain];
         _destinationObject = [destinationObject retain];
-        _keyPath = [keyPath retain];
         _objectMapping = [objectMapping retain];
     }
     
@@ -40,7 +42,6 @@
 - (void)dealloc {
     [_sourceObject release];
     [_destinationObject release];
-    [_keyPath release];
     [_objectMapping release];
     
     [super dealloc];
@@ -97,6 +98,16 @@
     } else if (value == [NSNull null] || [value isEqual:[NSNull null]]) {
         // Transform NSNull -> nil for simplicity
         return nil;
+    } else if ([sourceType isSubclassOfClass:[NSSet class]]) {
+        // Set -> Array
+        if ([destinationType isSubclassOfClass:[NSArray class]]) {
+            return [(NSSet*)value allObjects];
+        }
+    } else if ([sourceType isSubclassOfClass:[NSArray class]]) {
+        // Array -> Set
+        if ([destinationType isSubclassOfClass:[NSSet class]]) {
+            return [NSSet setWithArray:value];
+        }
     }
     
     return nil;
@@ -144,18 +155,17 @@
 	} else if (nil == value || nil == currentValue) {
 		// One is nil and the other is not
         return YES;
-	} else {
-		return NO == [self isValue:value equalToValue:currentValue];
 	}
     
-    return YES;
+    BOOL isEqual = [self isValue:value equalToValue:currentValue];
+    return !isEqual;
 }
 
 // Return YES if we mapped any attributes
 - (BOOL)applyAttributeMappings {
     BOOL appliedMappings = NO;
     
-    for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.mappings) {
+    for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.attributeMappings) {
         // TODO: Catch exceptions here... valueForUndefinedKey
         id value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
         if (value) {
@@ -169,14 +179,13 @@
             }
             
             // Ensure that the value is different
-            if (NO == [self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
+            if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
+                [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
+                [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+                // didMapValue:fromValue:usingMapping
+            } else {
                 // TODO: Debug log that it was skipped
-                continue;
             }
-            
-            [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
-            [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
-            // didMapValue:fromValue:usingMapping
         } else {
             [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
             // TODO: didNotFindMappableValue:forKeyPath:
@@ -191,18 +200,76 @@
     return appliedMappings;
 }
 
-- (BOOL)applyRelationshipMappings {
-    return NO;
+- (BOOL)isValueACollection:(id)value {
+    return ([value isKindOfClass:[NSSet class]] || [value isKindOfClass:[NSArray class]]);
 }
 
-- (BOOL)performMapping:(NSError**)error {    
-    if ([self applyAttributeMappings] || [self applyRelationshipMappings]) {
+- (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withMapping:(RKObjectRelationshipMapping*)mapping {
+    NSError* error = nil;
+    
+    RKObjectMappingOperation* subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withObjectMapping:mapping.objectMapping];
+    if (NO == [subOperation performMapping:&error]) {
+        // TODO: Bubble the error up
+    }
+    
+    return YES;
+}
+
+- (BOOL)applyRelationshipMappings {
+    BOOL appliedMappings = NO;
+    id destinationObject = nil;
+    
+    for (RKObjectRelationshipMapping* mapping in self.objectMapping.relationshipMappings) {
+        id value = [self.sourceObject valueForKeyPath:mapping.sourceKeyPath];
+        if (value == nil || value == [NSNull null] || [value isEqual:[NSNull null]]) {
+            // TODO: Log messages here...
+            continue;
+        } else {
+            // TODO: Optionally nil out the property?
+        }
+                
+        if ([self isValueACollection:value]) {
+            // One to many relationship
+            destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
+            for (id nestedObject in value) {
+                id mappedObject = [mapping.objectMapping.objectClass new];
+                if ([self mapNestedObject:nestedObject toObject:mappedObject withMapping:mapping]) {
+                    appliedMappings = YES;
+                    [destinationObject addObject:mappedObject];
+                }
+            }
+            
+            // Transform from NSSet <-> NSArray if necessary
+            // Inspect the property type to handle any value transformations
+            Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:mapping.destinationKeyPath ofClass:[self.destinationObject class]];
+            if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
+                destinationObject = [self transformValue:destinationObject atKeyPath:mapping.sourceKeyPath toType:type];
+            }
+        } else {
+            // One to one relationship
+            destinationObject = [[mapping.objectMapping.objectClass new] autorelease];
+            if ([self mapNestedObject:value toObject:destinationObject withMapping:mapping]) {
+                appliedMappings = YES;
+                // TODO: Logging
+            }
+        }
+                
+        // TODO: Check for differences
+        [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
+    }
+    
+    return appliedMappings;
+}
+
+- (BOOL)performMapping:(NSError**)error {
+    BOOL mappedAttributes = [self applyAttributeMappings];
+    BOOL mappedRelationships = [self applyRelationshipMappings];
+    if (mappedAttributes || mappedRelationships) {
         return YES;
     } else {
         // TODO: Improve error message...
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                   @"Unable to identify any mappable content", NSLocalizedDescriptionKey,
-                                  @"RKObjectMapperKeyPath", self.keyPath,
                                   nil];
         int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
         NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];        
@@ -216,8 +283,8 @@
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object at 'keyPath': %@. Mapping values from object %@ to object %@ with object mapping %@",
-            NSStringFromClass([self.destinationObject class]), self.keyPath, self.sourceObject, self.destinationObject];
+    return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object. Mapping values from object %@ to object %@ with object mapping %@",
+            NSStringFromClass([self.destinationObject class]), self.sourceObject, self.destinationObject, self.objectMapping];
 }
 
 @end

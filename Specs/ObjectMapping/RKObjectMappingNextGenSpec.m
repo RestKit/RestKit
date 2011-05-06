@@ -13,6 +13,7 @@
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
 #import "RKObjectAttributeMapping.h"
+#import "RKObjectRelationshipMapping.h"
 #import "Logging.h"
 
 #define RKFAILMAPPING() NSAssert(nil != nil, @"Failed mapping operation!!!")
@@ -82,7 +83,7 @@ typedef enum RKObjectMapperErrors {
 }
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping*)mapping {
-    RKLOG_MAPPING(0, @"Set '%@' to '%@' on object %@ at keyPath '%@'", keyPath, value, operation.destinationObject, operation.keyPath);
+    RKLOG_MAPPING(0, @"Set '%@' to '%@' on object %@", keyPath, value, operation.destinationObject);
 }
 
 - (void)objectMapper:(RKNewObjectMapper *)objectMapper didAddError:(NSError *)error {
@@ -362,7 +363,7 @@ typedef enum RKObjectMapperErrors {
     }
     
     NSError* error = nil;
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:destinationObject keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:mapping];
     operation.delegate = _tracer;
     BOOL success = [operation performMapping:&error];
     [operation release];
@@ -417,31 +418,62 @@ typedef enum RKObjectMapperErrors {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+@interface RKSpecAddress : NSObject {
+    NSString* _city;
+    NSString* _state;
+    NSString* _country;
+}
+
+@property (nonatomic, retain) NSString* city;
+@property (nonatomic, retain) NSString* state;
+@property (nonatomic, retain) NSString* country;
+
+@end
+
+@implementation RKSpecAddress
+
+@synthesize city = _city;
+@synthesize state = _state;
+@synthesize country = _country;
+
++ (RKSpecAddress*)address {
+    return [[self new] autorelease];
+}
+
+@end
+
 @interface RKExampleUser : NSObject {
     NSNumber* _userID;
     NSString* _name;
     NSDate* _birthDate;
     NSArray* _favoriteColors;
-    NSDictionary* _address;
+    NSDictionary* _addressDictionary;
     NSURL* _website;
     NSNumber* _isDeveloper;
     NSNumber* _luckyNumber;
     NSDecimalNumber* _weight;
     NSArray* _interests;
     NSString* _country;
+    
+    // Relationships
+    RKSpecAddress* _address;
+    NSArray* _friends;
 }
 
 @property (nonatomic, retain) NSNumber* userID;
 @property (nonatomic, retain) NSString* name;
 @property (nonatomic, retain) NSDate* birthDate;
 @property (nonatomic, retain) NSArray* favoriteColors;
-@property (nonatomic, retain) NSDictionary* address;
+@property (nonatomic, retain) NSDictionary* addressDictionary;
 @property (nonatomic, retain) NSURL* website;
 @property (nonatomic, retain) NSNumber* isDeveloper;
 @property (nonatomic, retain) NSNumber* luckyNumber;
 @property (nonatomic, retain) NSDecimalNumber* weight;
 @property (nonatomic, retain) NSArray* interests;
 @property (nonatomic, retain) NSString* country;
+@property (nonatomic, retain) RKSpecAddress* address;
+@property (nonatomic, retain) NSArray* friends;
+@property (nonatomic, retain) NSSet* friendsSet;
 
 @end
 
@@ -451,13 +483,16 @@ typedef enum RKObjectMapperErrors {
 @synthesize name = _name;
 @synthesize birthDate = _birthDate;
 @synthesize favoriteColors = _favoriteColors;
-@synthesize address = _address;
+@synthesize addressDictionary = _addressDictionary;
 @synthesize website = _website;
 @synthesize isDeveloper = _isDeveloper;
 @synthesize luckyNumber = _luckyNumber;
 @synthesize weight = _weight;
 @synthesize interests = _interests;
 @synthesize country = _country;
+@synthesize address = _address;
+@synthesize friends = _friends;
+@synthesize friendsSet = _friendsSet;
 
 + (RKExampleUser*)user {
     return [[self new] autorelease];
@@ -509,6 +544,22 @@ typedef enum RKObjectMapperErrors {
     [mapping addAttributeMapping:idMapping];
     [expectThat([mapping mappingForKeyPath:@"id"] == idMapping) should:be(YES)];
     // [expectThat([mapping mappingForKeyPath:@"id"]) should:be(idMapping)]; // TODO: Trigger UIExpectation be() matcher bug...
+}
+
+- (void)itShouldAddMappingsToAttributeMappings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addAttributeMapping:idMapping];
+    [expectThat([mapping.mappings containsObject:idMapping]) should:be(YES)];
+    [expectThat([mapping.attributeMappings containsObject:idMapping]) should:be(YES)];
+}
+
+- (void)itShouldAddMappingsToRelationshipMappings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectRelationshipMapping* idMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"id" toKeyPath:@"userID" objectMapping:nil];
+    [mapping addRelationshipMapping:idMapping];
+    [expectThat([mapping.mappings containsObject:idMapping]) should:be(YES)];
+    [expectThat([mapping.relationshipMappings containsObject:idMapping]) should:be(YES)];
 }
 
 #pragma mark - RKNewObjectMapper Specs
@@ -678,6 +729,7 @@ typedef enum RKObjectMapperErrors {
     [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"lucky_number"];
     [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"address"];
     [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"interests"];
+    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"friends"];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
@@ -915,7 +967,7 @@ typedef enum RKObjectMapperErrors {
     NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:123], @"id", @"Blake Watters", @"name", nil];
     RKExampleUser* user = [RKExampleUser user];
     
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     [operation performMapping:nil];    
     [expectThat(user.name) should:be(@"Blake Watters")];
     [expectThat(user.userID) should:be(123)];    
@@ -934,7 +986,7 @@ typedef enum RKObjectMapperErrors {
     user.userID = [NSNumber numberWithInt:123];
     
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:user destinationObject:dictionary keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:user destinationObject:dictionary objectMapping:mapping];
     BOOL success = [operation performMapping:nil];
     [expectThat(success) should:be(YES)];
     [expectThat([dictionary valueForKey:@"name"]) should:be(@"Blake Watters")];
@@ -952,7 +1004,7 @@ typedef enum RKObjectMapperErrors {
     NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"blue", @"favorite_color", @"coffee", @"preferred_beverage", nil];
     RKExampleUser* user = [RKExampleUser user];
     
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     BOOL success = [operation performMapping:&error];
     [expectThat(success) should:be(NO)];
@@ -974,7 +1026,7 @@ typedef enum RKObjectMapperErrors {
     NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"blue", @"favorite_color", @"coffee", @"preferred_beverage", nil];
     RKExampleUser* user = [RKExampleUser user];
     
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     [[mockDelegate expect] objectMappingOperation:operation didFailWithError:[OCMArg isNotNil]];
     [mockDelegate verify];
     return;
@@ -996,7 +1048,7 @@ typedef enum RKObjectMapperErrors {
     NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"blue", @"favorite_color", @"coffee", @"preferred_beverage", nil];
     RKExampleUser* user = [RKExampleUser user];
     
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     [expectThat(error) shouldNot:be(nil)];
@@ -1015,7 +1067,7 @@ typedef enum RKObjectMapperErrors {
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1024,6 +1076,14 @@ typedef enum RKObjectMapperErrors {
     [expectThat([dateFormatter stringFromDate:user.birthDate]) should:be(@"11/27/1982")];
 }
 
+- (void)itShouldMapADateToAString {
+    
+}
+// TODO: It should assume date strings with timestamps are in UTC time
+// TODO: It should serialize dates by consulting the datePropertyAsString method (if available)
+// TODO: It should serialize dates
+// TODO: It should let you specify a format string for the date (maybe?)
+
 - (void)itShouldMapStringToURL {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"website" toKeyPath:@"website"];
@@ -1031,7 +1091,7 @@ typedef enum RKObjectMapperErrors {
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1047,7 +1107,7 @@ typedef enum RKObjectMapperErrors {
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1061,7 +1121,7 @@ typedef enum RKObjectMapperErrors {
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1075,7 +1135,7 @@ typedef enum RKObjectMapperErrors {
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1091,7 +1151,7 @@ typedef enum RKObjectMapperErrors {
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1105,7 +1165,7 @@ typedef enum RKObjectMapperErrors {
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1115,12 +1175,12 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldMapANestedDictionaryToAnAttribute {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"address" toKeyPath:@"address"];
+    RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"address" toKeyPath:@"addressDictionary"];
     [mapping addAttributeMapping:countryMapping];
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     
@@ -1128,28 +1188,28 @@ typedef enum RKObjectMapperErrors {
                              @"city", @"Carrboro",
                              @"state", @"North Carolina",
                              @"country", @"USA", nil];
-    [expectThat(user.address) should:be(address)];
+    [expectThat(user.addressDictionary) should:be(address)];
 }
 
 - (void)itShouldNotSetAPropertyWhenTheValueIsTheSame {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
-    [mapping addAttributeMapping:countryMapping];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     RKExampleUser* user = [RKExampleUser user];
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser reject] setName:OCMOCK_ANY];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
 }
 
 - (void)itShouldNotSetTheDestinationPropertyWhenBothAreNil {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
-    [mapping addAttributeMapping:countryMapping];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     [dictionary setValue:[NSNull null] forKey:@"name"];
@@ -1157,15 +1217,15 @@ typedef enum RKObjectMapperErrors {
     user.name = nil;
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser reject] setName:OCMOCK_ANY];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
 }
 
 - (void)itShouldSetNilForNSNullValues {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
-    [mapping addAttributeMapping:countryMapping];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
     
     NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
     [dictionary setValue:[NSNull null] forKey:@"name"];
@@ -1173,7 +1233,7 @@ typedef enum RKObjectMapperErrors {
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser expect] setName:nil];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     [mockUser verify];
@@ -1181,8 +1241,8 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldOptionallySetNilForAMissingKeyPath {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
-    [mapping addAttributeMapping:countryMapping];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
     
     NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
     [dictionary removeObjectForKey:@"name"];
@@ -1190,7 +1250,7 @@ typedef enum RKObjectMapperErrors {
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser expect] setName:nil];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = YES;
     [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingAttributes];
@@ -1201,8 +1261,8 @@ typedef enum RKObjectMapperErrors {
 
 - (void)itShouldOptionallyIgnoreAMissingSourceKeyPath {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
-    [mapping addAttributeMapping:countryMapping];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
     
     NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
     [dictionary removeObjectForKey:@"name"];
@@ -1210,7 +1270,7 @@ typedef enum RKObjectMapperErrors {
     user.name = @"Blake Watters";
     id mockUser = [OCMockObject partialMockForObject:user];
     [[mockUser reject] setName:nil];
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user keyPath:@"" objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = NO;
     [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingAttributes];
@@ -1220,17 +1280,66 @@ typedef enum RKObjectMapperErrors {
 }
 
 // TODO: It should handle valueForUndefinedKey
-// TODO: Handle timeZone conversions... remote time zone probably lives on the object manager
 // We can probably just copy the time zone to the mapper instance?
 
 #pragma mark - Relationship Mapping
 
 - (void)itShouldMapANestedObject {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    RKObjectAttributeMapping* cityMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"city" toKeyPath:@"city"];
+    [addressMapping addAttributeMapping:cityMapping];
     
+    RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"address" objectMapping:addressMapping];
+    [userMapping addRelationshipMapping:hasOneMapping];
+    
+    RKNewObjectMapper* mapper = [RKNewObjectMapper new];
+    id userInfo = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [mapper mapObject:[RKExampleUser user] fromObject:userInfo usingMapping:userMapping];
+    [mapper release];
+    [expectThat(user.name) should:be(@"Blake Watters")];
+    [expectThat(user.address) shouldNot:be(nil)];
 }
 
 - (void)itShouldMapANestedObjectCollection {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
     
+    RKObjectRelationshipMapping* hasManyMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friends" toKeyPath:@"friends" objectMapping:userMapping];
+    [userMapping addRelationshipMapping:hasManyMapping];
+    
+    RKNewObjectMapper* mapper = [RKNewObjectMapper new];
+    id userInfo = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [mapper mapObject:[RKExampleUser user] fromObject:userInfo usingMapping:userMapping];
+    [mapper release];
+    [expectThat(user.name) should:be(@"Blake Watters")];
+    [expectThat(user.friends) shouldNot:be(nil)];
+    [expectThat([user.friends count]) should:be(2)];
+    NSArray* names = [NSArray arrayWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
+    [expectThat([user.friends valueForKey:@"name"]) should:be(names)];
+}
+
+- (void)itShouldMapANestedArrayIntoASet {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    
+    RKObjectRelationshipMapping* hasManyMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friends" toKeyPath:@"friendsSet" objectMapping:userMapping];
+    [userMapping addRelationshipMapping:hasManyMapping];
+    
+    RKNewObjectMapper* mapper = [RKNewObjectMapper new];
+    id userInfo = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [mapper mapObject:[RKExampleUser user] fromObject:userInfo usingMapping:userMapping];
+    [mapper release];
+    [expectThat(user.name) should:be(@"Blake Watters")];
+    [expectThat(user.friendsSet) shouldNot:be(nil)];
+    [expectThat([user.friendsSet isKindOfClass:[NSSet class]]) should:be(YES)];
+    [expectThat([user.friendsSet count]) should:be(2)];
+    NSSet* names = [NSSet setWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
+    [expectThat([user.friendsSet valueForKey:@"name"]) should:be(names)];
 }
 
 #pragma mark - Unidentified Components

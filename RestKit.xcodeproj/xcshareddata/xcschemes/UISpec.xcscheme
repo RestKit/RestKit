@@ -71,8 +71,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapAStringToADateAttribute"
-            isEnabled = "NO">
+            value = "itShouldMapANestedArrayIntoASet"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"

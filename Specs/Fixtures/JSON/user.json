@@ -8,11 +8,19 @@
     "lucky_number": "187",
     "interests": [
         "Hacking",
-        "Running"
+        "Running" 
     ],
     "address": {
         "city": "Carrboro",
         "state": "North Carolina",
         "country": "USA" 
-    }
+    },
+    "friends": [
+        {
+            "name": "Jeremy Ellison" 
+        },
+        {
+            "name": "Rachit Shukla" 
+        }
+    ]
 }

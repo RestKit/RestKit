@@ -28,7 +28,6 @@
 @interface RKObjectMappingOperation : NSObject {
     id _sourceObject;
     id _destinationObject;
-    NSString* _keyPath;
     RKObjectMapping* _objectMapping;
     
     id<RKObjectMappingOperationDelegate> _delegate;
@@ -46,12 +45,6 @@
 @property (nonatomic, readonly) id destinationObject;
 
 /*!
- The current keyPath this operation is occuring at. This our current scope in
- a larger object mapping context.
- */
-@property (nonatomic, readonly) NSString* keyPath;
-
-/*!
  The object mapping defining how values contained in the source object should be transformed to the destination object via key-value coding
  */
 @property (nonatomic, readonly) RKObjectMapping* objectMapping;
@@ -61,12 +54,16 @@
  */
 @property (nonatomic, assign) id<RKObjectMappingOperationDelegate> delegate;
 
-// TODO: mappingOperationFromObject:toObject:withObjectMapping:keyPath: // TODO: This is the new 
+/*!
+ Create a new mapping operation configured to transform the object representation
+ in a source object to a new destination object according to an object mapping definition
+ */
++ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withObjectMapping:(RKObjectMapping*)objectMapping;
 
 /*!
  Initialize a mapping operation for an object and set of data at a particular key path with an object mapping definition
  */
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject keyPath:(NSString*)keyPath objectMapping:(RKObjectMapping*)objectMapping;
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject objectMapping:(RKObjectMapping*)objectMapping;
 
 /*!
  Process all mappable values from the mappable dictionary and assign them to the target object
