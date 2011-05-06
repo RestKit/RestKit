@@ -29,10 +29,10 @@ static RKObjectManager* sharedManager = nil;
 @synthesize router = _router;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
-	return self = [self initWithBaseURL:baseURL objectMapper:[[[RKObjectMapper alloc] init] autorelease] router:[[[RKDynamicRouter alloc] init] autorelease]];
+	return self = [self initWithBaseURL:baseURL objectMapper:[[[RKOldObjectMapper alloc] init] autorelease] router:[[[RKDynamicRouter alloc] init] autorelease]];
 }
 
-- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
+- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
     self = [super init];
 	if (self) {
 		_mapper = [mapper retain];
@@ -71,7 +71,7 @@ static RKObjectManager* sharedManager = nil;
 	sharedManager = manager;
 }
 
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
 	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL objectMapper:mapper router:router] autorelease];
 	if (nil == sharedManager) {
 		[RKObjectManager setSharedManager:manager];

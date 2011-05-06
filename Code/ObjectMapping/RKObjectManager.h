@@ -7,7 +7,7 @@
 //
 
 #import "../Network/Network.h"
-#import "RKObjectMapper.h"
+#import "RKOldObjectMapper.h"
 #import "RKObjectLoader.h"
 #import "RKDynamicRouter.h"
 
@@ -26,7 +26,7 @@ typedef enum {
 @interface RKObjectManager : NSObject {
 	RKClient* _client;
 	RKMappingFormat _format;
-	RKObjectMapper* _mapper;
+	RKOldObjectMapper* _mapper;
 	NSObject<RKRouter>* _router;
 	RKManagedObjectStore* _objectStore;	
 	RKObjectManagerOnlineState _onlineState;
@@ -52,7 +52,7 @@ typedef enum {
  * Create and initialize a new object manager. If this is the first instance created
  * it will be set as the shared instance
  */
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
 
 /**
  * Initialize a new model manager instance
@@ -62,7 +62,7 @@ typedef enum {
 /**
  * Initialize a new model manager instance
  */
-- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
+- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
 
 /**
  * The wire format to use for communications. Either RKMappingFormatXML or RKMappingFormatJSON.
@@ -94,7 +94,7 @@ typedef enum {
 /**
  * Mapper object responsible for mapping remote HTTP resources to Cocoa objects
  */
-@property(nonatomic, readonly) RKObjectMapper* mapper;
+@property(nonatomic, readonly) RKOldObjectMapper* mapper;
 
 /**
  * Routing object responsible for generating paths for objects and serializing

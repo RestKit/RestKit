@@ -23,6 +23,8 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 
 - (void)beforeAll {
     RKNetworkSetGlobalCredentialPersistence(NSURLCredentialPersistenceNone);
+    RKSpecStubNetworkAvailability(YES);
+    RKSpecNewRequestQueue();
 }
                                             
 - (void)itShouldAccessUnprotectedResourcePaths {
@@ -35,7 +37,7 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 
 - (void)itShouldAuthenticateViaHTTPAuthBasic {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
+    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];    
     client.username = RKAuthenticationSpecUsername;
     client.password = RKAuthenticationSpecPassword;
     [client get:@"/authentication/basic" delegate:loader];

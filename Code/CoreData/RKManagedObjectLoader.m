@@ -14,7 +14,7 @@
 @interface RKObjectLoader (Private)
 
 @property (nonatomic, readonly) RKManagedObjectStore* objectStore;
-@property (nonatomic, readonly) RKObjectMapper* objectMapper;
+@property (nonatomic, readonly) RKOldObjectMapper* objectMapper;
 
 - (void)handleTargetObject;
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;

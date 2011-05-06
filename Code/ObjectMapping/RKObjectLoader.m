@@ -15,7 +15,7 @@
 @interface RKObjectLoader (Private)
 
 @property (nonatomic, readonly) RKClient* client;
-@property (nonatomic, readonly) RKObjectMapper* objectMapper;
+@property (nonatomic, readonly) RKOldObjectMapper* objectMapper;
 
 - (void)prepareURLRequest;
 
@@ -58,7 +58,7 @@
     return self.objectManager.client;
 }
 
-- (RKObjectMapper*)objectMapper {
+- (RKOldObjectMapper*)objectMapper {
     return self.objectManager.mapper;
 }
 
@@ -177,7 +177,7 @@
 // Invoked just before request hits the network
 - (void)prepareURLRequest {
     [self handleTargetObject];
-    [self prepareURLRequest];
+    [super prepareURLRequest];
 }
 
 - (void)didFailLoadWithError:(NSError*)error {

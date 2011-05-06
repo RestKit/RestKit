@@ -2,581 +2,322 @@
 //  RKObjectMapper.m
 //  RestKit
 //
-//  Created by Blake Watters on 3/4/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//  Created by Blake Watters on 5/6/11.
+//  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import <objc/message.h>
-
-#import "../CoreData/CoreData.h"
-#import "RKObjectManager.h"
-
 #import "RKObjectMapper.h"
-#import "NSDictionary+RKAdditions.h"
-#import "RKJSONParser.h"
-#import "RKXMLParser.h"
 #import "Errors.h"
-
-// Default format string for date and time objects from Rails
-// TODO: Rails specifics should probably move elsewhere...
-static const NSString* kRKModelMapperRailsDateTimeFormatString = @"yyyy-MM-dd'T'HH:mm:ss'Z'"; // 2009-08-08T17:23:59Z
-static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 
 @interface RKObjectMapper (Private)
 
-- (id)parseString:(NSString*)string;
+- (id)mapObject:(id)destinationObject fromObject:(id)sourceObject usingMapping:(RKObjectMapping*)mapping;
+- (NSArray*)mapObjectsFromArray:(NSArray*)array usingMapping:(RKObjectMapping*)mapping;
 
-- (Class)typeClassForProperty:(NSString*)property ofClass:(Class)class;
-- (NSDictionary*)elementToPropertyMappingsForModel:(id)model;
+@end
 
-- (NSObject<RKObjectMappable>*)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
-- (NSObject<RKObjectMappable>*)createOrUpdateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements;
+// TODO: We can probably just ditch tracing in favor of NSLogger
+@implementation RKObjectMapperTracingDelegate
 
-- (void)updateModel:(id)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName; // Rename!
-- (void)updateModel:(id)model fromElements:(NSDictionary*)elements;
-- (void)setPropertiesOfModel:(id)model fromElements:(NSDictionary*)elements;
-- (void)setRelationshipsOfModel:(id)object fromElements:(NSDictionary*)elements;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)elementMapping forKeyPath:(NSString *)keyPath {
+    RKLOG_MAPPING(0, @"Found mapping for keyPath '%@': %@", keyPath, elementMapping);
+}
 
-- (NSDate*)parseDateFromString:(NSString*)string;
-- (NSDate*)dateInLocalTime:(NSDate*)date;
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath {
+    RKLOG_MAPPING(0, @"Unable to find mapping for keyPath '%@'", keyPath);
+}
+
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping*)mapping {
+    RKLOG_MAPPING(0, @"Set '%@' to '%@' on object %@", keyPath, value, operation.destinationObject);
+}
+
+- (void)objectMapper:(RKObjectMapper *)objectMapper didAddError:(NSError *)error {
+    RKLOG_MAPPING(0, @"Object mapper encountered error: %@", [error localizedDescription]);
+}
+
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFailWithError:(NSError*)error {
+    RKLOG_MAPPING(0, @"Object mapping operation failed with error: %@", [error localizedDescription]);
+}
 
 @end
 
 @implementation RKObjectMapper
 
-@synthesize format = _format;
-@synthesize missingElementMappingPolicy = _missingElementMappingPolicy;
-@synthesize dateFormats = _dateFormats;
-@synthesize remoteTimeZone = _remoteTimeZone;
-@synthesize localTimeZone = _localTimeZone;
-@synthesize errorsKeyPath = _errorsKeyPath;
-@synthesize errorsConcatenationString = _errorsConcatenationString;
+@synthesize tracingEnabled = _tracingEnabled;
+@synthesize targetObject = _targetObject;
+@synthesize delegate =_delegate;
+@synthesize keyPath = _keyPath;
+@synthesize mappingProvider = _mappingProvider;
+@synthesize object = _object;
+@synthesize errors = _errors;
 
-///////////////////////////////////////////////////////////////////////////////
-// public
++ (id)mapperForObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(id<RKObjectMappingProvider>)mappingProvider {
+    return [[[self alloc] initWithObject:object atKeyPath:keyPath mappingProvider:mappingProvider] autorelease];
+}
 
-- (id)init {
-	if ((self = [super init])) {
-		_elementToClassMappings = [[NSMutableDictionary alloc] init];
-		_format = RKMappingFormatJSON;
-		_missingElementMappingPolicy = RKIgnoreMissingElementMappingPolicy;
-		_inspector = [[RKObjectPropertyInspector alloc] init];
-		self.dateFormats = [NSArray arrayWithObjects:kRKModelMapperRailsDateTimeFormatString, kRKModelMapperRailsDateFormatString, nil];
-		self.remoteTimeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
-		self.localTimeZone = [NSTimeZone localTimeZone];
-		self.errorsKeyPath = @"errors";
-		self.errorsConcatenationString = @", ";
-	}
-	return self;
+- (id)initWithObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(id<RKObjectMappingProvider>)mappingProvider {
+    self = [super init];
+    if (self) {
+        _object = [object retain];
+        _mappingProvider = mappingProvider;
+        _keyPath = [keyPath copy];
+        _errors = [NSMutableArray new];
+    }
+    
+    return self;
 }
 
 - (void)dealloc {
-	[_elementToClassMappings release];
-	[_inspector release];
-	[_dateFormats release];
-	[_errorsKeyPath release];
-	[_errorsConcatenationString release];
-	[super dealloc];
+    [_object release];
+    [_keyPath release];
+    [_errors release];
+    [_tracer release];
+    [super dealloc];
 }
 
-- (void)registerClass:(Class<RKObjectMappable>)aClass forElementNamed:(NSString*)elementName {
-	[_elementToClassMappings setObject:aClass forKey:elementName];
+- (void)setTracer:(RKObjectMapperTracingDelegate*)tracer {
+    [tracer retain];
+    [_tracer release];
+    _tracer = tracer;
 }
 
-- (void)setFormat:(RKMappingFormat)format {
-	_format = format;
+- (void)setTracingEnabled:(BOOL)tracingEnabled {
+    if (tracingEnabled) {
+        [self setTracer:[RKObjectMapperTracingDelegate new]];
+    } else {
+        [self setTracer:nil];
+    }
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Mapping from a string
+- (BOOL)tracingEnabled {
+    return _tracer != nil;
+}
 
-- (id)parseString:(NSString*)string {
-    Class parserClass;
-    NSString* className = nil;
-    NSObject<RKParser>* parser = nil;
-    
-    if (_format == RKMappingFormatJSON) {
-        className = @"RKJSONParser";
-    } else if (_format == RKMappingFormatXML) {
-        className = @"RKXMLParser";
+- (NSUInteger)errorCount {
+    return [self.errors count];
+}
+
+- (id)createInstanceOfClassForMapping:(Class)mappableClass {
+    // TODO: Believe we want this to consult the delegate? Or maybe the provider? objectForMappingWithClass:atKeyPath:
+    if (mappableClass) {
+        return [[mappableClass new] autorelease];
     }
     
-    parserClass = NSClassFromString(className);
-    if (nil == parserClass) {
-        [NSException raise:@"Unable to find an appropriate parser." 
-                    format:@"The object mapper attempted to process a payload via the '%@' parser, but it was not found.", className];
-    }
-	
-    parser = [[parserClass alloc] init];
-	id result = nil;
-	@try {
-		result = [parser objectFromString:string];
-	}
-	@catch (NSException* e) {
-		NSLog(@"[RestKit] RKObjectMapper:parseString: Exception (%@) parsing error from string: %@", [e reason], string);
-	}
-    [parser release];
+    return nil;
+}
+
+- (void)addError:(NSError*)error {
+    NSAssert(error, @"Cannot add a nil error");
+    [_errors addObject:error];
     
-	return result;
+    if ([self.delegate respondsToSelector:@selector(objectMapper:didAddError:)]) {
+        [self.delegate objectMapper:self didAddError:error];
+    }
+    [_tracer objectMapper:self didAddError:error];
 }
 
-- (NSError*)parseErrorFromString:(NSString*)string {
-	NSString* errorMessage = [[[self parseString:string] valueForKeyPath:_errorsKeyPath] componentsJoinedByString:_errorsConcatenationString];
-	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-							  errorMessage, NSLocalizedDescriptionKey,
-							  nil];
-	NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
-	
-	return error;
+- (void)addErrorWithCode:(RKObjectMapperErrorCode)errorCode message:(NSString*)errorMessage keyPath:(NSString*)keyPath userInfo:(NSDictionary*)otherInfo {
+    NSMutableDictionary* userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                     errorMessage, NSLocalizedDescriptionKey,
+                                     @"RKObjectMapperKeyPath", keyPath ? keyPath : (NSString*) [NSNull null],
+                                     nil];
+    [userInfo addEntriesFromDictionary:otherInfo];
+    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:errorCode userInfo:userInfo];
+    [self addError:error];
 }
 
-// Primary entry point for RKObjectLoader
-- (id)mapFromString:(NSString*)string toClass:(Class<RKObjectMappable>)class keyPath:(NSString*)keyPath {
-	id object = [self parseString:string];
-	if (keyPath) {
-		object = [object valueForKeyPath:keyPath];
-	}
-  
-	if ([object isKindOfClass:[NSDictionary class]]) {
-        if (class) {
-            return [self mapObjectFromDictionary:(NSDictionary*)object toClass:class];
-        } else {
-            return [self mapObjectFromDictionary:(NSDictionary*)object];
+- (void)addErrorForUnmappableKeyPath:(NSString*)keyPath {
+    NSString* errorMessage = [NSString stringWithFormat:@"Could not find an object mapping for keyPath: %@", keyPath];
+    [self addErrorWithCode:RKObjectMapperErrorObjectMappingNotFound message:errorMessage keyPath:self.keyPath userInfo:nil];
+}
+
+// If the object being mapped is a collection, we map each object within the collection
+- (id)performMappingForCollection {
+    NSAssert([self.object isKindOfClass:[NSArray class]] || [self.object isKindOfClass:[NSSet class]], @"Expected self.object to be a collection");
+    RKObjectMapping* mapping = [self.mappingProvider objectMappingForKeyPath:self.keyPath];
+    if (mapping) {
+        return [self mapObjectsFromArray:self.object usingMapping:mapping];
+    } else {
+        // Attempted to map a collection but couldn't find a mapping for the keyPath
+        [self addErrorForUnmappableKeyPath:self.keyPath];
+    }
+    
+    return nil;
+}
+
+- (RKObjectMapping*)mappingForKeyPath:(NSString*)keyPath {
+    RKLOG_MAPPING(0, @"Looking for mapping for keyPath %@", keyPath);
+    if ([self.delegate respondsToSelector:@selector(objectMapper:willAttemptMappingForKeyPath:)]) {
+        [self.delegate objectMapper:self willAttemptMappingForKeyPath:keyPath];
+    }
+    [_tracer objectMapper:self willAttemptMappingForKeyPath:keyPath]; // TODO: Eliminate tracer in favor of logging macros...
+    
+    RKObjectMapping* mapping = [self.mappingProvider objectMappingForKeyPath:keyPath];
+    if (mapping) {
+        if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMapping:forKeyPath:)]) {
+            [self.delegate objectMapper:self didFindMapping:mapping forKeyPath:keyPath];
         }
-	} else if ([object isKindOfClass:[NSArray class]]) {
-		if (class) {
-			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object toClass:class];
-		} else {
-			return [self mapObjectsFromArrayOfDictionaries:(NSArray*)object];
-		}
-	} else if (nil == object) {
-		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
-		return nil;
-	} else {
-		[NSException raise:@"Unable to map from requested string" 
-					format:@"The object was deserialized into a %@. A dictionary or array of dictionaries was expected.", [object class]];
-		return nil;
-	}
+    } else {
+        if ([self.delegate respondsToSelector:@selector(objectMapper:didNotFindMappingForKeyPath:)]) {
+            [self.delegate objectMapper:self didNotFindMappingForKeyPath:keyPath];
+        }
+    }
+    
+    return mapping;
 }
 
-- (id)mapFromString:(NSString*)string {
-	return [self mapFromString:string toClass:nil keyPath:nil];
-}
-
-- (void)mapObject:(NSObject<RKObjectMappable>*)model fromString:(NSString*)string keyPath:(NSString*)keyPath {
-	id object = [self parseString:string];
-	if (keyPath) {
-		object = [object valueForKeyPath:keyPath];
-	}
-	
-	if ([object isKindOfClass:[NSDictionary class]]) {
-		[self mapObject:model fromDictionary:object];
-	} else if (nil == object) {
-		NSLog(@"[RestKit] RKModelMapper: mapObject:fromString: attempted to map from a nil payload. Skipping...");
-		return;
-	} else {
-		[NSException raise:@"Unable to map from requested string"
-					format:@"The object was serialized into a %@. A dictionary of elements was expected. (Object: %@) [Payload: %@]", [object class], object, string];
-	}
-}
-
-- (void)mapObject:(NSObject<RKObjectMappable>*)model fromString:(NSString*)string {
-	[self mapObject:model fromString:string keyPath:nil];
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Mapping from objects
-
-- (void)mapObject:(NSObject<RKObjectMappable>*)model fromDictionary:(NSDictionary*)dictionary {
-	Class class = [model class];
-	
-	NSArray* elementNames = [_elementToClassMappings allKeysForObject:class];
-	if ([elementNames count] == 0) {
-		if ([model conformsToProtocol:@protocol(RKObjectMappable)]) {
-			[self updateModel:model fromElements:dictionary];
-		} else {
-			[NSException raise:@"Unable to map from requested dictionary"
-						format:@"There was no mappable element found for objects of type %@", class];
-		}
-	} else {
-		for (NSString* elementName in elementNames) {
-			if ([[dictionary allKeys] containsObject:elementName]) {
-				NSDictionary* elements = [dictionary objectForKey:elementName];
-				[self updateModel:model fromElements:elements];
-				return;
-			}
-		}
-		// If the dictionary is not namespaced, attempt mapping its properties directly...
-		[self updateModel:model fromElements:dictionary];
-	}
-}
-
-- (id)mapObjectFromDictionary:(NSDictionary*)dictionary toClass:(Class)class {
-	return [self createOrUpdateInstanceOfModelClass:class fromElements:dictionary];
-}
-
-// Lookup an object type using the element to class mappings and map its attributes
-// Expects an object of the form {"registered_type": {"attribute1": "value", "attribute2": "value"}
-- (NSObject<RKObjectMappable>*)mapObjectFromDictionary:(NSDictionary*)dictionary {
-    // NOTE: This will only map the first matching object in the dictionary will map
-    // Here we have a dictionary that may contain a mappable object. We do not know the
-    // type or keyPath the object or how many will match.
-    // TODO: Move this logic into a more reusable place
-    Class objectClass = nil;
-    NSString* matchedKeyPath = nil;
-    for (NSString* keyPath in [_elementToClassMappings allKeys]) {
-        NSLog(@"Checking for keyPath %@ in %@", keyPath, dictionary);
-        if ([dictionary valueForKeyPath:keyPath]) {
-            if (objectClass) {
-                // TODO: Factor out this log warning and use a self.logger so that we can unit test logging...
-                NSLog(@"WARNING: Multiple mapping targets match in dictionary, using the first match: '%@' => [%@ class]. [Dictionary: %@]", 
-                      matchedKeyPath, NSStringFromClass(objectClass), dictionary);
-            } else {
-                matchedKeyPath = [keyPath copy];
-                objectClass = [_elementToClassMappings valueForKeyPath:keyPath];
+// Attempts to map each sub keyPath for a mappable collection and returns the result as a dictionary
+- (id)performSubKeyPathObjectMapping {
+    NSAssert([self.object isKindOfClass:[NSDictionary class]], @"Can only perform sub keyPath mapping on a dictionary");
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+    for (NSString* subKeyPath in [self.object allKeys]) {
+        NSString* keyPath = self.keyPath ? [NSString stringWithFormat:@"%@.%@", self.keyPath, subKeyPath] : subKeyPath;
+        RKObjectMapping* mapping = [self mappingForKeyPath:keyPath];
+        if (mapping) {
+            // This is a mappable sub keyPath. Initialize a new object mapper targeted at the subObject
+            id subObject = [self.object valueForKey:keyPath];
+            RKObjectMapper* subMapper = [RKObjectMapper mapperForObject:subObject atKeyPath:keyPath mappingProvider:self.mappingProvider];
+            subMapper.delegate = self.delegate;
+            [subMapper setTracer:_tracer];
+            id mappedResults = [subMapper performMapping];
+            if (mappedResults) {
+                [dictionary setValue:mappedResults forKey:keyPath];
             }
         }
     }
     
-    if (!objectClass) {
-        NSLog(@"Unable to find registered mapping keyPath in payload, returning nil...");
+    // If we have attempted a sub keyPath mapping and found no results, add an error
+    if ([dictionary count] == 0) {
+        NSString* errorMessage = [NSString stringWithFormat:@"Could not find an object mapping for keyPath: %@", self.keyPath];
+        [self addErrorWithCode:RKObjectMapperErrorObjectMappingNotFound message:errorMessage keyPath:self.keyPath userInfo:nil];
         return nil;
     }
     
-	id elements = [dictionary valueForKeyPath:matchedKeyPath];
-	
-    // Support case where elements is an Array of objects
-    id model = nil;
-    if ([elements isKindOfClass:[NSDictionary class]]) {
-        model = [self findOrCreateInstanceOfModelClass:objectClass fromElements:elements];
-        [self updateModel:model fromElements:elements];        
-    } else if ([elements isKindOfClass:[NSArray class]]) {
-        model = [self mapObjectsFromArrayOfDictionaries:elements toClass:objectClass];
+    return dictionary;
+}
+
+- (id)performMappingForObject {
+    NSAssert([self.object respondsToSelector:@selector(setValue:forKeyPath:)], @"Expected self.object to be KVC compliant");
+    
+    RKObjectMapping* objectMapping = nil;
+    id destinationObject = nil;
+    
+    if (self.targetObject) {
+        // If we find a mapping for this type and keyPath, map the entire dictionary to the target object
+        destinationObject = self.targetObject;
+        objectMapping = [self mappingForKeyPath:self.keyPath];
+        if (objectMapping && NO == [[self.targetObject class] isSubclassOfClass:objectMapping.objectClass]) {
+            NSString* errorMessage = [NSString stringWithFormat:
+                                      @"Expected an object mapping for class of type '%@', provider returned one for '%@'", 
+                                      NSStringFromClass([self.targetObject class]), NSStringFromClass(objectMapping.objectClass)];            
+            [self addErrorWithCode:RKObjectMapperErrorObjectMappingTypeMismatch message:errorMessage keyPath:self.keyPath userInfo:nil];
+            return nil;
+        }
+    } else {
+        // Otherwise map to a new object instance
+        objectMapping = [self mappingForKeyPath:self.keyPath];
+        destinationObject = [self createInstanceOfClassForMapping:objectMapping.objectClass];
     }
     
-	return model;
-}
-
-- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array {
-	NSMutableArray* objects = [NSMutableArray array];
-	for (NSDictionary* dictionary in array) {
-		if (![dictionary isKindOfClass:[NSNull class]]) {
-			// TODO: Makes assumptions about the structure of the JSON...
-			NSString* elementName = [[dictionary allKeys] objectAtIndex:0];
-			Class class = [_elementToClassMappings valueForKeyPath:elementName];
-			NSAssert(class != nil, @"Unable to perform object mapping without a destination class");
-			NSDictionary* elements = [dictionary objectForKey:elementName];
-			id object = [self createOrUpdateInstanceOfModelClass:class fromElements:elements];
-			[objects addObject:object];
-		}
-	}
-	
-	return (NSArray*)objects;
-}
-
-- (NSDictionary*)mappableElementsForDictionary:(NSDictionary*)elements withObjectClass:(Class<RKObjectMappable>)objectClass {
-    NSArray* elementNames = [_elementToClassMappings allKeysForObject:objectClass];
-	if ([elementNames count] > 0) {		
-		for (NSString* elementName in elementNames) {
-			if ([[elements allKeys] containsObject:elementName]) {
-				return [elements objectForKey:elementName];
-			}
-		}
-	}
-    
-    // Assume that this dictionary is not namespaced and return it
-    return elements;
-}
-
-- (NSArray*)mappableElementsForArrayOfDictionaries:(NSArray*)dictionaries withObjectClass:(Class<RKObjectMappable>)objectClass {
-    NSMutableArray* arrayOfElements = [NSMutableArray arrayWithCapacity:[dictionaries count]];
-    for (NSDictionary* elements in dictionaries) {
-        [arrayOfElements addObject:[self mappableElementsForDictionary:elements withObjectClass:objectClass]];
+    if (objectMapping && destinationObject) {
+        return [self mapObject:destinationObject fromObject:self.object usingMapping:objectMapping];
+    } else if ([self.object isKindOfClass:[NSDictionary class]]) {
+        // If this is a dictionary, attempt to map each sub-keyPath
+        return [self performSubKeyPathObjectMapping];
+    } else {
+        // Attempted to map an object but couldn't find a mapping for the keyPath
+        [self addErrorForUnmappableKeyPath:self.keyPath];
+        return nil;
     }
     
-    return arrayOfElements;
+    return nil;
 }
 
-- (NSArray*)mapObjectsFromArrayOfDictionaries:(NSArray*)array toClass:(Class<RKObjectMappable>)objectClass {
-	NSMutableArray* objects = [NSMutableArray array];
-    for (NSDictionary* elements in [self mappableElementsForArrayOfDictionaries:array withObjectClass:objectClass]) {
-		if (![elements isKindOfClass:[NSNull class]]) {
-			id object = [self createOrUpdateInstanceOfModelClass:objectClass fromElements:elements];
-			[objects addObject:object];
-		}
-	}
-	
-	return (NSArray*)objects;
+// Primary entry point for the mapper. 
+- (id)performMapping {
+    id mappingResult = nil;
+    NSAssert(self.object != nil, @"Cannot perform object mapping without an object to map");
+    NSAssert(self.mappingProvider != nil, @"Cannot perform object mapping without an object mapping provider");
+    
+    if ([self.delegate respondsToSelector:@selector(objectMapperWillBeginMapping:)]) {
+        [self.delegate objectMapperWillBeginMapping:self];
+    }
+    
+    // Perform the mapping
+    RKLOG_MAPPING(0, @"Self.object is %@", self.object);
+    if ([self.object isKindOfClass:[NSArray class]] || [self.object isKindOfClass:[NSSet class]]) {        
+        mappingResult = [self performMappingForCollection];
+    } else {
+        mappingResult = [self performMappingForObject];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(objectMapperDidFinishMapping:)]) {
+        [self.delegate objectMapperDidFinishMapping:self];
+    }
+    
+    return mappingResult;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Utility Methods
-
-- (Class)typeClassForProperty:(NSString*)property ofClass:(Class)class {
-	return [[_inspector propertyNamesAndTypesForClass:class] objectForKey:property];
+- (id)mapObject:(id)destinationObject fromObject:(id)sourceObject usingMapping:(RKObjectMapping*)mapping {    
+    NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");    
+    NSAssert(sourceObject != nil, @"Cannot map without a collection of attributes");
+    NSAssert(mapping != nil, @"Cannot map without an mapping");
+    
+    RKLOG_MAPPING(0, @"Asked to map source object %@ with mapping %@", sourceObject, mapping);
+    if ([self.delegate respondsToSelector:@selector(objectMapper:willMapObject:fromObject:atKeyPath:usingMapping:)]) {
+        [self.delegate objectMapper:self willMapObject:destinationObject fromObject:sourceObject atKeyPath:self.keyPath usingMapping:mapping];
+    }
+    
+    NSError* error = nil;
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:mapping];
+    operation.delegate = _tracer;
+    BOOL success = [operation performMapping:&error];
+    [operation release];
+    
+    if (success) {
+        if ([self.delegate respondsToSelector:@selector(objectMapper:didMapObject:fromObject:atKeyPath:usingMapping:)]) {
+            [self.delegate objectMapper:self didMapObject:destinationObject fromObject:sourceObject atKeyPath:self.keyPath usingMapping:mapping];
+        }
+    } else {
+        if ([self.delegate respondsToSelector:@selector(objectMapper:didFailMappingObject:withError:fromObject:atKeyPath:usingMapping:)]) {
+            [self.delegate objectMapper:self didFailMappingObject:destinationObject withError:error fromObject:sourceObject atKeyPath:self.keyPath usingMapping:mapping];
+        }
+        [self addError:error];
+    }
+    
+    return destinationObject;
 }
 
-- (NSDictionary*)elementToPropertyMappingsForModel:(id)model {
-	return [[model class] elementToPropertyMappings];
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Persistent Instance Finders
-
-// TODO: This version does not update properties. Should probably be realigned.
-- (NSObject<RKObjectMappable>*)findOrCreateInstanceOfModelClass:(Class)class fromElements:(NSDictionary*)elements {
-	id object = nil;
-    Class managedObjectClass = NSClassFromString(@"RKManagedObject");
-	if (managedObjectClass && [class isSubclassOfClass:managedObjectClass]) {
-		NSString* primaryKeyElement = [class performSelector:@selector(primaryKeyElement)];
-		id primaryKeyValue = [elements objectForKey:primaryKeyElement];
-		object = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:class
-                                                                                withPrimaryKeyValue:primaryKeyValue];
-	}
-	// instantiate if object is nil
-	if (object == nil) {
-        if ([class conformsToProtocol:@protocol(RKObjectMappable)] && [class respondsToSelector:@selector(object)]) {
-            object = [class object];
+- (NSArray*)mapObjectsFromArray:(NSArray*)array usingMapping:(RKObjectMapping*)mapping {
+    NSAssert(array != nil, @"Cannot map without an array of objects");
+    NSAssert(mapping != nil, @"Cannot map without a mapping to consult");
+    
+    // Ensure we are mapping onto a mutable collection if there is a target
+    if (self.targetObject && NO == [self.targetObject respondsToSelector:@selector(addObject:)]) {
+        NSString* errorMessage = [NSString stringWithFormat:
+                                  @"Cannot map a collection of objects onto a non-mutable collection. Unexpected target object type '%@'", 
+                                  NSStringFromClass([self.targetObject class])];            
+        [self addErrorWithCode:RKObjectMapperErrorObjectMappingTypeMismatch message:errorMessage keyPath:self.keyPath userInfo:nil];
+        return nil;
+    }
+    
+    // TODO: It should map arrays of arrays...
+    NSMutableArray* mappedObjects = [NSMutableArray arrayWithCapacity:[array count]];
+    for (id elements in array) {
+        // TODO: Need to examine the type of elements and behave appropriately...
+        if ([elements isKindOfClass:[NSDictionary class]]) {
+            id mappableObject = [self createInstanceOfClassForMapping:mapping.objectClass];
+            NSObject* mappedObject = [self mapObject:mappableObject fromObject:elements usingMapping:mapping];
+            if (mappedObject) {
+                [mappedObjects addObject:mappedObject];
+            }
         } else {
-            // Allow non-RKObjectMappable objecs to pass through to alloc/init. Do we need this?
-            object = [[[class alloc] init] autorelease];
-        }
-	}
-	
-	return object;
-}
-
-- (NSObject<RKObjectMappable>*)createOrUpdateInstanceOfModelClass:(Class<RKObjectMappable>)class fromElements:(NSDictionary*)elements {
-	id model = [self findOrCreateInstanceOfModelClass:class fromElements:elements];
-	[self updateModel:model fromElements:elements];
-	return model;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Property & Relationship Manipulation
-
-- (void)updateModel:(NSObject<RKObjectMappable>*)model ifNewPropertyValue:(id)propertyValue forPropertyNamed:(NSString*)propertyName {
-	id currentValue = [model valueForKey:propertyName];
-	if (nil == currentValue && nil == propertyValue) {
-		// Don't set the property, both are nil
-	} else if (nil == propertyValue || [propertyValue isKindOfClass:[NSNull class]]) {
-		// Clear out the value to reset it
-		[model setValue:nil forKey:propertyName];
-	} else if (currentValue == nil || [currentValue isKindOfClass:[NSNull class]]) {
-		// Existing value was nil, just set the property and be happy
-		[model setValue:propertyValue forKey:propertyName];
-	} else {
-		SEL comparisonSelector;
-		if ([propertyValue isKindOfClass:[NSString class]]) {
-			comparisonSelector = @selector(isEqualToString:);
-		} else if ([propertyValue isKindOfClass:[NSNumber class]]) {
-			comparisonSelector = @selector(isEqualToNumber:);
-		} else if ([propertyValue isKindOfClass:[NSDate class]]) {
-			comparisonSelector = @selector(isEqualToDate:);
-		} else if ([propertyValue isKindOfClass:[NSArray class]]) {
-			comparisonSelector = @selector(isEqualToArray:);
-		} else if ([propertyValue isKindOfClass:[NSDictionary class]]) {
-			comparisonSelector = @selector(isEqualToDictionary:);
-		} else {
-			[NSException raise:@"NoComparisonSelectorFound" format:@"You need a comparison selector for %@ (%@)", propertyName, [propertyValue class]];
-		}
-		
-		// Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
-		// Original code courtesy of Greg Parker
-		// This is necessary because isEqualToNumber will return negative integer values that aren't coercable directly to BOOL's without help [sbw]
-		BOOL (*ComparisonSender)(id, SEL, id) = (BOOL (*)(id, SEL, id)) objc_msgSend;		
-		BOOL areEqual = ComparisonSender(currentValue, comparisonSelector, propertyValue);
-		
-		if (NO == areEqual) {
-			[model setValue:propertyValue forKey:propertyName];
-		}
-	}
-}
-
-- (void)setPropertiesOfModel:(NSObject<RKObjectMappable>*)model fromElements:(NSDictionary*)elements {
-    BOOL anyValuesSet = NO;
-	NSDictionary* elementToPropertyMappings = [self elementToPropertyMappingsForModel:model];
-	for (NSString* elementKeyPath in elementToPropertyMappings) {		
-		id elementValue = nil;
-		BOOL setValue = YES;
-		
-		@try {
-			elementValue = [elements valueForKeyPath:elementKeyPath];
-		}
-		@catch (NSException * e) {
-			NSLog(@"[RestKit] RKModelMapper: Unable to find element at keyPath %@ in elements dictionary for %@. Skipping...", elementKeyPath, [model class]);
-			setValue = NO;
-		}
-		
-		// nil is returned when the collection does not contain the element
-		if (nil == elementValue) {
-			setValue = (_missingElementMappingPolicy == RKSetNilForMissingElementMappingPolicy);
-		}
-		
-		if (setValue) {
-            anyValuesSet = YES;
-			id propertyValue = elementValue;
-			NSString* propertyName = [elementToPropertyMappings objectForKey:elementKeyPath];
-			Class class = [self typeClassForProperty:propertyName ofClass:[model class]];
-			if (elementValue != (id)kCFNull && nil != elementValue) {
-				if ([class isEqual:[NSDate class]]) {
-					NSDate* date = [self parseDateFromString:(propertyValue)];
-					propertyValue = [self dateInLocalTime:date];
-				}
-                else if ([class isEqual:[NSDecimalNumber class]]) {
-                    propertyValue = [NSDecimalNumber decimalNumberWithString:propertyValue];
-                }
-			}
-            
-            // If we know the destination class, the property is not of the correct class, and the property value is not null or nil...
-            // if (class && propertyValue && ![propertyValue isKindOfClass:class] && ![propertyValue isEqual:[NSNull null]]) {
-            if (class && propertyValue && ![propertyValue isKindOfClass:class] && ![propertyValue isEqual:[NSNull null]]) {
-                // Then we must cooerce the element (probably a string) into the correct class.
-                // Currently this only supports NSNumbers (NSDates are handled above).
-                // New cooersions will be added on an as-needed basis.
-                if (class == [NSNumber class]) {
-                    if ([propertyValue isEqualToString:@"true"] ||
-                        [propertyValue isEqualToString:@"false"]) {
-                        propertyValue = [NSNumber numberWithBool:[propertyValue isEqualToString:@"true"]];
-                    } else {
-                        propertyValue = [NSNumber numberWithDouble:[propertyValue doubleValue]];
-                    }
-                } else if (class == [NSURL class] && [propertyValue isKindOfClass:[NSString class]]) {
-                    propertyValue = [NSURL URLWithString:propertyValue];
-                } else {
-                    [NSException raise:@"NoElementValueConversionMethod" format:@"Don't know how to convert %@ (%@) to %@", propertyValue, [propertyValue class], class];
-                }
-            }
-			
-			[self updateModel:model ifNewPropertyValue:propertyValue forPropertyNamed:propertyName];
-		}
-	}
-    
-    if (anyValuesSet == NO) {
-        NSLog(@"WARNING: RestKit did not find any mappable values for the specified object. If you have specified an explicit objectClass for mapping, be sure that the keyPath has been set to target your mappable data.");
-    }
-}
-
-- (void)setRelationshipsOfModel:(NSObject<RKObjectMappable>*)object fromElements:(NSDictionary*)elements {
-	NSDictionary* elementToRelationshipMappings = [[object class] elementToRelationshipMappings];
-	for (NSString* elementKeyPath in elementToRelationshipMappings) {
-		NSString* propertyName = [elementToRelationshipMappings objectForKey:elementKeyPath];
-		
-		id relationshipElements = nil;
-		@try {
-			relationshipElements = [elements valueForKeyPath:elementKeyPath];
-		}
-		@catch (NSException* e) {
-			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
-		}
-        
-        // Handle missing elements for the relationship
-        if (relationshipElements == nil) {
-            if (self.missingElementMappingPolicy == RKSetNilForMissingElementMappingPolicy) {
-                [object setValue:nil forKey:propertyName];
-                continue;
-            } else if(self.missingElementMappingPolicy == RKIgnoreMissingElementMappingPolicy) {
-                continue;
-            }
-        }
-        
-        // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
-        NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
-        NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
-        Class modelClass = [_elementToClassMappings valueForKeyPath:className];
-        if ([modelClass isKindOfClass: [NSNull class]]) {
-            NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
-            NSLog(@"   parent class   : %@", [object class]);
-            NSLog(@"   elements to map: %@", elements);
-            NSLog(@"maybe you want to register your model with the object mapper or you want to pluralize the keypath?");
-            break;
-        }
-        
-        Class collectionClass = [self typeClassForProperty:propertyName ofClass:[object class]];
-        if ([collectionClass isSubclassOfClass:[NSSet class]] || [collectionClass isSubclassOfClass:[NSArray class]]) {
-            id children = nil;
-            if ([collectionClass isSubclassOfClass:[NSSet class]]) {
-                children = [NSMutableSet setWithCapacity:[relationshipElements count]];
-            } else if ([collectionClass isSubclassOfClass:[NSArray class]]) {
-                children = [NSMutableArray arrayWithCapacity:[relationshipElements count]];
-            }
-            
-            for (NSDictionary* childElements in relationshipElements) {				
-                id child = [self createOrUpdateInstanceOfModelClass:modelClass fromElements:childElements];		
-                if (child) {
-                    [(NSMutableArray*)children addObject:child];
-                }
-            }
-            
-            [object setValue:children forKey:propertyName];
-        } else if ([relationshipElements isKindOfClass:[NSDictionary class]]) {
-            id child = [self createOrUpdateInstanceOfModelClass:modelClass fromElements:relationshipElements];		
-            [object setValue:child forKey:propertyName];
+            // TODO: Delegate method invocation here...
+            RKFAILMAPPING();
         }
     }
     
-    // Connect relationships by primary key
-    Class managedObjectClass = NSClassFromString(@"RKManagedObject");
-    if (managedObjectClass && [object isKindOfClass:managedObjectClass]) {
-        RKManagedObject* managedObject = (RKManagedObject*)object;
-        NSDictionary* relationshipToPkPropertyMappings = [[managedObject class] relationshipToPrimaryKeyPropertyMappings];
-        for (NSString* relationship in relationshipToPkPropertyMappings) {
-            NSString* primaryKeyPropertyString = [relationshipToPkPropertyMappings objectForKey:relationship];
-            
-            NSNumber* objectPrimaryKeyValue = nil;
-            @try {
-                objectPrimaryKeyValue = [managedObject valueForKeyPath:primaryKeyPropertyString];
-            } @catch (NSException* e) {
-                NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for object:%@", e, primaryKeyPropertyString, managedObject);
-            }
-            
-            NSDictionary* relationshipsByName = [[managedObject entity] relationshipsByName];
-            NSEntityDescription* relationshipDestinationEntity = [[relationshipsByName objectForKey:relationship] destinationEntity];
-            id relationshipDestinationClass = objc_getClass([[relationshipDestinationEntity managedObjectClassName] cStringUsingEncoding:NSUTF8StringEncoding]);
-            RKManagedObject* relationshipValue = [[[RKObjectManager sharedManager] objectStore] findOrCreateInstanceOfManagedObject:relationshipDestinationClass
-                                                                                                                withPrimaryKeyValue:objectPrimaryKeyValue];
-            if (relationshipValue) {
-                [managedObject setValue:relationshipValue forKey:relationship];
-            }
-        }
-    }
-
-}
-
-- (void)updateModel:(NSObject<RKObjectMappable>*)model fromElements:(NSDictionary*)elements {
-	[self setPropertiesOfModel:model fromElements:elements];
-	[self setRelationshipsOfModel:model fromElements:elements];
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Date & Time Helpers
-
-- (NSDate*)parseDateFromString:(NSString*)string {
-	NSDate* date = nil;
-	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-	// TODO: I changed this to local time and it fixes my date issues. wtf?
-	[formatter setTimeZone:self.localTimeZone];
-	for (NSString* formatString in self.dateFormats) {
-		[formatter setDateFormat:formatString];
-		date = [formatter dateFromString:string];
-		if (date) {
-			break;
-		}
-	}
-	
-	[formatter release];
-	return date;
-}
-
-- (NSDate*)dateInLocalTime:(NSDate*)date {
-	NSDate* destinationDate = nil;
-	if (date) {
-		NSInteger remoteGMTOffset = [self.remoteTimeZone secondsFromGMTForDate:date];
-		NSInteger localGMTOffset = [self.localTimeZone secondsFromGMTForDate:date];
-		NSTimeInterval interval = localGMTOffset - remoteGMTOffset;		
-		destinationDate = [[[NSDate alloc] initWithTimeInterval:interval sinceDate:date] autorelease];
-	}	
-	return destinationDate;
+    return mappedObjects;
 }
 
 @end
