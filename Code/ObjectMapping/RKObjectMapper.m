@@ -171,12 +171,13 @@
     NSAssert([self.object isKindOfClass:[NSDictionary class]], @"Can only perform sub keyPath mapping on a dictionary");
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     for (NSString* subKeyPath in [self.object allKeys]) {
-        NSString* keyPath = self.keyPath ? [NSString stringWithFormat:@"%@.%@", self.keyPath, subKeyPath] : subKeyPath;
+        NSString* keyPath = ([self.keyPath length] > 0) ? [NSString stringWithFormat:@"%@.%@", self.keyPath, subKeyPath] : subKeyPath;
         RKObjectMapping* mapping = [self mappingForKeyPath:keyPath];
         if (mapping) {
             // This is a mappable sub keyPath. Initialize a new object mapper targeted at the subObject
             id subObject = [self.object valueForKey:keyPath];
             RKObjectMapper* subMapper = [RKObjectMapper mapperForObject:subObject atKeyPath:keyPath mappingProvider:self.mappingProvider];
+            subMapper.targetObject = self.targetObject;
             subMapper.delegate = self.delegate;
             [subMapper setTracer:_tracer];
             id mappedResults = [subMapper performMapping];

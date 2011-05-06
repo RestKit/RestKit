@@ -151,8 +151,10 @@
     if (self.keyPath) {
         parsedData = [parsedData valueForKeyPath:self.keyPath];
     }
+    
+    NSString* key = @"";
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:parsedData
-                                                   atKeyPath:@""
+                                                   atKeyPath:key
                                              mappingProvider:self.objectManager.mappingProvider];
     mapper.targetObject = self.targetObject;
     results = [mapper performMapping];
