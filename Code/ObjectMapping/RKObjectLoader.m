@@ -7,15 +7,21 @@
 //
 
 #import "RKObjectLoader.h"
+#import "RKObjectMapper.h"
 #import "RKObjectManager.h"
 #import "Errors.h"
 #import "RKNotifications.h"
+#import "RKParser.h"
 
 // Private Interfaces - Proxy access to RKObjectManager for convenience
 @interface RKObjectLoader (Private)
 
 @property (nonatomic, readonly) RKClient* client;
-@property (nonatomic, readonly) RKOldObjectMapper* objectMapper;
+@property (nonatomic, readonly) RKObjectMapper* objectMapper;
+
+@end
+
+@interface RKRequest (Private);
 
 - (void)prepareURLRequest;
 
@@ -23,7 +29,7 @@
 
 @implementation RKObjectLoader
 
-@synthesize objectManager = _objectManager, response = _response, objectClass = _objectClass, keyPath = _keyPath;
+@synthesize objectManager = _objectManager, response = _response, keyPath = _keyPath;
 @synthesize targetObject = _targetObject;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
@@ -58,7 +64,7 @@
     return self.objectManager.client;
 }
 
-- (RKOldObjectMapper*)objectMapper {
+- (RKObjectMapper*)objectMapper {
     return self.objectManager.mapper;
 }
 
@@ -87,23 +93,16 @@
 
 		return YES;
 	} else if ([response isError]) {
-		NSError* error = nil;
         
-        // TODO: Unwind hard coding of JSON specific assumptions
-		if ([response isJSON]) {
-			error = [self.objectMapper parseErrorFromString:[response bodyAsString]];
-			[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
-		} else {
-            if ([response isServiceUnavailable]) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
-            }
-            
-			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
-				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
-			}
-		}
+        if ([response isServiceUnavailable]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
+        }
+        
+        if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
+            [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
+        }
 
-		[self responseProcessingSuccessful:NO withError:error];
+		[self responseProcessingSuccessful:NO withError:nil];
 
 		return YES;
 	}
@@ -145,19 +144,28 @@
 	 * individual object instances via getObject and friends.
 	 */
 	NSArray* results = nil;
-	if (self.targetObject) {
-		[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:self.keyPath];
-        results = [NSArray arrayWithObject:self.targetObject];
-	} else {
-		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:self.keyPath];
-		if ([result isKindOfClass:[NSArray class]]) {
-			results = (NSArray*)result;
-		} else {
-			// Using arrayWithObjects: instead of arrayWithObject:
-			// so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
-			results = [NSArray arrayWithObjects:result, nil];
-		}
-	}
+    
+    // TODO: rewrite this. jbe.
+    id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
+    id parsedData = [parser objectFromString:[response bodyAsString]];
+    if (self.keyPath) {
+        parsedData = [parsedData valueForKeyPath:self.keyPath];
+    }
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:parsedData
+                                                   atKeyPath:self.keyPath
+                                             mappingProvider:self.objectManager.mappingProvider];
+    mapper.targetObject = self.targetObject;
+    results = [mapper performMapping];
+        
+    // TODO: do we still want to cooerce everyting into an array? jbe
+    
+//		if ([result isKindOfClass:[NSArray class]]) {
+//			results = (NSArray*)result;
+//		} else {
+//			// Using arrayWithObjects: instead of arrayWithObject:
+//			// so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
+//			results = [NSArray arrayWithObjects:result, nil];
+//		}
 
     NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", results, @"objects", nil] retain];
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
@@ -200,9 +208,8 @@
 	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
         // TODO: Should probably be an expected MIME types array set by client/manager
         // if ([self.objectMapper hasParserForMIMEType:[response MIMEType]) canMapFromMIMEType:
-        BOOL isAcceptable = (self.objectMapper.format == RKMappingFormatXML && [response isXML]) ||
-                            (self.objectMapper.format == RKMappingFormatJSON && [response isJSON]);
-		if ([response isSuccessful] && isAcceptable) {
+        
+		if ([response isSuccessful]) {
 			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
 		} else {
 			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", response.statusCode, response.MIMEType);

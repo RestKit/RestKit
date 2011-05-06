@@ -24,19 +24,6 @@
 
 @dynamic human;
 
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-			@"name", @"name",
-			@"nickName", @"nick-name",
-			@"birthYear", @"birth_year",
-			@"sex", @"sex",
-			@"age", @"age",
-			@"createdAt", @"created-at",
-			@"updatedAt", @"updated-at",
-			@"railsID", @"id",
-			nil];
-}
-
 + (NSString*)primaryKeyProperty {
 	return @"railsID";
 }

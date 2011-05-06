@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RKObjectAttributeMapping.h"
-
-@class RKObjectRelationshipMapping;
+#import "RKObjectRelationshipMapping.h"
 
 // Defines the mapping rules for a given target class
 @interface RKObjectMapping : NSObject {

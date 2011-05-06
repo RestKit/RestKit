@@ -9,6 +9,8 @@
 #import "RKObjectManager.h"
 #import "../CoreData/RKManagedObjectStore.h"
 #import "../CoreData/RKManagedObjectLoader.h"
+// TODO: introducing a new dependency?
+#import "RKJSONParser.h"
 
 NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
 NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
@@ -25,21 +27,26 @@ static RKObjectManager* sharedManager = nil;
 @synthesize mapper = _mapper;
 @synthesize client = _client;
 @synthesize objectStore = _objectStore;
-@synthesize format = _format;
 @synthesize router = _router;
+@synthesize mappingProvider = _mappingProvider;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
 	return self = [self initWithBaseURL:baseURL objectMapper:[[[RKOldObjectMapper alloc] init] autorelease] router:[[[RKDynamicRouter alloc] init] autorelease]];
 }
 
-- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
+- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
     self = [super init];
 	if (self) {
 		_mapper = [mapper retain];
 		_router = [router retain];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
+        // TODO: we may want to be able to set this later. jbe.
+        [_client setValue:@"application/json" forHTTPHeaderField:@"Accept"];
 
-		self.format = RKMappingFormatJSON;
+        _parsersForMimeTypes = [NSMutableDictionary new];
+        RKJSONParser* jsonParser = [[RKJSONParser new] autorelease];
+        [_parsersForMimeTypes setObject:jsonParser forKey:@"application/json"];
+        
 		_onlineState = RKObjectManagerOnlineStateUndetermined;
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)
@@ -71,7 +78,7 @@ static RKObjectManager* sharedManager = nil;
 	sharedManager = manager;
 }
 
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
 	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL objectMapper:mapper router:router] autorelease];
 	if (nil == sharedManager) {
 		[RKObjectManager setSharedManager:manager];
@@ -89,6 +96,9 @@ static RKObjectManager* sharedManager = nil;
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [_parsersForMimeTypes release];
+    _parsersForMimeTypes = nil;
 	[_mapper release];
 	_mapper = nil;
 	[_router release];
@@ -120,21 +130,15 @@ static RKObjectManager* sharedManager = nil;
 	}
 }
 
-- (void)setFormat:(RKMappingFormat)format {
-	_format = format;
-	_mapper.format = format;
-	if (RKMappingFormatXML == _format) {
-		[_client setValue:@"application/xml" forHTTPHeaderField:@"Accept"];
-	} else if (RKMappingFormatJSON == _format) {
-		[_client setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-	}
+- (void)setParser:(id<RKParser>)parser forMIMEType:(NSString*)mimeType {
+    [_parsersForMimeTypes setObject:parser forKey:mimeType];
+}
+
+- (id<RKParser>)parserForMIMEType:(NSString*)mimeType {
+    return [_parsersForMimeTypes objectForKey:mimeType];
 }
 
 #pragma mark Object Loading
-
-- (void)registerClass:(Class<RKObjectMappable>)class forElementNamed:(NSString*)elementNameOrKeyPath {
-	[_mapper registerClass:class forElementNamed:elementNameOrKeyPath];
-}
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
     RKObjectLoader* objectLoader = nil;

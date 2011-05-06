@@ -220,6 +220,8 @@
 		3F4EAF5B1342071B00F944E4 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4EAF5A1342071B00F944E4 /* libxml2.dylib */; };
 		3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A2D10FE749C008F47C5 /* Foundation.framework */; };
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		3F71ED3413748536006281CA /* RKStaticObjectMappingProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F71ED3213748536006281CA /* RKStaticObjectMappingProvider.h */; };
+		3F71ED3513748536006281CA /* RKStaticObjectMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F71ED3313748536006281CA /* RKStaticObjectMappingProvider.m */; };
 		73057FD61331AD5E001908EE /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 73057FC71331AA3D001908EE /* JSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73057FD71331AD67001908EE /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC81331AA3D001908EE /* JSONKit.m */; };
 		73057FD91331AD99001908EE /* RKJSONParser+JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC41331A8F6001908EE /* RKJSONParser+JSONKit.m */; };
@@ -570,6 +572,8 @@
 		3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = /Users/blake/Projects/two_toasters/InMotion/Libraries/UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<absolute>"; };
 		3F6C3A2D10FE749C008F47C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3F6C3A9510FE7524008F47C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		3F71ED3213748536006281CA /* RKStaticObjectMappingProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKStaticObjectMappingProvider.h; sourceTree = "<group>"; };
+		3F71ED3313748536006281CA /* RKStaticObjectMappingProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKStaticObjectMappingProvider.m; sourceTree = "<group>"; };
 		73057FC41331A8F6001908EE /* RKJSONParser+JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKJSONParser+JSONKit.m"; sourceTree = "<group>"; };
 		73057FC71331AA3D001908EE /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSONKit.h; path = Vendor/JSONKit/JSONKit.h; sourceTree = "<group>"; };
 		73057FC81331AA3D001908EE /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JSONKit.m; path = Vendor/JSONKit/JSONKit.m; sourceTree = "<group>"; };
@@ -829,6 +833,8 @@
 				25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */,
 				259C64BD137477D0001FE1C5 /* RKObjectMapper.h */,
 				259C64BE137477D0001FE1C5 /* RKObjectMapper.m */,
+				3F71ED3213748536006281CA /* RKStaticObjectMappingProvider.h */,
+				3F71ED3313748536006281CA /* RKStaticObjectMappingProvider.m */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
@@ -1277,6 +1283,7 @@
 				25952F12136F97B300D04F93 /* RKObjectSerializer.h in Headers */,
 				25F5182513724866009B2E22 /* RKObjectRelationshipMapping.h in Headers */,
 				259C64BF137477D0001FE1C5 /* RKObjectMapper.h in Headers */,
+				3F71ED3413748536006281CA /* RKStaticObjectMappingProvider.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1758,6 +1765,7 @@
 				25952F13136F97B300D04F93 /* RKObjectSerializer.m in Sources */,
 				25F5182613724866009B2E22 /* RKObjectRelationshipMapping.m in Sources */,
 				259C64C0137477D0001FE1C5 /* RKObjectMapper.m in Sources */,
+				3F71ED3513748536006281CA /* RKStaticObjectMappingProvider.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

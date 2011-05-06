@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "RKObjectAttributeMapping.h"
-#import "RKObjectMapping.h"
+
+@class RKObjectMapping;
 
 @interface RKObjectRelationshipMapping : RKObjectAttributeMapping {
     RKObjectMapping* _objectMapping;

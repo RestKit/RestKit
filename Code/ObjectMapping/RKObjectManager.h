@@ -7,9 +7,11 @@
 //
 
 #import "../Network/Network.h"
-#import "RKOldObjectMapper.h"
+#import "RKObjectMapper.h"
 #import "RKObjectLoader.h"
 #import "RKDynamicRouter.h"
+
+@protocol RKParser;
 
 // Notifications
 extern NSString* const RKDidEnterOfflineModeNotification;
@@ -25,11 +27,12 @@ typedef enum {
 
 @interface RKObjectManager : NSObject {
 	RKClient* _client;
-	RKMappingFormat _format;
-	RKOldObjectMapper* _mapper;
+	RKObjectMapper* _mapper;
 	NSObject<RKRouter>* _router;
 	RKManagedObjectStore* _objectStore;	
 	RKObjectManagerOnlineState _onlineState;
+    NSMutableDictionary* _parsersForMimeTypes;
+    NSObject<RKObjectMappingProvider>* _mappingProvider;
 }
 
 /**
@@ -52,7 +55,7 @@ typedef enum {
  * Create and initialize a new object manager. If this is the first instance created
  * it will be set as the shared instance
  */
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
++ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
 
 /**
  * Initialize a new model manager instance
@@ -62,15 +65,29 @@ typedef enum {
 /**
  * Initialize a new model manager instance
  */
-- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKOldObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
+- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
 
+// TODO: delete this.
 /**
  * The wire format to use for communications. Either RKMappingFormatXML or RKMappingFormatJSON.
  *
  * Defaults to RKMappingFormatJSON
  */
 // TODO: Replace this with setParser:forMIMEType: method. 
-@property(nonatomic, assign) RKMappingFormat format;
+// @property(nonatomic, assign) RKMappingFormat format;
+
+
+/**
+ * Sets a parser to user for a given mimetype.
+ *
+ * Will Default to RKJSONParser for JSON and RKXMLParser for XML.
+ */
+- (void)setParser:(id<RKParser>)parser forMIMEType:(NSString*)mimeType;
+
+/**
+ * Returns the correct parser for the given MIMEType;
+ */
+- (id<RKParser>)parserForMIMEType:(NSString*)mimeType;
 
 /**
  * The REST client for this manager
@@ -83,18 +100,14 @@ typedef enum {
 - (BOOL)isOnline;
 
 /**
- * Register a resource mapping from a domain model class to a JSON/XML element name
- *
- * Configures the mapper by indicating that elements with the specified name or keyPath value map
- * to the specified class. The mapper will appropriately map to a single object or a collection, depending
- * on the type of object in the payload.
- */
-- (void)registerClass:(Class<RKObjectMappable>)objectClass forElementNamed:(NSString*)elementNameOrKeyPath;
-
-/**
  * Mapper object responsible for mapping remote HTTP resources to Cocoa objects
  */
-@property(nonatomic, readonly) RKOldObjectMapper* mapper;
+@property(nonatomic, readonly) RKObjectMapper* mapper;
+
+/**
+ * The Mapping Provider responsible for returning mappings for various keypaths.
+ */
+@property(nonatomic, retain) NSObject<RKObjectMappingProvider>* mappingProvider;
 
 /**
  * Routing object responsible for generating paths for objects and serializing
@@ -131,27 +144,6 @@ typedef enum {
  * local objects by consulting the element registrations set on the mapper.
  */
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
-
-////////////////////////////////////////////////////////
-// Explicit Object Loaders
-
-/**
- * These methods are suitable for loading remote payloads where no type information is encoded into the payload. When
- * the request is completed, the resulting payload will be mapped into instances of the specified mappable object class.
- */
-
-/**
- * Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
- * with the loaded objects. Remote objects will be mapped into instances of the specified object mappable class.
- */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
-
-/**
- * Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
- * of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped into 
- * instances of the specified object mappable class.
- */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
 // Mappable object helpers

@@ -8,6 +8,7 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKRailsRouter.h"
+#import "RKStaticObjectMappingProvider.h"
 
 @interface RKSpecComplexUser : RKObject {
     NSNumber* _userID;
@@ -81,7 +82,14 @@
     objectLoader.method = RKRequestMethodGET;
     objectLoader.targetObject = user;
     objectLoader.keyPath = @"data.STUser";
-    objectLoader.objectClass = [RKSpecComplexUser class];
+//    objectLoader.objectClass = [RKSpecComplexUser class];
+    RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
+    [provider setMapping:userMapping forKeyPath:@"data.STUser"];
+    [objectManager setMappingProvider:provider];
+    
+    
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
     

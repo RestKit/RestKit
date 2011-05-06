@@ -10,7 +10,9 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKSpecResponseLoader.h"
+#import "RKStaticObjectMappingProvider.h"
 #import "RKHuman.h"
+#import "RKCat.h"
 
 @interface RKObjectManagerSpec : NSObject <UISpec> {
 	RKObjectManager* _objectManager;
@@ -27,18 +29,44 @@
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
     [_objectManager.objectStore deletePersistantStore];
-	[_objectManager registerClass:[RKHuman class] forElementNamed:@"human"];
-    [_objectManager registerClass:[RKHuman class] forElementNamed:@"humans"];
+    
+    
+    RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
+    
+    RKObjectMapping* humanMapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
+    [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    
+    RKObjectMapping* catObjectMapping = [RKObjectMapping mappingForClass:[RKCat class]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"sex" toKeyPath:@"sex"]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"age" toKeyPath:@"age"]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"created-at" toKeyPath:@"createdAt"]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
+    [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
+    
+    [catObjectMapping addRelationshipMapping:[RKObjectRelationshipMapping mappingFromKeyPath:@"cats" toKeyPath:@"cats" objectMapping:catObjectMapping]];
+    
+    [provider setMapping:humanMapping forKeyPath:@"human"];
+    [provider setMapping:humanMapping forKeyPath:@"humans"];
+    
+    
+    _objectManager.mappingProvider = provider;
+//	[_objectManager registerClass:[RKHuman class] forElementNamed:@"human"];
+//    [_objectManager registerClass:[RKHuman class] forElementNamed:@"humans"];
 	
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];
 }
 
-- (void)itShouldDefaultToAnXMLMappingFormat {	
-	[expectThat(_objectManager.format) should:be(RKMappingFormatJSON)];
-}
-
 - (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
-	_objectManager.format = RKMappingFormatJSON;
 	[expectThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
 }
 

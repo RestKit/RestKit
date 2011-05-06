@@ -72,6 +72,9 @@
 	 * individual object instances via getObject and friends.
 	 */
 	NSArray* results = nil;
+    
+    
+    
 	if (self.targetObject) {
 		if (_targetObjectID) {
 			NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];

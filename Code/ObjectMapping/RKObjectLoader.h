@@ -47,7 +47,6 @@
     RKObjectManager* _objectManager;
 	RKResponse* _response;
 	NSObject<RKObjectMappable>* _targetObject;
-	Class<RKObjectMappable> _objectClass;
 	NSString* _keyPath;
 }
 

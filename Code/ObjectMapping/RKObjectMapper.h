@@ -74,6 +74,8 @@ typedef enum RKObjectMapperErrors {
     id<RKObjectMapperDelegate> _delegate;
     NSMutableArray* _errors;
     RKObjectMapperTracingDelegate* _tracer;
+    // TODO: i think this goes away. jbe.
+    BOOL _tracingEnabled;
 }
 
 @property (nonatomic, readonly) id object;
