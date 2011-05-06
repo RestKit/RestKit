@@ -152,7 +152,7 @@
         parsedData = [parsedData valueForKeyPath:self.keyPath];
     }
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:parsedData
-                                                   atKeyPath:self.keyPath
+                                                   atKeyPath:@""
                                              mappingProvider:self.objectManager.mappingProvider];
     mapper.targetObject = self.targetObject;
     results = [mapper performMapping];

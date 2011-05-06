@@ -86,7 +86,31 @@
     RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
-    [provider setMapping:userMapping forKeyPath:@"data.STUser"];
+    [provider setMapping:userMapping forKeyPath:@""];
+    [objectManager setMappingProvider:provider];
+    
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    
+    [expectThat(user.firstname) should:be(@"Diego")];
+}
+
+- (void)itShouldLoadAComplexUserObjectWithTargetObjectWithASlightlyDifferentKeySetup {
+    RKSpecComplexUser* user = [RKSpecComplexUser object];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
+    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
+    NSString *authString = [NSString stringWithFormat:@"TRUEREST username=%@&password=%@&apikey=123456&class=iphone", @"username", @"password"];
+    [objectLoader.URLRequest addValue:authString forHTTPHeaderField:@"Authorization"];
+    objectLoader.method = RKRequestMethodGET;
+    objectLoader.targetObject = user;
+    objectLoader.keyPath = @"data";
+    //    objectLoader.objectClass = [RKSpecComplexUser class];
+    RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
+    [provider setMapping:userMapping forKeyPath:@"STUser"];
     [objectManager setMappingProvider:provider];
     
     
