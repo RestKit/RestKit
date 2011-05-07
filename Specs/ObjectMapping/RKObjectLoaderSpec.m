@@ -8,7 +8,7 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKRailsRouter.h"
-#import "RKStaticObjectMappingProvider.h"
+#import "RKObjectMappingProvider.h"
 
 @interface RKSpecComplexUser : RKObject {
     NSNumber* _userID;
@@ -83,7 +83,7 @@
     objectLoader.targetObject = user;
 //    objectLoader.keyPath = @"data.STUser";
 //    objectLoader.objectClass = [RKSpecComplexUser class];
-    RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
     [provider setMapping:userMapping forKeyPath:@""];
@@ -107,7 +107,7 @@
     objectLoader.targetObject = user;
 //    objectLoader.keyPath = @"data";
     //    objectLoader.objectClass = [RKSpecComplexUser class];
-    RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
     [provider setMapping:userMapping forKeyPath:@"STUser"];
@@ -127,7 +127,7 @@
     objectLoader.method = RKRequestMethodGET;
 //    objectLoader.keyPath = @"data";
     
-    RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
     [provider setMapping:userMapping forKeyPath:@"data.STUser"];

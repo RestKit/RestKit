@@ -12,3 +12,5 @@
 #import "RKObjectMapping.h"
 #import "RKObjectSerializer.h"
 #import "RKOldObjectMapper.h"
+#import "RKObjectMappingProvider.h"
+#import "RKObjectMappingResult.h"

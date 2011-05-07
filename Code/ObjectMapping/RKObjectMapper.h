@@ -11,26 +11,9 @@
 #import "RKObjectMappingOperation.h"
 #import "Logging.h"
 #import "RKObjectMappingResult.h"
+#import "RKObjectMappingProvider.h"
 
 #define RKFAILMAPPING() NSAssert(nil != nil, @"Failed mapping operation!!!")
-
-/*!
- Responsible for providing object mappings to an instance of the object mapper
- by evaluating the current keyPath being operated on
- */
-@protocol RKObjectMappingProvider <NSObject>
-
-@required
-/*!
- Returns the object mapping that is appropriate to use for a given keyPath or nil if
- the keyPath is not mappable.
- */
-- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
-- (NSDictionary*)keyPathsAndObjectMappings;
-
-@end
-
-@class RKObjectMapper;
 
 /*!
  Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
@@ -41,6 +24,8 @@ typedef enum RKObjectMapperErrors {
     RKObjectMapperErrorObjectMappingTypeMismatch,   // Target class and object mapping are in disagreement
     RKObjectMapperErrorUnmappableContent            // No mappable attributes or relationships were found
 } RKObjectMapperErrorCode;
+
+@class RKObjectMapper;
 
 @protocol RKObjectMapperDelegate <NSObject>
 
@@ -70,9 +55,9 @@ typedef enum RKObjectMapperErrors {
 
 @interface RKObjectMapper : NSObject {
     id _object;
-    NSString* _keyPath;
+//    NSString* _keyPath;
     id _targetObject;
-    id<RKObjectMappingProvider> _mappingProvider;
+    RKObjectMappingProvider* _mappingProvider;
     id<RKObjectMapperDelegate> _delegate;
     NSMutableArray* _errors;
     RKObjectMapperTracingDelegate* _tracer;
@@ -81,8 +66,8 @@ typedef enum RKObjectMapperErrors {
 }
 
 @property (nonatomic, readonly) id object;
-@property (nonatomic, readonly) NSString* keyPath;
-@property (nonatomic, readonly) id<RKObjectMappingProvider> mappingProvider;
+//@property (nonatomic, readonly) NSString* keyPath;
+@property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
 
 /*!
  When YES, the mapper will log tracing information about the mapping operations performed
@@ -93,8 +78,8 @@ typedef enum RKObjectMapperErrors {
 
 @property (nonatomic, readonly) NSArray* errors;
 
-+ (id)mapperForObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(id<RKObjectMappingProvider>)mappingProvider;
-- (id)initWithObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(id<RKObjectMappingProvider>)mappingProvider;
++ (id)mapperForObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(RKObjectMappingProvider*)mappingProvider;
+- (id)initWithObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(RKObjectMappingProvider*)mappingProvider;
 
 // Primary entry point for the mapper. Examines the type of object and processes it appropriately...
 - (RKObjectMappingResult*)performMapping;

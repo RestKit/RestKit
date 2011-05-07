@@ -46,21 +46,21 @@
 @synthesize tracingEnabled = _tracingEnabled;
 @synthesize targetObject = _targetObject;
 @synthesize delegate =_delegate;
-@synthesize keyPath = _keyPath;
+//@synthesize keyPath = _keyPath;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize object = _object;
 @synthesize errors = _errors;
 
-+ (id)mapperForObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(id<RKObjectMappingProvider>)mappingProvider {
++ (id)mapperForObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(RKObjectMappingProvider*)mappingProvider {
     return [[[self alloc] initWithObject:object atKeyPath:keyPath mappingProvider:mappingProvider] autorelease];
 }
 
-- (id)initWithObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(id<RKObjectMappingProvider>)mappingProvider {
+- (id)initWithObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(RKObjectMappingProvider*)mappingProvider {
     self = [super init];
     if (self) {
         _object = [object retain];
         _mappingProvider = mappingProvider;
-        _keyPath = [keyPath copy];
+//        _keyPath = [keyPath copy];
         _errors = [NSMutableArray new];
     }
     
@@ -69,7 +69,7 @@
 
 - (void)dealloc {
     [_object release];
-    [_keyPath release];
+//    [_keyPath release];
     [_errors release];
     [_tracer release];
     [super dealloc];
@@ -103,6 +103,10 @@
         return [[mappableClass new] autorelease];
     }
     
+    return nil;
+}
+
+- (NSString*)keyPath {
     return nil;
 }
 
@@ -144,27 +148,27 @@
 //    
 //    return nil;
 //}
-
-- (RKObjectMapping*)mappingForKeyPath:(NSString*)keyPath {
-    RKLOG_MAPPING(0, @"Looking for mapping for keyPath %@", keyPath);
-    if ([self.delegate respondsToSelector:@selector(objectMapper:willAttemptMappingForKeyPath:)]) {
-        [self.delegate objectMapper:self willAttemptMappingForKeyPath:keyPath];
-    }
-    [_tracer objectMapper:self willAttemptMappingForKeyPath:keyPath]; // TODO: Eliminate tracer in favor of logging macros...
-    
-    RKObjectMapping* mapping = [self.mappingProvider objectMappingForKeyPath:keyPath];
-    if (mapping) {
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMapping:forKeyPath:)]) {
-            [self.delegate objectMapper:self didFindMapping:mapping forKeyPath:keyPath];
-        }
-    } else {
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didNotFindMappingForKeyPath:)]) {
-            [self.delegate objectMapper:self didNotFindMappingForKeyPath:keyPath];
-        }
-    }
-    
-    return mapping;
-}
+//
+//- (RKObjectMapping*)mappingForKeyPath:(NSString*)keyPath {
+//    RKLOG_MAPPING(0, @"Looking for mapping for keyPath %@", keyPath);
+//    if ([self.delegate respondsToSelector:@selector(objectMapper:willAttemptMappingForKeyPath:)]) {
+//        [self.delegate objectMapper:self willAttemptMappingForKeyPath:keyPath];
+//    }
+//    [_tracer objectMapper:self willAttemptMappingForKeyPath:keyPath]; // TODO: Eliminate tracer in favor of logging macros...
+//    
+//    RKObjectMapping* mapping = [self.mappingProvider objectMappingForKeyPath:keyPath];
+//    if (mapping) {
+//        if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMapping:forKeyPath:)]) {
+//            [self.delegate objectMapper:self didFindMapping:mapping forKeyPath:keyPath];
+//        }
+//    } else {
+//        if ([self.delegate respondsToSelector:@selector(objectMapper:didNotFindMappingForKeyPath:)]) {
+//            [self.delegate objectMapper:self didNotFindMappingForKeyPath:keyPath];
+//        }
+//    }
+//    
+//    return mapping;
+//}
 
 // Attempts to map each sub keyPath for a mappable collection and returns the result as a dictionary
 //- (id)performSubKeyPathObjectMapping {
@@ -234,6 +238,14 @@
     return nil;
 }
 
+- (BOOL)isNullCollection:(id)object {
+    if ([object respondsToSelector:@selector(countForObject:)]) {
+        return ([object countForObject:[NSNull null]] == [object count]);
+    }
+    
+    return NO;
+}
+
 // Primary entry point for the mapper. 
 - (RKObjectMappingResult*)performMapping {
     NSAssert(self.object != nil, @"Cannot perform object mapping without an object to map");
@@ -259,7 +271,8 @@
         }        
         
         // Not found...
-        if (mappableValue == nil) {
+        if (mappableValue == nil || mappableValue == [NSNull null] || [self isNullCollection:mappableValue]) {
+            NSLog(@"Not mappable, skipping... %@", mappableValue);
             continue;
         }
         
@@ -270,33 +283,22 @@
             mappingResult = [self performMappingForObject:mappableValue withObjectMapping:objectMapping];
         }
         
-        [results setObject:mappingResult forKey:keyPath];
+        if (mappingResult) {
+            [results setObject:mappingResult forKey:keyPath];
+        }
     }
     
-    RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:results];    
     if ([self.delegate respondsToSelector:@selector(objectMapperDidFinishMapping:)]) {
         [self.delegate objectMapperDidFinishMapping:self];
     }
+
+
+    if ([results count] == 0) {
+        [self addErrorForUnmappableKeyPath:self.keyPath];
+        return nil;
+    }
     
-    return result;
-    
-//    for (NSString* keyPaths in [
-//    for (RKObjectMapping* objectMapping in [self.mappingProvider objectMappings]) {
-//        if ([self.object valueForKeyPath:objectMapping.so
-//    }
-    
-//    RKLOG_MAPPING(0, @"Self.object is %@", self.object);
-//    if ([self.object isKindOfClass:[NSArray class]] || [self.object isKindOfClass:[NSSet class]]) {        
-//        mappingResult = [self performMappingForCollection];
-//    } else {
-//        mappingResult = [self performMappingForObject];
-//    }
-//    
-//    if ([self.delegate respondsToSelector:@selector(objectMapperDidFinishMapping:)]) {
-//        [self.delegate objectMapperDidFinishMapping:self];
-//    }
-//    
-//    return mappingResult;
+    return [RKObjectMappingResult mappingResultWithDictionary:results];
 }
 
 - (id)mapObject:(id)destinationObject fromObject:(id)sourceObject usingMapping:(RKObjectMapping*)mapping {    

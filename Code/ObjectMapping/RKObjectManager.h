@@ -32,7 +32,7 @@ typedef enum {
 	RKManagedObjectStore* _objectStore;	
 	RKObjectManagerOnlineState _onlineState;
     NSMutableDictionary* _parsersForMimeTypes;
-    NSObject<RKObjectMappingProvider>* _mappingProvider;
+    RKObjectMappingProvider* _mappingProvider;
 }
 
 /**
@@ -107,7 +107,7 @@ typedef enum {
 /**
  * The Mapping Provider responsible for returning mappings for various keypaths.
  */
-@property(nonatomic, retain) NSObject<RKObjectMappingProvider>* mappingProvider;
+@property(nonatomic, retain) RKObjectMappingProvider* mappingProvider;
 
 /**
  * Routing object responsible for generating paths for objects and serializing

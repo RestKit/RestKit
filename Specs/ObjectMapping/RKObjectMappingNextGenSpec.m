@@ -239,8 +239,11 @@
                                     
 - (void)itShouldDetermineTheObjectMappingByConsultingTheMappingProviderWhenThereIsATargetObject {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
+    id mockProvider = [OCMockObject partialMockForObject:provider];
+//    id mockProvider = [OCMockObject mockForClass:@class(RKObjectMappingProvider)];
+//    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
         
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
@@ -252,8 +255,9 @@
 
 - (void)itShouldAddAnErrorWhenTheKeyPathMappingAndObjectClassDoNotAgree {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
+    id mockProvider = [OCMockObject partialMockForObject:provider];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
@@ -269,9 +273,9 @@
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
     
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-//    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
-    [[[mockProvider expect] andReturn:[NSDictionary dictionaryWithObject:mapping forKey:@""]] keyPathsAndObjectMappings];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
+    id mockProvider = [OCMockObject partialMockForObject:provider];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
@@ -293,19 +297,23 @@
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:@"user"];
+    
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
+    id mockProvider = [OCMockObject partialMockForObject:provider];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:@"user" mappingProvider:mockProvider];
-    id mappingResult = [mapper performMapping];
+    id mappingResult = [[mapper performMapping] asObject];
     [expectThat([mappingResult isKindOfClass:[RKExampleUser class]]) should:be(YES)];
 }
 
 - (void)itShouldDetermineTheMappingClassForAKeyPathByConsultingTheMappingProviderWhenMappingADictionaryWithoutATargetObject {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];        
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:@"user"];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
+    id mockProvider = [OCMockObject partialMockForObject:provider];
+    [[mockProvider expect] keyPathsAndObjectMappings];
         
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:@"user" mappingProvider:mockProvider];
@@ -319,12 +327,14 @@
     [mapping addAttributeMapping:idMapping];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
+    
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
+    id mockProvider = [OCMockObject partialMockForObject:provider];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
-    RKExampleUser* user = [mapper performMapping];
+    RKExampleUser* user = [[mapper performMapping] asObject];
     [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
     [expectThat(user.name) should:be(@"Blake Watters")];
 }
@@ -335,54 +345,56 @@
     [mapping addAttributeMapping:idMapping];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"users.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
-    NSArray* users = [mapper performMapping];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
+    RKObjectMappingResult* result = [mapper performMapping];
+    NSArray* users = [result asCollection];
     [expectThat([users isKindOfClass:[NSArray class]]) should:be(YES)];
     [expectThat([users count]) should:be(3)];
     RKExampleUser* user = [users objectAtIndex:0];
     [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
     [expectThat(user.name) should:be(@"Blake Watters")];
 }
-
-- (void)itShouldAttemptToMapEachSubKeyPathOfAnUnmappableDictionary {
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:nil];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"id"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"name"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"website"];    
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"birthdate"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"is_developer"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"weight"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"lucky_number"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"address"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"interests"];
-    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"friends"];
-    
-    id userInfo = RKSpecParseFixtureJSON(@"user.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
-    [mapper performMapping];    
-    [mockProvider verify];
-}
-
+//
+//- (void)itShouldAttemptToMapEachSubKeyPathOfAnUnmappableDictionary {
+//    id mockProvider = [OCMockObject mockForClass:@class(RKObjectMappingProvider)];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:nil];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"id"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"name"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"website"];    
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"birthdate"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"is_developer"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"weight"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"lucky_number"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"address"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"interests"];
+//    [[[mockProvider expect] andReturn:nil] objectMappingForKeyPath:@"friends"];
+//    
+//    id userInfo = RKSpecParseFixtureJSON(@"user.json");
+//    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+//    [mapper performMapping];    
+//    [mockProvider verify];
+//}
+//
 - (void)itShouldBeAbleToMapFromAUserObjectToADictionary {    
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"userID" toKeyPath:@"id"];
     [mapping addAttributeMapping:idMapping];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     RKExampleUser* user = [RKExampleUser user];
     user.name = @"Blake Watters";
     user.userID = [NSNumber numberWithInt:123];
     
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:user atKeyPath:nil mappingProvider:mockProvider];
-    NSDictionary* userInfo = [mapper performMapping];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:user atKeyPath:nil mappingProvider:provider];
+    RKObjectMappingResult* result = [mapper performMapping];
+    NSDictionary* userInfo = [result asObject];
     [expectThat([userInfo isKindOfClass:[NSDictionary class]]) should:be(YES)];
     [expectThat([userInfo valueForKey:@"name"]) should:be(@"Blake Watters")];
 }
@@ -394,32 +406,31 @@
     [mapping addAttributeMapping:idMapping];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
-    id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider stub] andReturn:nil] objectMappingForKeyPath:nil];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:@"user"];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@"user"];
     
     id userInfo = RKSpecParseFixtureJSON(@"nested_user.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
-    NSDictionary* dictionary = [mapper performMapping];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
+    NSDictionary* dictionary = [[mapper performMapping] asDictionary];
     [expectThat([dictionary isKindOfClass:[NSDictionary class]]) should:be(YES)];
     RKExampleUser* user = [dictionary objectForKey:@"user"];
     [expectThat(user) shouldNot:be(nil)];
     [expectThat(user.name) should:be(@"Blake Watters")];
 }
 
-#pragma mark Mapping Error States
-
+//#pragma mark Mapping Error States
+//
 - (void)itShouldAddAnErrorWhenYouTryToMapAnArrayToATargetObject {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
     [mapping addAttributeMapping:idMapping];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"users.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     mapper.targetObject = [RKExampleUser user];
     [mapper performMapping];
     [expectThat([mapper errorCount]) should:be(1)];
@@ -427,20 +438,18 @@
 }
 
 - (void)itShouldAddAnErrorWhenAttemptingToMapADictionaryWithoutAnObjectMapping {
-    id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
-    
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [mapper performMapping];
     [expectThat([mapper errorCount]) should:be(1)];
     [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: (null)")];
 }
 
 - (void)itShouldAddAnErrorWhenAttemptingToMapACollectionWithoutAnObjectMapping {
-    id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
-    
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     id userInfo = RKSpecParseFixtureJSON(@"users.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [mapper performMapping];
     [expectThat([mapper errorCount]) should:be(1)];
     [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: (null)")];
@@ -449,13 +458,13 @@
 #pragma mark RKObjectMapperDelegate Specs
 
 - (void)itShouldInformTheDelegateWhenMappingBegins {
-    id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"users.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [[mockDelegate expect] objectMapperWillBeginMapping:mapper];
     mapper.delegate = mockDelegate;
     [mapper performMapping];
@@ -463,14 +472,13 @@
 }
 
 - (void)itShouldInformTheDelegateWhenMappingEnds {
-    id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
-    
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"users.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [[mockDelegate stub] objectMapperWillBeginMapping:mapper];
     [[mockDelegate expect] objectMapperDidFinishMapping:mapper];
     mapper.delegate = mockDelegate;
@@ -479,13 +487,13 @@
 }
 
 - (void)itShouldInformTheDelegateWhenCheckingForObjectMappingForKeyPath {
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [[mockDelegate expect] objectMapper:mapper willAttemptMappingForKeyPath:nil];
     mapper.delegate = mockDelegate;
     [mapper performMapping];
@@ -493,13 +501,13 @@
 }
 
 - (void)itShouldInformTheDelegateWhenCheckingForObjectMappingForKeyPathIsSuccessful {
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [[mockDelegate expect] objectMapper:mapper didFindMapping:mapping forKeyPath:nil];
     mapper.delegate = mockDelegate;
     [mapper performMapping];
@@ -507,9 +515,9 @@
 }
 
 - (void)itShouldInformTheDelegateWhenCheckingForObjectMappingForKeyPathIsNotSuccessful {
-    id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
+    id mockProvider = [OCMockObject niceMockForClass:[RKObjectMappingProvider class]];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
-    [[[mockProvider stub] andReturn:nil] objectMappingForKeyPath:nil];
+//    [[[mockProvider stub] andReturn:nil] objectMappingForKeyPath:nil];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
@@ -520,7 +528,7 @@
 }
 
 - (void)itShouldInformTheDelegateOfError {
-    id mockProvider = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingProvider)];
+    id mockProvider = [OCMockObject niceMockForClass:[RKObjectMappingProvider class]];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     
     id userInfo = RKSpecParseFixtureJSON(@"users.json");
@@ -532,7 +540,7 @@
 }
 
 - (void)itShouldNotifyTheDelegateWhenItWillMapAnObject {
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
+    id mockProvider = [OCMockObject niceMockForClass:[RKObjectMappingProvider class]];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
@@ -546,15 +554,15 @@
 }
 
 - (void)itShouldNotifyTheDelegateWhenItDidMapAnObject {
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];    
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [[mockDelegate expect] objectMapper:mapper didMapObject:[OCMArg any] fromObject:userInfo atKeyPath:nil usingMapping:mapping];
     mapper.delegate = mockDelegate;
     [mapper performMapping];
@@ -562,13 +570,13 @@
 }
 
 - (void)itShouldNotifyTheDelegateWhenItFailedToMapAnObject {
-    id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
-    [[[mockProvider stub] andReturn:mapping] objectMappingForKeyPath:nil];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:provider];
     [[mockDelegate expect] objectMapper:mapper didFailMappingObject:[OCMArg any] withError:[OCMArg any] fromObject:userInfo atKeyPath:nil usingMapping:mapping];
     mapper.delegate = mockDelegate;
     [mapper performMapping];

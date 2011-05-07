@@ -10,7 +10,7 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKSpecResponseLoader.h"
-#import "RKStaticObjectMappingProvider.h"
+#import "RKObjectMappingProvider.h"
 #import "RKHuman.h"
 #import "RKCat.h"
 
@@ -31,7 +31,7 @@
     [_objectManager.objectStore deletePersistantStore];
     
     
-    RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     
     RKObjectMapping* humanMapping = [RKObjectMapping mappingForClass:[RKHuman class]];
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];

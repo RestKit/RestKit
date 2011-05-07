@@ -6,9 +6,9 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKStaticObjectMappingProvider.h"
+#import "RKObjectMappingProvider.h"
 
-@implementation RKStaticObjectMappingProvider
+@implementation RKObjectMappingProvider
 
 - (id)init {
     if ((self = [super init])) {
