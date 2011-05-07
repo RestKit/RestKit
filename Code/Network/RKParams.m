@@ -26,7 +26,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 }
 
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		_attachments = [NSMutableArray new];
 		_footer       = [[[NSString stringWithFormat:@"--%@--\r\n", kRKStringBoundary] dataUsingEncoding:NSUTF8StringEncoding] retain];
 		_footerLength = [_footer length];

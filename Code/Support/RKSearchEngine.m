@@ -17,7 +17,7 @@
 }
 
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		_mode = RKSearchModeOr;
 		_tokenizeQuery = YES;
 		_stripWhitespace = YES;

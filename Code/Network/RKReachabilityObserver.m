@@ -78,7 +78,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 - (id)initWithReachabilityRef:(SCNetworkReachabilityRef)reachabilityRef {
-	if (self = [self init]) {
+	if ((self = [self init])) {
 		_reachabilityRef = reachabilityRef;
 		[self scheduleObserver];
 	}
