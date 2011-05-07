@@ -162,7 +162,7 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
-    objectLoader.objectClass = [RKSpecComplexUser class];
+//    objectLoader.objectClass = [RKSpecComplexUser class];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
@@ -179,7 +179,7 @@
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
 //    objectLoader.keyPath = @"data.STUser";
-    objectLoader.objectClass = [RKSpecComplexUser class];
+//    objectLoader.objectClass = [RKSpecComplexUser class];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
@@ -328,7 +328,7 @@
     [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-    loader.objectClass = [RKAnotherUser class];
+//    loader.objectClass = [RKAnotherUser class];
     [loader send];
     [responseLoader waitForResponse];
     RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
@@ -346,7 +346,7 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
 //    loader.keyPath = @"user";
-    loader.objectClass = [RKAnotherUser class];
+//    loader.objectClass = [RKAnotherUser class];
     [loader send];
     [responseLoader waitForResponse];
     RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
@@ -362,7 +362,7 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
 //    loader.keyPath = @"user";
-    loader.objectClass = [RKAnotherUser class];
+//    loader.objectClass = [RKAnotherUser class];
     [loader send];
     [responseLoader waitForResponse];
     RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];

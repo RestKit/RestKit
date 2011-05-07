@@ -8,6 +8,7 @@
 
 #import "../Network/Network.h"
 #import "RKObjectMappable.h"
+#import "RKObjectMapping.h"
 
 @class RKObjectManager;
 @class RKObjectLoader;
@@ -46,8 +47,8 @@
 @interface RKObjectLoader : RKRequest {	
     RKObjectManager* _objectManager;
 	RKResponse* _response;
+    RKObjectMapping* _objectMapping;
 	NSObject<RKObjectMappable>* _targetObject;
-//	NSString* _keyPath;
 }
 
 /**
@@ -62,22 +63,15 @@
 @property (nonatomic, readonly) RKResponse* response;
 
 /**
- * The mappable object class to load payload results into. When nil, indicates that
- * the resulting objects will be determined via element registrations on the mapper.
+ * The object mapping to apply to the response
  */
-@property (nonatomic, assign) Class<RKObjectMappable> objectClass;
+@property (nonatomic, retain) RKObjectMapping* objectMapping;
 
 /**
  * The mappable object that generated this loader. This is used to map object
  * updates back to the object that sent the request
  */
 @property (nonatomic, retain) NSObject<RKObjectMappable>* targetObject;
-
-/*
- * The keyPath property is an optional property to tell the mapper to map a subset of the response
- * defined by a specific key.
- */
-//@property (nonatomic, copy) NSString* keyPath;
 
 /**
  * Initialize and return an object loader for a resource path against an object manager. The resource path

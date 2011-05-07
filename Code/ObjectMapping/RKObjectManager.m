@@ -178,7 +178,7 @@ static RKObjectManager* sharedManager = nil;
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	loader.method = RKRequestMethodGET;
-	loader.objectClass = objectClass;
+//	loader.objectClass = objectClass;
 
 	[loader send];
 
@@ -189,7 +189,7 @@ static RKObjectManager* sharedManager = nil;
 	NSString* resourcePathWithQuery = RKPathAppendQueryParams(resourcePath, queryParams);
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePathWithQuery delegate:delegate];
 	loader.method = RKRequestMethodGET;
-	loader.objectClass = objectClass;
+//	loader.objectClass = objectClass;
 
 	[loader send];
 
@@ -209,7 +209,7 @@ static RKObjectManager* sharedManager = nil;
 	loader.method = method;
 	loader.params = params;
 	loader.targetObject = object;
-	loader.objectClass = [object class];
+//	loader.objectClass = [object class];
 
 	return loader;
 }

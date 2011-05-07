@@ -29,8 +29,8 @@
 
 @implementation RKObjectLoader
 
-@synthesize objectManager = _objectManager, response = _response;//, keyPath = _keyPath;
-@synthesize targetObject = _targetObject;
+@synthesize objectManager = _objectManager, response = _response;
+@synthesize targetObject = _targetObject, objectMapping = _objectMapping;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
@@ -52,8 +52,8 @@
     
 	[_response release];
 	_response = nil;
-//	[_keyPath release];
-//	_keyPath = nil;
+	[_objectMapping release];
+	_objectMapping = nil;
     
 	[super dealloc];
 }
@@ -111,10 +111,18 @@
 
 // NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
-	NSArray* objects = [dictionary objectForKey:@"objects"];
+	RKObjectMappingResult* result = [dictionary objectForKey:@"result"];
 	[dictionary release];
 
-	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didLoadObjects:objects];
+//	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didLoadObjects:objects];
+    if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
+        [self.delegate objectLoader:self didLoadObject:[result asCollection]];
+    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObject:)]) {
+        [self.delegate objectLoader:self didLoadObject:[result asObject]];
+    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
+        [self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
+    }
+    
 	[self responseProcessingSuccessful:YES withError:nil];
 }
 
@@ -152,23 +160,21 @@
 //        parsedData = [parsedData valueForKeyPath:self.keyPath];
 //    }
     
-    NSString* key = @"";
+    RKObjectMappingProvider* mappingProvider;
+    if (self.objectMapping) {
+        mappingProvider = [[RKObjectMappingProvider new] autorelease];
+        [mappingProvider setMapping:self.objectMapping forKeyPath:@""];
+    } else {
+        mappingProvider = self.objectManager.mappingProvider;
+    }
+    
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:parsedData
-                                                   atKeyPath:key
-                                             mappingProvider:self.objectManager.mappingProvider];
+                                                   atKeyPath:@""
+                                             mappingProvider:mappingProvider];
     mapper.targetObject = self.targetObject;
     RKObjectMappingResult* result = [mapper performMapping];
-    results = [result asCollection]; // dictionaryValue
-    // results = [[mapper performMapping] resultsDictionary]; [[mapper performMapping] restultsArray asArray];
-    
-//    // TODO: do we still want to cooerce everyting into an array? jbe
-//    if (![results isKindOfClass:[NSArray class]]) {
-//        // Using arrayWithObjects: instead of arrayWithObject:
-//        // so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
-//        results = [NSArray arrayWithObjects:results, nil];
-//    }
 
-    NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", results, @"objects", nil] retain];
+    NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", result, @"result", nil] retain];
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
 
 	[pool drain];
