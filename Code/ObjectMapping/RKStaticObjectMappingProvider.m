@@ -30,4 +30,8 @@
     [_mappings setValue:mapping forKey:keyPath];
 }
 
+- (NSDictionary*)keyPathsAndObjectMappings {
+    return _mappings;
+}
+
 @end

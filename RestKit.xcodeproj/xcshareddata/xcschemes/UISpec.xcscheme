@@ -71,7 +71,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldNotSetThePropertyWhenTheNestedObjectCollectionIsIdentical"
+            value = "itShouldMapToATargetObject"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

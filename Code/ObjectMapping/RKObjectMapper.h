@@ -10,6 +10,7 @@
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
 #import "Logging.h"
+#import "RKObjectMappingResult.h"
 
 #define RKFAILMAPPING() NSAssert(nil != nil, @"Failed mapping operation!!!")
 
@@ -25,6 +26,7 @@
  the keyPath is not mappable.
  */
 - (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
+- (NSDictionary*)keyPathsAndObjectMappings;
 
 @end
 
@@ -95,7 +97,7 @@ typedef enum RKObjectMapperErrors {
 - (id)initWithObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(id<RKObjectMappingProvider>)mappingProvider;
 
 // Primary entry point for the mapper. Examines the type of object and processes it appropriately...
-- (id)performMapping;
+- (RKObjectMappingResult*)performMapping;
 - (NSUInteger)errorCount;
 
 @end

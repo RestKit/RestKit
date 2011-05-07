@@ -47,7 +47,7 @@
     RKObjectManager* _objectManager;
 	RKResponse* _response;
 	NSObject<RKObjectMappable>* _targetObject;
-	NSString* _keyPath;
+//	NSString* _keyPath;
 }
 
 /**
@@ -77,7 +77,7 @@
  * The keyPath property is an optional property to tell the mapper to map a subset of the response
  * defined by a specific key.
  */
-@property (nonatomic, copy) NSString* keyPath;
+//@property (nonatomic, copy) NSString* keyPath;
 
 /**
  * Initialize and return an object loader for a resource path against an object manager. The resource path

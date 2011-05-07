@@ -29,7 +29,7 @@
 
 @implementation RKObjectLoader
 
-@synthesize objectManager = _objectManager, response = _response, keyPath = _keyPath;
+@synthesize objectManager = _objectManager, response = _response;//, keyPath = _keyPath;
 @synthesize targetObject = _targetObject;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
@@ -52,8 +52,8 @@
     
 	[_response release];
 	_response = nil;
-	[_keyPath release];
-	_keyPath = nil;
+//	[_keyPath release];
+//	_keyPath = nil;
     
 	[super dealloc];
 }
@@ -143,28 +143,30 @@
 	 * the results back into the instance. This is used for loading and updating
 	 * individual object instances via getObject and friends.
 	 */
-	NSArray* results = nil;
+	NSArray* results = nil;    
     
     // TODO: rewrite this. jbe.
     id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
     id parsedData = [parser objectFromString:[response bodyAsString]];
-    if (self.keyPath) {
-        parsedData = [parsedData valueForKeyPath:self.keyPath];
-    }
+//    if (self.keyPath) {
+//        parsedData = [parsedData valueForKeyPath:self.keyPath];
+//    }
     
     NSString* key = @"";
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:parsedData
                                                    atKeyPath:key
                                              mappingProvider:self.objectManager.mappingProvider];
     mapper.targetObject = self.targetObject;
-    results = [mapper performMapping];
-        
-    // TODO: do we still want to cooerce everyting into an array? jbe
-    if (![results isKindOfClass:[NSArray class]]) {
-        // Using arrayWithObjects: instead of arrayWithObject:
-        // so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
-        results = [NSArray arrayWithObjects:results, nil];
-    }
+    RKObjectMappingResult* result = [mapper performMapping];
+    results = [result asCollection]; // dictionaryValue
+    // results = [[mapper performMapping] resultsDictionary]; [[mapper performMapping] restultsArray asArray];
+    
+//    // TODO: do we still want to cooerce everyting into an array? jbe
+//    if (![results isKindOfClass:[NSArray class]]) {
+//        // Using arrayWithObjects: instead of arrayWithObject:
+//        // so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
+//        results = [NSArray arrayWithObjects:results, nil];
+//    }
 
     NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", results, @"objects", nil] retain];
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];

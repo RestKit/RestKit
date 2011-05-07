@@ -81,15 +81,15 @@
 			if (self.method == RKRequestMethodDELETE) {
 				[[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
 			} else {
-				[self.objectMapper mapObject:backgroundThreadModel fromString:[response bodyAsString] keyPath:self.keyPath];
+//				[self.objectMapper mapObject:backgroundThreadModel fromString:[response bodyAsString] keyPath:self.keyPath];
 				results = [NSArray arrayWithObject:backgroundThreadModel];
 			}
 		} else {
-			[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:self.keyPath];
+///			[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:self.keyPath];
 			results = [NSArray arrayWithObject:self.targetObject];
 		}
 	} else {
-		id result = [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:self.keyPath];
+		id result = nil;// [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:self.keyPath];
 		if ([result isKindOfClass:[NSArray class]]) {
 			results = (NSArray*)result;
 		} else {

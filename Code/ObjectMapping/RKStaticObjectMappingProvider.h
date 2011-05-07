@@ -14,5 +14,6 @@
 }
 
 - (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath;
+- (NSDictionary*)keyPathsAndObjectMappings;
 
 @end

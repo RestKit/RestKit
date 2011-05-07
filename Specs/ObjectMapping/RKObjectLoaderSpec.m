@@ -81,7 +81,7 @@
     [objectLoader.URLRequest addValue:authString forHTTPHeaderField:@"Authorization"];
     objectLoader.method = RKRequestMethodGET;
     objectLoader.targetObject = user;
-    objectLoader.keyPath = @"data.STUser";
+//    objectLoader.keyPath = @"data.STUser";
 //    objectLoader.objectClass = [RKSpecComplexUser class];
     RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
@@ -105,7 +105,7 @@
     [objectLoader.URLRequest addValue:authString forHTTPHeaderField:@"Authorization"];
     objectLoader.method = RKRequestMethodGET;
     objectLoader.targetObject = user;
-    objectLoader.keyPath = @"data";
+//    objectLoader.keyPath = @"data";
     //    objectLoader.objectClass = [RKSpecComplexUser class];
     RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
@@ -125,12 +125,12 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
-    objectLoader.keyPath = @"data";
+//    objectLoader.keyPath = @"data";
     
     RKStaticObjectMappingProvider* provider = [[RKStaticObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
-    [provider setMapping:userMapping forKeyPath:@"STUser"];
+    [provider setMapping:userMapping forKeyPath:@"data.STUser"];
     [objectManager setMappingProvider:provider];
     
     [objectLoader sendAsynchronously];
@@ -178,7 +178,7 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
-    objectLoader.keyPath = @"data.STUser";
+//    objectLoader.keyPath = @"data.STUser";
     objectLoader.objectClass = [RKSpecComplexUser class];
     
     [objectLoader sendAsynchronously];
@@ -345,7 +345,7 @@
     [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-    loader.keyPath = @"user";
+//    loader.keyPath = @"user";
     loader.objectClass = [RKAnotherUser class];
     [loader send];
     [responseLoader waitForResponse];
@@ -361,7 +361,7 @@
     
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-    loader.keyPath = @"user";
+//    loader.keyPath = @"user";
     loader.objectClass = [RKAnotherUser class];
     [loader send];
     [responseLoader waitForResponse];

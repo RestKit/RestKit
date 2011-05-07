@@ -147,6 +147,10 @@
                      kLoggerOption_BrowseOnlyLocalDomain);
 }
 
+- (void)afterAll {
+    LoggerFlush(NULL, YES);
+}
+
 #pragma mark - RKObjectKeyPathMapping Specs
 
 - (void)itShouldDefineElementToPropertyMapping {
@@ -266,17 +270,20 @@
     [mapping addAttributeMapping:nameMapping];
     
     id mockProvider = [OCMockObject mockForProtocol:@protocol(RKObjectMappingProvider)];
-    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
+//    [[[mockProvider expect] andReturn:mapping] objectMappingForKeyPath:nil];
+    [[[mockProvider expect] andReturn:[NSDictionary dictionaryWithObject:mapping forKey:@""]] keyPathsAndObjectMappings];
     
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperForObject:userInfo atKeyPath:nil mappingProvider:mockProvider];
     RKExampleUser* user = [RKExampleUser user];
     mapper.targetObject = user;
-    RKExampleUser* userReference = [mapper performMapping];
+    RKObjectMappingResult* result = [mapper performMapping];
     
     [mockProvider verify];
-    [expectThat(user) shouldNot:be(nil)];
-    [expectThat(user == userReference) should:be(YES)];    
+    [expectThat(result) shouldNot:be(nil)];
+    NSLog(@"Got back result: %@", result);
+    NSLog(@"Got back result object: %@", [result asObject]);
+    [expectThat([result asObject] == user) should:be(YES)];    
 //    [expectThat(@"1234") should:be(user)];
 //    [expectThat(userReference) should:be(user)]; // TODO: This kind of invocation of the be() matcher causes UISpec to fuck up memory management
     [expectThat(user.name) should:be(@"Blake Watters")];
