@@ -34,7 +34,16 @@
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withObjectMapping:_mapping];
     [operation performMapping:error];
+    if (*error) {
+        return nil;
+    }
     if ([mimeType isEqualToString:@"application/json"]) {
+        for (id key in [dictionary allKeys]) {
+            id val = [dictionary valueForKey:key];
+            if ([val isKindOfClass:[NSDate class]]) {
+                [dictionary setValue:[val description] forKey:key];
+            }
+        }
         return [RKJSONSerialization JSONSerializationWithObject:dictionary];
     } else if ([mimeType isEqualToString:@"application/x-www-form-urlencoded"]) {
         return dictionary;
