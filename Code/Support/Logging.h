@@ -18,6 +18,8 @@ enum RKLogLevels {
 };
 
 //#ifdef DEBUG
+    #define RKLOG_START_BLOCK(name) LogStartBlock(name)
+    #define RKLOG_END_BLOCK()            LogEndBlock()
     #define RKLOG_NETWORK(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"Network",level,__VA_ARGS__)
     #define RKLOG_MAPPING(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"Object Mapping",level,__VA_ARGS__)
     #define RKLOG_GENERAL(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"General",level,__VA_ARGS__)

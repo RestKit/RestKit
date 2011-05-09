@@ -14,6 +14,7 @@
 @interface RKObjectMapping : NSObject {
     Class _objectClass;
     NSMutableArray* _mappings;
+    NSMutableArray* _dateFormatStrings;
 }
 
 @property (nonatomic, assign) Class objectClass;
@@ -21,6 +22,12 @@
 @property (nonatomic, readonly) NSArray* attributeMappings;
 @property (nonatomic, readonly) NSArray* relationshipMappings;
 @property (nonatomic, readonly) NSArray* mappedKeyPaths;
+
+/*!
+ An array of date format strings to apply when mapping a
+ String attribute to a NSDate property
+ */
+@property (nonatomic, retain) NSMutableArray* dateFormatStrings;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass;
 - (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping;

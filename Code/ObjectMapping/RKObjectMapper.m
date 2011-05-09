@@ -10,31 +10,6 @@
 #import "Errors.h"
 #import "RKObjectMapper_Private.h"
 
-// TODO: Move these into the object mapping operation class
-//@implementation RKObjectMapperTracingDelegate
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)elementMapping forKeyPath:(NSString *)keyPath {
-//    RKLOG_MAPPING(0, @"Found mapping for keyPath '%@': %@", keyPath, elementMapping);
-//}
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath {
-//    RKLOG_MAPPING(0, @"Unable to find mapping for keyPath '%@'", keyPath);
-//}
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping*)mapping {
-//    RKLOG_MAPPING(0, @"Set '%@' to '%@' on object %@", keyPath, value, operation.destinationObject);
-//}
-//
-//- (void)objectMapper:(RKObjectMapper *)objectMapper didAddError:(NSError *)error {
-//    RKLOG_MAPPING(0, @"Object mapper encountered error: %@", [error localizedDescription]);
-//}
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFailWithError:(NSError*)error {
-//    RKLOG_MAPPING(0, @"Object mapping operation failed with error: %@", [error localizedDescription]);
-//}
-//
-//@end
-
 @implementation RKObjectMapper
 
 @synthesize sourceObject = _sourceObject;

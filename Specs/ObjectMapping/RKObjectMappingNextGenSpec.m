@@ -140,14 +140,13 @@
 - (void)beforeAll {
 //    LoggerSetViewerHost(NULL, (CFStringRef) @"localhost", 50000);    
     LoggerSetOptions(NULL,						// configure the default logger
-//                     kLoggerOption_LogToConsole | 
+                     kLoggerOption_LogToConsole | 
                      kLoggerOption_BufferLogsUntilConnection |
                      kLoggerOption_UseSSL |
                      kLoggerOption_BrowseBonjour |
                      kLoggerOption_BrowseOnlyLocalDomain);
     LoggerStart(LoggerGetDefaultLogger());
-    LogMessage(@"Object Mapping", 10, @"Starting object mapping...");
-    RKLOG_MAPPING(1, @"Testing the macros...");
+    LogMessage(@"Object Mapping", 10, @"Starting object mapping specs...");
     LoggerFlush(NULL, NO);
 }
 
@@ -276,8 +275,6 @@
     
     [mockProvider verify];
     [expectThat(result) shouldNot:be(nil)];
-    NSLog(@"Got back result: %@", result);
-    NSLog(@"Got back result object: %@", [result asObject]);
     [expectThat([result asObject] == user) should:be(YES)];    
 //    [expectThat(@"1234") should:be(user)];
 //    [expectThat(userReference) should:be(user)]; // TODO: This kind of invocation of the be() matcher causes UISpec to fuck up memory management
