@@ -93,7 +93,8 @@
     if ([self.delegate respondsToSelector:@selector(objectMapper:didAddError:)]) {
         [self.delegate objectMapper:self didAddError:error];
     }
-    // TODO: Log error
+    
+    RKLOG_MAPPING(0, @"Adding mapping error: %@", [error localizedDescription]);
 }
 
 - (void)addErrorWithCode:(RKObjectMapperErrorCode)errorCode message:(NSString*)errorMessage keyPath:(NSString*)keyPath userInfo:(NSDictionary*)otherInfo {

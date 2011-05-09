@@ -114,13 +114,12 @@
 	RKObjectMappingResult* result = [dictionary objectForKey:@"result"];
 	[dictionary release];
 
-//	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didLoadObjects:objects];
     if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
-        [self.delegate objectLoader:self didLoadObject:[result asCollection]];
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asCollection]];
     } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObject:)]) {
-        [self.delegate objectLoader:self didLoadObject:[result asObject]];
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asObject]];
     } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
-        [self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
     }
     
 	[self responseProcessingSuccessful:YES withError:nil];
@@ -145,21 +144,10 @@
 // NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
-	/**
-	 * If this loader is bound to a particular object, then we map
-	 * the results back into the instance. This is used for loading and updating
-	 * individual object instances via getObject and friends.
-	 */
-	NSArray* results = nil;    
     
-    // TODO: rewrite this. jbe.
     id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
+    // TODO: Handle case where there is no parser for this MIME type
     id parsedData = [parser objectFromString:[response bodyAsString]];
-//    if (self.keyPath) {
-//        parsedData = [parsedData valueForKeyPath:self.keyPath];
-//    }
-    
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
@@ -168,9 +156,7 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    RKObjectMapper* mapper = [RKObjectMapper mapperForObject:parsedData
-                                                   atKeyPath:@""
-                                             mappingProvider:mappingProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.targetObject = self.targetObject;
     RKObjectMappingResult* result = [mapper performMapping];
 

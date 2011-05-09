@@ -273,9 +273,8 @@
     if (mappedAttributes || mappedRelationships) {
         return YES;
     } else {
-        // TODO: Improve error message...
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  @"Unable to identify any mappable content", NSLocalizedDescriptionKey,
+                                  @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
                                   nil];
         int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
         NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];        
