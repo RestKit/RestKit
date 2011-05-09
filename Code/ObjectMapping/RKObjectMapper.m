@@ -151,20 +151,19 @@
 - (NSArray*)mapCollection:(NSArray*)mappableObjects atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)mapping {
     NSAssert(mappableObjects != nil, @"Cannot map without an collection of mappable objects");
     NSAssert(mapping != nil, @"Cannot map without a mapping to consult");
-    // TODO: Assert on the type of mappableObjects?
     
     // Ensure we are mapping onto a mutable collection if there is a target
-    if (self.targetObject && NO == [self.targetObject respondsToSelector:@selector(addObject:)]) {
+    NSMutableArray* mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[mappableObjects count]];
+    if (NO == [mappedObjects respondsToSelector:@selector(addObject:)]) {
         NSString* errorMessage = [NSString stringWithFormat:
-                                  @"Cannot map a collection of objects onto a non-mutable collection. Unexpected target object type '%@'", 
-                                  NSStringFromClass([self.targetObject class])];            
+                                  @"Cannot map a collection of objects onto a non-mutable collection. Unexpected destination object type '%@'", 
+                                  NSStringFromClass([mappedObjects class])];            
         [self addErrorWithCode:RKObjectMapperErrorObjectMappingTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
         return nil;
     }
     
     // TODO: It should map arrays of arrays...
-    // TODO: It should map array of objects back to dicitonaries...
-    NSMutableArray* mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[mappableObjects count]];
+    // TODO: It should map array of objects back to dicitonaries...    
     for (id mappableObject in mappableObjects) {
         id destinationObject = [self createInstanceOfClassForMapping:mapping.objectClass];
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
@@ -177,7 +176,6 @@
 }
 
 // The workhorse of this entire process. Emits object loading operations
-// TODO: This should probably just return a BOOL?
 - (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:keyPath usingMapping:(RKObjectMapping*)mapping {
     NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");    
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
