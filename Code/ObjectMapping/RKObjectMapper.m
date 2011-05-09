@@ -10,31 +10,6 @@
 #import "Errors.h"
 #import "RKObjectMapper_Private.h"
 
-// TODO: Move these into the object mapping operation class
-//@implementation RKObjectMapperTracingDelegate
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)elementMapping forKeyPath:(NSString *)keyPath {
-//    RKLOG_MAPPING(0, @"Found mapping for keyPath '%@': %@", keyPath, elementMapping);
-//}
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath {
-//    RKLOG_MAPPING(0, @"Unable to find mapping for keyPath '%@'", keyPath);
-//}
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping*)mapping {
-//    RKLOG_MAPPING(0, @"Set '%@' to '%@' on object %@", keyPath, value, operation.destinationObject);
-//}
-//
-//- (void)objectMapper:(RKObjectMapper *)objectMapper didAddError:(NSError *)error {
-//    RKLOG_MAPPING(0, @"Object mapper encountered error: %@", [error localizedDescription]);
-//}
-//
-//- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFailWithError:(NSError*)error {
-//    RKLOG_MAPPING(0, @"Object mapping operation failed with error: %@", [error localizedDescription]);
-//}
-//
-//@end
-
 @implementation RKObjectMapper
 
 @synthesize sourceObject = _sourceObject;
@@ -87,7 +62,7 @@
         [self.delegate objectMapper:self didAddError:error];
     }
     
-    RKLOG_MAPPING(0, @"Adding mapping error: %@", [error localizedDescription]);
+    RKLOG_MAPPING(RKLogLevelError, @"Adding mapping error: %@", [error localizedDescription]);
 }
 
 - (void)addErrorWithCode:(RKObjectMapperErrorCode)errorCode message:(NSString*)errorMessage keyPath:(NSString*)keyPath userInfo:(NSDictionary*)otherInfo {
@@ -181,7 +156,7 @@
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
     NSAssert(mapping != nil, @"Cannot map without an mapping");
     
-    RKLOG_MAPPING(0, @"Asked to map source object %@ with mapping %@", sourceObject, mapping);
+    RKLOG_MAPPING(RKLogLevelDebug, @"Asked to map source object %@ with mapping %@", mappableObject, mapping);
     if ([self.delegate respondsToSelector:@selector(objectMapper:willMapFromObject:toObject:atKeyPath:usingMapping:)]) {
         [self.delegate objectMapper:self willMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
     }
@@ -210,8 +185,7 @@
     NSAssert(self.sourceObject != nil, @"Cannot perform object mapping without a source object to map from");
     NSAssert(self.mappingProvider != nil, @"Cannot perform object mapping without an object mapping provider");
     
-    RKLOG_MAPPING(0, @"Self.object is %@", self.object);
-    // TODO: Log if there is a target object...
+    RKLOG_MAPPING(RKLogLevelDebug, @"Self.object is %@. Target object is %@", self.sourceObject, self.targetObject);
     
     if ([self.delegate respondsToSelector:@selector(objectMapperWillBeginMapping:)]) {
         [self.delegate objectMapperWillBeginMapping:self];
@@ -219,12 +193,12 @@
     
     // Perform the mapping
     NSMutableDictionary* results = [NSMutableDictionary dictionary];
-    NSDictionary* keyPathsAndObjectMappings = [self.mappingProvider keyPathsAndObjectMappings];
+    NSDictionary* keyPathsAndObjectMappings = [self.mappingProvider objectMappingsByKeyPath];
     for (NSString* keyPath in keyPathsAndObjectMappings) {
         id mappingResult;
         id mappableValue;
         
-        // TODO: Log that we will attempt mapping this keyPath
+        RKLOG_MAPPING(RKLogLevelInfo, @"Examining keyPath %@ for mappable content...", keyPath);
         
         if ([keyPath isEqualToString:@""]) {
             mappableValue = self.sourceObject;
@@ -234,7 +208,7 @@
         
         // Not found...
         if (mappableValue == nil || mappableValue == [NSNull null] || [self isNullCollection:mappableValue]) {
-            NSLog(@"Not mappable, skipping... %@", mappableValue);
+            RKLOG_MAPPING(RKLogLevelInfo, @"Found unmappable value at keyPath: %@", keyPath);
             
             if ([self.delegate respondsToSelector:@selector(objectMapper:didNotFindMappableObjectAtKeyPath:)]) {
                 [self.delegate objectMapper:self didNotFindMappableObjectAtKeyPath:keyPath];
@@ -248,6 +222,7 @@
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:objectMapping];
         }
+        RKLOG_MAPPING(RKLogLevelInfo, @"Found mappable data at keyPath '%@': ", keyPath, mappableValue);
         if ([mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]]) {
             mappingResult = [self mapCollection:mappableValue atKeyPath:keyPath usingMapping:objectMapping];
         } else {

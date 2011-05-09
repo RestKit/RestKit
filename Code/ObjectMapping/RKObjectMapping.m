@@ -13,6 +13,7 @@
 
 @synthesize objectClass = _objectClass;
 @synthesize mappings = _mappings;
+@synthesize dateFormatStrings = _dateFormatStrings;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [RKObjectMapping new];
@@ -24,6 +25,7 @@
     self = [super init];
     if (self) {
         _mappings = [NSMutableArray new];
+        _dateFormatStrings = [NSMutableArray arrayWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
     }
     
     return self;
