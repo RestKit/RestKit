@@ -22,7 +22,8 @@ class RestKit::SpecServer < Sinatra::Base
   end
   
   get '/' do
-    "OK"
+    content_type 'application/json'
+    {'status' => 'ok'}.to_json
   end
   
   post '/photo' do

@@ -16,14 +16,19 @@
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
 /**
- * Sent when an object loader has completed successfully and loaded a collection of mapped objects
- */
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects;
-
-/**
  * Sent when an object loaded failed to load the collection due to an error
  */
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error;
+
+@optional
+/**
+ * Sent when an object loader has completed successfully and loaded a collection of mapped objects
+ * Implement one of the followng to specify the data type in which you would like to recieve the objects.
+ * These methods are optional, but one of these is required to load objects.
+ */
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects;
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObject:(NSObject*)object;
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjectDictionary:(NSDictionary*)dictionary;
 
 @optional
 /**
