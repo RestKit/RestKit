@@ -150,6 +150,12 @@ typedef enum RKRequestBackgroundPolicy {
  */
 - (id)initWithURL:(NSURL*)URL delegate:(id)delegate;
 
+
+/**
+ * Setup the NSURLRequest. The request must be prepared right before dispatching
+ */
+- (void)prepareURLRequest;
+
 /**
  * Send the request asynchronously. It will be added to the queue and
  * dispatched as soon as possible.
