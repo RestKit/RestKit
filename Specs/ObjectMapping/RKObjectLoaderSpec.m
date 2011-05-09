@@ -56,6 +56,7 @@
 // TODO: These specs need to be executed against the RKManagedObjectLoader and RKObjectLoader
 // until we can collapse the functionality somehow...
 @interface RKObjectLoaderSpec : NSObject <UISpec> {
+    
 }
 
 @end
@@ -67,6 +68,14 @@
     queue.suspended = NO;
     [RKRequestQueue setSharedQueue:queue];
     [queue release];
+}
+
+- (RKObjectMappingProvider*)providerForComplexUser {
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
+    [provider setMapping:userMapping forKeyPath:@"data.STUser"];
+    return provider;
 }
 
 // TODO: Should move into a mapping scenario
@@ -81,41 +90,13 @@
     [objectLoader.URLRequest addValue:authString forHTTPHeaderField:@"Authorization"];
     objectLoader.method = RKRequestMethodGET;
     objectLoader.targetObject = user;
-//    objectLoader.keyPath = @"data.STUser";
-//    objectLoader.objectClass = [RKSpecComplexUser class];
-    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
-    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
-    [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
-    [provider setMapping:userMapping forKeyPath:@""];
-    [objectManager setMappingProvider:provider];
-    
-    
-    [objectLoader sendAsynchronously];
-    [responseLoader waitForResponse];
-    
-    [expectThat(user.firstname) should:be(@"Diego")];
-}
 
-- (void)itShouldLoadAComplexUserObjectWithTargetObjectWithASlightlyDifferentKeySetup {
-    RKSpecComplexUser* user = [RKSpecComplexUser object];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
-    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
-    NSString *authString = [NSString stringWithFormat:@"TRUEREST username=%@&password=%@&apikey=123456&class=iphone", @"username", @"password"];
-    [objectLoader.URLRequest addValue:authString forHTTPHeaderField:@"Authorization"];
-    objectLoader.method = RKRequestMethodGET;
-    objectLoader.targetObject = user;
-//    objectLoader.keyPath = @"data";
-    //    objectLoader.objectClass = [RKSpecComplexUser class];
-    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
-    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
-    [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
-    [provider setMapping:userMapping forKeyPath:@"STUser"];
-    [objectManager setMappingProvider:provider];
-    
+    [objectManager setMappingProvider:[self providerForComplexUser]];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
+    
+    NSLog(@"Response: %@", responseLoader.objects);
     
     [expectThat(user.firstname) should:be(@"Diego")];
 }
@@ -125,13 +106,8 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
-//    objectLoader.keyPath = @"data";
     
-    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
-    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
-    [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
-    [provider setMapping:userMapping forKeyPath:@"data.STUser"];
-    [objectManager setMappingProvider:provider];
+    [objectManager setMappingProvider:[self providerForComplexUser]];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
@@ -143,43 +119,11 @@
 
 - (void)itShouldLoadAComplexUserObjectUsingRegisteredKeyPath {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
-    [objectManager registerClass:[RKSpecComplexUser class] forElementNamed:@"data.STUser"];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
     
-    [objectLoader sendAsynchronously];
-    [responseLoader waitForResponse];
-    [expectThat([responseLoader.objects count]) should:be(1)];
-    RKSpecComplexUser* user = [responseLoader.objects lastObject];
-    
-    [expectThat(user.firstname) should:be(@"Diego")];
-}
-
-- (void)itShouldNotLoadAComplexUserObjectUsingRegisteredKeyPathAndExplicitObjectClass {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
-    [objectManager registerClass:[RKSpecComplexUser class] forElementNamed:@"data.STUser"];
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
-    objectLoader.method = RKRequestMethodGET;
-//    objectLoader.objectClass = [RKSpecComplexUser class];
-    
-    [objectLoader sendAsynchronously];
-    [responseLoader waitForResponse];
-    [expectThat([responseLoader.objects count]) should:be(1)];
-    RKSpecComplexUser* user = [responseLoader.objects lastObject];
-    
-    [expectThat(user.firstname) should:be(nil)];
-}
-
-- (void)itShouldLoadAComplexUserObjectUsingRegisteredKeyPathAndExplicitObjectClassAndKeyPath {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
-    [objectManager registerClass:[RKSpecComplexUser class] forElementNamed:@"data.STUser"];
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
-    objectLoader.method = RKRequestMethodGET;
-//    objectLoader.keyPath = @"data.STUser";
-//    objectLoader.objectClass = [RKSpecComplexUser class];
+    [objectManager setMappingProvider:[self providerForComplexUser]];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
@@ -193,6 +137,7 @@
 
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSend {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [RKSpecComplexUser object];
     id mockObject = [OCMockObject partialMockForObject:user];
 
@@ -208,6 +153,7 @@
 
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSendAsynchronously {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [RKSpecComplexUser object];
     id mockObject = [OCMockObject partialMockForObject:user];
     
@@ -223,6 +169,7 @@
 
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSendSynchronously {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [RKSpecComplexUser object];
     id mockObject = [OCMockObject partialMockForObject:user];
     
@@ -305,13 +252,22 @@
 
 @implementation RKUserRailsJSONMappingSpec
 
+- (RKObjectMappingProvider*)mappingProvider {
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKAnotherUser class]];
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"first_name" toKeyPath:@"firstName"]];
+    [provider setMapping:mapping forKeyPath:@"user"];
+    return provider;
+}
+
 - (void)itShouldMapWhenGivenARegisteredClassMapping {
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecStubNetworkAvailability(YES);
     RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
     [router setModelName:@"user" forClass:[RKAnotherUser class]];
     
-    [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
+    [objectManager setMappingProvider:[self mappingProvider]];
+
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     [objectManager loadObjectsAtResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
     [responseLoader waitForResponse];
@@ -319,54 +275,5 @@
     [expectThat(user.firstName) should:be(@"Test")];
 }
 
-- (void)itShouldMapToAnEmptyObjectAndLogAWarningWhenExplicitlyGivenAnObjectClassAndThePayloadIsNotMappable {
-    RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-    
-    [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-//    loader.objectClass = [RKAnotherUser class];
-    [loader send];
-    [responseLoader waitForResponse];
-    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-    [expectThat(user.firstName) should:be(nil)];
-    // TODO: Can't test the log message right now...
-}
-
-- (void)itShouldMapWhenGivenAKeyPathAndAnObjectClassAndTheClassIsRegistered {
-    RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-    
-    [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-//    loader.keyPath = @"user";
-//    loader.objectClass = [RKAnotherUser class];
-    [loader send];
-    [responseLoader waitForResponse];
-    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-    [expectThat(user.firstName) should:be(@"Test")];
-}
-
-- (void)itShouldMapWhenGivenAKeyPathAndAnObjectClassAndTheClassIsNotRegistered {
-    RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-    
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-//    loader.keyPath = @"user";
-//    loader.objectClass = [RKAnotherUser class];
-    [loader send];
-    [responseLoader waitForResponse];
-    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-    [expectThat(user.firstName) should:be(@"Test")];
-}
 
 @end
