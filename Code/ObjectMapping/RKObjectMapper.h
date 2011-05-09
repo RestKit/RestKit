@@ -13,8 +13,6 @@
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
 
-#define RKFAILMAPPING() NSAssert(nil != nil, @"Failed mapping operation!!!")
-
 /*!
  Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
  for an external object mapping operation.
@@ -33,16 +31,13 @@ typedef enum RKObjectMapperErrors {
 
 - (void)objectMapperWillBeginMapping:(RKObjectMapper*)objectMapper;
 - (void)objectMapperDidFinishMapping:(RKObjectMapper*)objectMapper;
-
 - (void)objectMapper:(RKObjectMapper*)objectMapper didAddError:(NSError*)error;
-- (void)objectMapper:(RKObjectMapper*)objectMapper willAttemptMappingForKeyPath:(NSString*)keyPath;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didNotFindMappingForKeyPath:(NSString*)keyPath;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didNotFindMappableObjectAtKeyPath:(NSString*)keyPath;
 
-// TODO: Should this be fromObject:toObject:
-- (void)objectMapper:(RKObjectMapper*)objectMapper willMapObject:(id)destinationObject fromObject:(id)sourceObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapObject:(id)destinationObject fromObject:(id)sourceObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingObject:(id)object withError:(NSError*)error fromObject:(id)sourceObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
 
 @end
 

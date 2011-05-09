@@ -28,8 +28,7 @@
 @interface RKObjectMappingOperation : NSObject {
     id _sourceObject;
     id _destinationObject;
-    RKObjectMapping* _objectMapping;
-    
+    RKObjectMapping* _objectMapping;    
     id<RKObjectMappingOperationDelegate> _delegate;
 }
 

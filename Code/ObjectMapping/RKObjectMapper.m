@@ -166,19 +166,13 @@
     }
     
     // TODO: It should map arrays of arrays...
+    // TODO: It should map array of objects back to dicitonaries...
     NSMutableArray* mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[mappableObjects count]];
     for (id mappableObject in mappableObjects) {
-        // TODO: Need to examine the type of elements and behave appropriately...
-        // Believe this just goes away...
-        if ([mappableObject isKindOfClass:[NSDictionary class]]) {
-            id destinationObject = [self createInstanceOfClassForMapping:mapping.objectClass];
-            NSObject* mappedObject = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
-            if (mappedObject) {
-                [mappedObjects addObject:mappedObject];
-            }
-        } else {
-            // TODO: Delegate method invocation here...
-            RKFAILMAPPING();
+        id destinationObject = [self createInstanceOfClassForMapping:mapping.objectClass];
+        NSObject* mappedObject = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
+        if (mappedObject) {
+            [mappedObjects addObject:mappedObject];
         }
     }
     
@@ -193,8 +187,8 @@
     NSAssert(mapping != nil, @"Cannot map without an mapping");
     
     RKLOG_MAPPING(0, @"Asked to map source object %@ with mapping %@", sourceObject, mapping);
-    if ([self.delegate respondsToSelector:@selector(objectMapper:willMapObject:fromObject:atKeyPath:usingMapping:)]) {
-        [self.delegate objectMapper:self willMapObject:destinationObject fromObject:mappableObject atKeyPath:keyPath usingMapping:mapping];
+    if ([self.delegate respondsToSelector:@selector(objectMapper:willMapFromObject:toObject:atKeyPath:usingMapping:)]) {
+        [self.delegate objectMapper:self willMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
     }
     
     NSError* error = nil;
@@ -203,12 +197,12 @@
     [operation release];
     
     if (success) {
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didMapObject:fromObject:atKeyPath:usingMapping:)]) {
-            [self.delegate objectMapper:self didMapObject:destinationObject fromObject:mappableObject atKeyPath:keyPath usingMapping:mapping];
+        if ([self.delegate respondsToSelector:@selector(objectMapper:didMapFromObject:toObject:atKeyPath:usingMapping:)]) {
+            [self.delegate objectMapper:self didMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
         }
     } else {
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didFailMappingObject:withError:fromObject:atKeyPath:usingMapping:)]) {
-            [self.delegate objectMapper:self didFailMappingObject:destinationObject withError:error fromObject:mappableObject atKeyPath:keyPath usingMapping:mapping];
+        if ([self.delegate respondsToSelector:@selector(objectMapper:didFailMappingFromObject:toObject:withError:atKeyPath:usingMapping:)]) {
+            [self.delegate objectMapper:self didFailMappingFromObject:mappableObject toObject:destinationObject withError:error atKeyPath:keyPath usingMapping:mapping];
         }
         [self addError:error];
     }
@@ -235,10 +229,7 @@
         id mappingResult;
         id mappableValue;
         
-        if ([self.delegate respondsToSelector:@selector(objectMapper:willAttemptMappingForKeyPath:)]) {
-            [self.delegate objectMapper:self willAttemptMappingForKeyPath:keyPath];
-        }
-        // TODO: LOG this event
+        // TODO: Log that we will attempt mapping this keyPath
         
         if ([keyPath isEqualToString:@""]) {
             mappableValue = self.sourceObject;
@@ -250,8 +241,8 @@
         if (mappableValue == nil || mappableValue == [NSNull null] || [self isNullCollection:mappableValue]) {
             NSLog(@"Not mappable, skipping... %@", mappableValue);
             
-            if ([self.delegate respondsToSelector:@selector(objectMapper:didNotFindMappingForKeyPath:)]) {
-                [self.delegate objectMapper:self didNotFindMappingForKeyPath:keyPath];
+            if ([self.delegate respondsToSelector:@selector(objectMapper:didNotFindMappableObjectAtKeyPath:)]) {
+                [self.delegate objectMapper:self didNotFindMappableObjectAtKeyPath:keyPath];
             }
             
             continue;
@@ -259,14 +250,12 @@
         
         // Found something to map
         RKObjectMapping* objectMapping = [keyPathsAndObjectMappings objectForKey:keyPath];
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMapping:forKeyPath:)]) {
-            [self.delegate objectMapper:self didFindMapping:objectMapping forKeyPath:keyPath];
+        if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
+            [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:objectMapping];
         }
         if ([mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]]) {
-            // mapCollection:atKeyPath:usingMapping:
             mappingResult = [self mapCollection:mappableValue atKeyPath:keyPath usingMapping:objectMapping];
         } else {
-            // mapObject:atKeyPath:usingMapping:
             mappingResult = [self mapObject:mappableValue atKeyPath:keyPath usingMapping:objectMapping];
         }
         
