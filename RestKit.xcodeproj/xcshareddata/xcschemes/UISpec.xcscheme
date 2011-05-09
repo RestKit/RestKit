@@ -71,7 +71,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapACollectionOfSimpleObjectDictionaries"
+            value = "itShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

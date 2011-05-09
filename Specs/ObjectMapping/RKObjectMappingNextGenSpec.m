@@ -138,18 +138,22 @@
 @implementation RKObjectMappingNextGenSpec
 
 - (void)beforeAll {
-    LoggerSetViewerHost(NULL, (CFStringRef) @"localhost", 50000);
-    LoggerStart(LoggerGetDefaultLogger());
+//    LoggerSetViewerHost(NULL, (CFStringRef) @"localhost", 50000);    
     LoggerSetOptions(NULL,						// configure the default logger
 //                     kLoggerOption_LogToConsole | 
                      kLoggerOption_BufferLogsUntilConnection |
                      kLoggerOption_UseSSL |
                      kLoggerOption_BrowseBonjour |
                      kLoggerOption_BrowseOnlyLocalDomain);
+    LoggerStart(LoggerGetDefaultLogger());
+    LogMessage(@"Object Mapping", 10, @"Starting object mapping...");
+    RKLOG_MAPPING(1, @"Testing the macros...");
+    LoggerFlush(NULL, NO);
 }
 
 - (void)afterAll {
-    LoggerFlush(NULL, YES);
+    // TODO: Maybe a 5 second wait?
+    LoggerFlush(NULL, NO);
 }
 
 #pragma mark - RKObjectKeyPathMapping Specs
@@ -300,7 +304,7 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     [provider setMapping:mapping forKeyPath:@""];
     id mockProvider = [OCMockObject partialMockForObject:provider];
-    [[mockProvider expect] keyPathsAndObjectMappings];
+    [[mockProvider expect] objectMappingsByKeyPath];
         
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:mockProvider];
@@ -537,17 +541,6 @@
     [mockDelegate verify];
 }
 
-#pragma mark - RKObjectManager specs
-
-// TODO: Map with registered object types
-- (void)itShouldImplementKeyPathToObjectMappingRegistrationServices {
-    // Here we want it to find the registered mapping for a class and use that to process the mapping
-}
-
-- (void)itShouldSetSelfAsTheObjectMapperDelegateForObjectLoadersCreatedViaTheManager {
-    
-}
-
 #pragma mark - RKObjectMappingOperationSpecs
 
 - (void)itShouldBeAbleToMapADictionaryToAUser {
@@ -606,10 +599,7 @@
 }
 
 - (void)itShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent {
-    // TODO: Pending, this spec is crashing at [mockDelegate verify];
-    return;
-    // TODO: WTF?
-    id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
     [mapping addAttributeMapping:idMapping];
@@ -620,14 +610,9 @@
     RKExampleUser* user = [RKExampleUser user];
     
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
-    [[mockDelegate expect] objectMappingOperation:operation didFailWithError:[OCMArg isNotNil]];
-    [mockDelegate verify];
-    return;
-//    [[mockDelegate expect] objectMappingOperation:operation didNotFindMappingForKeyPath:@"balls"];
-//    [mockDelegate verify];
     operation.delegate = mockDelegate;
-    [operation performMapping:nil];
-    RKLOG_MAPPING(0, @"The delegate is.... %@", mockDelegate);
+    BOOL success = [operation performMapping:nil];
+    [expectThat(success) should:be(NO)];
     [mockDelegate verify];
 }
 
@@ -962,7 +947,6 @@
     
     RKObjectMapper* mapper = [RKObjectMapper new];
     id userInfo = RKSpecParseFixtureJSON(@"user.json");
-//    RKExampleUser* user = [RKExampleUser user];
     [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     [mapper release];
 }
@@ -1059,6 +1043,17 @@
 // TODO: This probably lives outside of the mapper
 
 - (void)itShouldParseErrorsOutOfThePayload {
+    
+}
+
+#pragma mark - RKObjectManager specs
+
+// TODO: Map with registered object types
+- (void)itShouldImplementKeyPathToObjectMappingRegistrationServices {
+    // Here we want it to find the registered mapping for a class and use that to process the mapping
+}
+
+- (void)itShouldSetSelfAsTheObjectMapperDelegateForObjectLoadersCreatedViaTheManager {
     
 }
 

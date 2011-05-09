@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "RKObjectMappable.h"
 #import "RKObjectPropertyInspector.h"
-#import "../Support/RKParser.h"
 
 /**
  * Define the object mapping formats

@@ -54,7 +54,7 @@
 }
 
 - (NSDate*)parseDateFromString:(NSString*)string {
-    RKLOG_MAPPING(RKLogLevelDebug, @"Transforming string value '%@' to NSDate...");
+    RKLOG_MAPPING(RKLogLevelDebug, @"Transforming string value '%@' to NSDate...", string);
     
 	NSDate* date = nil;
 	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
@@ -72,7 +72,7 @@
 }
 
 - (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType {
-    RKLOG_MAPPING(RKLogLevelInfo, @"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", NSStringFromClass([value class]), NSStringFromClass(destinationType));
+    RKLOG_MAPPING(RKLogLevelDebug, @"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];
     
     if ([sourceType isSubclassOfClass:[NSString class]]) {
