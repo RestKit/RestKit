@@ -8,14 +8,7 @@
 
 #import "RKObjectMapper.h"
 #import "Errors.h"
-
-@interface RKObjectMapper (Private)
-
-- (id)mapObject:(id)mappableObject atKeyPath:keyPath usingMapping:(RKObjectMapping*)mapping;
-- (NSArray*)mapCollection:(NSArray*)mappableObjects atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)mapping;
-- (id)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:keyPath usingMapping:(RKObjectMapping*)mapping;
-
-@end
+#import "RKObjectMapper_Private.h"
 
 // TODO: Move these into the object mapping operation class
 //@implementation RKObjectMapperTracingDelegate
@@ -142,7 +135,10 @@
     }
     
     if (objectMapping && destinationObject) {
-        return [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:objectMapping];
+        BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:objectMapping];
+        if (success) {
+            return destinationObject;
+        }
     } else {
         // Attempted to map an object but couldn't find a mapping for the keyPath
         [self addErrorForUnmappableKeyPath:keyPath];
@@ -171,9 +167,9 @@
     NSMutableArray* mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[mappableObjects count]];
     for (id mappableObject in mappableObjects) {
         id destinationObject = [self createInstanceOfClassForMapping:mapping.objectClass];
-        NSObject* mappedObject = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
-        if (mappedObject) {
-            [mappedObjects addObject:mappedObject];
+        BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
+        if (success) {
+            [mappedObjects addObject:destinationObject];
         }
     }
     
@@ -182,7 +178,7 @@
 
 // The workhorse of this entire process. Emits object loading operations
 // TODO: This should probably just return a BOOL?
-- (id)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:keyPath usingMapping:(RKObjectMapping*)mapping {
+- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:keyPath usingMapping:(RKObjectMapping*)mapping {
     NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");    
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
     NSAssert(mapping != nil, @"Cannot map without an mapping");
@@ -208,7 +204,7 @@
         [self addError:error];
     }
     
-    return destinationObject;
+    return success;
 }
 
 // Primary entry point for the mapper. 
