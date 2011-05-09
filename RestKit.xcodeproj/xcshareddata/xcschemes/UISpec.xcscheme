@@ -71,7 +71,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldBeAbleToMapFromAUserObjectToADictionary"
+            value = "itShouldMapACollectionOfSimpleObjectDictionaries"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

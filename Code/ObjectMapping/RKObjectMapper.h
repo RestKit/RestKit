@@ -46,40 +46,22 @@ typedef enum RKObjectMapperErrors {
 
 @end
 
-/*!
- An object mapper delegate for tracing the object mapper operations
- */
-@interface RKObjectMapperTracingDelegate : NSObject <RKObjectMapperDelegate, RKObjectMappingOperationDelegate> {
-}
-@end
-
 @interface RKObjectMapper : NSObject {
-    id _object;
-//    NSString* _keyPath;
+    id _sourceObject;
     id _targetObject;
     RKObjectMappingProvider* _mappingProvider;
     id<RKObjectMapperDelegate> _delegate;
     NSMutableArray* _errors;
-    RKObjectMapperTracingDelegate* _tracer;
-    // TODO: i think this goes away. jbe.
-    BOOL _tracingEnabled;
 }
 
-@property (nonatomic, readonly) id object;
-//@property (nonatomic, readonly) NSString* keyPath;
-@property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
-
-/*!
- When YES, the mapper will log tracing information about the mapping operations performed
- */
-@property (nonatomic, assign) BOOL tracingEnabled;
+@property (nonatomic, readonly) id sourceObject;
 @property (nonatomic, assign) id targetObject;
+@property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
 @property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
-
 @property (nonatomic, readonly) NSArray* errors;
 
-+ (id)mapperForObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(RKObjectMappingProvider*)mappingProvider;
-- (id)initWithObject:(id)object atKeyPath:(NSString*)keyPath mappingProvider:(RKObjectMappingProvider*)mappingProvider;
++ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider;
+- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider;
 
 // Primary entry point for the mapper. Examines the type of object and processes it appropriately...
 - (RKObjectMappingResult*)performMapping;
