@@ -252,13 +252,22 @@
 
 @implementation RKUserRailsJSONMappingSpec
 
+- (RKObjectMappingProvider*)mappingProvider {
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKAnotherUser class]];
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"first_name" toKeyPath:@"firstName"]];
+    [provider setMapping:mapping forKeyPath:@"user"];
+    return provider;
+}
+
 - (void)itShouldMapWhenGivenARegisteredClassMapping {
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecStubNetworkAvailability(YES);
     RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
     [router setModelName:@"user" forClass:[RKAnotherUser class]];
     
-    [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
+    [objectManager setMappingProvider:[self mappingProvider]];
+
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     [objectManager loadObjectsAtResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
     [responseLoader waitForResponse];
@@ -266,54 +275,5 @@
     [expectThat(user.firstName) should:be(@"Test")];
 }
 
-- (void)itShouldMapToAnEmptyObjectAndLogAWarningWhenExplicitlyGivenAnObjectClassAndThePayloadIsNotMappable {
-    RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-    
-    [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-//    loader.objectClass = [RKAnotherUser class];
-    [loader send];
-    [responseLoader waitForResponse];
-    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-    [expectThat(user.firstName) should:be(nil)];
-    // TODO: Can't test the log message right now...
-}
-
-- (void)itShouldMapWhenGivenAKeyPathAndAnObjectClassAndTheClassIsRegistered {
-    RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-    
-    [objectManager registerClass:[RKAnotherUser class] forElementNamed:@"user"];
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-//    loader.keyPath = @"user";
-//    loader.objectClass = [RKAnotherUser class];
-    [loader send];
-    [responseLoader waitForResponse];
-    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-    [expectThat(user.firstName) should:be(@"Test")];
-}
-
-- (void)itShouldMapWhenGivenAKeyPathAndAnObjectClassAndTheClassIsNotRegistered {
-    RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-    
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-//    loader.keyPath = @"user";
-//    loader.objectClass = [RKAnotherUser class];
-    [loader send];
-    [responseLoader waitForResponse];
-    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-    [expectThat(user.firstName) should:be(@"Test")];
-}
 
 @end
