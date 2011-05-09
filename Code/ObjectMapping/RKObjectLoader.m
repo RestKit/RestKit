@@ -144,16 +144,10 @@
 // NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
-	/**
-	 * If this loader is bound to a particular object, then we map
-	 * the results back into the instance. This is used for loading and updating
-	 * individual object instances via getObject and friends.
-	 */
     
     id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
+    // TODO: Handle case where there is no parser for this MIME type
     id parsedData = [parser objectFromString:[response bodyAsString]];
-    
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
@@ -162,8 +156,7 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData
-                                             mappingProvider:mappingProvider];
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.targetObject = self.targetObject;
     RKObjectMappingResult* result = [mapper performMapping];
 

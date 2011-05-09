@@ -55,7 +55,7 @@
 
 - (id)asObject {
     // TODO: Warn that only last object was returned...
-    return [[self asCollection] lastObject];
+    return [[self asCollection] objectAtIndex:0];
 }
 
 @end

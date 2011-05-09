@@ -116,8 +116,6 @@
 - (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue {
     NSAssert(sourceValue, @"Expected sourceValue not to be nil");
     NSAssert(destinationValue, @"Expected destinationValue not to be nil");
-    // TODO: Disabled, comparison of mutable to immutable arrays fails the assertion
-    //NSAssert2([destinationValue isKindOfClass:[sourceValue class]], @"Expected sourceValue and destinationValue to be of the same type. %@ != %@", NSStringFromClass([sourceValue class]), NSStringFromClass([destinationValue class]));
     
     SEL comparisonSelector;
     if ([sourceValue isKindOfClass:[NSString class]]) {
@@ -275,9 +273,8 @@
     if (mappedAttributes || mappedRelationships) {
         return YES;
     } else {
-        // TODO: Improve error message...
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  @"Unable to identify any mappable content", NSLocalizedDescriptionKey,
+                                  @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
                                   nil];
         int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
         NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];        
