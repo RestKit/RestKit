@@ -14,6 +14,9 @@
 #import <OCMock/OCMock.h>
 #import <OCMock/NSNotificationCenter+OCMAdditions.h>
 
+#define HC_SHORTHAND
+#import <OCHamcrestIOS/OCHamcrestIOS.h>
+
 #import "RestKit.h"
 #import "RKSpecResponseLoader.h"
 

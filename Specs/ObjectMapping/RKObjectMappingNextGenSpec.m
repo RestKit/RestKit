@@ -174,8 +174,7 @@
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
     [mapping addAttributeMapping:idMapping];
-    [expectThat([mapping mappingForKeyPath:@"id"] == idMapping) should:be(YES)];
-    // [expectThat([mapping mappingForKeyPath:@"id"]) should:be(idMapping)]; // TODO: Trigger UIExpectation be() matcher bug...
+    assertThat([mapping mappingForKeyPath:@"id"], is(sameInstance(idMapping)));
 }
 
 - (void)itShouldAddMappingsToAttributeMappings {
@@ -275,9 +274,7 @@
     
     [mockProvider verify];
     [expectThat(result) shouldNot:be(nil)];
-    [expectThat([result asObject] == user) should:be(YES)];    
-//    [expectThat(@"1234") should:be(user)];
-//    [expectThat(userReference) should:be(user)]; // TODO: This kind of invocation of the be() matcher causes UISpec to fuck up memory management
+    [expectThat([result asObject] == user) should:be(YES)];
     [expectThat(user.name) should:be(@"Blake Watters")];
 }
 
@@ -631,8 +628,6 @@
     [operation release];
 }
 
-// TODO: RKObjectMappingOperationDelegate specs
-
 #pragma mark - Attribute Mapping
 
 - (void)itShouldMapAStringToADateAttribute {
@@ -650,14 +645,6 @@
     [dateFormatter setDateFormat:@"MM/dd/yyyy"];    
     [expectThat([dateFormatter stringFromDate:user.birthDate]) should:be(@"11/27/1982")];
 }
-
-- (void)itShouldMapADateToAString {
-    
-}
-// TODO: It should assume date strings with timestamps are in UTC time
-// TODO: It should serialize dates by consulting the datePropertyAsString method (if available)
-// TODO: It should serialize dates
-// TODO: It should let you specify a format string for the date (maybe?)
 
 - (void)itShouldMapStringToURL {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
@@ -745,7 +732,7 @@
     [operation performMapping:&error];
     
     NSArray* interests = [NSArray arrayWithObjects:@"Hacking", @"Running", nil];
-    [expectThat(user.interests) should:be(interests)];
+    assertThat(user.interests, is(equalTo(interests)));
 }
 
 - (void)itShouldMapANestedDictionaryToAnAttribute {
@@ -764,7 +751,7 @@
                              @"state", @"North Carolina",
                              @"id", [NSNumber numberWithInt:1234],
                              @"country", @"USA", nil];
-    [expectThat(user.addressDictionary) should:be(address)];
+    assertThat(user.addressDictionary, is(equalTo(address)));
 }
 
 - (void)itShouldNotSetAPropertyWhenTheValueIsTheSame {
@@ -855,9 +842,6 @@
     [expectThat(user.name) should:be(@"Blake Watters")];
 }
 
-// TODO: It should handle valueForUndefinedKey
-// We can probably just copy the time zone to the mapper instance?
-
 #pragma mark - Relationship Mapping
 
 - (void)itShouldMapANestedObject {
@@ -899,7 +883,7 @@
     [expectThat(user.friends) shouldNot:be(nil)];
     [expectThat([user.friends count]) should:be(2)];
     NSArray* names = [NSArray arrayWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
-    [expectThat([user.friends valueForKey:@"name"]) should:be(names)];
+    assertThat([user.friends valueForKey:@"name"], is(equalTo(names)));
 }
 
 - (void)itShouldMapANestedArrayIntoASet {
@@ -921,7 +905,7 @@
     [expectThat([user.friendsSet isKindOfClass:[NSSet class]]) should:be(YES)];
     [expectThat([user.friendsSet count]) should:be(2)];
     NSSet* names = [NSSet setWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
-    [expectThat([user.friendsSet valueForKey:@"name"]) should:be(names)];
+    assertThat([user.friendsSet valueForKey:@"name"], is(equalTo(names)));
 }
 
 - (void)itShouldNotSetThePropertyWhenTheNestedObjectIsIdentical {
@@ -1055,5 +1039,14 @@
 }
 
 #pragma mark - Core Data Integration
+
+// TODO: It should assume date strings with timestamps are in UTC time
+// TODO: It should serialize dates by consulting the datePropertyAsString method (if available)
+// TODO: It should serialize dates
+// TODO: It should let you specify a format string for the date (maybe?)
+
+// TODO: RKObjectMappingOperationDelegate specs
+// TODO: It should handle valueForUndefinedKey
+// We can probably just copy the time zone to the mapper instance?
 
 @end
