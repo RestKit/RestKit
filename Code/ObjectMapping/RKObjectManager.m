@@ -202,14 +202,24 @@ static RKObjectManager* sharedManager = nil;
 - (RKObjectLoader*)objectLoaderForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	// Get the serialization representation from the router
 	NSString* resourcePath = [self.router resourcePathForObject:object method:method];
-	NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
-
+    
+    NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
+//    RKObjectMapping* mapping = [self.mappingProvider mappingForSerializationOfObjectClass:[object class]];
+//    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
+//    NSError* error = nil;
+    //    NSObject<RKRequestSerializable>* params[serializer serializationForMimeType:self.serializationMIMEType error:&error];
+    
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
+    
+//    if (error) {
+//        [delegate objectLoader:loader didFailWithError:error];
+//        // TODO: what do we return here so the request doesn't get sent?
+//        return nil;
+//    }
 
 	loader.method = method;
 	loader.params = params;
 	loader.targetObject = object;
-//	loader.objectClass = [object class];
 
 	return loader;
 }

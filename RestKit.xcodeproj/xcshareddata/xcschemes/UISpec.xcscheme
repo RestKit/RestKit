@@ -61,7 +61,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingNextGenSpec"
+            value = "RKObjectSerializerSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -72,7 +72,7 @@
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
             value = "itShouldMapACollectionOfSimpleObjectDictionaries"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"

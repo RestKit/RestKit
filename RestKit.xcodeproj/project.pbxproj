@@ -221,6 +221,7 @@
 		3F4EAF58134205CF00F944E4 /* RKXMLParserSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F4EAF57134205CF00F944E4 /* RKXMLParserSpec.m */; };
 		3F4EAF591342069200F944E4 /* RKXMLParser+libXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 259DF7851340294400233DF4 /* RKXMLParser+libXML.m */; };
 		3F4EAF5B1342071B00F944E4 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F4EAF5A1342071B00F944E4 /* libxml2.dylib */; };
+		3F5356ED13785DA300132100 /* RKObjectSerializerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F5356EC13785DA300132100 /* RKObjectSerializerSpec.m */; };
 		3F6C3A2E10FE749C008F47C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A2D10FE749C008F47C5 /* Foundation.framework */; };
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
 		3F71ED3413748536006281CA /* RKObjectMappingProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F71ED3213748536006281CA /* RKObjectMappingProvider.h */; };
@@ -574,6 +575,7 @@
 		3F19129712DF6B4800C077AD /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		3F4EAF57134205CF00F944E4 /* RKXMLParserSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKXMLParserSpec.m; sourceTree = "<group>"; };
 		3F4EAF5A1342071B00F944E4 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		3F5356EC13785DA300132100 /* RKObjectSerializerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectSerializerSpec.m; sourceTree = "<group>"; };
 		3F6C39A510FE5C95008F47C5 /* UISpec.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UISpec.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = /Users/blake/Projects/two_toasters/InMotion/Libraries/UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<absolute>"; };
 		3F6C3A2D10FE749C008F47C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1152,6 +1154,7 @@
 				25D1994D136BE7E00090B617 /* RKObjectMappingNextGenSpec.m */,
 				25952DEE136C8F9C00D04F93 /* RKObjectMappingOperationSpec.h */,
 				25952DEF136C8F9C00D04F93 /* RKObjectMappingOperationSpec.m */,
+				3F5356EC13785DA300132100 /* RKObjectSerializerSpec.m */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
@@ -1882,6 +1885,7 @@
 				25D1994E136BE7E00090B617 /* RKObjectMappingNextGenSpec.m in Sources */,
 				25952DF0136C8F9C00D04F93 /* RKObjectMappingOperationSpec.m in Sources */,
 				25952FDE1370959900D04F93 /* LoggerClient.m in Sources */,
+				3F5356ED13785DA300132100 /* RKObjectSerializerSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
