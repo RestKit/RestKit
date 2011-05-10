@@ -8,6 +8,10 @@
 
 #import "RKObjectAttributeMapping.h"
 
+RKObjectAttributeMapping* RKObjectAttributeMappingMake(NSString* from, NSString* to) {
+    return [RKObjectAttributeMapping mappingFromKeyPath:from toKeyPath:to];
+}
+
 @implementation RKObjectAttributeMapping
 
 @synthesize sourceKeyPath = _sourceKeyPath;

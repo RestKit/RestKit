@@ -16,19 +16,19 @@
 @synthesize user = _user;
 @synthesize tasks = _tasks;
 
-+ (NSDictionary*)elementToPropertyMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"id", @"projectID",
-            @"name", @"name",
-            @"description", @"description", 
-            nil];
-}
-
-+ (NSDictionary*)elementToRelationshipMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"user", @"user",
-            @"tasks", @"tasks",
-            nil];
-}
+//+ (NSDictionary*)elementToPropertyMappings {
+//    return [NSDictionary dictionaryWithKeysAndObjects:
+//            @"id", @"projectID",
+//            @"name", @"name",
+//            @"description", @"description", 
+//            nil];
+//}
+//
+//+ (NSDictionary*)elementToRelationshipMappings {
+//    return [NSDictionary dictionaryWithKeysAndObjects:
+//            @"user", @"user",
+//            @"tasks", @"tasks",
+//            nil];
+//}
 
 @end

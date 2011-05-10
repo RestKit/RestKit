@@ -9,6 +9,7 @@
 #import "RKObjectMapping.h"
 #import "RKObjectAttributeMapping.h"
 
+@class RKObjectMapper;
 @class RKObjectMappingOperation;
 
 @protocol RKObjectMappingOperationDelegate  <NSObject>
@@ -30,6 +31,7 @@
     id _destinationObject;
     RKObjectMapping* _objectMapping;    
     id<RKObjectMappingOperationDelegate> _delegate;
+    RKObjectMapper* _objectMapper;
 }
 
 /*!
@@ -47,6 +49,8 @@
  The object mapping defining how values contained in the source object should be transformed to the destination object via key-value coding
  */
 @property (nonatomic, readonly) RKObjectMapping* objectMapping;
+
+@property (nonatomic, retain) RKObjectMapper* objectMapper;
 
 /*!
  The delegate to inform of 

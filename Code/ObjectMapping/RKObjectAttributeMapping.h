@@ -13,6 +13,10 @@
 //    RKObjectElementMappingTypeRelationship
 //} RKObjectElementMappingType;
 
+@class RKObjectAttributeMapping;
+
+RKObjectAttributeMapping* RKObjectAttributeMappingMake(NSString* from, NSString* to);
+
 // Defines the rules for mapping a particular element
 // TODO: This is probably a private class that is created via calls to the object mapping?
 @interface RKObjectAttributeMapping : NSObject {

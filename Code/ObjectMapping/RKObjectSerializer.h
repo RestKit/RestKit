@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RKObjectMapping.h"
-#import "RKRequestSerializable.h"
+#import "../Network/RKRequestSerializable.h"
 
 /*!
  Performs a serialization of an object and its relationships back into

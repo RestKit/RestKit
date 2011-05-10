@@ -184,6 +184,7 @@
     
     NSError* error = nil;
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject objectMapping:mapping];
+    operation.objectMapper = self;
     BOOL success = [operation performMapping:&error];
     [operation release];
     

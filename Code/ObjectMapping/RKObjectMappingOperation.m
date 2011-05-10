@@ -12,6 +12,7 @@
 #import "RKObjectPropertyInspector.h"
 #import "Logging.h"
 #import "RKObjectRelationshipMapping.h"
+#import "RKObjectMapper.h"
 
 @implementation RKObjectMappingOperation
 
@@ -19,6 +20,7 @@
 @synthesize destinationObject = _destinationObject;
 @synthesize objectMapping = _objectMapping;
 @synthesize delegate = _delegate;
+@synthesize objectMapper = _objectMapper;
 
 + (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withObjectMapping:(RKObjectMapping*)objectMapping {
     return [[[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:objectMapping] autorelease];
@@ -43,6 +45,7 @@
     [_sourceObject release];
     [_destinationObject release];
     [_objectMapping release];
+    [_objectMapper release];
     
     [super dealloc];
 }
@@ -242,7 +245,7 @@
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
             for (id nestedObject in value) {
-                id mappedObject = [mapping.objectMapping.objectClass new];
+                id mappedObject = [_objectMapper createInstanceOfClassForMapping:mapping.objectMapping mappable:nestedObject];
                 if ([self mapNestedObject:nestedObject toObject:mappedObject withMapping:mapping]) {
                     appliedMappings = YES;
                     [destinationObject addObject:mappedObject];
@@ -258,7 +261,7 @@
             // One to one relationship
             RKLOG_MAPPING(RKLogLevelInfo, @"Mapping one to one relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);            
             
-            destinationObject = [[mapping.objectMapping.objectClass new] autorelease];
+            destinationObject = [_objectMapper createInstanceOfClassForMapping:mapping.objectMapping mappable:value];
             if ([self mapNestedObject:value toObject:destinationObject withMapping:mapping]) {
                 appliedMappings = YES;
             }
