@@ -61,7 +61,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
+            value = "RKObjectSerializerSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -71,13 +71,17 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldHandleTheErrorCaseAppropriately"
-            isEnabled = "YES">
+<<<<<<< HEAD
+            value = "itShouldMapACollectionOfSimpleObjectDictionaries"
+=======
+            value = "itShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent"
+>>>>>>> e476c5d84050493c212523a99d8408bcff53c9b4
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"
             value = "NO"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSZombieEnabled"

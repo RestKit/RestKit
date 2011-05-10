@@ -31,6 +31,12 @@ class RestKit::SpecServer < Sinatra::Base
     "OK"
   end
   
+  get '/errors.json' do
+    status 401
+    content_type 'application/json'
+    send_file 'Specs/Server/../Fixtures/JSON/errors.json'
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

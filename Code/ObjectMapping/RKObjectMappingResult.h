@@ -21,5 +21,6 @@
 - (NSDictionary*)asDictionary;
 - (id)asObject;
 - (id)asCollection;
+- (NSError*)asError;
 
 @end
