@@ -12,7 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // RestKit managed models
 
-@interface RKManagedObject : NSManagedObject <RKObjectMappable> {
+@interface RKManagedObject : NSManagedObject {
 	
 }
 
@@ -92,12 +92,6 @@
  * Must be implemented by the subclass for the mapper to be able to uniquely identify objects.
  */
 + (NSString*)primaryKeyProperty;
-
-/**
- * The name of the primary key in the server-side data payload. This defaults to the key
- * in the element to property mappings corresponding to the primaryKeyProperty value.
- */
-+ (NSString*)primaryKeyElement;
 
 /**
  * Returns the instance of this class where the primary key value is value or nil when not found. This

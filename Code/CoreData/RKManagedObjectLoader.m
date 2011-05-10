@@ -10,6 +10,7 @@
 #import "RKURL.h"
 #import "RKManagedObject.h"
 #import "RKManagedObjectStore.h"
+#import "RKObjectMapper.h"
 
 @interface RKObjectLoader (Private)
 
@@ -22,11 +23,21 @@
 
 @implementation RKManagedObjectLoader
 
+- (id)init {
+    if ((self = [super init])) {
+        _managedKeyPathsAndObjectIDs = [NSMutableDictionary new];
+        _managedKeyPathsAndObjects = [NSMutableDictionary new];
+    }
+    return self;
+}
+
 - (void)dealloc {
     [_targetObject release];
 	_targetObject = nil;
 	[_targetObjectID release];
-	_targetObjectID = nil;    
+	_targetObjectID = nil;
+    [_managedKeyPathsAndObjectIDs release];
+    [_managedKeyPathsAndObjects release];
     
     [super dealloc];
 }
@@ -41,102 +52,107 @@
 }
 
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
-    NSMutableDictionary* newInfo = [[NSMutableDictionary alloc] initWithDictionary:dictionary];
-	NSArray* models = [dictionary objectForKey:@"objects"];
+    RKObjectMappingResult* result = [dictionary objectForKey:@"result"];
 	[dictionary release];
-	
-	// NOTE: The models dictionary may contain NSManagedObjectID's from persistent objects
-	// that were model mapped on a background thread. We look up the objects by ID and then
-	// notify the delegate that the operation has completed.
-	NSMutableArray* objects = [NSMutableArray arrayWithCapacity:[models count]];
-	for (id object in models) {
-		if ([object isKindOfClass:[NSManagedObjectID class]]) {
-			id obj = [self.objectStore objectWithID:(NSManagedObjectID*)object];
-			[objects addObject:obj];
-		} else {
-			[objects addObject:object];
-		}
-	}
     
-    [newInfo setObject:objects forKey:@"objects"];
-	
-	[super informDelegateOfObjectLoadWithInfoDictionary:newInfo];
+    
+    // Swap out any objects in the results with their managed object coutnerparts on this thread based on
+    // they keys and ids in _managedKeyPathsAndObjectIDs
+    
+    NSMutableDictionary* resultsDictionary = [[[result asDictionary] mutableCopy] autorelease];
+    for (NSString* keyPath in [_managedKeyPathsAndObjectIDs allKeys]) {
+        id objectIDorIDs = [_managedKeyPathsAndObjectIDs objectForKey:keyPath];
+        if ([objectIDorIDs isKindOfClass:[NSManagedObjectID class]]) {
+            NSManagedObject* object = [self.objectStore objectWithID:(NSManagedObjectID*)objectIDorIDs];
+            [resultsDictionary setValue:object forKey:keyPath];
+        } else if ([objectIDorIDs isKindOfClass:[NSArray class]]) {
+            NSMutableArray* array = [NSMutableArray array];
+            for (NSManagedObjectID* objectID in (NSArray*)objectIDorIDs) {
+                NSManagedObject* object = [self.objectStore objectWithID:objectID];
+                [array addObject:object];
+            }
+            [resultsDictionary setValue:array forKey:keyPath];
+        }
+            
+    }
+    
+    result = [RKObjectMappingResult mappingResultWithDictionary:resultsDictionary];
+    
+    if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjects:[result asCollection]];
+    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObject:)]) {
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asObject]];
+    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
+    }
+    
+	[self responseProcessingSuccessful:YES withError:nil];
+}
+
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
+    
+    Class managedObjectClass = NSClassFromString(@"NSManagedObject");
+    if (self.objectStore && managedObjectClass) {
+        if ([destinationObject isKindOfClass:managedObjectClass]) {
+            id objectIDorIDsForKeyPath = [_managedKeyPathsAndObjects objectForKey:keyPath];
+            if (nil == objectIDorIDsForKeyPath) {
+                [_managedKeyPathsAndObjects setValue:destinationObject forKey:keyPath];
+            } else if ([objectIDorIDsForKeyPath isKindOfClass:[NSManagedObject class]]) {
+                NSMutableArray* array = [NSMutableArray arrayWithObject:destinationObject];
+                [array addObject:destinationObject];
+                [_managedKeyPathsAndObjects setValue:array forKey:keyPath];
+            } else {
+                NSMutableArray* array = (NSMutableArray*)objectIDorIDsForKeyPath;
+                [array addObject:destinationObject];
+            }
+        }
+    }
+}
+
+- (void)getPermanantObjectIdsForManagedObjects {
+    for (NSString* keyPath in [_managedKeyPathsAndObjects allKeys]) {
+        id objectOrObjects = [_managedKeyPathsAndObjects objectForKey:keyPath];
+        if ([objectOrObjects isKindOfClass:[NSManagedObject class]]) {
+            NSManagedObjectID* objectID = [(NSManagedObject*)objectOrObjects objectID];
+            [_managedKeyPathsAndObjectIDs setValue:objectID forKey:keyPath];
+        } else if ([objectOrObjects isKindOfClass:[NSArray class]]) {
+            NSMutableArray* array = [NSMutableArray array];
+            for (NSManagedObject* object in (NSArray*)objectOrObjects) {
+                NSManagedObjectID* objectID = [(NSManagedObject*)object objectID];
+                [array addObject:objectID];
+            }
+            [_managedKeyPathsAndObjectIDs setValue:array forKey:keyPath];
+        }
+        [_managedKeyPathsAndObjects removeObjectForKey:keyPath];
+    }
 }
 
 - (void)processLoadModelsInBackground:(RKResponse *)response {
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
-	/**
-	 * If this loader is bound to a particular object, then we map
-	 * the results back into the instance. This is used for loading and updating
-	 * individual object instances via getObject and friends.
-	 */
-	NSArray* results = nil;
+    RKObjectMappingProvider* mappingProvider;
+    if (self.objectMapping) {
+        mappingProvider = [[RKObjectMappingProvider new] autorelease];
+        [mappingProvider setMapping:self.objectMapping forKeyPath:@""];
+    } else {
+        mappingProvider = self.objectManager.mappingProvider;
+    }
     
+    RKObjectMappingResult* result = nil;
+    if (_targetObjectID && self.targetObject) {
+        NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];
+        if (self.method == RKRequestMethodDELETE) {
+            [[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
+        }
+    } else {
+        result = [self mapResponse:response withMappingProvider:mappingProvider];
+    }
     
+    [self.objectStore save];
+    [self getPermanantObjectIdsForManagedObjects];
     
-	if (self.targetObject) {
-		if (_targetObjectID) {
-			NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];
-			if (self.method == RKRequestMethodDELETE) {
-				[[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
-			} else {
-//				[self.objectMapper mapObject:backgroundThreadModel fromString:[response bodyAsString] keyPath:self.keyPath];
-				results = [NSArray arrayWithObject:backgroundThreadModel];
-			}
-		} else {
-///			[self.objectMapper mapObject:self.targetObject fromString:[response bodyAsString] keyPath:self.keyPath];
-			results = [NSArray arrayWithObject:self.targetObject];
-		}
-	} else {
-		id result = nil;// [self.objectMapper mapFromString:[response bodyAsString] toClass:self.objectClass keyPath:self.keyPath];
-		if ([result isKindOfClass:[NSArray class]]) {
-			results = (NSArray*)result;
-		} else {
-			// Using arrayWithObjects: instead of arrayWithObject:
-			// so that in the event result is nil, then we get empty array instead of exception for trying to insert nil.
-			results = [NSArray arrayWithObjects:result, nil];
-		}
-		
-		if (self.objectStore && [self.objectStore managedObjectCache]) {
-			if ([self.URL isKindOfClass:[RKURL class]]) {
-				RKURL* rkURL = (RKURL*)self.URL;
-				
-				NSArray* fetchRequests = [[self.objectStore managedObjectCache] fetchRequestsForResourcePath:rkURL.resourcePath];
-				NSArray* cachedObjects = [RKManagedObject objectsWithFetchRequests:fetchRequests];
-				for (id object in cachedObjects) {
-					if ([object isKindOfClass:[RKManagedObject class]]) {
-						if (NO == [results containsObject:object]) {
-							[[self.objectStore managedObjectContext] deleteObject:object];
-						}
-					}
-				}
-			}
-		}
-	}
-    
-	// Before looking up NSManagedObjectIDs, need to save to ensure we do not have
-	// temporary IDs for new objects prior to handing the objectIDs across threads
-	NSError* error = [self.objectStore save];
-	if (nil != error) {
-		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", error, @"error", nil] retain];
-		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadErrorWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
-	} else {
-		// NOTE: Passing Core Data objects across threads is not safe.
-		// Iterate over each model and coerce Core Data objects into ID's to pass across the threads.
-		// The object ID's will be deserialized back into objects on the main thread before the delegate is called back
-		NSMutableArray* models = [NSMutableArray arrayWithCapacity:[results count]];
-		for (id object in results) {
-			if ([object isKindOfClass:[NSManagedObject class]]) {
-				[models addObject:[(NSManagedObject*)object objectID]];
-			} else {
-				[models addObject:object];
-			}
-		}
-        
-		NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", models, @"objects", nil] retain];
-		[self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
-	}
+    NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", result, @"result", nil] retain];
+    [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
     
 	[pool drain];
 }

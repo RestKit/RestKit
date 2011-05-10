@@ -143,7 +143,9 @@
     id parsedData = [parser objectFromString:[response bodyAsString]];
     
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+    mapper.objectManager = self.objectManager;
     mapper.targetObject = self.targetObject;
+    mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];
     return result;
 }

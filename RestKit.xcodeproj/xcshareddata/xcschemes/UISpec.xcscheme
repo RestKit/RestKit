@@ -61,7 +61,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
+            value = "RKObjectManagerSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -71,7 +71,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldHandleTheErrorCaseAppropriately"
+            value = "itShouldLoadAHuman"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

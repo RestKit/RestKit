@@ -102,20 +102,6 @@
 	return nil;
 }
 
-+ (NSString*)primaryKeyElement {
-	NSDictionary* mappings = [[self class] elementToPropertyMappings];
-	for (NSString* elementName in mappings) {
-		NSString* propertyName = [mappings valueForKey:elementName];
-		if ([propertyName isEqualToString:[self primaryKeyProperty]]) {
-			return elementName;
-		}
-	}
-
-	// Blow up if not found
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
 /**
  * TODO: Unwind assumptions about the primaryKey
  *
@@ -138,15 +124,6 @@
  	return [self objectWithPredicate:predicate];
 }
 
-+ (NSDictionary*)elementToPropertyMappings {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
-
-+ (NSDictionary*)elementToRelationshipMappings {
-	return [NSDictionary dictionary];
-}
-
 + (NSDictionary*)relationshipToPrimaryKeyPropertyMappings {
 	return [NSDictionary dictionary];
 }
@@ -159,14 +136,6 @@
 
 - (id)primaryKeyValue {
 	return [self valueForKey:[[self class] primaryKeyProperty]];
-}
-
-- (NSDictionary*)propertiesForSerialization {
-	return RKObjectMappableGetPropertiesByElement(self);
-}
-
-- (NSDictionary*)relationshipsForSerialization {
-	return RKObjectMappableGetRelationshipsByElement(self);
 }
 
 - (BOOL)isNew {

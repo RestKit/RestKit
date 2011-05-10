@@ -11,6 +11,8 @@
 // Handles object loads when Core Data is being utilized
 @interface RKManagedObjectLoader : RKObjectLoader {
     NSManagedObjectID* _targetObjectID;	
+    NSMutableDictionary* _managedKeyPathsAndObjects;
+    NSMutableDictionary* _managedKeyPathsAndObjectIDs;
 }
 
 @end

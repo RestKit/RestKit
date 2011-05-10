@@ -16,6 +16,7 @@
 @synthesize targetObject = _targetObject;
 @synthesize delegate =_delegate;
 @synthesize mappingProvider = _mappingProvider;
+@synthesize objectManager = _objectManager;
 @synthesize errors = _errors;
 
 + (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider {
@@ -34,15 +35,36 @@
 }
 
 - (void)dealloc {
+    _objectManager = nil; //
     [_sourceObject release];
     [_errors release];
     [super dealloc];
 }
 
-- (id)createInstanceOfClassForMapping:(Class)mappableClass {
+- (id)createInstanceOfClassForMapping:(RKObjectMapping*)mapping mappable:(id)mappableObject {
+    Class mappableClass = mapping.objectClass;
     // TODO: Believe we want this to consult the delegate? Or maybe the provider? objectForMappingWithClass:atKeyPath:
     if (mappableClass) {
-        return [[mappableClass new] autorelease];
+        Class nsManagedObjectClass = NSClassFromString(@"NSManagedObject");
+        if (nsManagedObjectClass && [mappableClass isSubclassOfClass:nsManagedObjectClass]) {
+            //primaryKeyProperty 
+            RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
+            id primaryKeyValue = nil;
+            NSString* primaryKeyProperty = [mappableClass performSelector:@selector(primaryKeyProperty)];
+            for (RKObjectAttributeMapping* attributeMapping in mapping.attributeMappings) {
+                if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyProperty]) {
+                    primaryKeyAttributeMapping = attributeMapping;
+                    break;
+                }
+            }
+            NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
+            if (keyPathForPrimaryKeyElement) {
+                primaryKeyValue = [mappableObject valueForKey:keyPathForPrimaryKeyElement];
+            }
+            return [self.objectManager.objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyValue:primaryKeyValue];
+        } else {
+            return [[mappableClass new] autorelease];
+        }
     }
     
     return nil;
@@ -105,7 +127,7 @@
             return nil;
         }
     } else {
-        destinationObject = [self createInstanceOfClassForMapping:objectMapping.objectClass];
+        destinationObject = [self createInstanceOfClassForMapping:objectMapping mappable:mappableObject];
     }
     
     if (objectMapping && destinationObject) {
@@ -139,7 +161,7 @@
     // TODO: It should map arrays of arrays...
     // TODO: It should map array of objects back to dictionaries...    
     for (id mappableObject in mappableObjects) {
-        id destinationObject = [self createInstanceOfClassForMapping:mapping.objectClass];
+        id destinationObject = [self createInstanceOfClassForMapping:mapping mappable:mappableObject];
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
         if (success) {
             [mappedObjects addObject:destinationObject];

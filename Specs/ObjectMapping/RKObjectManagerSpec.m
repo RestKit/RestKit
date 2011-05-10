@@ -58,10 +58,7 @@
     [provider setMapping:humanMapping forKeyPath:@"human"];
     [provider setMapping:humanMapping forKeyPath:@"humans"];
     
-    
     _objectManager.mappingProvider = provider;
-//	[_objectManager registerClass:[RKHuman class] forElementNamed:@"human"];
-//    [_objectManager registerClass:[RKHuman class] forElementNamed:@"humans"];
 	
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];
 }
@@ -73,6 +70,7 @@
 - (void)itShouldLoadAHuman {
 	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
+    [expectThat(_responseLoader.failureError) should:be(nil)];
 	RKHuman* blake = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
 	NSLog(@"Blake: %@ (name = %@)", blake, blake.name);
 	[expectThat(blake.name) should:be(@"Blake Watters")];
