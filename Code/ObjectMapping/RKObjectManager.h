@@ -32,6 +32,7 @@ typedef enum {
 	RKObjectManagerOnlineState _onlineState;
     NSMutableDictionary* _parsersForMIMETypes;
     RKObjectMappingProvider* _mappingProvider;
+    NSString* _serializationMIMEType;
 }
 
 /**
@@ -80,7 +81,7 @@ typedef enum {
 /**
  * The Mapping Provider responsible for returning mappings for various keyPaths.
  */
-@property(nonatomic, retain) RKObjectMappingProvider* mappingProvider;
+@property (nonatomic, retain) RKObjectMappingProvider* mappingProvider;
 
 /**
  * Routing object responsible for generating paths for objects and serializing
@@ -88,12 +89,17 @@ typedef enum {
  *
  * Defaults to an instance of RKDynamicRouter
  */
-@property(nonatomic, retain) NSObject<RKRouter>* router;
+@property (nonatomic, retain) NSObject<RKRouter>* router;
 
 /**
  * A Core Data backed object store for persisting objects that have been fetched from the Web
  */
-@property(nonatomic, retain) RKManagedObjectStore* objectStore;
+@property (nonatomic, retain) RKManagedObjectStore* objectStore;
+
+/**
+ * The Default MIME Type to be used in object serialization.
+ */
+@property (nonatomic, retain) NSString* serializationMIMEType;
 
 ////////////////////////////////////////////////////////
 // Registered Object Loaders

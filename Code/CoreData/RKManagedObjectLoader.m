@@ -139,11 +139,9 @@
     }
     
     RKObjectMappingResult* result = nil;
-    if (_targetObjectID && self.targetObject) {
+    if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
         NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];
-        if (self.method == RKRequestMethodDELETE) {
-            [[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
-        }
+        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
     } else {
         result = [self mapResponse:response withMappingProvider:mappingProvider];
     }
