@@ -17,7 +17,6 @@
 @interface RKObjectLoader (Private)
 
 @property (nonatomic, readonly) RKClient* client;
-@property (nonatomic, readonly) RKObjectMapper* objectMapper;
 
 @end
 
@@ -62,10 +61,6 @@
 
 - (RKClient*)client {
     return self.objectManager.client;
-}
-
-- (RKObjectMapper*)objectMapper {
-    return self.objectManager.mapper;
 }
 
 #pragma mark Response Processing

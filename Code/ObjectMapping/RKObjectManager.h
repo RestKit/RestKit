@@ -7,9 +7,9 @@
 //
 
 #import "../Network/Network.h"
-#import "RKObjectMapper.h"
 #import "RKObjectLoader.h"
 #import "RKDynamicRouter.h"
+#import "RKObjectMappingProvider.h"
 
 @protocol RKParser;
 
@@ -27,11 +27,10 @@ typedef enum {
 
 @interface RKObjectManager : NSObject {
 	RKClient* _client;
-	RKObjectMapper* _mapper;
 	NSObject<RKRouter>* _router;
 	RKManagedObjectStore* _objectStore;	
 	RKObjectManagerOnlineState _onlineState;
-    NSMutableDictionary* _parsersForMimeTypes;
+    NSMutableDictionary* _parsersForMIMETypes;
     RKObjectMappingProvider* _mappingProvider;
 }
 
@@ -52,30 +51,9 @@ typedef enum {
 + (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL;
 
 /**
- * Create and initialize a new object manager. If this is the first instance created
- * it will be set as the shared instance
- */
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
-
-/**
  * Initialize a new model manager instance
  */
 - (id)initWithBaseURL:(NSString*)baseURL;
-
-/**
- * Initialize a new model manager instance
- */
-- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router;
-
-// TODO: delete this.
-/**
- * The wire format to use for communications. Either RKMappingFormatXML or RKMappingFormatJSON.
- *
- * Defaults to RKMappingFormatJSON
- */
-// TODO: Replace this with setParser:forMIMEType: method. 
-// @property(nonatomic, assign) RKMappingFormat format;
-
 
 /**
  * Sets a parser to user for a given mimetype.
@@ -100,7 +78,7 @@ typedef enum {
 - (BOOL)isOnline;
 
 /**
- * The Mapping Provider responsible for returning mappings for various keypaths.
+ * The Mapping Provider responsible for returning mappings for various keyPaths.
  */
 @property(nonatomic, retain) RKObjectMappingProvider* mappingProvider;
 
@@ -138,7 +116,7 @@ typedef enum {
  * of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped to 
  * local objects by consulting the element registrations set on the mapper.
  */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
 // Mappable object helpers
@@ -146,22 +124,22 @@ typedef enum {
 /**
  * Update a mappable model by loading its attributes from the web
  */
-- (RKObjectLoader*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting objects from the payload
  */
-- (RKObjectLoader*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting objects from the payload
  */
-- (RKObjectLoader*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 /**
  * Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
  */
-- (RKObjectLoader*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
 // Object Loader Primitives
@@ -188,6 +166,6 @@ typedef enum {
  * object family of methods. Note that this should be used for one-off changes. If you need to substantially modify all your
  * object loads, you are better off subclassing or implementing your own RKRouter for dryness.
  */
-- (RKObjectLoader*)objectLoaderForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 @end

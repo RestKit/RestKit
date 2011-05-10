@@ -24,28 +24,24 @@ static RKObjectManager* sharedManager = nil;
 
 @implementation RKObjectManager
 
-@synthesize mapper = _mapper;
 @synthesize client = _client;
 @synthesize objectStore = _objectStore;
 @synthesize router = _router;
 @synthesize mappingProvider = _mappingProvider;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
-	return self = [self initWithBaseURL:baseURL objectMapper:[[[RKOldObjectMapper alloc] init] autorelease] router:[[[RKDynamicRouter alloc] init] autorelease]];
-}
-
-- (id)initWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
     self = [super init];
 	if (self) {
-		_mapper = [mapper retain];
-		_router = [router retain];
+        _mappingProvider = [RKObjectMappingProvider new];
+		_router = [RKDynamicRouter new];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
+        
         // TODO: we may want to be able to set this later. jbe.
         [_client setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-
-        _parsersForMimeTypes = [NSMutableDictionary new];
+        
+        _parsersForMIMETypes = [NSMutableDictionary new];
         RKJSONParser* jsonParser = [[RKJSONParser new] autorelease];
-        [_parsersForMimeTypes setObject:jsonParser forKey:@"application/json"];
+        [_parsersForMIMETypes setObject:jsonParser forKey:@"application/json"];
         
 		_onlineState = RKObjectManagerOnlineStateUndetermined;
 		[[NSNotificationCenter defaultCenter] addObserver:self
@@ -53,6 +49,7 @@ static RKObjectManager* sharedManager = nil;
 													 name:RKReachabilityStateChangedNotification
 												   object:nil];
 	}
+    
 	return self;
 }
 
@@ -66,26 +63,6 @@ static RKObjectManager* sharedManager = nil;
 	sharedManager = manager;
 }
 
-// Deprecated
-+ (RKObjectManager*)globalManager {
-	return sharedManager;
-}
-
-// Deprecated
-+ (void)setGlobalManager:(RKObjectManager*)manager {
-	[manager retain];
-	[sharedManager release];
-	sharedManager = manager;
-}
-
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL objectMapper:(RKObjectMapper*)mapper router:(NSObject<RKRouter>*)router {
-	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL objectMapper:mapper router:router] autorelease];
-	if (nil == sharedManager) {
-		[RKObjectManager setSharedManager:manager];
-	}
-	return manager;
-}
-
 + (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL {
 	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL] autorelease];
 	if (nil == sharedManager) {
@@ -97,10 +74,8 @@ static RKObjectManager* sharedManager = nil;
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_parsersForMimeTypes release];
-    _parsersForMimeTypes = nil;
-	[_mapper release];
-	_mapper = nil;
+    [_parsersForMIMETypes release];
+    _parsersForMIMETypes = nil;
 	[_router release];
 	_router = nil;
 	[_client release];
@@ -131,11 +106,11 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (void)setParser:(id<RKParser>)parser forMIMEType:(NSString*)mimeType {
-    [_parsersForMimeTypes setObject:parser forKey:mimeType];
+    [_parsersForMIMETypes setObject:parser forKey:mimeType];
 }
 
 - (id<RKParser>)parserForMIMEType:(NSString*)mimeType {
-    return [_parsersForMimeTypes objectForKey:mimeType];
+    return [_parsersForMIMETypes objectForKey:mimeType];
 }
 
 #pragma mark Object Loading
@@ -143,6 +118,7 @@ static RKObjectManager* sharedManager = nil;
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
     RKObjectLoader* objectLoader = nil;
     
+    // TODO: Can we eliminate and just use RKObjectLoader???
     Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
     if (self.objectStore && managedObjectLoaderClass) {
         objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
@@ -203,6 +179,7 @@ static RKObjectManager* sharedManager = nil;
 	// Get the serialization representation from the router
 	NSString* resourcePath = [self.router resourcePathForObject:object method:method];
     
+    // TODO: Use the new serializer...
     NSObject<RKRequestSerializable>* params = [self.router serializationForObject:object method:method];
 //    RKObjectMapping* mapping = [self.mappingProvider mappingForSerializationOfObjectClass:[object class]];
 //    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
