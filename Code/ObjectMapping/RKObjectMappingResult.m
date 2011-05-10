@@ -6,6 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import "RKObjectMapper.h" // TODO: Eliminate import once we get the errors in the right place
 #import "RKObjectMappingResult.h"
 #import "Errors.h"
 
@@ -65,7 +66,7 @@
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:description, NSLocalizedDescriptionKey,
                               collection, RKObjectMapperErrorObjectsKey, nil];
     
-    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKMappingError userInfo:userInfo];
+    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
     return error;
 }
 

@@ -20,7 +20,8 @@
 typedef enum RKObjectMapperErrors {
     RKObjectMapperErrorObjectMappingNotFound,       // No mapping found
     RKObjectMapperErrorObjectMappingTypeMismatch,   // Target class and object mapping are in disagreement
-    RKObjectMapperErrorUnmappableContent            // No mappable attributes or relationships were found
+    RKObjectMapperErrorUnmappableContent,            // No mappable attributes or relationships were found
+    RKObjectMapperErrorFromMappingResult
 } RKObjectMapperErrorCode;
 
 @class RKObjectMapper;
