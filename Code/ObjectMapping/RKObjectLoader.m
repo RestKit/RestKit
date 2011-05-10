@@ -19,6 +19,8 @@
 @property (nonatomic, readonly) RKClient* client;
 @property (nonatomic, readonly) RKObjectMapper* objectMapper;
 
+- (RKObjectMappingResult*)mapResponse:(RKResponse*)response withMappingProvider:(RKObjectMappingProvider*)mappingProvider;
+
 @end
 
 @interface RKRequest (Private);
@@ -98,12 +100,11 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
         }
         
-        if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
-            [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
-        }
-
-		[self responseProcessingSuccessful:NO withError:nil];
-
+        RKObjectMappingResult* result = [self mapResponse:response withMappingProvider:self.objectManager.mappingProvider];
+        NSError* error = [result asError];
+        
+        [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+        
 		return YES;
 	}
 	return NO;
@@ -141,13 +142,21 @@
 	[self responseProcessingSuccessful:NO withError:rkError];
 }
 
+- (RKObjectMappingResult*)mapResponse:(RKResponse*)response withMappingProvider:(RKObjectMappingProvider*)mappingProvider {
+    id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
+    // TODO: Handle case where there is no parser for this MIME type
+    id parsedData = [parser objectFromString:[response bodyAsString]];
+    
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+    mapper.targetObject = self.targetObject;
+    RKObjectMappingResult* result = [mapper performMapping];
+    return result;
+}
+
 // NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
 - (void)processLoadModelsInBackground:(RKResponse *)response {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
-    id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
-    // TODO: Handle case where there is no parser for this MIME type
-    id parsedData = [parser objectFromString:[response bodyAsString]];
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
@@ -156,9 +165,7 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
-    mapper.targetObject = self.targetObject;
-    RKObjectMappingResult* result = [mapper performMapping];
+    RKObjectMappingResult* result = [self mapResponse:response withMappingProvider:mappingProvider];
 
     NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", result, @"result", nil] retain];
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];

@@ -7,7 +7,7 @@
 //
 
 #import "RKObjectMappingResult.h"
-
+#import "Errors.h"
 
 @implementation RKObjectMappingResult
 
@@ -56,6 +56,17 @@
 - (id)asObject {
     // TODO: Warn that only last object was returned...
     return [[self asCollection] objectAtIndex:0];
+}
+
+- (NSError*)asError {
+    NSArray* collection = [self asCollection];
+    NSString* description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
+    
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:description, NSLocalizedDescriptionKey,
+                              collection, RKObjectMapperErrorObjectsKey, nil];
+    
+    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKMappingError userInfo:userInfo];
+    return error;
 }
 
 @end

@@ -9,6 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKRailsRouter.h"
 #import "RKObjectMappingProvider.h"
+#import "RKErrorMessage.h"
 
 @interface RKSpecComplexUser : RKObject {
     NSNumber* _userID;
@@ -76,6 +77,38 @@
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
     [provider setMapping:userMapping forKeyPath:@"data.STUser"];
     return provider;
+}
+
+- (RKObjectMappingProvider*)errorMappingProvider {
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+    [errorMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"" toKeyPath:@"errorMessage"]];
+    [provider setMapping:errorMapping forKeyPath:@"error"];
+    [provider setMapping:errorMapping forKeyPath:@"errors"];
+    return provider;
+}
+
+- (void)itShouldHandleTheErrorCaseAppropriately {
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/errors.json" delegate:responseLoader];
+    objectLoader.method = RKRequestMethodGET;
+    
+    [objectManager setMappingProvider:[self errorMappingProvider]];
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    
+    [expectThat(responseLoader.failureError) shouldNot:be(nil)];
+    
+    [expectThat([responseLoader.failureError localizedDescription]) should:be(@"error1, error2")];
+    
+    NSArray* objects = [[responseLoader.failureError userInfo] objectForKey:RKObjectMapperErrorObjectsKey];
+    RKErrorMessage* error1 = [objects objectAtIndex:0];
+    RKErrorMessage* error2 = [objects lastObject];
+    
+    [expectThat(error1.errorMessage) should:be(@"error1")];
+    [expectThat(error2.errorMessage) should:be(@"error2")];
 }
 
 // TODO: Should move into a mapping scenario

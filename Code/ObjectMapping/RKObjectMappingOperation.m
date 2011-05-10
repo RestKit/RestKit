@@ -136,7 +136,7 @@
 }
 
 - (BOOL)shouldSetValue:(id)value atKeyPath:(NSString*)keyPath {
-    id currentValue = [self.destinationObject valueForKey:keyPath];
+    id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
         currentValue = nil;
     }
@@ -159,7 +159,12 @@
     
     for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.attributeMappings) {
         // TODO: Catch exceptions here... valueForUndefinedKey
-        id value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        id value = nil;
+        if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
+            value = self.sourceObject;
+        } else {
+            value = [self.sourceObject valueForKeyPath:attributeMapping.sourceKeyPath];
+        }
         if (value) {
             appliedMappings = YES;
             [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
