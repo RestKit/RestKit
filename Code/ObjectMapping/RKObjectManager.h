@@ -100,11 +100,6 @@ typedef enum {
 - (BOOL)isOnline;
 
 /**
- * Mapper object responsible for mapping remote HTTP resources to Cocoa objects
- */
-@property(nonatomic, readonly) RKObjectMapper* mapper;
-
-/**
  * The Mapping Provider responsible for returning mappings for various keypaths.
  */
 @property(nonatomic, retain) RKObjectMappingProvider* mappingProvider;

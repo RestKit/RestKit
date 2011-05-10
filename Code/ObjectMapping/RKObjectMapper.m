@@ -106,7 +106,6 @@
         }
     } else {
         destinationObject = [self createInstanceOfClassForMapping:objectMapping.objectClass];
-        // TODO: Check the type?
     }
     
     if (objectMapping && destinationObject) {
@@ -138,7 +137,7 @@
     }
     
     // TODO: It should map arrays of arrays...
-    // TODO: It should map array of objects back to dicitonaries...    
+    // TODO: It should map array of objects back to dictionaries...    
     for (id mappableObject in mappableObjects) {
         id destinationObject = [self createInstanceOfClassForMapping:mapping.objectClass];
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];

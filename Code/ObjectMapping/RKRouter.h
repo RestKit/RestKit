@@ -20,9 +20,4 @@
  */
 - (NSString*)resourcePathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method;
 
-/**
- * Returns a serialization of an object suitable for exchanging with a remote system
- */
-- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method;
-
 @end

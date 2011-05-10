@@ -1018,6 +1018,9 @@
     [mockUser verify];
 }
 
+// TODO: It should map an array of arrays // Object mapper?
+// TODO: It should map an array of objects // Is this possible on the mapper? or serializer only?
+
 #pragma mark - Unidentified Components
 
 // TODO: Error keyPath. Needs a place to live just like the date format strings

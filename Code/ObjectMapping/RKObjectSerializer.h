@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RKObjectMapping.h"
+#import "RKRequestSerializable.h"
 
 /*!
  Performs a serialization of an object and its relationships back into
@@ -21,6 +22,6 @@
 + (id)serializerWithObject:(id)object mapping:(RKObjectMapping*)mapping;
 - (id)initWithObject:(id)object mapping:(RKObjectMapping*)mapping;
 
-- (id)serializationForMIMEType:(NSString*)mimeType error:(NSError**)error;
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)mimeType error:(NSError**)error;
 
 @end

@@ -9,6 +9,7 @@
 #import "RKObjectSerializer.h"
 #import "RKObjectMappingOperation.h"
 #import "RKJSONSerialization.h"
+#import "NSDictionary+RKRequestSerialization.h"
 
 @implementation RKObjectSerializer
 
@@ -27,16 +28,18 @@
 - (void)dealloc {
     [_object release];
     [_mapping release];
+    
     [super dealloc];
 }
 
-- (id)serializationForMIMEType:(NSString*)mimeType error:(NSError**)error {
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)mimeType error:(NSError**)error {
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withObjectMapping:_mapping];
     [operation performMapping:error];
     if (*error) {
         return nil;
     }
+    
     if ([mimeType isEqualToString:@"application/json"]) {
         for (id key in [dictionary allKeys]) {
             id val = [dictionary valueForKey:key];
@@ -44,10 +47,12 @@
                 [dictionary setValue:[val description] forKey:key];
             }
         }
+        
         return [RKJSONSerialization JSONSerializationWithObject:dictionary];
     } else if ([mimeType isEqualToString:@"application/x-www-form-urlencoded"]) {
         return dictionary;
     }
+    
     return nil;
 }
 

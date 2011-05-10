@@ -747,6 +747,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		253007B413797D760074F3FD /* To Be Eliminated */ = {
+			isa = PBXGroup;
+			children = (
+				259562E6126D3B43004BAC4C /* RKRailsRouter.h */,
+				259562E7126D3B43004BAC4C /* RKRailsRouter.m */,
+				253A088412551D8D00976E89 /* RKOldObjectMapper.h */,
+				253A088512551D8D00976E89 /* RKOldObjectMapper.m */,
+				253E1B1012E9450700F3E4B0 /* RKObjectMappable.m */,
+				253A088312551D8D00976E89 /* RKObjectMappable.h */,
+			);
+			name = "To Be Eliminated";
+			sourceTree = "<group>";
+		};
 		253A085F12551D8D00976E89 /* Code */ = {
 			isa = PBXGroup;
 			children = (
@@ -814,6 +827,7 @@
 		253A087C12551D8D00976E89 /* ObjectMapping */ = {
 			isa = PBXGroup;
 			children = (
+				253007B413797D760074F3FD /* To Be Eliminated */,
 				253A09E512552B5300976E89 /* ObjectMapping.h */,
 				253A087D12551D8D00976E89 /* RKObject.h */,
 				253A087E12551D8D00976E89 /* RKObject.m */,
@@ -821,17 +835,11 @@
 				253A088012551D8D00976E89 /* RKObjectLoader.m */,
 				253A088112551D8D00976E89 /* RKObjectManager.h */,
 				253A088212551D8D00976E89 /* RKObjectManager.m */,
-				253A088312551D8D00976E89 /* RKObjectMappable.h */,
-				253A088412551D8D00976E89 /* RKOldObjectMapper.h */,
-				253A088512551D8D00976E89 /* RKOldObjectMapper.m */,
 				253A088612551D8D00976E89 /* RKObjectPropertyInspector.h */,
 				253A088712551D8D00976E89 /* RKObjectPropertyInspector.m */,
 				253A088A12551D8D00976E89 /* RKRouter.h */,
 				259562E2126D3B36004BAC4C /* RKDynamicRouter.h */,
 				259562E3126D3B36004BAC4C /* RKDynamicRouter.m */,
-				259562E6126D3B43004BAC4C /* RKRailsRouter.h */,
-				259562E7126D3B43004BAC4C /* RKRailsRouter.m */,
-				253E1B1012E9450700F3E4B0 /* RKObjectMappable.m */,
 				25952DE8136C8F3500D04F93 /* RKObjectMappingOperation.h */,
 				25952DE9136C8F3500D04F93 /* RKObjectMappingOperation.m */,
 				25952DF3136C8FD500D04F93 /* RKObjectMapping.h */,
@@ -844,11 +852,11 @@
 				25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */,
 				259C64BD137477D0001FE1C5 /* RKObjectMapper.h */,
 				259C64BE137477D0001FE1C5 /* RKObjectMapper.m */,
+				2530078D137838D30074F3FD /* RKObjectMapper_Private.h */,
 				3F71ED3213748536006281CA /* RKObjectMappingProvider.h */,
 				3F71ED3313748536006281CA /* RKObjectMappingProvider.m */,
 				257D2D6E13759D6F008E9649 /* RKObjectMappingResult.h */,
 				257D2D6F13759D6F008E9649 /* RKObjectMappingResult.m */,
-				2530078D137838D30074F3FD /* RKObjectMapper_Private.h */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
