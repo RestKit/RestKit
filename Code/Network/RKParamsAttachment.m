@@ -65,9 +65,12 @@ extern NSString* const kRKStringBoundary;
 		_MIMEType = [[self mimeTypeForExtension:[filePath pathExtension]] retain];
 		_bodyStream    = [[NSInputStream inputStreamWithFileAtPath:filePath] retain];
 		
-		NSError* error = nil;		
-		_bodyLength    = [[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error] objectForKey:NSFileSize] unsignedIntegerValue];		
-		if (error) {
+		NSError* error;
+		NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+		if (attributes) {
+			_bodyLength    = [[attributes objectForKey:NSFileSize] unsignedIntegerValue];
+		}
+		else {
 			NSLog(@"Encountered an error while determining file size: %@", error);
 		}
 	}

@@ -89,7 +89,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 	NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
 	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
     
-	if (nil == error) {
+	if (payload != nil) {
         // TODO: When we support multiple parsers, we should auto-detect the MIME Type from the file extension
         // and pass it through to the mapper
 		id objects = [_manager.mapper parseString:payload];
