@@ -14,3 +14,4 @@
 #import "RKOldObjectMapper.h"
 #import "RKObjectMappingProvider.h"
 #import "RKObjectMappingResult.h"
+#import "RKObjectMapper.h"

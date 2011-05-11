@@ -257,8 +257,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded) {
 		RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self];
 		objectLoader.method = self.method;
-		objectLoader.objectClass = _objectClass;
-		objectLoader.keyPath = _keyPath;
+//		objectLoader.objectClass = _objectClass;
+//		objectLoader.keyPath = _keyPath;
 		objectLoader.params = self.params;
 
 		_isLoading = YES;
