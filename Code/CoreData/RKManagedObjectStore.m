@@ -107,6 +107,8 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 			
 			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:@"error"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
+			
+			return error;
 		}
 	}
 	@catch (NSException* e) {
