@@ -120,7 +120,7 @@ Xcode 4.x (Git Submodule)
 1. Click the disclosure triangles next to the **Target Dependencies** and **Link Binary with Libraries** items.
 1. In the **Target Dependencies** section, click the **+** button to open the Target selection sheet. Click on the **RestKit** aggregate target (it will have the bulls-eye icon) and click the **Add** button to create a dependency.
 1. In the **Link Binary with Libraries** section, click the **+** button to open the Library selection sheet. Here we need to instruct the target to link against all the required RestKit libraries and several system libraries. Select each of the following items (one at a time or while holding down the Command key to select all of them at once) and then click the **Add** button:
-    * **libRestKitCoreData.a**
+    * **libRestKitCoreData.a** - Optional. Only necessary if you are using Core Data.
     * **libRestKitJSONParserYAJL.a**
     * **libRestKitNetwork.a**
     * **libRestKitObjectMapping.a**
