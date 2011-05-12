@@ -86,12 +86,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectManagerSpec"
+            value = "RKManagedObjectThreadSafeInvocationSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldLoadAHuman"
+            value = "itShouldSerializeAndDeserializeManagedObjectsAcrossAThreadInvocation"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
