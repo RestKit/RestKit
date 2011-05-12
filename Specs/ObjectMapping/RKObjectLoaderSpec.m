@@ -111,7 +111,6 @@
     [expectThat(error2.errorMessage) should:be(@"error2")];
 }
 
-// TODO: Should move into a mapping scenario
 #pragma mark - Complex JSON
 
 - (void)itShouldLoadAComplexUserObjectWithTargetObject {

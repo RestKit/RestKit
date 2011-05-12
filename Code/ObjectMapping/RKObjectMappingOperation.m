@@ -20,7 +20,7 @@
 @synthesize destinationObject = _destinationObject;
 @synthesize objectMapping = _objectMapping;
 @synthesize delegate = _delegate;
-@synthesize objectMapper = _objectMapper;
+@synthesize objectFactory = _objectFactory;
 
 + (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withObjectMapping:(RKObjectMapping*)objectMapping {
     return [[[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:objectMapping] autorelease];
@@ -45,7 +45,6 @@
     [_sourceObject release];
     [_destinationObject release];
     [_objectMapping release];
-    [_objectMapper release];
     
     [super dealloc];
 }
@@ -161,7 +160,6 @@
     BOOL appliedMappings = NO;
     
     for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.attributeMappings) {
-        // TODO: Catch exceptions here... valueForUndefinedKey
         id value = nil;
         if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
             value = self.sourceObject;
@@ -245,7 +243,7 @@
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
             for (id nestedObject in value) {
-                id mappedObject = [_objectMapper createInstanceOfClassForMapping:mapping.objectMapping mappable:nestedObject];
+                id mappedObject = [self.objectFactory objectWithMapping:mapping.objectMapping andData:nestedObject];
                 if ([self mapNestedObject:nestedObject toObject:mappedObject withMapping:mapping]) {
                     appliedMappings = YES;
                     [destinationObject addObject:mappedObject];
@@ -261,7 +259,7 @@
             // One to one relationship
             RKLOG_MAPPING(RKLogLevelInfo, @"Mapping one to one relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);            
             
-            destinationObject = [_objectMapper createInstanceOfClassForMapping:mapping.objectMapping mappable:value];
+            destinationObject = [self.objectFactory objectWithMapping:mapping.objectMapping andData:value];
             if ([self mapNestedObject:value toObject:destinationObject withMapping:mapping]) {
                 appliedMappings = YES;
             }

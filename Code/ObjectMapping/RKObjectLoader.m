@@ -14,7 +14,7 @@
 #import "RKParser.h"
 
 // Private Interfaces - Proxy access to RKObjectManager for convenience
-@interface RKObjectLoader (Private)
+@interface RKObjectLoader (Private) <RKObjectMapperDelegate>
 
 @property (nonatomic, readonly) RKClient* client;
 
@@ -137,13 +137,25 @@
 	[self responseProcessingSuccessful:NO withError:rkError];
 }
 
+// TODO: Lives on RKManagedObjectLoader???
+- (id<RKObjectFactory>)createObjectFactory {
+    if (self.objectManager.objectStore) {
+        Class managedObjectFactory = NSClassFromString(@"RKManagedObjectFactory");
+        if (managedObjectFactory) {
+            return [[managedObjectFactory new] autorelease];
+        }
+    }
+    
+    return nil;    
+}
+
 - (RKObjectMappingResult*)mapResponse:(RKResponse*)response withMappingProvider:(RKObjectMappingProvider*)mappingProvider {
     id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
     // TODO: Handle case where there is no parser for this MIME type
     id parsedData = [parser objectFromString:[response bodyAsString]];
     
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
-    mapper.objectManager = self.objectManager;
+    mapper.objectFactory = [self createObjectFactory];
     mapper.targetObject = self.targetObject;
     mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];

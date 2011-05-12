@@ -8,8 +8,8 @@
 
 #import "RKObjectMapping.h"
 #import "RKObjectAttributeMapping.h"
+#import "RKObjectFactory.h"
 
-@class RKObjectMapper;
 @class RKObjectMappingOperation;
 
 @protocol RKObjectMappingOperationDelegate  <NSObject>
@@ -31,7 +31,7 @@
     id _destinationObject;
     RKObjectMapping* _objectMapping;    
     id<RKObjectMappingOperationDelegate> _delegate;
-    RKObjectMapper* _objectMapper;
+    id<RKObjectFactory> _objectFactory;
 }
 
 /*!
@@ -50,12 +50,16 @@
  */
 @property (nonatomic, readonly) RKObjectMapping* objectMapping;
 
-@property (nonatomic, retain) RKObjectMapper* objectMapper;
-
 /*!
- The delegate to inform of 
+ The delegate to inform of interesting events during the mapping operation
  */
 @property (nonatomic, assign) id<RKObjectMappingOperationDelegate> delegate;
+
+/*!
+ An object factory responsible for creating new instances of mappable objects
+ necessary for the processing of relationship mappings
+ */
+@property (nonatomic, assign) id<RKObjectFactory> objectFactory;
 
 /*!
  Create a new mapping operation configured to transform the object representation
