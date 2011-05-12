@@ -34,7 +34,7 @@
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
 		250C29FD134185D2000A3551 /* RKNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 250C29FB134185CE000A3551 /* RKNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250C29FE134185D2000A3551 /* RKNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C29FC134185D0000A3551 /* RKNetwork.m */; };
-		251899FC1370F4E00092B049 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 251899FB1370F4E00092B049 /* Logging.h */; };
+		251899FC1370F4E00092B049 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 251899FB1370F4E00092B049 /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251D14AC133597B800959061 /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 251D14AA133597B800959061 /* RKManagedObjectLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 251D14AB133597B800959061 /* RKManagedObjectLoader.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
@@ -213,7 +213,7 @@
 		25D198401368A9CE0090B617 /* RKObjectLoaderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25D1983F1368A9CE0090B617 /* RKObjectLoaderSpec.m */; };
 		25D1984313697FEF0090B617 /* RKManagedObjectLoaderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25D1984213697FEF0090B617 /* RKManagedObjectLoaderSpec.m */; };
 		25D1994E136BE7E00090B617 /* RKObjectMappingNextGenSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25D1994D136BE7E00090B617 /* RKObjectMappingNextGenSpec.m */; };
-		25D6390713517D8B000879B1 /* RKAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = 25D6390513517D8B000879B1 /* RKAlert.h */; };
+		25D6390713517D8B000879B1 /* RKAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = 25D6390513517D8B000879B1 /* RKAlert.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25D6390813517D8B000879B1 /* RKAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 25D6390613517D8B000879B1 /* RKAlert.m */; };
 		25F5182513724866009B2E22 /* RKObjectRelationshipMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F5182313724865009B2E22 /* RKObjectRelationshipMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25F5182613724866009B2E22 /* RKObjectRelationshipMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */; };

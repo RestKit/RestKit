@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
-#import "Logging.h"
+#import "../Support/Logging.h"
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
 #import "RKObjectFactory.h"

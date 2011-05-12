@@ -71,7 +71,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldLoadAHuman"
+            value = "itShouldUpdateACoreDataBackedTargetObject"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

@@ -209,6 +209,7 @@
     
     RKObjectMappingOperation* subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withObjectMapping:mapping.objectMapping];
     subOperation.delegate = self.delegate;
+    subOperation.objectMapper = self.objectMapper;
     if (NO == [subOperation performMapping:&error]) {
         NSString* errorMessage = [NSString stringWithFormat:@"WARNING: Failed mapping nested object: %@", [error localizedDescription]];
         RKLOG_MAPPING(RKLogLevelWarning, errorMessage);

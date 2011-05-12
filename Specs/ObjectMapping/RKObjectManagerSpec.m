@@ -58,13 +58,32 @@
     [provider setMapping:humanMapping forKeyPath:@"human"];
     [provider setMapping:humanMapping forKeyPath:@"humans"];
     
+    RKObjectMapping* humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    [humanSerialization addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
+    [provider setMapping:humanSerialization forObjectClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
 	
+    RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+    [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
+    _objectManager.router = router;
+    
+    
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];
 }
 
 - (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
 	[expectThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
+}
+
+- (void)itShouldUpdateACoreDataBackedTargetObject {
+    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
+    temporaryHuman.name = @"My Name";
+    [_objectManager postObject:temporaryHuman delegate:_responseLoader];
+    [_responseLoader waitForResponse];
+    
+    RKHuman* human = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
+    [expectThat(human) should:be(temporaryHuman)];
+    [expectThat(human.railsID) should:be([NSNumber numberWithInt:1])];
 }
 
 - (void)itShouldLoadAHuman {

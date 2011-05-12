@@ -110,12 +110,12 @@
 	RKObjectMappingResult* result = [dictionary objectForKey:@"result"];
 	[dictionary release];
 
-    if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
+    if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
+    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjects:[result asCollection]];
     } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObject:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asObject]];
-    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
-        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
     }
     
 	[self responseProcessingSuccessful:YES withError:nil];

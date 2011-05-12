@@ -37,6 +37,12 @@ class RestKit::SpecServer < Sinatra::Base
     send_file 'Specs/Server/../Fixtures/JSON/errors.json'
   end
   
+  post '/humans' do
+    status 201
+    content_type 'application/json'
+    {:human => {:name => "My Name", :id => 1}}.to_json
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

@@ -13,21 +13,31 @@
 - (id)init {
     if ((self = [super init])) {
         _mappings = [NSMutableDictionary new];
+        _serializationMappings = [NSMutableDictionary new];
     }
     return self;
 }
 
 - (void)dealloc {
     [_mappings release];
+    [_serializationMappings release];
     [super dealloc];
 }
 
-- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath {
-    return [_mappings objectForKey:keyPath];
-}
+//- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath {
+//    return [_mappings objectForKey:keyPath];
+//}
 
 - (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath {
     [_mappings setValue:mapping forKey:keyPath];
+}
+
+- (void)setMapping:(RKObjectMapping *)mapping forObjectClass:(Class)objectClass {
+    [_serializationMappings setValue:mapping forKey:NSStringFromClass(objectClass)];
+}
+
+- (RKObjectMapping*)objectMappingForClass:(Class)objectClass {
+    return (RKObjectMapping*)[_serializationMappings objectForKey:NSStringFromClass(objectClass)];
 }
 
 - (NSDictionary*)objectMappingsByKeyPath {
