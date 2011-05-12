@@ -62,7 +62,7 @@
 
 // Public
 
-- (void)routeClass:(Class<RKObjectMappable>)class toResourcePath:(NSString*)resourcePath {
+- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath {
 	[self routeClass:class toResourcePath:resourcePath forMethodName:@"ANY"];
 }
 
@@ -73,7 +73,7 @@
 
 #pragma mark RKRouter
 
-- (NSString*)resourcePathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
+- (NSString*)resourcePathForObject:(NSObject*)object method:(RKRequestMethod)method {
 	NSString* methodName = [self HTTPVerbForMethod:method];
 	NSString* className  = NSStringFromClass([object class]);
 	NSDictionary* classRoutes = [_routes objectForKey:className];

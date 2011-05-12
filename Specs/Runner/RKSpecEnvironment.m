@@ -52,6 +52,15 @@ RKObjectManager* RKSpecNewObjectManager() {
     return objectManager;
 }
 
+// TODO: Store initialization should not be coupled to object manager...
+RKManagedObjectStore* RKSpecNewManagedObjectStore() {
+    RKManagedObjectStore* store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    objectManager.objectStore = store;
+    [objectManager.objectStore deletePersistantStore];
+    return store;
+}
+
 // Read a fixture from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName) {
     NSError* error = nil;
@@ -70,3 +79,16 @@ id RKSpecParseFixtureJSON(NSString* fileName) {
     [parser release];
     return result;
 }
+
+
+@implementation RKSpec
+
+- (void)failWithException:(NSException *) e {
+    printf("%s:%i: error: %s\n",
+           [[[e userInfo] objectForKey:SenTestFilenameKey] cString],
+           [[[e userInfo] objectForKey:SenTestLineNumberKey] intValue],
+           [[[e userInfo] objectForKey:SenTestDescriptionKey] cString]);
+    [e raise];
+}
+
+@end

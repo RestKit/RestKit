@@ -408,7 +408,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
     [expectThat([mapper errorCount]) should:be(1)];
-    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ")];
+    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ''")];
 }
 
 - (void)itShouldAddAnErrorWhenAttemptingToMapACollectionWithoutAnObjectMapping {
@@ -417,7 +417,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
     [expectThat([mapper errorCount]) should:be(1)];
-    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ")];
+    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ''")];
 }
 
 #pragma mark RKObjectMapperDelegate Specs

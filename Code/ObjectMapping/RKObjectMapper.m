@@ -68,7 +68,7 @@
 }
 
 - (void)addErrorForUnmappableKeyPath:(NSString*)keyPath {
-    NSString* errorMessage = [NSString stringWithFormat:@"Could not find an object mapping for keyPath: %@", keyPath];
+    NSString* errorMessage = [NSString stringWithFormat:@"Could not find an object mapping for keyPath: '%@'", keyPath];
     [self addErrorWithCode:RKObjectMapperErrorObjectMappingNotFound message:errorMessage keyPath:keyPath userInfo:nil];
 }
 
@@ -230,7 +230,6 @@
         [self.delegate objectMapperDidFinishMapping:self];
     }
     
-    
     if ([results count] == 0) {
         [self addErrorForUnmappableKeyPath:@""];
         return nil;
@@ -243,7 +242,7 @@
 
 - (id)objectWithMapping:(RKObjectMapping*)objectMapping andData:(id)mappableData {
     if (self.objectFactory) {
-        [self.objectFactory objectWithMapping:objectMapping andData:mappableData];
+        return [self.objectFactory objectWithMapping:objectMapping andData:mappableData];
     }
     
     return [[objectMapping.objectClass new] autorelease];

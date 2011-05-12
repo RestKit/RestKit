@@ -11,6 +11,8 @@
 @implementation RKManagedObjectFactory
 
 - (id)initWithObjectStore:(RKManagedObjectStore*)objectStore {
+    NSAssert(objectStore, @"Object store cannot be nil");
+    
     self = [self init];
     if (self) {
         _objectStore = [objectStore retain];
@@ -29,14 +31,18 @@
 }
 
 - (id)objectWithMapping:(RKObjectMapping*)mapping andData:(id)mappableData {
+    NSAssert(mapping, @"Mapping cannot be nil");
+    NSAssert(mappableData, @"Mappable data cannot be nil");
+    NSAssert(_objectStore, @"Object store cannot be nil");
+    
     Class mappableClass = mapping.objectClass;
-    if (mappableClass) {
-        Class nsManagedObjectClass = NSClassFromString(@"NSManagedObject");
-        if (nsManagedObjectClass && [mappableClass isSubclassOfClass:nsManagedObjectClass]) {
-            RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
-            id primaryKeyValue = nil;
-            
-            NSString* primaryKeyProperty = [mappableClass performSelector:@selector(primaryKeyProperty)];
+    if ([mappableClass isSubclassOfClass:[NSManagedObject class]]) {
+        RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
+        id primaryKeyValue = nil;
+        
+        // TODO: Primary key moves to RKManagedObjectMapping...
+        NSString* primaryKeyProperty = [mappableClass performSelector:@selector(primaryKeyProperty)];
+        if (primaryKeyProperty) {
             for (RKObjectAttributeMapping* attributeMapping in mapping.attributeMappings) {
                 if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyProperty]) {
                     primaryKeyAttributeMapping = attributeMapping;
@@ -48,11 +54,14 @@
             if (keyPathForPrimaryKeyElement) {
                 primaryKeyValue = [mappableData valueForKey:keyPathForPrimaryKeyElement];
             }
-            
-            return [_objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyValue:primaryKeyValue];
-        } else {
-            return [[mappableClass new] autorelease];
         }
+        
+        id object = [_objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyValue:primaryKeyValue];
+        NSAssert2(object, @"Failed creation of managed object with class '%@' and primary key value '%@'", NSStringFromClass(mappableClass), primaryKeyValue);
+        // TODO: Error logging...
+        return object;
+    } else {
+        return [[mappableClass new] autorelease];
     }
     
     return nil;

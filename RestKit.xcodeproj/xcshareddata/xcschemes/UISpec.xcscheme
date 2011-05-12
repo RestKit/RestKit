@@ -61,8 +61,8 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectManagerSpec"
-            isEnabled = "YES">
+            value = "RKManagedObjectFactorySpec"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -71,8 +71,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldUpdateACoreDataBackedTargetObject"
-            isEnabled = "YES">
+            value = "itShouldCreateANewManagedObjectWhenThePrimaryKeyIsNSNull"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"
@@ -82,6 +82,16 @@
          <EnvironmentVariable
             key = "NSZombieEnabled"
             value = "YES"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UISPEC_SPEC"
+            value = "RKObjectManagerSpec"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UISPEC_EXAMPLE"
+            value = "itShouldLoadAHuman"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

@@ -142,7 +142,7 @@
     if (self.objectManager.objectStore) {
         Class managedObjectFactory = NSClassFromString(@"RKManagedObjectFactory");
         if (managedObjectFactory) {
-            return [[managedObjectFactory new] autorelease];
+            return [managedObjectFactory objectFactoryWithObjectStore:self.objectManager.objectStore];
         }
     }
     
@@ -159,6 +159,13 @@
     mapper.targetObject = self.targetObject;
     mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];
+    
+    // TODO: Have to handle errors here... Maybe we always return a result with the errors?
+    if (nil == result) {
+        NSLog(@"GOT MAPPING ERRORS: %@", mapper.errors);
+        return nil;
+    }
+    
     return result;
 }
 

@@ -97,6 +97,7 @@
 #pragma mark -
 #pragma mark RKObjectMappable
 
+// TODO: Gets moved into RKManagedObjectMapping...
 + (NSString*)primaryKeyProperty {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;

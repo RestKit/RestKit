@@ -25,13 +25,13 @@
 	[super dealloc];
 }
 
-- (void)setModelName:(NSString*)modelName forClass:(Class<RKObjectMappable>)class {
+- (void)setModelName:(NSString*)modelName forClass:(Class)class {
 	[_classToModelMappings setObject:modelName forKey:class];
 }
 
 #pragma mark RKRouter
 
-- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method {
+- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject*)object method:(RKRequestMethod)method {
 	// Rails does not send parameters for delete requests.
 	if (method == RKRequestMethodDELETE) {
 		return nil;

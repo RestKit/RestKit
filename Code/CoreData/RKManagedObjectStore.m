@@ -97,7 +97,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
  */
 - (NSError*)save {
 	NSManagedObjectContext* moc = [self managedObjectContext];
-    NSError *error;
+    NSError *error = nil;
 	
 	@try {
 		if (![moc save:&error]) {
@@ -309,9 +309,11 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 		NSMutableDictionary* dictionary = [threadDictionary objectForKey:class];
 		object = [dictionary objectForKey:primaryKeyValue];
 		
-		if (object == nil && primaryKeyValue && [class respondsToSelector:@selector(object)]) {
+		if (object == nil && [class respondsToSelector:@selector(object)]) {
 			object = [class object];
-			[dictionary setObject:object forKey:primaryKeyValue];
+            if (primaryKeyValue) {
+                [dictionary setObject:object forKey:primaryKeyValue];
+            }
 		}
 	}
 	return object;

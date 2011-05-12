@@ -15,12 +15,13 @@
 @interface RKObjectLoader (Private)
 
 @property (nonatomic, readonly) RKManagedObjectStore* objectStore;
-@property (nonatomic, readonly) RKOldObjectMapper* objectMapper;
 
 - (void)handleTargetObject;
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
 @end
 
+// TODO: I believe that we want to eliminate the subclass here and roll the managed object
+// handling into another object that is set as the delegate on the object loader.
 @implementation RKManagedObjectLoader
 
 - (id)init {
@@ -42,7 +43,7 @@
     [super dealloc];
 }
 
-- (void)setTargetObject:(NSObject<RKObjectMappable>*)targetObject {
+- (void)setTargetObject:(NSObject*)targetObject {
 	[_targetObject release];
 	_targetObject = nil;	
 	_targetObject = [targetObject retain];	
@@ -164,6 +165,7 @@
 			// into an error where the object context cannot be saved. We do this
 			// right before send to avoid sequencing issues where the target object is
 			// set before the managed object store.
+            // TODO: Can we just obtain a permanent object ID instead of saving the store???
 			[self.objectStore save];
 			_targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
 		}

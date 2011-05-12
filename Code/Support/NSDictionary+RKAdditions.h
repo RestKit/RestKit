@@ -12,8 +12,7 @@
 
 /**
  * Creates and initializes a dictionary with key value pairs, with the keys specified
- * first instead of the objects. This allows for a more sensible definition of the 
- * property to element and relationship mappings on RKObjectMappable classes
+ * first instead of the objects.
  */
 + (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
 
