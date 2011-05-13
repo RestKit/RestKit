@@ -13,6 +13,7 @@
 
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
+#import "NSURL+RKAdditions.h"
 #import "RKJSONParser.h"
 #import "RKXMLParser.h"
 #import "Errors.h"
@@ -369,6 +370,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		SEL comparisonSelector;
 		if ([propertyValue isKindOfClass:[NSString class]]) {
 			comparisonSelector = @selector(isEqualToString:);
+		} else if ([propertyValue isKindOfClass:[NSURL class]]) {
+			comparisonSelector = @selector(isEqualToURL:);            
 		} else if ([propertyValue isKindOfClass:[NSNumber class]]) {
 			comparisonSelector = @selector(isEqualToNumber:);
 		} else if ([propertyValue isKindOfClass:[NSDate class]]) {
