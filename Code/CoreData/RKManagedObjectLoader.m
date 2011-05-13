@@ -35,8 +35,8 @@
 }
 
 - (void)dealloc {
-	[_targetObjectID release];
-	_targetObjectID = nil;
+    [_targetObjectID release];
+    _targetObjectID = nil;
     [_managedObjectKeyPaths release];
     
     [super dealloc];
@@ -72,12 +72,12 @@
 }
 
 - (void)setTargetObject:(NSObject*)targetObject {
-	[_targetObject release];
-	_targetObject = nil;	
-	_targetObject = [targetObject retain];	
-    
-	[_targetObjectID release];
-	_targetObjectID = nil;
+    [_targetObject release];
+    _targetObject = nil;	
+    _targetObject = [targetObject retain];	
+
+    [_targetObjectID release];
+    _targetObjectID = nil;
     
     // Obtain a permanent ID for the object
     // NOTE: There is an important sequencing issue here. You MUST save the
