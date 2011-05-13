@@ -9,20 +9,10 @@
 #import "RKManagedObjectLoader.h"
 #import "RKURL.h"
 #import "RKManagedObject.h"
-#import "RKManagedObjectStore.h"
 #import "RKObjectMapper.h"
 #import "RKManagedObjectFactory.h"
 #import "RKManagedObjectThreadSafeInvocation.h"
-
-// TODO: Move me to a new header file for sharing...
-@interface RKObjectLoader (Private)
-
-@property (nonatomic, readonly) RKManagedObjectStore* objectStore;
-
-- (void)handleTargetObject;
-- (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
-- (void)performMappingOnBackgroundThread;
-@end
+#import "../ObjectMapping/RKObjectLoader_Internals.h"
 
 @implementation RKManagedObjectLoader
 
@@ -42,21 +32,20 @@
     [super dealloc];
 }
 
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
-    Class managedObjectClass = NSClassFromString(@"NSManagedObject");
-    if (self.objectStore && managedObjectClass) {
-        if ([destinationObject isKindOfClass:managedObjectClass]) {
-            // TODO: logging here
-            [_managedObjectKeyPaths addObject:keyPath];
-        }
-    }
-}
-
 - (RKManagedObjectStore*)objectStore {
     return self.objectManager.objectStore;
 }
 
-#pragma mark - Subclass Hooks
+#pragma mark - RKObjectMapperDelegate methods
+
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
+    if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
+        // TODO: logging here
+        [_managedObjectKeyPaths addObject:keyPath];
+    }
+}
+
+#pragma mark - RKObjectLoader overrides
 
 - (void)performMappingOnBackgroundThread {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];

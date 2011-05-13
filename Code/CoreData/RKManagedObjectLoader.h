@@ -7,6 +7,7 @@
 //
 
 #import "../ObjectMapping/RKObjectLoader.h"
+#import "RKManagedObjectStore.h"
 
 /*!
  A subclass of the object loader that is dispatched when you
@@ -18,5 +19,7 @@
     NSManagedObjectID* _targetObjectID;	
     NSMutableSet* _managedObjectKeyPaths;
 }
+
+@property (nonatomic, readonly) RKManagedObjectStore* objectStore;
 
 @end

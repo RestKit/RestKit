@@ -12,16 +12,9 @@
 #import "Errors.h"
 #import "RKNotifications.h"
 #import "RKParser.h"
+#import "RKObjectLoader_Internals.h"
 
-// Private Interfaces - Proxy access to RKObjectManager for convenience
-@interface RKObjectLoader (Private) <RKObjectMapperDelegate>
-
-@property (nonatomic, readonly) RKClient* client;
-
-- (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary*)resultDictionary;
-
-@end
-
+// TODO: Move to RKRequest_Internals.h
 @interface RKRequest (Private);
 
 - (void)prepareURLRequest;
@@ -58,7 +51,7 @@
 	[super dealloc];
 }
 
-#pragma mark Response Processing
+#pragma mark - Response Processing
 
 - (void)finalizeLoad:(BOOL)successful {
 	_isLoading = NO;
@@ -121,7 +114,8 @@
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider {
     id<RKParser> parser = [self.objectManager parserForMIMEType:self.response.MIMEType];
     id parsedData = [parser objectFromString:[self.response bodyAsString]];
-    // TODO: Assert that there is a parser and data???
+    NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
+    NSAssert(parsedData, @"Cannot perform object load without data for mapping");
     
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.objectFactory = [self createObjectFactory];
@@ -131,6 +125,7 @@
     
     // TODO: Have to handle errors here... Maybe we always return a result with the errors?
     if (nil == result) {
+        // TODO: Logging macros
         NSLog(@"GOT MAPPING ERRORS: %@", mapper.errors);
         return nil;
     }
