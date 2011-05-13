@@ -11,36 +11,64 @@
 #import "RKManagedObject.h"
 #import "RKManagedObjectStore.h"
 #import "RKObjectMapper.h"
+#import "RKManagedObjectFactory.h"
+#import "RKManagedObjectThreadSafeInvocation.h"
 
+// TODO: Move me to a new header file for sharing...
 @interface RKObjectLoader (Private)
 
 @property (nonatomic, readonly) RKManagedObjectStore* objectStore;
 
 - (void)handleTargetObject;
 - (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
+- (void)performMappingOnBackgroundThread;
 @end
 
-// TODO: I believe that we want to eliminate the subclass here and roll the managed object
-// handling into another object that is set as the delegate on the object loader.
 @implementation RKManagedObjectLoader
 
 - (id)init {
-    if ((self = [super init])) {
-        _managedKeyPathsAndObjectIDs = [NSMutableDictionary new];
-        _managedKeyPathsAndObjects = [NSMutableDictionary new];
+    self = [super init];
+    if (self) {
+        _managedObjectKeyPaths = [[NSMutableSet alloc] init];
     }
     return self;
 }
 
 - (void)dealloc {
-    [_targetObject release];
-	_targetObject = nil;
 	[_targetObjectID release];
 	_targetObjectID = nil;
-    [_managedKeyPathsAndObjectIDs release];
-    [_managedKeyPathsAndObjects release];
+    [_managedObjectKeyPaths release];
     
     [super dealloc];
+}
+
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
+    Class managedObjectClass = NSClassFromString(@"NSManagedObject");
+    if (self.objectStore && managedObjectClass) {
+        if ([destinationObject isKindOfClass:managedObjectClass]) {
+            // TODO: logging here
+            [_managedObjectKeyPaths addObject:keyPath];
+        }
+    }
+}
+
+- (RKManagedObjectStore*)objectStore {
+    return self.objectManager.objectStore;
+}
+
+#pragma mark - Subclass Hooks
+
+- (void)performMappingOnBackgroundThread {
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    
+    // Refetch the target object now that we are on the background thread
+    if (_targetObjectID) {
+        self.targetObject = [self.objectStore objectWithID:_targetObjectID];
+    }
+    
+    // Let RKObjectLoader handle the processing...
+    [super performMappingOnBackgroundThread];    
+    [pool drain];
 }
 
 - (void)setTargetObject:(NSObject*)targetObject {
@@ -50,132 +78,54 @@
     
 	[_targetObjectID release];
 	_targetObjectID = nil;
-}
-
-- (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
-    RKObjectMappingResult* result = [dictionary objectForKey:@"result"];
-	[dictionary release];
     
-    
-    // Swap out any objects in the results with their managed object coutnerparts on this thread based on
-    // they keys and ids in _managedKeyPathsAndObjectIDs
-    
-    NSMutableDictionary* resultsDictionary = [[[result asDictionary] mutableCopy] autorelease];
-    for (NSString* keyPath in [_managedKeyPathsAndObjectIDs allKeys]) {
-        id objectIDorIDs = [_managedKeyPathsAndObjectIDs objectForKey:keyPath];
-        if ([objectIDorIDs isKindOfClass:[NSManagedObjectID class]]) {
-            NSManagedObject* object = [self.objectStore objectWithID:(NSManagedObjectID*)objectIDorIDs];
-            [resultsDictionary setValue:object forKey:keyPath];
-        } else if ([objectIDorIDs isKindOfClass:[NSArray class]]) {
-            NSMutableArray* array = [NSMutableArray array];
-            for (NSManagedObjectID* objectID in (NSArray*)objectIDorIDs) {
-                NSManagedObject* object = [self.objectStore objectWithID:objectID];
-                [array addObject:object];
-            }
-            [resultsDictionary setValue:array forKey:keyPath];
-        }
-            
-    }
-    
-    result = [RKObjectMappingResult mappingResultWithDictionary:resultsDictionary];
-    
-    if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
-        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjects:[result asCollection]];
-    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObject:)]) {
-        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asObject]];
-    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
-        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
-    }
-    
-	[self responseProcessingSuccessful:YES withError:nil];
-}
-
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
-    
-    Class managedObjectClass = NSClassFromString(@"NSManagedObject");
-    if (self.objectStore && managedObjectClass) {
-        if ([destinationObject isKindOfClass:managedObjectClass]) {
-            id objectIDorIDsForKeyPath = [_managedKeyPathsAndObjects objectForKey:keyPath];
-            if (nil == objectIDorIDsForKeyPath) {
-                [_managedKeyPathsAndObjects setValue:destinationObject forKey:keyPath];
-            } else if ([objectIDorIDsForKeyPath isKindOfClass:[NSManagedObject class]]) {
-                NSMutableArray* array = [NSMutableArray arrayWithObject:destinationObject];
-                [array addObject:destinationObject];
-                [_managedKeyPathsAndObjects setValue:array forKey:keyPath];
-            } else {
-                NSMutableArray* array = (NSMutableArray*)objectIDorIDsForKeyPath;
-                [array addObject:destinationObject];
-            }
+    // Obtain a permanent ID for the object
+    // NOTE: There is an important sequencing issue here. You MUST save the
+    // managed object context before retaining the objectID or you will run
+    // into an error where the object context cannot be saved. We do this
+    // right before send to avoid sequencing issues where the target object is
+    // set before the managed object store.
+    // TODO: Can we just obtain a permanent object ID instead of saving the store???
+    if ([targetObject isKindOfClass:[NSManagedObject class]]) {
+        NSManagedObjectContext* context = self.objectStore.managedObjectContext;
+        NSError* error = nil;
+        if ([context obtainPermanentIDsForObjects:[NSArray arrayWithObject:targetObject] error:&error]) {
+            _targetObjectID = [[(NSManagedObject*)targetObject objectID] retain];
         }
     }
 }
 
-- (void)getPermanantObjectIdsForManagedObjects {
-    for (NSString* keyPath in [_managedKeyPathsAndObjects allKeys]) {
-        id objectOrObjects = [_managedKeyPathsAndObjects objectForKey:keyPath];
-        if ([objectOrObjects isKindOfClass:[NSManagedObject class]]) {
-            NSManagedObjectID* objectID = [(NSManagedObject*)objectOrObjects objectID];
-            [_managedKeyPathsAndObjectIDs setValue:objectID forKey:keyPath];
-        } else if ([objectOrObjects isKindOfClass:[NSArray class]]) {
-            NSMutableArray* array = [NSMutableArray array];
-            for (NSManagedObject* object in (NSArray*)objectOrObjects) {
-                NSManagedObjectID* objectID = [(NSManagedObject*)object objectID];
-                [array addObject:objectID];
-            }
-            [_managedKeyPathsAndObjectIDs setValue:array forKey:keyPath];
-        }
-        [_managedKeyPathsAndObjects removeObjectForKey:keyPath];
-    }
-}
-
-- (void)processLoadModelsInBackground:(RKResponse *)response {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+- (void)processMappingResult:(RKObjectMappingResult*)result {
+    // TODO: Need tests around the deletion case
+    // TODO: Save the store... handle deletion...
+    //    RKObjectMappingResult* result = nil;
+    //    if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
+    //        NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];
+    //        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
+    //    } else {
+    //        result = [self mapResponse:response withMappingProvider:mappingProvider];
+    //    }
     
-    RKObjectMappingProvider* mappingProvider;
-    if (self.objectMapping) {
-        mappingProvider = [[RKObjectMappingProvider new] autorelease];
-        [mappingProvider setMapping:self.objectMapping forKeyPath:@""];
-    } else {
-        mappingProvider = self.objectManager.mappingProvider;
-    }
-    
-    RKObjectMappingResult* result = nil;
-    if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
-        NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];
-        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
-    } else {
-        result = [self mapResponse:response withMappingProvider:mappingProvider];
-    }
-    
+    // If the response was successful, save the store...
     [self.objectStore save];
-    [self getPermanantObjectIdsForManagedObjects];
     
-    NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", result, @"result", nil] retain];
-    [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
-    
-	[pool drain];
+    NSDictionary* dictionary = [result asDictionary];
+    NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
+    RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+    [invocation setObjectStore:self.objectStore];
+    [invocation setTarget:self];
+    [invocation setSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
+    [invocation setArgument:&dictionary atIndex:2];
+    [invocation setManagedObjectKeyPaths:_managedObjectKeyPaths forArgument:2];
+    [invocation invokeOnMainThread];
 }
 
-// Give the target object a chance to modify the request. This is invoked during prepareURLRequest right before it hits the wire
-- (void)handleTargetObject {
-	if (self.targetObject) {
-		if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
-			// NOTE: There is an important sequencing issue here. You MUST save the
-			// managed object context before retaining the objectID or you will run
-			// into an error where the object context cannot be saved. We do this
-			// right before send to avoid sequencing issues where the target object is
-			// set before the managed object store.
-            // TODO: Can we just obtain a permanent object ID instead of saving the store???
-			[self.objectStore save];
-			_targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
-		}
-		
-		[super handleTargetObject];
-	}
-}
-
-- (RKManagedObjectStore*)objectStore {
-    return self.objectManager.objectStore;
+- (id<RKObjectFactory>)createObjectFactory {
+    if (self.objectManager.objectStore) {
+        return [RKManagedObjectFactory objectFactoryWithObjectStore:self.objectStore];
+    }
+    
+    return nil;    
 }
 
 @end

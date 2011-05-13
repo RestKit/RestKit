@@ -86,12 +86,17 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKManagedObjectThreadSafeInvocationSpec"
+            value = "RKObjectManagerSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldSerializeAndDeserializeManagedObjectsAcrossAThreadInvocation"
+            value = "itShouldUpdateACoreDataBackedTargetObject"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "NSAutoreleaseHaltOnNoPool"
+            value = "YES"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

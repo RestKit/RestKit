@@ -8,11 +8,15 @@
 
 #import "../ObjectMapping/RKObjectLoader.h"
 
-// Handles object loads when Core Data is being utilized
+/*!
+ A subclass of the object loader that is dispatched when you
+ are loading Core Data managed objects. This differs from the
+ transient object loader only by handling the special threading
+ concerns imposed by Core Data.
+ */
 @interface RKManagedObjectLoader : RKObjectLoader {
     NSManagedObjectID* _targetObjectID;	
-    NSMutableDictionary* _managedKeyPathsAndObjects;
-    NSMutableDictionary* _managedKeyPathsAndObjectIDs;
+    NSMutableSet* _managedObjectKeyPaths;
 }
 
 @end
