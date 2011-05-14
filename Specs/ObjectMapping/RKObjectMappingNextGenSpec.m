@@ -252,7 +252,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:mockProvider];
     mapper.targetObject = [NSDictionary new];
     [mapper performMapping];
-    [expectThat([mapper errorCount]) should:be(2)];
+    [expectThat([mapper errorCount]) should:be(1)];
 }
 
 - (void)itShouldMapToATargetObject {
@@ -398,7 +398,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     mapper.targetObject = [RKExampleUser user];
     [mapper performMapping];
-    [expectThat([mapper errorCount]) should:be(2)];
+    [expectThat([mapper errorCount]) should:be(1)];
     [expectThat([[mapper.errors objectAtIndex:0] code]) should:be(RKObjectMapperErrorObjectMappingTypeMismatch)];
 }
 

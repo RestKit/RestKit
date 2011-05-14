@@ -73,8 +73,13 @@
 }
 
 - (BOOL)isNullCollection:(id)object {
-    if ([object respondsToSelector:@selector(countForObject:)]) {
-        return ([object countForObject:[NSNull null]] == [object count]);
+    // We consider an empty array/dictionary mappable, but a collection that contains only NSNull
+    // values is unmappable
+    if ([object respondsToSelector:@selector(countForObject:)] && [object count] > 0) {        
+        if ([object countForObject:[NSNull null]] == [object count]) {
+            RKLOG_MAPPING(RKLogLevelWarning, @"Found a collection containing only NSNull values, considering the collection unmappable...");
+            return YES;
+        }
     }
     
     return NO;
@@ -128,8 +133,6 @@
         return nil;
     }
     
-    // TODO: It should map arrays of arrays...
-    // TODO: It should map array of objects back to dictionaries...    
     for (id mappableObject in mappableObjects) {
         id destinationObject = [self objectWithMapping:mapping andData:mappableObject];
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
@@ -184,6 +187,7 @@
     }
     
     // Perform the mapping
+    BOOL foundMappable = NO;
     NSMutableDictionary* results = [NSMutableDictionary dictionary];
     NSDictionary* keyPathsAndObjectMappings = [self.mappingProvider objectMappingsByKeyPath];
     for (NSString* keyPath in keyPathsAndObjectMappings) {
@@ -210,6 +214,7 @@
         }
         
         // Found something to map
+        foundMappable = YES;
         RKObjectMapping* objectMapping = [keyPathsAndObjectMappings objectForKey:keyPath];
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:objectMapping];
@@ -230,7 +235,7 @@
         [self.delegate objectMapperDidFinishMapping:self];
     }
     
-    if ([results count] == 0) {
+    if (foundMappable == NO) {
         [self addErrorForUnmappableKeyPath:@""];
         return nil;
     }

@@ -86,13 +86,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectManagerSpec"
+            value = "RKManagedObjectLoaderSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
             value = "itShouldUpdateACoreDataBackedTargetObject"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

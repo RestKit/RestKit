@@ -43,6 +43,12 @@ class RestKit::SpecServer < Sinatra::Base
     {:human => {:name => "My Name", :id => 1}}.to_json
   end
   
+  delete '/humans/1' do
+    status 200
+    content_type 'application/json'
+    "{}"
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

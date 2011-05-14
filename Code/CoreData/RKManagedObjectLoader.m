@@ -41,6 +41,7 @@
 - (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
     if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
         // TODO: logging here
+        // TODO: Unit test with a collection
         [_managedObjectKeyPaths addObject:keyPath];
     }
 }
@@ -85,18 +86,17 @@
 }
 
 - (void)processMappingResult:(RKObjectMappingResult*)result {
-    // TODO: Need tests around the deletion case
-    // TODO: Save the store... handle deletion...
-    //    RKObjectMappingResult* result = nil;
-    //    if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
-    //        NSManagedObject* backgroundThreadModel = [self.objectStore objectWithID:_targetObjectID];
-    //        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadModel];
-    //    } else {
-    //        result = [self mapResponse:response withMappingProvider:mappingProvider];
-    //    }
+    if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
+        // TODO: Logging
+        NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
+        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadObject];
+    }
     
     // If the response was successful, save the store...
-    [self.objectStore save];
+    if ([self.response isSuccessful]) {
+        // TODO: Logging or delegate notifications?
+        [self.objectStore save];
+    }
     
     NSDictionary* dictionary = [result asDictionary];
     NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
