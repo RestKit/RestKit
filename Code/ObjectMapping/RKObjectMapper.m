@@ -465,12 +465,18 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	for (NSString* elementKeyPath in elementToRelationshipMappings) {
 		NSString* propertyName = [elementToRelationshipMappings objectForKey:elementKeyPath];
 		
+        // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
+        NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
+        
+        // Get the right key.
+        NSString *relationshipElementKey = ([componentsOfKeyPath count] == 1) ? [componentsOfKeyPath lastObject] : [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count]-2]; 
+		
 		id relationshipElements = nil;
 		@try {
-			relationshipElements = [elements valueForKeyPath:elementKeyPath];
+			relationshipElements = [elements valueForKeyPath:relationshipElementKey];
 		}
 		@catch (NSException* e) {
-			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
+			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ (%@) for elements:%@", e, elementKeyPath, relationshipElementKey, elements);
 		}
         
         // Handle missing elements for the relationship
@@ -483,8 +489,6 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
             }
         }
         
-        // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
-        NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
         NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
         Class modelClass = [_elementToClassMappings valueForKeyPath:className];
         if ([modelClass isKindOfClass: [NSNull class]]) {
