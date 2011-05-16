@@ -12,13 +12,15 @@
 @implementation RKMappableObject
 
 @synthesize dateTest = _dateTest, numberTest = _numberTest, stringTest = _stringTest, urlTest = _urlTest,
-hasOne = _hasOne, hasMany = _hasMany;
+decimalNumberTest = _decimalNumberTest, hasOne = _hasOne, hasMany = _hasMany;
 
 + (NSDictionary*)elementToPropertyMappings {
 	return [NSDictionary dictionaryWithKeysAndObjects:@"date_test", @"dateTest", 
 					@"number_test", @"numberTest", 
 					@"string_test", @"stringTest",
-					@"url_test", @"urlTest", nil];
+					@"url_test", @"urlTest",
+					@"decimal_number_test", @"decimalNumberTest",
+					nil];
 }
 
 + (NSDictionary*)elementToRelationshipMappings {

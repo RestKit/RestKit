@@ -14,7 +14,8 @@
 	NSDate* _dateTest;
 	NSNumber* _numberTest;
 	NSString* _stringTest;
-    NSURL* _urlTest;
+	NSURL* _urlTest;
+	NSDecimalNumber* _decimalNumberTest;
 	RKMappableAssociation* _hasOne;
 	NSSet* _hasMany;
 }
@@ -23,6 +24,7 @@
 @property (nonatomic, retain) NSNumber* numberTest;
 @property (nonatomic, retain) NSString* stringTest;
 @property (nonatomic, retain) NSURL* urlTest;
+@property (nonatomic, retain) NSDecimalNumber * decimalNumberTest;
 @property (nonatomic, retain) RKMappableAssociation* hasOne;
 @property (nonatomic, retain) NSSet* hasMany;
 

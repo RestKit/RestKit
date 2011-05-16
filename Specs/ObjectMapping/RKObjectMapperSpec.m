@@ -127,6 +127,7 @@
 	[expectThat([result numberTest]) should:be(2)];
 	[expectThat([result stringTest]) should:be(@"SomeString")];
 	[expectThat([result urlTest]) should:be([NSURL URLWithString:@"https://github.com/twotoasters/RestKit"])];
+	[expectThat([result decimalNumberTest]) should:be([NSDecimalNumber decimalNumberWithString:@"3.14159265"])];
 	
 	[expectThat([result hasOne]) shouldNot:be(nil)];
 	[expectThat([[result hasOne] testString]) should:be(@"A String")];
@@ -344,6 +345,7 @@
 	@"      \"number_test\":2,"
 	@"      \"string_test\":\"SomeString\","
 	@"      \"url_test\":\"https://github.com/twotoasters/RestKit\","
+	@"      \"decimal_number_test\":\"3.14159265\","
 	@"      \"has_one\":{"
 	@"         \"test_string\":\"A String\""
 	@"      },"

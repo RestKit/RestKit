@@ -443,6 +443,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
                     }
                 } else if (class == [NSURL class] && [propertyValue isKindOfClass:[NSString class]]) {
                     propertyValue = [NSURL URLWithString:propertyValue];
+                } else if (class == [NSDecimalNumber class] && [propertyValue isKindOfClass:[NSString class]]) {
+                    propertyValue = [NSDecimalNumber decimalNumberWithString:propertyValue];
                 } else {
                     [NSException raise:@"NoElementValueConversionMethod" format:@"Don't know how to convert %@ (%@) to %@", propertyValue, [propertyValue class], class];
                 }
