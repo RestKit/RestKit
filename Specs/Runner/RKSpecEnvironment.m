@@ -7,7 +7,7 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKJSONParser.h"
+#import "RKParserRegistry.h"
 
 NSString* RKSpecGetBaseURL() {
     char* ipAddress = getenv("RESTKIT_IP_ADDRESS");
@@ -73,11 +73,16 @@ NSString* RKSpecReadFixture(NSString* fileName) {
 }
 
 id RKSpecParseFixtureJSON(NSString* fileName) {
+    NSError* error = nil;
     NSString* JSON = RKSpecReadFixture(fileName);
-    RKJSONParser* parser = [RKJSONParser new];    
-    id result = [parser objectFromString:JSON];
-    [parser release];
-    return result;
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:RKMIMETypeJSON];
+    id object = [parser objectFromString:JSON error:&error];
+    if (object == nil) {
+        NSLog(@"ERROR: Failed to parse JSON fixture '%@'. Error: %@", fileName, [error localizedDescription]);
+        return nil;
+    }
+    
+    return object;
 }
 
 

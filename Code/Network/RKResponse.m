@@ -8,7 +8,6 @@
 
 #import "RKResponse.h"
 #import "RKNotifications.h"
-#import "RKJSONParser.h"
 #import "RKNetwork.h"
 
 @implementation RKResponse
@@ -109,8 +108,11 @@
 	return [[[NSString alloc] initWithData:self.body encoding:NSUTF8StringEncoding] autorelease];
 }
 
+// TODO: Reimplement as parsedBody
 - (id)bodyAsJSON {
-	return [[[[RKJSONParser alloc] init] autorelease] objectFromString:[self bodyAsString]];
+    [NSException raise:nil format:@"Reimplemented as parsedBody!!!"];
+//	return [[[[RKJSONParser alloc] init] autorelease] objectFromString:[self bodyAsString]];
+    return nil;
 }
 
 - (NSString*)failureErrorDescription {

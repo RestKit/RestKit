@@ -9,7 +9,6 @@
 #import <OCMock/OCMock.h>
 #import <OCMock/NSNotificationCenter+OCMAdditions.h>
 #import "RKSpecEnvironment.h"
-#import "RKJSONParser.h"
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
 #import "RKObjectAttributeMapping.h"
@@ -774,7 +773,7 @@
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
     
-    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
     [dictionary setValue:[NSNull null] forKey:@"name"];
     RKExampleUser* user = [RKExampleUser user];
     user.name = nil;
@@ -790,7 +789,7 @@
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
     
-    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    NSDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
     [dictionary setValue:[NSNull null] forKey:@"name"];
     RKExampleUser* user = [RKExampleUser user];
     user.name = @"Blake Watters";

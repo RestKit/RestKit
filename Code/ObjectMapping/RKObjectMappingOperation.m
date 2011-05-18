@@ -168,7 +168,9 @@
         }
         if (value) {
             appliedMappings = YES;
-            [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+            if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFindMapping:forKeyPath:)]) {
+                [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+            }
             RKLOG_MAPPING(RKLogLevelInfo, @"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
             
             // Inspect the property type to handle any value transformations
@@ -180,13 +182,17 @@
             // Ensure that the value is different
             if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
                 [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
-                [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+                if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
+                    [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+                }
                 RKLOG_MAPPING(RKLogLevelDebug, @"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
             } else {
                 RKLOG_MAPPING(RKLogLevelDebug, @"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
             }
         } else {
-            [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
+            if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotFindMappingForKeyPath:)]) {
+                [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
+            }
             RKLOG_MAPPING(RKLogLevelInfo, @"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
             
             // Optionally set nil for missing values
@@ -288,8 +294,10 @@
                                   @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
                                   nil];
         int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
-        NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];        
-        [self.delegate objectMappingOperation:self didFailWithError:unmappableError];
+        NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];
+        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
+            [self.delegate objectMappingOperation:self didFailWithError:unmappableError];
+        }
         if (error) {
             *error = unmappableError;
         }

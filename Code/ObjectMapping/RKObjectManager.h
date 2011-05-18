@@ -30,7 +30,6 @@ typedef enum {
 	NSObject<RKRouter>* _router;
 	RKManagedObjectStore* _objectStore;	
 	RKObjectManagerOnlineState _onlineState;
-    NSMutableDictionary* _parsersForMIMETypes;
     RKObjectMappingProvider* _mappingProvider;
     NSString* _serializationMIMEType;
 }
@@ -55,18 +54,6 @@ typedef enum {
  * Initialize a new model manager instance
  */
 - (id)initWithBaseURL:(NSString*)baseURL;
-
-/**
- * Sets a parser to user for a given mimetype.
- *
- * Will Default to RKJSONParser for JSON and RKXMLParser for XML.
- */
-- (void)setParser:(id<RKParser>)parser forMIMEType:(NSString*)mimeType;
-
-/**
- * Returns the correct parser for the given MIMEType;
- */
-- (id<RKParser>)parserForMIMEType:(NSString*)mimeType;
 
 /**
  * The REST client for this manager
@@ -100,6 +87,11 @@ typedef enum {
  * The Default MIME Type to be used in object serialization.
  */
 @property (nonatomic, retain) NSString* serializationMIMEType;
+
+/**
+ * The value for the HTTP Accept header to specify the preferred format for retrieved data
+ */
+@property (nonatomic, assign) NSString* acceptMIMEType;
 
 ////////////////////////////////////////////////////////
 // Registered Object Loaders

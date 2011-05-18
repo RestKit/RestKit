@@ -13,6 +13,7 @@
 #import "RKNotifications.h"
 #import "RKParser.h"
 #import "RKObjectLoader_Internals.h"
+#import "RKParserRegistry.h"
 
 // TODO: Move to RKRequest_Internals.h
 @interface RKRequest (Private);
@@ -112,8 +113,10 @@
 #pragma mark - Response Object Mapping
 
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider {
-    id<RKParser> parser = [self.objectManager parserForMIMEType:self.response.MIMEType];
-    id parsedData = [parser objectFromString:[self.response bodyAsString]];
+    NSError* error = nil;
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
+    id parsedData = [parser objectFromString:[self.response bodyAsString] error:&error];
+    // TODO: Surface the parsing error...
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
     NSAssert(parsedData, @"Cannot perform object load without data for mapping");
     
