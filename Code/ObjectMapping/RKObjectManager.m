@@ -113,8 +113,6 @@ static RKObjectManager* sharedManager = nil;
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
     RKObjectLoader* objectLoader = nil;
-    
-    // TODO: Can we eliminate and just use RKObjectLoader???
     Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
     if (self.objectStore && managedObjectLoaderClass) {
         objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
@@ -147,22 +145,21 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
-// TODO: should be withObjectMapping:
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectClass:(Class)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	loader.method = RKRequestMethodGET;
-//	loader.objectClass = objectClass;
+    loader.objectMapping = objectMapping;
 
 	[loader send];
 
 	return loader;
 }
 
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectClass:(Class)objectClass delegate:(NSObject <RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(NSObject <RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePathWithQuery = RKPathAppendQueryParams(resourcePath, queryParams);
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePathWithQuery delegate:delegate];
 	loader.method = RKRequestMethodGET;
-//	loader.objectClass = objectClass;
+	loader.objectMapping = objectMapping;
 
 	[loader send];
 
@@ -177,13 +174,11 @@ static RKObjectManager* sharedManager = nil;
     RKObjectMapping* serializationMapping = [self.mappingProvider objectMappingForClass:[object class]];
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:serializationMapping];
     NSError* error = nil;
-    id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];
-    
+    id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];    
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
     
     if (error) {
         [delegate objectLoader:loader didFailWithError:error];
-        // TODO: what do we return here so the request doesn't get sent?
         return nil;
     }
 

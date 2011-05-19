@@ -31,12 +31,13 @@
  * Set a mapping to serialize objects of a specific class
  * for posting/putting back to the server
  */
-- (void)setMapping:(RKObjectMapping *)mapping forObjectClass:(Class)objectClass;
+- (void)setMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass;
 
 /**
  * returns the serialization mapping for a specific object class
  * which has been previously registered.
  */
 - (RKObjectMapping*)objectMappingForClass:(Class)objectClass;
+- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
 
 @end

@@ -42,6 +42,7 @@
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withObjectMapping:_mapping];
     operation.delegate = self;
+    operation.objectFactory = self;
     BOOL success = [operation performMapping:error];
     if (!success) {
         return nil;
@@ -74,6 +75,13 @@
         NSString* dateAsString = [value description];
         [operation.destinationObject setValue:dateAsString forKey:keyPath];
     }
+}
+
+#pragma mark - RKObjectFactory
+
+// We always serialize back to a dictionary
+- (id)objectWithMapping:(RKObjectMapping*)objectMapping andData:(id)mappableData {
+    return [NSMutableDictionary dictionary];
 }
 
 @end

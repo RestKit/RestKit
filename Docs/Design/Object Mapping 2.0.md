@@ -140,15 +140,6 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
     }
 ```
 
-### Tracing a Mapping
-// TODO: Believe we are getting rid of the tracing concept in favor of logging macros...
-```objc
-    RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:payload atKeyPath:nil mappingProvider:self.objectManager.mappingProvider];
-    mapper.tracingEnabled = YES;
-    id mappingResults = [mapper performMapping];
-    // Generates log output informing you of what happened within the mapper and mapping operations
-```
-
 ### Loading Using KeyPath Mapping Lookup
 ```objc
     RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" delegate:self];

@@ -94,4 +94,29 @@
     return YES;
 }
 
+- (void)mapAttributesSet:(NSSet*)attributes {
+    for (NSString* attributeKeyPath in attributes) {
+        [self addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:attributeKeyPath toKeyPath:attributeKeyPath]];
+    }
+}
+
+- (void)mapAttributes:(NSString*)attributeKeyPath, ... {
+    va_list args;
+    va_start(args, attributeKeyPath);
+	NSMutableSet* attributeKeyPaths = [NSMutableSet set];
+                                       
+    for (NSString* keyPath = attributeKeyPath; keyPath != nil; keyPath = va_arg(args, NSString*)) {
+        [attributeKeyPaths addObject:keyPath];
+    }
+    
+    va_end(args);
+    
+    [self mapAttributesSet:attributeKeyPaths];
+}
+
+- (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping {
+    RKObjectRelationshipMapping* mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:relationshipKeyPath objectMapping:objectMapping];
+    [self addRelationshipMapping:mapping];
+}
+
 @end

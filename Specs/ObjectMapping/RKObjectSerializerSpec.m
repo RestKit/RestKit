@@ -8,8 +8,9 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKObjectSerializer.h"
+#import "RKMappableObject.h"
 
-@interface RKObjectSerializerSpec : NSObject <UISpec> {
+@interface RKObjectSerializerSpec : RKSpec {
 }
 
 @end
@@ -115,5 +116,29 @@
     [expectThat(serialization) should:be(nil)];
 }
 
+- (void)itShouldSerializeNestedObjectsContainingDatesToJSON {
+    RKMappableObject* object = [[RKMappableObject new] autorelease];
+    object.stringTest = @"The string";
+    RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
+    association.date = [NSDate dateWithTimeIntervalSince1970:0];
+    object.hasOne = association;
+    
+    // Setup object mappings
+    RKObjectMapping* objectMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [objectMapping mapAttributes:@"stringTest", nil];    
+    RKObjectMapping* relationshipMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [relationshipMapping mapAttributes:@"date", nil];
+    [objectMapping mapRelationship:@"hasOne" withObjectMapping:relationshipMapping];
+    
+    // Serialize
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:objectMapping];
+    NSError* error = nil;
+    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
+    assertThat(error, is(nilValue()));
+    
+    NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
+    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    assertThat(data, is(equalTo(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"}}")));
+}
 
 @end

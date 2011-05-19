@@ -11,6 +11,7 @@
 #import "RKObjectRelationshipMapping.h"
 
 // Defines the mapping rules for a given target class
+// TODO: Document me!
 @interface RKObjectMapping : NSObject {
     Class _objectClass;
     NSMutableArray* _mappings;
@@ -38,5 +39,8 @@
 // TODO: Probably become properties...
 - (BOOL)shouldSetNilForMissingAttributes;
 - (BOOL)shouldSetNilForMissingRelationships;
+
+- (void)mapAttributes:(NSString*)attributeKeyPath, ...;
+- (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping;
 
 @end

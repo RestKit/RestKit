@@ -24,15 +24,15 @@
     [super dealloc];
 }
 
-//- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath {
-//    return [_mappings objectForKey:keyPath];
-//}
+- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath {
+    return [_mappings objectForKey:keyPath];
+}
 
 - (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath {
     [_mappings setValue:mapping forKey:keyPath];
 }
 
-- (void)setMapping:(RKObjectMapping *)mapping forObjectClass:(Class)objectClass {
+- (void)setMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass {
     [_serializationMappings setValue:mapping forKey:NSStringFromClass(objectClass)];
 }
 

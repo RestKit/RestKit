@@ -13,6 +13,7 @@
 #import "RKObjectMappingProvider.h"
 #import "RKHuman.h"
 #import "RKCat.h"
+#import "RKObjectMapperSpecModel.h"
 
 @interface RKObjectManagerSpec : RKSpec {
 	RKObjectManager* _objectManager;
@@ -59,7 +60,7 @@
     
     RKObjectMapping* humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [humanSerialization addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
-    [provider setMapping:humanSerialization forObjectClass:[RKHuman class]];
+    [provider setMapping:humanSerialization forClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
 	
     RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
@@ -83,7 +84,6 @@
     // that we just need a way to save the context before we begin mapping or something
     // on success. Always saving means that we can abandon objects on failure...
     [_objectManager.objectStore save];
-    _responseLoader.timeout = 200;
     [_objectManager postObject:temporaryHuman delegate:_responseLoader];
     [_responseLoader waitForResponse];
     
@@ -118,6 +118,30 @@
 	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:_responseLoader];
 	[_responseLoader waitForResponse];
 	[expectThat(_responseLoader.success) should:be(NO)];
+}
+
+- (void)itShouldPOSTAnObject {
+    RKObjectManager* manager = RKSpecNewObjectManager();
+    RKDynamicRouter* router = [[RKDynamicRouter new] autorelease];
+    [router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
+    manager.router = router;
+    
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    [mapping mapAttributes:@"name", @"age", nil];
+    [manager.mappingProvider setMapping:mapping forKeyPath:@"human"];
+    [manager.mappingProvider setMapping:mapping forClass:[RKObjectMapperSpecModel class]];
+    
+    RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
+    human.name = @"Blake Watters";
+    human.age = [NSNumber numberWithInt:28];
+    
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [manager postObject:human delegate:loader];
+    [loader waitForResponse];
+    
+    // NOTE: The /humans endpoint returns a canned response, we are testing the plumbing
+    // of the object manager here.
+    assertThat(human.name, is(equalTo(@"My Name")));
 }
 
 @end
