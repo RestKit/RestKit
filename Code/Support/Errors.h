@@ -14,5 +14,6 @@ extern NSString* const RKObjectMapperErrorObjectsKey;
 typedef enum {
 	RKObjectLoaderRemoteSystemError = 1,
 	RKRequestBaseURLOfflineError,
-    RKRequestUnexpectedResponseError
+    RKRequestUnexpectedResponseError,
+    RKObjectLaoderUnexpectedResponseError
 } RKRestKitError;
