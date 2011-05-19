@@ -172,6 +172,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	return loadedTime;
 }
 
+
+
 #pragma mark RKModelLoaderDelegate
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
@@ -191,9 +193,9 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
 	_isLoading = NO;
 
-	// TODO: Passing a nil error here does nothing for Three20.  Need to construct our
-	// own error here to make Three20 happy??
-	[self didFailLoadWithError:nil];
+    // TODO: pass error message?
+    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestUnexpectedResponseError userInfo:nil];
+	[self didFailLoadWithError:error];
 }
 
 
