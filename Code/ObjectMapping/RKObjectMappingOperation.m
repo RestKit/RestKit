@@ -20,7 +20,7 @@
 @synthesize destinationObject = _destinationObject;
 @synthesize objectMapping = _objectMapping;
 @synthesize delegate = _delegate;
-@synthesize objectMapper = _objectMapper;
+@synthesize objectFactory = _objectFactory;
 
 + (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withObjectMapping:(RKObjectMapping*)objectMapping {
     return [[[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:objectMapping] autorelease];
@@ -45,7 +45,6 @@
     [_sourceObject release];
     [_destinationObject release];
     [_objectMapping release];
-    [_objectMapper release];
     
     [super dealloc];
 }
@@ -161,7 +160,6 @@
     BOOL appliedMappings = NO;
     
     for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.attributeMappings) {
-        // TODO: Catch exceptions here... valueForUndefinedKey
         id value = nil;
         if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
             value = self.sourceObject;
@@ -170,7 +168,9 @@
         }
         if (value) {
             appliedMappings = YES;
-            [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+            if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFindMapping:forKeyPath:)]) {
+                [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+            }
             RKLOG_MAPPING(RKLogLevelInfo, @"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
             
             // Inspect the property type to handle any value transformations
@@ -182,13 +182,17 @@
             // Ensure that the value is different
             if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
                 [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
-                [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+                if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
+                    [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+                }
                 RKLOG_MAPPING(RKLogLevelDebug, @"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
             } else {
                 RKLOG_MAPPING(RKLogLevelDebug, @"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
             }
         } else {
-            [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
+            if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotFindMappingForKeyPath:)]) {
+                [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
+            }
             RKLOG_MAPPING(RKLogLevelInfo, @"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
             
             // Optionally set nil for missing values
@@ -211,7 +215,7 @@
     
     RKObjectMappingOperation* subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withObjectMapping:mapping.objectMapping];
     subOperation.delegate = self.delegate;
-    subOperation.objectMapper = self.objectMapper;
+    subOperation.objectFactory = self.objectFactory;
     if (NO == [subOperation performMapping:&error]) {
         NSString* errorMessage = [NSString stringWithFormat:@"WARNING: Failed mapping nested object: %@", [error localizedDescription]];
         RKLOG_MAPPING(RKLogLevelWarning, errorMessage);
@@ -246,7 +250,7 @@
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
             for (id nestedObject in value) {
-                id mappedObject = [_objectMapper createInstanceOfClassForMapping:mapping.objectMapping mappable:nestedObject];
+                id mappedObject = [self.objectFactory objectWithMapping:mapping.objectMapping andData:nestedObject];
                 if ([self mapNestedObject:nestedObject toObject:mappedObject withMapping:mapping]) {
                     appliedMappings = YES;
                     [destinationObject addObject:mappedObject];
@@ -262,7 +266,7 @@
             // One to one relationship
             RKLOG_MAPPING(RKLogLevelInfo, @"Mapping one to one relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);            
             
-            destinationObject = [_objectMapper createInstanceOfClassForMapping:mapping.objectMapping mappable:value];
+            destinationObject = [self.objectFactory objectWithMapping:mapping.objectMapping andData:value];
             if ([self mapNestedObject:value toObject:destinationObject withMapping:mapping]) {
                 appliedMappings = YES;
             }
@@ -290,8 +294,10 @@
                                   @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
                                   nil];
         int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
-        NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];        
-        [self.delegate objectMappingOperation:self didFailWithError:unmappableError];
+        NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];
+        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
+            [self.delegate objectMappingOperation:self didFailWithError:unmappableError];
+        }
         if (error) {
             *error = unmappableError;
         }

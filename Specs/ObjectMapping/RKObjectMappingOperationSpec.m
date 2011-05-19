@@ -6,9 +6,15 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKObjectMappingOperationSpec.h"
+#import "RKSpecEnvironment.h"
 
+@interface RKObjectMappingOperationSpec : RKSpec {
+    
+}
+
+@end
 
 @implementation RKObjectMappingOperationSpec
+
 
 @end

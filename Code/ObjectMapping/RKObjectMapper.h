@@ -12,7 +12,7 @@
 #import "../Support/Logging.h"
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
-#import "RKObjectManager.h"
+#import "RKObjectFactory.h"
 
 /*!
  Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
@@ -48,7 +48,7 @@ typedef enum RKObjectMapperErrors {
     id _targetObject;
     RKObjectMappingProvider* _mappingProvider;
     id<RKObjectMapperDelegate> _delegate;
-    RKObjectManager* _objectManager;
+    id<RKObjectFactory> _objectFactory;
     NSMutableArray* _errors;
 }
 
@@ -56,7 +56,7 @@ typedef enum RKObjectMapperErrors {
 @property (nonatomic, assign) id targetObject;
 @property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
 @property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
-@property (nonatomic, assign) RKObjectManager* objectManager;
+@property (nonatomic, assign) id<RKObjectFactory> objectFactory;
 @property (nonatomic, readonly) NSArray* errors;
 
 + (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider;

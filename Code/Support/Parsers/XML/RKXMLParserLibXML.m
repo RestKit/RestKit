@@ -1,22 +1,14 @@
 //
-//  RKXMLParser.mm
+//  RKXMLParserLibXML.m
 //
 //  Created by Jeremy Ellison on 2011-02-28.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import "RKXMLParser.h"
 #import <libxml2/libxml/parser.h>
+#import "RKXMLParserLibXML.h"
 
-@interface RKXMLParser (Private)
-- (NSDictionary*)parseXML:(NSString*)xml;
-@end
-
-@implementation RKXMLParser
-
-+ (NSDictionary*)parse:(NSString*)xml {
-    return [[[self new] autorelease] parseXML:xml];
-}
+@implementation RKXMLParserLibXML
 
 - (id)parseNode:(xmlNode*)node {
     NSMutableArray* nodes = [NSMutableArray array];
@@ -108,11 +100,12 @@
     return result;
 }
 
-- (id)objectFromString:(NSString*)string {
+- (id)objectFromString:(NSString*)string error:(NSError **)error {
+    // TODO: Add error handling...
     return [self parseXML:string];
 }
 
-- (NSString*)stringFromObject:(id)object {
+- (NSString*)stringFromObject:(id)object error:(NSError **)error {    
     [self doesNotRecognizeSelector:_cmd];
     return nil;
 }

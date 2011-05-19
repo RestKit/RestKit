@@ -13,7 +13,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "RKRequestSerializable.h"
-#import "RKJSONSerialization.h"
 
 /**
  * HTTP methods for requests

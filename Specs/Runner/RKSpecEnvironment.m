@@ -7,7 +7,7 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKJSONParser.h"
+#import "RKParserRegistry.h"
 
 NSString* RKSpecGetBaseURL() {
     char* ipAddress = getenv("RESTKIT_IP_ADDRESS");
@@ -52,6 +52,15 @@ RKObjectManager* RKSpecNewObjectManager() {
     return objectManager;
 }
 
+// TODO: Store initialization should not be coupled to object manager...
+RKManagedObjectStore* RKSpecNewManagedObjectStore() {
+    RKManagedObjectStore* store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    objectManager.objectStore = store;
+    [objectManager.objectStore deletePersistantStore];
+    return store;
+}
+
 // Read a fixture from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName) {
     NSError* error = nil;
@@ -64,9 +73,27 @@ NSString* RKSpecReadFixture(NSString* fileName) {
 }
 
 id RKSpecParseFixtureJSON(NSString* fileName) {
+    NSError* error = nil;
     NSString* JSON = RKSpecReadFixture(fileName);
-    RKJSONParser* parser = [RKJSONParser new];    
-    id result = [parser objectFromString:JSON];
-    [parser release];
-    return result;
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:RKMIMETypeJSON];
+    id object = [parser objectFromString:JSON error:&error];
+    if (object == nil) {
+        NSLog(@"ERROR: Failed to parse JSON fixture '%@'. Error: %@", fileName, [error localizedDescription]);
+        return nil;
+    }
+    
+    return object;
 }
+
+
+@implementation RKSpec
+
+- (void)failWithException:(NSException *) e {
+    printf("%s:%i: error: %s\n",
+           [[[e userInfo] objectForKey:SenTestFilenameKey] cString],
+           [[[e userInfo] objectForKey:SenTestLineNumberKey] intValue],
+           [[[e userInfo] objectForKey:SenTestDescriptionKey] cString]);
+    [e raise];
+}
+
+@end

@@ -83,7 +83,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     }
 }
 
-- (void)seedObjectsFromFile:(NSString*)fileName toClass:(Class<RKObjectMappable>)nilOrMppableClass keyPath:(NSString*)nilOrKeyPath {
+- (void)seedObjectsFromFile:(NSString*)fileName toClass:(Class)nilOrMppableClass keyPath:(NSString*)nilOrKeyPath {
     NSError* error = nil;
     NSArray* mappedObjects;
 	NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
@@ -108,7 +108,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
         
         // Inform the delegate
         if (self.delegate) {
-            for (NSObject<RKObjectMappable>* object in mappedObjects) {
+            for (NSObject* object in mappedObjects) {
                 [self.delegate didSeedObject:object fromFile:fileName];
             }
         }

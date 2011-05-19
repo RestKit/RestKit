@@ -31,4 +31,5 @@
 - (void)removeCatsObject:(RKCat *)value;
 - (void)addCats:(NSSet *)value;
 - (void)removeCats:(NSSet *)value;
+
 @end

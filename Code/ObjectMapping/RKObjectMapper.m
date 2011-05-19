@@ -16,7 +16,7 @@
 @synthesize targetObject = _targetObject;
 @synthesize delegate =_delegate;
 @synthesize mappingProvider = _mappingProvider;
-@synthesize objectManager = _objectManager;
+@synthesize objectFactory = _objectFactory;
 @synthesize errors = _errors;
 
 + (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider {
@@ -35,39 +35,9 @@
 }
 
 - (void)dealloc {
-    _objectManager = nil; //
     [_sourceObject release];
     [_errors release];
     [super dealloc];
-}
-
-- (id)createInstanceOfClassForMapping:(RKObjectMapping*)mapping mappable:(id)mappableObject {
-    Class mappableClass = mapping.objectClass;
-    // TODO: Believe we want this to consult the delegate? Or maybe the provider? objectForMappingWithClass:atKeyPath:
-    if (mappableClass) {
-        Class nsManagedObjectClass = NSClassFromString(@"NSManagedObject");
-        if (nsManagedObjectClass && [mappableClass isSubclassOfClass:nsManagedObjectClass]) {
-            //primaryKeyProperty 
-            RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
-            id primaryKeyValue = nil;
-            NSString* primaryKeyProperty = [mappableClass performSelector:@selector(primaryKeyProperty)];
-            for (RKObjectAttributeMapping* attributeMapping in mapping.attributeMappings) {
-                if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyProperty]) {
-                    primaryKeyAttributeMapping = attributeMapping;
-                    break;
-                }
-            }
-            NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
-            if (keyPathForPrimaryKeyElement) {
-                primaryKeyValue = [mappableObject valueForKey:keyPathForPrimaryKeyElement];
-            }
-            return [self.objectManager.objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyValue:primaryKeyValue];
-        } else {
-            return [[mappableClass new] autorelease];
-        }
-    }
-    
-    return nil;
 }
 
 #pragma mark - Errors
@@ -98,13 +68,18 @@
 }
 
 - (void)addErrorForUnmappableKeyPath:(NSString*)keyPath {
-    NSString* errorMessage = [NSString stringWithFormat:@"Could not find an object mapping for keyPath: %@", keyPath];
+    NSString* errorMessage = [NSString stringWithFormat:@"Could not find an object mapping for keyPath: '%@'", keyPath];
     [self addErrorWithCode:RKObjectMapperErrorObjectMappingNotFound message:errorMessage keyPath:keyPath userInfo:nil];
 }
 
 - (BOOL)isNullCollection:(id)object {
-    if ([object respondsToSelector:@selector(countForObject:)]) {
-        return ([object countForObject:[NSNull null]] == [object count]);
+    // We consider an empty array/dictionary mappable, but a collection that contains only NSNull
+    // values is unmappable
+    if ([object respondsToSelector:@selector(countForObject:)] && [object count] > 0) {        
+        if ([object countForObject:[NSNull null]] == [object count]) {
+            RKLOG_MAPPING(RKLogLevelWarning, @"Found a collection containing only NSNull values, considering the collection unmappable...");
+            return YES;
+        }
     }
     
     return NO;
@@ -127,7 +102,7 @@
             return nil;
         }
     } else {
-        destinationObject = [self createInstanceOfClassForMapping:objectMapping mappable:mappableObject];
+        destinationObject = [self objectWithMapping:objectMapping andData:mappableObject];
     }
     
     if (objectMapping && destinationObject) {
@@ -158,10 +133,8 @@
         return nil;
     }
     
-    // TODO: It should map arrays of arrays...
-    // TODO: It should map array of objects back to dictionaries...    
     for (id mappableObject in mappableObjects) {
-        id destinationObject = [self createInstanceOfClassForMapping:mapping mappable:mappableObject];
+        id destinationObject = [self objectWithMapping:mapping andData:mappableObject];
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
         if (success) {
             [mappedObjects addObject:destinationObject];
@@ -184,7 +157,7 @@
     
     NSError* error = nil;
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject objectMapping:mapping];
-    operation.objectMapper = self;
+    operation.objectFactory = self;
     BOOL success = [operation performMapping:&error];
     [operation release];
     
@@ -214,6 +187,7 @@
     }
     
     // Perform the mapping
+    BOOL foundMappable = NO;
     NSMutableDictionary* results = [NSMutableDictionary dictionary];
     NSDictionary* keyPathsAndObjectMappings = [self.mappingProvider objectMappingsByKeyPath];
     for (NSString* keyPath in keyPathsAndObjectMappings) {
@@ -240,6 +214,7 @@
         }
         
         // Found something to map
+        foundMappable = YES;
         RKObjectMapping* objectMapping = [keyPathsAndObjectMappings objectForKey:keyPath];
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:objectMapping];
@@ -260,13 +235,22 @@
         [self.delegate objectMapperDidFinishMapping:self];
     }
     
-    
-    if ([results count] == 0) {
+    if (foundMappable == NO) {
         [self addErrorForUnmappableKeyPath:@""];
         return nil;
     }
     
     return [RKObjectMappingResult mappingResultWithDictionary:results];
+}
+
+#pragma - RKObjectFactory methods
+
+- (id)objectWithMapping:(RKObjectMapping*)objectMapping andData:(id)mappableData {
+    if (self.objectFactory) {
+        return [self.objectFactory objectWithMapping:objectMapping andData:mappableData];
+    }
+    
+    return [[objectMapping.objectClass new] autorelease];
 }
 
 @end

@@ -14,7 +14,7 @@
 #import "RKHuman.h"
 #import "RKCat.h"
 
-@interface RKObjectManagerSpec : NSObject <UISpec> {
+@interface RKObjectManagerSpec : RKSpec {
 	RKObjectManager* _objectManager;
 	RKSpecResponseLoader* _responseLoader;
 }
@@ -29,7 +29,6 @@
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
     [_objectManager.objectStore deletePersistantStore];
-    
     
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     
@@ -67,7 +66,6 @@
     [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     _objectManager.router = router;
     
-    
 	_responseLoader	= [[RKSpecResponseLoader alloc] init];
 }
 
@@ -75,21 +73,32 @@
 	[expectThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"]) should:be(@"application/json")];
 }
 
+// TODO: Move to Core Data specific spec file...
 - (void)itShouldUpdateACoreDataBackedTargetObject {
     RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
     temporaryHuman.name = @"My Name";
+    
+    // TODO: We should NOT have to save the object store here to make this
+    // spec pass. Without it we are crashing inside the mapper internals. Believe
+    // that we just need a way to save the context before we begin mapping or something
+    // on success. Always saving means that we can abandon objects on failure...
+    [_objectManager.objectStore save];
+    _responseLoader.timeout = 200;
     [_objectManager postObject:temporaryHuman delegate:_responseLoader];
     [_responseLoader waitForResponse];
     
     RKHuman* human = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
-    [expectThat(human) should:be(temporaryHuman)];
-    [expectThat(human.railsID) should:be([NSNumber numberWithInt:1])];
+    assertThat(human, is(equalTo(temporaryHuman)));
+    assertThat(human.railsID, is(equalToInt(1)));
 }
 
+// TODO: Move to Core Data specific spec file...
 - (void)itShouldLoadAHuman {
 	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:_responseLoader];
+    _responseLoader.timeout = 200;
 	[_responseLoader waitForResponse];
     [expectThat(_responseLoader.failureError) should:be(nil)];
+    assertThat(_responseLoader.objects, isNot(empty()));
 	RKHuman* blake = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
 	NSLog(@"Blake: %@ (name = %@)", blake, blake.name);
 	[expectThat(blake.name) should:be(@"Blake Watters")];

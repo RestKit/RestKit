@@ -9,8 +9,7 @@
 #import "RKObjectManager.h"
 #import "../CoreData/RKManagedObjectStore.h"
 #import "../CoreData/RKManagedObjectLoader.h"
-// TODO: introducing a new dependency?
-#import "RKJSONParser.h"
+#import "../Support/RKMIMETypes.h"
 
 NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
 NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
@@ -36,17 +35,11 @@ static RKObjectManager* sharedManager = nil;
         _mappingProvider = [RKObjectMappingProvider new];
 		_router = [RKDynamicRouter new];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
+        _onlineState = RKObjectManagerOnlineStateUndetermined;
         
-        // TODO: we may want to be able to set this later. jbe.
-        [_client setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-        
-        _parsersForMIMETypes = [NSMutableDictionary new];
-        RKJSONParser* jsonParser = [[RKJSONParser new] autorelease];
-        [_parsersForMIMETypes setObject:jsonParser forKey:@"application/json"];
-        
-        self.serializationMIMEType = @"application/x-www-form-urlencoded";
-        
-		_onlineState = RKObjectManagerOnlineStateUndetermined;
+        self.acceptMIMEType = RKMIMETypeJSON;
+        self.serializationMIMEType = RKMIMETypeFormURLEncoded;
+        		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)
 													 name:RKReachabilityStateChangedNotification
@@ -77,8 +70,6 @@ static RKObjectManager* sharedManager = nil;
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_parsersForMIMETypes release];
-    _parsersForMIMETypes = nil;
 	[_router release];
 	_router = nil;
 	[_client release];
@@ -110,12 +101,12 @@ static RKObjectManager* sharedManager = nil;
 	}
 }
 
-- (void)setParser:(id<RKParser>)parser forMIMEType:(NSString*)mimeType {
-    [_parsersForMIMETypes setObject:parser forKey:mimeType];
+- (void)setAcceptMIMEType:(NSString*)MIMEType {
+    [_client setValue:MIMEType forHTTPHeaderField:@"Accept"];
 }
 
-- (id<RKParser>)parserForMIMEType:(NSString*)mimeType {
-    return [_parsersForMIMETypes objectForKey:mimeType];
+- (NSString*)acceptMIMEType {
+    return [self.client.HTTPHeaders valueForKey:@"Accept"];
 }
 
 #pragma mark Object Loading
@@ -156,7 +147,8 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+// TODO: should be withObjectMapping:
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectClass:(Class)objectClass delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
 	loader.method = RKRequestMethodGET;
 //	loader.objectClass = objectClass;
@@ -166,7 +158,7 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectClass:(Class<RKObjectMappable>)objectClass delegate:(NSObject <RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectClass:(Class)objectClass delegate:(NSObject <RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePathWithQuery = RKPathAppendQueryParams(resourcePath, queryParams);
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePathWithQuery delegate:delegate];
 	loader.method = RKRequestMethodGET;
@@ -180,14 +172,11 @@ static RKObjectManager* sharedManager = nil;
 /////////////////////////////////////////////////////////////
 // Object Instance Loaders
 
-- (RKObjectLoader*)objectLoaderForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
-	// Get the serialization representation from the router
-	NSString* resourcePath = [self.router resourcePathForObject:object method:method];
-    
-    // TODO: Use the new serializer...
+- (RKObjectLoader*)objectLoaderForObject:(NSObject*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+	NSString* resourcePath = [self.router resourcePathForObject:object method:method];    
     RKObjectMapping* serializationMapping = [self.mappingProvider objectMappingForClass:[object class]];
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:serializationMapping];
-    NSError* error = nil;;
+    NSError* error = nil;
     id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];
     
 	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
@@ -205,25 +194,25 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
-- (RKObjectLoader*)getObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)getObject:(NSObject*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodGET delegate:delegate];
 	[loader send];
 	return loader;
 }
 
-- (RKObjectLoader*)postObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)postObject:(NSObject*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPOST delegate:delegate];
 	[loader send];
 	return loader;
 }
 
-- (RKObjectLoader*)putObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)putObject:(NSObject*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPUT delegate:delegate];
 	[loader send];
 	return loader;
 }
 
-- (RKObjectLoader*)deleteObject:(NSObject<RKObjectMappable>*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
+- (RKObjectLoader*)deleteObject:(NSObject*)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodDELETE delegate:delegate];
 	[loader send];
 	return loader;

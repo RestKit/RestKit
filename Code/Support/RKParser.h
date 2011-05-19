@@ -18,8 +18,7 @@
  * Object attributes are encoded as a dictionary and collections
  * of objects are returned as arrays.
  */
-- (id)objectFromString:(NSString*)string;
-
-- (NSString*)stringFromObject:(id)object;
+- (id)objectFromString:(NSString*)string error:(NSError**)error;
+- (NSString*)stringFromObject:(id)object error:(NSError**)error;
 
 @end

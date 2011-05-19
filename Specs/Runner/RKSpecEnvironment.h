@@ -16,9 +16,11 @@
 
 #define HC_SHORTHAND
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
+#import <SenTestingKit/SenTestingKit.h>
 
 #import "RestKit.h"
 #import "RKSpecResponseLoader.h"
+#import "RKManagedObjectStore.h"
 
 ////////////////////////////////////////////////////////////////////////////
 // OCMock - For some reason this macro is incorrect. Note the use of __typeof
@@ -34,9 +36,14 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable);
 
 // Helpers for returning new instances that clear global state
 RKClient* RKSpecNewClient();
-RKObjectManager* RKSpecNewObjectManager();
 RKRequestQueue* RKSpecNewRequestQueue();
+RKObjectManager* RKSpecNewObjectManager();
+RKManagedObjectStore* RKSpecNewManagedObjectStore();
 
 // Read the contents of a fixture file from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName);
 id RKSpecParseFixtureJSON(NSString* fileName);
+
+// Base class for specs. Allows UISpec to run the specs and use of Hamcrest matchers...
+@interface RKSpec : NSObject <UISpec>
+@end

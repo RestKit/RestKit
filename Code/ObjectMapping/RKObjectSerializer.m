@@ -6,19 +6,25 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import "../Network/RKRequestSerialization.h"
+#import "../Support/RKMIMETypes.h"
+#import "../Support/RKParser.h"
 #import "RKObjectSerializer.h"
-#import "RKObjectMappingOperation.h"
-#import "RKJSONSerialization.h"
 #import "NSDictionary+RKRequestSerialization.h"
+#import "RKParserRegistry.h"
 
 @implementation RKObjectSerializer
+
+@synthesize object = _object;
+@synthesize mapping = _mapping;
 
 + (id)serializerWithObject:(id)object mapping:(RKObjectMapping*)mapping {
     return [[[self alloc] initWithObject:object mapping:mapping] autorelease];
 }
 
 - (id)initWithObject:(id)object mapping:(RKObjectMapping*)mapping {
-    if ((self = [super init])) {
+    self = [super init];
+    if (self) {
         _object = [object retain];
         _mapping = [mapping retain];
     }
@@ -32,29 +38,42 @@
     [super dealloc];
 }
 
-- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)mimeType error:(NSError**)error {
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)MIMEType error:(NSError**)error {
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withObjectMapping:_mapping];
-    [operation performMapping:error];
-    if (*error) {
+    operation.delegate = self;
+    BOOL success = [operation performMapping:error];
+    if (!success) {
         return nil;
     }
     
-    if ([mimeType isEqualToString:@"application/json"]) {
-        for (id key in [dictionary allKeys]) {
-            id val = [dictionary valueForKey:key];
-            if ([val isKindOfClass:[NSDate class]]) {
-                [dictionary setValue:[val description] forKey:key];
-            }
+    if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
+        // Dictionaries are natively RKRequestSerializable as Form Encoded
+        return dictionary;
+    } else {
+        id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
+        NSString* string = [parser stringFromObject:dictionary error:error];
+        if (string == nil) {
+            return nil;
         }
         
-        return [RKJSONSerialization JSONSerializationWithObject:dictionary];
-    } else if ([mimeType isEqualToString:@"application/x-www-form-urlencoded"]) {
-        return dictionary;
+        NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+        return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
     }
     
     return nil;
 }
 
+#pragma mark - RKObjectMappingOperationDelegate
+
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
+    
+    // Date's are not natively serializable, must be encoded as a string
+    if ([value isKindOfClass:[NSDate class]]) {
+        // TODO: Log transformation from NSDate to string...
+        NSString* dateAsString = [value description];
+        [operation.destinationObject setValue:dateAsString forKey:keyPath];
+    }
+}
 
 @end

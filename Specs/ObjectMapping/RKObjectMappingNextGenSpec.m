@@ -9,7 +9,6 @@
 #import <OCMock/OCMock.h>
 #import <OCMock/NSNotificationCenter+OCMAdditions.h>
 #import "RKSpecEnvironment.h"
-#import "RKJSONParser.h"
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
 #import "RKObjectAttributeMapping.h"
@@ -252,7 +251,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:mockProvider];
     mapper.targetObject = [NSDictionary new];
     [mapper performMapping];
-    [expectThat([mapper errorCount]) should:be(2)];
+    [expectThat([mapper errorCount]) should:be(1)];
 }
 
 - (void)itShouldMapToATargetObject {
@@ -398,7 +397,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     mapper.targetObject = [RKExampleUser user];
     [mapper performMapping];
-    [expectThat([mapper errorCount]) should:be(2)];
+    [expectThat([mapper errorCount]) should:be(1)];
     [expectThat([[mapper.errors objectAtIndex:0] code]) should:be(RKObjectMapperErrorObjectMappingTypeMismatch)];
 }
 
@@ -408,7 +407,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
     [expectThat([mapper errorCount]) should:be(1)];
-    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ")];
+    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ''")];
 }
 
 - (void)itShouldAddAnErrorWhenAttemptingToMapACollectionWithoutAnObjectMapping {
@@ -417,7 +416,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
     [expectThat([mapper errorCount]) should:be(1)];
-    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ")];
+    [expectThat([[mapper.errors objectAtIndex:0] localizedDescription]) should:be(@"Could not find an object mapping for keyPath: ''")];
 }
 
 #pragma mark RKObjectMapperDelegate Specs
@@ -774,7 +773,7 @@
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
     
-    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
     [dictionary setValue:[NSNull null] forKey:@"name"];
     RKExampleUser* user = [RKExampleUser user];
     user.name = nil;
@@ -790,7 +789,7 @@
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
     
-    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    NSDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
     [dictionary setValue:[NSNull null] forKey:@"name"];
     RKExampleUser* user = [RKExampleUser user];
     user.name = @"Blake Watters";

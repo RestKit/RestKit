@@ -12,16 +12,10 @@
 #import "Errors.h"
 #import "RKNotifications.h"
 #import "RKParser.h"
+#import "RKObjectLoader_Internals.h"
+#import "RKParserRegistry.h"
 
-// Private Interfaces - Proxy access to RKObjectManager for convenience
-@interface RKObjectLoader (Private)
-
-@property (nonatomic, readonly) RKClient* client;
-
-- (RKObjectMappingResult*)mapResponse:(RKResponse*)response withMappingProvider:(RKObjectMappingProvider*)mappingProvider;
-
-@end
-
+// TODO: Move to RKRequest_Internals.h
 @interface RKRequest (Private);
 
 - (void)prepareURLRequest;
@@ -39,9 +33,8 @@
 
 - (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	if ((self = [super initWithURL:[objectManager.client URLForResourcePath:resourcePath] delegate:delegate])) {		
-        _objectManager = objectManager;
-        
-        [self.client setupRequest:self];
+        _objectManager = objectManager;        
+        [self.objectManager.client setupRequest:self];
 	}
     
 	return self;
@@ -59,15 +52,9 @@
 	[super dealloc];
 }
 
-#pragma mark - RKObjectManager Proxy Methods
+#pragma mark - Response Processing
 
-- (RKClient*)client {
-    return self.objectManager.client;
-}
-
-#pragma mark Response Processing
-
-- (void)responseProcessingSuccessful:(BOOL)successful withError:(NSError*)error {
+- (void)finalizeLoad:(BOOL)successful {
 	_isLoading = NO;
 
 	if (successful) {
@@ -82,76 +69,74 @@
 	}
 }
 
-- (BOOL)encounteredErrorWhileProcessingRequest:(RKResponse*)response {
-	if ([response isFailure]) {
-		[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:response.failureError];
-
-		[self responseProcessingSuccessful:NO withError:response.failureError];
-
-		return YES;
-	} else if ([response isError]) {
-        
-        if ([response isServiceUnavailable]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
-        }
-        
-        RKObjectMappingResult* result = [self mapResponse:response withMappingProvider:self.objectManager.mappingProvider];
-        NSError* error = [result asError];
-        
-        [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
-        
-		return YES;
-	}
-	return NO;
-}
-
-// NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
-- (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary {
-	RKObjectMappingResult* result = [dictionary objectForKey:@"result"];
-	[dictionary release];
+// Invoked on the main thread. Inform the delegate.
+- (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary*)resultDictionary {
+	RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:resultDictionary];
 
     if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjectDictionary:[result asDictionary]];
-    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjects:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObjects:[result asCollection]];
-    } else if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObject:)]) {
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObject:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asObject]];
     }
     
-	[self responseProcessingSuccessful:YES withError:nil];
+	[self finalizeLoad:YES];
 }
 
-- (void)informDelegateOfObjectLoadErrorWithInfoDictionary:(NSDictionary*)dictionary {
-	NSError* error = [dictionary objectForKey:@"error"];
-	[dictionary release];
+#pragma mark - Subclass Hooks
 
-	NSLog(@"[RestKit] RKObjectLoader: Error saving managed object context: error=%@ userInfo=%@", error, error.userInfo);
-
-	NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-							  [error localizedDescription], NSLocalizedDescriptionKey,
-							  nil];
-	NSError *rkError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
-
-	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:rkError];
-
-	[self responseProcessingSuccessful:NO withError:rkError];
+/*!
+ Overloaded by RKManagedObjectLoader to provide support for creation
+ and find/update of managed object instances
+ 
+ @protected
+ */
+- (id<RKObjectFactory>)createObjectFactory {
+    return nil;
 }
 
-- (RKObjectMappingResult*)mapResponse:(RKResponse*)response withMappingProvider:(RKObjectMappingProvider*)mappingProvider {
-    id<RKParser> parser = [self.objectManager parserForMIMEType:response.MIMEType];
-    // TODO: Handle case where there is no parser for this MIME type
-    id parsedData = [parser objectFromString:[response bodyAsString]];
+/*!
+ Overloaded by RKManagedObjectLoader to serialize/deserialize managed objects
+ at thread boundaries. 
+ 
+ @protected
+ */
+- (void)processMappingResult:(RKObjectMappingResult*)result {
+    [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithResultDictionary:) withObject:[result asDictionary] waitUntilDone:YES];
+}
+
+#pragma mark - Response Object Mapping
+
+- (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider {
+    NSError* error = nil;
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
+    id parsedData = [parser objectFromString:[self.response bodyAsString] error:&error];
+    // TODO: Surface the parsing error...
+    NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
+    NSAssert(parsedData, @"Cannot perform object load without data for mapping");
     
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
-    mapper.objectManager = self.objectManager;
+    mapper.objectFactory = [self createObjectFactory];
     mapper.targetObject = self.targetObject;
     mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];
+    
+    // TODO: Have to handle errors here... Maybe we always return a result with the errors?
+    if (nil == result) {
+        // TODO: Logging macros
+        NSLog(@"GOT MAPPING ERRORS: %@", mapper.errors);
+        return nil;
+    }
+    
     return result;
 }
 
-// NOTE: This method is overloaded in RKManagedObjectLoader to provide Core Data support
-- (void)processLoadModelsInBackground:(RKResponse *)response {
+- (void)performMappingOnBackgroundThread {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
     RKObjectMappingProvider* mappingProvider;
@@ -162,26 +147,65 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    RKObjectMappingResult* result = [self mapResponse:response withMappingProvider:mappingProvider];
-
-    NSDictionary* infoDictionary = [[NSDictionary dictionaryWithObjectsAndKeys:response, @"response", result, @"result", nil] retain];
-    [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithInfoDictionary:) withObject:infoDictionary waitUntilDone:YES];
+    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:mappingProvider];
+    [self processMappingResult:result];
 
 	[pool drain];
 }
 
-// Give the target object a chance to modify the request
-- (void)handleTargetObject {
-	if (self.targetObject) {
-		if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
-			[self.targetObject willSendWithObjectLoader:self];
-		}
-	}
+- (BOOL)canParseMIMEType:(NSString*)MIMEType {
+    // TODO: Implement this
+    // TODO: Check that we have a parser available for the MIME Type
+    // TODO: Should probably be an expected MIME types array set by client/manager
+    // if ([self.objectMapper hasParserForMIMEType:[response MIMEType]) canMapFromMIMEType:
+    return YES;
 }
+
+- (BOOL)isResponseMappable {
+	if ([self.response isFailure]) {
+		[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:self.response.failureError];
+        
+		[self finalizeLoad:NO];
+        
+		return NO;
+	} else if ([self.response isError]) {
+        
+        if ([self.response isServiceUnavailable]) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
+        }
+        
+        RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.objectManager.mappingProvider];
+        NSError* error = [result asError];
+        
+        // TODO: Is this returning: [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
+        [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+        
+		return NO;
+	} else if ([self.response isSuccessful] && NO == [self canParseMIMEType:[self.response MIMEType]]) {
+        NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
+        if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
+            [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
+        }
+        
+        [self finalizeLoad:NO];
+        
+        return NO;
+    }
+    
+	return YES;
+}
+
+#pragma mark - RKRequest & RKRequestDelegate methods
 
 // Invoked just before request hits the network
 - (void)prepareURLRequest {
-    [self handleTargetObject];
+    // TODO: This is an informal protocol ATM. Maybe its not obvious enough?
+    if (self.targetObject) {
+        if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
+            [self.targetObject performSelector:@selector(willSendWithObjectLoader:) withObject:self];
+        }
+    }
+    
     [super prepareURLRequest];
 }
 
@@ -189,12 +213,13 @@
 	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 		[_delegate request:self didFailLoadWithError:error];
 	}
-
+    
 	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
-
-	[self responseProcessingSuccessful:NO withError:error];
+    
+	[self finalizeLoad:NO];
 }
 
+// NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
 - (void)didFinishLoad:(RKResponse*)response {
 	_response = [response retain];
     
@@ -202,20 +227,8 @@
         [_delegate request:self didLoadResponse:response];
     }
     
-	if (NO == [self encounteredErrorWhileProcessingRequest:response]) {
-        // TODO: Should probably be an expected MIME types array set by client/manager
-        // if ([self.objectMapper hasParserForMIMEType:[response MIMEType]) canMapFromMIMEType:
-        
-		if ([response isSuccessful]) {
-			[self performSelectorInBackground:@selector(processLoadModelsInBackground:) withObject:response];
-		} else {
-			NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", response.statusCode, response.MIMEType);
-			if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
-				[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
-			}
-            
-			[self responseProcessingSuccessful:NO withError:nil];
-		}
+	if ([self isResponseMappable]) {
+		[self performSelectorInBackground:@selector(performMappingOnBackgroundThread) withObject:nil];
 	}
 }
 

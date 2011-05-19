@@ -7,7 +7,6 @@
 //
 
 #import "../Network/Network.h"
-#import "RKObjectMappable.h"
 #import "RKObjectMapping.h"
 
 @class RKObjectManager;
@@ -68,7 +67,7 @@
     RKObjectManager* _objectManager;
 	RKResponse* _response;
     RKObjectMapping* _objectMapping;
-	NSObject<RKObjectMappable>* _targetObject;
+	NSObject* _targetObject;
 }
 
 /**
@@ -91,7 +90,7 @@
  * The mappable object that generated this loader. This is used to map object
  * updates back to the object that sent the request
  */
-@property (nonatomic, retain) NSObject<RKObjectMappable>* targetObject;
+@property (nonatomic, retain) NSObject* targetObject;
 
 /**
  * Initialize and return an object loader for a resource path against an object manager. The resource path
