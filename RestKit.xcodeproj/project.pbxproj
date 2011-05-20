@@ -99,7 +99,7 @@
 		256FDE55112DB0B90077F340 /* RKObjectMapperSpecModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */; };
 		257D2D7013759D70008E9649 /* RKObjectMappingResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 257D2D6E13759D6F008E9649 /* RKObjectMappingResult.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257D2D7113759D70008E9649 /* RKObjectMappingResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 257D2D6F13759D6F008E9649 /* RKObjectMappingResult.m */; };
-		258A92691379D18A00D80034 /* RKObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A92681379D18A00D80034 /* RKObjectFactory.h */; };
+		258A92691379D18A00D80034 /* RKObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A92681379D18A00D80034 /* RKObjectFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258A926C1379D41F00D80034 /* RKManagedObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A926A1379D41F00D80034 /* RKManagedObjectFactory.h */; };
 		258A926D1379D41F00D80034 /* RKManagedObjectFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 258A926B1379D41F00D80034 /* RKManagedObjectFactory.m */; };
 		258C6688133C377A004388A4 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 258C6687133C377A004388A4 /* libUISpec.a */; };
@@ -230,8 +230,6 @@
 		3F6C3A9610FE7524008F47C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
 		3F71ED3413748536006281CA /* RKObjectMappingProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F71ED3213748536006281CA /* RKObjectMappingProvider.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3F71ED3513748536006281CA /* RKObjectMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F71ED3313748536006281CA /* RKObjectMappingProvider.m */; };
-		3F7C8ED11379815A00BEBC29 /* (null) in Headers */ = {isa = PBXBuildFile; };
-		3F7C8ED21379815A00BEBC29 /* (null) in Sources */ = {isa = PBXBuildFile; };
 		3FD12C851379AD64008B996A /* RKRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3FD12C841379AD64008B996A /* RKRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73057FD61331AD5E001908EE /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 73057FC71331AA3D001908EE /* JSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73057FD71331AD67001908EE /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC81331AA3D001908EE /* JSONKit.m */; };
@@ -1330,7 +1328,6 @@
 				253E04C513798D72005D2E15 /* RKErrorMessage.h in Headers */,
 				3FD12C851379AD64008B996A /* RKRouter.h in Headers */,
 				259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */,
-				3F7C8ED11379815A00BEBC29 /* (null) in Headers */,
 				258A92691379D18A00D80034 /* RKObjectFactory.h in Headers */,
 				25A1CA8A137DD33900A7D5C9 /* RKObjectLoader_Internals.h in Headers */,
 				25A1CB4313840C5400A7D5C9 /* RKParserRegistry.h in Headers */,
@@ -1815,7 +1812,6 @@
 				259C64C0137477D0001FE1C5 /* RKObjectMapper.m in Sources */,
 				3F71ED3513748536006281CA /* RKObjectMappingProvider.m in Sources */,
 				257D2D7113759D70008E9649 /* RKObjectMappingResult.m in Sources */,
-				3F7C8ED21379815A00BEBC29 /* (null) in Sources */,
 				253E04C613798D72005D2E15 /* RKErrorMessage.m in Sources */,
 				25A1CB4413840C5400A7D5C9 /* RKParserRegistry.m in Sources */,
 			);
