@@ -15,5 +15,5 @@ typedef enum {
 	RKObjectLoaderRemoteSystemError = 1,
 	RKRequestBaseURLOfflineError,
     RKRequestUnexpectedResponseError,
-    RKObjectLaoderUnexpectedResponseError
+    RKObjectLoaderUnexpectedResponseError
 } RKRestKitError;

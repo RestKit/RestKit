@@ -186,7 +186,7 @@
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
         } else {
             // TODO: error message?
-            NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLaoderUnexpectedResponseError userInfo:nil];
+            NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         }
         
