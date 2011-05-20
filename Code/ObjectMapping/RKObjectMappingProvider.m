@@ -44,4 +44,12 @@
     return _mappings;
 }
 
+- (void)registerMapping:(RKObjectMapping*)objectMapping withRootKeyPath:(NSString*)keyPath {
+    // TODO: Should generate logs
+    [self setMapping:objectMapping forKeyPath:keyPath];
+    RKObjectMapping* inverseMapping = [objectMapping inverseMapping];
+    inverseMapping.rootKeyPath = keyPath;
+    [self setMapping:inverseMapping forClass:objectMapping.objectClass];
+}
+
 @end

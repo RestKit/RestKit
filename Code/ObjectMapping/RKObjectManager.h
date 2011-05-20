@@ -8,7 +8,7 @@
 
 #import "../Network/Network.h"
 #import "RKObjectLoader.h"
-#import "RKDynamicRouter.h"
+#import "RKObjectRouter.h"
 #import "RKObjectMappingProvider.h"
 
 @protocol RKParser;
@@ -27,7 +27,7 @@ typedef enum {
 
 @interface RKObjectManager : NSObject {
 	RKClient* _client;
-	NSObject<RKRouter>* _router;
+	RKObjectRouter* _router;
 	RKManagedObjectStore* _objectStore;	
 	RKObjectManagerOnlineState _onlineState;
     RKObjectMappingProvider* _mappingProvider;
@@ -71,12 +71,10 @@ typedef enum {
 @property (nonatomic, retain) RKObjectMappingProvider* mappingProvider;
 
 /**
- * Routing object responsible for generating paths for objects and serializing
- * representations of the object for transport.
- *
- * Defaults to an instance of RKDynamicRouter
+ * Router object responsible for generating resource paths for
+ * HTTP requests
  */
-@property (nonatomic, retain) NSObject<RKRouter>* router;
+@property (nonatomic, retain) RKObjectRouter* router;
 
 /**
  * A Core Data backed object store for persisting objects that have been fetched from the Web
@@ -114,6 +112,7 @@ typedef enum {
  * of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped to 
  * local objects by consulting the element registrations set on the mapper.
  */
+// TODO: Deprecate! Just RKPathAppendQueryParams(resourcePath, queryParams)
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
@@ -159,10 +158,12 @@ typedef enum {
 
 /**
  * Returns an object loader configured for transmitting an object instance across the wire. A request will be constructed
- * for you with the resource path &amp; object serialization configured for you by the Router. This is the best place to
+ * for you with the resource path configured for you by the Router. This is the best place to
  * begin work if you need a slightly different interaction with the server than what is provided for you by get/post/put/delete
  * object family of methods. Note that this should be used for one-off changes. If you need to substantially modify all your
  * object loads, you are better off subclassing or implementing your own RKRouter for dryness.
+ 
+ // TODO: Cleanup this comment
  */
 - (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 

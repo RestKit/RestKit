@@ -27,7 +27,6 @@
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
     NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    // TODO: it probably isn't guarenteed to come back in this order, but it seems to every time...
     [expectThat(error) should:be(nil)];
     [expectThat(data) should:be(@"key2-form-name=value2&key1-form-name=value1")];
 }
@@ -139,6 +138,21 @@
     NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     assertThat(data, is(equalTo(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"}}")));
+}
+
+- (void)itShouldEncloseTheSerializationInAContainerIfRequested {
+    NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    mapping.rootKeyPath = @"stuff";
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key2" toKeyPath:@"key2-form-name"]];
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
+    NSError* error = nil;
+    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/x-www-form-urlencoded" error:&error];
+    NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
+    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    [expectThat(error) should:be(nil)];
+    [expectThat(data) should:be(@"key2-form-name=value2&key1-form-name=value1")];
 }
 
 @end

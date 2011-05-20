@@ -48,6 +48,12 @@
         return nil;
     }
     
+    // Optionally enclose the serialized object within a container...
+    if (_mapping.rootKeyPath) {
+        // TODO: Should log this...
+        dictionary = [NSMutableDictionary dictionaryWithObject:dictionary forKey:_mapping.rootKeyPath];
+    }
+    
     if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
         // Dictionaries are natively RKRequestSerializable as Form Encoded
         return dictionary;

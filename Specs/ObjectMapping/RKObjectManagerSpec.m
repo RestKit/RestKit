@@ -63,7 +63,7 @@
     [provider setMapping:humanSerialization forClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
 	
-    RKDynamicRouter* router = [[[RKDynamicRouter alloc] init] autorelease];
+    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     _objectManager.router = router;
     
@@ -122,7 +122,7 @@
 
 - (void)itShouldPOSTAnObject {
     RKObjectManager* manager = RKSpecNewObjectManager();
-    RKDynamicRouter* router = [[RKDynamicRouter new] autorelease];
+    RKObjectRouter* router = [[RKObjectRouter new] autorelease];
     [router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     manager.router = router;
     

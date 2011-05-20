@@ -128,7 +128,7 @@
 
 #pragma mark -
 
-@interface RKObjectMappingNextGenSpec : NSObject <UISpec> {
+@interface RKObjectMappingNextGenSpec : RKSpec {
     
 }
 
@@ -190,6 +190,59 @@
     [mapping addRelationshipMapping:idMapping];
     [expectThat([mapping.mappings containsObject:idMapping]) should:be(YES)];
     [expectThat([mapping.relationshipMappings containsObject:idMapping]) should:be(YES)];
+}
+
+- (void)itShouldGenerateAttributeMappings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    assertThat([mapping mappingForKeyPath:@"name"], is(nilValue()));
+    [mapping mapAttribute:@"name" toKeyPath:@"name"];
+    assertThat([mapping mappingForKeyPath:@"name"], isNot(nilValue()));
+}
+
+- (void)itShouldGenerateRelationshipMappings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectMapping* anotherMapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    assertThat([mapping mappingForKeyPath:@"another"], is(nilValue()));
+    [mapping mapRelationship:@"another" withObjectMapping:anotherMapping];
+    assertThat([mapping mappingForKeyPath:@"another"], isNot(nilValue()));
+}
+
+- (void)itShouldRemoveMappings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addAttributeMapping:idMapping];
+    assertThat(mapping.mappings, hasItem(idMapping));
+    [mapping removeMapping:idMapping];
+    assertThat(mapping.mappings, isNot(hasItem(idMapping)));
+}
+
+- (void)itShouldRemoveMappingsByKeyPath {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addAttributeMapping:idMapping];
+    assertThat(mapping.mappings, hasItem(idMapping));
+    [mapping removeMappingForKeyPath:@"id"];
+    assertThat(mapping.mappings, isNot(hasItem(idMapping)));
+}
+
+- (void)itShouldRemoveAllMappings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    [mapping mapAttributes:@"one", @"two", @"three", nil];
+    assertThat(mapping.mappings, hasCountOf(3));
+    [mapping removeAllMappings];
+    assertThat(mapping.mappings, is(empty()));
+}
+
+- (void)itShouldGenerateAnInverseMappings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];    
+    [mapping mapAttribute:@"first_name" toKeyPath:@"firstName"];
+    [mapping mapAttributes:@"city", @"state", @"zip", nil];
+    RKObjectMapping* otherMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    [otherMapping mapAttributes:@"street", nil];
+    [mapping mapRelationship:@"address" withObjectMapping:otherMapping];
+    RKObjectMapping* inverse = [mapping inverseMapping];
+    assertThat(inverse.objectClass, is(equalTo([NSMutableDictionary class])));
+    assertThat([inverse mappingForKeyPath:@"firstName"], isNot(nilValue()));
 }
 
 #pragma mark - RKObjectMapper Specs
@@ -1017,38 +1070,33 @@
     [mockUser verify];
 }
 
-// TODO: It should map an array of arrays // Object mapper?
-// TODO: It should map an array of objects // Is this possible on the mapper? or serializer only?
+#pragma mark - RKObjectMappingProvider
 
-#pragma mark - Unidentified Components
-
-// TODO: Error keyPath. Needs a place to live just like the date format strings
-// TODO: This probably lives outside of the mapper
-
-- (void)itShouldParseErrorsOutOfThePayload {
+- (void)itShouldRegisterRailsIdiomaticObjects {
+    RKSpecStubNetworkAvailability(YES);
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    [mapping mapAttributes:@"name", @"website", nil];
+    [mapping mapAttribute:@"id" toKeyPath:@"userID"];
     
-}
-
-#pragma mark - RKObjectManager specs
-
-// TODO: Map with registered object types
-- (void)itShouldImplementKeyPathToObjectMappingRegistrationServices {
-    // Here we want it to find the registered mapping for a class and use that to process the mapping
-}
-
-- (void)itShouldSetSelfAsTheObjectMapperDelegateForObjectLoadersCreatedViaTheManager {
+    [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans/(userID)"];
+    [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
+    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
     
+    RKExampleUser* user = [RKExampleUser new];
+    user.userID = [NSNumber numberWithInt:1];
+    
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [objectManager getObject:user delegate:loader];
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"Blake Watters")));
+    
+    [objectManager postObject:user delegate:loader];
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"My Name")));
+    assertThat(user.website, is(equalTo([NSURL URLWithString:@"http://restkit.org/"])));
 }
-
-#pragma mark - Core Data Integration
-
-// TODO: It should assume date strings with timestamps are in UTC time
-// TODO: It should serialize dates by consulting the datePropertyAsString method (if available)
-// TODO: It should serialize dates
-// TODO: It should let you specify a format string for the date (maybe?)
-
-// TODO: RKObjectMappingOperationDelegate specs
-// TODO: It should handle valueForUndefinedKey
-// We can probably just copy the time zone to the mapper instance?
 
 @end

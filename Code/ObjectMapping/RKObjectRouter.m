@@ -6,11 +6,11 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKDynamicRouter.h"
-#import "RKDynamicRouter.h"
+#import "RKObjectRouter.h"
+#import "RKClient.h"
 #import "NSDictionary+RKRequestSerialization.h"
 
-@implementation RKDynamicRouter
+@implementation RKObjectRouter
 
 - (id)init {
 	if ((self = [super init])) {

@@ -169,8 +169,8 @@
 		25952FDD1370959900D04F93 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25952FD81370959900D04F93 /* LICENSE.txt */; };
 		25952FDE1370959900D04F93 /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952FDA1370959900D04F93 /* LoggerClient.m */; };
 		25952FDF1370959900D04F93 /* README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 25952FDC1370959900D04F93 /* README.markdown */; };
-		259562E4126D3B36004BAC4C /* RKDynamicRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKDynamicRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		259562E5126D3B36004BAC4C /* RKDynamicRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E3126D3B36004BAC4C /* RKDynamicRouter.m */; };
+		259562E4126D3B36004BAC4C /* RKObjectRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKObjectRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		259562E5126D3B36004BAC4C /* RKObjectRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E3126D3B36004BAC4C /* RKObjectRouter.m */; };
 		259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E6126D3B43004BAC4C /* RKRailsRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25956983126DF1AE004BAC4C /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A081412551D5300976E89 /* libRestKitCoreData.a */; };
 		25956984126DF1AE004BAC4C /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */; };
@@ -524,8 +524,8 @@
 		25952FDA1370959900D04F93 /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggerClient.m; sourceTree = "<group>"; };
 		25952FDB1370959900D04F93 /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerCommon.h; sourceTree = "<group>"; };
 		25952FDC1370959900D04F93 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
-		259562E2126D3B36004BAC4C /* RKDynamicRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicRouter.h; sourceTree = "<group>"; };
-		259562E3126D3B36004BAC4C /* RKDynamicRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicRouter.m; sourceTree = "<group>"; };
+		259562E2126D3B36004BAC4C /* RKObjectRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectRouter.h; sourceTree = "<group>"; };
+		259562E3126D3B36004BAC4C /* RKObjectRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRouter.m; sourceTree = "<group>"; };
 		259562E6126D3B43004BAC4C /* RKRailsRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRailsRouter.h; sourceTree = "<group>"; };
 		259562E7126D3B43004BAC4C /* RKRailsRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRailsRouter.m; sourceTree = "<group>"; };
 		259C64BD137477D0001FE1C5 /* RKObjectMapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapper.h; sourceTree = "<group>"; };
@@ -849,8 +849,8 @@
 				253A088212551D8D00976E89 /* RKObjectManager.m */,
 				253A088612551D8D00976E89 /* RKObjectPropertyInspector.h */,
 				253A088712551D8D00976E89 /* RKObjectPropertyInspector.m */,
-				259562E2126D3B36004BAC4C /* RKDynamicRouter.h */,
-				259562E3126D3B36004BAC4C /* RKDynamicRouter.m */,
+				259562E2126D3B36004BAC4C /* RKObjectRouter.h */,
+				259562E3126D3B36004BAC4C /* RKObjectRouter.m */,
 				25952DE8136C8F3500D04F93 /* RKObjectMappingOperation.h */,
 				25952DE9136C8F3500D04F93 /* RKObjectMappingOperation.m */,
 				25952DF3136C8FD500D04F93 /* RKObjectMapping.h */,
@@ -1317,7 +1317,7 @@
 				253A08FC1255246500976E89 /* RKObjectManager.h in Headers */,
 				253A09021255246A00976E89 /* RKObjectPropertyInspector.h in Headers */,
 				253A09E612552B5300976E89 /* ObjectMapping.h in Headers */,
-				259562E4126D3B36004BAC4C /* RKDynamicRouter.h in Headers */,
+				259562E4126D3B36004BAC4C /* RKObjectRouter.h in Headers */,
 				259C64BF137477D0001FE1C5 /* RKObjectMapper.h in Headers */,
 				25952DF9136C9E7C00D04F93 /* RKObjectAttributeMapping.h in Headers */,
 				25952DF5136C8FD500D04F93 /* RKObjectMapping.h in Headers */,
@@ -1806,7 +1806,7 @@
 				253A08FB1255246500976E89 /* RKObjectLoader.m in Sources */,
 				253A08FD1255246600976E89 /* RKObjectManager.m in Sources */,
 				253A09011255246900976E89 /* RKObjectPropertyInspector.m in Sources */,
-				259562E5126D3B36004BAC4C /* RKDynamicRouter.m in Sources */,
+				259562E5126D3B36004BAC4C /* RKObjectRouter.m in Sources */,
 				25952DEB136C8F3500D04F93 /* RKObjectMappingOperation.m in Sources */,
 				25952DF6136C8FD500D04F93 /* RKObjectMapping.m in Sources */,
 				25952DFA136C9E7C00D04F93 /* RKObjectAttributeMapping.m in Sources */,

@@ -86,12 +86,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectManagerSpec"
+            value = "RKObjectMappingNextGenSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldPOSTAnObject"
+            value = "itShouldRegisterRailsIdiomaticObjects"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

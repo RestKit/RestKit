@@ -1,12 +1,14 @@
 //
-//  RKDynamicRouter.h
+//  RKObjectRouter.h
 //  RestKit
 //
 //  Created by Blake Watters on 10/18/10.
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKRouter.h"
+#import "../Network/RKRequest.h"
+
+// TODO: Cleanup the comments in here
 
 /**
  * An implementation of the RKRouter protocol that is suitable for use in either
@@ -15,7 +17,7 @@
  * or DELETE action is invoked. Dynamic routes are available by encoding key paths into
  * the resourcePath surrounded by parentheses (i.e. /users/(userID))
  */
-@interface RKDynamicRouter : NSObject <RKRouter> {
+@interface RKObjectRouter : NSObject {
 	NSMutableDictionary* _routes;
 }
 
@@ -30,5 +32,7 @@
  * Register a mapping from an object class to a resource path for a specific HTTP method.
  */
 - (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
+
+- (NSString*)resourcePathForObject:(NSObject*)object method:(RKRequestMethod)method;
 
 @end

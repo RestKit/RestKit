@@ -14,6 +14,7 @@
 @synthesize objectClass = _objectClass;
 @synthesize mappings = _mappings;
 @synthesize dateFormatStrings = _dateFormatStrings;
+@synthesize rootKeyPath = _rootKeyPath;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [RKObjectMapping new];
@@ -114,9 +115,52 @@
     [self mapAttributesSet:attributeKeyPaths];
 }
 
-- (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping {
-    RKObjectRelationshipMapping* mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:relationshipKeyPath objectMapping:objectMapping];
+- (void)mapRelationship:(NSString *)relationshipKeyPath toKeyPath:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping {
+    RKObjectRelationshipMapping* mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath objectMapping:objectMapping];
     [self addRelationshipMapping:mapping];
+}
+
+- (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping {
+    [self mapRelationship:relationshipKeyPath toKeyPath:relationshipKeyPath withObjectMapping:objectMapping];
+}
+
+- (void)mapAttribute:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath {
+    RKObjectAttributeMapping* mapping = [RKObjectAttributeMapping mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
+    [self addAttributeMapping:mapping];
+}
+
+- (void)hasMany:(NSString*)keyPath withMapping:(RKObjectMapping*)objectMapping {
+    [self mapRelationship:keyPath withObjectMapping:objectMapping];
+}
+
+- (void)belongsTo:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping {
+    [self mapRelationship:keyPath withObjectMapping:mapping];
+}
+
+- (void)removeAllMappings {
+    [_mappings removeAllObjects];
+}
+
+- (void)removeMapping:(RKObjectAttributeMapping*)attributeOrRelationshipMapping {
+    [_mappings removeObject:attributeOrRelationshipMapping];
+}
+
+- (void)removeMappingForKeyPath:(NSString*)keyPath {
+    RKObjectAttributeMapping* mapping = [self mappingForKeyPath:keyPath];
+    [self removeMapping:mapping];
+}
+
+- (RKObjectMapping*)inverseMapping {
+    RKObjectMapping* inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    for (RKObjectAttributeMapping* attributeMapping in self.attributeMappings) {
+        [inverseMapping mapAttribute:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath];
+    }
+    
+    for (RKObjectRelationshipMapping* relationshipMapping in self.relationshipMappings) {
+        [inverseMapping mapRelationship:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withObjectMapping:[relationshipMapping.objectMapping inverseMapping]];
+    }
+    
+    return inverseMapping;
 }
 
 @end

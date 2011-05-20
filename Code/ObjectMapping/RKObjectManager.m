@@ -33,7 +33,7 @@ static RKObjectManager* sharedManager = nil;
     self = [super init];
 	if (self) {
         _mappingProvider = [RKObjectMappingProvider new];
-		_router = [RKDynamicRouter new];
+		_router = [RKObjectRouter new];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
         _onlineState = RKObjectManagerOnlineStateUndetermined;
         

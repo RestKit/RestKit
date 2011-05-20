@@ -40,4 +40,11 @@
 - (RKObjectMapping*)objectMappingForClass:(Class)objectClass;
 - (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
 
+/*!
+ Registers an object mapping as being rooted at a specific keyPath. The keyPath will be registered
+ and an inverse mapping for the object will be generated and used for serialization. 
+ */
+// TODO: Are we happy with this design/method signature?
+- (void)registerMapping:(RKObjectMapping*)objectMapping withRootKeyPath:(NSString*)keyPath;
+
 @end

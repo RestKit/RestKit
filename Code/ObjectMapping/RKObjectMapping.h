@@ -16,6 +16,7 @@
     Class _objectClass;
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
+    NSString* _rootKeyPath;
 }
 
 @property (nonatomic, assign) Class objectClass;
@@ -23,6 +24,7 @@
 @property (nonatomic, readonly) NSArray* attributeMappings;
 @property (nonatomic, readonly) NSArray* relationshipMappings;
 @property (nonatomic, readonly) NSArray* mappedKeyPaths;
+@property (nonatomic, retain) NSString* rootKeyPath;
 
 /*!
  An array of date format strings to apply when mapping a
@@ -42,5 +44,14 @@
 
 - (void)mapAttributes:(NSString*)attributeKeyPath, ...;
 - (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping;
+
+- (void)mapRelationship:(NSString *)relationshipKeyPath toKeyPath:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping;
+- (void)mapAttribute:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath;
+- (void)hasMany:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping;
+- (void)belongsTo:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping;
+- (void)removeAllMappings;
+- (void)removeMapping:(RKObjectAttributeMapping*)attributeOrRelationshipMapping;
+- (void)removeMappingForKeyPath:(NSString*)keyPath;
+- (RKObjectMapping*)inverseMapping;
 
 @end

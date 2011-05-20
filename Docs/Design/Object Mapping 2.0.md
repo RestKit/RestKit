@@ -84,7 +84,6 @@ contained in the `RKObjectMapping` against the mappable dictionary and assigns t
     [mapping mapAttributesWithKeyPathPairs:@"created_at", @"createdAt", nil]; // TODO: Better method signature...
     [mapping hasMany:@"comments" withMapping:[Comment objectMapping]];
     [mapping belongsTo:@"author" withObjectMapping:[User objectMapping] andPrimaryKey:@"author_id"];
-    [mapping serializeRelationships:@"comments", nil];
     
     // Register the mapping with the object manager
     [objectManager setMapping:mapping forKeyPath:@"article"];

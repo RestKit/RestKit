@@ -40,7 +40,15 @@ class RestKit::SpecServer < Sinatra::Base
   post '/humans' do
     status 201
     content_type 'application/json'
-    {:human => {:name => "My Name", :id => 1}}.to_json
+    puts "Got params: #{params.inspect}"
+    {:human => {:name => "My Name", :id => 1, :website => "http://restkit.org/"}}.to_json
+  end
+  
+  get '/humans/1' do
+    status 200
+    content_type 'application/json'
+    puts "Got params: #{params.inspect}"
+    {:human => {:name => "Blake Watters", :id => 1}}.merge(params).to_json
   end
   
   delete '/humans/1' do
