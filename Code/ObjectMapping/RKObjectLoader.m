@@ -154,11 +154,10 @@
 }
 
 - (BOOL)canParseMIMEType:(NSString*)MIMEType {
-    // TODO: Implement this
-    // TODO: Check that we have a parser available for the MIME Type
-    // TODO: Should probably be an expected MIME types array set by client/manager
-    // if ([self.objectMapper hasParserForMIMEType:[response MIMEType]) canMapFromMIMEType:
-    return YES;
+    if ([[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType]) {
+        return YES;
+    }
+    return NO;
 }
 
 - (BOOL)isResponseMappable {
@@ -185,6 +184,10 @@
         NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
         if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
+        } else {
+            // TODO: error message?
+            NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLaoderUnexpectedResponseError userInfo:nil];
+            [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         }
         
         [self finalizeLoad:NO];
