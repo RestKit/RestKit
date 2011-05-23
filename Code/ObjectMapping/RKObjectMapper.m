@@ -468,8 +468,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
         // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
         NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
         
-        // Get the right key.
-        NSString *relationshipElementKey = ([componentsOfKeyPath count] == 1) ? [componentsOfKeyPath lastObject] : [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count]-2]; 
+        NSString *relationshipElementKey = ([componentsOfKeyPath count] == 1) ? elementKeyPath :  [elementKeyPath substringFromIndex:[[componentsOfKeyPath objectAtIndex:0] length]+1];
 		
 		id relationshipElements = nil;
 		@try {
@@ -489,7 +488,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
             }
         }
         
-        NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
+        NSString *className = [componentsOfKeyPath objectAtIndex:0];
         Class modelClass = [_elementToClassMappings valueForKeyPath:className];
         if ([modelClass isKindOfClass: [NSNull class]]) {
             NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
