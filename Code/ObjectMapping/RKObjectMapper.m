@@ -360,8 +360,13 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	if (nil == currentValue && nil == propertyValue) {
 		// Don't set the property, both are nil
 	} else if (nil == propertyValue || [propertyValue isKindOfClass:[NSNull class]]) {
-		// Clear out the value to reset it
-		[model setValue:nil forKey:propertyName];
+		// Check if there is a default value for this attribute, or clear it
+		NSAttributeDescription *desc = [[[(RKManagedObject *)model entity] attributesByName] valueForKey:propertyName];
+		if (![desc isOptional]) { 
+			[model setValue:[desc defaultValue] forKey:propertyName];
+		} else {
+			[model setValue:nil forKey:propertyName];
+		}
 	} else if (currentValue == nil || [currentValue isKindOfClass:[NSNull class]]) {
 		// Existing value was nil, just set the property and be happy
 		[model setValue:propertyValue forKey:propertyName];
