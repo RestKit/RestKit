@@ -216,7 +216,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 }
 
 - (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate {
-	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+    NSString* resourcePathWithQueryString = (queryParams) ? [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]] : resourcePath;
 	return [self load:resourcePathWithQueryString method:RKRequestMethodGET params:nil delegate:delegate];
 }
 
