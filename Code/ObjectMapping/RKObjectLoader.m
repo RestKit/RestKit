@@ -112,6 +112,7 @@
 
 #pragma mark - Response Object Mapping
 
+// TODO: This needs to accept an error argument for plumbing underlying errors back to the delegate. Or just invoke the delegate.
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider {
     NSError* error = nil;
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
@@ -173,6 +174,9 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
         }
         
+        // Clear the target object since this is an error and we don't want to map back to the object.
+        // TODO: Needs explicit test coverage        
+        self.targetObject = nil;
         RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.objectManager.mappingProvider];
         NSError* error = [result asError];
         

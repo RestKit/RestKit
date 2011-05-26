@@ -10,6 +10,7 @@
 #import "../CoreData/RKManagedObjectStore.h"
 #import "../CoreData/RKManagedObjectLoader.h"
 #import "../Support/RKMIMETypes.h"
+#import "RKErrorMessage.h"
 
 NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
 NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
@@ -39,6 +40,12 @@ static RKObjectManager* sharedManager = nil;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
+        
+        // Setup default error message mappings
+        RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+        [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
+        [_mappingProvider setMapping:errorMapping forKeyPath:@"error"];
+        [_mappingProvider setMapping:errorMapping forKeyPath:@"errors"];
         		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)

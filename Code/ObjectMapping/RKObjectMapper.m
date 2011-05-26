@@ -240,6 +240,12 @@
         return nil;
     }
     
+    // If we found a mappable and a mapping but the results remains empty, then an
+    // error occured in the underlying operation and we should return nil to indicate the failure
+    if ([results count] == 0) {
+        return nil;
+    }
+    
     return [RKObjectMappingResult mappingResultWithDictionary:results];
 }
 
