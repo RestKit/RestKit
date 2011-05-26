@@ -8,10 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class RKObjectAttributeMapping;
-
-RKObjectAttributeMapping* RKObjectAttributeMappingMake(NSString* from, NSString* to);
-
 // Defines the rules for mapping a particular element
 @interface RKObjectAttributeMapping : NSObject {
     NSString* _sourceKeyPath;

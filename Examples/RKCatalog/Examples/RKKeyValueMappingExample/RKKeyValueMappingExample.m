@@ -12,7 +12,7 @@
 /**
  This code is excerpted from the Advanced Tutorial. See Docs/ for explanation
  */
-@interface SimpleAccount : RKObject {
+@interface SimpleAccount : NSObject {
     NSNumber* _accountID;
     NSString* _name;
     NSNumber* _balance;
@@ -39,17 +39,6 @@
 @synthesize averageTransactionAmount = _averageTransactionAmount;
 @synthesize distinctPayees = _distinctPayees;
 
-+ (NSDictionary*)elementToPropertyMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"id", @"accountID",
-            @"name", @"name",
-            @"balance", @"balance",
-            @"transactions.@count", @"transactionsCount",
-            @"transactions.@avg.amount", @"averageTransactionAmount",
-            @"transactions.@distinctUnionOfObjects.payee", @"distinctPayees",
-            nil];
-}
-
 @end
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +51,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [RKObjectManager objectManagerWithBaseURL:gRKCatalogBaseURL];        
+        [RKObjectManager objectManagerWithBaseURL:gRKCatalogBaseURL];
     }
     
     return self;
@@ -71,7 +60,17 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKKeyValueMappingExample" objectClass:[SimpleAccount class] delegate:self];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[SimpleAccount class]];
+    [mapping mapKeyPathsAndAttributes:
+     @"id", @"accountID",
+     @"name", @"name",
+     @"balance", @"balance",
+     @"transactions.@count", @"transactionsCount",
+     @"transactions.@avg.amount", @"averageTransactionAmount",
+     @"transactions.@distinctUnionOfObjects.payee", @"distinctPayees",
+     nil];
+     
+    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKKeyValueMappingExample" objectMapping:mapping delegate:self];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
