@@ -14,16 +14,6 @@
 @dynamic name;
 @dynamic screenName;
 
-#pragma mark RKObjectMappable methods
-
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id", @"userID",
-			@"screen_name", @"screenName",
-			@"name", @"name",
-			nil];
-}
-
 + (NSString*)primaryKeyProperty {
 	return @"userID";
 }

@@ -115,6 +115,9 @@ typedef enum {
 // TODO: Deprecate! Just RKPathAppendQueryParams(resourcePath, queryParams)
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
 
+// TODO: Document!
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+
 ////////////////////////////////////////////////////////
 // Mappable object helpers
 

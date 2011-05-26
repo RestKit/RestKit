@@ -47,7 +47,6 @@
 		3F7C3F781379AE8700B4A357 /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7C3F771379AE8700B4A357 /* libRestKitObjectMapping.a */; };
 		3F7C3F7A1379AE8B00B4A357 /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7C3F791379AE8B00B4A357 /* libRestKitSupport.a */; };
 		3F7C3F7E1379AEA600B4A357 /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F7C3F7D1379AEA600B4A357 /* libRestKitXMLParserLibxml.a */; };
-		3F7C3F861379AF0D00B4A357 /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F7C3F841379AF0D00B4A357 /* LoggerClient.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,9 +209,6 @@
 		3F7C3F791379AE8B00B4A357 /* libRestKitSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitSupport.a; sourceTree = SOURCE_ROOT; };
 		3F7C3F7B1379AE8F00B4A357 /* libRestKitXMLParserLibxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitXMLParserLibxml.a; sourceTree = SOURCE_ROOT; };
 		3F7C3F7D1379AEA600B4A357 /* libRestKitXMLParserLibxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitXMLParserLibxml.a; sourceTree = SOURCE_ROOT; };
-		3F7C3F831379AF0D00B4A357 /* LoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoggerClient.h; path = ../../../Vendor/NSLogger/LoggerClient.h; sourceTree = "<group>"; };
-		3F7C3F841379AF0D00B4A357 /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LoggerClient.m; path = ../../../Vendor/NSLogger/LoggerClient.m; sourceTree = "<group>"; };
-		3F7C3F851379AF0D00B4A357 /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoggerCommon.h; path = ../../../Vendor/NSLogger/LoggerCommon.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,9 +335,6 @@
 		258BAA3413608BDB00ED0614 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				3F7C3F831379AF0D00B4A357 /* LoggerClient.h */,
-				3F7C3F841379AF0D00B4A357 /* LoggerClient.m */,
-				3F7C3F851379AF0D00B4A357 /* LoggerCommon.h */,
 				258BAA3513608BDB00ED0614 /* InfoPlist.strings */,
 				258BAA3713608BDB00ED0614 /* MainWindow.xib */,
 				258BAA3913608BDB00ED0614 /* RootViewController.xib */,
@@ -581,7 +574,6 @@
 				256F38AE13612E9400CE0C58 /* RKCoreDataExample.m in Sources */,
 				258E219C1361BC42000D4DCF /* RKCoreDataExample.xcdatamodeld in Sources */,
 				25825DF31361BCA6001A2902 /* RKRelationshipMappingExample.xcdatamodeld in Sources */,
-				3F7C3F861379AF0D00B4A357 /* LoggerClient.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

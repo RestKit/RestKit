@@ -20,23 +20,7 @@
 
 #pragma mark RKObjectMappable methods
 
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id", @"statusID",
-			@"created_at", @"createdAt",
-			@"text", @"text",
-			@"url", @"urlString",
-			@"in_reply_to_screen_name", @"inReplyToScreenName",
-			@"favorited", @"isFavorited",
-			nil];
-}
-
-+ (NSDictionary*)elementToRelationshipMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"user", @"user",
-			nil];
-}
-
+// TODO: Move to the object mapping...
 + (NSString*)primaryKeyProperty {
 	return @"statusID";
 }

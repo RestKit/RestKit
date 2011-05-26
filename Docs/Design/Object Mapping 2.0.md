@@ -1,8 +1,8 @@
 # Object Mapping
 
-This document details the design of object mapping in RestKit. 
+This document details the design of object mapping in RestKit as of version 0.9.3
 
-## Goals
+## Goals / The Object Mapper is Designed to... (TODO)
 - Take parsing responsibilities out of the mapper entirely
 - Support arbitrarily complex mapping operations
 - Enable full transparency and insight into the mapping operation
@@ -22,15 +22,14 @@ leverages key-value coding conventions to determine how to map keyPaths between 
 attributes. The process is composed of four steps:
 
 1. Identification: An `RKObjectMapper` is initialized with an arbitrary collection of key-value coding
-compliant data, a keyPath the object resides at (can be nil), and a mapping provider. The mapper inspects the
-type of object and attempts to find mappable objects with the data.
+compliant data, a keyPath the object resides at (can be nil), and a mapping provider. The mapping provider
+supplies the mapper with mappable keyPaths 
 1. Processing of Mappable Objects: If a dictionary or array is found and a corresponding object mapping is
 available for the keyPath, an `RKObjectMappingOperation` is created to process the data. 
-1. Attribute & Relationship Mapping: Each mapping within the object mapping definition is evaluated against the
-mappable data and the result is set on the target object.
-1. Sub-keyPath Mapping: If an entire dictionary is not mappable, but contains keyPaths that are mappable, these
-keyPaths are mapped using a new object mapper targeted at the nested mappable data. The results of this mapping is
-assigned to a results dictionary with a key set to the keyPath that was mapped. 
+1. Attribute & Relationship Mapping: Each attribute or relationship mapping within the object mapping definition 
+is evaluated against the mappable data and the result is set on the target object.
+1. Recursive sub-processing. Any nested object data, as identified by 
+
 ```
 i.e. { "user": { // user data here}, "status": { // status data here } } 
 => { "user": user // RKUser instance, "status": status // RKStatus instance}

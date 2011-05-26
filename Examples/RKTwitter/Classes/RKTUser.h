@@ -6,9 +6,7 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import <RestKit/RestKit.h>
-
-@interface RKTUser : RKObject {
+@interface RKTUser : NSObject {
 	NSNumber* _userID;
 	NSString* _name;
 	NSString* _screenName;

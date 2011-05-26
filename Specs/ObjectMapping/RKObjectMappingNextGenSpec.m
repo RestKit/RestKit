@@ -195,7 +195,7 @@
 - (void)itShouldGenerateAttributeMappings {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     assertThat([mapping mappingForKeyPath:@"name"], is(nilValue()));
-    [mapping mapAttribute:@"name" toKeyPath:@"name"];
+    [mapping mapKeyPath:@"name" toAttribute:@"name"];
     assertThat([mapping mappingForKeyPath:@"name"], isNot(nilValue()));
 }
 
@@ -235,7 +235,7 @@
 
 - (void)itShouldGenerateAnInverseMappings {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];    
-    [mapping mapAttribute:@"first_name" toKeyPath:@"firstName"];
+    [mapping mapKeyPath:@"first_name" toAttribute:@"firstName"];
     [mapping mapAttributes:@"city", @"state", @"zip", nil];
     RKObjectMapping* otherMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
     [otherMapping mapAttributes:@"street", nil];
@@ -1077,7 +1077,7 @@
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     [mapping mapAttributes:@"name", @"website", nil];
-    [mapping mapAttribute:@"id" toKeyPath:@"userID"];
+    [mapping mapKeyPath:@"id" toAttribute:@"userID"];
     
     [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans/(userID)"];
     [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];

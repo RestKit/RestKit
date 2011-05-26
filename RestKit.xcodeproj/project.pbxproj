@@ -31,9 +31,13 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A088912551D8D00976E89 /* RKManagedObjectSeeder.m */; };
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
 		250C29FD134185D2000A3551 /* RKNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 250C29FB134185CE000A3551 /* RKNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250C29FE134185D2000A3551 /* RKNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C29FC134185D0000A3551 /* RKNetwork.m */; };
+		250FD902138DBC3300B5D02E /* LoggerClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952FD91370959900D04F93 /* LoggerClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		250FD903138DBC3300B5D02E /* LoggerCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952FDB1370959900D04F93 /* LoggerCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		250FD904138DBC4600B5D02E /* LoggerClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952FDA1370959900D04F93 /* LoggerClient.m */; };
 		251899FC1370F4E00092B049 /* Logging.h in Headers */ = {isa = PBXBuildFile; fileRef = 251899FB1370F4E00092B049 /* Logging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251D14AC133597B800959061 /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 251D14AA133597B800959061 /* RKManagedObjectLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 251D14AB133597B800959061 /* RKManagedObjectLoader.m */; };
@@ -207,7 +211,7 @@
 		25A1CB4313840C5400A7D5C9 /* RKParserRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB4113840C5100A7D5C9 /* RKParserRegistry.h */; };
 		25A1CB4413840C5400A7D5C9 /* RKParserRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CB4213840C5300A7D5C9 /* RKParserRegistry.m */; };
 		25A1CB4713840E6100A7D5C9 /* RKParserRegistrySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CB4613840E6000A7D5C9 /* RKParserRegistrySpec.m */; };
-		25A1CB4B138413E100A7D5C9 /* RKMIMETypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB49138413DF00A7D5C9 /* RKMIMETypes.h */; };
+		25A1CB4B138413E100A7D5C9 /* RKMIMETypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB49138413DF00A7D5C9 /* RKMIMETypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A1CB4C138413E100A7D5C9 /* RKMIMETypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CB4A138413E000A7D5C9 /* RKMIMETypes.m */; };
 		25A1CB50138419D900A7D5C9 /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */; };
 		25A1CB51138419D900A7D5C9 /* libRestKitJSONParserSBJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */; };
@@ -1347,6 +1351,8 @@
 				25D6390713517D8B000879B1 /* RKAlert.h in Headers */,
 				251899FC1370F4E00092B049 /* Logging.h in Headers */,
 				25A1CB4B138413E100A7D5C9 /* RKMIMETypes.h in Headers */,
+				250FD902138DBC3300B5D02E /* LoggerClient.h in Headers */,
+				250FD903138DBC3300B5D02E /* LoggerCommon.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1821,6 +1827,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				250FD904138DBC4600B5D02E /* LoggerClient.m in Sources */,
 				253A09171255250B00976E89 /* Errors.m in Sources */,
 				253A09191255250C00976E89 /* NSDictionary+RKAdditions.m in Sources */,
 				253A091C1255250F00976E89 /* NSString+InflectionSupport.m in Sources */,
@@ -1834,6 +1841,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */,
 				253A09251255258500976E89 /* RKManagedObject.m in Sources */,
 				253A09271255258600976E89 /* RKManagedObjectStore.m in Sources */,
 				251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */,
