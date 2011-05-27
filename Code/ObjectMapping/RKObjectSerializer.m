@@ -12,6 +12,7 @@
 #import "RKObjectSerializer.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKParserRegistry.h"
+#import "Logging.h"
 
 @implementation RKObjectSerializer
 
@@ -74,12 +75,19 @@
 #pragma mark - RKObjectMappingOperationDelegate
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
+    id transformedValue = nil;
     
-    // Date's are not natively serializable, must be encoded as a string
     if ([value isKindOfClass:[NSDate class]]) {
-        // TODO: Log transformation from NSDate to string...
-        NSString* dateAsString = [value description];
-        [operation.destinationObject setValue:dateAsString forKey:keyPath];
+        // Date's are not natively serializable, must be encoded as a string
+        transformedValue = [value description];
+    } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
+        // Precision numbers are serialized as strings to work around Javascript notation limits
+        transformedValue = [(NSDecimalNumber*)value stringValue];        
+    }
+    
+    if (transformedValue) {
+        RKLOG_MAPPING(RKLogLevelDebug, @"Serialized %@ value at keyPath to %@ (%@)", NSStringFromClass([value class]), NSStringFromClass([transformedValue class]), value);
+        [operation.destinationObject setValue:transformedValue forKey:keyPath];
     }
 }
 
