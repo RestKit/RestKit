@@ -81,6 +81,11 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	_storeFilename = nil;
 	[_pathToStoreFile release];
 	_pathToStoreFile = nil;
+	// Clear the current managed object context. Will be re-created next time it is accessed.
+	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+    if ([threadDictionary objectForKey:kRKManagedObjectContextKey]) {
+        [threadDictionary removeObjectForKey:kRKManagedObjectContextKey];
+    }    
     [_managedObjectModel release];
 	_managedObjectModel = nil;
     [_persistentStoreCoordinator release];

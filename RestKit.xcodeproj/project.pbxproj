@@ -207,6 +207,8 @@
 		73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */; };
 		73FE56C7126CB91600E0F30B /* RKURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 73FE56C4126CB91600E0F30B /* RKURL.h */; };
 		73FE56C8126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
+		AD67F006137D9DE50072ED0F /* NSURL+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = AD67F004137D9DE50072ED0F /* NSURL+RKAdditions.h */; };
+		AD67F007137D9DE50072ED0F /* NSURL+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AD67F005137D9DE50072ED0F /* NSURL+RKAdditions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -535,6 +537,8 @@
 		73FE56C4126CB91600E0F30B /* RKURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURL.h; sourceTree = "<group>"; };
 		73FE56C5126CB91600E0F30B /* RKURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURL.m; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AD67F004137D9DE50072ED0F /* NSURL+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSURL+RKAdditions.h"; path = "../../../../mslab/apple/plizy-ios-backend/vendor/RestKit/Code/Support/NSURL+RKAdditions.h"; sourceTree = "<group>"; };
+		AD67F005137D9DE50072ED0F /* NSURL+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSURL+RKAdditions.m"; path = "../../../../mslab/apple/plizy-ios-backend/vendor/RestKit/Code/Support/NSURL+RKAdditions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -779,6 +783,8 @@
 		253A089312551D8D00976E89 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				AD67F004137D9DE50072ED0F /* NSURL+RKAdditions.h */,
+				AD67F005137D9DE50072ED0F /* NSURL+RKAdditions.m */,
 				253A08B41255212300976E89 /* Parsers */,
 				253A089412551D8D00976E89 /* Errors.h */,
 				253A089512551D8D00976E89 /* Errors.m */,
@@ -1210,6 +1216,7 @@
 				259DF7881340299900233DF4 /* RKXMLParser.h in Headers */,
 				253A09F612552BDC00976E89 /* Support.h in Headers */,
 				25D6390713517D8B000879B1 /* RKAlert.h in Headers */,
+				AD67F006137D9DE50072ED0F /* NSURL+RKAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1674,6 +1681,7 @@
 				253A091C1255250F00976E89 /* NSString+InflectionSupport.m in Sources */,
 				253A091F1255251900976E89 /* RKSearchEngine.m in Sources */,
 				25D6390813517D8B000879B1 /* RKAlert.m in Sources */,
+				AD67F007137D9DE50072ED0F /* NSURL+RKAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

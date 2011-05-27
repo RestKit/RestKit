@@ -13,6 +13,7 @@
 
 #import "RKObjectMapper.h"
 #import "NSDictionary+RKAdditions.h"
+#import "NSURL+RKAdditions.h"
 #import "RKJSONParser.h"
 #import "RKXMLParser.h"
 #import "Errors.h"
@@ -369,6 +370,8 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 		SEL comparisonSelector;
 		if ([propertyValue isKindOfClass:[NSString class]]) {
 			comparisonSelector = @selector(isEqualToString:);
+		} else if ([propertyValue isKindOfClass:[NSURL class]]) {
+			comparisonSelector = @selector(isEqualToURL:);            
 		} else if ([propertyValue isKindOfClass:[NSNumber class]]) {
 			comparisonSelector = @selector(isEqualToNumber:);
 		} else if ([propertyValue isKindOfClass:[NSDate class]]) {
@@ -462,12 +465,17 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
 	for (NSString* elementKeyPath in elementToRelationshipMappings) {
 		NSString* propertyName = [elementToRelationshipMappings objectForKey:elementKeyPath];
 		
+        // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
+        NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
+        
+        NSString *relationshipElementKey = ([componentsOfKeyPath count] == 1) ? elementKeyPath :  [elementKeyPath substringFromIndex:[[componentsOfKeyPath objectAtIndex:0] length]+1];
+		
 		id relationshipElements = nil;
 		@try {
-			relationshipElements = [elements valueForKeyPath:elementKeyPath];
+			relationshipElements = [elements valueForKeyPath:relationshipElementKey];
 		}
 		@catch (NSException* e) {
-			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ for elements:%@", e, elementKeyPath, elements);
+			NSLog(@"Caught exception:%@ when trying valueForKeyPath with path:%@ (%@) for elements:%@", e, elementKeyPath, relationshipElementKey, elements);
 		}
         
         // Handle missing elements for the relationship
@@ -480,9 +488,7 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
             }
         }
         
-        // NOTE: The last part of the keyPath contains the elementName for the mapped destination class of our children
-        NSArray* componentsOfKeyPath = [elementKeyPath componentsSeparatedByString:@"."];
-        NSString *className = [componentsOfKeyPath objectAtIndex:[componentsOfKeyPath count] - 1];
+        NSString *className = [componentsOfKeyPath objectAtIndex:0];
         Class modelClass = [_elementToClassMappings valueForKeyPath:className];
         if ([modelClass isKindOfClass: [NSNull class]]) {
             NSLog(@"Warning: could not find a class mapping for relationship '%@':", className);
