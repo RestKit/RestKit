@@ -195,7 +195,7 @@
 - (void)itShouldGenerateAttributeMappings {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     assertThat([mapping mappingForKeyPath:@"name"], is(nilValue()));
-    [mapping mapAttribute:@"name" toKeyPath:@"name"];
+    [mapping mapKeyPath:@"name" toAttribute:@"name"];
     assertThat([mapping mappingForKeyPath:@"name"], isNot(nilValue()));
 }
 
@@ -235,7 +235,7 @@
 
 - (void)itShouldGenerateAnInverseMappings {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];    
-    [mapping mapAttribute:@"first_name" toKeyPath:@"firstName"];
+    [mapping mapKeyPath:@"first_name" toAttribute:@"firstName"];
     [mapping mapAttributes:@"city", @"state", @"zip", nil];
     RKObjectMapping* otherMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
     [otherMapping mapAttributes:@"street", nil];
@@ -603,6 +603,23 @@
     [operation performMapping:nil];    
     [expectThat(user.name) should:be(@"Blake Watters")];
     [expectThat(user.userID) should:be(123)];    
+    [operation release];
+}
+
+- (void)itShouldConsiderADictionaryContainingOnlyNullValuesForKeysMappable {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addAttributeMapping:idMapping];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
+    
+    NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNull null], @"name", nil];
+    RKExampleUser* user = [RKExampleUser user];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(user.name, is(nilValue()));
     [operation release];
 }
 
@@ -1077,7 +1094,7 @@
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     [mapping mapAttributes:@"name", @"website", nil];
-    [mapping mapAttribute:@"id" toKeyPath:@"userID"];
+    [mapping mapKeyPath:@"id" toAttribute:@"userID"];
     
     [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans/(userID)"];
     [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];

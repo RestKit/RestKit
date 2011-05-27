@@ -51,8 +51,11 @@
 }
 
 - (void)loadData {
-	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-	[[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/restkit.json" objectClass:[RKTStatus class] delegate:self] retain];
+    // Load the object model via RestKit	
+    RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    RKObjectMapping* statusMapping = [objectManager.mappingProvider objectMappingForKeyPath:@"status"];
+    
+    [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" objectMapping:statusMapping delegate:self];
 }
 
 - (void)reloadButtonWasPressed:(id)sender {

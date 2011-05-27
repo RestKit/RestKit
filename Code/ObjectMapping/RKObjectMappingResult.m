@@ -61,6 +61,8 @@
 
 - (NSError*)asError {
     NSArray* collection = [self asCollection];
+    // TODO: What is the correct behavior when there is an empty collection we expect to contain an error???
+    NSAssert([collection count] > 0, @"Expected mapping result to contain at least one object to construct an error");
     NSString* description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
     
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:description, NSLocalizedDescriptionKey,

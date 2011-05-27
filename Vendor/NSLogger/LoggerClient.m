@@ -34,6 +34,10 @@
  * SOFTWARE,   EVEN  IF   ADVISED  OF   THE  POSSIBILITY   OF  SUCH   DAMAGE.
  * 
  */
+
+// Defined here to enable building into static lib
+#define	ALLOW_COCOA_USE			1
+
 #import <sys/time.h>
 #if !TARGET_OS_IPHONE
 	#import <sys/types.h>

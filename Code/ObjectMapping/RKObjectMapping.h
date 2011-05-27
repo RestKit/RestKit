@@ -48,13 +48,16 @@
 - (void)mapAttributes:(NSString*)attributeKeyPath, ...;
 - (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping;
 
-- (void)mapRelationship:(NSString *)relationshipKeyPath toKeyPath:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping;
-- (void)mapAttribute:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath;
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping;
+- (void)mapKeyPath:(NSString*)sourceKeyPath toAttribute:(NSString*)destinationKeyPath;
+
 - (void)hasMany:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping;
 - (void)belongsTo:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping;
 - (void)removeAllMappings;
 - (void)removeMapping:(RKObjectAttributeMapping*)attributeOrRelationshipMapping;
 - (void)removeMappingForKeyPath:(NSString*)keyPath;
 - (RKObjectMapping*)inverseMapping;
+
+- (void)mapKeyPathsToAttributes:(NSString*)keyPath, ...;
 
 @end

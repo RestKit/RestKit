@@ -31,21 +31,6 @@ static DBUser* currentUser = nil;
 @synthesize delegate = _delegate;
 
 /**
- * The property mapping dictionary. This method declares how elements in the JSON
- * are mapped to properties on the object
- */
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id", @"userID",
-			@"email", @"email",
-			@"username", @"username",
-			@"single_access_token", @"singleAccessToken",
-			@"password", @"password",
-			@"password_confirmation", @"passwordConfirmation",
-			nil];
-}
-
-/**
  * Informs RestKit which property contains the primary key for identifying
  * this object. This is used to ensure that existing objects are updated during mapping
  */
@@ -100,8 +85,11 @@ static DBUser* currentUser = nil;
 	
 	RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/login" delegate:self];
 	objectLoader.method = RKRequestMethodPOST;
-	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"user[username]", username, @"user[password]", password, nil];	
+	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"user[username]", username, @"user[password]", password, nil];
 	objectLoader.targetObject = self;
+    
+    // TODO: Temporary to work around bug in Rails serialization on the Heroku app
+    objectLoader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForKeyPath:@"user"];
 	[objectLoader send];
 }
 

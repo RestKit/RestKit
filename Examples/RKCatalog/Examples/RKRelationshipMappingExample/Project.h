@@ -9,7 +9,7 @@
 #import "RKCatalog.h"
 #import "User.h"
 
-@interface Project : RKObject {
+@interface Project : NSObject {
     NSNumber* _projectID;
     NSString* _name;
     NSString* _description;

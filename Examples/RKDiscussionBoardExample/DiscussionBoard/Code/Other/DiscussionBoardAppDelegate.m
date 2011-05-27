@@ -10,8 +10,6 @@
 
 // RestKit
 #import <RestKit/RestKit.h>
-#import <RestKit/ObjectMapping/RKDynamicRouter.h>
-#import <RestKit/ObjectMapping/RKRailsRouter.h>
 
 // Three20
 #import <Three20/Three20.h>
@@ -48,7 +46,8 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	[RKRequestTTModel setDefaultRefreshRate:1];
 
 	// Set nil for any attributes we expect to appear in the payload, but do not
-	objectManager.mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
+    // TODO: Fix this. Now settable on a per-object basis
+//	objectManager.mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
 
 	// Initialize object store
 	// We are using the Core Data support, so we have initialized a managed object store backed
@@ -61,10 +60,48 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// The object mapper is responsible for mapping JSON encoded representations of objects
 	// back to local object representations. Here we instruct RestKit how to connect
 	// sub-dictionaries of attributes to local classes.
-	RKObjectMapper* mapper =  objectManager.mapper;
-	[mapper registerClass:[DBUser class] forElementNamed:@"user"];
-	[mapper registerClass:[DBTopic class] forElementNamed:@"topic"];
-	[mapper registerClass:[DBPost class] forElementNamed:@"post"];
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[DBUser class]];
+    [userMapping mapKeyPathsToAttributes:
+     @"id", @"userID",
+     @"email", @"email",
+     @"username", @"username",
+     @"single_access_token", @"singleAccessToken",
+     @"password", @"password",
+     @"password_confirmation", @"passwordConfirmation",
+     nil];
+    
+    RKObjectMapping* topicMapping = [RKObjectMapping mappingForClass:[DBTopic class]];
+    [topicMapping mapKeyPathsToAttributes:
+     @"id", @"topicID",
+     @"name", @"name",
+     @"user_id", @"userID",
+     @"created_at", @"createdAt",
+     @"updated_at", @"updatedAt",
+     nil];
+    [topicMapping mapRelationship:@"user" withObjectMapping:userMapping];
+    
+    RKObjectMapping* postMapping = [RKObjectMapping mappingForClass:[DBPost class]];
+    [postMapping mapKeyPathsToAttributes:
+     @"id",@"postID",
+     @"topic_id",@"topicID",
+     @"user_id",@"userID",
+     @"created_at",@"createdAt",
+     @"updated_at",@"updatedAt",
+     @"attachment_content_type", @"attachmentContentType",
+     @"attachment_file_name", @"attachmentFileName",
+     @"attachment_file_size", @"attachmentFileSize",
+     @"attachment_path", @"attachmentPath",
+     @"attachment_updated_at", @"attachmentUpdatedAt",
+     @"body", @"body",
+    nil];
+    [postMapping mapRelationship:@"user" withObjectMapping:userMapping];
+    
+    // Register the mappings with the mapping provider. Use of registerMapping:withRootKeyPath:
+    // configures the mapping provider with both object and serialization mappings for the specified
+    // keyPath.
+    [objectManager.mappingProvider registerMapping:userMapping withRootKeyPath:@"user"];
+    [objectManager.mappingProvider registerMapping:topicMapping withRootKeyPath:@"topic"];
+    [objectManager.mappingProvider registerMapping:postMapping withRootKeyPath:@"post"];
 
 	// Set Up Router
 	// The router is responsible for generating the appropriate resource path to
@@ -74,29 +111,17 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// can be loaded from any number of resource paths. You can also PUT/POST
 	// an object to arbitrary paths by configuring the object loader yourself. The
 	// router is just for configuring the default 'home address' for an object.
-	//
-	// Since we are communicating with a Ruby on Rails backend server, we are using
-	// the Rails router. The Rails router is aware of the Rails pattern of nesting
-	// attributes under the underscored version of the model name. The Rails router
-	// will also not send any attributes in a DELETE request, preventing problems with
-	// forgery protection.
-	RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-	[router setModelName:@"user" forClass:[DBUser class]];
-	[router routeClass:[DBUser class] toResourcePath:@"/signup" forMethod:RKRequestMethodPOST];
-	[router routeClass:[DBUser class] toResourcePath:@"/login" forMethod:RKRequestMethodPUT];
+	[objectManager.router routeClass:[DBUser class] toResourcePath:@"/signup" forMethod:RKRequestMethodPOST];
+	[objectManager.router routeClass:[DBUser class] toResourcePath:@"/login" forMethod:RKRequestMethodPUT];
 
-	[router setModelName:@"topic" forClass:[DBTopic class]];
-	[router routeClass:[DBTopic class] toResourcePath:@"/topics" forMethod:RKRequestMethodPOST];
-	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodPUT];
-	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodDELETE];
+	[objectManager.router routeClass:[DBTopic class] toResourcePath:@"/topics" forMethod:RKRequestMethodPOST];
+	[objectManager.router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodPUT];
+	[objectManager.router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodDELETE];
 
-	[router setModelName:@"post" forClass:[DBPost class]];
-	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts" forMethod:RKRequestMethodPOST];
-	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
-	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
-
-	objectManager.router = router;
-
+	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts" forMethod:RKRequestMethodPOST];
+	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
+	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
+    
 	// Initialize Three20
 	TTURLMap* map = [[TTNavigator navigator] URLMap];
 	[map from:@"db://topics" toViewController:[DBTopicsTableViewController class]];

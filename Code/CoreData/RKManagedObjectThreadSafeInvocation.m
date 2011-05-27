@@ -99,8 +99,10 @@
 }
 
 - (void)invokeOnMainThread {
+    [self retain];
     [self serializeManagedObjects];
     [self performSelectorOnMainThread:@selector(performInvocationOnMainThread) withObject:nil waitUntilDone:YES];
+    [self release];
 }
 
 - (void)dealloc {

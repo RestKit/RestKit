@@ -115,31 +115,36 @@
 
 #pragma mark - Response Object Mapping
 
-- (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider {
-    NSError* error = nil;
+- (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject error:(NSError**)error {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
-    id parsedData = [parser objectFromString:[self.response bodyAsString] error:&error];
-    // TODO: Surface the parsing error...
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
-    NSAssert(parsedData, @"Cannot perform object load without data for mapping");
+    id parsedData = [parser objectFromString:[self.response bodyAsString] error:error];
+    if (parsedData == nil && error) {
+        return nil;
+    }
     
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.objectFactory = [self createObjectFactory];
-    mapper.targetObject = self.targetObject;
+    mapper.targetObject = targetObject;
     mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];
     
-    // TODO: Have to handle errors here... Maybe we always return a result with the errors?
     if (nil == result) {
         // TODO: Logging macros
         NSLog(@"GOT MAPPING ERRORS: %@", mapper.errors);
+        
+        // TODO: Construct a composite error that wraps up all the other errors
+        *error = [mapper.errors lastObject];
         return nil;
     }
     
     return result;
 }
 
-- (RKObjectMappingResult*)performMapping {
+- (void)performMappingOnBackgroundThread {
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    NSError* error = nil;
+    
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
@@ -148,8 +153,12 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    return [self mapResponseWithMappingProvider:mappingProvider];
-}
+    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject error:&error];
+    if (result) {
+        [self processMappingResult:result];
+    } else {
+        [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+    }
 
 - (void)performMappingOnBackgroundThread {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
@@ -164,6 +173,8 @@
     if ([[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType]) {
         return YES;
     }
+    
+    RKLOG_MAPPING(RKLogLevelWarning, @"Unable to find parser for MIME Type '%@'", MIMEType);
     return NO;
 }
 
@@ -180,19 +191,25 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
         }
         
-        RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.objectManager.mappingProvider];
-        NSError* error = [result asError];
+        // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
+        // target object
+        NSError* error = nil;
+        RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.objectManager.mappingProvider toObject:nil error:&error];
+        if (result) {
+            error = [result asError];
+        } else {
+            // TODO: Log that mapping from payload errors failed
+        }
         
-        // TODO: Is this returning: [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderRemoteSystemError userInfo:userInfo];
         [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         
 		return NO;
 	} else if ([self.response isSuccessful] && NO == [self canParseMIMEType:[self.response MIMEType]]) {
+        // TODO: Logging macros...
         NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
         if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
         } else {
-            // TODO: error message?
             NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         }

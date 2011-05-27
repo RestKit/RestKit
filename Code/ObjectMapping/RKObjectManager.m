@@ -10,6 +10,7 @@
 #import "../CoreData/RKManagedObjectStore.h"
 #import "../CoreData/RKManagedObjectLoader.h"
 #import "../Support/RKMIMETypes.h"
+#import "RKErrorMessage.h"
 
 NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
 NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
@@ -39,6 +40,12 @@ static RKObjectManager* sharedManager = nil;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
+        
+        // Setup default error message mappings
+        RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+        [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
+        [_mappingProvider setMapping:errorMapping forKeyPath:@"error"];
+        [_mappingProvider setMapping:errorMapping forKeyPath:@"errors"];
         		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)
@@ -63,6 +70,17 @@ static RKObjectManager* sharedManager = nil;
 	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL] autorelease];
 	if (nil == sharedManager) {
 		[RKObjectManager setSharedManager:manager];
+        
+        // TODO: Temporary. Initialize logging...
+        LoggerSetOptions(NULL,						// configure the default logger
+                         kLoggerOption_LogToConsole | 
+                         kLoggerOption_BufferLogsUntilConnection |
+                         kLoggerOption_UseSSL |
+                         kLoggerOption_BrowseBonjour |
+                         kLoggerOption_BrowseOnlyLocalDomain);
+        LoggerStart(LoggerGetDefaultLogger());
+        LogMessage(@"Object Mapping", 10, @"Object Manager initialized...");
+        LoggerFlush(NULL, NO);
 	}
 	return manager;
 }

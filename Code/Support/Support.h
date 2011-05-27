@@ -8,3 +8,4 @@
 
 #import "Errors.h"
 #import "NSDictionary+RKAdditions.h"
+#import "RKMIMETypes.h"

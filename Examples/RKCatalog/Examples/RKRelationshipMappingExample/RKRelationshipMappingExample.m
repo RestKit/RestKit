@@ -24,24 +24,22 @@
         RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
         
         RKObjectMapping* taskMapping = [RKObjectMapping mappingForClass:[Task class]];
-        [taskMapping addAttributeMapping:RKObjectAttributeMappingMake(@"id", @"taskID")];
-        [taskMapping addAttributeMapping:RKObjectAttributeMappingMake(@"name", @"name")];
-        [taskMapping addAttributeMapping:RKObjectAttributeMappingMake(@"assigned_user_id", @"assignedUserID")];
+        [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
+        [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
+        [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
         [provider setMapping:taskMapping forKeyPath:@"task"];
         
         RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[User class]];
-        [userMapping addAttributeMapping:RKObjectAttributeMappingMake(@"id", @"userID")];
-        [userMapping addAttributeMapping:RKObjectAttributeMappingMake(@"name", @"name")];
-        [userMapping addAttributeMapping:RKObjectAttributeMappingMake(@"email", @"email")];
-        [userMapping addRelationshipMapping:[RKObjectRelationshipMapping mappingFromKeyPath:@"tasks" toKeyPath:@"tasks" objectMapping:taskMapping]];
+        [userMapping mapAttributes:@"name", @"email", nil];
+        [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
+        [userMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
         [provider setMapping:userMapping forKeyPath:@"user"];
         
         RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
-        [projectMapping addAttributeMapping:RKObjectAttributeMappingMake(@"id", @"projectID")];
-        [projectMapping addAttributeMapping:RKObjectAttributeMappingMake(@"name", @"name")];
-        [projectMapping addAttributeMapping:RKObjectAttributeMappingMake(@"description", @"description")];
-        [projectMapping addRelationshipMapping:[RKObjectRelationshipMapping mappingFromKeyPath:@"user" toKeyPath:@"user" objectMapping:userMapping]];
-        [projectMapping addRelationshipMapping:[RKObjectRelationshipMapping mappingFromKeyPath:@"tasks" toKeyPath:@"tasks" objectMapping:taskMapping]];
+        [projectMapping mapKeyPath:@"id" toAttribute:@"projectID"];
+        [projectMapping mapAttributes:@"name", @"description", nil];
+        [projectMapping mapRelationship:@"user" withObjectMapping:userMapping];
+        [projectMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
         [provider setMapping:projectMapping forKeyPath:@"project"];
         
         objectManager.mappingProvider = provider;

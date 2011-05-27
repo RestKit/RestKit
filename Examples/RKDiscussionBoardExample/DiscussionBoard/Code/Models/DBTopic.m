@@ -17,20 +17,6 @@
 #pragma mark RKObjectMappable methods
 
 /**
- * The property mapping dictionary. This method declares how elements in the JSON
- * are mapped to properties on the object.
- */
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-					@"id", @"topicID",
-					@"name", @"name",
-					@"user_id", @"userID",
-					@"created_at", @"createdAt",
-					@"updated_at", @"updatedAt",
-					nil];
-}
-
-/**
  * Informs RestKit which properties contain the primary key values that
  * can be used to hydrate relationships to other objects. This hint enables
  * RestKit to automatically maintain true Core Data relationships between objects

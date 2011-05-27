@@ -73,8 +73,15 @@
 }
 
 - (BOOL)isNullCollection:(id)object {
+    // The purpose of this method is to guard against the case where we perform valueForKeyPath: on an array
+    // and it returns NSNull for each element in the array. 
+    
     // We consider an empty array/dictionary mappable, but a collection that contains only NSNull
     // values is unmappable
+    if ([object respondsToSelector:@selector(objectForKey:)]) {
+        return NO;
+    }
+    
     if ([object respondsToSelector:@selector(countForObject:)] && [object count] > 0) {        
         if ([object countForObject:[NSNull null]] == [object count]) {
             RKLOG_MAPPING(RKLogLevelWarning, @"Found a collection containing only NSNull values, considering the collection unmappable...");
@@ -180,7 +187,7 @@
     NSAssert(self.sourceObject != nil, @"Cannot perform object mapping without a source object to map from");
     NSAssert(self.mappingProvider != nil, @"Cannot perform object mapping without an object mapping provider");
     
-    RKLOG_MAPPING(RKLogLevelDebug, @"Self.object is %@. Target object is %@", self.sourceObject, self.targetObject);
+    RKLOG_MAPPING(RKLogLevelDebug, @"Performing object mapping sourceObject: %@\n and targetObject: %@", self.sourceObject, self.targetObject);
     
     if ([self.delegate respondsToSelector:@selector(objectMapperWillBeginMapping:)]) {
         [self.delegate objectMapperWillBeginMapping:self];
@@ -194,7 +201,7 @@
         id mappingResult;
         id mappableValue;
         
-        RKLOG_MAPPING(RKLogLevelInfo, @"Examining keyPath %@ for mappable content...", keyPath);
+        RKLOG_MAPPING(RKLogLevelInfo, @"Examining keyPath '%@' for mappable content...", keyPath);
         
         if ([keyPath isEqualToString:@""]) {
             mappableValue = self.sourceObject;
@@ -219,7 +226,7 @@
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:objectMapping];
         }
-        RKLOG_MAPPING(RKLogLevelInfo, @"Found mappable data at keyPath '%@': ", keyPath, mappableValue);
+        RKLOG_MAPPING(RKLogLevelInfo, @"Found mappable data at keyPath '%@': %@", keyPath, mappableValue);
         if ([mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]]) {
             mappingResult = [self mapCollection:mappableValue atKeyPath:keyPath usingMapping:objectMapping];
         } else {
@@ -239,6 +246,14 @@
         [self addErrorForUnmappableKeyPath:@""];
         return nil;
     }
+    
+    // If we found a mappable and a mapping but the results remains empty, then an
+    // error occured in the underlying operation and we should return nil to indicate the failure
+    if ([results count] == 0) {
+        return nil;
+    }
+    
+    RKLOG_MAPPING(RKLogLevelDebug, @"Finished performing object mapping. Results: %@", results);
     
     return [RKObjectMappingResult mappingResultWithDictionary:results];
 }

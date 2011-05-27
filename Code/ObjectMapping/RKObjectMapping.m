@@ -28,6 +28,7 @@
     self = [super init];
     if (self) {
         _mappings = [NSMutableArray new];
+        _dateFormatStrings = [[NSMutableArray alloc] initWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
         _dateFormatStrings = [NSMutableArray arrayWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
         self.setNilForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;
@@ -110,16 +111,16 @@
     [self mapAttributesSet:attributeKeyPaths];
 }
 
-- (void)mapRelationship:(NSString *)relationshipKeyPath toKeyPath:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping {
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping {
     RKObjectRelationshipMapping* mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath objectMapping:objectMapping];
     [self addRelationshipMapping:mapping];
 }
 
 - (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping {
-    [self mapRelationship:relationshipKeyPath toKeyPath:relationshipKeyPath withObjectMapping:objectMapping];
+    [self mapKeyPath:relationshipKeyPath toRelationship:relationshipKeyPath withObjectMapping:objectMapping];
 }
 
-- (void)mapAttribute:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath {
+- (void)mapKeyPath:(NSString*)sourceKeyPath toAttribute:(NSString*)destinationKeyPath {
     RKObjectAttributeMapping* mapping = [RKObjectAttributeMapping mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
     [self addAttributeMapping:mapping];
 }
@@ -148,14 +149,26 @@
 - (RKObjectMapping*)inverseMapping {
     RKObjectMapping* inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     for (RKObjectAttributeMapping* attributeMapping in self.attributeMappings) {
-        [inverseMapping mapAttribute:attributeMapping.destinationKeyPath toKeyPath:attributeMapping.sourceKeyPath];
+        [inverseMapping mapKeyPath:attributeMapping.destinationKeyPath toAttribute:attributeMapping.sourceKeyPath];
     }
     
     for (RKObjectRelationshipMapping* relationshipMapping in self.relationshipMappings) {
-        [inverseMapping mapRelationship:relationshipMapping.destinationKeyPath toKeyPath:relationshipMapping.sourceKeyPath withObjectMapping:[relationshipMapping.objectMapping inverseMapping]];
+        [inverseMapping mapKeyPath:relationshipMapping.destinationKeyPath toRelationship:relationshipMapping.sourceKeyPath withObjectMapping:[relationshipMapping.objectMapping inverseMapping]];
     }
     
     return inverseMapping;
+}
+
+- (void)mapKeyPathsToAttributes:(NSString*)firstKeyPath, ... {
+    va_list args;
+    va_start(args, firstKeyPath);
+    for (NSString* keyPath = firstKeyPath; keyPath != nil; keyPath = va_arg(args, NSString*)) {
+		NSString* attributeKeyPath = va_arg(args, NSString*);
+        NSAssert(attributeKeyPath != nil, @"Cannot map a keyPath without a destination attribute keyPath");
+        [self mapKeyPath:keyPath toAttribute:attributeKeyPath];
+        // TODO: Raise proper exception here, argument error...
+    }
+    va_end(args);
 }
 
 @end

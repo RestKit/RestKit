@@ -17,28 +17,40 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-    
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Initialize RestKit
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:@"http://twitter.com"];
     
     // Enable automatic network activity indicator management
     [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
     
-    // Uncomment this to use XML, comment it to use JSON
-    [objectManager setFormat:RKMappingFormatXML];
+    // Setup our object mappings
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTUser class]];
+    [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
+    [userMapping mapKeyPath:@"screen_name" toAttribute:@"screenName"];
+    [userMapping mapAttributes:@"name", nil];
     
-	RKObjectMapper* mapper = objectManager.mapper;
-	
-	// Add our element to object mappings
-	[mapper registerClass:[RKTUser class] forElementNamed:@"user"];
-	[mapper registerClass:[RKTStatus class] forElementNamed:@"status"];
-	
-	// Update date format so that we can parse twitter dates properly
+    RKObjectMapping* statusMapping = [RKObjectMapping mappingForClass:[RKTStatus class]];
+    [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
+         @"created_at", @"createdAt",
+         @"text", @"text",
+         @"url", @"urlString",
+         @"in_reply_to_screen_name", @"inReplyToScreenName",
+         @"favorited", @"isFavorited",
+         nil];
+    [statusMapping mapRelationship:@"user" withObjectMapping:userMapping];
+    
+    // Update date format so that we can parse Twitter dates properly
 	// Wed Sep 29 15:31:08 +0000 2010
-	NSMutableArray* dateFormats = [[[mapper dateFormats] mutableCopy] autorelease];
-	[dateFormats addObject:@"E MMM d HH:mm:ss Z y"];
-	[mapper setDateFormats:dateFormats];
+	[statusMapping.dateFormatStrings addObject:@"E MMM d HH:mm:ss Z y"];
+    
+    // Register our mappings with the provider
+    [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
+    [objectManager.mappingProvider setMapping:statusMapping forKeyPath:@"status"];
+    
+    // Uncomment this to use XML, comment it to use JSON
+//  objectManager.acceptMIMEType = RKMIMETypeXML;
+//  [objectManager.mappingProvider setMapping:statusMapping forKeyPath:@"statuses.status"];
 	
     // Create Window and View Controllers
 	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
