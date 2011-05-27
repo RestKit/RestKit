@@ -17,6 +17,8 @@
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
     NSString* _rootKeyPath;
+    BOOL _etNilForMissingAttributes;
+    BOOL _etNilForMissingRelationships;
 }
 
 @property (nonatomic, assign) Class objectClass;
@@ -25,7 +27,8 @@
 @property (nonatomic, readonly) NSArray* relationshipMappings;
 @property (nonatomic, readonly) NSArray* mappedKeyPaths;
 @property (nonatomic, retain) NSString* rootKeyPath;
-
+@property (nonatomic, assign) BOOL setNilForMissingAttributes;
+@property (nonatomic, assign) BOOL setNilForMissingRelationships;
 /*!
  An array of date format strings to apply when mapping a
  String attribute to a NSDate property
@@ -39,8 +42,8 @@
 - (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath;
 
 // TODO: Probably become properties...
-- (BOOL)shouldSetNilForMissingAttributes;
-- (BOOL)shouldSetNilForMissingRelationships;
+- (BOOL)setNilForMissingAttributes;
+- (BOOL)setNilForMissingRelationships;
 
 - (void)mapAttributes:(NSString*)attributeKeyPath, ...;
 - (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping;

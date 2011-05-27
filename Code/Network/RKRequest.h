@@ -55,6 +55,7 @@ typedef enum RKRequestBackgroundPolicy {
 	RKRequestMethod _method;
 	BOOL _isLoading;
 	BOOL _isLoaded;
+    BOOL _sentSynchronously;
     RKRequestBackgroundPolicy _backgroundPolicy;
     
     #if TARGET_OS_IPHONE

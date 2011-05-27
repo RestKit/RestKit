@@ -196,7 +196,7 @@
             RKLOG_MAPPING(RKLogLevelInfo, @"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
             
             // Optionally set nil for missing values
-            if ([self.objectMapping shouldSetNilForMissingAttributes]) {
+            if ([self.objectMapping setNilForMissingAttributes]) {
                 [self.destinationObject setValue:nil forKey:attributeMapping.destinationKeyPath];
                 RKLOG_MAPPING(RKLogLevelInfo, @"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
             }
@@ -235,7 +235,7 @@
             RKLOG_MAPPING(RKLogLevelInfo, @"Did not find mappable relationship value keyPath '%@'", mapping.sourceKeyPath);
             
             // Optionally nil out the property
-            if ([self.objectMapping shouldSetNilForMissingRelationships] && [self shouldSetValue:nil atKeyPath:mapping.destinationKeyPath]) {
+            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:nil atKeyPath:mapping.destinationKeyPath]) {
                 [self.destinationObject setValue:nil forKey:mapping.destinationKeyPath];
                 
                 RKLOG_MAPPING(RKLogLevelInfo, @"Setting nil for missing relationship value at keyPath '%@'", mapping.sourceKeyPath);

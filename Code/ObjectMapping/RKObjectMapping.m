@@ -15,6 +15,8 @@
 @synthesize mappings = _mappings;
 @synthesize dateFormatStrings = _dateFormatStrings;
 @synthesize rootKeyPath = _rootKeyPath;
+@synthesize setNilForMissingAttributes = _setNilForMissingAttributes;
+@synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [RKObjectMapping new];
@@ -27,6 +29,8 @@
     if (self) {
         _mappings = [NSMutableArray new];
         _dateFormatStrings = [NSMutableArray arrayWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
+        self.setNilForMissingAttributes = NO;
+        self.setNilForMissingRelationships = NO;
     }
     
     return self;
@@ -84,15 +88,6 @@
     }
     
     return nil;
-}
-
-// TODO: This is a stub. Need to figure out where the real behavior lives...
-- (BOOL)shouldSetNilForMissingAttributes {
-    return YES;
-}
-
-- (BOOL)shouldSetNilForMissingRelationships {
-    return YES;
 }
 
 - (void)mapAttributesSet:(NSSet*)attributes {

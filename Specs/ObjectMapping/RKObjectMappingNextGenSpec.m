@@ -868,7 +868,7 @@
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingAttributes];
     NSError* error = nil;
     [operation performMapping:&error];
     [mockUser verify];
@@ -888,7 +888,7 @@
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = NO;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingAttributes];
     NSError* error = nil;
     [operation performMapping:&error];
     [expectThat(user.name) should:be(@"Blake Watters")];
@@ -1035,7 +1035,7 @@
     [dictionary removeObjectForKey:@"address"];    
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingRelationships];
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser objectMapping:mockMapping];
     
     NSError* error = nil;
@@ -1062,7 +1062,7 @@
     [dictionary removeObjectForKey:@"address"];    
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] ssetNilForMissingRelationships];
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser objectMapping:mockMapping];
     
     NSError* error = nil;

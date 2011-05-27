@@ -26,6 +26,7 @@
 
 @synthesize objectManager = _objectManager, response = _response;
 @synthesize targetObject = _targetObject, objectMapping = _objectMapping;
+@synthesize result = _result;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
@@ -48,6 +49,8 @@
 	_response = nil;
 	[_objectMapping release];
 	_objectMapping = nil;
+    [_result release];
+    _result = nil;
     
 	[super dealloc];
 }
@@ -136,9 +139,7 @@
     return result;
 }
 
-- (void)performMappingOnBackgroundThread {
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    
+- (RKObjectMappingResult*)performMapping {
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
@@ -147,8 +148,14 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:mappingProvider];
-    [self processMappingResult:result];
+    return [self mapResponseWithMappingProvider:mappingProvider];
+}
+
+- (void)performMappingOnBackgroundThread {
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    
+    self.result = [self performMapping];
+    [self processMappingResult:self.result];
 
 	[pool drain];
 }
@@ -231,7 +238,13 @@
     }
     
 	if ([self isResponseMappable]) {
-		[self performSelectorInBackground:@selector(performMappingOnBackgroundThread) withObject:nil];
+        // Determine if we are synchronous here or not.
+        if (_sentSynchronously) {
+            self.result = [self performMapping];
+            [self processMappingResult:self.result];
+        } else {
+            [self performSelectorInBackground:@selector(performMappingOnBackgroundThread) withObject:nil];
+        }
 	}
 }
 
