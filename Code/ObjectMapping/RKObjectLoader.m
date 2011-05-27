@@ -48,6 +48,8 @@
 	_response = nil;
 	[_objectMapping release];
 	_objectMapping = nil;
+    [_targetObject release];
+    _targetObject = nil;
     
 	[super dealloc];
 }
