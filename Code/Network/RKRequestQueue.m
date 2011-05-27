@@ -206,13 +206,20 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (void)cancelRequest:(RKRequest*)request loadNext:(BOOL)loadNext {
-	if ([_requests containsObject:request] && ![request isLoaded]) {
+    if (![request isLoading]) {
+        [_requests removeObject:request];
+        request.delegate = nil;
+        
+        if ([_delegate respondsToSelector:@selector(requestQueue:didCancelRequest:)]) {
+            [_delegate requestQueue:self didCancelRequest:request];
+        }
+    } else if ([_requests containsObject:request] && ![request isLoaded]) {
 		[request cancel];
 		request.delegate = nil;
         
-    if ([_delegate respondsToSelector:@selector(requestQueue:didCancelRequest:)]) {
-        [_delegate requestQueue:self didCancelRequest:request];
-    }
+        if ([_delegate respondsToSelector:@selector(requestQueue:didCancelRequest:)]) {
+            [_delegate requestQueue:self didCancelRequest:request];
+        }
 
 		[_requests removeObject:request];
 		self.loadingCount = self.loadingCount - 1;
