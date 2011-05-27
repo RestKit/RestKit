@@ -26,6 +26,7 @@
 
 @synthesize objectManager = _objectManager, response = _response;
 @synthesize targetObject = _targetObject, objectMapping = _objectMapping;
+@synthesize result = _result;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
@@ -50,6 +51,8 @@
 	_objectMapping = nil;
     [_targetObject release];
     _targetObject = nil;
+    [_result release];
+    _result = nil;
     
 	[super dealloc];
 }
@@ -140,10 +143,7 @@
     return result;
 }
 
-- (void)performMappingOnBackgroundThread {
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    NSError* error = nil;
-    
+- (RKObjectMappingResult*)performMapping:(NSError**)error {
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
@@ -152,9 +152,17 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject error:&error];
-    if (result) {
-        [self processMappingResult:result];
+    return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject error:error];
+}
+    
+
+- (void)performMappingOnBackgroundThread {
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    
+    NSError* error = nil;
+    self.result = [self performMapping:&error];
+    if (self.result) {
+        [self processMappingResult:self.result];
     } else {
         [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
     }
@@ -230,6 +238,8 @@
 }
 
 - (void)didFailLoadWithError:(NSError*)error {
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    
 	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 		[_delegate request:self didFailLoadWithError:error];
 	}
@@ -237,6 +247,8 @@
 	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
     
 	[self finalizeLoad:NO];
+    
+    [pool release];
 }
 
 // NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
@@ -248,7 +260,18 @@
     }
     
 	if ([self isResponseMappable]) {
-		[self performSelectorInBackground:@selector(performMappingOnBackgroundThread) withObject:nil];
+        // Determine if we are synchronous here or not.
+        if (_sentSynchronously) {
+            NSError* error = nil;
+            self.result = [self performMapping:&error];
+            if (self.result) {
+                [self processMappingResult:self.result];
+            } else {
+                [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+            }
+        } else {
+            [self performSelectorInBackground:@selector(performMappingOnBackgroundThread) withObject:nil];
+        }
 	}
 }
 

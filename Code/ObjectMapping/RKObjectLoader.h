@@ -8,6 +8,7 @@
 
 #import "../Network/Network.h"
 #import "RKObjectMapping.h"
+#import "RKObjectMappingResult.h"
 
 @class RKObjectManager;
 @class RKObjectLoader;
@@ -67,6 +68,7 @@
     RKObjectManager* _objectManager;
 	RKResponse* _response;
     RKObjectMapping* _objectMapping;
+    RKObjectMappingResult* _result;
 	NSObject* _targetObject;
 }
 
@@ -91,6 +93,11 @@
  * updates back to the object that sent the request
  */
 @property (nonatomic, retain) NSObject* targetObject;
+
+/**
+ * If the request was sent synchronously, this is how you get at the object mapping result.
+ */
+@property (nonatomic, retain) RKObjectMappingResult* result;
 
 /**
  * Initialize and return an object loader for a resource path against an object manager. The resource path
