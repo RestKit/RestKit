@@ -17,8 +17,8 @@
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
     NSString* _rootKeyPath;
-    BOOL _etNilForMissingAttributes;
-    BOOL _etNilForMissingRelationships;
+    BOOL _setNilForMissingAttributes;
+    BOOL _setNilForMissingRelationships;
 }
 
 @property (nonatomic, assign) Class objectClass;
@@ -40,10 +40,6 @@
 - (void)addRelationshipMapping:(RKObjectRelationshipMapping*)mapping;
 
 - (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath;
-
-// TODO: Probably become properties...
-- (BOOL)setNilForMissingAttributes;
-- (BOOL)setNilForMissingRelationships;
 
 - (void)mapAttributes:(NSString*)attributeKeyPath, ...;
 - (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping;

@@ -141,10 +141,7 @@
     return result;
 }
 
-- (void)performMappingOnBackgroundThread {
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    NSError* error = nil;
-    
+- (RKObjectMappingResult*)performMapping:(NSError**)error {
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
@@ -153,18 +150,20 @@
         mappingProvider = self.objectManager.mappingProvider;
     }
     
-    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject error:&error];
-    if (result) {
-        [self processMappingResult:result];
-    } else {
-        [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
-    }
+    return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject error:error];
+}
+    
 
 - (void)performMappingOnBackgroundThread {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
-    self.result = [self performMapping];
-    [self processMappingResult:self.result];
+    NSError* error = nil;
+    self.result = [self performMapping:&error];
+    if (self.result) {
+        [self processMappingResult:self.result];
+    } else {
+        [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+    }
 
 	[pool drain];
 }
@@ -257,8 +256,13 @@
 	if ([self isResponseMappable]) {
         // Determine if we are synchronous here or not.
         if (_sentSynchronously) {
-            self.result = [self performMapping];
-            [self processMappingResult:self.result];
+            NSError* error = nil;
+            self.result = [self performMapping:&error];
+            if (self.result) {
+                [self processMappingResult:self.result];
+            } else {
+                [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+            }
         } else {
             [self performSelectorInBackground:@selector(performMappingOnBackgroundThread) withObject:nil];
         }

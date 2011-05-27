@@ -29,7 +29,6 @@
     if (self) {
         _mappings = [NSMutableArray new];
         _dateFormatStrings = [[NSMutableArray alloc] initWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
-        _dateFormatStrings = [NSMutableArray arrayWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
         self.setNilForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;
     }
