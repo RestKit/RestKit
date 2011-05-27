@@ -236,6 +236,8 @@
 }
 
 - (void)didFailLoadWithError:(NSError*)error {
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+    
 	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 		[_delegate request:self didFailLoadWithError:error];
 	}
@@ -243,6 +245,8 @@
 	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
     
 	[self finalizeLoad:NO];
+    
+    [pool release];
 }
 
 // NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
