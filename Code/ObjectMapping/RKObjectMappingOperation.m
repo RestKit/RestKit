@@ -106,6 +106,8 @@
         }
     }
     
+    RKLOG_MAPPING(RKLogLevelWarning, @"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", NSStringFromClass([value class]), NSStringFromClass(destinationType));
+    
     return nil;
 }
 

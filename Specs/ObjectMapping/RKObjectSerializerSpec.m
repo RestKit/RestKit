@@ -64,6 +64,23 @@
     [expectThat(data) should:be(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01 00:00:00 +0000\"}")];
 }
 
+- (void)itShouldSerializeNSDecimalNumberAttributesToJSON {
+    NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDecimalNumber decimalNumberWithString:@"18274191731731.4557723623"], @"number", nil];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"number" toKeyPath:@"number-form-name"]];
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
+    
+    NSError* error = nil;
+    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
+    
+    NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
+    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    [expectThat(error) should:be(nil)];
+    [expectThat(data) should:be(@"{\"key1-form-name\":\"value1\",\"number-form-name\":\"18274191731731.4557723623\"}")];
+}
+
 - (void)itShouldSerializeRelationshipsToo {
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2",
                             [NSArray arrayWithObjects:
@@ -152,7 +169,7 @@
     NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [expectThat(error) should:be(nil)];
-    [expectThat(data) should:be(@"key2-form-name=value2&key1-form-name=value1")];
+    [expectThat(data) should:be(@"stuff[key2-form-name]=value2&stuff[key1-form-name]=value1")];
 }
 
 @end
