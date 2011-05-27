@@ -14,6 +14,11 @@
 #import "RKManagedObjectThreadSafeInvocation.h"
 #import "../ObjectMapping/RKObjectLoader_Internals.h"
 
+// TODO: Move to new header...
+@interface RKRequest (Internals)
+- (void)prepareURLRequest;
+@end
+
 @implementation RKManagedObjectLoader
 
 - (id)init {
@@ -40,25 +45,19 @@
 
 - (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
     if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
-        // TODO: logging here
-        // TODO: Unit test with a collection
         [_managedObjectKeyPaths addObject:keyPath];
     }
 }
 
 #pragma mark - RKObjectLoader overrides
 
-- (void)performMappingOnBackgroundThread {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-    
-    // Refetch the target object now that we are on the background thread
-    if (_targetObjectID) {
-        self.targetObject = [self.objectStore objectWithID:_targetObjectID];
+// Overload the target object reader to return a thread-local copy of the target object
+- (id)targetObject {
+    if ([NSThread isMainThread] == NO && _targetObjectID) {
+        return [self.objectStore objectWithID:_targetObjectID];        
     }
     
-    // Let RKObjectLoader handle the processing...
-    [super performMappingOnBackgroundThread];    
-    [pool drain];
+    return _targetObject;
 }
 
 - (void)setTargetObject:(NSObject*)targetObject {
@@ -69,22 +68,34 @@
     [_targetObjectID release];
     _targetObjectID = nil;
     
-    // Obtain a permanent ID for the object
+    
+    // TODO: Can we just obtain a permanent object ID instead of saving the store???
+//    if ([targetObject isKindOfClass:[NSManagedObject class]]) {
+//        NSManagedObjectContext* context = self.objectStore.managedObjectContext;
+//        NSError* error = nil;
+//        if ([context obtainPermanentIDsForObjects:[NSArray arrayWithObject:targetObject] error:&error]) {
+//            _targetObjectID = [[(NSManagedObject*)targetObject objectID] retain];
+//        }
+//    }
+}
+
+- (void)prepareURLRequest {
+    // TODO: Can we just do this if the object hasn't been saved already???
+    
     // NOTE: There is an important sequencing issue here. You MUST save the
     // managed object context before retaining the objectID or you will run
     // into an error where the object context cannot be saved. We do this
     // right before send to avoid sequencing issues where the target object is
     // set before the managed object store.
-    // TODO: Can we just obtain a permanent object ID instead of saving the store???
-    if ([targetObject isKindOfClass:[NSManagedObject class]]) {
-        NSManagedObjectContext* context = self.objectStore.managedObjectContext;
-        NSError* error = nil;
-        if ([context obtainPermanentIDsForObjects:[NSArray arrayWithObject:targetObject] error:&error]) {
-            _targetObjectID = [[(NSManagedObject*)targetObject objectID] retain];
-        }
+    if (self.targetObject && [self.targetObject isKindOfClass:[NSManagedObject class]]) {
+        [self.objectStore save];
+        _targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
     }
+    
+    [super prepareURLRequest];
 }
 
+// NOTE: We are on the background thread here, be mindful of Core Data's threading needs
 - (void)processMappingResult:(RKObjectMappingResult*)result {
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
         // TODO: Logging
@@ -97,6 +108,8 @@
         // TODO: Logging or delegate notifications?
         [self.objectStore save];
     }
+    
+    // TODO: If unsuccessful and we saved the object, remove it from the store so that it is not orphaned
     
     NSDictionary* dictionary = [result asDictionary];
     NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];

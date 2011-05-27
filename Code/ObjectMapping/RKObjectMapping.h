@@ -55,6 +55,6 @@
 - (void)removeMappingForKeyPath:(NSString*)keyPath;
 - (RKObjectMapping*)inverseMapping;
 
-- (void)mapKeyPathsAndAttributes:(NSString*)keyPath, ...;
+- (void)mapKeyPathsToAttributes:(NSString*)keyPath, ...;
 
 @end

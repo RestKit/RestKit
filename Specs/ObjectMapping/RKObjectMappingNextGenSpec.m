@@ -606,6 +606,23 @@
     [operation release];
 }
 
+- (void)itShouldConsiderADictionaryContainingOnlyNullValuesForKeysMappable {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
+    [mapping addAttributeMapping:idMapping];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
+    
+    NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNull null], @"name", nil];
+    RKExampleUser* user = [RKExampleUser user];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(user.name, is(nilValue()));
+    [operation release];
+}
+
 - (void)itShouldBeAbleToMapAUserToADictionary {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"userID" toKeyPath:@"id"];

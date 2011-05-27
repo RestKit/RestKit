@@ -55,7 +55,6 @@ RKParserRegistry* gSharedRegistry;
         return [[[parserClass alloc] init] autorelease];
     }
     
-    // TODO: Log a warning...
     return nil;
 }
 

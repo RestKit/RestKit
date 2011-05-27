@@ -17,14 +17,6 @@ NSString* const DBContentObjectDidChangeNotification = @"DBContentObjectDidChang
 @dynamic updatedAt;
 @dynamic user;
 
-/**
- * Instructs RestKit to map nested objects to the Core Data
- * relationship specified
- */
-+ (NSDictionary*)elementToRelationshipMappings {
-	return [NSDictionary dictionaryWithObject:@"user" forKey:@"user"];
-}
-
 - (BOOL)isNewRecord {
 	return [[self primaryKeyValue] intValue] == 0;
 }

@@ -163,7 +163,7 @@
     return inverseMapping;
 }
 
-- (void)mapKeyPathsAndAttributes:(NSString*)firstKeyPath, ... {
+- (void)mapKeyPathsToAttributes:(NSString*)firstKeyPath, ... {
     va_list args;
     va_start(args, firstKeyPath);
     for (NSString* keyPath = firstKeyPath; keyPath != nil; keyPath = va_arg(args, NSString*)) {

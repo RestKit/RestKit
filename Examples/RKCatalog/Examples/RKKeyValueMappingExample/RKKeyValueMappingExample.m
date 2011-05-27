@@ -61,7 +61,7 @@
     [super viewDidAppear:animated];
     
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[SimpleAccount class]];
-    [mapping mapKeyPathsAndAttributes:
+    [mapping mapKeyPathsToAttributes:
      @"id", @"accountID",
      @"name", @"name",
      @"balance", @"balance",

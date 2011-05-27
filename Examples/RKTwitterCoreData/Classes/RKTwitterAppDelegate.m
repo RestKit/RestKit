@@ -32,7 +32,7 @@
     [userMapping mapAttributes:@"name", nil];
     
     RKObjectMapping* statusMapping = [RKObjectMapping mappingForClass:[RKTStatus class]];
-    [statusMapping mapKeyPathsAndAttributes:@"id", @"statusID",
+    [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
      @"created_at", @"createdAt",
      @"text", @"text",
      @"url", @"urlString",

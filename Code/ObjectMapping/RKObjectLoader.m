@@ -115,8 +115,7 @@
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject error:(NSError**)error {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
-    id parsedData = [parser objectFromString:[self.response bodyAsString] error:error];    
-    NSAssert(parsedData, @"Cannot perform object load without data for mapping");
+    id parsedData = [parser objectFromString:[self.response bodyAsString] error:error];
     if (parsedData == nil && error) {
         return nil;
     }
@@ -165,6 +164,8 @@
     if ([[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType]) {
         return YES;
     }
+    
+    RKLOG_MAPPING(RKLogLevelWarning, @"Unable to find parser for MIME Type '%@'", MIMEType);
     return NO;
 }
 

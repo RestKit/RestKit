@@ -734,6 +734,9 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */,
+				2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */,
+				25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */,
 				3F4EAF5A1342071B00F944E4 /* libxml2.dylib */,
 				3F19126812DF6B3200C077AD /* CoreFoundation.framework */,
 				3F19129712DF6B4800C077AD /* CFNetwork.framework */,
@@ -745,9 +748,6 @@
 				255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */,
 				258C6687133C377A004388A4 /* libUISpec.a */,
 				25D638DE1351268D000879B1 /* Cocoa.framework */,
-				73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */,
-				2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */,
-				25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */,
 				25D638E01351268D000879B1 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -2208,7 +2208,10 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PREBINDING = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/SBJSON/Private;
 				PRODUCT_NAME = RestKitJSONParserSBJSON;
@@ -2224,6 +2227,10 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PREBINDING = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit/Private;
 				PRODUCT_NAME = RestKitJSONParserJSONKit;
@@ -2538,7 +2545,10 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PREBINDING = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/SBJSON/Private;
 				PRODUCT_NAME = RestKitJSONParserSBJSON;
@@ -2554,7 +2564,10 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PREBINDING = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/SBJSON/Private;
 				PRODUCT_NAME = RestKitJSONParserSBJSON;
@@ -2575,7 +2588,10 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = RestKitXMLParserLibxml;
 			};
 			name = Debug;
@@ -2590,7 +2606,10 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = RestKitXMLParserLibxml;
 			};
 			name = Release;
@@ -2605,7 +2624,10 @@
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = RestKitXMLParserLibxml;
 			};
 			name = Distribution;
@@ -2712,6 +2734,10 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PREBINDING = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit/Private;
 				PRODUCT_NAME = RestKitJSONParserJSONKit;
@@ -2726,6 +2752,10 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PREBINDING = NO;
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/JSONKit/Private;
 				PRODUCT_NAME = RestKitJSONParserJSONKit;

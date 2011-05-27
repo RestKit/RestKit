@@ -187,7 +187,7 @@
                 }
                 RKLOG_MAPPING(RKLogLevelDebug, @"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
             } else {
-                RKLOG_MAPPING(RKLogLevelDebug, @"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
+                RKLOG_MAPPING(RKLogLevelDebug, @"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
             }
         } else {
             if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotFindMappingForKeyPath:)]) {
