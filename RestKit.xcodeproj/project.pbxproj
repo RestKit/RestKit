@@ -2056,7 +2056,6 @@
 					../three20/Build/Products/three20,
 					Examples/RKDiscussionBoardExample/DiscussionBoard/Libraries/three20,
 				);
-				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -2087,7 +2086,6 @@
 					../three20/Build/Products/three20,
 					Examples/RKDiscussionBoardExample/DiscussionBoard/Libraries/three20,
 				);
-				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -2269,7 +2267,6 @@
 					../three20/Build/Products/three20,
 					Examples/RKDiscussionBoardExample/DiscussionBoard/Libraries/three20,
 				);
-				INSTALL_PATH = /usr/local/lib;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -2580,19 +2577,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = /tmp/RestKitXMLParser_libxml.dst;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
 				);
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/XML/LibXML/Private;
 				PRODUCT_NAME = RestKitXMLParserLibxml;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/XML/LibXML;
 			};
 			name = Debug;
 		};
@@ -2600,17 +2594,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = /tmp/RestKitXMLParser_libxml.dst;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
 				);
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/XML/LibXML/Private;
 				PRODUCT_NAME = RestKitXMLParserLibxml;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/XML/LibXML;
 			};
 			name = Release;
 		};
@@ -2618,17 +2610,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = /tmp/RestKitXMLParser_libxml.dst;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = /usr/include/libxml2;
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
 				);
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/XML/LibXML/Private;
 				PRODUCT_NAME = RestKitXMLParserLibxml;
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/XML/LibXML;
 			};
 			name = Distribution;
 		};
