@@ -41,7 +41,9 @@
             xmlAttribute* currentAttribute = NULL;
             for (currentAttribute = (xmlAttribute*)element->attributes; currentAttribute; currentAttribute = (xmlAttribute*)currentAttribute->next) {
                 NSString* name = [NSString stringWithCString:(char*)currentAttribute->name encoding:NSUTF8StringEncoding];
-                NSString* val = [NSString stringWithCString:(char*)xmlNodeGetContent((xmlNode*)currentAttribute) encoding:NSUTF8StringEncoding];
+                xmlChar* str = xmlNodeGetContent((xmlNode*)currentAttribute);
+                NSString* val = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
+                xmlFree(str);
                 [attrs setValue:val forKey:name];
                 // Only add attributes to nodes if there actually is one.
                 if (![nodes containsObject:attrs]) {
@@ -54,6 +56,7 @@
             if ([[part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] > 0) {
                 [nodes addObject:part];
             }
+            xmlFree(str);
         }
     }
     if ([nodes count] == 1) {
