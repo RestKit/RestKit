@@ -199,7 +199,7 @@
         if (result) {
             error = [result asError];
         } else {
-            // TODO: Log that mapping from payload errors failed
+            RKLOG_MAPPING(RKLogLevelWarning, @"Encountered an error while attempting to map server side errors from payload: %@", [error localizedDescription]);
         }
         
         [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];

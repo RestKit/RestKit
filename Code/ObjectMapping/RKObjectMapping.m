@@ -124,11 +124,11 @@
     [self addAttributeMapping:mapping];
 }
 
-- (void)hasMany:(NSString*)keyPath withMapping:(RKObjectMapping*)objectMapping {
+- (void)hasMany:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)objectMapping {
     [self mapRelationship:keyPath withObjectMapping:objectMapping];
 }
 
-- (void)belongsTo:(NSString*)keyPath withMapping:(RKObjectMapping*)mapping {
+- (void)belongsTo:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping {
     [self mapRelationship:keyPath withObjectMapping:mapping];
 }
 
