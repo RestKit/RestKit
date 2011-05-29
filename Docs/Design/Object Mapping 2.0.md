@@ -84,9 +84,6 @@ appropriate mapping is selected by consulting the `objectMappingForClass:` metho
 sharedRegistry instance that is automatically configured at library initialization time to handle the application/json and application/xml MIME types. Runtime detection
 of the parser classes is utilized to configure the registry appropriately. For JSON, autoconfiguration searches for JSONKit, then YAJL, and then SBJSON.
 
-## Lifecycle of an Object Loader
-## Serialization
-
 ## Tasks
 
 ### Configuring an Object Mapping
