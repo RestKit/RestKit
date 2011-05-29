@@ -125,20 +125,6 @@ TODO - Finish up
     [mapping belongsTo:@"author" withObjectMapping:[User objectMapping] andPrimaryKey:@"author_id"];
 ```
 
-### Performing a Mapping
-```objc
-    // RKObjectMapper always returns a single mapped structure from a dictionary. Arrays are handled by iterating and returning 
-    @implementation RKObjectLoader
-    
-    - (void)didFinishLoad {
-        id payload = [self.parser parseString:[self bodyAsString]];
-        RKNewObjectMapper* mapper = [RKNewObjectMapper mapperForObject:payload atKeyPath:nil mappingProvider:self.objectManager.mappingProvider];
-        id mappingResults = [mapper performMapping];
-            
-        [self.delegate didLoadObjects:mappingResults];
-    }
-```
-
 ### Loading Using KeyPath Mapping Lookup
 ```objc
     RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" delegate:self];
@@ -175,6 +161,27 @@ This is handled for you when using postObject and putObject, presented here for 
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:serializationMapping];
     NSError* error = nil;
     id serialization = [serializer serializationForMIMEType:RKMIMETypeJSON error:&error];
+```
+
+### Performing a Mapping
+This is handled for you when using loadObjectAtResourcePath:, presented here for reference:
+
+```objc
+    NSString* JSONString = @"{ \"name\": \"The name\", \"number\": 12345}";
+    NSString* MIMEType = @"application/json";
+    NSError* error = nil;
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
+    id parsedData = [parser objectFromString:JSONString error:error];
+    if (parsedData == nil && error) {
+        // Parser error...
+    }
+    
+    RKObjectMappingProvider* mappingProvider = [RKObjectManager sharedManager].mappingProvider;
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
+    RKObjectMappingResult* result = [mapper performMapping];
+    if (result) {
+        // Yay! Mapping finished successfully
+    }
 ```
 
 ### Registering a Parser
