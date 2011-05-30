@@ -17,7 +17,7 @@
 
 @implementation RKObjectSerializerSpec
 
-- (void)itShouldSerializeShitToFormEncodedData {
+- (void)itShouldSerializeToFormEncodedData {
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
@@ -170,6 +170,31 @@
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [expectThat(error) should:be(nil)];
     [expectThat(data) should:be(@"stuff[key2-form-name]=value2&stuff[key1-form-name]=value1")];
+}
+
+- (void)itShouldSerializeToManyRelationships {
+    RKMappableObject* object = [[RKMappableObject new] autorelease];
+    object.stringTest = @"The string";
+    RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
+    association.date = [NSDate dateWithTimeIntervalSince1970:0];
+    object.hasMany = [NSSet setWithObject:association];
+    
+    // Setup object mappings
+    RKObjectMapping* objectMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [objectMapping mapAttributes:@"stringTest", nil];    
+    RKObjectMapping* relationshipMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [relationshipMapping mapAttributes:@"date", nil];
+    [objectMapping mapRelationship:@"hasMany" withObjectMapping:relationshipMapping];
+    
+    // Serialize
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:objectMapping];
+    NSError* error = nil;
+    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
+    assertThat(error, is(nilValue()));
+    
+    NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
+    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    assertThat(data, is(equalTo(@"{\"hasMany\":[{\"date\":\"1970-01-01 00:00:00 +0000\"}],\"stringTest\":\"The string\"}")));
 }
 
 @end

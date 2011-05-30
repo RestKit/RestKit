@@ -9,6 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKManagedObjectStore.h"
 #import "RKHuman.h"
+#import "RKCat.h"
 
 @interface RKDynamicRouterSpec : NSObject <UISpec> {
 }

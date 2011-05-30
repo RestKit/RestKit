@@ -45,6 +45,8 @@
     // Weak reference
     _objectManager = nil;
     
+	[_targetObject release];
+	_targetObject = nil;
 	[_response release];
 	_response = nil;
 	[_objectMapping release];

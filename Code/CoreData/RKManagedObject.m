@@ -36,7 +36,7 @@
 + (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest {
 	NSError* error = nil;
 	NSArray* objects = [[RKManagedObject managedObjectContext] executeFetchRequest:fetchRequest error:&error];
-	if (error != nil) {
+	if (objects == nil) {
 		NSLog(@"Error: %@", [error localizedDescription]);
 		// TODO: Error handling
 	}

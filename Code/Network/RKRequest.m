@@ -250,7 +250,7 @@
 
 - (RKResponse*)sendSynchronously {
 	NSURLResponse* URLResponse = nil;
-	NSError* error = nil;
+	NSError* error;
 	NSData* payload = nil;
 	RKResponse* response = nil;
     _sentSynchronously = YES;
@@ -269,13 +269,15 @@
         }
         
 		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
+		if (payload != nil) error = nil;
+		
 		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
-        
-        if (error) {
-            [self didFailLoadWithError:error];
-        } else {
-            [self didFinishLoad:response];
-        }
+		
+		if (payload == nil) {
+			[self didFailLoadWithError:error];
+		} else {
+			[self didFinishLoad:response];
+		}
 	} else {
 		NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
 		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
