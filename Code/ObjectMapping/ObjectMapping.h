@@ -14,3 +14,4 @@
 #import "RKObjectMappingResult.h"
 #import "RKObjectMapper.h"
 #import "RKObjectFactory.h"
+#import "RKParserRegistry.h"
