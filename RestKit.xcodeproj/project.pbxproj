@@ -207,7 +207,7 @@
 		25A1CB3A137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB39137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h */; };
 		25A1CB3F138404CF00A7D5C9 /* RKRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB3B1383F7DF00A7D5C9 /* RKRequestSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A1CB40138404EB00A7D5C9 /* RKRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CB3C1383F7E100A7D5C9 /* RKRequestSerialization.m */; };
-		25A1CB4313840C5400A7D5C9 /* RKParserRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB4113840C5100A7D5C9 /* RKParserRegistry.h */; };
+		25A1CB4313840C5400A7D5C9 /* RKParserRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB4113840C5100A7D5C9 /* RKParserRegistry.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A1CB4413840C5400A7D5C9 /* RKParserRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CB4213840C5300A7D5C9 /* RKParserRegistry.m */; };
 		25A1CB4713840E6100A7D5C9 /* RKParserRegistrySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CB4613840E6000A7D5C9 /* RKParserRegistrySpec.m */; };
 		25A1CB4B138413E100A7D5C9 /* RKMIMETypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB49138413DF00A7D5C9 /* RKMIMETypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1330,10 +1330,10 @@
 				2530078E137838D30074F3FD /* RKObjectMapper_Private.h in Headers */,
 				253E04C513798D72005D2E15 /* RKErrorMessage.h in Headers */,
 				3FD12C851379AD64008B996A /* RKRouter.h in Headers */,
+				25A1CB4313840C5400A7D5C9 /* RKParserRegistry.h in Headers */,
 				259562E8126D3B43004BAC4C /* RKRailsRouter.h in Headers */,
 				258A92691379D18A00D80034 /* RKObjectFactory.h in Headers */,
 				25A1CA8A137DD33900A7D5C9 /* RKObjectLoader_Internals.h in Headers */,
-				25A1CB4313840C5400A7D5C9 /* RKParserRegistry.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
