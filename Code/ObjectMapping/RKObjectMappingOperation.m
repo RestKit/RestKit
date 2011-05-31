@@ -249,12 +249,12 @@
         if ([self isValueACollection:value]) {
             // One to many relationship
             RKLOG_MAPPING(RKLogLevelInfo, @"Mapping one to many relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);
+            appliedMappings = YES;
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
             for (id nestedObject in value) {
                 id mappedObject = [self.objectFactory objectWithMapping:mapping.objectMapping andData:nestedObject];
                 if ([self mapNestedObject:nestedObject toObject:mappedObject withMapping:mapping]) {
-                    appliedMappings = YES;
                     [destinationObject addObject:mappedObject];
                 }
             }
