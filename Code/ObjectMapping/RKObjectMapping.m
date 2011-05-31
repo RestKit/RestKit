@@ -128,7 +128,7 @@
     [self mapRelationship:keyPath withObjectMapping:objectMapping];
 }
 
-- (void)belongsTo:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping {
+- (void)hasOne:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping {
     [self mapRelationship:keyPath withObjectMapping:mapping];
 }
 

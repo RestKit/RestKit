@@ -25,8 +25,4 @@
 	return @"statusID";
 }
 
-- (NSString*)description {
-	return [NSString stringWithFormat:@"%@ (ID: %@ Date: %@)", self.text, self.statusID, self.createdAt];
-}
-
 @end

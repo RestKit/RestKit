@@ -67,16 +67,6 @@
 
     [_targetObjectID release];
     _targetObjectID = nil;
-    
-    
-    // TODO: Can we just obtain a permanent object ID instead of saving the store???
-//    if ([targetObject isKindOfClass:[NSManagedObject class]]) {
-//        NSManagedObjectContext* context = self.objectStore.managedObjectContext;
-//        NSError* error = nil;
-//        if ([context obtainPermanentIDsForObjects:[NSArray arrayWithObject:targetObject] error:&error]) {
-//            _targetObjectID = [[(NSManagedObject*)targetObject objectID] retain];
-//        }
-//    }
 }
 
 - (void)prepareURLRequest {

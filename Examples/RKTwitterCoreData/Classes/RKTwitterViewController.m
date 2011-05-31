@@ -74,7 +74,10 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
+	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error" 
+                                                     message:[error localizedDescription] 
+                                                    delegate:nil 
+                                           cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
 	[alert show];
 	NSLog(@"Hit error: %@", error);
 }
@@ -111,7 +114,8 @@
 		cell.textLabel.backgroundColor = [UIColor clearColor];
 		cell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"listbg.png"]];
 	}
-	cell.textLabel.text = [[_statuses objectAtIndex:indexPath.row] text];
+    RKTStatus* status = [_statuses objectAtIndex:indexPath.row];
+	cell.textLabel.text = status.text;
 	return cell;
 }
 

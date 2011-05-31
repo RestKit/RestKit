@@ -23,6 +23,7 @@
 @property (nonatomic, retain) NSDate* updatedAt;
 
 @property (nonatomic, retain) NSSet* cats;
+@property (nonatomic, retain) RKCat* favoriteCat;
 
 @end
 

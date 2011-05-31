@@ -20,6 +20,7 @@
 @dynamic createdAt;
 @dynamic updatedAt;
 
+@dynamic favoriteCat;
 @dynamic cats;
 
 + (NSArray*)relationshipsToSerialize {

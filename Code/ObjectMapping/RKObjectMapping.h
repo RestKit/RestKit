@@ -48,7 +48,7 @@
 - (void)mapKeyPath:(NSString*)sourceKeyPath toAttribute:(NSString*)destinationKeyPath;
 
 - (void)hasMany:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping;
-- (void)belongsTo:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping;
+- (void)hasOne:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping;
 - (void)removeAllMappings;
 - (void)removeMapping:(RKObjectAttributeMapping*)attributeOrRelationshipMapping;
 - (void)removeMappingForKeyPath:(NSString*)keyPath;
