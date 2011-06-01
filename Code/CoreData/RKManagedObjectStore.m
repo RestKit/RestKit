@@ -287,6 +287,9 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 }
 
 - (NSManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue {
+    NSAssert(class, @"Cannot instantiate managed object without a target class");
+    NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without a primary key attribute");
+    NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
 	NSManagedObject* object = nil;
 	if ([class respondsToSelector:@selector(allObjects)]) {
 		NSArray* objects = nil;
