@@ -61,8 +61,14 @@
             }
         }        
         
-        id object = [_objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
-        NSAssert2(object, @"Failed creation of managed object with class '%@' and primary key value '%@'", NSStringFromClass(mappableClass), primaryKeyValue);
+        // Handle managed objects without a primary key
+        id object = nil;
+        if (primaryKeyAttribute && primaryKeyValue) {
+            object = [_objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
+            NSAssert2(object, @"Failed creation of managed object with class '%@' and primary key value '%@'", NSStringFromClass(mappableClass), primaryKeyValue);
+        } else {
+            object = [mappableClass performSelector:@selector(object)];
+        }
         // TODO: Error logging...
         return object;
     } else {

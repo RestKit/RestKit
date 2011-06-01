@@ -17,7 +17,7 @@
 
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
-		_topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
+		_topic = [[DBTopic findFirstByAttribute:@"topicID" withValue:topicID] retain];
 		
 		self.title = @"Posts";
 		

@@ -9,11 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
-#import "../Support/Logging.h"
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
 #import "RKObjectFactory.h"
-#import "Errors.h"
+#import "../Support/Support.h"
 
 /*!
  Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
@@ -34,7 +33,6 @@
 - (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
-
 @end
 
 @interface RKObjectMapper : NSObject {

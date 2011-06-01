@@ -60,7 +60,7 @@
     
     RKObjectMapping* humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [humanSerialization addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
-    [provider setMapping:humanSerialization forClass:[RKHuman class]];
+    [provider setSerializationMapping:humanSerialization forClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
 	
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
@@ -129,7 +129,7 @@
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
     [manager.mappingProvider setMapping:mapping forKeyPath:@"human"];
-    [manager.mappingProvider setMapping:mapping forClass:[RKObjectMapperSpecModel class]];
+    [manager.mappingProvider setSerializationMapping:mapping forClass:[RKObjectMapperSpecModel class]];
     
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
     human.name = @"Blake Watters";

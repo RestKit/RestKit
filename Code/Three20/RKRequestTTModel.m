@@ -8,6 +8,7 @@
 
 #import "RKRequestTTModel.h"
 #import "RKManagedObjectStore.h"
+#import "NSManagedObject+ActiveRecord.h"
 #import "../Network/Network.h"
 
 
@@ -268,7 +269,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		[objectLoader send];
 	} else if (cacheFetchRequests && !_cacheLoaded) {
 		_cacheLoaded = YES;
-		[self modelsDidLoad:[RKManagedObject objectsWithFetchRequests:cacheFetchRequests]];
+		[self modelsDidLoad:[NSManagedObject objectsWithFetchRequests:cacheFetchRequests]];
 	}
 }
 

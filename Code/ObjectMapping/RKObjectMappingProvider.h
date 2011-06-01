@@ -17,28 +17,32 @@
     NSMutableDictionary* _serializationMappings;
 }
 
-/**
- * Set a mapping for a keypath that comes back in your payload
+/*!
+ Set a mapping for a keypath that comes back in your payload
  */
 - (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath;
 
-/**
- * returns _mappings
+/*!
+ Returns the object mapping to use for mapping the specified keyPath into an object graph
+ */
+- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
+
+/*!
+ Set a mapping to serialize objects of a specific class into a representation
+ suitable for transport over HTTP. Used by the object manager during postObject: and putObject:
+ */
+- (void)setSerializationMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass;
+
+/*!
+ returns the serialization mapping for a specific object class
+ which has been previously registered.
+ */
+- (RKObjectMapping*)serializationMappingForClass:(Class)objectClass;
+
+/*!
+ returns _mappings
  */
 - (NSDictionary*)objectMappingsByKeyPath;
-
-/**
- * Set a mapping to serialize objects of a specific class
- * for posting/putting back to the server
- */
-- (void)setMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass;
-
-/**
- * returns the serialization mapping for a specific object class
- * which has been previously registered.
- */
-- (RKObjectMapping*)objectMappingForClass:(Class)objectClass;
-- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
 
 /*!
  Registers an object mapping as being rooted at a specific keyPath. The keyPath will be registered
