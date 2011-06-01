@@ -115,6 +115,10 @@
     NSAssert(sourceValue, @"Expected sourceValue not to be nil");
     NSAssert(destinationValue, @"Expected destinationValue not to be nil");
     
+    if (![sourceValue isKindOfClass:[destinationValue class]]) {
+        return NO;
+    }
+    
     SEL comparisonSelector;
     if ([sourceValue isKindOfClass:[NSString class]]) {
         comparisonSelector = @selector(isEqualToString:);
