@@ -7,6 +7,7 @@
 //
 
 #import "RKManagedObjectFactory.h"
+#import "RKManagedObjectMapping.h"
 
 @implementation RKManagedObjectFactory
 
@@ -37,26 +38,30 @@
     
     Class mappableClass = mapping.objectClass;
     if ([mappableClass isSubclassOfClass:[NSManagedObject class]]) {
-        RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
         id primaryKeyValue = nil;
+        NSString* primaryKeyAttribute;
         
-        // TODO: Primary key moves to RKManagedObjectMapping...
-        NSString* primaryKeyProperty = [mappableClass performSelector:@selector(primaryKeyProperty)];
-        if (primaryKeyProperty) {
-            for (RKObjectAttributeMapping* attributeMapping in mapping.attributeMappings) {
-                if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyProperty]) {
-                    primaryKeyAttributeMapping = attributeMapping;
-                    break;
+        // Handle an RKManagedObjectMapping
+        if ([mapping isKindOfClass:[RKManagedObjectMapping class]]) {
+            RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;        
+            
+            primaryKeyAttribute = [(RKManagedObjectMapping*)mapping primaryKeyAttribute];
+            if (primaryKeyAttribute) {
+                for (RKObjectAttributeMapping* attributeMapping in mapping.attributeMappings) {
+                    if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
+                        primaryKeyAttributeMapping = attributeMapping;
+                        break;
+                    }
+                }
+                
+                NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
+                if (keyPathForPrimaryKeyElement) {
+                    primaryKeyValue = [mappableData valueForKey:keyPathForPrimaryKeyElement];
                 }
             }
-            
-            NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
-            if (keyPathForPrimaryKeyElement) {
-                primaryKeyValue = [mappableData valueForKey:keyPathForPrimaryKeyElement];
-            }
-        }
+        }        
         
-        id object = [_objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyValue:primaryKeyValue];
+        id object = [_objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
         NSAssert2(object, @"Failed creation of managed object with class '%@' and primary key value '%@'", NSStringFromClass(mappableClass), primaryKeyValue);
         // TODO: Error logging...
         return object;

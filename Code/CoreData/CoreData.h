@@ -8,7 +8,8 @@
 
 #import <CoreData/CoreData.h>
 #import "../ObjectMapping/ObjectMapping.h"
-#import "RKManagedObject.h"
+#import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectStore.h"
 #import "RKManagedObjectSeeder.h"
 #import "RKManagedObjectCache.h"
+#import "RKManagedObjectMapping.h"

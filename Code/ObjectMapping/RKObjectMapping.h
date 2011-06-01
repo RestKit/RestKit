@@ -35,13 +35,13 @@
  */
 @property (nonatomic, retain) NSMutableArray* dateFormatStrings;
 
-+ (RKObjectMapping*)mappingForClass:(Class)objectClass;
++ (id)mappingForClass:(Class)objectClass;
 - (void)addAttributeMapping:(RKObjectAttributeMapping*)mapping;
 - (void)addRelationshipMapping:(RKObjectRelationshipMapping*)mapping;
 
-- (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath;
+- (id)mappingForKeyPath:(NSString*)keyPath;
 
-- (void)mapAttributes:(NSString*)attributeKeyPath, ...;
+- (void)mapAttributes:(NSString*)attributeKeyPath, ... NS_REQUIRES_NIL_TERMINATION;
 - (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping;
 
 - (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping;
@@ -54,6 +54,6 @@
 - (void)removeMappingForKeyPath:(NSString*)keyPath;
 - (RKObjectMapping*)inverseMapping;
 
-- (void)mapKeyPathsToAttributes:(NSString*)keyPath, ...;
+- (void)mapKeyPathsToAttributes:(NSString*)keyPath, ... NS_REQUIRES_NIL_TERMINATION;
 
 @end

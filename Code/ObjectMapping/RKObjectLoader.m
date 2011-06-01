@@ -9,18 +9,13 @@
 #import "RKObjectLoader.h"
 #import "RKObjectMapper.h"
 #import "RKObjectManager.h"
+#import "RKObjectMapperError.h"
 #import "Errors.h"
 #import "RKNotifications.h"
 #import "RKParser.h"
 #import "RKObjectLoader_Internals.h"
 #import "RKParserRegistry.h"
-
-// TODO: Move to RKRequest_Internals.h
-@interface RKRequest (Private);
-
-- (void)prepareURLRequest;
-
-@end
+#import "../Network/RKRequest_Internals.h"
 
 @implementation RKObjectLoader
 

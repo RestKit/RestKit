@@ -31,8 +31,4 @@
 	return @"/this/is/the/path";
 }
 
-+ (NSString*)primaryKeyProperty {
-	return @"railsID";
-}
-
 @end

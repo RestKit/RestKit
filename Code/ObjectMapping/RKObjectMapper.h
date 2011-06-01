@@ -13,18 +13,12 @@
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
 #import "RKObjectFactory.h"
+#import "Errors.h"
 
 /*!
  Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
  for an external object mapping operation.
  */
-typedef enum RKObjectMapperErrors {
-    RKObjectMapperErrorObjectMappingNotFound,       // No mapping found
-    RKObjectMapperErrorObjectMappingTypeMismatch,   // Target class and object mapping are in disagreement
-    RKObjectMapperErrorUnmappableContent,            // No mappable attributes or relationships were found
-    RKObjectMapperErrorFromMappingResult
-} RKObjectMapperErrorCode;
-
 @class RKObjectMapper;
 
 @protocol RKObjectMapperDelegate <NSObject>

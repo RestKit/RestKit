@@ -18,11 +18,4 @@
 @dynamic isFavorited;
 @dynamic user;
 
-#pragma mark RKObjectMappable methods
-
-// TODO: Move to the object mapping...
-+ (NSString*)primaryKeyProperty {
-	return @"statusID";
-}
-
 @end

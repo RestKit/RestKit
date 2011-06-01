@@ -7,7 +7,7 @@
 //
 
 #import "RKObjectMapper.h"
-#import "Errors.h"
+#import "RKObjectMapperError.h"
 #import "RKObjectMapper_Private.h"
 
 @implementation RKObjectMapper
@@ -163,7 +163,11 @@
     }
     
     NSError* error = nil;
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:destinationObject objectMapping:mapping];
+    Class mappingOperationClass = NSClassFromString(@"RKManagedObjectMappingOperation");
+    if (mappingOperationClass == nil) {
+        mappingOperationClass = [RKObjectMappingOperation class];
+    }
+    RKObjectMappingOperation* operation = [[mappingOperationClass alloc] initWithSourceObject:mappableObject destinationObject:destinationObject objectMapping:mapping];
     operation.objectFactory = self;
     BOOL success = [operation performMapping:&error];
     [operation release];

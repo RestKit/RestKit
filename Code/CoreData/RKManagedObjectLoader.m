@@ -6,18 +6,14 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import "RKObjectManager.h"
 #import "RKManagedObjectLoader.h"
 #import "RKURL.h"
-#import "RKManagedObject.h"
 #import "RKObjectMapper.h"
 #import "RKManagedObjectFactory.h"
 #import "RKManagedObjectThreadSafeInvocation.h"
 #import "../ObjectMapping/RKObjectLoader_Internals.h"
-
-// TODO: Move to new header...
-@interface RKRequest (Internals)
-- (void)prepareURLRequest;
-@end
+#import "../Network/RKRequest_Internals.h"
 
 @implementation RKManagedObjectLoader
 

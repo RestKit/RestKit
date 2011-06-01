@@ -6,9 +6,8 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKObjectMapper.h" // TODO: Eliminate import once we get the errors in the right place
 #import "RKObjectMappingResult.h"
-#import "Errors.h"
+#import "RKObjectMapperError.h"
 
 @implementation RKObjectMappingResult
 
