@@ -191,7 +191,7 @@ static RKObjectManager* sharedManager = nil;
 
 - (RKObjectLoader*)objectLoaderForObject:(NSObject*)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate {
 	NSString* resourcePath = [self.router resourcePathForObject:object method:method];    
-    RKObjectMapping* serializationMapping = [self.mappingProvider objectMappingForClass:[object class]];
+    RKObjectMapping* serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:serializationMapping];
     NSError* error = nil;
     id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];    

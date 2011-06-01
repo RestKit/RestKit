@@ -32,11 +32,11 @@
     [_mappings setValue:mapping forKey:keyPath];
 }
 
-- (void)setMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass {
+- (void)setSerializationMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass {
     [_serializationMappings setValue:mapping forKey:NSStringFromClass(objectClass)];
 }
 
-- (RKObjectMapping*)objectMappingForClass:(Class)objectClass {
+- (RKObjectMapping*)serializationMappingForClass:(Class)objectClass {
     return (RKObjectMapping*)[_serializationMappings objectForKey:NSStringFromClass(objectClass)];
 }
 
@@ -49,7 +49,7 @@
     [self setMapping:objectMapping forKeyPath:keyPath];
     RKObjectMapping* inverseMapping = [objectMapping inverseMapping];
     inverseMapping.rootKeyPath = keyPath;
-    [self setMapping:inverseMapping forClass:objectMapping.objectClass];
+    [self setSerializationMapping:inverseMapping forClass:objectMapping.objectClass];
 }
 
 @end

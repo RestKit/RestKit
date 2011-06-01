@@ -117,6 +117,7 @@ typedef enum {
 
 // TODO: Document!
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
 
 ////////////////////////////////////////////////////////
 // Mappable object helpers

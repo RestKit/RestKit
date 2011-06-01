@@ -46,7 +46,7 @@ static DBUser* currentUser = nil;
 	if (nil == currentUser) {
 		id userID = [[NSUserDefaults standardUserDefaults] objectForKey:kDBUserCurrentUserIDDefaultsKey];
 		if (userID) {
-			currentUser = [self objectWithPrimaryKeyValue:userID];
+			currentUser = [self findFirstByAttribute:@"userID" withValue:userID];
 		} else {
 			currentUser = [self object];
 		}
