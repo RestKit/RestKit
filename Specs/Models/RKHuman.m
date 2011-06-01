@@ -20,6 +20,7 @@
 @dynamic createdAt;
 @dynamic updatedAt;
 
+@dynamic favoriteCat;
 @dynamic cats;
 
 + (NSArray*)relationshipsToSerialize {
@@ -28,10 +29,6 @@
 
 - (NSString*)polymorphicResourcePath {
 	return @"/this/is/the/path";
-}
-
-+ (NSString*)primaryKeyProperty {
-	return @"railsID";
 }
 
 @end

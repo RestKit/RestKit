@@ -6,18 +6,14 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import "RKObjectManager.h"
 #import "RKManagedObjectLoader.h"
 #import "RKURL.h"
-#import "RKManagedObject.h"
 #import "RKObjectMapper.h"
 #import "RKManagedObjectFactory.h"
 #import "RKManagedObjectThreadSafeInvocation.h"
 #import "../ObjectMapping/RKObjectLoader_Internals.h"
-
-// TODO: Move to new header...
-@interface RKRequest (Internals)
-- (void)prepareURLRequest;
-@end
+#import "../Network/RKRequest_Internals.h"
 
 @implementation RKManagedObjectLoader
 
@@ -67,16 +63,6 @@
 
     [_targetObjectID release];
     _targetObjectID = nil;
-    
-    
-    // TODO: Can we just obtain a permanent object ID instead of saving the store???
-//    if ([targetObject isKindOfClass:[NSManagedObject class]]) {
-//        NSManagedObjectContext* context = self.objectStore.managedObjectContext;
-//        NSError* error = nil;
-//        if ([context obtainPermanentIDsForObjects:[NSArray arrayWithObject:targetObject] error:&error]) {
-//            _targetObjectID = [[(NSManagedObject*)targetObject objectID] retain];
-//        }
-//    }
 }
 
 - (void)prepareURLRequest {

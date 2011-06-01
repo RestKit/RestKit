@@ -7,10 +7,10 @@
 //
 
 #import <RestKit/RestKit.h>
-#import "RKTUser.h"
 #import <RestKit/CoreData/CoreData.h>
+#import "RKTUser.h"
 
-@interface RKTStatus : RKManagedObject {
+@interface RKTStatus : NSManagedObject {
 }
 
 /**

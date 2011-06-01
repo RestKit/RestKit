@@ -12,22 +12,7 @@
 #import "RKObjectMapping.h"
 #import "RKMappableObject.h"
 #import "RKHuman.h"
-
-// TODO: Eliminate by moving primary key to the mapping definition
-#import <objc/runtime.h>
-@interface RKHumanWithoutPrimaryKey : RKHuman {
-}
-@end
-
-@implementation RKHumanWithoutPrimaryKey
-+ (NSEntityDescription*)entity {
-	NSString* className = [NSString stringWithCString:class_getName([RKHuman class]) encoding:NSASCIIStringEncoding];
-	return [NSEntityDescription entityForName:className inManagedObjectContext:[RKManagedObject managedObjectContext]];
-}
-+ (NSString*)primaryKeyProperty {
-    return nil;
-}
-@end
+#import "RKManagedObjectMapping.h"
     
 @interface RKManagedObjectFactorySpec : RKSpec {
 }
@@ -37,7 +22,16 @@
 @implementation RKManagedObjectFactorySpec
 
 - (void)itShouldCreateNewInstancesOfUnmanagedObjects {
-   RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKMappableObject class]];
+    id object = [factory objectWithMapping:mapping andData:[NSDictionary dictionary]];
+    assertThat(object, isNot(nilValue()));
+    assertThat([object class], is(equalTo([RKMappableObject class])));
+}
+
+- (void)itShouldCreateNewInstancesOfManagedObjectsWhenTheMappingIsAnRKObjectMapping {
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [factory objectWithMapping:mapping andData:[NSDictionary dictionary]];
@@ -48,7 +42,8 @@
 - (void)itShouldFindExistingManagedObjectsByPrimaryKey {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     RKHuman* human = [RKHuman object];
@@ -61,10 +56,11 @@
     assertThat(object, is(equalTo(human)));
 }
 
-- (void)itShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKey {
+- (void)itShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    mapping.primaryKeyAttribute = @"railsID";
     
     NSDictionary* data = [NSDictionary dictionary];
     id object = [factory objectWithMapping:mapping andData:data];
@@ -72,10 +68,23 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
-- (void)itShouldCreateANewManagedObjectWhenThePrimaryKeyIsNSNull {
+- (void)itShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    
+    NSDictionary* data = [NSDictionary dictionary];
+    id object = [factory objectWithMapping:mapping andData:data];
+    assertThat(object, isNot(nilValue()));
+    assertThat(object, is(instanceOf([RKHuman class])));
+}
+
+
+- (void)itShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull {
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNull null] forKey:@"id"];

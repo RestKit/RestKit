@@ -8,11 +8,12 @@
 
 #import <objc/message.h>
 #import "RKObjectMappingOperation.h"
-#import "Errors.h"
+#import "RKObjectMapperError.h"
 #import "RKObjectPropertyInspector.h"
-#import "Logging.h"
 #import "RKObjectRelationshipMapping.h"
 #import "RKObjectMapper.h"
+#import "../Support/Errors.h"
+#import "../Support/Logging.h"
 
 @implementation RKObjectMappingOperation
 
@@ -299,7 +300,6 @@
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                   @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
                                   nil];
-        int RKObjectMapperErrorUnmappableContent = 2; // TODO: Temporary
         NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];
         if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
             [self.delegate objectMappingOperation:self didFailWithError:unmappableError];

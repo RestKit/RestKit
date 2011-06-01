@@ -8,6 +8,7 @@
 
 #import "RKManagedObjectStore.h"
 #import "RKAlert.h"
+#import "NSManagedObject+ActiveRecord.h"
 
 NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
@@ -285,8 +286,8 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return objectArray;
 }
 
-- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyValue:(id)primaryKeyValue {
-	RKManagedObject* object = nil;
+- (NSManagedObject*)findOrCreateInstanceOfManagedObject:(Class)class withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue {
+	NSManagedObject* object = nil;
 	if ([class respondsToSelector:@selector(allObjects)]) {
 		NSArray* objects = nil;
 		NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
@@ -297,9 +298,8 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 			objects = [class objectsWithFetchRequest:fetchRequest];
 			NSLog(@"Caching all %d %@ objects to thread local storage", [objects count], class);
 			NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
 			for (id theObject in objects) {			
-				id primaryKeyValue = [theObject valueForKey:primaryKey];
+				id primaryKeyValue = [theObject valueForKey:primaryKeyAttribute];
 				if (primaryKeyValue) {
 					[dictionary setObject:theObject forKey:primaryKeyValue];
 				}
@@ -326,7 +326,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     
     if (self.managedObjectCache) {
         NSArray* cacheFetchRequests = [self.managedObjectCache fetchRequestsForResourcePath:resourcePath];
-        cachedObjects = [RKManagedObject objectsWithFetchRequests:cacheFetchRequests];
+        cachedObjects = [NSManagedObject objectsWithFetchRequests:cacheFetchRequests];
     }
     
     return cachedObjects;

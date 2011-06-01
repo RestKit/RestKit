@@ -9,7 +9,7 @@
 #import <RestKit/RestKit.h>
 #import <RestKit/CoreData/CoreData.h>
 
-@interface RKTUser : RKManagedObject {
+@interface RKTUser : NSManagedObject {
 }
 
 @property (nonatomic, retain) NSNumber* userID;

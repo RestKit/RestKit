@@ -19,7 +19,7 @@
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 
 + (RKObjectMapping*)mappingForClass:(Class)objectClass {
-    RKObjectMapping* mapping = [RKObjectMapping new];
+    RKObjectMapping* mapping = [self new];
     mapping.objectClass = objectClass;    
     return [mapping autorelease];
 }
@@ -38,6 +38,7 @@
 
 - (void)dealloc {
     [_mappings release];
+    [_dateFormatStrings release];
     [super dealloc];
 }
 
@@ -80,7 +81,7 @@
     return [NSString stringWithFormat:@"RKObjectMapping class => %@: keyPath mappings => %@", NSStringFromClass(self.objectClass), _mappings];
 }
 
-- (RKObjectAttributeMapping*)mappingForKeyPath:(NSString*)keyPath {
+- (id)mappingForKeyPath:(NSString*)keyPath {
     for (RKObjectAttributeMapping* mapping in _mappings) {
         if ([mapping.sourceKeyPath isEqualToString:keyPath]) {
             return mapping;
@@ -128,7 +129,7 @@
     [self mapRelationship:keyPath withObjectMapping:objectMapping];
 }
 
-- (void)belongsTo:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping {
+- (void)hasOne:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping {
     [self mapRelationship:keyPath withObjectMapping:mapping];
 }
 

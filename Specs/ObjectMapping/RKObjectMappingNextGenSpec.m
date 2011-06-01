@@ -16,6 +16,7 @@
 #import "Logging.h"
 #import "RKObjectMapper.h"
 #import "RKObjectMapper_Private.h"
+#import "RKObjectMapperError.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 

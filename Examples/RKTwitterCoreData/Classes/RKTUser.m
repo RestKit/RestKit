@@ -14,8 +14,4 @@
 @dynamic name;
 @dynamic screenName;
 
-+ (NSString*)primaryKeyProperty {
-	return @"userID";
-}
-
 @end

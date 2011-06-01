@@ -26,12 +26,14 @@
     [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
     
     // Setup our object mappings
-    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTUser class]];
+    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[RKTUser class]];
+    userMapping.primaryKeyAttribute = @"userID";
     [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
     [userMapping mapKeyPath:@"screen_name" toAttribute:@"screenName"];
     [userMapping mapAttributes:@"name", nil];
     
-    RKObjectMapping* statusMapping = [RKObjectMapping mappingForClass:[RKTStatus class]];
+    RKManagedObjectMapping* statusMapping = [RKManagedObjectMapping mappingForClass:[RKTStatus class]];
+    statusMapping.primaryKeyAttribute = @"statusID";
     [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
      @"created_at", @"createdAt",
      @"text", @"text",
