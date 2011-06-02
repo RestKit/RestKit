@@ -438,6 +438,9 @@ static const NSString* kRKModelMapperRailsDateFormatString = @"MM/dd/yyyy";
                     if ([propertyValue isEqualToString:@"true"] ||
                         [propertyValue isEqualToString:@"false"]) {
                         propertyValue = [NSNumber numberWithBool:[propertyValue isEqualToString:@"true"]];
+                    } else if ([propertyValue isEqualToString:@"t"] ||
+                               [propertyValue isEqualToString:@"f"]) {
+                        propertyValue = [NSNumber numberWithBool:[propertyValue isEqualToString:@"t"]];
                     } else {
                         propertyValue = [NSNumber numberWithDouble:[propertyValue doubleValue]];
                     }
