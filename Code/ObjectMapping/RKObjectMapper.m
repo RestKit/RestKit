@@ -162,16 +162,10 @@
         [self.delegate objectMapper:self willMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
     }
     
-    NSError* error = nil;
-    Class mappingOperationClass = NSClassFromString(@"RKManagedObjectMappingOperation");
-    if (mappingOperationClass == nil) {
-        mappingOperationClass = [RKObjectMappingOperation class];
-    }
-    RKObjectMappingOperation* operation = [[mappingOperationClass alloc] initWithSourceObject:mappableObject destinationObject:destinationObject objectMapping:mapping];
+    NSError* error = nil;    
+    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:mappableObject toObject:destinationObject withObjectMapping:mapping];
     operation.objectFactory = self;
-    BOOL success = [operation performMapping:&error];
-    [operation release];
-    
+    BOOL success = [operation performMapping:&error];    
     if (success) {
         if ([self.delegate respondsToSelector:@selector(objectMapper:didMapFromObject:toObject:atKeyPath:usingMapping:)]) {
             [self.delegate objectMapper:self didMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];

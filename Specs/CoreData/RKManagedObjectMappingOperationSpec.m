@@ -20,6 +20,23 @@
 
 @implementation RKManagedObjectMappingOperationSpec
 
+- (void)itShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate {
+    RKSpecNewManagedObjectStore();    
+    RKManagedObjectMapping* managedMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    NSDictionary* sourceObject = [NSDictionary dictionary];
+    RKHuman* human = [RKHuman createEntity];
+    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:human withObjectMapping:managedMapping];
+    assertThat(operation, is(instanceOf([RKManagedObjectMappingOperation class])));
+}
+
+- (void)itShouldOverloadInitializationOfRKObjectMappingOperationButReturnUnmanagedMappingOperationWhenAppropriate {
+    RKObjectMapping* vanillaMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSDictionary* sourceObject = [NSDictionary dictionary];
+    NSMutableDictionary* destinationObject = [NSMutableDictionary dictionary];
+    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:destinationObject withObjectMapping:vanillaMapping];
+    assertThat(operation, is(instanceOf([RKObjectMappingOperation class])));
+}
+
 - (void)itShouldConnectRelationshipsByPrimaryKey {
     RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
     

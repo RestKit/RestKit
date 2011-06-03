@@ -61,7 +61,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKManagedObjectFactorySpec"
+            value = "RKObjectMappingNextGenSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -86,13 +86,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKManagedObjectMappingOperationSpec"
-            isEnabled = "NO">
+            value = "RKManagedObjectFactorySpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldRegisterRailsIdiomaticObjects"
-            isEnabled = "NO">
+            value = "itShouldFindExistingManagedObjectsByPrimaryKey"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

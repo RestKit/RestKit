@@ -20,8 +20,7 @@
 @implementation RKDynamicRouterSpec
 
 - (void)beforeAll {
-	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:@"http://localhost:4567"];
-	objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RestKitSpecs.sqlite"];
+    RKSpecNewManagedObjectStore();
 }
 
 -(void)itShouldThrowAnExceptionWhenAskedForAPathForAnUnregisteredClassAndMethod {

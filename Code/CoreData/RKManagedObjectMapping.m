@@ -27,6 +27,7 @@
 }
 
 - (id)initWithEntity:(NSEntityDescription*)entity {
+    NSAssert(entity, @"Cannot initialize an RKManagedObjectMapping without an entity. Maybe you want RKObjectMapping instead?");
     self = [self init];
     if (self) {
         self.objectClass = NSClassFromString([entity managedObjectClassName]);

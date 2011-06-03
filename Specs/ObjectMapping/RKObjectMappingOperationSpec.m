@@ -6,7 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKSpecEnvironment.h"
+#import "RKSpecEnvironment.h" 
 
 @interface RKObjectMappingOperationSpec : RKSpec {
     
@@ -16,10 +16,5 @@
 
 @implementation RKObjectMappingOperationSpec
 
-- (void)itShouldNotCrashComparingANumberToAString {
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation new] autorelease]
-    BOOL result = [operation isValue:[NSNumber numberWithInt:1] equalToValue:@"1"];
-    [expectThat(result) should:be(NO)];
-}
 
 @end

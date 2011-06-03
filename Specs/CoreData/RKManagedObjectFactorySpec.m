@@ -11,6 +11,7 @@
 #import "RKManagedObjectFactory.h"
 #import "RKObjectMapping.h"
 #import "RKMappableObject.h"
+#import "NSManagedObject+ActiveRecord.h"
 #import "RKHuman.h"
 #import "RKManagedObjectMapping.h"
     
@@ -24,7 +25,7 @@
 - (void)itShouldCreateNewInstancesOfUnmanagedObjects {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKMappableObject class]];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [factory objectWithMapping:mapping andData:[NSDictionary dictionary]];
     assertThat(object, isNot(nilValue()));
     assertThat([object class], is(equalTo([RKMappableObject class])));
@@ -49,6 +50,7 @@
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
     [store save];
+    assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
     
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
     id object = [factory objectWithMapping:mapping andData:data];
@@ -71,7 +73,7 @@
 - (void)itShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
-    RKManagedObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     
     NSDictionary* data = [NSDictionary dictionary];
     id object = [factory objectWithMapping:mapping andData:data];

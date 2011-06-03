@@ -8,6 +8,7 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKManagedObjectLoader.h"
+#import "RKManagedObjectMapping.h"
 #import "RKHuman.h"
 #import "RKCat.h"
 
@@ -30,7 +31,7 @@
     human.railsID = [NSNumber numberWithInt:1];
     [objectManager.objectStore save];
     
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/humans/1" objectManager:objectManager delegate:responseLoader];
     objectLoader.method = RKRequestMethodDELETE;
@@ -48,9 +49,9 @@
     RKSpecNewRequestQueue();
     objectManager.objectStore = store;
     
-    RKObjectMapping* humanMapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    RKObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     [humanMapping mapAttributes:@"name", nil];
-    RKObjectMapping* catMapping = [RKObjectMapping mappingForClass:[RKCat class]];
+    RKObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     [catMapping mapAttributes:@"name", nil];
     [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withObjectMapping:catMapping];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];

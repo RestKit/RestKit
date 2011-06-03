@@ -36,64 +36,45 @@
     NSAssert(mappableData, @"Mappable data cannot be nil");
     NSAssert(_objectStore, @"Object store cannot be nil");
     
-    Class mappableClass = mapping.objectClass;
-    if ([mappableClass isSubclassOfClass:[NSManagedObject class]]) {
-        id primaryKeyValue = nil;
-        NSString* primaryKeyAttribute;
+    id object = nil;
+    id primaryKeyValue = nil;
+    NSString* primaryKeyAttribute;
+    
+    if ([mapping isKindOfClass:[RKManagedObjectMapping class]]) {        
+        NSEntityDescription* entity = [(RKManagedObjectMapping*)mapping entity];
+        RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;        
         
-        // Handle an RKManagedObjectMapping
-        if ([mapping isKindOfClass:[RKManagedObjectMapping class]]) {
-            RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;        
+        primaryKeyAttribute = [(RKManagedObjectMapping*)mapping primaryKeyAttribute];
+        if (primaryKeyAttribute) {
+            // If a primary key has been set on the object mapping, find the attribute mapping
+            // so that we can extract any existing primary key from the mappable data
+            for (RKObjectAttributeMapping* attributeMapping in mapping.attributeMappings) {
+                if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
+                    primaryKeyAttributeMapping = attributeMapping;
+                    break;
+                }
+            }
             
-            primaryKeyAttribute = [(RKManagedObjectMapping*)mapping primaryKeyAttribute];
-            if (primaryKeyAttribute) {
-                for (RKObjectAttributeMapping* attributeMapping in mapping.attributeMappings) {
-                    if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
-                        primaryKeyAttributeMapping = attributeMapping;
-                        break;
-                    }
-                }
-                
-                NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
-                if (keyPathForPrimaryKeyElement) {
-                    primaryKeyValue = [mappableData valueForKey:keyPathForPrimaryKeyElement];
-                }
+            // Get the primary key value out of the mappable data (if any)
+            NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
+            if (keyPathForPrimaryKeyElement) {
+                primaryKeyValue = [mappableData valueForKey:keyPathForPrimaryKeyElement];
             }
-        }        
-        
-        // Handle managed objects without a primary key
-        // TODO: Add support for thread local lookup of objects by primary key...
-        id object = nil;
-        if (primaryKeyAttribute && primaryKeyValue) {
-            NSError* error = nil;
-            NSEntityDescription* entity = [(RKManagedObjectMapping*)mapping entity];
-            NSString* primaryKeyAttribute = [(RKManagedObjectMapping*)mapping primaryKeyAttribute];
-            NSFetchRequest* fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-            [fetchRequest setEntity:entity];
-            [fetchRequest setPropertiesToFetch:[NSArray arrayWithObject:primaryKeyAttribute]];
-            [fetchRequest setFetchLimit:1];
-            [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, primaryKeyValue]];
-            NSArray *results = [_objectStore.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-            // TODO: Handle the error...
-            if ([results count] == 0) {
-                object = [[[mappableClass alloc] initWithEntity:[(RKManagedObjectMapping*)mapping entity] 
-                                 insertIntoManagedObjectContext:_objectStore.managedObjectContext] autorelease];
-            } else {
-                object = [results objectAtIndex:0];
-            }
-//            object = [_objectStore findOrCreateInstanceOfManagedObject:mappableClass withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
-            NSAssert2(object, @"Failed creation of managed object with class '%@' and primary key value '%@'", NSStringFromClass(mappableClass), primaryKeyValue);
-        } else {
-            object = [[[mappableClass alloc] initWithEntity:[(RKManagedObjectMapping*)mapping entity] 
-                             insertIntoManagedObjectContext:_objectStore.managedObjectContext] autorelease];
         }
-        // TODO: Error logging...
+        
+        // If we have found the primary key attribute & value, try to find an existing instance to update
+        if (primaryKeyAttribute && primaryKeyValue) {                
+            object = [_objectStore findOrCreateInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
+            NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
+        } else {
+            object = [[[NSManagedObject alloc] initWithEntity:entity
+                               insertIntoManagedObjectContext:_objectStore.managedObjectContext] autorelease];
+        }
+        
         return object;
-    } else {
-        return [[mappableClass new] autorelease];
     }
     
-    return nil;
+    return [[mapping.objectClass new] autorelease];
 }
 
 @end

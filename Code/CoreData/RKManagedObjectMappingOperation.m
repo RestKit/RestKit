@@ -10,7 +10,38 @@
 #import "RKManagedObjectMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
 
+/*!
+ Progressively enhance the RKObjectMappingOperation base class to inject Core Data
+ specifics without leaking into the object mapper abstractions
+ */
+@implementation RKObjectMappingOperation (CoreData)
+
+/*
+ Trampoline the initialization through RKManagedObjectMapping so the mapper uses RKManagedObjectMappingOperation
+ at the right moments
+ */
++ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withObjectMapping:(RKObjectMapping*)objectMapping {
+    if ([objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
+        return [[[RKManagedObjectMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:objectMapping] autorelease];
+    }
+        
+    return [[[RKObjectMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:destinationObject objectMapping:objectMapping] autorelease];
+}
+
+@end
+
 @implementation RKManagedObjectMappingOperation
+
+// TODO: Move this to a better home to take exposure out of the mapper
+- (Class)operationClassForMapping:(RKObjectMapping*)mapping {
+    Class managedMappingClass = NSClassFromString(@"RKManagedObjectMapping");
+    Class managedMappingOperationClass = NSClassFromString(@"RKManagedObjectMappingOperation");    
+    if (managedMappingClass != nil && [mapping isMemberOfClass:managedMappingClass]) {
+        return managedMappingOperationClass;        
+    }
+    
+    return [RKObjectMappingOperation class];
+}
 
 - (void)connectRelationships {
     if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
