@@ -11,7 +11,6 @@
 #import "RKTwitterAppDelegate.h"
 #import "RKTwitterViewController.h"
 #import "RKTStatus.h"
-#import "RKTUser.h"
 
 @implementation RKTwitterAppDelegate
 
@@ -25,13 +24,26 @@
     // Enable automatic network activity indicator management
     [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
     
-    // Setup our object mappings
-    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[RKTUser class]];
+    // Initialize object store
+    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:RKDefaultSeedDatabaseFileName managedObjectModel:nil];
+    
+    // Setup our object mappings    
+    /*!
+     Mapping by entity. Here we are configuring a mapping by targetting a Core Data entity with a specific
+     name. This allows us to map back Twitter user objects directly onto NSManagedObject instances --
+     there is no backing model class!
+     */
+    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKTUser"];
     userMapping.primaryKeyAttribute = @"userID";
     [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
     [userMapping mapKeyPath:@"screen_name" toAttribute:@"screenName"];
     [userMapping mapAttributes:@"name", nil];
     
+    /*!
+     Map to a target object class -- just as you would for a non-persistent class. The entity is resolved
+     for you using the Active Record pattern where the class name corresponds to the entity name within Core Data.
+     Twitter status objects will be mapped onto RKTStatus instances.
+     */
     RKManagedObjectMapping* statusMapping = [RKManagedObjectMapping mappingForClass:[RKTStatus class]];
     statusMapping.primaryKeyAttribute = @"statusID";
     [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
@@ -76,9 +88,6 @@
     // NOTE: If all of your mapped objects use keyPath -> objectMapping registration, you can perform seeding in one line of code:
     // [RKManagedObjectSeeder generateSeedDatabaseWithObjectManager:objectManager fromFiles:@"users.json", nil];
 #endif
-    
-    // Initialize object store
-    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:RKDefaultSeedDatabaseFileName managedObjectModel:nil];
     
     // Create Window and View Controllers
 	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];

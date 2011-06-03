@@ -11,15 +11,29 @@
 
 @implementation RKManagedObjectMapping
 
+@synthesize entity = _entity;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
 
++ (id)mappingForClass:(Class)objectClass {
+    return [self mappingForEntityWithName:NSStringFromClass(objectClass)];
+}
+
 + (RKManagedObjectMapping*)mappingForEntity:(NSEntityDescription*)entity {
-    Class mappableClass = NSClassFromString([entity managedObjectClassName]);
-    return [self mappingForClass:mappableClass];
+    return [[[self alloc] initWithEntity:entity] autorelease];
 }
 
 + (RKManagedObjectMapping*)mappingForEntityWithName:(NSString*)entityName {
     return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:[NSManagedObject managedObjectContext]]];
+}
+
+- (id)initWithEntity:(NSEntityDescription*)entity {
+    self = [self init];
+    if (self) {
+        self.objectClass = NSClassFromString([entity managedObjectClassName]);
+        _entity = [entity retain];
+    }
+    
+    return self;
 }
 
 - (id)init {
@@ -32,6 +46,7 @@
 }
 
 - (void)dealloc {
+    [_entity release];
     [_relationshipToPrimaryKeyMappings release];
     [super dealloc];
 }

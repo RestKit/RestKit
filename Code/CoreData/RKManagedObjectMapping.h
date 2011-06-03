@@ -10,6 +10,7 @@
 #import "../ObjectMapping/RKObjectMapping.h"
 
 @interface RKManagedObjectMapping : RKObjectMapping {
+    NSEntityDescription* _entity;
     NSString* _primaryKeyAttribute;
     NSMutableDictionary* _relationshipToPrimaryKeyMappings;
 }
@@ -26,6 +27,11 @@
 + (RKManagedObjectMapping*)mappingForEntityWithName:(NSString*)entityName;
 
 /*!
+ The Core Data entity description used for this object mapping
+ */
+@property (nonatomic, readonly) NSEntityDescription* entity;
+
+/*!
  The attribute containing the primary key value for the class. This is consulted by
  RestKit to uniquely identify objects within the store using the primary key in your
  remote backend system.
@@ -37,7 +43,6 @@
  the primary key for 
  */
 @property (nonatomic, readonly) NSDictionary* relationshipsAndPrimaryKeyAttributes;
-
 
 /*!
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
@@ -64,5 +69,7 @@
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
 - (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString*)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION;
+
+- (id)initWithEntity:(NSEntityDescription*)entity;
 
 @end
