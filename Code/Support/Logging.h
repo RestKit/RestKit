@@ -18,17 +18,19 @@ enum RKLogLevels {
     RKLogLevelDebug
 };
 
-//#ifdef DEBUG
+#if defined(DEBUG) && !defined(NDEBUG)
     #define RKLOG_START_BLOCK(name) LogStartBlock(name)
     #define RKLOG_END_BLOCK()            LogEndBlock()
     #define RKLOG_NETWORK(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"Network",level,__VA_ARGS__)
     #define RKLOG_MAPPING(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"Object Mapping",level,__VA_ARGS__)
     #define RKLOG_GENERAL(level, ...)    LogMessageF(__FILE__,__LINE__,__FUNCTION__,@"General",level,__VA_ARGS__)
-//#else
-//    #define RKLOG_NETWORK(...)    do{}while(0)
-//    #define RKLOG_MAPPING(...)    do{}while(0)
-//    #define RKLOG_GRAPHICS(...)   do{}while(0)
-//#endif
+#else
+    #define RKLOG_START_BLOCK(name)
+    #define RKLOG_END_BLOCK()
+    #define RKLOG_NETWORK(...)    do{}while(0)
+    #define RKLOG_MAPPING(...)    do{}while(0)
+    #define RKLOG_GRAPHICS(...)   do{}while(0)
+#endif
 
 #if defined(DEBUG) && !defined(NDEBUG)
     #undef assert
