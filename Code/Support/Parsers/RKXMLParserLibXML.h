@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "RKParser.h"
 
-/*!
+/**
  This is a dead simple XML parser that uses libxml2 to parse an XML document
  into a dictionary. It is designed specifically for use with RestKit. It
  does not support any fanciness like Namespaces, DTDs, or other nonsense.

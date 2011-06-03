@@ -15,36 +15,36 @@
     NSMutableDictionary* _relationshipToPrimaryKeyMappings;
 }
 
-/*!
+/**
  Creates a new object mapping targetting the specified Core Data entity
  */
 + (RKManagedObjectMapping*)mappingForEntity:(NSEntityDescription*)entity;
 
-/*!
+/**
  Creates a new object mapping targetting the Core Data entity with the specified name.
  The entity description is fetched from the current managed object context
  */
 + (RKManagedObjectMapping*)mappingForEntityWithName:(NSString*)entityName;
 
-/*!
+/**
  The Core Data entity description used for this object mapping
  */
 @property (nonatomic, readonly) NSEntityDescription* entity;
 
-/*!
+/**
  The attribute containing the primary key value for the class. This is consulted by
  RestKit to uniquely identify objects within the store using the primary key in your
  remote backend system.
  */
 @property (nonatomic, retain) NSString* primaryKeyAttribute;
 
-/*!
+/**
  Returns a dictionary containing Core Data relationships and attribute pairs containing
  the primary key for 
  */
 @property (nonatomic, readonly) NSDictionary* relationshipsAndPrimaryKeyAttributes;
 
-/*!
+/**
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
  the related object by primary key.
  
@@ -62,7 +62,7 @@
  */
 - (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute;
 
-/*!
+/**
  Connects relationships using the primary key values contained in the specified attribute. This method is
  a short-cut for repeated invocation of `connectRelationship:withObjectForPrimaryKeyAttribute:`.
  

@@ -17,7 +17,7 @@
 @property (nonatomic, retain) NSString* sourceKeyPath;
 @property (nonatomic, retain) NSString* destinationKeyPath;
 
-/*!
+/**
  Defines a mapping from one keyPath to another within an object mapping
  */
 + (RKObjectAttributeMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath;

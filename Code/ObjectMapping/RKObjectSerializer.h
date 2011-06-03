@@ -10,7 +10,7 @@
 #import "RKObjectMappingOperation.h"
 #import "../Network/RKRequestSerializable.h"
 
-/*!
+/**
  Performs a serialization of an object and its relationships back into
  a dictionary representation according to the mappings specified. The
  transformed object is then enclosed in an RKRequestSerializable representation

@@ -14,7 +14,7 @@
 #import "RKObjectFactory.h"
 #import "../Support/Support.h"
 
-/*!
+/**
  Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
  for an external object mapping operation.
  */

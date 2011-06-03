@@ -92,7 +92,7 @@
 
 #pragma mark - Subclass Hooks
 
-/*!
+/**
  Overloaded by RKManagedObjectLoader to provide support for creation
  and find/update of managed object instances
  
@@ -102,7 +102,7 @@
     return nil;
 }
 
-/*!
+/**
  Overloaded by RKManagedObjectLoader to serialize/deserialize managed objects
  at thread boundaries. 
  

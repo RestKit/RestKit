@@ -8,14 +8,14 @@
 
 #import "RKObjectMapping.h"
 
-/*!
+/**
  Defines a protocol for the creation of objects during an
  object mapping operation. Used to initialize objects that
  are going to be subsequently mapped with an object mapping
  */
 @protocol RKObjectFactory <NSObject>
 
-/*!
+/**
  Return a new initialized, auto-released object with the specified object mapping.
  */
 - (id)objectWithMapping:(RKObjectMapping*)objectMapping andData:(id)mappableData;

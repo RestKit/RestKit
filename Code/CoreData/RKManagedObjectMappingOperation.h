@@ -8,7 +8,7 @@
 
 #import "../ObjectMapping/RKObjectMappingOperation.h"
 
-/*!
+/**
  Enhances the object mapping operation process with Core Data specific logic
  */
 @interface RKManagedObjectMappingOperation : RKObjectMappingOperation {

@@ -10,7 +10,7 @@
 #import "RKManagedObjectMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
 
-/*!
+/**
  Progressively enhance the RKObjectMappingOperation base class to inject Core Data
  specifics without leaking into the object mapper abstractions
  */

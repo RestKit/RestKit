@@ -15,7 +15,7 @@
 
 + (RKObjectMappingResult*)mappingResultWithDictionary:(NSDictionary*)keyPathToMappedObjects;
 
-/*!
+/**
  Return the mapping result as a dictionary
  */
 - (NSDictionary*)asDictionary;

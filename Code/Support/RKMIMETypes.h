@@ -6,7 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-/*!
+/**
  MIME Type Constants
  */
 extern NSString* const RKMIMETypeJSON;

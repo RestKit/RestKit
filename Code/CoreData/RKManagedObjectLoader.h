@@ -9,7 +9,7 @@
 #import "../ObjectMapping/RKObjectLoader.h"
 #import "RKManagedObjectStore.h"
 
-/*!
+/**
  A subclass of the object loader that is dispatched when you
  are loading Core Data managed objects. This differs from the
  transient object loader only by handling the special threading

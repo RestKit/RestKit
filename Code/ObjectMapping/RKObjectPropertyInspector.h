@@ -20,7 +20,7 @@
  */
 - (NSDictionary *)propertyNamesAndTypesForClass:(Class)objectClass;
 
-/*!
+/**
  Returns the Class type of the specified property on the object class
  */
 - (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass;
