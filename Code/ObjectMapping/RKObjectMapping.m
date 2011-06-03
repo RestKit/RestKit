@@ -18,7 +18,7 @@
 @synthesize setNilForMissingAttributes = _setNilForMissingAttributes;
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 
-+ (RKObjectMapping*)mappingForClass:(Class)objectClass {
++ (id)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [self new];
     mapping.objectClass = objectClass;    
     return [mapping autorelease];

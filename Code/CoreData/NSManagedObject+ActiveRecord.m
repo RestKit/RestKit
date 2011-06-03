@@ -156,10 +156,10 @@ static NSNumber *defaultBatchSize = nil;
 	}
 }
 
-- (void)handleErrors:(NSError *)error
-{
-	[[self class] handleErrors:error];
-}
+//- (void)handleErrors:(NSError *)error
+//{
+//	[[self class] handleErrors:error];
+//}
 
 + (NSArray *)executeFetchRequest:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context
 {

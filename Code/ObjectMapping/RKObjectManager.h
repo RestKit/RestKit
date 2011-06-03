@@ -105,7 +105,7 @@ typedef enum {
  * with the loaded objects. Remote objects will be mapped to local objects by consulting the element registrations
  * set on the mapper.
  */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
  * Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
@@ -113,11 +113,11 @@ typedef enum {
  * local objects by consulting the element registrations set on the mapper.
  */
 // TODO: Deprecate! Just RKPathAppendQueryParams(resourcePath, queryParams)
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 // TODO: Document!
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(NSObject <RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 ////////////////////////////////////////////////////////
 // Mappable object helpers
@@ -125,22 +125,22 @@ typedef enum {
 /**
  * Update a mappable model by loading its attributes from the web
  */
-- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
  * Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting objects from the payload
  */
-- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
  * Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting objects from the payload
  */
-- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
  * Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
  */
-- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 ////////////////////////////////////////////////////////
 // Object Loader Primitives
@@ -158,7 +158,7 @@ typedef enum {
  * the best place to begin work if you need to create a slightly different collection loader than what is
  * provided by the loadObjects family of methods.
  */
-- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
  * Returns an object loader configured for transmitting an object instance across the wire. A request will be constructed
@@ -169,6 +169,6 @@ typedef enum {
  
  // TODO: Cleanup this comment
  */
-- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(NSObject<RKObjectLoaderDelegate>*)delegate;
+- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 @end

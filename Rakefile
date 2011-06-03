@@ -80,7 +80,7 @@ namespace :docs do
   
   desc "Check that documentation can be built from the source code via appledoc successfully."
   task :check do
-    command = apple_doc_command << " --no-create-html Code/"
+    command = apple_doc_command << " --no-create-html --verbose 5 Code/"
     run(command)
     if $? != 0
       puts "Documentation failed to generate with exit code #{$?}"

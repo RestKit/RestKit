@@ -29,14 +29,10 @@
     return [[[self alloc] initWithDictionary:keyPathToMappedObjects] autorelease];
 }
 
-/*!
- Return the mapping result as a dictionary
- */
 - (NSDictionary*)asDictionary {
     return _keyPathToMappedObjects;
 }
 
-// TODO: Test me explicitly...
 - (NSArray*)asCollection {
     // Flatten results down into a single array
     NSMutableArray* collection = [NSMutableArray array];

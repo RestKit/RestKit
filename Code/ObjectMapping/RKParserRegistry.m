@@ -41,11 +41,11 @@ RKParserRegistry* gSharedRegistry;
     [super dealloc];
 }
 
-- (Class)parserClassForMIMEType:(NSString*)MIMEType {
+- (Class<RKParser>)parserClassForMIMEType:(NSString*)MIMEType {
     return [_MIMETypeToParserClasses objectForKey:MIMEType];
 }
 
-- (void)setParserClass:(Class)parserClass forMIMEType:(NSString*)MIMEType {
+- (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString*)MIMEType {
     [_MIMETypeToParserClasses setObject:parserClass forKey:MIMEType];
 }
 

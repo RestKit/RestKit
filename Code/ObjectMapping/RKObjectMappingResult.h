@@ -20,7 +20,7 @@
  */
 - (NSDictionary*)asDictionary;
 - (id)asObject;
-- (id)asCollection;
+- (NSArray*)asCollection;
 - (NSError*)asError;
 
 @end
