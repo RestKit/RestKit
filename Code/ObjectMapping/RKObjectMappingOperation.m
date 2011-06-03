@@ -220,8 +220,7 @@
     subOperation.delegate = self.delegate;
     subOperation.objectFactory = self.objectFactory;
     if (NO == [subOperation performMapping:&error]) {
-        NSString* errorMessage = [NSString stringWithFormat:@"WARNING: Failed mapping nested object: %@", [error localizedDescription]];
-        RKLOG_MAPPING(RKLogLevelWarning, errorMessage);
+        RKLOG_MAPPING(RKLogLevelWarning, @"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     }
     
     return YES;
