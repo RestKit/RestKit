@@ -10,6 +10,7 @@
 
 // RestKit
 #import <RestKit/RestKit.h>
+#import <RestKit/CoreData/CoreData.h>
 
 // Three20
 #import <Three20/Three20.h>
@@ -60,7 +61,8 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// The object mapper is responsible for mapping JSON encoded representations of objects
 	// back to local object representations. Here we instruct RestKit how to connect
 	// sub-dictionaries of attributes to local classes.
-    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[DBUser class]];
+    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[DBUser class]];
+    userMapping.primaryKeyAttribute = @"userID";
     [userMapping mapKeyPathsToAttributes:
      @"id", @"userID",
      @"email", @"email",
@@ -70,7 +72,8 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      @"password_confirmation", @"passwordConfirmation",
      nil];
     
-    RKObjectMapping* topicMapping = [RKObjectMapping mappingForClass:[DBTopic class]];
+    RKManagedObjectMapping* topicMapping = [RKManagedObjectMapping mappingForClass:[DBTopic class]];
+    topicMapping.primaryKeyAttribute = @"topicID";
     [topicMapping mapKeyPathsToAttributes:
      @"id", @"topicID",
      @"name", @"name",
@@ -80,7 +83,8 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      nil];
     [topicMapping mapRelationship:@"user" withObjectMapping:userMapping];
     
-    RKObjectMapping* postMapping = [RKObjectMapping mappingForClass:[DBPost class]];
+    RKManagedObjectMapping* postMapping = [RKManagedObjectMapping mappingForClass:[DBPost class]];
+    postMapping.primaryKeyAttribute = @"postID";
     [postMapping mapKeyPathsToAttributes:
      @"id",@"postID",
      @"topic_id",@"topicID",
