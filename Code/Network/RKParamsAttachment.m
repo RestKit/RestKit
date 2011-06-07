@@ -27,7 +27,7 @@ extern NSString* const kRKStringBoundary;
 - (id)initWithName:(NSString*)name {
 	if ((self = [self init])) {
         self.name = name;
-        self.fileName = @"";
+        self.fileName = name;
 	}
 	
 	return self;
