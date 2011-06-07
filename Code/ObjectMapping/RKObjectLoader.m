@@ -122,6 +122,10 @@
         return nil;
     }
     
+    if ([self.delegate respondsToSelector:@selector(objectLoader:willMapData:)]) {
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self willMapData:parsedData];
+    }
+    
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.objectFactory = [self createObjectFactory];
     mapper.targetObject = targetObject;

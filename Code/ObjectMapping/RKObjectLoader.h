@@ -47,13 +47,20 @@
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjectDictionary:(NSDictionary*)dictionary;
 
 /**
- * Sent when an object loader encounters a response status code it does not know how to handle.
- * 2xx, 4xx, and 5xx responses are all handled appropriately. This should only occur when the remote
- * service sends back a really odd-ball response.
- *
- * @optional
+ Sent when an object loader encounters a response status code it does not know how to handle.
+ 2xx, 4xx, and 5xx responses are all handled appropriately. This should only occur when the remote
+ service sends back a really odd-ball response.
+ 
+ @optional
  */
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader;
+
+/**
+ Invoked just after parsing has completed, but before object mapping begins. This can be helpful
+ to extract data from the parsed payload that is not object mapped, but is interesting for one
+ reason or another.
+ */
+- (void)objectLoader:(RKObjectLoader*)loader willMapData:(id)mappableData;
 
 @end
 
