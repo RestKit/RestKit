@@ -58,7 +58,7 @@
             // Get the primary key value out of the mappable data (if any)
             NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
             if (keyPathForPrimaryKeyElement) {
-                primaryKeyValue = [mappableData valueForKey:keyPathForPrimaryKeyElement];
+                primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
             }
         }
         
