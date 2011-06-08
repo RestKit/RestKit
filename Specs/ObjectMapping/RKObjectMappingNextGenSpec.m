@@ -776,6 +776,21 @@
     [expectThat([weight compare:[NSDecimalNumber decimalNumberWithString:@"131.3"]]) should:be(NSOrderedSame)];
 }
 
+
+- (void)itShouldMapANumberToAString {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"lucky_number" toKeyPath:@"name"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = RKSpecParseFixtureJSON(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    [expectThat(user.name) should:be(@"187")]; 
+}
+
 - (void)itShouldMapANestedKeyPathToAnAttribute {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"address.country" toKeyPath:@"country"];

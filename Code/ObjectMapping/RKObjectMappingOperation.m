@@ -105,6 +105,8 @@
         if ([destinationType isSubclassOfClass:[NSSet class]]) {
             return [NSSet setWithArray:value];
         }
+    } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
+        return [value stringValue];
     }
     
     RKLOG_MAPPING(RKLogLevelWarning, @"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", NSStringFromClass([value class]), NSStringFromClass(destinationType));
