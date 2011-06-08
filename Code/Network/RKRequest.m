@@ -19,7 +19,8 @@
 @implementation RKRequest
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
-      			params = _params, userData = _userData, username = _username, password = _password, method = _method;
+            params = _params, userData = _userData, username = _username, password = _password, method = _method,
+            forceBasicAuthentication = _forceBasicAuthentication;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -37,6 +38,7 @@
 		_connection = nil;
 		_isLoading = NO;
 		_isLoaded = NO;
+        _forceBasicAuthentication = NO;
 	}
     
 	return self;
@@ -134,6 +136,17 @@
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
 	}
+    
+    // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
+    if (self.forceBasicAuthentication) {        
+        CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
+        
+        CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password,kCFHTTPAuthenticationSchemeBasic, FALSE);
+        CFStringRef authorizationString = CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
+        [_URLRequest setValue:(NSString *)authorizationString forHTTPHeaderField:@"Authorization"];
+        CFRelease(dummyRequest);
+        CFRelease(authorizationString);
+    }
 }
 
 // Setup the NSURLRequest. The request must be prepared right before dispatching

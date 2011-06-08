@@ -77,6 +77,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 @synthesize baseURL = _baseURL;
 @synthesize username = _username;
 @synthesize password = _password;
+@synthesize forceBasicAuthentication = _forceBasicAuthentication;
 @synthesize HTTPHeaders = _HTTPHeaders;
 @synthesize baseURLReachabilityObserver = _baseURLReachabilityObserver;
 @synthesize serviceUnavailableAlertTitle = _serviceUnavailableAlertTitle;
@@ -168,6 +169,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	request.additionalHTTPHeaders = _HTTPHeaders;
 	request.username = self.username;
 	request.password = self.password;
+    request.forceBasicAuthentication = self.forceBasicAuthentication;
 }
 
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header {

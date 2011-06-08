@@ -56,6 +56,7 @@ typedef enum RKRequestBackgroundPolicy {
 	BOOL _isLoading;
 	BOOL _isLoaded;
     BOOL _sentSynchronously;
+    BOOL _forceBasicAuthentication;
     RKRequestBackgroundPolicy _backgroundPolicy;
     
     #if TARGET_OS_IPHONE
@@ -116,11 +117,15 @@ typedef enum RKRequestBackgroundPolicy {
 /**
  * Credentials for HTTP AUTH Challenge
  */
-
-// The authentication scheme to use. When set to kCFHTTPAuthenticationSchemeBasic, authentication will
-// be setup before a challenge occurs
 @property(nonatomic, retain) NSString* username;
 @property(nonatomic, retain) NSString* password;
+
+/**
+ When YES, RestKit will assume you are using HTTP Basic Authentication
+ and add an Authorization header to the request. This will force authentication
+ without being challenged.
+ */
+@property(nonatomic, assign) BOOL forceBasicAuthentication;
 
 /**
  * The underlying NSMutableURLRequest sent for this request
