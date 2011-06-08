@@ -74,7 +74,7 @@
  */
 @property (assign) NSTimeInterval refreshRate;
 
-+ (RKObjectLoaderTTModel*)modelWithObjectLoader:(RKObjectLoader*)objectLoader;
++ (id)modelWithObjectLoader:(RKObjectLoader*)objectLoader;
 - (id)initWithObjectLoader:(RKObjectLoader*)objectLoader;
 
 /**
@@ -82,11 +82,4 @@
  */
 - (void)load;
 
-//// TODO: Does this work?
-//// Loads a new object loader
-//- (void)changeModelWithObjectLoader:(RKObjectLoader*)objectLoader;
-// [model didChange]
-//
-//- (void)filterWithPredicate:(NSPredicate*)predicate sortDescriptors:(NSArray*)sortDescriptors;
-//- (void)searchWithText:(NSString*)text predicate: sortDescriptors:
 @end

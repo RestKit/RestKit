@@ -1,5 +1,5 @@
 //
-//  RKRequestTTModel+Loading.h
+//  RKObjectLoaderTTModel+Loading.h
 //  DiscussionBoard
 //
 //  Created by Jeremy Ellison on 1/12/11.
@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <RestKit/Three20/Three20.h>
 
-@interface RKRequestTTModel (Loading)
+@interface RKObjectLoaderTTModel (Loading)
 
 @end

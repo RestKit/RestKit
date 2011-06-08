@@ -60,7 +60,7 @@
 
 - (id)tableView:(UITableView*)tableView objectForRowAtIndexPath:(NSIndexPath*)indexPath {
     if (indexPath.row < [self.modelObjects count]) {
-        NSObject<RKObjectMappable>* mappableObject =  [self.modelObjects objectAtIndex:indexPath.row];
+        NSObject* mappableObject =  [self.modelObjects objectAtIndex:indexPath.row];
         RKMappableObjectTableItem* tableItem = [RKMappableObjectTableItem itemWithObject:mappableObject];
         return tableItem;
     } else {

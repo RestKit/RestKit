@@ -16,15 +16,14 @@
 - (id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query {
 	if (self = [super initWithNavigatorURL:URL query:query]) {
 		self.title = @"Topics";
-		
-		_resourcePath = [@"/topics" retain];
-		_resourceClass = [DBTopic class];
+		_tableTitleHeaderLabel.text = @"Recent Topics";
 	}
 	return self;
 }
 
-- (void)loadView {
-	[super loadView];
+- (void)createModel {    
+    RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/topics" delegate:nil];
+    self.model = [RKObjectLoaderTTModel modelWithObjectLoader:objectLoader];
 
 	UIBarButtonItem* item = nil;
 	if ([[DBUser currentUser] isLoggedIn]) {
@@ -53,7 +52,7 @@
 - (void)didLoadModel:(BOOL)firstTime {
 	[super didLoadModel:firstTime];
 	
-	RKRequestTTModel* model = (RKRequestTTModel*)self.model;
+	RKObjectLoaderTTModel* model = (RKObjectLoaderTTModel*)self.model;
 	NSMutableArray* items = [NSMutableArray arrayWithCapacity:[model.objects count]];
 
 	for (DBTopic* topic in model.objects) {
