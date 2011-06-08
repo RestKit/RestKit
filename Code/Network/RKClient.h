@@ -121,6 +121,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	NSString* _baseURL;
 	NSString* _username;
 	NSString* _password;
+    BOOL _forceBasicAuthentication;
 	NSMutableDictionary* _HTTPHeaders;
 	RKReachabilityObserver* _baseURLReachabilityObserver;
 	NSString* _serviceUnavailableAlertTitle;
@@ -173,6 +174,15 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * The password to use for authentication via HTTP AUTH
  */
 @property(nonatomic, retain) NSString* password;
+
+/**
+ When YES, RKRequest objects dispatched through the client will have an HTTP Basic
+ Authorization header added before being sent.
+ 
+ This avoids an HTTP AUTH challenge before authentication and can be used to force
+ authentication is situations where an AUTH challenge is not issued
+ */
+@property(nonatomic, assign) BOOL forceBasicAuthentication;
 
 /**
  * The RKReachabilityObserver used to monitor whether or not the client has a connection
