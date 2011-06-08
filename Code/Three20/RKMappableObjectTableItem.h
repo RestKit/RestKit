@@ -10,11 +10,11 @@
 #import "../RestKit.h"
 
 @interface RKMappableObjectTableItem : TTTableLinkedItem {
-    NSObject<RKObjectMappable>* _object;
+    NSObject* _object;
 }
 
-@property (nonatomic, retain) NSObject<RKObjectMappable>* object;
+@property (nonatomic, retain) NSObject* object;
 
-+ (id)itemWithObject:(NSObject<RKObjectMappable>*)object;
++ (id)itemWithObject:(NSObject*)object;
 
 @end

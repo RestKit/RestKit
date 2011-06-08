@@ -44,7 +44,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 
 	// Set the default refresh rate to 1. This means we should always hit the web if we can.
 	// If the server is unavailable, we will load from the Core Data cache.
-	[RKRequestTTModel setDefaultRefreshRate:1];
+	[RKObjectLoaderTTModel setDefaultRefreshRate:1];
 
 	// Set nil for any attributes we expect to appear in the payload, but do not
     // TODO: Fix this. Now settable on a per-object basis
@@ -55,7 +55,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// with a SQLite database. We are also utilizing the managed object cache support to provide
 	// offline access to locally cached content.
 	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"DiscussionBoard.sqlite"] autorelease];
-	objectManager.objectStore.managedObjectCache = [[DBManagedObjectCache new] autorelease];
+//	objectManager.objectStore.managedObjectCache = [[DBManagedObjectCache new] autorelease];
 
 	// Set Up the Object Mapper
 	// The object mapper is responsible for mapping JSON encoded representations of objects
@@ -73,7 +73,15 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      nil];
     
     RKManagedObjectMapping* topicMapping = [RKManagedObjectMapping mappingForClass:[DBTopic class]];
+    /**
+     * Informs RestKit which property contains the primary key for identifying
+     * this object. This is used to ensure that objects are updated
+     */
     topicMapping.primaryKeyAttribute = @"topicID";
+    
+    /**
+     * Map keyPaths in the JSON to attributes of the DBTopic entity
+     */
     [topicMapping mapKeyPathsToAttributes:
      @"id", @"topicID",
      @"name", @"name",
@@ -81,6 +89,17 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      @"created_at", @"createdAt",
      @"updated_at", @"updatedAt",
      nil];
+    
+    /**
+     * Informs RestKit which properties contain the primary key values that
+     * can be used to hydrate relationships to other objects. This hint enables
+     * RestKit to automatically maintain true Core Data relationships between objects
+     * in your local store.
+     *
+     * Here we have asked RestKit to connect the 'user' relationship by performing a
+     * primary key lookup with the value in 'userID' property. This is the declarative
+     * equivalent of doing self.user = [DBUser objectWithPrimaryKeyValue:self.userID];
+     */
     [topicMapping mapRelationship:@"user" withObjectMapping:userMapping];
     
     RKManagedObjectMapping* postMapping = [RKManagedObjectMapping mappingForClass:[DBPost class]];

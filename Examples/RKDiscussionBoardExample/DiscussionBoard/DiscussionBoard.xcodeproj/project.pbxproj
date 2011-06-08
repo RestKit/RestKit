@@ -22,7 +22,7 @@
 		25359ED112E51070008BF33D /* DBManagedObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ECD12E51070008BF33D /* DBManagedObjectCache.m */; };
 		25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ECF12E51070008BF33D /* DiscussionBoardAppDelegate.m */; };
 		25359ED712E512BB008BF33D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ED612E512BB008BF33D /* main.m */; };
-		25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */; };
+		25359F4112E53966008BF33D /* RKObjectLoaderTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.m */; };
 		253E163412E8BA6500F3E4B0 /* DBContentObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 253E163312E8BA6500F3E4B0 /* DBContentObject.m */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */; };
@@ -480,8 +480,8 @@
 		3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPostTableViewController.m; sourceTree = "<group>"; };
 		3F3239EB12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBAuthenticatedTableViewController.h; sourceTree = "<group>"; };
 		3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBAuthenticatedTableViewController.m; sourceTree = "<group>"; };
-		3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RKRequestTTModel+Loading.h"; path = "Other/RKRequestTTModel+Loading.h"; sourceTree = "<group>"; };
-		3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RKRequestTTModel+Loading.m"; path = "Other/RKRequestTTModel+Loading.m"; sourceTree = "<group>"; };
+		3F49C15912DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RKObjectLoaderTTModel+Loading.h"; path = "Other/RKObjectLoaderTTModel+Loading.h"; sourceTree = "<group>"; };
+		3F49C15A12DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RKObjectLoaderTTModel+Loading.m"; path = "Other/RKObjectLoaderTTModel+Loading.m"; sourceTree = "<group>"; };
 		3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Resources/DataModel.xcdatamodel; sourceTree = "<group>"; };
 		3F8CF773131D78D70023C5EA /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info.plist"; path = "Resources/DiscussionBoard-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
@@ -944,8 +944,8 @@
 		25359EC912E51057008BF33D /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */,
-				3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */,
+				3F49C15912DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.h */,
+				3F49C15A12DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.m */,
 				25359ED512E512BB008BF33D /* DiscussionBoard_Prefix.pch */,
 				25359ED612E512BB008BF33D /* main.m */,
 				25359ECA12E51070008BF33D /* DBEnvironment.h */,
@@ -1281,7 +1281,7 @@
 				25359ED112E51070008BF33D /* DBManagedObjectCache.m in Sources */,
 				25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */,
 				25359ED712E512BB008BF33D /* main.m in Sources */,
-				25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */,
+				25359F4112E53966008BF33D /* RKObjectLoaderTTModel+Loading.m in Sources */,
 				253E163412E8BA6500F3E4B0 /* DBContentObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

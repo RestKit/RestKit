@@ -17,12 +17,13 @@ NSString* const DBContentObjectDidChangeNotification = @"DBContentObjectDidChang
 @dynamic updatedAt;
 @dynamic user;
 
-- (BOOL)isNewRecord {
-	return [[self primaryKeyValue] intValue] == 0;
-}
-
 - (NSString*)username {
 	return self.user.username;
+}
+
+- (BOOL)isNewRecord {
+    [self doesNotRecognizeSelector:_cmd];
+	return NO;
 }
 
 @end

@@ -51,7 +51,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	defaultRefreshRate = newDefaultRefreshRate;
 }
 
-+ (RKObjectLoaderTTModel*)modelWithObjectLoader:(RKObjectLoader*)objectLoader {
++ (id)modelWithObjectLoader:(RKObjectLoader*)objectLoader {
     return [[[self alloc] initWithObjectLoader:objectLoader] autorelease];
 }
 
@@ -64,12 +64,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
     }
     
     return self;
-}
-
-// TODO: Does this work?
-// Loads a new object loader
-- (void)updateModelWithObjectLoader:(RKObjectLoader*)objectLoader {
-    
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,7 +195,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 // public
 
 - (void)load {
-    Class managedObjectClass = NSClassFromString(@"RKManagedObject");
+    Class managedObjectClass = NSClassFromString(@"NSManagedObject");
 	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
 	NSArray* cacheFetchRequests = nil;
 	if (store.managedObjectCache) {
@@ -209,10 +203,6 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	}
 
 	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded) {
-		RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:_resourcePath delegate:self];
-		objectLoader.method = self.method;
-		objectLoader.params = self.params;
-
 		_isLoading = YES;
 		[self didStartLoad];
 		[self.objectLoader send];

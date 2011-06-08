@@ -12,7 +12,7 @@
 
 @synthesize object = _object;
 
-+ (id)itemWithObject:(NSObject<RKObjectMappable>*)object {
++ (id)itemWithObject:(NSObject*)object {
     RKMappableObjectTableItem* tableItem = [self new];
     tableItem.object = object;
     return [tableItem autorelease];
