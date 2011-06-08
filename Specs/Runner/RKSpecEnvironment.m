@@ -49,6 +49,9 @@ RKObjectManager* RKSpecNewObjectManager() {
     [RKClient setSharedClient:objectManager.client];
     RKSpecNewRequestQueue();
     
+    // This allows the manager to determine state.
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    
     return objectManager;
 }
 

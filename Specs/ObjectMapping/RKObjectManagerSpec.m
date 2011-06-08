@@ -18,7 +18,6 @@
 
 @interface RKObjectManagerSpec : RKSpec {
 	RKObjectManager* _objectManager;
-	RKSpecResponseLoader* _responseLoader;
 }
 
 @end
@@ -67,8 +66,6 @@
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     _objectManager.router = router;
-    
-	_responseLoader	= [[RKSpecResponseLoader alloc] init];
 }
 
 - (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
@@ -85,30 +82,33 @@
     // that we just need a way to save the context before we begin mapping or something
     // on success. Always saving means that we can abandon objects on failure...
     [_objectManager.objectStore save];
-    [_objectManager postObject:temporaryHuman delegate:_responseLoader];
-    [_responseLoader waitForResponse];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [_objectManager postObject:temporaryHuman delegate:loader];
+    [loader waitForResponse];
     
-    RKHuman* human = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
+    RKHuman* human = (RKHuman*)[loader.objects objectAtIndex:0];
     assertThat(human, is(equalTo(temporaryHuman)));
     assertThat(human.railsID, is(equalToInt(1)));
 }
 
 // TODO: Move to Core Data specific spec file...
 - (void)itShouldLoadAHuman {
-	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:_responseLoader];
-    _responseLoader.timeout = 200;
-	[_responseLoader waitForResponse];
-    [expectThat(_responseLoader.failureError) should:be(nil)];
-    assertThat(_responseLoader.objects, isNot(empty()));
-	RKHuman* blake = (RKHuman*)[_responseLoader.objects objectAtIndex:0];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
+    loader.timeout = 200;
+	[loader waitForResponse];
+    [expectThat(loader.failureError) should:be(nil)];
+    assertThat(loader.objects, isNot(empty()));
+	RKHuman* blake = (RKHuman*)[loader.objects objectAtIndex:0];
 	NSLog(@"Blake: %@ (name = %@)", blake, blake.name);
 	[expectThat(blake.name) should:be(@"Blake Watters")];
 }
 
 - (void)itShouldLoadAllHumans {
-	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:_responseLoader];
-	[_responseLoader waitForResponse];
-	NSArray* humans = (NSArray*) _responseLoader.objects;
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
+	[loader waitForResponse];
+	NSArray* humans = (NSArray*) loader.objects;
 	[expectThat([humans count]) should:be(2)];
 	[expectThat([[humans objectAtIndex:0] class]) should:be([RKHuman class])];
 }
@@ -116,9 +116,10 @@
 - (void)itShouldHandleConnectionFailures {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
 	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
-	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:_responseLoader];
-	[_responseLoader waitForResponse];
-	[expectThat(_responseLoader.success) should:be(NO)];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];
+	[loader waitForResponse];
+	[expectThat(loader.success) should:be(NO)];
 }
 
 - (void)itShouldPOSTAnObject {

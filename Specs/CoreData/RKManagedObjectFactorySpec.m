@@ -65,6 +65,7 @@
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
+    [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
     [store save];

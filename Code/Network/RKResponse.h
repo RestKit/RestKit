@@ -14,6 +14,8 @@
 	NSHTTPURLResponse* _httpURLResponse;
 	NSMutableData* _body;
 	NSError* _failureError;
+	BOOL _loading;
+	NSDictionary* _responseHeaders;
 }
 
 /**
@@ -62,6 +64,11 @@
 - (id)initWithRequest:(RKRequest*)request;
 
 /**
+ * Initialize a new response object from a cached request
+ */
+- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers;
+
+/**
  * Initializes a response object from the results of a synchronous request
  */
 - (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error;
@@ -85,6 +92,11 @@
  * Will determine if there is an error object and use it's localized message
  */
 - (NSString*)failureErrorDescription;
+
+/**
+ * Indicates whether the response was loaded from RKCache
+ */
+- (BOOL)wasLoadedFromCache;
 
 /**
  * Indicates that the connection failed to reach the remote server. The details of the failure
@@ -136,6 +148,11 @@
  * Indicates an HTTP response code of 201
  */
 - (BOOL)isCreated;
+
+/**
+ * Indicates an HTTP response code of 304
+ */
+- (BOOL)isNotModified;
 
 /**
  * Indicates an HTTP response code of 401

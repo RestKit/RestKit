@@ -10,10 +10,12 @@ Debugger.start
 # Import the RestKit Spec server
 $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
 require 'restkit/network/authentication'
+require 'restkit/network/etags'
 
 class RestKit::SpecServer < Sinatra::Base
   self.app_file = __FILE__
   use RestKit::Network::Authentication
+  use RestKit::Network::ETags
   
   configure do
     set :logging, true

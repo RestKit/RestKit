@@ -13,6 +13,7 @@
 
 @interface RKRequest (Private)
 - (void)fireAsynchronousRequest;
+- (void)shouldDispatchRequest;
 @end
 
 @interface RKRequestSpec : NSObject <UISpec> {
@@ -142,6 +143,239 @@
     [request sendAsynchronously];
     [loader waitForResponse];
     [expectThat([loader success]) should:be(YES)];
+}
+
+#pragma mark RKRequestCachePolicy Specs
+
+- (void)itShouldSendTheRequestWhenTheCachePolicyIsNone {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    NSString* url = [NSString stringWithFormat:@"%@/etags", RKSpecGetBaseURL()];
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.cachePolicy = RKRequestCachePolicyNone;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    [expectThat([loader success]) should:be(YES)];
+}
+
+- (void)itShouldCacheTheRequestHeadersAndBodyIncludingOurOwnCustomTimestampHeader {
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                        storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.cachePolicy = RKRequestCachePolicyEtag;
+    request.cache = cache;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    [expectThat([loader success]) should:be(YES)];
+    NSDictionary* headers = [cache headersForRequest:request];
+    [expectThat([headers valueForKey:@"X-RESTKIT-CACHEDATE"]) shouldNot:be(nil)];
+    [expectThat([headers valueForKey:@"Etag"]) should:be(@"686897696a7c876b7e")];
+    [expectThat([[cache responseForRequest:request] bodyAsString]) should:be(@"This Should Get Cached")];
+}
+
+- (void)itShouldGenerateAUniqueCacheKeyBasedOnTheUrlTheMethodAndTheHTTPBody {
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                        storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+    
+    NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.cachePolicy = RKRequestCachePolicyEtag;
+    
+    NSString* cacheKeyGET = [request cacheKey];
+    request.method = RKRequestMethodDELETE;
+    // Don't cache delete. cache key should be nil.
+    [expectThat([request cacheKey]) should:be(nil)];
+    
+    request.method = RKRequestMethodPOST;
+    [expectThat([request cacheKey]) shouldNot:be(nil)];
+    [expectThat(cacheKeyGET) shouldNot:be([request cacheKey])];
+    request.params = [NSDictionary dictionaryWithObject:@"val" forKey:@"key"];
+    NSString* cacheKeyPOST = [request cacheKey];
+    [expectThat(cacheKeyPOST) shouldNot:be(nil)];
+    request.method = RKRequestMethodPUT;
+    [expectThat(cacheKeyPOST) shouldNot:be([request cacheKey])];
+    [expectThat([request cacheKey]) shouldNot:be(nil)];
+}
+
+- (void)itShouldLoadFromCacheWhenWeRecieveA304 {
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([cache etagForRequest:request]) should:be(@"686897696a7c876b7e")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
+    }
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
+    }
+}
+
+- (void)itShouldLoadFromTheCacheIfThereIsAnError {
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                        storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+    
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
+    }
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyLoadOnError;
+        request.cache = cache;
+        request.delegate = loader;
+        [request didFailLoadWithError:[NSError errorWithDomain:@"Fake" code:0 userInfo:nil]];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
+    }
+}
+
+- (void)itShouldLoadFromTheCacheIfWeAreOffline {
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                        storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+    
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
+    }
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyLoadIfOffline;
+        request.cache = cache;
+        request.delegate = loader;
+        id mock = [OCMockObject partialMockForObject:request];
+        BOOL returnValue = NO;
+        [[[mock expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldDispatchRequest];
+        [mock sendAsynchronously];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
+    }
+}
+
+- (void)itShouldCacheTheStatusCodeMIMETypeAndURL {
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                        storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        NSLog(@"Headers: %@", [cache headersForRequest:request]);
+        [expectThat([cache etagForRequest:request]) should:be(@"686897696a7c876b7e")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
+    }
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
+        [expectThat(loader.response.statusCode) should:be(200)];
+        [expectThat(loader.response.MIMEType) should:be(@"text/html")];
+        [expectThat([loader.response.URL absoluteString]) should:be(@"http://localhost:4567/etags/cached")];
+    }
 }
 
 @end

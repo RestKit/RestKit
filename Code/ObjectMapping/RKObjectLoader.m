@@ -32,7 +32,7 @@
         _objectManager = objectManager;        
         [self.objectManager.client setupRequest:self];
 	}
-    
+
 	return self;
 }
 
@@ -131,6 +131,15 @@
     mapper.targetObject = targetObject;
     mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];
+    
+    if (nil == result && RKRequestMethodDELETE == self.method && [mapper.errors count] == 1) {
+        NSError* error = [mapper.errors objectAtIndex:0];
+        if (error.domain == RKRestKitErrorDomain && error.code == RKObjectMapperErrorUnmappableContent) {
+            // If this is a delete request, and the error is an "unmappable content" error, return an empty result
+            // because delete requests should allow for no objects to come back in the response (you just deleted the object).
+            result = [[[RKObjectMappingResult alloc] initWithDictionary:[NSDictionary dictionary]] autorelease];
+        }
+    }
     
     if (nil == result) {
         // TODO: Logging macros
@@ -241,13 +250,19 @@
 - (void)didFailLoadWithError:(NSError*)error {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
-	if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
-		[_delegate request:self didFailLoadWithError:error];
-	}
-    
-	[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
-    
-	[self finalizeLoad:NO];
+	if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
+		[[[RKClient sharedClient] cache] hasResponseForRequest:self]) {
+
+		[self didFinishLoad:[[[RKClient sharedClient] cache] responseForRequest:self]];
+	} else {
+        if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
+            [_delegate request:self didFailLoadWithError:error];
+        }
+        
+        [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+        
+        [self finalizeLoad:NO];
+    }
     
     [pool release];
 }
@@ -255,7 +270,17 @@
 // NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
 - (void)didFinishLoad:(RKResponse*)response {
 	_response = [response retain];
-    
+
+	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
+		[_response release];
+		_response = nil;
+		_response = [[[[RKClient sharedClient] cache] responseForRequest:self] retain];
+	}
+
+	if (![_response wasLoadedFromCache] && [_response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
+		[[[RKClient sharedClient] cache] storeResponse:_response forRequest:self];
+	}
+
     if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
         [_delegate request:self didLoadResponse:response];
     }

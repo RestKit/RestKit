@@ -1005,7 +1005,8 @@ static void _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash,
 
 static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(JKDictionary *dictionary, id aKey) {
   NSCParameterAssert((dictionary != NULL) && (dictionary->entry != NULL) && (dictionary->count <= dictionary->capacity));
-  if(aKey == NULL) { return(NULL); }
+  // Guard against a divide by zero here.
+  if(aKey == NULL || 0 == dictionary->capacity) { return(NULL); }
   NSUInteger        keyHash = CFHash(aKey), keyEntry = (keyHash % dictionary->capacity), idx = 0UL;
   JKHashTableEntry *atEntry = NULL;
   for(idx = 0UL; idx < dictionary->capacity; idx++) {
