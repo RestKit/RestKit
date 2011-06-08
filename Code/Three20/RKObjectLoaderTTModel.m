@@ -207,8 +207,15 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 		[self didStartLoad];
 		[self.objectLoader send];
 	} else if (cacheFetchRequests && !_cacheLoaded && managedObjectClass) {
-		_cacheLoaded = YES;
-		[self modelsDidLoad:[NSManagedObject objectsWithFetchRequests:cacheFetchRequests]];
+        NSArray* objects = [managedObjectClass objectsWithFetchRequests:cacheFetchRequests];
+        if ([objects count] > 0 && NO == [self isOutdated]) {
+            _cacheLoaded = YES;
+            [self modelsDidLoad:objects];
+        } else {
+            _isLoading = YES;
+            [self didStartLoad];
+            [self.objectLoader send];
+        }
 	}
 }
 

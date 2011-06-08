@@ -46,16 +46,12 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// If the server is unavailable, we will load from the Core Data cache.
 	[RKObjectLoaderTTModel setDefaultRefreshRate:1];
 
-	// Set nil for any attributes we expect to appear in the payload, but do not
-    // TODO: Fix this. Now settable on a per-object basis
-//	objectManager.mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
-
 	// Initialize object store
 	// We are using the Core Data support, so we have initialized a managed object store backed
 	// with a SQLite database. We are also utilizing the managed object cache support to provide
 	// offline access to locally cached content.
 	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"DiscussionBoard.sqlite"] autorelease];
-//	objectManager.objectStore.managedObjectCache = [[DBManagedObjectCache new] autorelease];
+	objectManager.objectStore.managedObjectCache = [[DBManagedObjectCache new] autorelease];
 
 	// Set Up the Object Mapper
 	// The object mapper is responsible for mapping JSON encoded representations of objects
@@ -63,6 +59,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// sub-dictionaries of attributes to local classes.
     RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[DBUser class]];
     userMapping.primaryKeyAttribute = @"userID";
+    userMapping.setNilForMissingRelationships = YES; // clear out any missing attributes (token on logout)
     [userMapping mapKeyPathsToAttributes:
      @"id", @"userID",
      @"email", @"email",
