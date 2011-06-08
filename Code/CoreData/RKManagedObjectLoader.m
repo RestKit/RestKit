@@ -24,7 +24,7 @@
     }
     return self;
 }
-
+    
 - (void)dealloc {
     [_targetObjectID release];
     _targetObjectID = nil;

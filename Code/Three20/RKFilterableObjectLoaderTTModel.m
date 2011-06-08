@@ -1,14 +1,14 @@
 //
-//  RKRequestFilterableTTModel.m
+//  RKFilterableObjectLoaderTTModel.m
 //  RestKit
 //
 //  Created by Blake Watters on 2/12/10.
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKRequestFilterableTTModel.h"
+#import "RKFilterableObjectLoaderTTModel.h"
 
-@implementation RKRequestFilterableTTModel
+@implementation RKFilterableObjectLoaderTTModel
 
 @synthesize searchEngine = _searchEngine;
 @synthesize predicate = _predicate;

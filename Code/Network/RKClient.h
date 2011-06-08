@@ -11,6 +11,7 @@
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKReachabilityObserver.h"
+#import "RKRequestCache.h"
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -127,6 +128,8 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	NSString* _serviceUnavailableAlertTitle;
 	NSString* _serviceUnavailableAlertMessage;
 	BOOL _serviceUnavailableAlertEnabled;
+	RKRequestCache* _cache;
+	RKRequestCachePolicy _cachePolicy;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -223,6 +226,10 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * *Default*: _NO_
  */
 @property(nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
+
+@property (nonatomic, retain) RKRequestCache* cache;
+
+@property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Shared Client Instance

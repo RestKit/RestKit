@@ -139,7 +139,6 @@
         [self addErrorWithCode:RKObjectMapperErrorObjectMappingTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
         return nil;
     }
-    
     for (id mappableObject in mappableObjects) {
         id destinationObject = [self objectWithMapping:mapping andData:mappableObject];
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];

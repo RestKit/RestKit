@@ -70,14 +70,17 @@ static const NSTimeInterval kFlushDelay = 0.3;
 													 name:RKRequestFailedWithErrorNotification
 												   object:nil];
 #if TARGET_OS_IPHONE
-        [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(willTransitionToBackground) 
-                                                     name:UIApplicationDidEnterBackgroundNotification 
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(willTransitionToForeground)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
+        BOOL backgroundOK = &UIApplicationDidEnterBackgroundNotification != NULL;
+        if (backgroundOK) {
+            [[NSNotificationCenter defaultCenter] addObserver:self 
+                                                     selector:@selector(willTransitionToBackground) 
+                                                         name:UIApplicationDidEnterBackgroundNotification 
+                                                       object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(willTransitionToForeground)
+                                                         name:UIApplicationWillEnterForegroundNotification
+                                                       object:nil];
+        }
 #endif
 	}
 	return self;
@@ -145,9 +148,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	}
 
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	
+
 	_queueTimer = nil;
-	
+
 	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
 	for (RKRequest* request in requestsCopy) {
 		if (![request isLoading] && ![request isLoaded] && self.loadingCount < _concurrentRequestsLimit) {            
@@ -187,7 +190,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
     }
 
 	_suspended = isSuspended;
-	
+
 	if (!_suspended) {
 		[self loadNextInQueue];
 	} else if (_queueTimer) {

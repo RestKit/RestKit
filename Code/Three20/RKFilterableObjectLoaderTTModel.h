@@ -1,19 +1,19 @@
 //
-//  RKRequestFilterableTTModel.h
+//  RKFilterableObjectLoaderTTModel.h
 //  RestKit
 //
 //  Created by Blake Watters on 2/12/10.
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKRequestTTModel.h"
+#import "RKObjectLoaderTTModel.h"
 #import "../Support/RKSearchEngine.h"
 
 /**
  * Provides an interface for searching and filtering a collection
  * of objects loaded from a remote source
  */
-@interface RKRequestFilterableTTModel : RKRequestTTModel {
+@interface RKFilterableObjectLoaderTTModel : RKObjectLoaderTTModel {
 	RKSearchEngine* _searchEngine;
 	NSPredicate* _predicate;
 	NSArray* _sortDescriptors;

@@ -6,5 +6,7 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKRequestTTModel.h"
-#import "RKRequestFilterableTTModel.h"
+#import "RKObjectLoaderTTModel.h"
+#import "RKFilterableObjectLoaderTTModel.h"
+#import "RKMappableObjectTableItem.h"
+#import "RKTableViewDataSource.h"

@@ -29,5 +29,18 @@
 	RKReachabilityNetworkStatus status = [client.baseURLReachabilityObserver networkStatus];
 	[expectThat(status) shouldNot:be(RKReachabilityIndeterminate)];	
 }
+- (void)itShouldSetTheCachePolicyOfTheRequest {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    client.cachePolicy = RKRequestCachePolicyLoadIfOffline;
+    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+	[expectThat(request.cachePolicy) should:be(RKRequestCachePolicyLoadIfOffline)];
+}
+
+- (void)itShouldInitializeTheCacheOfTheRequest {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    client.cache = [[[RKRequestCache alloc] init] autorelease];
+    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+	[expectThat(request.cache) should:be(client.cache)];
+}
 
 @end
