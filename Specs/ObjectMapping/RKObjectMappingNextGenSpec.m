@@ -746,6 +746,37 @@
     [expectThat([[user isDeveloper] boolValue]) should:be(YES)]; 
 }
 
+- (void)itShouldMapAShortTrueStringToANumberBool {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"is_developer" toKeyPath:@"isDeveloper"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    RKExampleUser* user = [RKExampleUser user];
+    [dictionary setValue:@"T" forKey:@"is_developer"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    [expectThat([[user isDeveloper] boolValue]) should:be(YES)]; 
+}
+
+
+- (void)itShouldMapAShortFalseStringToANumberBool {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"is_developer" toKeyPath:@"isDeveloper"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    RKExampleUser* user = [RKExampleUser user];
+    [dictionary setValue:@"f" forKey:@"is_developer"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    [expectThat([[user isDeveloper] boolValue]) should:be(NO)]; 
+}
+
 - (void)itShouldMapAStringToANumber {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"lucky_number" toKeyPath:@"luckyNumber"];
