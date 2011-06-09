@@ -21,10 +21,19 @@
 	return self;
 }
 
-- (void)createModel {    
+- (void)createModel {
+    /**
+     Map loaded objects into Three20 Table Item instances!
+     */
+    RKObjectTTTableViewDataSource* dataSource = [RKObjectTTTableViewDataSource dataSource];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TTTableTextItem class]];
+    [mapping mapKeyPath:@"name" toAttribute:@"text"];
+    [mapping mapKeyPath:@"topicNavURL" toAttribute:@"URL"];
+    [dataSource mapObjectClass:[DBTopic class] toTableItemWithMapping:mapping];
     RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/topics" delegate:nil];
-    self.model = [RKObjectLoaderTTModel modelWithObjectLoader:objectLoader];
-
+    dataSource.model = [RKObjectLoaderTTModel modelWithObjectLoader:objectLoader];
+    self.dataSource = dataSource;
+    
 	UIBarButtonItem* item = nil;
 	if ([[DBUser currentUser] isLoggedIn]) {
 		item = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleBordered target:self action:@selector(logoutButtonWasPressed:)];
@@ -47,24 +56,6 @@
 
 - (void)logoutButtonWasPressed:(id)sender {
 	[[DBUser currentUser] logout];
-}
-
-- (void)didLoadModel:(BOOL)firstTime {
-	[super didLoadModel:firstTime];
-	
-	RKObjectLoaderTTModel* model = (RKObjectLoaderTTModel*)self.model;
-	NSMutableArray* items = [NSMutableArray arrayWithCapacity:[model.objects count]];
-
-	for (DBTopic* topic in model.objects) {
-		NSString* topicPostsURL = RKMakePathWithObject(@"db://topics/(topicID)/posts", topic);
-		[items addObject:[TTTableTextItem itemWithText:topic.name URL:topicPostsURL]];
-	}
-
-	// Ensure that the datasource's model is still the RKRequestTTModel;
-	// Otherwise isOutdated will not work.
-	TTListDataSource* dataSource = [TTListDataSource dataSourceWithItems:items];
-	dataSource.model = model;
-	self.dataSource = dataSource;
 }
 
 @end
