@@ -18,4 +18,8 @@
 	return [self.topicID intValue] == 0;
 }
 
+- (NSString*)topicNavURL {
+    return RKMakePathWithObject(@"db://topics/(topicID)/posts", self);
+}
+
 @end

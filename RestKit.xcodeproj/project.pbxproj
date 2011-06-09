@@ -249,8 +249,8 @@
 		3F741A5E139D74F1002E7304 /* RKMappableObjectTableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F741A56139D74F1002E7304 /* RKMappableObjectTableItem.m */; };
 		3F741A5F139D74F1002E7304 /* RKObjectLoaderTTModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F741A57139D74F1002E7304 /* RKObjectLoaderTTModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3F741A60139D74F1002E7304 /* RKObjectLoaderTTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F741A58139D74F1002E7304 /* RKObjectLoaderTTModel.m */; };
-		3F741A61139D74F1002E7304 /* RKTableViewDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F741A59139D74F1002E7304 /* RKTableViewDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3F741A62139D74F1002E7304 /* RKTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F741A5A139D74F1002E7304 /* RKTableViewDataSource.m */; };
+		3F741A61139D74F1002E7304 /* RKObjectTTTableViewDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F741A59139D74F1002E7304 /* RKObjectTTTableViewDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3F741A62139D74F1002E7304 /* RKObjectTTTableViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F741A5A139D74F1002E7304 /* RKObjectTTTableViewDataSource.m */; };
 		3FD12C851379AD64008B996A /* RKRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3FD12C841379AD64008B996A /* RKRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73057FD61331AD5E001908EE /* JSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 73057FC71331AA3D001908EE /* JSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73057FD71331AD67001908EE /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 73057FC81331AA3D001908EE /* JSONKit.m */; };
@@ -633,8 +633,8 @@
 		3F741A56139D74F1002E7304 /* RKMappableObjectTableItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappableObjectTableItem.m; path = ../../../../../RestKit/Code/Three20/RKMappableObjectTableItem.m; sourceTree = "<group>"; };
 		3F741A57139D74F1002E7304 /* RKObjectLoaderTTModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKObjectLoaderTTModel.h; path = ../../../../../RestKit/Code/Three20/RKObjectLoaderTTModel.h; sourceTree = "<group>"; };
 		3F741A58139D74F1002E7304 /* RKObjectLoaderTTModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKObjectLoaderTTModel.m; path = ../../../../../RestKit/Code/Three20/RKObjectLoaderTTModel.m; sourceTree = "<group>"; };
-		3F741A59139D74F1002E7304 /* RKTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTableViewDataSource.h; path = ../../../../../RestKit/Code/Three20/RKTableViewDataSource.h; sourceTree = "<group>"; };
-		3F741A5A139D74F1002E7304 /* RKTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTableViewDataSource.m; path = ../../../../../RestKit/Code/Three20/RKTableViewDataSource.m; sourceTree = "<group>"; };
+		3F741A59139D74F1002E7304 /* RKObjectTTTableViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKObjectTTTableViewDataSource.h; path = ../../../../../RestKit/Code/Three20/RKObjectTTTableViewDataSource.h; sourceTree = "<group>"; };
+		3F741A5A139D74F1002E7304 /* RKObjectTTTableViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKObjectTTTableViewDataSource.m; path = ../../../../../RestKit/Code/Three20/RKObjectTTTableViewDataSource.m; sourceTree = "<group>"; };
 		3FD12C841379AD64008B996A /* RKRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKRouter.h; path = Code/ObjectMapping/RKRouter.h; sourceTree = SOURCE_ROOT; };
 		73057FC41331A8F6001908EE /* RKJSONParserJSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKJSONParserJSONKit.m; sourceTree = "<group>"; };
 		73057FC71331AA3D001908EE /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSONKit.h; path = Vendor/JSONKit/JSONKit.h; sourceTree = "<group>"; };
@@ -965,8 +965,8 @@
 				3F741A56139D74F1002E7304 /* RKMappableObjectTableItem.m */,
 				3F741A57139D74F1002E7304 /* RKObjectLoaderTTModel.h */,
 				3F741A58139D74F1002E7304 /* RKObjectLoaderTTModel.m */,
-				3F741A59139D74F1002E7304 /* RKTableViewDataSource.h */,
-				3F741A5A139D74F1002E7304 /* RKTableViewDataSource.m */,
+				3F741A59139D74F1002E7304 /* RKObjectTTTableViewDataSource.h */,
+				3F741A5A139D74F1002E7304 /* RKObjectTTTableViewDataSource.m */,
 				253A08A512551D8D00976E89 /* Three20.h */,
 			);
 			path = Three20;
@@ -1344,7 +1344,7 @@
 				3F741A5B139D74F1002E7304 /* RKFilterableObjectLoaderTTModel.h in Headers */,
 				3F741A5D139D74F1002E7304 /* RKMappableObjectTableItem.h in Headers */,
 				3F741A5F139D74F1002E7304 /* RKObjectLoaderTTModel.h in Headers */,
-				3F741A61139D74F1002E7304 /* RKTableViewDataSource.h in Headers */,
+				3F741A61139D74F1002E7304 /* RKObjectTTTableViewDataSource.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1846,7 +1846,7 @@
 				3F741A5C139D74F1002E7304 /* RKFilterableObjectLoaderTTModel.m in Sources */,
 				3F741A5E139D74F1002E7304 /* RKMappableObjectTableItem.m in Sources */,
 				3F741A60139D74F1002E7304 /* RKObjectLoaderTTModel.m in Sources */,
-				3F741A62139D74F1002E7304 /* RKTableViewDataSource.m in Sources */,
+				3F741A62139D74F1002E7304 /* RKObjectTTTableViewDataSource.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

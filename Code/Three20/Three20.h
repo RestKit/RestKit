@@ -9,4 +9,4 @@
 #import "RKObjectLoaderTTModel.h"
 #import "RKFilterableObjectLoaderTTModel.h"
 #import "RKMappableObjectTableItem.h"
-#import "RKTableViewDataSource.h"
+#import "RKObjectTTTableViewDataSource.h"
