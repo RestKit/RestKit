@@ -58,7 +58,8 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (id)initWithObjectLoader:(RKObjectLoader*)objectLoader {
     self = [self init];
     if (self) {
-        // TODO: When allowing mutation of object loader, be sure to update...
+        NSAssert(_objectLoader.isLoading == NO, @"Cannot use an object loader that is being sent");
+        NSAssert(_objectLoader.isLoaded == NO, @"Cannot use an object loader that is already loaded");
         _objectLoader = [objectLoader retain];
         _objectLoader.delegate = self;
     }
