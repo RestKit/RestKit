@@ -37,7 +37,7 @@
 	return self;
 }
 
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSMutableData*)body error:(NSError*)error {
     self = [super init];
 	if (self) {
 		// TODO: Does the lack of retain here cause problems with synchronous requests, since they

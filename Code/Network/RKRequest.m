@@ -153,9 +153,9 @@
 }
 
 - (RKResponse*)sendSynchronously {
-	NSURLResponse* URLResponse = nil;
+	NSHTTPURLResponse* URLResponse = nil;
 	NSError* error = nil;
-	NSData* payload = nil;
+	NSMutableData* payload = nil;
 	RKResponse* response = nil;
 
 	if ([[RKClient sharedClient] isNetworkAvailable]) {
@@ -168,7 +168,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:userInfo];
 
 		_isLoading = YES;
-		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
+		payload = [[[NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error] mutableCopy] autorelease];
 		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
         
         if (error) {
