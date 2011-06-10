@@ -142,6 +142,24 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
 	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
     
+    /**
+     Configure RestKit Logging
+     
+     RestKit ships with a robust logging framework that can be used to instrument
+     the libraries activities in great detail. Logging is configured by specifying a
+     logging component and a log level to use for that component.
+     
+     By default, RestKit is configured to log at the Info or Warning levels for all components
+     depending on the presence of the DEBUG pre-processor macro. This can be configured at run-time
+     via calls to RKLogConfigureByName as detailed below.
+     */
+    RKLogConfigureByName("RestKit", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
+    
+    // Enable boatloads of trace info from the mapper
+    // RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
+    
 	// Initialize Three20
 	TTURLMap* map = [[TTNavigator navigator] URLMap];
 	[map from:@"db://topics" toViewController:[DBTopicsTableViewController class]];
