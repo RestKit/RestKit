@@ -152,6 +152,8 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      By default, RestKit is configured to log at the Info or Warning levels for all components
      depending on the presence of the DEBUG pre-processor macro. This can be configured at run-time
      via calls to RKLogConfigureByName as detailed below.
+     
+     See RKLog.h and lcl_log_components.h for details on the logging macros available
      */
     RKLogConfigureByName("RestKit", RKLogLevelTrace);
     RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
