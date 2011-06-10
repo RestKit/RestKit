@@ -8,7 +8,11 @@
 
 #import <objc/message.h>
 #import "RKObjectPropertyInspector.h"
-#import "Logging.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitObjectMapping
 
 static RKObjectPropertyInspector* sharedInspector = nil;
 
@@ -88,7 +92,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 	}
 	
 	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:class];
-    RKLOG_MAPPING(RKLogLevelDebug, @"Cached property names and types for Class '%@': %@", NSStringFromClass(class), propertyNames);
+    RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(class), propertyNames);
 	return propertyNames;
 }
 

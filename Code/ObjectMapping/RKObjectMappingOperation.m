@@ -13,7 +13,11 @@
 #import "RKObjectRelationshipMapping.h"
 #import "RKObjectMapper.h"
 #import "../Support/Errors.h"
-#import "../Support/Logging.h"
+#import "../Support/RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitObjectMapping
 
 @implementation RKObjectMappingOperation
 
@@ -51,7 +55,7 @@
 }
 
 - (NSDate*)parseDateFromString:(NSString*)string {
-    RKLOG_MAPPING(RKLogLevelDebug, @"Transforming string value '%@' to NSDate...", string);
+    RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
     
 	NSDate* date = nil;
 	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
@@ -69,7 +73,7 @@
 }
 
 - (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType {
-    RKLOG_MAPPING(RKLogLevelDebug, @"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
+    RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];
     
     if ([sourceType isSubclassOfClass:[NSString class]]) {
@@ -111,7 +115,7 @@
         return [value stringValue];
     }
     
-    RKLOG_MAPPING(RKLogLevelWarning, @"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", NSStringFromClass([value class]), NSStringFromClass(destinationType));
+    RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", NSStringFromClass([value class]), NSStringFromClass(destinationType));
     
     return nil;
 }
@@ -178,7 +182,7 @@
             if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFindMapping:forKeyPath:)]) {
                 [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
             }
-            RKLOG_MAPPING(RKLogLevelInfo, @"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
+            RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
             
             // Inspect the property type to handle any value transformations
             Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:attributeMapping.destinationKeyPath ofClass:[self.destinationObject class]];
@@ -192,20 +196,20 @@
                 if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
                     [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
                 }
-                RKLOG_MAPPING(RKLogLevelDebug, @"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+                RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
             } else {
-                RKLOG_MAPPING(RKLogLevelDebug, @"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+                RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
             }
         } else {
             if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotFindMappingForKeyPath:)]) {
                 [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
             }
-            RKLOG_MAPPING(RKLogLevelInfo, @"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
+            RKLogWarning(@"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
             
             // Optionally set nil for missing values
             if ([self.objectMapping setNilForMissingAttributes]) {
                 [self.destinationObject setValue:nil forKey:attributeMapping.destinationKeyPath];
-                RKLOG_MAPPING(RKLogLevelInfo, @"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
+                RKLogTrace(@"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
             }
         }
     }
@@ -224,7 +228,7 @@
     subOperation.delegate = self.delegate;
     subOperation.objectFactory = self.objectFactory;
     if (NO == [subOperation performMapping:&error]) {
-        RKLOG_MAPPING(RKLogLevelWarning, @"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
+        RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     }
     
     return YES;
@@ -238,13 +242,13 @@
         id value = [self.sourceObject valueForKeyPath:mapping.sourceKeyPath];
         
         if (value == nil || value == [NSNull null] || [value isEqual:[NSNull null]]) {
-            RKLOG_MAPPING(RKLogLevelInfo, @"Did not find mappable relationship value keyPath '%@'", mapping.sourceKeyPath);
+            RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", mapping.sourceKeyPath);
             
             // Optionally nil out the property
             if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:nil atKeyPath:mapping.destinationKeyPath]) {
                 [self.destinationObject setValue:nil forKey:mapping.destinationKeyPath];
                 
-                RKLOG_MAPPING(RKLogLevelInfo, @"Setting nil for missing relationship value at keyPath '%@'", mapping.sourceKeyPath);
+                RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", mapping.sourceKeyPath);
             }
             
             continue;
@@ -252,7 +256,7 @@
                 
         if ([self isValueACollection:value]) {
             // One to many relationship
-            RKLOG_MAPPING(RKLogLevelInfo, @"Mapping one to many relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);
+            RKLogDebug(@"Mapping one to many relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);
             appliedMappings = YES;
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
@@ -270,7 +274,7 @@
             }
         } else {
             // One to one relationship
-            RKLOG_MAPPING(RKLogLevelInfo, @"Mapping one to one relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);            
+            RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);            
             
             destinationObject = [self.objectFactory objectWithMapping:mapping.objectMapping andData:value];
             if ([self mapNestedObject:value toObject:destinationObject withMapping:mapping]) {
@@ -281,7 +285,7 @@
         // If the relationship has changed, set it
         if ([self shouldSetValue:destinationObject atKeyPath:mapping.destinationKeyPath]) {
             [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
-            RKLOG_MAPPING(RKLogLevelDebug, @"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", mapping.sourceKeyPath, mapping.destinationKeyPath, destinationObject);
+            RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", mapping.sourceKeyPath, mapping.destinationKeyPath, destinationObject);
         }
     }
     
@@ -289,11 +293,11 @@
 }
 
 - (BOOL)performMapping:(NSError**)error {
-    RKLOG_START_BLOCK(@"Starting mapping operation...");
+    RKLogDebug(@"Starting mapping operation...");
     BOOL mappedAttributes = [self applyAttributeMappings];
     BOOL mappedRelationships = [self applyRelationshipMappings];
     if (mappedAttributes || mappedRelationships) {
-        RKLOG_END_BLOCK();
+        RKLogDebug(@"Finished mapping operation successfully...");
         return YES;
     } else {
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -307,7 +311,7 @@
             *error = unmappableError;
         }
         
-        RKLOG_END_BLOCK();
+        RKLogWarning(@"Failed mapping operation: %@", [unmappableError localizedDescription]);
         return NO;
     }
 }

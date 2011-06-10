@@ -12,6 +12,7 @@
 #import "RKURL.h"
 #import "RKNotifications.h"
 #import "RKAlert.h"
+#import "RKLog.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
@@ -107,6 +108,9 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	client.baseURL = baseURL;
 	if (sharedClient == nil) {
 		[RKClient setSharedClient:client];
+        
+        // Initialize Logging as soon as a client is created
+        RKLogInitialize();
 	}
 
 	return client;

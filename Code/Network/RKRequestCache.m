@@ -7,7 +7,11 @@
 //
 
 #import "RKRequestCache.h"
+#import "RKLog.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 static NSString* sessionCacheFolder = @"SessionStore";
 static NSString* permanentCacheFolder = @"PermanentStore";
@@ -54,11 +58,10 @@ static NSDateFormatter* __rfc1123DateFormatter;
 													   attributes:nil
 															error:&error];
 				if (!created || error != nil) {
-					NSLog(@"[RestKit] RKRequestCache: Failed to create cache directory at %@: error %@",
-						  path, [error localizedDescription]);
+					RKLogError(@"Failed to create cache directory at %@: error %@", path, [error localizedDescription]);
 				}
 			} else if (!isDirectory) {
-				NSLog(@"[RestKit] RKRequestCache: Failed to create cache directory: Directory already exists: %@", path);
+				RKLogWarning(@"Failed to create cache directory: Directory already exists: %@", path);
 			}
 		}
 
@@ -251,11 +254,11 @@ static NSDateFormatter* __rfc1123DateFormatter;
 					[fileManager removeItemAtPath:[cacheEntryPath stringByAppendingPathExtension:headersExtension]
 											error:&error];
 					if (nil != error) {
-						NSLog(@"[RestKit] RKRequestCache: Failed to delete cache entry for file: %@", cacheEntryPath);
+						RKLogError(@"Failed to delete cache entry for file: %@", cacheEntryPath);
 					}
 				}
 			} else {
-				NSLog(@"[RestKit] RKRequestCache: Failed to fetch list of cache entries for cache path: %@", cachePath);
+				RKLogWarning(@"Failed to fetch list of cache entries for cache path: %@", cachePath);
 			}
 		}
 

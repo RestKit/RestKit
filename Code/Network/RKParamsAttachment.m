@@ -10,6 +10,11 @@
 #import <MobileCoreServices/UTType.h>
 #endif
 #import "RKParamsAttachment.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 /**
  * The multi-part boundary. See RKParams.m
@@ -71,7 +76,7 @@ extern NSString* const kRKStringBoundary;
 			_bodyLength    = [[attributes objectForKey:NSFileSize] unsignedIntegerValue];
 		}
 		else {
-			NSLog(@"Encountered an error while determining file size: %@", error);
+			RKLogError(@"Encountered an error while determining file size: %@", error);
 		}
 	}
 	

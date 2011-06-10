@@ -13,7 +13,7 @@
 #import "RKObjectMappingOperation.h"
 #import "RKObjectAttributeMapping.h"
 #import "RKObjectRelationshipMapping.h"
-#import "Logging.h"
+#import "RKLog.h"
 #import "RKObjectMapper.h"
 #import "RKObjectMapper_Private.h"
 #import "RKObjectMapperError.h"
@@ -138,21 +138,8 @@
 @implementation RKObjectMappingNextGenSpec
 
 - (void)beforeAll {
-//    LoggerSetViewerHost(NULL, (CFStringRef) @"localhost", 50000);    
-    LoggerSetOptions(NULL,						// configure the default logger
-                     kLoggerOption_LogToConsole | 
-                     kLoggerOption_BufferLogsUntilConnection |
-                     kLoggerOption_UseSSL |
-                     kLoggerOption_BrowseBonjour |
-                     kLoggerOption_BrowseOnlyLocalDomain);
-    LoggerStart(LoggerGetDefaultLogger());
-    LogMessage(@"Object Mapping", 10, @"Starting object mapping specs...");
-    LoggerFlush(NULL, NO);
-}
-
-- (void)afterAll {
-    // TODO: Maybe a 5 second wait?
-    LoggerFlush(NULL, NO);
+    RKLogConfigureByName("RestKit/Object Mapping", RKLogLevelCritical);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
 }
 
 #pragma mark - RKObjectKeyPathMapping Specs

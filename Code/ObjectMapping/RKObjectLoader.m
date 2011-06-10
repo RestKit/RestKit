@@ -17,6 +17,10 @@
 #import "RKParserRegistry.h"
 #import "../Network/RKRequest_Internals.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
+
 @implementation RKObjectLoader
 
 @synthesize objectManager = _objectManager, response = _response;
@@ -140,8 +144,7 @@
     }
     
     if (nil == result) {
-        // TODO: Logging macros
-        NSLog(@"GOT MAPPING ERRORS: %@", mapper.errors);
+        RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
         
         // TODO: Construct a composite error that wraps up all the other errors
         *error = [mapper.errors lastObject];
@@ -183,7 +186,7 @@
         return YES;
     }
     
-    RKLOG_MAPPING(RKLogLevelWarning, @"Unable to find parser for MIME Type '%@'", MIMEType);
+    RKLogWarning(@"Unable to find parser for MIME Type '%@'", MIMEType);
     return NO;
 }
 
@@ -207,15 +210,14 @@
         if (result) {
             error = [result asError];
         } else {
-            RKLOG_MAPPING(RKLogLevelWarning, @"Encountered an error while attempting to map server side errors from payload: %@", [error localizedDescription]);
+            RKLogError(@"Encountered an error while attempting to map server side errors from payload: %@", [error localizedDescription]);
         }
         
         [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         
 		return NO;
 	} else if ([self.response isSuccessful] && NO == [self canParseMIMEType:[self.response MIMEType]]) {
-        // TODO: Logging macros...
-        NSLog(@"Encountered unexpected response code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
+        RKLogWarning(@"Encountered unexpected response code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
         if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
         } else {

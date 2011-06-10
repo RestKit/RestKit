@@ -9,6 +9,11 @@
 #import "RKResponse.h"
 #import "RKNotifications.h"
 #import "RKNetwork.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 extern NSString* cacheResponseCodeKey;
 extern NSString* cacheMIMETypeKey;
@@ -99,8 +104,8 @@ extern NSString* cacheURLKey;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {	
-    NSLog(@"NSHTTPURLResponse Status Code: %d", [response statusCode]);
-    NSLog(@"Headers: %@", [response allHeaderFields]);
+    RKLogDebug(@"NSHTTPURLResponse Status Code: %d", [response statusCode]);
+    RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
 }
 
