@@ -146,8 +146,7 @@
     }
     
     if (nil == result) {
-        // TODO: Logging macros
-        NSLog(@"GOT MAPPING ERRORS: %@", mapper.errors);
+        RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
         
         // TODO: Construct a composite error that wraps up all the other errors
         *error = [mapper.errors lastObject];

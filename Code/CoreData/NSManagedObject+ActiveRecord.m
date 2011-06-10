@@ -11,6 +11,11 @@
 #import <objc/runtime.h>
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectManager.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
 
 static NSUInteger const kActiveRecordDefaultBatchSize = 10;
 static NSNumber *defaultBatchSize = nil;
@@ -40,8 +45,7 @@ static NSNumber *defaultBatchSize = nil;
 	NSError* error = nil;
 	NSArray* objects = [[self managedObjectContext] executeFetchRequest:fetchRequest error:&error];
 	if (objects == nil) {
-		NSLog(@"Error: %@", [error localizedDescription]);
-		// TODO: Error handling
+		RKLogError(@"Error: %@", [error localizedDescription]);
 	}
 	return objects;
 }
@@ -138,21 +142,21 @@ static NSNumber *defaultBatchSize = nil;
 				{
 					if ([e respondsToSelector:@selector(userInfo)])
 					{
-						NSLog(@"Error Details: %@", [e userInfo]);
+						RKLogError(@"Error Details: %@", [e userInfo]);
 					}
 					else
 					{
-						NSLog(@"Error Details: %@", e);
+						RKLogError(@"Error Details: %@", e);
 					}
 				}
 			}
 			else
 			{
-				NSLog(@"Error: %@", detailedError);
+				RKLogError(@"Error: %@", detailedError);
 			}
 		}
-		NSLog(@"Error Domain: %@", [error domain]);
-		NSLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);	
+		RKLogError(@"Error Domain: %@", [error domain]);
+		RKLogError(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);	
 	}
 }
 
@@ -240,7 +244,7 @@ static NSNumber *defaultBatchSize = nil;
 			}
 			else
 			{
-				NSLog(@"Property '%@' not found in %@ properties for %@", propertyName, [propDict count], NSStringFromClass(self));
+				RKLogError(@"Property '%@' not found in %@ properties for %@", propertyName, [propDict count], NSStringFromClass(self));
 			}
 		}
 	}

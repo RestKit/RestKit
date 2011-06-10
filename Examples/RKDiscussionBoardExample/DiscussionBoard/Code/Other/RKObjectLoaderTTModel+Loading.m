@@ -8,19 +8,18 @@
 
 #import "RKObjectLoaderTTModel+Loading.h"
 
-
 @implementation RKObjectLoaderTTModel (Loading)
 
 - (void)requestDidStartLoad:(RKRequest*)request {
-	NSLog(@"Request Start Load");
+	RKLogDebug(@"Request Start Load");
 }
 
 - (void)request:(RKRequest*)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	NSLog(@"Request Did Send Body Data");
+	RKLogDebug(@"Request Did Send Body Data");
 }
 
 - (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response {
-	NSLog(@"Request Did Load Response");
+	RKLogDebug(@"Request Did Load Response");
 }
 
 @end

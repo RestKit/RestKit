@@ -37,11 +37,10 @@
 		250C29FE134185D2000A3551 /* RKNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C29FC134185D0000A3551 /* RKNetwork.m */; };
 		250D5BF013A0698100471F0E /* lcl.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BDB13A0698100471F0E /* lcl.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250D5BF113A0698100471F0E /* lcl.m in Sources */ = {isa = PBXBuildFile; fileRef = 250D5BDC13A0698100471F0E /* lcl.m */; };
-		250D5BF913A0698100471F0E /* lcl_config_logger.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BE813A0698100471F0E /* lcl_config_logger.h */; };
-		250D5BFA13A0698100471F0E /* LCLNSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BE913A0698100471F0E /* LCLNSLog.h */; };
+		250D5BFA13A0698100471F0E /* LCLNSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BE913A0698100471F0E /* LCLNSLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250D5BFB13A0698100471F0E /* LCLNSLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 250D5BEA13A0698100471F0E /* LCLNSLog.m */; };
-		250D5C0013A069C400471F0E /* lcl_config_components.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BFF13A069C400471F0E /* lcl_config_components.h */; };
-		250D5C0213A069EA00471F0E /* lcl_config_extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5C0113A069EA00471F0E /* lcl_config_extensions.h */; };
+		250D5C0013A069C400471F0E /* lcl_config_components.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BFF13A069C400471F0E /* lcl_config_components.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		250D5C0213A069EA00471F0E /* lcl_config_extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5C0113A069EA00471F0E /* lcl_config_extensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250D5C0413A06A4D00471F0E /* lcl_config_logger.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5C0313A06A4D00471F0E /* lcl_config_logger.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251899FC1370F4E00092B049 /* RKLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 251899FB1370F4E00092B049 /* RKLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251D14AC133597B800959061 /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 251D14AA133597B800959061 /* RKManagedObjectLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -109,7 +108,7 @@
 		257FB68913959884003A628E /* RKManagedObjectMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 257FB68613958786003A628E /* RKManagedObjectMappingSpec.m */; };
 		257FB6FF1395D36D003A628E /* RKObjectMapperError.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB6FE1395D36D003A628E /* RKObjectMapperError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257FB7061395DABB003A628E /* RKRequest_Internals.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7051395DABB003A628E /* RKRequest_Internals.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */; };
+		257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		257FB70A1395DC44003A628E /* RKManagedObjectMappingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 257FB7081395DC44003A628E /* RKManagedObjectMappingOperation.m */; };
 		258A92691379D18A00D80034 /* RKObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A92681379D18A00D80034 /* RKObjectFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258A926C1379D41F00D80034 /* RKManagedObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A926A1379D41F00D80034 /* RKManagedObjectFactory.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -236,9 +235,9 @@
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
 		3F1912A712DF6B4800C077AD /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F19129712DF6B4800C077AD /* CFNetwork.framework */; };
 		3F1912AF12DF6B6200C077AD /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */; };
-		3F278A40139D2AFF009AC3FA /* NSData+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F278A3A139D2AFF009AC3FA /* NSData+MD5.h */; };
+		3F278A40139D2AFF009AC3FA /* NSData+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F278A3A139D2AFF009AC3FA /* NSData+MD5.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		3F278A41139D2AFF009AC3FA /* NSData+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F278A3B139D2AFF009AC3FA /* NSData+MD5.m */; };
-		3F278A42139D2AFF009AC3FA /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F278A3C139D2AFF009AC3FA /* NSString+MD5.h */; };
+		3F278A42139D2AFF009AC3FA /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F278A3C139D2AFF009AC3FA /* NSString+MD5.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		3F278A43139D2AFF009AC3FA /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F278A3D139D2AFF009AC3FA /* NSString+MD5.m */; };
 		3F278A44139D2AFF009AC3FA /* RKRequestCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F278A3E139D2AFF009AC3FA /* RKRequestCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3F278A45139D2AFF009AC3FA /* RKRequestCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F278A3F139D2AFF009AC3FA /* RKRequestCache.m */; };
@@ -264,7 +263,7 @@
 		7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7377FBE11268E96300868752 /* RKManagedObjectCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */; };
-		73FE56C7126CB91600E0F30B /* RKURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 73FE56C4126CB91600E0F30B /* RKURL.h */; };
+		73FE56C7126CB91600E0F30B /* RKURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 73FE56C4126CB91600E0F30B /* RKURL.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		73FE56C8126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
 /* End PBXBuildFile section */
 
@@ -1450,14 +1449,14 @@
 				253A08DF125522E300976E89 /* RKRequestSerializable.h in Headers */,
 				253A08E0125522E300976E89 /* RKResponse.h in Headers */,
 				73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */,
-				73FE56C7126CB91600E0F30B /* RKURL.h in Headers */,
 				2538C05C12A6C44A0006903C /* RKRequestQueue.h in Headers */,
 				250C29FD134185D2000A3551 /* RKNetwork.h in Headers */,
 				3F278A44139D2AFF009AC3FA /* RKRequestCache.h in Headers */,
 				25A1CB3F138404CF00A7D5C9 /* RKRequestSerialization.h in Headers */,
-				257FB7061395DABB003A628E /* RKRequest_Internals.h in Headers */,
+				73FE56C7126CB91600E0F30B /* RKURL.h in Headers */,
 				3F278A40139D2AFF009AC3FA /* NSData+MD5.h in Headers */,
 				3F278A42139D2AFF009AC3FA /* NSString+MD5.h in Headers */,
+				257FB7061395DABB003A628E /* RKRequest_Internals.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1503,7 +1502,6 @@
 				251899FC1370F4E00092B049 /* RKLog.h in Headers */,
 				25A1CB4B138413E100A7D5C9 /* RKMIMETypes.h in Headers */,
 				250D5BF013A0698100471F0E /* lcl.h in Headers */,
-				250D5BF913A0698100471F0E /* lcl_config_logger.h in Headers */,
 				250D5BFA13A0698100471F0E /* LCLNSLog.h in Headers */,
 				250D5C0013A069C400471F0E /* lcl_config_components.h in Headers */,
 				250D5C0213A069EA00471F0E /* lcl_config_extensions.h in Headers */,

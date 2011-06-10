@@ -123,7 +123,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
         mapper.objectFactory = [RKManagedObjectFactory objectFactoryWithObjectStore:_manager.objectStore];
         RKObjectMappingResult* result = [mapper performMapping];
         if (result == nil) {
-            NSLog(@"Database seeding from file '%@' failed due to object mapping errors: %@", fileName, mapper.errors);
+            RKLogError(@"Database seeding from file '%@' failed due to object mapping errors: %@", fileName, mapper.errors);
             return;
         }
         
@@ -146,7 +146,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 - (void)finalizeSeedingAndExit {
 	NSError* error = [[_manager objectStore] save];
 	if (error != nil) {
-		NSLog(@"[RestKit] RKManagedObjectSeeder: Error saving object context: %@", [error localizedDescription]);
+		RKLogError(@"[RestKit] RKManagedObjectSeeder: Error saving object context: %@", [error localizedDescription]);
 	}
 	
 	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);

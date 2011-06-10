@@ -13,6 +13,11 @@
 #import "RKReachabilityObserver.h"
 #include <netdb.h>
 #include <arpa/inet.h>
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 // Constants
 NSString* const RKReachabilityStateChangedNotification = @"RKReachabilityStateChangedNotification";
@@ -163,7 +168,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	SCNetworkReachabilityContext context = {0, self, NULL, NULL, NULL};
 	if (SCNetworkReachabilitySetCallback(_reachabilityRef, ReachabilityCallback, &context)) {
 		if (NO == SCNetworkReachabilityScheduleWithRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
-			NSLog(@"Warning -- Unable to schedule reachability observer in current run loop.");
+			RKLogWarning(@"Warning -- Unable to schedule reachability observer in current run loop.");
 		}
 	}
 }

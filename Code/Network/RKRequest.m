@@ -214,7 +214,7 @@
 - (void)fireAsynchronousRequest {
     [self prepareURLRequest];
     NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-    NSLog(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+    RKLogDebug(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
     [body release];        
     
     _isLoading = YES;    
@@ -237,7 +237,7 @@
     _sentSynchronously = NO;
     if (self.cachePolicy & RKRequestCachePolicyEnabled) {
         if ([self.cache hasResponseForRequest:self]) {
-            NSLog(@"Found cached content, loading...");
+            RKLogDebug(@"Found cached content, loading...");
             _isLoading = YES;
             [self didFinishLoad:[self.cache responseForRequest:self]];
             return;
@@ -260,11 +260,11 @@
                                                        object:nil];
             [self fireAsynchronousRequest];
         } else if (self.backgroundPolicy == RKRequestBackgroundPolicyContinue) {
-            NSLog(@"Beginning background task to perform processing...");
+            RKLogInfo(@"Beginning background task to perform processing...");
             
             // Fork a background task for continueing a long-running request
             _backgroundTaskIdentifier = [app beginBackgroundTaskWithExpirationHandler:^{
-                NSLog(@"Background request time expired, canceling request.");
+                RKLogInfo(@"Background request time expired, canceling request.");
                 
                 [self cancelAndInformDelegate:NO];
                 [self cleanupBackgroundTask];
@@ -308,7 +308,7 @@
 	if ([self shouldDispatchRequest]) {
 		[self prepareURLRequest];
 		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-		NSLog(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
+		RKLogDebug(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
 		[body release];
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];

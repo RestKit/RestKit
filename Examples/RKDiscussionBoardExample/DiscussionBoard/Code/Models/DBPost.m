@@ -48,10 +48,10 @@
 	// NOTE - Since we have side-stepped the router, we need to
 	// nest the param names under the model name ourselves
 	[params setValue:self.body forParam:@"post[body]"];
-	NSLog(@"Self Body: %@", self.body);
+	RKLogDebug(@"Self Body: %@", self.body);
 	if (_newAttachment) {
 		NSData* data = UIImagePNGRepresentation(_newAttachment);
-		NSLog(@"Data Size: %d", [data length]);
+		RKLogDebug(@"Data Size: %d", [data length]);
 		RKParamsAttachment* attachment = [params setData:data MIMEType:@"application/octet-stream" forParam:@"post[attachment]"];
 		attachment.fileName = @"image.png";
 	}

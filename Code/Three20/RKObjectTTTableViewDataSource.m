@@ -9,6 +9,7 @@
 #import "RKObjectTTTableViewDataSource.h"
 #import "RKMappableObjectTableItem.h"
 #import "RKObjectLoaderTTModel.h"
+#import "RKLog.h"
 
 @implementation RKObjectTTTableViewDataSource
 
@@ -81,7 +82,7 @@
             if (success) {
                 return tableItem;
             } else {
-                NSLog(@"ERROR: Unable to map object to table item: %@", error);
+                RKLogError(@"Unable to map object to table item: %@", error);
             }
         }
         

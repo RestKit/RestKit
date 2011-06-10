@@ -9,6 +9,11 @@
 #import "RKManagedObjectStore.h"
 #import "RKAlert.h"
 #import "NSManagedObject+ActiveRecord.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
 
 NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
@@ -140,14 +145,14 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     if (NO == [[NSFileManager defaultManager] fileExistsAtPath:self.pathToStoreFile]) {
         NSString* seedDatabasePath = [[NSBundle mainBundle] pathForResource:seedDatabase ofType:nil];
         NSAssert1(seedDatabasePath, @"Unable to find seed database file '%@' in the Main Bundle, aborting...", seedDatabase);
-        NSLog(@"No existing database found, copying from seed path '%@'", seedDatabasePath);
+        RKLogInfo(@"No existing database found, copying from seed path '%@'", seedDatabasePath);
 		
 		NSError* error;
         if (![[NSFileManager defaultManager] copyItemAtPath:seedDatabasePath toPath:self.pathToStoreFile error:&error]) {
 			if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToCopySeedDatabase:error:)]) {
 				[self.delegate managedObjectStore:self didFailToCopySeedDatabase:seedDatabase error:error];
 			} else {
-				NSLog(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
+				RKLogError(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
 			}
         }
         NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:seedDatabasePath], @"Seed database not found at path '%@'!", seedDatabasePath);
@@ -302,7 +307,7 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
         [fetchRequest setEntity:entity];
         [fetchRequest setReturnsObjectsAsFaults:NO];			
         objects = [NSManagedObject executeFetchRequest:fetchRequest];
-        NSLog(@"Caching all %d %@ objects to thread local storage", [objects count], entity.name);
+        RKLogInfo(@"Caching all %d %@ objects to thread local storage", [objects count], entity.name);
         NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
         for (id theObject in objects) {			
             id primaryKeyValue = [theObject valueForKey:primaryKeyAttribute];

@@ -163,7 +163,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// Initialize authenticated access if we have a logged in current User reference
 	DBUser* user = [DBUser currentUser];
 	if ([user isLoggedIn]) {
-		NSLog(@"Found logged in User record for username '%@' [Access Token: %@]", user.username, user.singleAccessToken);
+		RKLogInfo(@"Found logged in User record for username '%@' [Access Token: %@]", user.username, user.singleAccessToken);
 		[objectManager.client setValue:user.singleAccessToken forHTTPHeaderField:kDBAccessTokenHTTPHeaderField];
 	}
 	
