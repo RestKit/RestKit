@@ -62,7 +62,7 @@
          <EnvironmentVariable
             key = "UISPEC_SPEC"
             value = "RKObjectMappingNextGenSpec"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -87,12 +87,12 @@
          <EnvironmentVariable
             key = "UISPEC_SPEC"
             value = "RKManagedObjectFactorySpec"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
             value = "itShouldFindExistingManagedObjectsByPrimaryKey"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

@@ -72,17 +72,6 @@ static RKObjectManager* sharedManager = nil;
 	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL] autorelease];
 	if (nil == sharedManager) {
 		[RKObjectManager setSharedManager:manager];
-        
-        // TODO: Temporary. Initialize logging...
-        LoggerSetOptions(NULL,						// configure the default logger
-                         kLoggerOption_LogToConsole | 
-                         kLoggerOption_BufferLogsUntilConnection |
-                         kLoggerOption_UseSSL |
-                         kLoggerOption_BrowseBonjour |
-                         kLoggerOption_BrowseOnlyLocalDomain);
-        LoggerStart(LoggerGetDefaultLogger());
-        LogMessage(@"Object Mapping", 10, @"Object Manager initialized...");
-        LoggerFlush(NULL, NO);
 	}
 	return manager;
 }

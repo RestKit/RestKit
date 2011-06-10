@@ -14,6 +14,11 @@
 #import "RKManagedObjectStore.h"
 #import "RKManagedObjectFactory.h"
 #import "../ObjectMapping/RKParserRegistry.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
 
 @interface RKManagedObjectSeeder (Private)
 - (NSString *)mimeTypeForExtension:(NSString *)extension;
@@ -132,9 +137,9 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
             }
         }
         
-		NSLog(@"[RestKit] RKManagedObjectSeeder: Seeded %d objects from %@...", [mappedObjects count], [NSString stringWithFormat:@"%@", fileName]);
+		RKLogInfo(@"Seeded %d objects from %@...", [mappedObjects count], [NSString stringWithFormat:@"%@", fileName]);
 	} else {
-		NSLog(@"Unable to read file %@: %@", fileName, [error localizedDescription]);
+		RKLogError(@"Unable to read file %@: %@", fileName, [error localizedDescription]);
 	}
 }
 
@@ -148,7 +153,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 	NSString* basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
 	NSString* storeFileName = [[_manager objectStore] storeFilename];
 	NSString* destinationPath = [basePath stringByAppendingPathComponent:storeFileName];
-	NSLog(@"[RestKit] RKManagedObjectSeeder: A seeded database has been generated at '%@'. "
+	RKLogInfo(@"A seeded database has been generated at '%@'. "
           @"Please execute `open \"%@\"` in your Terminal and copy %@ to your app. Be sure to add the seed database to your \"Copy Resources\" build phase.", 
           destinationPath, basePath, storeFileName);
 	

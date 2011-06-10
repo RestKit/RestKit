@@ -16,8 +16,12 @@
 #import "RKURL.h"
 #import "NSData+MD5.h"
 #import "NSString+MD5.h"
-#import "Logging.h"
+#import "RKLog.h"
 #import "RKRequestCache.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 @implementation RKRequest
 
@@ -372,8 +376,8 @@
   	_isLoading = NO;
   	_isLoaded = YES;
     
-    RKLOG_NETWORK(RKLogLevelInfo, @"Status Code: %d", [response statusCode]);
-    RKLOG_NETWORK(RKLogLevelInfo, @"Body: %@", [response bodyAsString]);
+    RKLogInfo(@"Status Code: %d", [response statusCode]);
+    RKLogInfo(@"Body: %@", [response bodyAsString]);
 
 	RKResponse* finalResponse = response;
 

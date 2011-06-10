@@ -8,11 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-
+/**
+ A destination class for mapping simple remote error messages.
+ */
 @interface RKErrorMessage : NSObject {
     NSString* _errorMessage;
 }
 
+/**
+ The error message string mapped from the response payload
+ */
 @property (nonatomic, retain) NSString* errorMessage;
 
 @end

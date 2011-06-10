@@ -12,7 +12,11 @@
 #import "RKObjectSerializer.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKParserRegistry.h"
-#import "Logging.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitObjectMapping
 
 @implementation RKObjectSerializer
 
@@ -86,7 +90,7 @@
     }
     
     if (transformedValue) {
-        RKLOG_MAPPING(RKLogLevelDebug, @"Serialized %@ value at keyPath to %@ (%@)", NSStringFromClass([value class]), NSStringFromClass([transformedValue class]), value);
+        RKLogDebug(@"Serialized %@ value at keyPath to %@ (%@)", NSStringFromClass([value class]), NSStringFromClass([transformedValue class]), value);
         [operation.destinationObject setValue:transformedValue forKey:keyPath];
     }
 }
