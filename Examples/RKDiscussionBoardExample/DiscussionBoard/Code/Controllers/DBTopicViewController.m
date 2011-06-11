@@ -7,8 +7,8 @@
 //
 
 #import "DBTopicViewController.h"
-#import "DBTopic.h"
-#import "DBUser.h"
+#import "../Models/DBTopic.h"
+#import "../Models/DBUser.h"
 
 @implementation DBTopicViewController
 

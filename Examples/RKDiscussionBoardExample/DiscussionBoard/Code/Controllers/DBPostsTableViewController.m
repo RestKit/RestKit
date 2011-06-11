@@ -8,8 +8,8 @@
 
 #import <RestKit/Three20/Three20.h>
 #import "DBPostsTableViewController.h"
-#import "DBPost.h"
-#import "DBUser.h"
+#import "../Models/DBPost.h"
+#import "../Models/DBUser.h"
 
 @implementation DBPostsTableViewController
 
@@ -37,9 +37,10 @@
 	[super loadView];
 
 	self.variableHeightRows = YES;
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-																							target:self
-																							action:@selector(addButtonWasPressed:)] autorelease];
+	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
+                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                               target:self
+                                               action:@selector(addButtonWasPressed:)] autorelease];
 }
 
 - (void)addButtonWasPressed:(id)sender {

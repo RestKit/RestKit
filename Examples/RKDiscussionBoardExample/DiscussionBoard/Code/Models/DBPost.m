@@ -18,13 +18,9 @@
 @dynamic attachmentPath;
 @dynamic attachmentUpdatedAt;
 @dynamic body;
-@dynamic createdAt;
 @dynamic topicID;
-@dynamic updatedAt;
-@dynamic userID;
 @dynamic postID;
 @dynamic username;
-@dynamic user;
 @dynamic topic;
 
 @synthesize newAttachment = _newAttachment;
