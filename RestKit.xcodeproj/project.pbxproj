@@ -289,13 +289,6 @@
 			remoteGlobalIDString = C7D4F29310BDA39C00B00019;
 			remoteInfo = Specs;
 		};
-		250F884813337F89002F4590 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259D5548132856A400897272 /* UISpec.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C7D4F29310BDA39C00B00019;
-			remoteInfo = Specs;
-		};
 		255B758E133BABCD00ED76AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -351,20 +344,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
 			remoteInfo = RestKit;
-		};
-		258C6838133CDF97004388A4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259D5548132856A400897272 /* UISpec.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = C76EB5D10F74586B00EF8398;
-			remoteInfo = UISpec;
-		};
-		259D5551132856A400897272 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 259D5548132856A400897272 /* UISpec.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
-			remoteInfo = UISpec;
 		};
 		259DF789134029BB00233DF4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -594,7 +573,7 @@
 		259D5133132854A700897272 /* RKSpecEnvironment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSpecEnvironment.h; sourceTree = "<group>"; };
 		259D5134132854A700897272 /* RKSpecResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSpecResponseLoader.h; sourceTree = "<group>"; };
 		259D5135132854A700897272 /* RKSpecResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSpecResponseLoader.m; sourceTree = "<group>"; };
-		259D5548132856A400897272 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<group>"; };
+		259D5548132856A400897272 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = UISpec/UISpec.xcodeproj; sourceTree = "<group>"; };
 		259D5557132856D700897272 /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
 		259D56B4132E706D00897272 /* RKAuthenticationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKAuthenticationSpec.m; sourceTree = "<group>"; };
 		259D56BB132E84B300897272 /* RKSpecEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSpecEnvironment.m; sourceTree = "<group>"; };
@@ -1372,15 +1351,6 @@
 			path = OCMock;
 			sourceTree = "<group>";
 		};
-		259D5549132856A400897272 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				259D5552132856A400897272 /* libUISpec.a */,
-				250F884913337F89002F4590 /* Specs.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		259DF7841340294400233DF4 /* XML */ = {
 			isa = PBXGroup;
 			children = (
@@ -1739,7 +1709,6 @@
 			);
 			dependencies = (
 				258C6837133CDF97004388A4 /* PBXTargetDependency */,
-				258C6839133CDF97004388A4 /* PBXTargetDependency */,
 			);
 			name = UISpec;
 			productName = "UI Spec";
@@ -1791,10 +1760,6 @@
 					ProductGroup = 250BC42C11F6260100F3FE5A /* Products */;
 					ProjectRef = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
 				},
-				{
-					ProductGroup = 259D5549132856A400897272 /* Products */;
-					ProjectRef = 259D5548132856A400897272 /* UISpec.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -1833,20 +1798,6 @@
 			fileType = wrapper.application;
 			path = Specs.app;
 			remoteRef = 250BC43611F6260100F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250F884913337F89002F4590 /* Specs.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = Specs.app;
-			remoteRef = 250F884813337F89002F4590 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		259D5552132856A400897272 /* libUISpec.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libUISpec.a;
-			remoteRef = 259D5551132856A400897272 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -2150,11 +2101,6 @@
 			isa = PBXTargetDependency;
 			target = 255B7588133BABBF00ED76AD /* RestKit */;
 			targetProxy = 258C6836133CDF97004388A4 /* PBXContainerItemProxy */;
-		};
-		258C6839133CDF97004388A4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UISpec;
-			targetProxy = 258C6838133CDF97004388A4 /* PBXContainerItemProxy */;
 		};
 		259DF78A134029BB00233DF4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
