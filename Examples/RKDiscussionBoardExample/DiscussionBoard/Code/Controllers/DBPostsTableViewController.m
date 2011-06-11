@@ -37,9 +37,10 @@
 	[super loadView];
 
 	self.variableHeightRows = YES;
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-																							target:self
-																							action:@selector(addButtonWasPressed:)] autorelease];
+	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
+                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                               target:self
+                                               action:@selector(addButtonWasPressed:)] autorelease];
 }
 
 - (void)addButtonWasPressed:(id)sender {
