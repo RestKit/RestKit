@@ -160,6 +160,7 @@
 }
 
 - (void)itShouldCacheTheRequestHeadersAndBodyIncludingOurOwnCustomTimestampHeader {
+    RKLogConfigureByName("RestKit/Network/Cache", RKLogLevelTrace);
     NSString* baseURL = RKSpecGetBaseURL();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
 								   [[NSURL URLWithString:baseURL] host]];

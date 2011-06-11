@@ -1138,6 +1138,7 @@
     user.userID = [NSNumber numberWithInt:1];
     
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    loader.timeout = 5;
     [objectManager getObject:user delegate:loader];
     [loader waitForResponse];
     assertThatBool(loader.success, is(equalToBool(YES)));

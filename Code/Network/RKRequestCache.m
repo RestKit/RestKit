@@ -11,7 +11,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitNetwork
+#define RKLogComponent lcl_cRestKitNetworkCache
 
 static NSString* sessionCacheFolder = @"SessionStore";
 static NSString* permanentCacheFolder = @"PermanentStore";
@@ -59,7 +59,9 @@ static NSDateFormatter* __rfc1123DateFormatter;
 															error:&error];
 				if (!created || error != nil) {
 					RKLogError(@"Failed to create cache directory at %@: error %@", path, [error localizedDescription]);
-				}
+				} else {
+                    RKLogDebug(@"Created cache storage at path '%@'", path);
+                }
 			} else if (!isDirectory) {
 				RKLogWarning(@"Failed to create cache directory: Directory already exists: %@", path);
 			}
@@ -99,6 +101,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	}
 
 	[_cacheLock unlock];
+    RKLogTrace(@"Found cachePath '%@' for %@", pathForRequest, request);
+    
 	return pathForRequest;
 }
 
@@ -116,12 +120,13 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	[fileManager release];
 
 	[_cacheLock unlock];
+    RKLogTrace(@"Determined hasResponseForRequest: %@ => %@", request, hasEntryForRequest ? @"YES" : @"NO");
 	return hasEntryForRequest;
 }
 
 - (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request {
 	[_cacheLock lock];
-
+    
 	if ([self hasResponseForRequest:request]) {
 		[self invalidateRequest:request];
 	}
@@ -131,7 +136,13 @@ static NSDateFormatter* __rfc1123DateFormatter;
 		if (cachePath) {
 			NSData* body = response.body;
 			if (body) {
-				[body writeToFile:cachePath atomically:NO];
+				BOOL success = [body writeToFile:cachePath atomically:NO];
+                if (success) {
+                    RKLogTrace(@"Wrote cached response body to path '%@'", cachePath);
+                    
+                } else {
+                    RKLogError(@"Failed to write cached response body to path '%@'", cachePath);
+                }
 			}
 
 			NSMutableDictionary* headers = [response.allHeaderFields mutableCopy];
@@ -147,13 +158,21 @@ static NSDateFormatter* __rfc1123DateFormatter;
                 // Cache MIME Type
                 [headers setObject:urlResponse.MIMEType
 							forKey:cacheMIMETypeKey];
-//                // Cache URL
+                // Cache URL
                 [headers setObject:[urlResponse.URL absoluteString]
 							forKey:cacheURLKey];
                 // Save
-                [headers writeToFile:[cachePath stringByAppendingPathExtension:headersExtension]
-						  atomically:YES];
+                BOOL success = [headers writeToFile:[cachePath
+                                                     stringByAppendingPathExtension:headersExtension]
+                                         atomically:YES];
+                if (success) {
+                    RKLogTrace(@"Wrote cached response header to path '%@'", cachePath);
+                    
+                } else {
+                    RKLogError(@"Failed to write cached response headers to path '%@'", cachePath);
+                }
 			}
+            
 			[headers release];
 		}
 	}
@@ -177,6 +196,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	}
 
 	[_cacheLock unlock];
+    RKLogDebug(@"Found cached RKResponse '%@' for '%@'", request, response);
 	return response;
 }
 
@@ -187,10 +207,18 @@ static NSDateFormatter* __rfc1123DateFormatter;
     
     NSDictionary* headers = nil;
     if (cachePath) {
-        headers = [NSDictionary dictionaryWithContentsOfFile:
-                                 [cachePath stringByAppendingPathExtension:headersExtension]];
+        NSString* headersPath = [cachePath stringByAppendingPathExtension:headersExtension];
+        headers = [NSDictionary dictionaryWithContentsOfFile:headersPath];
+        if (headers) {
+            RKLogDebug(@"Read cached headers '%@' from cachePath '%@' for '%@'", headers, headersPath, request);
+        } else {
+            RKLogDebug(@"Read nil cached headers from cachePath '%@' for '%@'", headersPath, request);
+        }
+    } else {
+        RKLogDebug(@"Unable to read cached headers for '%@': cachePath not found", request);
     }
-    [_cacheLock unlock];
+    
+    [_cacheLock unlock];    
     return headers;
 }
 
@@ -209,12 +237,14 @@ static NSDateFormatter* __rfc1123DateFormatter;
     }
 
 	[_cacheLock unlock];
+    RKLogDebug(@"Found cached ETag '%@' for '%@'", etag, request);
 	return etag;
 }
 
 - (void)invalidateRequest:(RKRequest*)request {
 	[_cacheLock lock];
-
+    RKLogDebug(@"Invalidating cache entry for '%@'", request);
+    
 	NSString* cachePath = [self pathForRequest:request];
 	if (cachePath) {
 		NSFileManager* fileManager = [[NSFileManager alloc] init];
@@ -222,6 +252,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 		[fileManager removeItemAtPath:[cachePath stringByAppendingPathExtension:headersExtension]
 																		  error:NULL];
 		[fileManager release];
+        RKLogTrace(@"Removed cache entry at path '%@' for '%@'", cachePath, request);
 	}
 
 	[_cacheLock unlock];
@@ -237,7 +268,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
 		} else {
 			cachePath = [_cachePath stringByAppendingPathComponent:permanentCacheFolder];
 		}
-
+        
+        RKLogInfo(@"Invalidating cache at path: %@", cachePath);
 		NSFileManager* fileManager = [[NSFileManager alloc] init];
 
 		BOOL isDirectory = NO;
@@ -270,7 +302,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
 
 - (void)invalidateAll {
 	[_cacheLock lock];
-
+    
+    RKLogInfo(@"Invalidating all cache entries...");
 	[self invalidateWithStoragePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
 	[self invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
 

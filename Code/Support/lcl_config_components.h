@@ -39,5 +39,6 @@
 
 _lcl_component(RestKit,                 "restkit",                  "RestKit")
 _lcl_component(RestKitNetwork,          "restkit.network",          "RestKit/Network")
+_lcl_component(RestKitNetworkCache,     "restkit.network.cache",    "RestKit/Network/Cache")
 _lcl_component(RestKitObjectMapping,    "restkit.object_mapping",   "RestKit/ObjectMapping")
 _lcl_component(RestKitCoreData,         "restkit.core_data",        "RestKit/CoreData")
