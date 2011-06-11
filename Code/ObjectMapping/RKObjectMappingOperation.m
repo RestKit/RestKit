@@ -115,7 +115,7 @@
         return [value stringValue];
     }
     
-    RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", NSStringFromClass([value class]), NSStringFromClass(destinationType));
+    RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     
     return nil;
 }
@@ -204,7 +204,7 @@
             if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotFindMappingForKeyPath:)]) {
                 [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
             }
-            RKLogWarning(@"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
+            RKLogTrace(@"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
             
             // Optionally set nil for missing values
             if ([self.objectMapping setNilForMissingAttributes]) {

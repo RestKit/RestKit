@@ -23,18 +23,19 @@
         
         RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
         
-        RKObjectMapping* taskMapping = [RKObjectMapping mappingForClass:[Task class]];
+        RKManagedObjectMapping* taskMapping = [RKManagedObjectMapping mappingForClass:[Task class]];
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
         [provider setMapping:taskMapping forKeyPath:@"task"];
         
-        RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[User class]];
+        RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class]];
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
         [userMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
         [provider setMapping:userMapping forKeyPath:@"user"];
         
+        // NOTE - Project is not backed by Core Data
         RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
         [projectMapping mapKeyPath:@"id" toAttribute:@"projectID"];
         [projectMapping mapAttributes:@"name", @"description", nil];

@@ -221,7 +221,7 @@ uint32_t lcl_configure_by_name(const char *name, _lcl_level_t level);
 
 
 // Active log levels, indexed by log component.
-_lcl_level_narrow_t _lcl_component_level[_lcl_component_t_count];
+__attribute__((visibility("default"))) _lcl_level_narrow_t _lcl_component_level[_lcl_component_t_count];
 
 // Log component identifiers, indexed by log component.
 extern const char * const _lcl_component_identifier[_lcl_component_t_count];

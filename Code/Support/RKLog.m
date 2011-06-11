@@ -1,12 +1,12 @@
 //
-//  RKLog.c
+//  RKLog.m
 //  RestKit
 //
 //  Created by Blake Watters on 6/10/11.
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#include "RKLog.h"
+#import "RKLog.h"
 
 static BOOL loggingInitialized = NO;
 
