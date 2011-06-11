@@ -34,3 +34,4 @@ Contributors
 * Peter Marks       (tassock)
 * Chad Podoski      (chadpod)
 * Andras Hatvani    (andrashatvani)
+* Ed McManus        (emcmanus)
