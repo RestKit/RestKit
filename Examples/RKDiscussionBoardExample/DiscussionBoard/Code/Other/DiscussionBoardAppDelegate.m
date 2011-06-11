@@ -18,15 +18,15 @@
 #import <Three20/Three20+Additions.h>
 
 // Discussion Board
-#import "DBTopicsTableViewController.h"
-#import "DBTopic.h"
-#import "DBPostsTableViewController.h"
-#import "DBPost.h"
 #import "DBManagedObjectCache.h"
-#import "DBTopicViewController.h"
-#import "DBLoginOrSignUpViewController.h"
-#import "DBUser.h"
-#import "DBPostTableViewController.h"
+#import "../Controllers/DBTopicViewController.h"
+#import "../Controllers/DBTopicsTableViewController.h"
+#import "../Controllers/DBPostsTableViewController.h"
+#import "../Controllers/DBPostTableViewController.h"
+#import "../Controllers/DBLoginOrSignUpViewController.h"
+#import "../Models/DBTopic.h"
+#import "../Models/DBPost.h"
+#import "../Models/DBUser.h"
 
 /**
  * The HTTP Header Field we transmit the authentication token obtained
