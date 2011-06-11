@@ -11,10 +11,17 @@
 @implementation RKObjectRelationshipMapping
 
 @synthesize objectMapping = _objectMapping;
+@synthesize reversible = _reversible;
 
-+ (RKObjectRelationshipMapping*) mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath objectMapping:(RKObjectMapping*)objectMapping {
++ (RKObjectRelationshipMapping*) mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath objectMapping:(RKObjectMapping*)objectMapping reversible:(BOOL)reversible {
     RKObjectRelationshipMapping* mapping = (RKObjectRelationshipMapping*) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
     mapping.objectMapping = objectMapping;
+    mapping.reversible = reversible;
+    return mapping;
+}
+
++ (RKObjectRelationshipMapping*) mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath objectMapping:(RKObjectMapping*)objectMapping {
+    RKObjectRelationshipMapping* mapping = [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath objectMapping:objectMapping reversible:YES];
     return mapping;
 }
 

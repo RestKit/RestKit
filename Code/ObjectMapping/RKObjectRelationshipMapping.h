@@ -13,10 +13,14 @@
 
 @interface RKObjectRelationshipMapping : RKObjectAttributeMapping {
     RKObjectMapping* _objectMapping;
+    BOOL _reversible;
 }
 
 @property (nonatomic, retain) RKObjectMapping* objectMapping;
+@property (nonatomic, assign) BOOL reversible;
 
 + (RKObjectRelationshipMapping*) mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath objectMapping:(RKObjectMapping*)objectMapping;
+
++ (RKObjectRelationshipMapping*) mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath objectMapping:(RKObjectMapping*)objectMapping reversible:(BOOL)reversible;
 
 @end

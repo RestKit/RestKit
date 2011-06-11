@@ -111,9 +111,13 @@
     [self mapAttributesSet:attributeKeyPaths];
 }
 
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping {
-    RKObjectRelationshipMapping* mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath objectMapping:objectMapping];
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping serialize:(BOOL)serialize {
+    RKObjectRelationshipMapping* mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath objectMapping:objectMapping reversible:serialize];
     [self addRelationshipMapping:mapping];
+}
+
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping {
+    [self mapKeyPath:relationshipKeyPath toRelationship:keyPath withObjectMapping:objectMapping serialize:YES];
 }
 
 - (void)mapRelationship:(NSString*)relationshipKeyPath withObjectMapping:(RKObjectMapping*)objectMapping {
@@ -146,17 +150,27 @@
     [self removeMapping:mapping];
 }
 
-- (RKObjectMapping*)inverseMapping {
+#ifndef MAX_INVERSE_MAPPING_RECURSION_DEPTH
+#define MAX_INVERSE_MAPPING_RECURSION_DEPTH (100)
+#endif
+- (RKObjectMapping*)inverseMappingAtDepth:(NSInteger)depth {
+    NSAssert(depth < MAX_INVERSE_MAPPING_RECURSION_DEPTH, @"Exceeded max recursion level in inverseMapping. This is likely due to a loop in the serialization graph. To break this loop, specify one-way relationships by setting serialize to NO in mapKeyPath:toRelationship:withObjectMapping:serialize:");
     RKObjectMapping* inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     for (RKObjectAttributeMapping* attributeMapping in self.attributeMappings) {
         [inverseMapping mapKeyPath:attributeMapping.destinationKeyPath toAttribute:attributeMapping.sourceKeyPath];
     }
     
     for (RKObjectRelationshipMapping* relationshipMapping in self.relationshipMappings) {
-        [inverseMapping mapKeyPath:relationshipMapping.destinationKeyPath toRelationship:relationshipMapping.sourceKeyPath withObjectMapping:[relationshipMapping.objectMapping inverseMapping]];
+        if (relationshipMapping.reversible) {   
+            [inverseMapping mapKeyPath:relationshipMapping.destinationKeyPath toRelationship:relationshipMapping.sourceKeyPath withObjectMapping:[relationshipMapping.objectMapping inverseMappingAtDepth:depth+1]];
+        }
     }
     
     return inverseMapping;
+}
+
+- (RKObjectMapping*)inverseMapping {
+    return [self inverseMappingAtDepth:0];
 }
 
 - (void)mapKeyPathsToAttributes:(NSString*)firstKeyPath, ... {

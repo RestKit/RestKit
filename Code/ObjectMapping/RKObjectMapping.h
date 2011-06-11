@@ -214,6 +214,21 @@ relationship. Relationships are processed using an object mapping as well.
 - (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString*)destinationRelationship withObjectMapping:(RKObjectMapping *)objectMapping;
 
 /**
+ Instantiate and add an RKObjectRelationshipMapping instance targeting a keyPath within the mappable
+ source data to a relationship property on the target object. 
+ 
+ Used to indicate whether the relationship should be included in serialization.
+
+ @param sourceKeyPath A key-value coding keyPath to fetch the mappable value from
+ @param destinationRelationship The relationship name to assign the mapped value to
+ @param objectMapping An object mapping to use when processing the nested objects
+ @param serialize A boolean value indicating whether to include this relationship in serialization
+ 
+ @see mapKeyPath:toRelationship:withObjectMapping:
+ */
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping serialize:(BOOL)serialize;
+
+/**
  Quickly define a group of attribute mappings using alternating keyPath and attribute names. You must provide
  an equal number of keyPath and attribute pairs or an exception will be generated.
  
