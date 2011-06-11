@@ -23,8 +23,8 @@
 	return self;
 }
 
-- (void)createModel {
-	[super createModel];
+- (void)loadView {
+	[super loadView];
 
 	UIBarButtonItem* item = nil;
 	if ([[DBUser currentUser] isLoggedIn]) {
