@@ -8,8 +8,8 @@
 
 #import <RestKit/Three20/Three20.h>
 #import "DBPostsTableViewController.h"
-#import "DBPost.h"
-#import "DBUser.h"
+#import "../Models/DBPost.h"
+#import "../Models/DBUser.h"
 
 @implementation DBPostsTableViewController
 

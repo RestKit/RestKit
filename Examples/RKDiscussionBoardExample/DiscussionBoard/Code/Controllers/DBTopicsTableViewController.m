@@ -8,8 +8,8 @@
 
 #import <Three20/Three20+Additions.h>
 #import "DBTopicsTableViewController.h"
-#import "DBTopic.h"
-#import "DBUser.h"
+#import "../Models/DBTopic.h"
+#import "../Models/DBUser.h"
 
 @implementation DBTopicsTableViewController
 
