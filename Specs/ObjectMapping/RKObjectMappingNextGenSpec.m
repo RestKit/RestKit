@@ -1113,7 +1113,7 @@
     [dictionary removeObjectForKey:@"address"];    
     id mockMapping = [OCMockObject partialMockForObject:userMapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] ssetNilForMissingRelationships];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingRelationships];
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockUser objectMapping:mockMapping];
     
     NSError* error = nil;

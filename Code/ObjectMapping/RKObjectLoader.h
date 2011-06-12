@@ -16,12 +16,7 @@
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
 @required
-/**
- * Sent when an object loaded failed to load the collection due to an error
- */
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error;
 
-@optional
 /**
  * Sent when an object loaded failed to load the collection due to an error
  */

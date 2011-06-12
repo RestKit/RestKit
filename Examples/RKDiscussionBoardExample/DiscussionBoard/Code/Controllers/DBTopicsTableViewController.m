@@ -16,12 +16,13 @@
 - (id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query {
 	if (self = [super initWithNavigatorURL:URL query:query]) {
 		self.title = @"Topics";
-		_tableTitleHeaderLabel.text = @"Recent Topics";
 	}
 	return self;
 }
 
-- (void)createModel {
+- (void)loadView {
+    [super loadView];
+    
     /**
      Map loaded objects into Three20 Table Item instances!
      */
