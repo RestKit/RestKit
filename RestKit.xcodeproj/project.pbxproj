@@ -208,9 +208,9 @@
 		25A1CA87137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CA85137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		25A1CA88137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CA86137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.m */; };
 		25A1CA8A137DD33900A7D5C9 /* RKObjectLoader_Internals.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CA89137DD33800A7D5C9 /* RKObjectLoader_Internals.h */; };
-		25A1CB36137F5C6300A7D5C9 /* RKJSONParserYAJL.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB35137F5C6300A7D5C9 /* RKJSONParserYAJL.h */; };
-		25A1CB38137F5C7800A7D5C9 /* RKJSONParserSBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB37137F5C7700A7D5C9 /* RKJSONParserSBJSON.h */; };
-		25A1CB3A137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB39137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h */; };
+		25A1CB36137F5C6300A7D5C9 /* RKJSONParserYAJL.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB35137F5C6300A7D5C9 /* RKJSONParserYAJL.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25A1CB38137F5C7800A7D5C9 /* RKJSONParserSBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB37137F5C7700A7D5C9 /* RKJSONParserSBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25A1CB3A137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB39137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A1CB3F138404CF00A7D5C9 /* RKRequestSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB3B1383F7DF00A7D5C9 /* RKRequestSerialization.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A1CB40138404EB00A7D5C9 /* RKRequestSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CB3C1383F7E100A7D5C9 /* RKRequestSerialization.m */; };
 		25A1CB4313840C5400A7D5C9 /* RKParserRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB4113840C5100A7D5C9 /* RKParserRegistry.h */; settings = {ATTRIBUTES = (Public, ); }; };
