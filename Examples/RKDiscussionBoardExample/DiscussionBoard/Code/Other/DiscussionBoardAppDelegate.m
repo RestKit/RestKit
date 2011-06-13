@@ -11,6 +11,9 @@
 // RestKit
 #import <RestKit/RestKit.h>
 #import <RestKit/CoreData/CoreData.h>
+#import <RestKit/Support/JSON/JSONKit/RKJSONParserJSONKit.h>
+#import <RestKit/Support/JSON/SBJSON/RKJSONParserSBJSON.h>
+#import <RestKit/Support/JSON/YAJL/RKJSONParserYAJL.h>
 
 // Three20
 #import <Three20/Three20.h>

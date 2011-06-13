@@ -6,7 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKParser.h"
+#import "../../RKParser.h"
 
 @interface RKJSONParserJSONKit : NSObject <RKParser> {
 }
