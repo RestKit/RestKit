@@ -10,6 +10,7 @@
 #import "RKNotifications.h"
 #import "RKNetwork.h"
 #import "RKLog.h"
+#import "RKParserRegistry.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -143,11 +144,19 @@ extern NSString* cacheURLKey;
 	return [[[NSString alloc] initWithData:self.body encoding:NSUTF8StringEncoding] autorelease];
 }
 
-// TODO: Reimplement as parsedBody
 - (id)bodyAsJSON {
-    [NSException raise:nil format:@"Reimplemented as parsedBody!!!"];
-//	return [[[[RKJSONParser alloc] init] autorelease] objectFromString:[self bodyAsString]];
+    [NSException raise:nil format:@"Reimplemented as parsedBody"];
     return nil;
+}
+
+- (id)parsedBody:(NSError*)error {
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:[self contentType]];
+    id object = [parser objectFromString:[self bodyAsString] error:&error];
+    if (error == nil) {
+        RKLogError(@"Unable to parse response body: %@", [error localizedDescription]);
+        return nil;
+    }
+    return object;
 }
 
 - (NSString*)failureErrorDescription {
