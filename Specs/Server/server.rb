@@ -59,6 +59,12 @@ class RestKit::SpecServer < Sinatra::Base
     "{}"
   end
   
+  post '/echo_params' do
+    status 200
+    content_type 'application/json'
+    params.to_json
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

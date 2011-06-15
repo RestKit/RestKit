@@ -379,4 +379,16 @@
     }
 }
 
+- (void)itShouldPostSimpleKeyValuesViaRKParams {
+    RKParams* params = [RKParams params];
+    
+    [params setValue: @"hello" forParam:@"username"];
+    [params setValue: @"password" forParam:@"password"];
+    
+    RKClient* client = RKSpecNewClient();
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [client post:@"/echo_params" params:params delegate:loader];
+    [loader waitForResponse];
+    assertThat([loader.response bodyAsString], is(equalTo(@"{\"username\":\"hello\",\"password\":\"password\"}")));
+}
 @end
