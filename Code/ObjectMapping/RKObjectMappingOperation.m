@@ -89,8 +89,8 @@
         } else if ([destinationType isSubclassOfClass:[NSNumber class]]) {
             // String -> Number
             NSString* lowercasedString = [(NSString*)value lowercaseString];
-            NSSet* trueStrings = [NSSet setWithObjects:@"true", @"t", nil];
-            NSSet* booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", nil]];
+            NSSet* trueStrings = [NSSet setWithObjects:@"true", @"t", @"yes", nil];
+            NSSet* booleanStrings = [trueStrings setByAddingObjectsFromSet:[NSSet setWithObjects:@"false", @"f", @"no", nil]];
             if ([booleanStrings containsObject:lowercasedString]) {
                 // Handle booleans encoded as Strings
                 return [NSNumber numberWithBool:[trueStrings containsObject:lowercasedString]];
