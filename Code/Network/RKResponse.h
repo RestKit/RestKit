@@ -83,10 +83,16 @@
  */
 - (NSString*)bodyAsString;
 
+/*!
+ * Return the response body parsed as JSON into an object
+ * @deprecated in version 2.0
+ */
+- (id)bodyAsJSON;
+
 /**
  * Return the response body parsed as JSON into an object
  */
-- (id)bodyAsJSON;
+- (id)parsedBody;
 
 /**
  * Will determine if there is an error object and use it's localized message
