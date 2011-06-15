@@ -9,7 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKHuman.h"
 
-@interface RKManagedObjectSpec : NSObject <UISpec> {
+@interface RKManagedObjectSpec : RKSpec {
 	
 }
 

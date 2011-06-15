@@ -13,7 +13,7 @@
 #import "RKHuman.h"
 #import "RKCat.h"
 
-@interface RKRailsRouterSpec : NSObject <UISpec> {
+@interface RKRailsRouterSpec : RKSpec {
 }
 
 @end

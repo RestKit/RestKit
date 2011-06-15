@@ -12,7 +12,7 @@
 #import "RKHuman.h"
 #import "RKCat.h"
 
-@interface RKObjectRouterSpec : NSObject <UISpec> {
+@interface RKObjectRouterSpec : RKSpec {
 }
 
 @end

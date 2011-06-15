@@ -9,7 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKResponse.h"
 
-@interface RKResponseSpec : NSObject <UISpec> {
+@interface RKResponseSpec : RKSpec {
 	RKResponse* _response;
 }
 
@@ -189,6 +189,18 @@
 	NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
 	[[[mock stub] andReturn:headers] allHeaderFields];
 	[expectThat([mock isJSON]) should:be(YES)];
+}
+
+- (void)itShouldReturnParseErrorsWhenParsedBodyFails {
+    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+	id mock = [OCMockObject partialMockForObject:response];
+	[[[mock stub] andReturn:@"sad;sdvjnk;"] bodyAsString];
+    [[[mock stub] andReturn:@"application/json"] contentType];
+    NSError* error = nil;
+    id object = [mock parsedBody:&error];
+    assertThat(object, is(nilValue()));
+    assertThat(error, isNot(nilValue()));
+    assertThat([error localizedDescription], is(equalTo(@"Unexpected token, wanted '{', '}', '[', ']', ',', ':', 'true', 'false', 'null', '\"STRING\"', 'NUMBER'.")));
 }
 
 @end

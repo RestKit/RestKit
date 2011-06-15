@@ -8,7 +8,7 @@
 
 #import "RKSpecEnvironment.h"
 
-@interface RKRequestQueueSpec : NSObject <UISpec> {
+@interface RKRequestQueueSpec : RKSpec {
     
 }
 

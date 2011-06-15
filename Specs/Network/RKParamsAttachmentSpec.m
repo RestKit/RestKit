@@ -9,7 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKParamsAttachment.h"
 
-@interface RKParamsAttachmentSpec : NSObject <UISpec> {
+@interface RKParamsAttachmentSpec : RKSpec {
 }
 
 @end

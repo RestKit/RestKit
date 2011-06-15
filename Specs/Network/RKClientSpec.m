@@ -8,7 +8,7 @@
 
 #import "RKSpecEnvironment.h"
 
-@interface RKClientSpec : NSObject <UISpec> {
+@interface RKClientSpec : RKSpec {
 }
 
 @end

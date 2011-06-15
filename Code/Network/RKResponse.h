@@ -92,7 +92,7 @@
 /**
  * Return the response body parsed as JSON into an object
  */
-- (id)parsedBody:(NSError*)error;
+- (id)parsedBody:(NSError**)error;
 
 /**
  * Will determine if there is an error object and use it's localized message

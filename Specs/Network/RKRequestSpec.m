@@ -16,7 +16,7 @@
 - (void)shouldDispatchRequest;
 @end
 
-@interface RKRequestSpec : NSObject <UISpec> {
+@interface RKRequestSpec : RKSpec {
 }
 
 @end

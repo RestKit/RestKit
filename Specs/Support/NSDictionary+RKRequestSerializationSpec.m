@@ -10,7 +10,7 @@
 #import "NSDictionary+RKRequestSerialization.h"
 #import "NSDictionary+RKAdditions.h"
 
-@interface NSDictionary_RKRequestSerializationSpec : NSObject <UISpec> {
+@interface NSDictionary_RKRequestSerializationSpec : RKSpec {
 	
 }
 

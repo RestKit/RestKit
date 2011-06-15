@@ -63,7 +63,7 @@
 
 @end
 
-@interface RKObjectMapperSpec : NSObject <UISpec>
+@interface RKObjectMapperSpec : RKSpec
 
 - (NSString*)jsonString;
 - (NSString*)jsonCollectionString;
@@ -559,7 +559,7 @@
 
 @end
 
-@interface RKObjectMapperRegisteredClassWithArraySpec : NSObject <UISpec> {
+@interface RKObjectMapperRegisteredClassWithArraySpec : RKSpec {
 @private
 }
 @end
@@ -696,7 +696,7 @@
 
 @end
 
-@interface RKObjectMapperPayloadItemsWithDuplicateKeysSpec : NSObject <UISpec> {
+@interface RKObjectMapperPayloadItemsWithDuplicateKeysSpec : RKSpec {
 }
 @end
 

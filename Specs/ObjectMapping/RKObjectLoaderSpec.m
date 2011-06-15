@@ -56,7 +56,7 @@
 
 // TODO: These specs need to be executed against the RKManagedObjectLoader and RKObjectLoader
 // until we can collapse the functionality somehow...
-@interface RKObjectLoaderSpec : NSObject <UISpec> {
+@interface RKObjectLoaderSpec : RKSpec {
     
 }
 
@@ -278,7 +278,7 @@
 @end
 
 // Works with Michael Deung's RailsUser.json
-@interface RKUserRailsJSONMappingSpec : NSObject <UISpec> {
+@interface RKUserRailsJSONMappingSpec : RKSpec {
 }
 @end
 

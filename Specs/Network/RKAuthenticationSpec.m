@@ -13,7 +13,7 @@
 static NSString* const RKAuthenticationSpecUsername = @"restkit";
 static NSString* const RKAuthenticationSpecPassword = @"authentication";
 
-@interface RKAuthenticationSpec : NSObject <UISpec> {
+@interface RKAuthenticationSpec : RKSpec {
     
 }
 

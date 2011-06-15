@@ -9,7 +9,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKXMLParserLibXML.h"
 
-@interface RKXMLParserLibXMLSpec : NSObject <UISpec> {
+@interface RKXMLParserLibXMLSpec : RKSpec {
     
 }
 
