@@ -177,21 +177,24 @@ static RKObjectManager* sharedManager = nil;
 #pragma mark - Object Instance Loaders
 
 - (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate {
-	NSString* resourcePath = [self.router resourcePathForObject:object method:method];    
-    RKObjectMapping* serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
-    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:serializationMapping];
-    NSError* error = nil;
-    id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];    
-	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
+    NSString* resourcePath = [self.router resourcePathForObject:object method:method];
+    RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
+    loader.method = method;
+    loader.targetObject = object;
     
-    if (error) {
-        [delegate objectLoader:loader didFailWithError:error];
-        return nil;
+    if (method == RKRequestMethodPOST || method == RKRequestMethodPUT) {
+        RKObjectMapping* serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
+        RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:serializationMapping];
+        NSError* error = nil;
+        id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];	
+    
+        if (error) {
+            [delegate objectLoader:loader didFailWithError:error];
+            return nil;
+        }
+        
+        loader.params = params;
     }
-
-	loader.method = method;
-	loader.params = params;
-	loader.targetObject = object;
 
 	return loader;
 }
