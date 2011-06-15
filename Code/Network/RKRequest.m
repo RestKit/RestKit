@@ -122,7 +122,7 @@
 }
 
 - (void)setRequestBody {
-	if (_params && (_method != RKRequestMethodGET)) {
+	if (_params && (_method != RKRequestMethodGET && _method != RKRequestMethodHEAD)) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
 			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
@@ -200,6 +200,9 @@
 			break;
 		case RKRequestMethodDELETE:
 			return @"DELETE";
+			break;
+        case RKRequestMethodHEAD:
+			return @"HEAD";
 			break;
 		default:
 			return nil;
@@ -419,6 +422,10 @@
 
 - (BOOL)isDELETE {
 	return _method == RKRequestMethodDELETE;
+}
+
+- (BOOL)isHEAD {
+	return _method == RKRequestMethodHEAD;
 }
 
 - (BOOL)isLoading {

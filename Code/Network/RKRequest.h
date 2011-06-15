@@ -20,10 +20,11 @@
  * HTTP methods for requests
  */
 typedef enum RKRequestMethod {
-	RKRequestMethodGET = 0,
-	RKRequestMethodPOST,
-	RKRequestMethodPUT,
-	RKRequestMethodDELETE
+    RKRequestMethodGET = 0,
+    RKRequestMethodPOST,
+    RKRequestMethodPUT,
+    RKRequestMethodDELETE,
+    RKRequestMethodHEAD
 } RKRequestMethod;
 
 /**
@@ -247,6 +248,11 @@ typedef enum RKRequestBackgroundPolicy {
  * Returns YES when this is a DELETE request
  */
 - (BOOL)isDELETE;
+
+/**
+ * Returns YES when this is a HEAD request
+ */
+- (BOOL)isHEAD;
 
 /**
  * Returns YES when this request is in-progress
