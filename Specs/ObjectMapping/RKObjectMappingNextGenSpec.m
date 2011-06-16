@@ -125,24 +125,6 @@
 
 @end
 
-// See Specs/Fixtures/XML/tab_data.xml
-@interface RKSpecTabData : NSObject {
-    NSString* _title;
-    NSString* _summary;
-}
-
-@property (nonatomic, retain) NSString* title;
-@property (nonatomic, retain) NSString* summary;
-
-@end
-
-@implementation RKSpecTabData
-
-@synthesize title = _title;
-@synthesize summary = _summary;
-
-@end
-
 ////////////////////////////////////////////////////////////////////////////////
 
 #pragma mark -
@@ -786,7 +768,7 @@
     RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"is_developer" toKeyPath:@"isDeveloper"];
     [mapping addAttributeMapping:websiteMapping];
     
-    NSDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    NSDictionary* dictionary = [RKSpecParseFixture(@"user.json") mutableCopy];
     RKExampleUser* user = [RKExampleUser user];
     [dictionary setValue:@"yes" forKey:@"is_developer"];
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
@@ -801,7 +783,7 @@
     RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"is_developer" toKeyPath:@"isDeveloper"];
     [mapping addAttributeMapping:websiteMapping];
     
-    NSDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    NSDictionary* dictionary = [RKSpecParseFixture(@"user.json") mutableCopy];
     RKExampleUser* user = [RKExampleUser user];
     [dictionary setValue:@"NO" forKey:@"is_developer"];
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
@@ -1196,21 +1178,6 @@
     assertThatBool(loader.success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"My Name")));
     assertThat(user.website, is(equalTo([NSURL URLWithString:@"http://restkit.org/"])));
-}
-
-#pragma mark - XML
-
-- (void)itShouldMapXML {
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKSpecTabData class]];
-    [mapping mapAttributes:@"title", @"summary", nil];
-    RKObjectMappingProvider* provider = [[RKObjectMappingProvider alloc] init];
-    id data = RKSpecParseFixture(@"tab_data.xml");
-    NSLog(@"%@", data);
-    assertThat([data valueForKeyPath:@"tabdata.item"], is(instanceOf([NSArray class])));
-    [provider setMapping:mapping forKeyPath:@"tabdata.item"];
-    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:data mappingProvider:provider];
-    RKObjectMappingResult* result = [mapper performMapping];
-    assertThatInt([[result asCollection] count], is(equalToInt(2)));
 }
 
 @end

@@ -20,7 +20,16 @@
             NSString* nodeName = [NSString stringWithCString:(char*)currentNode->name encoding:NSUTF8StringEncoding];
             id val = [self parseNode:currentNode->children];
             if ([val isKindOfClass:[NSString class]]) {
-                [attrs setValue:val forKey:nodeName];
+                id oldVal = [attrs valueForKey:nodeName];
+                if (nil == oldVal) {
+                    [attrs setValue:val forKey:nodeName];
+                } else if ([oldVal isKindOfClass:[NSMutableArray class]]) {
+                    [oldVal addObject:val];
+                } else {
+                    NSMutableArray* array = [NSMutableArray arrayWithObjects:oldVal, val, nil];
+                    [attrs setValue:array forKey:nodeName];
+                }
+                
                 // Only add attributes to nodes if there actually is one.
                 if (![nodes containsObject:attrs]) {
                     [nodes addObject:attrs];
@@ -57,25 +66,23 @@
     if ([nodes count] == 0) {
         return @"";
     }
-    if ([nodes containsObject:attrs]) {
+    if (YES || [nodes containsObject:attrs]) {
         // We have both attributes and children. merge everything together.
         NSMutableDictionary* results = [NSMutableDictionary dictionary];
         for (NSDictionary* dict in nodes) {
             for (NSString* key in dict) {
-                if ([results valueForKey:key]) {
-                    // If we have overlapping keys, assemble them into an array
-                    id currentValue = [results valueForKey:key];
-                    if ([currentValue isKindOfClass:[NSMutableArray class]]) {
-                        [(NSMutableArray*)currentValue addObject:[dict valueForKey:key]];
-                    } else {
-                        NSMutableArray* array = [NSMutableArray arrayWithObject:currentValue];
-                        [results setValue:array forKey:key];
-                    }
+                NSLog(@"Key: %@", key);
+                id value = [dict valueForKey:key];
+                id currentValue = [results valueForKey:key];
+                if (nil == currentValue) {
+                    [results setValue:value forKey:key];
+                } else if ([currentValue isKindOfClass:[NSMutableArray class]]) {
+                    [currentValue addObject:value];
                 } else {
-                    [results setValue:[dict allValues] forKey:key];
+                    NSMutableArray* array = [NSMutableArray arrayWithObjects: currentValue, value, nil];
+                    [results setValue:array forKey:key];
                 }
             }
-//            [results addEntriesFromDictionary:dict];
         }
         return results;
     }
