@@ -847,7 +847,7 @@
     RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"dateAsNumber" toKeyPath:@"birthDate"];
     [mapping addAttributeMapping:birthDateMapping];
     
-    NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    NSMutableDictionary* dictionary = [RKSpecParseFixture(@"user.json") mutableCopy];
     [dictionary setValue:[NSNumber numberWithInt:[date timeIntervalSince1970]] forKey:@"dateAsNumber"];
     RKExampleUser* user = [RKExampleUser user];
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
