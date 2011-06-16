@@ -77,6 +77,7 @@
         RKLogWarning(@"Request was reset while loading: %@. Canceling.", self);
         [self cancel];
     }
+    [_URLRequest release];
     _URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
     [_URLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
     _connection = nil;
