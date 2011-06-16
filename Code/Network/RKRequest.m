@@ -41,11 +41,7 @@
     self = [self init];
 	if (self) {
 		_URL = [URL retain];
-		_URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
-        [_URLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-		_connection = nil;
-		_isLoading = NO;
-		_isLoaded = NO;
+        [self reset];
         _forceBasicAuthentication = NO;
 		_cachePolicy = RKRequestCachePolicyDefault;
 	}
@@ -74,6 +70,20 @@
     }
     
     return self;
+}
+
+- (void)reset {
+    if (_isLoading) {
+        RKLogWarning(@"Request was reset while loading: %@. Canceling.", self);
+        [self cancel];
+    }
+    [_URLRequest release];
+    _URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
+    [_URLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+    [_connection release];
+    _connection = nil;
+    _isLoading = NO;
+    _isLoaded = NO;
 }
 
 - (void)cleanupBackgroundTask {
@@ -211,6 +221,7 @@
 }
 
 - (void)send {
+    NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
 	[[RKRequestQueue sharedQueue] addRequest:self];
 }
 
@@ -237,6 +248,7 @@
 }
 
 - (void)sendAsynchronously {
+    NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     _sentSynchronously = NO;
     if (self.cachePolicy & RKRequestCachePolicyEnabled) {
         if ([self.cache hasResponseForRequest:self]) {
@@ -302,6 +314,7 @@
 }
 
 - (RKResponse*)sendSynchronously {
+    NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
 	NSURLResponse* URLResponse = nil;
 	NSError* error;
 	NSData* payload = nil;

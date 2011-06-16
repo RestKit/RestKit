@@ -202,7 +202,10 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	if (store.managedObjectCache) {
 		cacheFetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
 	}
-
+    
+    // Reset in case we are reusing the object loader (model was reloaded).
+    [self.objectLoader reset];
+    
 	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded) {
 		_isLoading = YES;
 		[self didStartLoad];
