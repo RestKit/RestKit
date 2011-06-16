@@ -61,7 +61,21 @@
         // We have both attributes and children. merge everything together.
         NSMutableDictionary* results = [NSMutableDictionary dictionary];
         for (NSDictionary* dict in nodes) {
-            [results addEntriesFromDictionary:dict];
+            for (NSString* key in dict) {
+                if ([results valueForKey:key]) {
+                    // If we have overlapping keys, assemble them into an array
+                    id currentValue = [results valueForKey:key];
+                    if ([currentValue isKindOfClass:[NSMutableArray class]]) {
+                        [(NSMutableArray*)currentValue addObject:[dict valueForKey:key]];
+                    } else {
+                        NSMutableArray* array = [NSMutableArray arrayWithObject:currentValue];
+                        [results setValue:array forKey:key];
+                    }
+                } else {
+                    [results setValue:[dict allValues] forKey:key];
+                }
+            }
+//            [results addEntriesFromDictionary:dict];
         }
         return results;
     }

@@ -160,6 +160,7 @@
 		2590E8601252515400531FA8 /* GHNSBundle+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85B1252515400531FA8 /* GHNSBundle+Utils.m */; };
 		2590E8611252515400531FA8 /* GTMBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E85D1252515400531FA8 /* GTMBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E8621252515400531FA8 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85E1252515400531FA8 /* GTMBase64.m */; };
+		25915AD013A2E82200EA63B0 /* tab_data.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25915ACF13A2E82200EA63B0 /* tab_data.xml */; };
 		25952DEA136C8F3500D04F93 /* RKObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952DE8136C8F3500D04F93 /* RKObjectMappingOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25952DEB136C8F3500D04F93 /* RKObjectMappingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952DE9136C8F3500D04F93 /* RKObjectMappingOperation.m */; };
 		25952DF5136C8FD500D04F93 /* RKObjectMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952DF3136C8FD500D04F93 /* RKObjectMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -532,6 +533,7 @@
 		2590E85B1252515400531FA8 /* GHNSBundle+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GHNSBundle+Utils.m"; sourceTree = "<group>"; };
 		2590E85D1252515400531FA8 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
 		2590E85E1252515400531FA8 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
+		25915ACF13A2E82200EA63B0 /* tab_data.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = tab_data.xml; sourceTree = "<group>"; };
 		25952DE8136C8F3500D04F93 /* RKObjectMappingOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingOperation.h; sourceTree = "<group>"; };
 		25952DE9136C8F3500D04F93 /* RKObjectMappingOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingOperation.m; sourceTree = "<group>"; };
 		25952DEF136C8F9C00D04F93 /* RKObjectMappingOperationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingOperationSpec.m; sourceTree = "<group>"; };
@@ -1225,11 +1227,20 @@
 			path = GTM;
 			sourceTree = "<group>";
 		};
+		25915ACE13A2E82200EA63B0 /* XML */ = {
+			isa = PBXGroup;
+			children = (
+				25915ACF13A2E82200EA63B0 /* tab_data.xml */,
+			);
+			path = XML;
+			sourceTree = "<group>";
+		};
 		25952ED6136F563E00D04F93 /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
-				25952ED7136F563E00D04F93 /* Assets */,
 				25952ED9136F563E00D04F93 /* JSON */,
+				25915ACE13A2E82200EA63B0 /* XML */,
+				25952ED7136F563E00D04F93 /* Assets */,
 			);
 			path = Fixtures;
 			sourceTree = "<group>";
@@ -1823,6 +1834,7 @@
 				25952F0F136F8F7700D04F93 /* users.json in Resources */,
 				25952FDD1370959900D04F93 /* LICENSE.txt in Resources */,
 				25952FDF1370959900D04F93 /* README.markdown in Resources */,
+				25915AD013A2E82200EA63B0 /* tab_data.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
