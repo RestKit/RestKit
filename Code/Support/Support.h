@@ -10,3 +10,4 @@
 #import "NSDictionary+RKAdditions.h"
 #import "RKMIMETypes.h"
 #import "RKLog.h"
+#import "NSString+RestKit.h"

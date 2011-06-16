@@ -187,13 +187,16 @@ typedef enum {
  Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
  of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped to 
  local objects by consulting the element registrations set on the mapper.
+ 
+ These methods have been deprecated. You can use [resourcePath appendQueryParams:queryParams] to achieve the same effect.
+
+ @deprecated
  */
-// TODO: Deprecate! Just RKPathAppendQueryParams(resourcePath, queryParams)
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id<RKObjectLoaderDelegate>)delegate;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 // TODO: Document!
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 ////////////////////////////////////////////////////////
 /// @name Mappable object helpers
