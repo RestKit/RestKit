@@ -80,6 +80,7 @@
     [_URLRequest release];
     _URLRequest = [[NSMutableURLRequest alloc] initWithURL:_URL];
     [_URLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+    [_connection release];
     _connection = nil;
     _isLoading = NO;
     _isLoaded = NO;
