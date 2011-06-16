@@ -64,7 +64,8 @@ Quick Start (aka TL;DR)
 1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
 1. Add **Header Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build"` directory
-1. Add **Library Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory
+1. Add **Library Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory.  
+**NOTE**: This is only necessary if you are **NOT** using DerivedData.
 1. Add **Other Linker Flags** for `-ObjC -all_load`
 1. Open target settings editor for the target you want to link RestKit into
 1. Add direct dependency on the **RestKit** aggregate target
@@ -113,7 +114,8 @@ Xcode 4.x (Git Submodule)
 1. Click on your project's name in the sidebar on the left to open the project settings view in the right pane of the window.
 1. In the middle pane you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
 1. Find the **Header Search Paths** setting. Double click and add a new entry. Add a search path to the `"$(SOURCE_ROOT)/RestKit/Build"` directory you have added to your project. **DO NOT** check the `Recursive` checkbox.
-1. Find the **Library Search Paths** setting. Double click and add a new entry. Add a search path to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory you have added to your project.
+1. Find the **Library Search Paths** setting. Double click and add a new entry. Add a search path to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory you have added to your project.  
+**NOTE**: This is only necessary if you are **NOT** using DerivedData.
 1. Find the **Other Linker Flags** entry and double click it. Use the **+** button to add a new entry and enter `-ObjC -all_load`. Dismiss the editor with the **Done** button.
 1. Locate the target you wish to add RestKit to in the **TARGETS** list in the middle of the editor pane. Select it to open the target settings editor in the right pane of the window.
 1. Click the **Build Phases** tab along the top of the window to open the Build Phases editor.
