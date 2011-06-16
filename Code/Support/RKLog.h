@@ -89,7 +89,7 @@ lcl_log(RKLogComponent, lcl_vTrace, @"" __VA_ARGS__);
     RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
  
     // Log only critical messages from the Object Mapping component
-    RKLogConfigureByName("RestKit/Object Mapping", RKLogLevelCritical);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelCritical);
  */
 #define RKLogConfigureByName(name, level)                                         \
 lcl_configure_by_name(name, level);

@@ -1,0 +1,19 @@
+<tabdata>
+   <title>My tab</title>
+   <title>Title 2</title>
+   <itemscount>5</itemscount>
+   <item>
+       <title>Title item</title>
+       <summary>Description</summary>
+       <image>http://......</image>
+       <detailuri>http://......</detailuri>
+       <date>9.06.2011 17:32:43</date>
+  </item>
+  <item>
+       <title>Title item 2</title>
+       <summary>Description 2</summary>
+       <image>http://......</image>
+       <detailuri>http://......</detailuri>
+       <date>9.06.2011 17:32:43</date>
+  </item>
+</tabdata>
