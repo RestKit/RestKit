@@ -119,6 +119,22 @@
 	[expectThat([mock isNotFound]) should:be(YES)];
 }
 
+- (void)itShouldConsiderAFourOhNineResponseConflict {
+	RKResponse* response = [[[RKResponse alloc] init] autorelease];
+	id mock = [OCMockObject partialMockForObject:response];
+	NSInteger statusCode = 409;
+	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
+	[expectThat([mock isConflict]) should:be(YES)];
+}
+
+- (void)itShouldConsiderAFourHundredAndTenResponseConflict {
+	RKResponse* response = [[[RKResponse alloc] init] autorelease];
+	id mock = [OCMockObject partialMockForObject:response];
+	NSInteger statusCode = 410;
+	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
+	[expectThat([mock isGone]) should:be(YES)];
+}
+
 - (void)itShouldConsiderVariousThreeHundredResponsesRedirect {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
