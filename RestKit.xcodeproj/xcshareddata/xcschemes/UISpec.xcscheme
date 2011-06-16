@@ -62,8 +62,8 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKResponseSpec"
-            isEnabled = "NO">
+            value = "RKObjectMappingNextGenSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -72,8 +72,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldPostSimpleKeyValuesViaRKParams"
-            isEnabled = "NO">
+            value = "itShouldMapANumberToADate"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"
