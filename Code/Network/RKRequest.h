@@ -194,6 +194,11 @@ typedef enum RKRequestBackgroundPolicy {
 - (void)prepareURLRequest;
 
 /**
+ * Resets the state of an RKRequest so that it can be re-sent.
+ */
+- (void)reset;
+
+/**
  * Send the request asynchronously. It will be added to the queue and
  * dispatched as soon as possible.
  */
