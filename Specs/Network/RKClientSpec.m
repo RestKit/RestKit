@@ -43,4 +43,18 @@
 	[expectThat(request.cache) should:be(client.cache)];
 }
 
+- (void)itShouldAllowYouToChangeTheBaseURL {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
+    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    client.baseURL = @"http://www.google.com";
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
+    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [client requestWithResourcePath:@"/" delegate:loader];
+    [request send];
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(YES)));
+}
+
 @end
