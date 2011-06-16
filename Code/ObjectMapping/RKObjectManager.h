@@ -178,15 +178,15 @@ typedef enum {
  
 /**
  Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
- with the loaded objects. Remote objects will be mapped to local objects by consulting the element registrations
- set on the mapper.
+ with the loaded objects. Remote objects will be mapped to local objects by consulting the keyPath registrations
+ set on the mapping provider.
  */
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
  Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
- of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped to 
- local objects by consulting the element registrations set on the mapper.
+ of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped 
+ to local objects by consulting the keyPath registrations set on the mapping provider.
  
  These methods have been deprecated. You can use [resourcePath appendQueryParams:queryParams] to achieve the same effect.
 
@@ -195,7 +195,9 @@ typedef enum {
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
-// TODO: Document!
+/**
+ Load mappable objects at the specified resourcePath using the specified object mapping.
+ */
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 ////////////////////////////////////////////////////////
