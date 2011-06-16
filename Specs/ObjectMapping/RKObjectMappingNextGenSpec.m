@@ -838,6 +838,25 @@
     [expectThat(user.name) should:be(@"187")]; 
 }
 
+- (void)itShouldMapANumberToADate {
+    NSDateFormatter* dateFormatter = [[NSDateFormatter new] autorelease];
+    [dateFormatter setDateFormat:@"MM/dd/yyyy"];
+    NSDate* date = [dateFormatter dateFromString:@"11/27/1982"];
+    
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"dateAsNumber" toKeyPath:@"birthDate"];
+    [mapping addAttributeMapping:birthDateMapping];
+    
+    NSMutableDictionary* dictionary = [RKSpecParseFixtureJSON(@"user.json") mutableCopy];
+    [dictionary setValue:[NSNumber numberWithInt:[date timeIntervalSince1970]] forKey:@"dateAsNumber"];
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    [expectThat([dateFormatter stringFromDate:user.birthDate]) should:be(@"11/27/1982")];
+}
+
 - (void)itShouldMapANestedKeyPathToAnAttribute {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* countryMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"address.country" toKeyPath:@"country"];
