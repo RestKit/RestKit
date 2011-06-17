@@ -116,4 +116,11 @@
     return nil;    
 }
 
+// Overloaded to handle deleting an object orphaned by a failed postObject:
+- (void)handleResponseError {
+    [super handleResponseError];
+    [[self.objectStore managedObjectContext] deleteObject:[self.objectStore objectWithID:_targetObjectID]];
+    [self.objectStore save];
+}
+
 @end

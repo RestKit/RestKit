@@ -198,23 +198,7 @@
         
 		return NO;
 	} else if ([self.response isError]) {
-        
-        if ([self.response isServiceUnavailable]) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
-        }
-        
-        // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
-        // target object
-        NSError* error = nil;
-        RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.objectManager.mappingProvider toObject:nil error:&error];
-        if (result) {
-            error = [result asError];
-        } else {
-            RKLogError(@"Encountered an error while attempting to map server side errors from payload: %@", [error localizedDescription]);
-        }
-        
-        [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
-        
+        [self handleResponseError];
 		return NO;
 	} else if ([self.response isSuccessful] && NO == [self canParseMIMEType:[self.response MIMEType]]) {
         RKLogWarning(@"Encountered unexpected response code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
@@ -231,6 +215,24 @@
     }
     
 	return YES;
+}
+
+- (void)handleResponseError {
+    if ([self.response isServiceUnavailable]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
+    }
+    
+    // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
+    // target object
+    NSError* error = nil;
+    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.objectManager.mappingProvider toObject:nil error:&error];
+    if (result) {
+        error = [result asError];
+    } else {
+        RKLogError(@"Encountered an error while attempting to map server side errors from payload: %@", [error localizedDescription]);
+    }
+    
+    [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 }
 
 #pragma mark - RKRequest & RKRequestDelegate methods
