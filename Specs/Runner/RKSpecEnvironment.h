@@ -42,7 +42,7 @@ RKManagedObjectStore* RKSpecNewManagedObjectStore();
 
 // Read the contents of a fixture file from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName);
-id RKSpecParseFixtureJSON(NSString* fileName);
+id RKSpecParseFixture(NSString* fileName);
 
 // Base class for specs. Allows UISpec to run the specs and use of Hamcrest matchers...
 @interface RKSpec : NSObject <UISpec>

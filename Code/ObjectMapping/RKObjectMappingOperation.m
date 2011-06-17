@@ -115,6 +115,8 @@
         // Number -> Date
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
             return [NSDate dateWithTimeIntervalSince1970:[(NSNumber*)value intValue]];
+        } else if ([sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")] && [destinationType isSubclassOfClass:[NSString class]]) {
+            return ([value boolValue] ? @"true" : @"false");
         }
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
         return [value stringValue];

@@ -259,6 +259,14 @@ extern NSString* cacheURLKey;
 	return ([self statusCode] == 404);
 }
 
+- (BOOL)isConflict {
+    return ([self statusCode] == 409);
+}
+
+- (BOOL)isGone {
+    return ([self statusCode] == 410);
+}
+
 - (BOOL)isUnprocessableEntity {
 	return ([self statusCode] == 422);
 }

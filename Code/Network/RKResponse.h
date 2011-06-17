@@ -176,6 +176,16 @@
 - (BOOL)isNotFound;
 
 /**
+ * Indicates an HTTP response code of 409
+ */
+- (BOOL)isConflict;
+
+/**
+ * Indicates an HTTP response code of 410
+ */
+- (BOOL)isGone;
+
+/**
  * Indicates an HTTP response code of 422
  */
 - (BOOL)isUnprocessableEntity;

@@ -75,19 +75,30 @@ NSString* RKSpecReadFixture(NSString* fileName) {
 	return fixtureData;
 }
 
-id RKSpecParseFixtureJSON(NSString* fileName) {
+NSString* RKSpecMIMETypeForFixture(NSString* fileName) {
+    NSString* extension = [[fileName pathExtension] lowercaseString];
+    if ([extension isEqualToString:@"xml"]) {
+        return RKMIMETypeXML;
+    } else if ([extension isEqualToString:@"json"]) {
+        return RKMIMETypeJSON;
+    } else {
+        return nil;
+    }
+}
+
+id RKSpecParseFixture(NSString* fileName) {
     NSError* error = nil;
-    NSString* JSON = RKSpecReadFixture(fileName);
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:RKMIMETypeJSON];
-    id object = [parser objectFromString:JSON error:&error];
+    NSString* data = RKSpecReadFixture(fileName);
+    NSString* MIMEType = RKSpecMIMETypeForFixture(fileName);
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
+    id object = [parser objectFromString:data error:&error];
     if (object == nil) {
-        NSLog(@"ERROR: Failed to parse JSON fixture '%@'. Error: %@", fileName, [error localizedDescription]);
+        RKLogCritical(@"Failed to parse JSON fixture '%@'. Error: %@", fileName, [error localizedDescription]);
         return nil;
     }
     
     return object;
 }
-
 
 @implementation RKSpec
 
