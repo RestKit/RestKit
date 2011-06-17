@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 // Defines the rules for mapping a particular element
-@interface RKObjectAttributeMapping : NSObject {
+@interface RKObjectAttributeMapping : NSObject <NSCopying> {
     NSString* _sourceKeyPath;
     NSString* _destinationKeyPath;
 }

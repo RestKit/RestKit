@@ -28,6 +28,11 @@
     return self;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+    RKObjectAttributeMapping* copy = [[[self class] allocWithZone:zone] initWithSourceKeyPath:self.sourceKeyPath andDestinationKeyPath:self.destinationKeyPath];
+    return copy;
+}
+
 - (void)dealloc {
     [_sourceKeyPath release];
     [_destinationKeyPath release];

@@ -123,6 +123,16 @@
     }
 }
 
+- (id)valueForUndefinedKey:(NSString *)key {
+    RKLogError(@"Unexpectedly asked for undefined key '%@'", key);
+    return [super valueForUndefinedKey:key];
+}
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key {
+    RKLogError(@"Asked to set value '%@' for undefined key '%@'", value, key);
+    [super setValue:value forUndefinedKey:key];
+}
+
 @end
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -384,6 +394,58 @@
     [expectThat(user.name) should:be(@"Blake Watters")];
 }
 
+- (void)itShouldMapACollectionOfObjectsWithDynamicKeys {
+    RKLogConfigureByName("RestKit/*", RKLogLevelTrace);
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    mapping.forceCollectionMapping = YES;
+    [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];    
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"(name).id" toKeyPath:@"userID"];
+    [mapping addAttributeMapping:idMapping];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@"users"];
+    
+    id userInfo = RKSpecParseFixture(@"DynamicKeys.json");
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    RKObjectMappingResult* result = [mapper performMapping];
+    NSArray* users = [result asCollection];
+    [expectThat([users isKindOfClass:[NSArray class]]) should:be(YES)];
+    [expectThat([users count]) should:be(2)];
+    RKExampleUser* user = [users objectAtIndex:0];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"blake")];
+    user = [users objectAtIndex:1];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"rachit")];
+}
+
+- (void)itShouldMapACollectionOfObjectsWithDynamicKeysAndRelationships {
+    RKLogConfigureByName("RestKit/*", RKLogLevelTrace);
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    mapping.forceCollectionMapping = YES;
+    [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    [addressMapping mapAttributes:@"city", @"state", nil];
+    [mapping mapKeyPath:@"(name).address" toRelationship:@"address" withObjectMapping:addressMapping];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@"users"];
+    
+    id userInfo = RKSpecParseFixture(@"DynamicKeysWithRelationship.json");
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    RKObjectMappingResult* result = [mapper performMapping];
+    NSArray* users = [result asCollection];
+    [expectThat([users isKindOfClass:[NSArray class]]) should:be(YES)];
+    [expectThat([users count]) should:be(2)];
+    RKExampleUser* user = [users objectAtIndex:0];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"blake")];
+    user = [users objectAtIndex:1];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"rachit")];
+    [expectThat(user.address) shouldNot:be(nil)];
+    [expectThat(user.address.city) should:be(@"New York")];
+}
+
 - (void)itShouldBeAbleToMapFromAUserObjectToADictionary {    
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"userID" toKeyPath:@"id"];
@@ -403,7 +465,6 @@
     [expectThat([userInfo isKindOfClass:[NSDictionary class]]) should:be(YES)];
     [expectThat([userInfo valueForKey:@"name"]) should:be(@"Blake Watters")];
 }
-
 
 - (void)itShouldMapRegisteredSubKeyPathsOfAnUnmappableDictionaryAndReturnTheResults {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];

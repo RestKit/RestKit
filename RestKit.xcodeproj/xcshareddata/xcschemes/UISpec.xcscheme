@@ -63,7 +63,7 @@
          <EnvironmentVariable
             key = "UISPEC_SPEC"
             value = "RKObjectMappingNextGenSpec"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -72,8 +72,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapANumberToADate"
-            isEnabled = "YES">
+            value = "itShouldMapACollectionOfObjectsWithDynamicKeysAndRelationships"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"
@@ -83,22 +83,22 @@
          <EnvironmentVariable
             key = "NSZombieEnabled"
             value = "YES"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "UISPEC_SPEC"
-            value = "RKRequestSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "UISPEC_SPEC"
+            value = "RKXMLParserLibXMLSpec"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldFindExistingManagedObjectsByPrimaryKey"
+            value = "itShouldMapMultipleObjectsToAnArray"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"
             value = "YES"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>

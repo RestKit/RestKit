@@ -47,33 +47,17 @@
 
 - (void)itShouldMapMultipleObjectsToAnArray {
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records type=\"array\">\n  <record>\n    <float type=\"float\">2.4</float>\n    <string>string</string>\n    <number type=\"integer\">1</number>\n  </record>\n  <record>\n    <another-number type=\"integer\">1</another-number>\n  </record>\n</records>\n";
-    {
-        // Parse Raw Data
-        RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-        id result = [parser parseXML:data];
-        NSArray* records = (NSArray*)[result valueForKeyPath:@"records.record"];
-        [expectThat([records count]) should:be(2)];
-        id result1 = [records objectAtIndex:1];
-        [expectThat(NSStringFromClass([result1 class])) should:be(@"__NSCFDictionary")];
-        [expectThat([[result1 valueForKeyPath:@"record.float"] floatValue]) should:be(2.4f)];
-        [expectThat([[result1 valueForKeyPath:@"record.number"] intValue]) should:be(1)];
-        [expectThat([result1 valueForKeyPath:@"record.string"]) should:be(@"string")];
-        id result2 = [records objectAtIndex:0];
-        [expectThat([[result2 valueForKeyPath:@"record.another-number"] intValue]) should:be(1)];
-    }
-    {
-        // Simulate using a keypath to extract records array
-        RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-        id result = [[parser parseXML:data] valueForKeyPath:@"records.record"];
-        [expectThat([result count]) should:be(2)];
-        id result1 = [result objectAtIndex:1];
-        [expectThat(NSStringFromClass([result1 class])) should:be(@"__NSCFDictionary")];
-        [expectThat([[result1 valueForKeyPath:@"float"] floatValue]) should:be(2.4f)];
-        [expectThat([[result1 valueForKeyPath:@"number"] intValue]) should:be(1)];
-        [expectThat([result1 valueForKeyPath:@"string"]) should:be(@"string")];
-        id result2 = [result objectAtIndex:0];
-        [expectThat([[result2 valueForKeyPath:@"another-number"] intValue]) should:be(1)];
-    }
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    id result = [parser parseXML:data];
+    NSArray* records = (NSArray*)[result valueForKeyPath:@"records.record"];
+    [expectThat([records count]) should:be(2)];
+    id result1 = [records objectAtIndex:0];
+    [expectThat(NSStringFromClass([result1 class])) should:be(@"__NSCFDictionary")];
+    [expectThat([[result1 valueForKeyPath:@"float"] floatValue]) should:be(2.4f)];
+    [expectThat([[result1 valueForKeyPath:@"number"] intValue]) should:be(1)];
+    [expectThat([result1 valueForKeyPath:@"string"]) should:be(@"string")];
+    id result2 = [records objectAtIndex:1];
+    [expectThat([[result2 valueForKeyPath:@"another-number"] intValue]) should:be(1)];
 }
 
 - (void)itShouldMapXML {

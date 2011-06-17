@@ -47,7 +47,7 @@
 - (void)itShouldNotExplodeBecauseOfUnicodeCharacters {
     NSException* failed = nil;
     @try {
-        RKURL* url = [RKURL URLWithBaseURLString:@"http://test.com" resourcePath:@"/places.json?category=Automóviles"];
+        [RKURL URLWithBaseURLString:@"http://test.com" resourcePath:@"/places.json?category=Automóviles"];
     }
     @catch (NSException *exception) {
         failed = exception;

@@ -51,6 +51,7 @@
 }
 
 - (void)itShouldSuccessfullyMapBoolsToStrings {
+    RKLogConfigureByName("*", RKLogLevelTrace);
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolString", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];

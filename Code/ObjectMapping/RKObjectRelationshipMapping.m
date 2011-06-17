@@ -25,6 +25,13 @@
     return mapping;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+    RKObjectRelationshipMapping* copy = [super copyWithZone:zone];
+    copy.objectMapping = self.objectMapping;
+    copy.reversible = self.reversible;
+    return copy;
+}
+
 - (void)dealloc {
     [_objectMapping release];
     [super dealloc];

@@ -134,6 +134,19 @@
     NSAssert(mappableObjects != nil, @"Cannot map without an collection of mappable objects");
     NSAssert(mapping != nil, @"Cannot map without a mapping to consult");
     
+    NSArray* objectsToMap = mappableObjects;
+    // If we have forced mapping of a dictionary, map each subdictionary
+    if (mapping.forceCollectionMapping && [mappableObjects isKindOfClass:[NSDictionary class]]) {
+        RKLogDebug(@"Collection mapping forced for NSDictionary, mapping each key/value independently...");
+        objectsToMap = [NSMutableArray arrayWithCapacity:[mappableObjects count]];
+        for (id key in mappableObjects) {
+            NSDictionary* dictionaryToMap = [NSDictionary dictionaryWithObject:[mappableObjects valueForKey:key] forKey:key];
+            [(NSMutableArray*)objectsToMap addObject:dictionaryToMap];
+        }
+    } else {
+        RKLogWarning(@"Collection mapping forced but mappable objects is of type '%@' rather than NSDictionary", NSStringFromClass([mappableObjects class]));
+    }
+    
     // Ensure we are mapping onto a mutable collection if there is a target
     NSMutableArray* mappedObjects = self.targetObject ? self.targetObject : [NSMutableArray arrayWithCapacity:[mappableObjects count]];
     if (NO == [mappedObjects respondsToSelector:@selector(addObject:)]) {
@@ -143,7 +156,7 @@
         [self addErrorWithCode:RKObjectMapperErrorObjectMappingTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
         return nil;
     }
-    for (id mappableObject in mappableObjects) {
+    for (id mappableObject in objectsToMap) {
         id destinationObject = [self objectWithMapping:mapping andData:mappableObject];
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
         if (success) {
@@ -226,11 +239,12 @@
         RKObjectMapping* objectMapping = [keyPathsAndObjectMappings objectForKey:keyPath];
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:objectMapping];
-        }
-        RKLogDebug(@"Found mappable data at keyPath '%@': %@", keyPath, mappableValue);
-        if ([mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]]) {
+        }        
+        if (objectMapping.forceCollectionMapping || [mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]]) {
+            RKLogDebug(@"Found mappable collection at keyPath '%@': %@", keyPath, mappableValue);
             mappingResult = [self mapCollection:mappableValue atKeyPath:keyPath usingMapping:objectMapping];
         } else {
+            RKLogDebug(@"Found mappable data at keyPath '%@': %@", keyPath, mappableValue);
             mappingResult = [self mapObject:mappableValue atKeyPath:keyPath usingMapping:objectMapping];
         }
         
