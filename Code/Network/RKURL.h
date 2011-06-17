@@ -6,7 +6,6 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-
 @interface RKURL : NSURL {
 	NSString* _baseURLString;
 	NSString* _resourcePath;
