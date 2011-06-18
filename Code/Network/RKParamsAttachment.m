@@ -164,11 +164,11 @@ extern NSString* const kRKStringBoundary;
 		NSUInteger headerBytesRemaining, bytesRemainingInBuffer;
 		
 		headerBytesRemaining = _MIMEHeaderLength - _delivered;
-		bytesRemainingInBuffer = maxLength - sent;
+		bytesRemainingInBuffer = maxLength;
 		
 		// Send the entire header if there is room
         read       = (headerBytesRemaining < bytesRemainingInBuffer) ? headerBytesRemaining : bytesRemainingInBuffer;
-        [_MIMEHeader getBytes:buffer + sent range:NSMakeRange(_delivered, read)];
+        [_MIMEHeader getBytes:buffer range:NSMakeRange(_delivered, read)];
 		
         sent += read;
         _delivered += sent;

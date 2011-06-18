@@ -51,8 +51,7 @@ extern NSString* cacheURLKey;
 	self = [self initWithRequest:request];
 	if (self) {
 		[_body release];
-		_body = nil;
-		_body = [body retain];
+        _body = [[NSMutableData dataWithData:body] retain];
 		_responseHeaders = [headers retain];
 	}
 
@@ -67,7 +66,7 @@ extern NSString* cacheURLKey;
 		_request = request;
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
-		_body = [body retain];
+        _body = [[NSMutableData dataWithData:body] retain];
 		_loading = NO;
 	}
 

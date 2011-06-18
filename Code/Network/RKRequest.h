@@ -57,12 +57,14 @@ typedef enum {
  * of time in the background. RestKit provides simple
  * support for continuing a request when in the background.
  */
+#if TARGET_OS_IPHONE
 typedef enum RKRequestBackgroundPolicy {
     RKRequestBackgroundPolicyNone = 0,      // Take no action with regards to backgrounding
     RKRequestBackgroundPolicyCancel,        // Cancel the request on transition to the background
     RKRequestBackgroundPolicyContinue,      // Continue the request in the background until time expires
     RKRequestBackgroundPolicyRequeue        // Stop the request and place it back on the queue. It will fire when the app reopens
 } RKRequestBackgroundPolicy;
+#endif
 
 @class RKResponse;
 @protocol RKRequestDelegate;
@@ -83,10 +85,10 @@ typedef enum RKRequestBackgroundPolicy {
 	RKRequestCachePolicy _cachePolicy;
     BOOL _sentSynchronously;
     BOOL _forceBasicAuthentication;
-    RKRequestBackgroundPolicy _backgroundPolicy;
     RKRequestCache* _cache;
     
     #if TARGET_OS_IPHONE
+    RKRequestBackgroundPolicy _backgroundPolicy;
     UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
     #endif
 }
