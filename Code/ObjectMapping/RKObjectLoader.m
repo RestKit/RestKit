@@ -147,7 +147,7 @@
         RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
         
         // TODO: Construct a composite error that wraps up all the other errors
-        *error = [mapper.errors lastObject];
+        if (error) *error = [mapper.errors lastObject];   
         return nil;
     }
     
