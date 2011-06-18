@@ -13,6 +13,7 @@
     id _keyPathToMappedObjects;
 }
 
+- (id)initWithDictionary:(id)dictionary;
 + (RKObjectMappingResult*)mappingResultWithDictionary:(NSDictionary*)keyPathToMappedObjects;
 
 /**
