@@ -18,7 +18,9 @@
 }
 
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath {
-    self = [self initWithString:[NSString stringWithFormat:@"%@%@", baseURLString, resourcePath]];
+    self = (baseURLString) ? 
+        [self initWithString:[NSString stringWithFormat:@"%@%@", baseURLString, resourcePath]] :
+        [self initWithString:resourcePath];
 	if (self) {
 		_baseURLString = [baseURLString copy];
 		_resourcePath = [resourcePath copy];
