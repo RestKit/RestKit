@@ -33,6 +33,12 @@
     [super dealloc];
 }
 
+- (void)reset {
+    [super reset]; 
+    [_targetObjectID release];
+    _targetObjectID = nil;
+}
+
 - (RKManagedObjectStore*)objectStore {
     return self.objectManager.objectStore;
 }
