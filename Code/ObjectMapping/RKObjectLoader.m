@@ -56,6 +56,12 @@
 	[super dealloc];
 }
 
+- (void)reset {
+    [super reset];
+    [_response release];
+    _response = nil;
+}
+
 #pragma mark - Response Processing
 
 - (void)finalizeLoad:(BOOL)successful {

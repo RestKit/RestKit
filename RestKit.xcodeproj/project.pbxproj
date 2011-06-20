@@ -412,10 +412,10 @@
 		251899FB1370F4E00092B049 /* RKLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLog.h; sourceTree = "<group>"; };
 		251939B213A94B5F0073A39B /* NSString+RestKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+RestKit.h"; sourceTree = "<group>"; };
 		251939B313A94B5F0073A39B /* NSString+RestKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+RestKit.m"; sourceTree = "<group>"; };
-		251939E613AABED40073A39B /* DynamicKeys.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DynamicKeys.json; sourceTree = "<group>"; };
-		251939E713AABED40073A39B /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
-		251939E813AABED40073A39B /* errors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = errors.json; sourceTree = "<group>"; };
-		251939EC13ABA06D0073A39B /* DynamicKeysWithRelationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DynamicKeysWithRelationship.json; sourceTree = "<group>"; };
+		251939E613AABED40073A39B /* DynamicKeys.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DynamicKeys.json; sourceTree = "<group>"; };
+		251939E713AABED40073A39B /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = error.json; sourceTree = "<group>"; };
+		251939E813AABED40073A39B /* errors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = errors.json; sourceTree = "<group>"; };
+		251939EC13ABA06D0073A39B /* DynamicKeysWithRelationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DynamicKeysWithRelationship.json; sourceTree = "<group>"; };
 		251D14AA133597B800959061 /* RKManagedObjectLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectLoader.h; sourceTree = "<group>"; };
 		251D14AB133597B800959061 /* RKManagedObjectLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoader.m; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
