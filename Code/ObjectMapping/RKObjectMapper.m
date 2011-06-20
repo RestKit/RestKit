@@ -135,16 +135,18 @@
     NSAssert(mapping != nil, @"Cannot map without a mapping to consult");
     
     NSArray* objectsToMap = mappableObjects;
-    // If we have forced mapping of a dictionary, map each subdictionary
-    if (mapping.forceCollectionMapping && [mappableObjects isKindOfClass:[NSDictionary class]]) {
-        RKLogDebug(@"Collection mapping forced for NSDictionary, mapping each key/value independently...");
-        objectsToMap = [NSMutableArray arrayWithCapacity:[mappableObjects count]];
-        for (id key in mappableObjects) {
-            NSDictionary* dictionaryToMap = [NSDictionary dictionaryWithObject:[mappableObjects valueForKey:key] forKey:key];
-            [(NSMutableArray*)objectsToMap addObject:dictionaryToMap];
+    if (mapping.forceCollectionMapping) {
+        // If we have forced mapping of a dictionary, map each subdictionary
+        if ([mappableObjects isKindOfClass:[NSDictionary class]]) {
+            RKLogDebug(@"Collection mapping forced for NSDictionary, mapping each key/value independently...");
+            objectsToMap = [NSMutableArray arrayWithCapacity:[mappableObjects count]];
+            for (id key in mappableObjects) {
+                NSDictionary* dictionaryToMap = [NSDictionary dictionaryWithObject:[mappableObjects valueForKey:key] forKey:key];
+                [(NSMutableArray*)objectsToMap addObject:dictionaryToMap];
+            }
+        } else {
+            RKLogWarning(@"Collection mapping forced but mappable objects is of type '%@' rather than NSDictionary", NSStringFromClass([mappableObjects class]));
         }
-    } else {
-        RKLogWarning(@"Collection mapping forced but mappable objects is of type '%@' rather than NSDictionary", NSStringFromClass([mappableObjects class]));
     }
     
     // Ensure we are mapping onto a mutable collection if there is a target

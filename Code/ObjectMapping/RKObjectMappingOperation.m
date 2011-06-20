@@ -186,6 +186,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
             nestedMapping.sourceKeyPath = [nestedMapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
             nestedMapping.destinationKeyPath = [nestedMapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
             [array addObject:nestedMapping];
+            [nestedMapping release];
         }
         
         return array;
@@ -331,7 +332,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
         // If the relationship has changed, set it
         if ([self shouldSetValue:destinationObject atKeyPath:mapping.destinationKeyPath]) {
             RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", mapping.sourceKeyPath, mapping.destinationKeyPath, destinationObject);
-            [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];            
+            [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
         }
     }
     

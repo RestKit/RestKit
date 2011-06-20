@@ -21,19 +21,17 @@
         RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:gRKCatalogBaseURL];
         objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
         
-        RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
-        
         RKManagedObjectMapping* taskMapping = [RKManagedObjectMapping mappingForClass:[Task class]];
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
-        [provider setObjectMapping:taskMapping forKeyPath:@"task"];
+        [objectManager.mappingProvider setObjectMapping:taskMapping forKeyPath:@"task"];
         
         RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class]];
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
         [userMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
-        [provider setObjectMapping:userMapping forKeyPath:@"user"];
+        [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"user"];
         
         // NOTE - Project is not backed by Core Data
         RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
@@ -41,9 +39,7 @@
         [projectMapping mapAttributes:@"name", @"description", nil];
         [projectMapping mapRelationship:@"user" withObjectMapping:userMapping];
         [projectMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
-        [provider setObjectMapping:projectMapping forKeyPath:@"project"];
-        
-        objectManager.mappingProvider = provider;
+        [objectManager.mappingProvider setObjectMapping:projectMapping forKeyPath:@"project"];
     }
     
     return self;
@@ -105,7 +101,7 @@
         label.text = @"Tasks";
     }
 
-    return label;
+    return [label autorelease];
 }
 
 #pragma mark - Table View Selection

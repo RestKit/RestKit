@@ -132,8 +132,8 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
                                        [[NSURL URLWithString:baseURL] host]];
         NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
                                stringByAppendingPathComponent:cacheDirForClient];
-        self.cache = [[RKRequestCache alloc] initWithCachePath:cachePath
-                                                   storagePolicy:RKRequestCacheStoragePolicyPermanently];
+        _cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                             storagePolicy:RKRequestCacheStoragePolicyPermanently];
         self.cachePolicy = RKRequestCachePolicyDefault;
         self.baseURL = baseURL;
         
