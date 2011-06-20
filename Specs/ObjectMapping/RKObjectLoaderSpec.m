@@ -75,7 +75,7 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
-    [provider setMapping:userMapping forKeyPath:@"data.STUser"];
+    [provider setObjectMapping:userMapping forKeyPath:@"data.STUser"];
     return provider;
 }
 
@@ -83,8 +83,8 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
     [errorMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"" toKeyPath:@"errorMessage"]];
-    [provider setMapping:errorMapping forKeyPath:@"error"];
-    [provider setMapping:errorMapping forKeyPath:@"errors"];
+    [provider setObjectMapping:errorMapping forKeyPath:@"error"];
+    [provider setObjectMapping:errorMapping forKeyPath:@"errors"];
     return provider;
 }
 
@@ -288,7 +288,7 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKAnotherUser class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"first_name" toKeyPath:@"firstName"]];
-    [provider setMapping:mapping forKeyPath:@"user"];
+    [provider setObjectMapping:mapping forKeyPath:@"user"];
     return provider;
 }
 

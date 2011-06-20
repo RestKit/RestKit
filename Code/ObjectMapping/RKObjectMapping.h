@@ -286,7 +286,7 @@ relationship. Relationships are processed using an object mapping as well.
     [mapping mapFromKeyPath:@"(firstName).id" toAttribute:"userID"];
     [mapping mapFromKeyPath:@"(firstName).email" toAttribute:"email"];
  
-    [[RKObjectManager sharedManager].mappingProvider setMapping:mapping forKeyPath:@"users"];
+    [[RKObjectManager sharedManager].mappingProvider setObjectMapping:mapping forKeyPath:@"users"];
  */
 - (void)mapKeyOfNestedDictionaryToAttribute:(NSString*)attributeName;
 

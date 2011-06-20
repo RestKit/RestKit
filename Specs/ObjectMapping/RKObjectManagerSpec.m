@@ -55,8 +55,8 @@
     
     [catObjectMapping addRelationshipMapping:[RKObjectRelationshipMapping mappingFromKeyPath:@"cats" toKeyPath:@"cats" objectMapping:catObjectMapping]];
     
-    [provider setMapping:humanMapping forKeyPath:@"human"];
-    [provider setMapping:humanMapping forKeyPath:@"humans"];
+    [provider setObjectMapping:humanMapping forKeyPath:@"human"];
+    [provider setObjectMapping:humanMapping forKeyPath:@"humans"];
     
     RKObjectMapping* humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [humanSerialization addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
@@ -146,7 +146,7 @@
     
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
-    [manager.mappingProvider setMapping:mapping forKeyPath:@"human"];
+    [manager.mappingProvider setObjectMapping:mapping forKeyPath:@"human"];
     [manager.mappingProvider setSerializationMapping:mapping forClass:[RKObjectMapperSpecModel class]];
     
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];

@@ -114,7 +114,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
         RKObjectMappingProvider* mappingProvider = nil;
         if (nilOrObjectMapping) {
             mappingProvider = [[RKObjectMappingProvider new] autorelease];
-            [mappingProvider setMapping:nilOrObjectMapping forKeyPath:@""];
+            [mappingProvider setObjectMapping:nilOrObjectMapping forKeyPath:@""];
         } else {
             mappingProvider = _manager.mappingProvider;
         }

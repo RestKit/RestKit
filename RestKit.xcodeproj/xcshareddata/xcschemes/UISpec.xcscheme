@@ -88,7 +88,7 @@
          <EnvironmentVariable
             key = "UISPEC_SPEC"
             value = "RKXMLParserLibXMLSpec"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
