@@ -115,7 +115,7 @@
   	[_URLRequest release];
   	_URLRequest = nil;
   	[_params release];
-  	_params = nil;
+  	_params = nil;    
   	[_additionalHTTPHeaders release];
   	_additionalHTTPHeaders = nil;
   	[_username release];
@@ -135,6 +135,8 @@
 	if (_params && (_method != RKRequestMethodGET && _method != RKRequestMethodHEAD)) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
+            // NOTE: This causes the stream to be retained. For RKParams, this will
+            // cause a leak unless the stream is released. See [RKParams close]
 			[_URLRequest setHTTPBodyStream:[_params HTTPBodyStream]];
 		} else {
 			[_URLRequest setHTTPBody:[_params HTTPBody]];

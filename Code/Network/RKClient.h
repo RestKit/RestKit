@@ -271,6 +271,15 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 + (RKClient*)clientWithBaseURL:(NSString*)baseURL username:(NSString*)username password:(NSString*)password;
 
+/**
+ * Return a client scoped to a particular base URL. If the singleton client is nil, the return client is set as the singleton
+ *
+ * @param baseURL The baseURL to set for the client. All requests will be relative to this base URL
+ * @see baseURL
+ * @return A configured RKClient instance ready to send requests
+ */
+- (id)initWithBaseURL:(NSString*)baseURL;
+
 /////////////////////////////////////////////////////////////////////////
 /// @name Constructing Resource Paths and URLs
 /////////////////////////////////////////////////////////////////////////

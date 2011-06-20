@@ -16,8 +16,17 @@
 @synthesize uploadButton = _uploadButton;
 @synthesize statusLabel = _statusLabel;
 
-- (IBAction)uploadButtonWasTouched:(id)sender {
-    RKClient* client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
+- (void)dealloc {    
+    [RKClient setSharedClient:nil];
+    [_client release];
+    [super dealloc];
+}
+
+- (void)viewDidLoad {
+    _client = [[RKClient alloc] initWithBaseURL:gRKCatalogBaseURL];
+}
+
+- (IBAction)uploadButtonWasTouched:(id)sender {    
     RKParams* params = [RKParams params];
     
     // Attach the Image from Image View
@@ -35,7 +44,7 @@
     NSLog(@"RKParams HTTPHeaderValueForContentLength = %d", [params HTTPHeaderValueForContentLength]);
     
     // Send it for processing!
-    [client post:@"/RKParamsExample" params:params delegate:self];
+    [_client post:@"/RKParamsExample" params:params delegate:self];
 }
 
 - (void)requestDidStartLoad:(RKRequest *)request {

@@ -97,22 +97,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 }
 
 + (RKClient*)clientWithBaseURL:(NSString*)baseURL {
-	RKClient* client = [[[RKClient alloc] init] autorelease];
-	NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
-						   stringByAppendingPathComponent:cacheDirForClient];
-	client.cache = [[RKRequestCache alloc] initWithCachePath:cachePath
-											   storagePolicy:RKRequestCacheStoragePolicyPermanently];
-	client.cachePolicy = RKRequestCachePolicyDefault;
-	client.baseURL = baseURL;
-	if (sharedClient == nil) {
-		[RKClient setSharedClient:client];
-        
-        // Initialize Logging as soon as a client is created
-        RKLogInitialize();
-	}
-
+	RKClient* client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
 	return client;
 }
 
@@ -138,6 +123,29 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	}
 
 	return self;
+}
+
+- (id)initWithBaseURL:(NSString*)baseURL {
+    self = [self init];
+    if (self) {
+        NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+                                       [[NSURL URLWithString:baseURL] host]];
+        NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+                               stringByAppendingPathComponent:cacheDirForClient];
+        self.cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                   storagePolicy:RKRequestCacheStoragePolicyPermanently];
+        self.cachePolicy = RKRequestCachePolicyDefault;
+        self.baseURL = baseURL;
+        
+        if (sharedClient == nil) {
+            [RKClient setSharedClient:self];
+            
+            // Initialize Logging as soon as a client is created
+            RKLogInitialize();
+        }
+    }
+    
+    return self;
 }
 
 - (void)dealloc {

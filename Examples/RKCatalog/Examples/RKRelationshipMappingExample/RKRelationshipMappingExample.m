@@ -27,13 +27,13 @@
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
-        [provider setMapping:taskMapping forKeyPath:@"task"];
+        [provider setObjectMapping:taskMapping forKeyPath:@"task"];
         
         RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class]];
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
         [userMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
-        [provider setMapping:userMapping forKeyPath:@"user"];
+        [provider setObjectMapping:userMapping forKeyPath:@"user"];
         
         // NOTE - Project is not backed by Core Data
         RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
@@ -41,7 +41,7 @@
         [projectMapping mapAttributes:@"name", @"description", nil];
         [projectMapping mapRelationship:@"user" withObjectMapping:userMapping];
         [projectMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
-        [provider setMapping:projectMapping forKeyPath:@"project"];
+        [provider setObjectMapping:projectMapping forKeyPath:@"project"];
         
         objectManager.mappingProvider = provider;
     }

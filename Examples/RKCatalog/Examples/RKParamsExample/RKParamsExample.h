@@ -9,6 +9,7 @@
 #import "RKCatalog.h"
 
 @interface RKParamsExample : UIViewController <RKRequestDelegate> {
+    RKClient* _client;
     UIProgressView* _progressView;
     UIActivityIndicatorView* _activityIndicatorView;
     UIImageView* _imageView;

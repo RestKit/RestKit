@@ -7,6 +7,11 @@
 //
 
 #import "RKParams.h"
+#import "../Support/RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 /**
  * The boundary used used for multi-part headers
@@ -183,10 +188,17 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 - (void)open {
     _streamStatus = NSStreamStatusOpen;
+    RKLogTrace(@"RKParams stream opened...");
 }
 
 - (void)close {
     _streamStatus = NSStreamStatusClosed;
+    RKLogTrace(@"RKParams stream closed. Releasing self.");
+    
+    // NOTE: When we are assigned to the URL request, we get
+    // retained. We release ourselves here to ensure the retain
+    // count will hit zero after upload is complete.
+    [self release];    
 }
 
 - (NSStreamStatus)streamStatus {

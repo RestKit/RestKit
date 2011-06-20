@@ -47,7 +47,7 @@ extern NSString* const kRKStringBoundary;
 			[body appendData:[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding]];
 		}
 		
-		_bodyStream    = [[NSInputStream inputStreamWithData:body] retain];
+		_bodyStream    = [[NSInputStream alloc] initWithData:body];
 		_bodyLength    = [body length];
 	}
 	
@@ -56,7 +56,7 @@ extern NSString* const kRKStringBoundary;
 
 - (id)initWithName:(NSString*)name data:(NSData*)data {
 	if ((self = [self initWithName:name])) {		
-		_bodyStream    = [[NSInputStream inputStreamWithData:data] retain];
+		_bodyStream    = [[NSInputStream alloc] initWithData:data];
 		_bodyLength    = [data length];
 	}
 	
@@ -66,9 +66,9 @@ extern NSString* const kRKStringBoundary;
 - (id)initWithName:(NSString*)name file:(NSString*)filePath {
 	if ((self = [self initWithName:name])) {
 		NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:filePath], @"Expected file to exist at path: %@", filePath);
-		_fileName = [[filePath lastPathComponent] retain];
+		self.fileName = [[filePath lastPathComponent] retain];
 		_MIMEType = [[self mimeTypeForExtension:[filePath pathExtension]] retain];
-		_bodyStream    = [[NSInputStream inputStreamWithFileAtPath:filePath] retain];
+		_bodyStream    = [[NSInputStream alloc] initWithFileAtPath:filePath];
 		
 		NSError* error;
 		NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
