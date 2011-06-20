@@ -37,6 +37,7 @@
 
 - (void)dealloc {
     [_objectToTableCellMappings release];
+    [_objectClassToTableItemMappings release];
     
     [super dealloc];
 }
