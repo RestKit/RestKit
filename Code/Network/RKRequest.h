@@ -171,6 +171,16 @@ typedef enum RKRequestBackgroundPolicy {
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
 @property (nonatomic, retain) RKRequestCache* cache;
 
+/**
+ * The HTTP body as a NSData used for this request
+ */ 
+@property (nonatomic, retain) NSData* HTTPBody;
+
+/**
+ * The HTTP body as a string used for this request
+ */
+@property (nonatomic, retain) NSString* HTTPBodyString;
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 

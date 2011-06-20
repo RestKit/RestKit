@@ -71,7 +71,6 @@
         NSMutableDictionary* results = [NSMutableDictionary dictionary];
         for (NSDictionary* dict in nodes) {
             for (NSString* key in dict) {
-                NSLog(@"Key: %@", key);
                 id value = [dict valueForKey:key];
                 id currentValue = [results valueForKey:key];
                 if (nil == currentValue) {

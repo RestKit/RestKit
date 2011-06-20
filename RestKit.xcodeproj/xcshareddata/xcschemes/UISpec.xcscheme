@@ -62,7 +62,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKResponseSpec"
+            value = "RKObjectMappingNextGenSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -72,7 +72,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldPostSimpleKeyValuesViaRKParams"
+            value = "itShouldMapACollectionOfObjectsWithDynamicKeysAndRelationships"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -83,22 +83,22 @@
          <EnvironmentVariable
             key = "NSZombieEnabled"
             value = "YES"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKRequestSpec"
+            value = "RKXMLParserLibXMLSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldFindExistingManagedObjectsByPrimaryKey"
+            value = "itShouldMapMultipleObjectsToAnArray"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"
             value = "YES"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>

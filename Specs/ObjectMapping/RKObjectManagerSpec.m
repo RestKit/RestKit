@@ -55,8 +55,8 @@
     
     [catObjectMapping addRelationshipMapping:[RKObjectRelationshipMapping mappingFromKeyPath:@"cats" toKeyPath:@"cats" objectMapping:catObjectMapping]];
     
-    [provider setMapping:humanMapping forKeyPath:@"human"];
-    [provider setMapping:humanMapping forKeyPath:@"humans"];
+    [provider setObjectMapping:humanMapping forKeyPath:@"human"];
+    [provider setObjectMapping:humanMapping forKeyPath:@"humans"];
     
     RKObjectMapping* humanSerialization = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [humanSerialization addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
@@ -89,6 +89,22 @@
     RKHuman* human = (RKHuman*)[loader.objects objectAtIndex:0];
     assertThat(human, is(equalTo(temporaryHuman)));
     assertThat(human.railsID, is(equalToInt(1)));
+}
+
+- (void)itShouldDeleteACoreDataBackedTargetObjectOnError {
+    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
+    temporaryHuman.name = @"My Name";    
+    [_objectManager.objectStore save];
+    
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];    
+    NSString* resourcePath = @"/humans/fail";
+    RKObjectLoader* objectLoader = [_objectManager objectLoaderWithResourcePath:resourcePath delegate:loader];
+    objectLoader.method = RKRequestMethodPOST;
+    objectLoader.targetObject = temporaryHuman;
+	[objectLoader send];
+    [loader waitForResponse];
+
+    assertThat(temporaryHuman.managedObjectContext, is(equalTo(nil)));
 }
 
 // TODO: Move to Core Data specific spec file...
@@ -130,7 +146,7 @@
     
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
-    [manager.mappingProvider setMapping:mapping forKeyPath:@"human"];
+    [manager.mappingProvider setObjectMapping:mapping forKeyPath:@"human"];
     [manager.mappingProvider setSerializationMapping:mapping forClass:[RKObjectMapperSpecModel class]];
     
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];

@@ -79,7 +79,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * copying the seed database from the main bundle. If the managed object model provided is nil,
  * all models will be merged from the main bundle for you.
  */
-+ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel;
++ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel withDelegate:(id)delegate;
 
 /**
  * Initialize a new managed object store backed by a SQLite database with the specified filename,
@@ -88,7 +88,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * the store by copying the seed database from the main bundle. If the managed object model
  * provided is nil, all models will be merged from the main bundle for you.
  */
-+ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel;
++ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel withDelegate:(id)delegate;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified

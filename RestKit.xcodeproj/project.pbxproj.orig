@@ -164,6 +164,7 @@
 		2590E8601252515400531FA8 /* GHNSBundle+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85B1252515400531FA8 /* GHNSBundle+Utils.m */; };
 		2590E8611252515400531FA8 /* GTMBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E85D1252515400531FA8 /* GTMBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E8621252515400531FA8 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E85E1252515400531FA8 /* GTMBase64.m */; };
+		25915AD013A2E82200EA63B0 /* tab_data.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25915ACF13A2E82200EA63B0 /* tab_data.xml */; };
 		25952DEA136C8F3500D04F93 /* RKObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952DE8136C8F3500D04F93 /* RKObjectMappingOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25952DEB136C8F3500D04F93 /* RKObjectMappingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952DE9136C8F3500D04F93 /* RKObjectMappingOperation.m */; };
 		25952DF5136C8FD500D04F93 /* RKObjectMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952DF3136C8FD500D04F93 /* RKObjectMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -227,7 +228,6 @@
 		25A1CB50138419D900A7D5C9 /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */; };
 		25A1CB51138419D900A7D5C9 /* libRestKitJSONParserSBJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */; };
 		25A1CB52138419D900A7D5C9 /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */; };
-		25BA443513ABB34900ADC7D0 /* tab_data.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25915ACF13A2E82200EA63B0 /* tab_data.xml */; };
 		25C66B0113A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 25C66AF913A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25C66B0213A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C66AFA13A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.m */; };
 		25C66B0313A43A4900FEA8CB /* RKMappableObjectTableItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 25C66AFB13A43A4900FEA8CB /* RKMappableObjectTableItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -412,10 +412,10 @@
 		251899FB1370F4E00092B049 /* RKLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLog.h; sourceTree = "<group>"; };
 		251939B213A94B5F0073A39B /* NSString+RestKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+RestKit.h"; sourceTree = "<group>"; };
 		251939B313A94B5F0073A39B /* NSString+RestKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+RestKit.m"; sourceTree = "<group>"; };
-		251939E613AABED40073A39B /* DynamicKeys.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DynamicKeys.json; sourceTree = "<group>"; };
-		251939E713AABED40073A39B /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = error.json; sourceTree = "<group>"; };
-		251939E813AABED40073A39B /* errors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = errors.json; sourceTree = "<group>"; };
-		251939EC13ABA06D0073A39B /* DynamicKeysWithRelationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = DynamicKeysWithRelationship.json; sourceTree = "<group>"; };
+		251939E613AABED40073A39B /* DynamicKeys.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DynamicKeys.json; sourceTree = "<group>"; };
+		251939E713AABED40073A39B /* error.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = error.json; sourceTree = "<group>"; };
+		251939E813AABED40073A39B /* errors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = errors.json; sourceTree = "<group>"; };
+		251939EC13ABA06D0073A39B /* DynamicKeysWithRelationship.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = DynamicKeysWithRelationship.json; sourceTree = "<group>"; };
 		251D14AA133597B800959061 /* RKManagedObjectLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectLoader.h; sourceTree = "<group>"; };
 		251D14AB133597B800959061 /* RKManagedObjectLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoader.m; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -792,6 +792,7 @@
 		0867D691FE84028FC02AAC07 /* OTRestFramework */ = {
 			isa = PBXGroup;
 			children = (
+				13924B7813AAB91700DD5078 /* libUISpec.a */,
 				253A085F12551D8D00976E89 /* Code */,
 				3F6C3A9210FE750E008F47C5 /* Specs */,
 				253A0A8D1255300000976E89 /* Scripts */,
@@ -818,7 +819,6 @@
 				25E075981279D9AB00B22EC9 /* MobileCoreServices.framework */,
 				255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */,
 				258C6687133C377A004388A4 /* libUISpec.a */,
-				13924B7813AAB91700DD5078 /* libUISpec.a */,
 				25D638DE1351268D000879B1 /* Cocoa.framework */,
 				25D638E01351268D000879B1 /* Other Frameworks */,
 			);
@@ -1882,11 +1882,15 @@
 				25952F0F136F8F7700D04F93 /* users.json in Resources */,
 				25952FDD1370959900D04F93 /* LICENSE.txt in Resources */,
 				25952FDF1370959900D04F93 /* README.markdown in Resources */,
+<<<<<<< HEAD
+				25915AD013A2E82200EA63B0 /* tab_data.xml in Resources */,
+||||||| merged common ancestors
+=======
 				251939E913AABED40073A39B /* DynamicKeys.json in Resources */,
 				251939EA13AABED40073A39B /* error.json in Resources */,
 				251939EB13AABED40073A39B /* errors.json in Resources */,
 				251939ED13ABA06D0073A39B /* DynamicKeysWithRelationship.json in Resources */,
-				25BA443513ABB34900ADC7D0 /* tab_data.xml in Resources */,
+>>>>>>> Implemented nested mapping for structures similar to the BuildBot JSON structure. fixes #112
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

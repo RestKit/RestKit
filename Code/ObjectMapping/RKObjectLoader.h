@@ -117,5 +117,9 @@
  * Initialize a new object loader with an object mapper, a request, and a delegate
  */
 - (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate;				
+/**
+ * Handle an error in the response preventing it from being mapped, called from -isResponseMappable
+ */
+- (void)handleResponseError;
 
 @end

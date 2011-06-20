@@ -19,6 +19,8 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
+extern NSString* const RKObjectMappingNestingAttributeKeyName;
+
 @implementation RKObjectMappingOperation
 
 @synthesize sourceObject = _sourceObject;
@@ -50,6 +52,7 @@
     [_sourceObject release];
     [_destinationObject release];
     [_objectMapping release];
+    [_nestedAttributeSubstitution release];
     
     [super dealloc];
 }
@@ -111,6 +114,13 @@
         if ([destinationType isSubclassOfClass:[NSSet class]]) {
             return [NSSet setWithArray:value];
         }
+    } else if ([sourceType isSubclassOfClass:[NSNumber class]]) {
+        // Number -> Date
+        if ([destinationType isSubclassOfClass:[NSDate class]]) {
+            return [NSDate dateWithTimeIntervalSince1970:[(NSNumber*)value intValue]];
+        } else if ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] && [destinationType isSubclassOfClass:[NSString class]]) {
+            return ([value boolValue] ? @"true" : @"false");
+        }
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
         return [value stringValue];
     }
@@ -166,11 +176,67 @@
     return !isEqual;
 }
 
+- (NSArray*)applyNestingToMappings:(NSArray*)mappings {
+    if (_nestedAttributeSubstitution) {
+        NSString* searchString = [NSString stringWithFormat:@"(%@)", [[_nestedAttributeSubstitution allKeys] lastObject]];
+        NSString* replacementString = [[_nestedAttributeSubstitution allValues] lastObject];
+        NSMutableArray* array = [NSMutableArray arrayWithCapacity:[self.objectMapping.attributeMappings count]];
+        for (RKObjectAttributeMapping* mapping in mappings) {
+            RKObjectAttributeMapping* nestedMapping = [mapping copy];
+            nestedMapping.sourceKeyPath = [nestedMapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+            nestedMapping.destinationKeyPath = [nestedMapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
+            [array addObject:nestedMapping];
+        }
+        
+        return array;
+    }
+    
+    return mappings;
+}
+
+- (NSArray*)attributeMappings {
+    return [self applyNestingToMappings:self.objectMapping.attributeMappings];
+}
+
+- (NSArray*)relationshipMappings {
+    return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
+}
+
+- (void)applyAttributeMapping:(RKObjectAttributeMapping*)attributeMapping withValue:(id)value {
+    if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFindMapping:forKeyPath:)]) {
+        [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+    }
+    RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
+    
+    // Inspect the property type to handle any value transformations
+    Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:attributeMapping.destinationKeyPath ofClass:[self.destinationObject class]];
+    if (type && NO == [[value class] isSubclassOfClass:type]) {
+        value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
+    }
+    
+    // Ensure that the value is different
+    if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
+        RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+        [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
+        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
+            [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+        }        
+    } else {
+        RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+    }
+}
+
 // Return YES if we mapped any attributes
 - (BOOL)applyAttributeMappings {
-    BOOL appliedMappings = NO;
+    // If we have a nesting substitution value, we have alread
+    BOOL appliedMappings = (_nestedAttributeSubstitution != nil);
     
-    for (RKObjectAttributeMapping* attributeMapping in self.objectMapping.attributeMappings) {
+    for (RKObjectAttributeMapping* attributeMapping in [self attributeMappings]) {
+        if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
+            RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", RKObjectMappingNestingAttributeKeyName);
+            continue;
+        }
+        
         id value = nil;
         if ([attributeMapping.sourceKeyPath isEqualToString:@""]) {
             value = self.sourceObject;
@@ -179,27 +245,7 @@
         }
         if (value) {
             appliedMappings = YES;
-            if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFindMapping:forKeyPath:)]) {
-                [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
-            }
-            RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
-            
-            // Inspect the property type to handle any value transformations
-            Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:attributeMapping.destinationKeyPath ofClass:[self.destinationObject class]];
-            if (type && NO == [[value class] isSubclassOfClass:type]) {
-                value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
-            }
-            
-            // Ensure that the value is different
-            if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
-                [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
-                if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
-                    [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
-                }
-                RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
-            } else {
-                RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
-            }
+            [self applyAttributeMapping:attributeMapping withValue:value];
         } else {
             if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotFindMappingForKeyPath:)]) {
                 [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
@@ -238,7 +284,7 @@
     BOOL appliedMappings = NO;
     id destinationObject = nil;
     
-    for (RKObjectRelationshipMapping* mapping in self.objectMapping.relationshipMappings) {
+    for (RKObjectRelationshipMapping* mapping in [self relationshipMappings]) {
         id value = [self.sourceObject valueForKeyPath:mapping.sourceKeyPath];
         
         if (value == nil || value == [NSNull null] || [value isEqual:[NSNull null]]) {
@@ -246,9 +292,8 @@
             
             // Optionally nil out the property
             if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:nil atKeyPath:mapping.destinationKeyPath]) {
-                [self.destinationObject setValue:nil forKey:mapping.destinationKeyPath];
-                
                 RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", mapping.sourceKeyPath);
+                [self.destinationObject setValue:nil forKey:mapping.destinationKeyPath];
             }
             
             continue;
@@ -277,6 +322,7 @@
             RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", mapping.sourceKeyPath, mapping.destinationKeyPath);            
             
             destinationObject = [self.objectFactory objectWithMapping:mapping.objectMapping andData:value];
+            NSAssert(destinationObject, @"Cannot map a relationship without an object factory to create it...");
             if ([self mapNestedObject:value toObject:destinationObject withMapping:mapping]) {
                 appliedMappings = YES;
             }
@@ -284,16 +330,32 @@
         
         // If the relationship has changed, set it
         if ([self shouldSetValue:destinationObject atKeyPath:mapping.destinationKeyPath]) {
-            [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
             RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", mapping.sourceKeyPath, mapping.destinationKeyPath, destinationObject);
+            [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];            
         }
     }
     
     return appliedMappings;
 }
 
+- (void)applyNestedMappings {
+    RKObjectAttributeMapping* attributeMapping = [self.objectMapping mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
+    if (attributeMapping) {
+        RKLogDebug(@"Found nested mapping definition to attribute '%@'", attributeMapping.destinationKeyPath);
+        id attributeValue = [[self.sourceObject allKeys] lastObject];
+        if (attributeValue) {
+            RKLogDebug(@"Found nesting value of '%@' for attribute '%@'", attributeValue, attributeMapping.destinationKeyPath);
+            _nestedAttributeSubstitution = [[NSDictionary alloc] initWithObjectsAndKeys:attributeValue, attributeMapping.destinationKeyPath, nil];
+            [self applyAttributeMapping:attributeMapping withValue:attributeValue];
+        } else {
+            RKLogWarning(@"Unable to find nesting value for attribute '%@'", attributeMapping.destinationKeyPath);
+        }
+    }
+}
+
 - (BOOL)performMapping:(NSError**)error {
-    RKLogDebug(@"Starting mapping operation...");
+    RKLogDebug(@"Starting mapping operation...");    
+    [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];
     BOOL mappedRelationships = [self applyRelationshipMappings];
     if (mappedAttributes || mappedRelationships) {

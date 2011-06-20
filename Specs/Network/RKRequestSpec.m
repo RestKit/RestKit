@@ -41,6 +41,30 @@
 	[expectThat(response.statusCode) should:be(200)];
 }
 
+#pragma mark - Basics
+
+- (void)itShouldSetURLRequestHTTPBody {
+    NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    NSString* JSON = @"whatever";
+    NSData* data = [JSON dataUsingEncoding:NSASCIIStringEncoding];
+    request.HTTPBody = data;
+    [expectThat(request.URLRequest.HTTPBody) should:be(data)];
+    [expectThat(request.HTTPBody) should:be(data)];
+    [expectThat(request.HTTPBodyString) should:be(JSON)];
+}
+
+- (void)itShouldSetURLRequestHTTPBodyByString {
+    NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    NSString* JSON = @"whatever";
+    NSData* data = [JSON dataUsingEncoding:NSASCIIStringEncoding];
+    request.HTTPBodyString = JSON;
+    [expectThat(request.URLRequest.HTTPBody) should:be(data)];
+    [expectThat(request.HTTPBody) should:be(data)];
+    [expectThat(request.HTTPBodyString) should:be(JSON)];
+}
+
 #pragma mark - Background Policies
 
 - (void)itShouldSendTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyNone {

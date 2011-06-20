@@ -142,6 +142,22 @@
 	}
 }
 
+- (NSData*)HTTPBody {
+    return self.URLRequest.HTTPBody;
+}
+
+- (void)setHTTPBody:(NSData *)HTTPBody {
+    [self.URLRequest setHTTPBody:HTTPBody];
+}
+
+- (NSString*)HTTPBodyString {
+    return [[[NSString alloc] initWithData:self.URLRequest.HTTPBody encoding:NSASCIIStringEncoding] autorelease];
+}
+
+- (void)setHTTPBodyString:(NSString *)HTTPBodyString {
+    [self.URLRequest setHTTPBody:[HTTPBodyString dataUsingEncoding:NSASCIIStringEncoding]];
+}
+
 - (void)addHeadersToRequest {
 	NSString* header;
 	for (header in _additionalHTTPHeaders) {

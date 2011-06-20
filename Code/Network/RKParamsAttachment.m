@@ -84,16 +84,17 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (void)dealloc {
-	[_fileName release];
-	[_MIMEType release];
-	
-	[_MIMEHeader release];
-	_MIMEHeader = nil;
-	
+    [_name release];
+    [_fileName release];
+    [_MIMEType release];
+
+    [_MIMEHeader release];
+    _MIMEHeader = nil;
+
     [_bodyStream close];
-	[_bodyStream release];
-	_bodyStream = nil;
-	
+    [_bodyStream release];
+    _bodyStream = nil;
+
     [super dealloc];
 }
 

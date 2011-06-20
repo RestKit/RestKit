@@ -32,6 +32,7 @@
     RKObjectMapping* _objectMapping;    
     id<RKObjectMappingOperationDelegate> _delegate;
     id<RKObjectFactory> _objectFactory;
+    NSDictionary* _nestedAttributeSubstitution;
 }
 
 /**

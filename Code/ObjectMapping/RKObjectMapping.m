@@ -9,6 +9,9 @@
 #import "RKObjectMapping.h"
 #import "RKObjectRelationshipMapping.h"
 
+// Constants
+NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
+
 @implementation RKObjectMapping
 
 @synthesize objectClass = _objectClass;
@@ -17,6 +20,7 @@
 @synthesize rootKeyPath = _rootKeyPath;
 @synthesize setNilForMissingAttributes = _setNilForMissingAttributes;
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
+@synthesize forceCollectionMapping = _forceCollectionMapping;
 
 + (id)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [self new];
@@ -31,6 +35,7 @@
         _dateFormatStrings = [[NSMutableArray alloc] initWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
         self.setNilForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;
+        self.forceCollectionMapping = NO;
     }
     
     return self;
@@ -183,6 +188,10 @@
         // TODO: Raise proper exception here, argument error...
     }
     va_end(args);
+}
+
+- (void)mapKeyOfNestedDictionaryToAttribute:(NSString*)attributeName {    
+    [self mapKeyPath:RKObjectMappingNestingAttributeKeyName toAttribute:attributeName];
 }
 
 @end

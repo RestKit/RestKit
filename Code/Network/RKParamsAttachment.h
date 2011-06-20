@@ -15,7 +15,6 @@
  */
 @interface RKParamsAttachment : NSObject {
 	NSString* _name;
-	NSString* _boundary;
 	NSString* _fileName;
 	NSString* _MIMEType;
 
