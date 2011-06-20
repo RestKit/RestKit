@@ -84,16 +84,17 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (void)dealloc {
-	[_fileName release];
-	[_MIMEType release];
-	
-	[_MIMEHeader release];
-	_MIMEHeader = nil;
-	
+    [_name release];
+    [_fileName release];
+    [_MIMEType release];
+
+    [_MIMEHeader release];
+    _MIMEHeader = nil;
+
     [_bodyStream close];
-	[_bodyStream release];
-	_bodyStream = nil;
-	
+    [_bodyStream release];
+    _bodyStream = nil;
+
     [super dealloc];
 }
 
@@ -164,11 +165,11 @@ extern NSString* const kRKStringBoundary;
 		NSUInteger headerBytesRemaining, bytesRemainingInBuffer;
 		
 		headerBytesRemaining = _MIMEHeaderLength - _delivered;
-		bytesRemainingInBuffer = maxLength - sent;
+		bytesRemainingInBuffer = maxLength;
 		
 		// Send the entire header if there is room
         read       = (headerBytesRemaining < bytesRemainingInBuffer) ? headerBytesRemaining : bytesRemainingInBuffer;
-        [_MIMEHeader getBytes:buffer + sent range:NSMakeRange(_delivered, read)];
+        [_MIMEHeader getBytes:buffer range:NSMakeRange(_delivered, read)];
 		
         sent += read;
         _delivered += sent;

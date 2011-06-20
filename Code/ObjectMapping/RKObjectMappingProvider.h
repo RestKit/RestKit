@@ -13,31 +13,28 @@
  by evaluating the current keyPath being operated on
  */
 @interface RKObjectMappingProvider : NSObject {
-    NSMutableDictionary* _mappings;
+    NSMutableArray* _objectMappings;
+    NSMutableDictionary* _objectMappingsByKeyPath;
     NSMutableDictionary* _serializationMappings;
 }
 
 /**
  Set a mapping for a keypath that comes back in your payload
+ 
+ @deprecated
  */
-- (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath;
+- (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath DEPRECATED_ATTRIBUTE;
+
+/**
+ Configure an object mapping to handle data that appears at a particular keyPath in
+ a payload loaded from a 
+ */
+- (void)setObjectMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath;
 
 /**
  Returns the object mapping to use for mapping the specified keyPath into an object graph
  */
 - (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
-
-/**
- Set a mapping to serialize objects of a specific class into a representation
- suitable for transport over HTTP. Used by the object manager during postObject: and putObject:
- */
-- (void)setSerializationMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass;
-
-/**
- returns the serialization mapping for a specific object class
- which has been previously registered.
- */
-- (RKObjectMapping*)serializationMappingForClass:(Class)objectClass;
 
 /**
  Returns a dictionary where the keys are mappable keyPaths and the values are the object
@@ -77,5 +74,41 @@
     [[RKObjectManager sharedManager].mappingProvider setSerializationMapping:serializationMappingForPerson forClass:[Person class]];
  */
 - (void)registerMapping:(RKObjectMapping*)objectMapping withRootKeyPath:(NSString*)keyPath;
+
+/**
+ Adds an object mapping to the provider for later retrieval. The mapping is not bound to a particular keyPath and
+ must be explicitly set on an instance of RKObjectLoader or RKObjectMappingOperation to be applied. This is useful
+ in cases where the remote system does not namespace resources in a keyPath that can be used for disambiguation.
+ 
+ You can retrieve mappings added to the provider by invoking objectMappingsForClass: and objectMappingForClass:
+ 
+ @see objectMappingsForClass:
+ @see objectMappingForClass:
+ */
+- (void)addObjectMapping:(RKObjectMapping*)objectMapping;
+
+/**
+ Returns all object mappings registered for a particular class on the provider. The collection of mappings is assembled
+ by searching for all mappings added via addObjctMapping: and then consulting those registered via objectMappingForKeyPath:
+ */
+- (NSArray*)objectMappingsForClass:(Class)theClass;
+
+/**
+ Returns the first object mapping for a particular class in the provider. Mappings registered via addObjectMapping: take
+ precedence over those registered via setObjectMapping:forKeyPath:
+ */
+- (RKObjectMapping*)objectMappingForClass:(Class)theClass;
+
+/**
+ Set a mapping to serialize objects of a specific class into a representation
+ suitable for transport over HTTP. Used by the object manager during postObject: and putObject:
+ */
+- (void)setSerializationMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass;
+
+/**
+ returns the serialization mapping for a specific object class
+ which has been previously registered.
+ */
+- (RKObjectMapping*)serializationMappingForClass:(Class)objectClass;
 
 @end

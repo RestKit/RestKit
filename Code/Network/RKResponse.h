@@ -236,7 +236,7 @@
 - (BOOL)isXML;
 
 /**
- * True when the server turned an XML response (MIME type is application/json)
+ * True when the server turned an JSON response (MIME type is application/json)
  */
 - (BOOL)isJSON;
 

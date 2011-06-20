@@ -38,6 +38,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 - (void)dealloc {
 	[_attachments release];
+    [_footer release];
+    
 	[super dealloc];
 }
 

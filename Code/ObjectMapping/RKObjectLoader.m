@@ -145,7 +145,7 @@
         if (error.domain == RKRestKitErrorDomain && error.code == RKObjectMapperErrorUnmappableContent) {
             // If this is a delete request, and the error is an "unmappable content" error, return an empty result
             // because delete requests should allow for no objects to come back in the response (you just deleted the object).
-            result = [[[RKObjectMappingResult alloc] initWithDictionary:[NSDictionary dictionary]] autorelease];
+            result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
         }
     }
     
@@ -153,7 +153,7 @@
         RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
         
         // TODO: Construct a composite error that wraps up all the other errors
-        *error = [mapper.errors lastObject];
+        if (error) *error = [mapper.errors lastObject];   
         return nil;
     }
     
@@ -164,7 +164,7 @@
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
-        [mappingProvider setMapping:self.objectMapping forKeyPath:@""];
+        [mappingProvider setObjectMapping:self.objectMapping forKeyPath:@""];
     } else {
         mappingProvider = self.objectManager.mappingProvider;
     }

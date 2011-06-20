@@ -74,7 +74,7 @@ typedef enum {
     RKObjectManager* manager = [RKObjectManager managerWithBaseURL:myBaseURL];
     RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
     [mapping mapAttributes:@"title", @"body", @"publishedAt", nil];
-    [manager.mappingProvider setMapping:articleMapping forKeyPath:@"article"];
+    [manager.mappingProvider setObjectMapping:articleMapping forKeyPath:@"article"];
 
     // Generate an inverse mapping for transforming Article -> NSMutableDictionary. 
     [manager.mappingProvider setSerializationMapping:[articleMapping inverseMapping] forClass:[Article class]];`
