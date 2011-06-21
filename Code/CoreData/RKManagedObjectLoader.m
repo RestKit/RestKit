@@ -125,8 +125,17 @@
 // Overloaded to handle deleting an object orphaned by a failed postObject:
 - (void)handleResponseError {
     [super handleResponseError];
-    [[self.objectStore managedObjectContext] deleteObject:[self.objectStore objectWithID:_targetObjectID]];
-    [self.objectStore save];
+    
+    if (_targetObjectID) {
+        RKLogInfo(@"Error response encountered: Deleting existing managed object with ID: %@", _targetObjectID);
+        NSManagedObject* objectToDelete = [self.objectStore objectWithID:_targetObjectID];
+        if (objectToDelete) {
+            [[self.objectStore managedObjectContext] deleteObject:objectToDelete];
+            [self.objectStore save];
+        } else {
+            RKLogWarning(@"Unable to delete existing managed object with ID: %@. Object not found in the store.", _targetObjectID);
+        }
+    }
 }
 
 @end
