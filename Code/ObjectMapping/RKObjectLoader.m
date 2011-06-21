@@ -197,17 +197,19 @@
 }
 
 - (BOOL)isResponseMappable {
+    if ([self.response isServiceUnavailable]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
+    }
+    
 	if ([self.response isFailure]) {
 		[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:self.response.failureError];
         
 		[self finalizeLoad:NO];
         
 		return NO;
-	} else if ([self.response isError]) {
-        [self handleResponseError];
-		return NO;
-	} else if ([self.response isSuccessful] && NO == [self canParseMIMEType:[self.response MIMEType]]) {
-        RKLogWarning(@"Encountered unexpected response code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
+	} else if (NO == [self canParseMIMEType:[self.response MIMEType]]) {
+        // We can't parse the response, it's unmappable regardless of the status code
+        RKLogWarning(@"Encountered unexpected response with status code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
         if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
         } else {
@@ -218,16 +220,16 @@
         [self finalizeLoad:NO];
         
         return NO;
+    } else if ([self.response isError]) {
+        // This is an error and we can map the MIME Type of the response
+        [self handleResponseError];
+		return NO;
     }
     
 	return YES;
 }
 
 - (void)handleResponseError {
-    if ([self.response isServiceUnavailable]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
-    }
-    
     // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
     // target object
     NSError* error = nil;

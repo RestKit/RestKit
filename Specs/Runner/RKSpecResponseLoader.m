@@ -18,6 +18,7 @@
 @synthesize success = _success;
 @synthesize timeout = _timeout;
 @synthesize wasCancelled = _wasCancelled;
+@synthesize unknownResponse = _unknownResponse;
 
 + (RKSpecResponseLoader*)responseLoader {
     return [[[self alloc] init] autorelease];
@@ -102,6 +103,7 @@
     NSLog(@"*** Loaded unexpected response in spec response loader");
     _success = NO;
     _awaitingResponse = NO;
+    _unknownResponse = YES;
 }
 
 @end

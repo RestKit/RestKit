@@ -7,11 +7,10 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKRailsRouter.h"
 #import "RKObjectMappingProvider.h"
 #import "RKErrorMessage.h"
 
-@interface RKSpecComplexUser : RKObject {
+@interface RKSpecComplexUser : NSObject {
     NSNumber* _userID;
     NSString* _firstname;
     NSString* _lastname;
@@ -111,10 +110,19 @@
     [expectThat(error2.errorMessage) should:be(@"error2")];
 }
 
+- (void)itShouldNotCrashWhenLoadingAnErrorResponseWithAnUnmappableMIMEType {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKSpecStubNetworkAvailability(YES);
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [objectManager loadObjectsAtResourcePath:@"/404" delegate:loader];
+    [loader waitForResponse];
+    assertThatBool(loader.unknownResponse, is(equalToBool(YES)));
+}
+
 #pragma mark - Complex JSON
 
 - (void)itShouldLoadAComplexUserObjectWithTargetObject {
-    RKSpecComplexUser* user = [RKSpecComplexUser object];
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
@@ -170,7 +178,7 @@
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSend {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [objectManager setMappingProvider:[self providerForComplexUser]];
-    RKSpecComplexUser* user = [RKSpecComplexUser object];
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
 
     // Explicitly init so we don't get a managed object loader...
@@ -186,7 +194,7 @@
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSendAsynchronously {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [objectManager setMappingProvider:[self providerForComplexUser]];
-    RKSpecComplexUser* user = [RKSpecComplexUser object];
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
     
     // Explicitly init so we don't get a managed object loader...
@@ -202,7 +210,7 @@
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSendSynchronously {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [objectManager setMappingProvider:[self providerForComplexUser]];
-    RKSpecComplexUser* user = [RKSpecComplexUser object];
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
     
     // Explicitly init so we don't get a managed object loader...
@@ -215,7 +223,7 @@
 
 @end
 
-@interface RKAnotherUser : RKObject {
+@interface RKAnotherUser : NSObject {
     NSNumber *userID;
     NSString *firstName;
     NSString *lastName;
@@ -292,20 +300,19 @@
     return provider;
 }
 
-- (void)itShouldMapWhenGivenARegisteredClassMapping {
-    RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-    
-    [objectManager setMappingProvider:[self mappingProvider]];
-
-    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    [objectManager loadObjectsAtResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-    [responseLoader waitForResponse];
-    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-    [expectThat(user.firstName) should:be(@"Test")];
-}
-
+//- (void)itShouldMapWhenGivenARegisteredClassMapping {
+//    RKObjectManager* objectManager = RKSpecNewObjectManager();
+//    RKSpecStubNetworkAvailability(YES);
+//    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
+//    [router setModelName:@"user" forClass:[RKAnotherUser class]];
+//    
+//    [objectManager setMappingProvider:[self mappingProvider]];
+//
+//    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+//    [objectManager loadObjectsAtResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
+//    [responseLoader waitForResponse];
+//    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
+//    [expectThat(user.firstName) should:be(@"Test")];
+//}
 
 @end

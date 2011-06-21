@@ -148,7 +148,7 @@
 @implementation RKObjectMappingNextGenSpec
 
 - (void)beforeAll {
-    RKLogConfigureByName("RestKit/Object Mapping", RKLogLevelCritical);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelCritical);
     RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
 }
 

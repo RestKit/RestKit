@@ -71,6 +71,12 @@ class RestKit::SpecServer < Sinatra::Base
     params.to_json
   end
   
+  get '/404' do
+    status 404
+    content_type 'text/html'
+    "File Not Found"
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end
