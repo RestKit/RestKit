@@ -12,7 +12,7 @@ static BOOL loggingInitialized = NO;
 
 void RKLogInitialize() {
     if (loggingInitialized == NO) {
-        RKLogConfigureByName("RestKit*", RKLogLevelDefault);
+        lcl_configure_by_name("RestKit*", RKLogLevelDefault);
         RKLogInfo(@"RestKit initialized...");
         loggingInitialized = YES;
     }

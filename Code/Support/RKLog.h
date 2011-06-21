@@ -79,7 +79,8 @@ lcl_log(RKLogComponent, lcl_vTrace, @"" __VA_ARGS__);
 #define RKLogLevelTrace     lcl_vTrace
 
 /**
- Alias the LibComponentLogger logging configuration method.
+ Alias the LibComponentLogger logging configuration method. Also ensures logging
+ is initialized for the framework.
  
  Expects the name of the component and a log level.
  
@@ -92,6 +93,7 @@ lcl_log(RKLogComponent, lcl_vTrace, @"" __VA_ARGS__);
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelCritical);
  */
 #define RKLogConfigureByName(name, level)                                         \
+RKLogInitialize();                                                                \
 lcl_configure_by_name(name, level);
 
 /**
