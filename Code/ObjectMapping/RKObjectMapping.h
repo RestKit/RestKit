@@ -146,6 +146,20 @@ relationship. Relationships are processed using an object mapping as well.
 - (id)mappingForKeyPath:(NSString*)sourceKeyPath;
 
 /**
+ Returns the attribute mapping targeting the specified attribute on the destination object
+ 
+ @param attributeKey The name of the attribute we want to retrieve the mapping for
+ */
+- (RKObjectAttributeMapping*)mappingForAttribute:(NSString*)attributeKey;
+
+/**
+ Returns the relationship mapping targeting the specified relationship on the destination object
+ 
+ @param relationshipKey The name of the relationship we want to retrieve the mapping for
+ */
+- (RKObjectRelationshipMapping*)mappingForRelationship:(NSString*)relationshipKey;
+
+/**
  Define an attribute mapping for one or more keyPaths where the source keyPath and destination attribute property
  have the same name.
  

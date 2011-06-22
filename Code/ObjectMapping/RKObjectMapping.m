@@ -194,4 +194,24 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [self mapKeyPath:RKObjectMappingNestingAttributeKeyName toAttribute:attributeName];
 }
 
+- (RKObjectAttributeMapping*)mappingForAttribute:(NSString*)attributeKey {
+    for (RKObjectAttributeMapping* mapping in [self attributeMappings]) {
+        if ([mapping.destinationKeyPath isEqualToString:attributeKey]) {
+            return mapping;
+        }
+    }
+    
+    return nil;
+}
+
+- (RKObjectRelationshipMapping*)mappingForRelationship:(NSString*)relationshipKey {
+    for (RKObjectRelationshipMapping* mapping in [self relationshipMappings]) {
+        if ([mapping.destinationKeyPath isEqualToString:relationshipKey]) {
+            return mapping;
+        }
+    }
+    
+    return nil;
+}
+
 @end

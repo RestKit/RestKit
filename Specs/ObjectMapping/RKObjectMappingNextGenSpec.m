@@ -243,6 +243,20 @@
     assertThat([inverse mappingForKeyPath:@"firstName"], isNot(nilValue()));
 }
 
+- (void)itShouldLetYouRetrieveMappingsByAttribute {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* attributeMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"nameAttribute"];
+    [mapping addAttributeMapping:attributeMapping];
+    assertThat([mapping mappingForAttribute:@"nameAttribute"], is(equalTo(attributeMapping)));
+}
+
+- (void)itShouldLetYouRetrieveMappingsByRelationship {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectRelationshipMapping* relationshipMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friend" toKeyPath:@"friendRelationship" objectMapping:mapping];
+    [mapping addRelationshipMapping:relationshipMapping];
+    assertThat([mapping mappingForRelationship:@"friendRelationship"], is(equalTo(relationshipMapping)));
+}
+
 #pragma mark - RKObjectMapper Specs
 
 - (void)itShouldPerformBasicMapping {

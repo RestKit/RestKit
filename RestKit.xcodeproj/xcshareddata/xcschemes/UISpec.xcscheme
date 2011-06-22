@@ -87,13 +87,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
-            isEnabled = "NO">
+            value = "RKObjectMappingNextGenSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldNotCrashWhenLoadingAnErrorResponseWithAnUnmappableMIMEType"
-            isEnabled = "NO">
+            value = "itShouldLetYouRetrieveMappingsByRelationship"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

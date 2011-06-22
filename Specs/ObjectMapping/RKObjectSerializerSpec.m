@@ -197,5 +197,21 @@
     assertThat(data, is(equalTo(@"{\"hasMany\":[{\"date\":\"1970-01-01 00:00:00 +0000\"}],\"stringTest\":\"The string\"}")));
 }
 
-@end
+- (void)itShouldSerializeAnNSNumberContainingABooleanToTrueFalseIfRequested {
+    NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSNumber numberWithBool:YES], @"boolean", nil];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
+    RKObjectAttributeMapping* attributeMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"boolean" toKeyPath:@"boolean-value"];
+    [mapping addAttributeMapping:attributeMapping];
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
+    
+    NSError* error = nil;
+    id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
+    
+    NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
+    data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    [expectThat(error) should:be(nil)];
+    [expectThat(data) should:be(@"{\"boolean-value\":true}")];
+}
 
+@end
