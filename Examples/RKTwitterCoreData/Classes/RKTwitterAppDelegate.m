@@ -25,7 +25,7 @@
     [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
     
     // Initialize object store
-    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:RKDefaultSeedDatabaseFileName managedObjectModel:nil];
+    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:RKDefaultSeedDatabaseFileName managedObjectModel:nil delegate:nil];
     
     // Setup our object mappings    
     /*!
@@ -60,8 +60,8 @@
 	[statusMapping.dateFormatStrings addObject:@"E MMM d HH:mm:ss Z y"];
     
     // Register our mappings with the provider
-    [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
-    [objectManager.mappingProvider setMapping:statusMapping forKeyPath:@"status"];
+    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"user"];
+    [objectManager.mappingProvider setObjectMapping:statusMapping forKeyPath:@"status"];
     
     // Uncomment this to use XML, comment it to use JSON
     //  objectManager.acceptMIMEType = RKMIMETypeXML;
