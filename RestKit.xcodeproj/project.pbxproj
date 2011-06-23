@@ -43,6 +43,8 @@
 		250D5C0013A069C400471F0E /* lcl_config_components.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BFF13A069C400471F0E /* lcl_config_components.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250D5C0213A069EA00471F0E /* lcl_config_extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5C0113A069EA00471F0E /* lcl_config_extensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250D5C0413A06A4D00471F0E /* lcl_config_logger.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5C0313A06A4D00471F0E /* lcl_config_logger.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2515E7BA13B36A7D00E013A4 /* ArrayOfResults.json in Resources */ = {isa = PBXBuildFile; fileRef = 2515E7B913B36A7D00E013A4 /* ArrayOfResults.json */; };
+		2515E7BD13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2515E7BC13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m */; };
 		251899FC1370F4E00092B049 /* RKLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 251899FB1370F4E00092B049 /* RKLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251939B613A94B670073A39B /* NSString+RestKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 251939B213A94B5F0073A39B /* NSString+RestKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		251939B713A94B670073A39B /* NSString+RestKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 251939B313A94B5F0073A39B /* NSString+RestKit.m */; };
@@ -410,6 +412,9 @@
 		250D5BFF13A069C400471F0E /* lcl_config_components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_components.h; sourceTree = "<group>"; };
 		250D5C0113A069EA00471F0E /* lcl_config_extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_extensions.h; sourceTree = "<group>"; };
 		250D5C0313A06A4D00471F0E /* lcl_config_logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_logger.h; sourceTree = "<group>"; };
+		2515E7B913B36A7D00E013A4 /* ArrayOfResults.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfResults.json; sourceTree = "<group>"; };
+		2515E7BB13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectLoaderSpecResultModel.h; sourceTree = "<group>"; };
+		2515E7BC13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectLoaderSpecResultModel.m; sourceTree = "<group>"; };
 		251899FB1370F4E00092B049 /* RKLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLog.h; sourceTree = "<group>"; };
 		251939B213A94B5F0073A39B /* NSString+RestKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+RestKit.h"; sourceTree = "<group>"; };
 		251939B313A94B5F0073A39B /* NSString+RestKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+RestKit.m"; sourceTree = "<group>"; };
@@ -1127,6 +1132,8 @@
 				3F032AAA10FFBC1F00F35142 /* RKResident.m */,
 				256FDE53112DB0B90077F340 /* RKObjectMapperSpecModel.h */,
 				256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */,
+				2515E7BB13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.h */,
+				2515E7BC13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1289,6 +1296,7 @@
 		25952ED9136F563E00D04F93 /* JSON */ = {
 			isa = PBXGroup;
 			children = (
+				2515E7B913B36A7D00E013A4 /* ArrayOfResults.json */,
 				251939EC13ABA06D0073A39B /* DynamicKeysWithRelationship.json */,
 				251939E613AABED40073A39B /* DynamicKeys.json */,
 				251939E713AABED40073A39B /* error.json */,
@@ -1888,6 +1896,7 @@
 				251939EB13AABED40073A39B /* errors.json in Resources */,
 				251939ED13ABA06D0073A39B /* DynamicKeysWithRelationship.json in Resources */,
 				25BA443513ABB34900ADC7D0 /* tab_data.xml in Resources */,
+				2515E7BA13B36A7D00E013A4 /* ArrayOfResults.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2118,6 +2127,7 @@
 				25DBB3A413A2506900CE90F1 /* RKObjectMappingOperationSpec.m in Sources */,
 				25DBB3A513A2506C00CE90F1 /* RKManagedObjectMappingOperationSpec.m in Sources */,
 				25AA85D613B1065000A95E2A /* RKObjectLoaderSpec.m in Sources */,
+				2515E7BD13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

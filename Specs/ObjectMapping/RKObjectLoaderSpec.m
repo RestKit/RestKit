@@ -10,6 +10,9 @@
 #import "RKObjectMappingProvider.h"
 #import "RKErrorMessage.h"
 
+// Models
+#import "RKObjectLoaderSpecResultModel.h"
+
 @interface RKSpecComplexUser : NSObject {
     NSNumber* _userID;
     NSString* _firstname;
@@ -53,8 +56,6 @@
 
 /////////////////////////////////////////////////////////////////////////////
 
-// TODO: These specs need to be executed against the RKManagedObjectLoader and RKObjectLoader
-// until we can collapse the functionality somehow...
 @interface RKObjectLoaderSpec : RKSpec {
     
 }
@@ -221,98 +222,21 @@
     [mockObject verify];
 }
 
-@end
-
-@interface RKAnotherUser : NSObject {
-    NSNumber *userID;
-    NSString *firstName;
-    NSString *lastName;
-    NSString *email;
-    NSString *phone;
-    NSString *availability;
-    NSArray  *interests;
-    NSString *singleAccessToken;
-    NSString *password;
-    NSString *passwordConfirmation;
-    NSString *facebookAccessToken;
-    NSDate *facebookAccessTokenExpirationDate;
+- (void)itShouldLoadResultsNestedAtAKeyPath {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKObjectMapping* objectMapping = [RKObjectMapping mappingForClass:[RKObjectLoaderSpecResultModel class]];
+    [objectMapping mapKeyPath:@"id" toAttribute:@"ID"];
+    [objectMapping mapKeyPath:@"ends_at" toAttribute:@"endsAt"];
+    [objectMapping mapKeyPath:@"photo_url" toAttribute:@"photoURL"];
+    [objectManager.mappingProvider setObjectMapping:objectMapping forKeyPath:@"results"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [objectManager loadObjectsAtResourcePath:@"/JSON/ArrayOfResults.json" delegate:loader];
+    [loader waitForResponse];
+    assertThat([loader objects], hasCountOf(2));
+    assertThat([[[loader objects] objectAtIndex:0] ID], is(equalToInt(226)));
+    assertThat([[[loader objects] objectAtIndex:0] photoURL], is(equalTo(@"1308262872.jpg")));
+    assertThat([[[loader objects] objectAtIndex:1] ID], is(equalToInt(235)));
+    assertThat([[[loader objects] objectAtIndex:1] photoURL], is(equalTo(@"1308634984.jpg")));
 }
-
-@property (nonatomic, retain) NSString *firstName;
-@property (nonatomic, retain) NSString *lastName;
-@property (nonatomic, retain) NSArray  *interests;
-@property (nonatomic, retain) NSString *email;
-@property (nonatomic, retain) NSString *phone;
-@property (nonatomic, retain) NSString *singleAccessToken;
-@property (nonatomic, retain) NSNumber *userID;
-@property (nonatomic, retain) NSString *password;
-@property (nonatomic, retain) NSString *passwordConfirmation;
-@property (nonatomic, retain) NSString *facebookAccessToken;
-@property (nonatomic, retain) NSDate* facebookAccessTokenExpirationDate;
-
-@end
-
-@implementation RKAnotherUser
-
-@synthesize firstName;
-@synthesize lastName;
-@synthesize interests;
-@synthesize email;
-@synthesize phone;
-@synthesize singleAccessToken;
-@synthesize userID;
-@synthesize password;
-@synthesize passwordConfirmation;
-@synthesize facebookAccessToken;
-@synthesize facebookAccessTokenExpirationDate;
-
-+ (NSDictionary*)elementToPropertyMappings {
-    return [NSDictionary dictionaryWithKeysAndObjects:
-            @"id", @"userID",
-            @"first_name", @"firstName",
-            @"last_name", @"lastName",
-            @"email", @"email",
-            @"phone", @"phone",
-            @"user_interests", @"interests",
-            @"single_access_token", @"singleAccessToken",
-            @"password", @"password",
-            @"password_confirmation", @"passwordConfirmation",
-            @"facebook_access_token", @"facebookAccessToken",
-            @"facebook_access_token_expiration_date",
-            @"facebookAccessTokenExpirationDate",
-            nil];
-}
-
-@end
-
-// Works with Michael Deung's RailsUser.json
-@interface RKUserRailsJSONMappingSpec : RKSpec {
-}
-@end
-
-@implementation RKUserRailsJSONMappingSpec
-
-- (RKObjectMappingProvider*)mappingProvider {
-    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKAnotherUser class]];
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"first_name" toKeyPath:@"firstName"]];
-    [provider setObjectMapping:mapping forKeyPath:@"user"];
-    return provider;
-}
-
-//- (void)itShouldMapWhenGivenARegisteredClassMapping {
-//    RKObjectManager* objectManager = RKSpecNewObjectManager();
-//    RKSpecStubNetworkAvailability(YES);
-//    RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-//    [router setModelName:@"user" forClass:[RKAnotherUser class]];
-//    
-//    [objectManager setMappingProvider:[self mappingProvider]];
-//
-//    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-//    [objectManager loadObjectsAtResourcePath:@"/JSON/RailsUser.json" delegate:responseLoader];
-//    [responseLoader waitForResponse];
-//    RKAnotherUser* user = [responseLoader.objects objectAtIndex:0];
-//    [expectThat(user.firstName) should:be(@"Test")];
-//}
 
 @end

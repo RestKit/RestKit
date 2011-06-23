@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingNextGenSpec"
+            value = "RKObjectLoaderSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldLetYouRetrieveMappingsByRelationship"
+            value = "itShouldLoadResultsNestedAtAKeyPath"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

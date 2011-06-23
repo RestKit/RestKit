@@ -53,7 +53,7 @@ def run(command)
   system(command)
   if $? != 0
     puts "[!] Failed with exit code #{$?} while running: `#{command}`"
-    exit($?)
+    exit($?.to_i)
   end
 end
 
