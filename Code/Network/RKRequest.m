@@ -202,6 +202,10 @@
 	[_URLRequest setHTTPMethod:[self HTTPMethod]];
 	[self setRequestBody];
 	[self addHeadersToRequest];
+    
+    NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
+    RKLogTrace(@"Prepared %@ URLRequest '%@' for URL %@. HTTP Headers: %@. HTTP Body: %@.", [self HTTPMethod], _URLRequest, [[self URL] absoluteString], [_URLRequest allHTTPHeaderFields], body);
+    [body release];
 }
 
 - (void)cancelAndInformDelegate:(BOOL)informDelegate {
@@ -244,10 +248,8 @@
 }
 
 - (void)fireAsynchronousRequest {
+    RKLogDebug(@"Sending asynchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
     [self prepareURLRequest];
-    NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-    RKLogDebug(@"Sending %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-    [body release];        
     
     _isLoading = YES;    
     
@@ -340,10 +342,8 @@
     _sentSynchronously = YES;
 
 	if ([self shouldDispatchRequest]) {
-		[self prepareURLRequest];
-		NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-		RKLogDebug(@"Sending synchronous %@ request to URL %@. HTTP Body: %@", [self HTTPMethod], [[self URL] absoluteString], body);
-		[body release];
+		[self prepareURLRequest];        
+		RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 
