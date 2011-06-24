@@ -204,7 +204,7 @@
 	[self addHeadersToRequest];
     
     NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
-    RKLogTrace(@"Prepared %@ URLRequest '%@' for URL %@. HTTP Headers: %@. HTTP Body: %@.", [self HTTPMethod], _URLRequest, [[self URL] absoluteString], [_URLRequest allHTTPHeaderFields], body);
+    RKLogTrace(@"Prepared %@ URLRequest '%@'. HTTP Headers: %@. HTTP Body: %@.", [self HTTPMethod], _URLRequest, [_URLRequest allHTTPHeaderFields], body);
     [body release];
 }
 
@@ -335,7 +335,7 @@
 
 - (RKResponse*)sendSynchronously {
     NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
-	NSURLResponse* URLResponse = nil;
+	NSHTTPURLResponse* URLResponse = nil;
 	NSError* error;
 	NSData* payload = nil;
 	RKResponse* response = nil;
