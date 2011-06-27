@@ -48,6 +48,8 @@ typedef enum {
 
 - (NSString*)etagForRequest:(RKRequest*)request;
 
+- (NSDate*)cacheDateForRequest:(RKRequest*)request;
+
 - (void)invalidateRequest:(RKRequest*)request;
 
 - (void)invalidateWithStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy;

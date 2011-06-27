@@ -27,7 +27,8 @@
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
             params = _params, userData = _userData, username = _username, password = _password, method = _method,
-            forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache;
+            forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache,
+            cacheTimeoutInterval = _cacheTimeoutInterval;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -44,6 +45,7 @@
         [self reset];
         _forceBasicAuthentication = NO;
 		_cachePolicy = RKRequestCachePolicyDefault;
+        _cacheTimeoutInterval = 0;
 	}
 	return self;
 }
@@ -268,23 +270,37 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
 
-- (BOOL)shouldDispatchRequest {    
+- (BOOL)shouldLoadFromCache {
+    // if RKRequestCachePolicyEnabled or if RKRequestCachePolicyTimeout and we are in the timeout
+    if ([self.cache hasResponseForRequest:self]) {
+        if (self.cachePolicy & RKRequestCachePolicyEnabled) {
+            return YES;
+        } else if (self.cachePolicy & RKRequestCachePolicyTimeout) {
+            NSDate* date = [self.cache cacheDateForRequest:self];
+            NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:date];
+            return interval <= self.cacheTimeoutInterval;
+        }
+    }
+    return NO;
+}
+
+- (RKResponse*)loadResponseFromCache {
+    RKLogDebug(@"Found cached content, loading...");
+    return [self.cache responseForRequest:self];
+}
+
+- (BOOL)shouldDispatchRequest {
     return [RKClient sharedClient] == nil || [[RKClient sharedClient] isNetworkAvailable];
 }
 
 - (void)sendAsynchronously {
     NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
-    _sentSynchronously = NO;
-    if (self.cachePolicy & RKRequestCachePolicyEnabled) {
-        if ([self.cache hasResponseForRequest:self]) {
-            RKLogDebug(@"Found cached content, loading...");
-            _isLoading = YES;
-            [self didFinishLoad:[self.cache responseForRequest:self]];
-            return;
-        }
-    }
-    
-	if ([self shouldDispatchRequest]) {        
+    _sentSynchronously = NO;    
+	  if ([self shouldLoadFromCache]) {
+        RKResponse* response = [self loadResponseFromCache];
+        _isLoading = YES;
+        [self didFinishLoad:response];
+    } else if ([self shouldDispatchRequest]) {
 #if TARGET_OS_IPHONE
         // Background Request Policy support
         UIApplication* app = [UIApplication sharedApplication];
@@ -327,7 +343,7 @@
 			[self.cache hasResponseForRequest:self]) {
 
 			_isLoading = YES;
-			[self didFinishLoad:[self.cache responseForRequest:self]];
+			[self didFinishLoad:[self loadResponseFromCache]];
 
 		} else {
             RKLogCritical(@"SharedClient = %@ and network availability = %d", [RKClient sharedClient], [[RKClient sharedClient] isNetworkAvailable]);
@@ -349,12 +365,16 @@
 	RKResponse* response = nil;
     _sentSynchronously = YES;
 
-	if ([self shouldDispatchRequest]) {
-        RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
-		if (![self prepareURLRequest]) {
-            // TODO: Logging
-            return nil;
-        }
+	if ([self shouldLoadFromCache]) {
+        response = [self loadResponseFromCache];
+        _isLoading = YES;
+        [self didFinishLoad:response];
+    } else if ([self shouldDispatchRequest]) {
+      RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
+		  if (![self prepareURLRequest]) {
+      // TODO: Logging
+        return nil;
+      }
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 
@@ -378,7 +398,7 @@
 		if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
 			[self.cache hasResponseForRequest:self]) {
 
-			response = [self.cache responseForRequest:self];
+			response = [self loadResponseFromCache];
 
 		} else {
 			NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
@@ -404,7 +424,7 @@
 	if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
 		[self.cache hasResponseForRequest:self]) {
 
-		[self didFinishLoad:[self.cache responseForRequest:self]];
+		[self didFinishLoad:[self loadResponseFromCache]];
 	} else {
 		_isLoading = NO;
 
@@ -429,7 +449,7 @@
 	RKResponse* finalResponse = response;
 
 	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
-		finalResponse = [self.cache responseForRequest:self];
+		finalResponse = [self loadResponseFromCache];
 	}
 
 	if (![response wasLoadedFromCache] && [response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {

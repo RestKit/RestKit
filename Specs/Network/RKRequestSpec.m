@@ -324,6 +324,72 @@
     }
 }
 
+- (void)itShouldLoadFromTheCacheIfWeAreWithinTheTimeout {
+    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+    
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                        storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+    
+    NSString* url = [NSString stringWithFormat:@"%@/disk/cached", RKSpecGetBaseURL()];
+    NSURL* URL = [NSURL URLWithString:url];
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyTimeout;
+        request.cacheTimeoutInterval = 5;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached For 5 Seconds")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
+    }
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyTimeout;
+        request.cacheTimeoutInterval = 5;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        // Don't wait for a response as this actually returns synchronously.
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached For 5 Seconds")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
+    }
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyTimeout;
+        request.cacheTimeoutInterval = 5;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendSynchronously];
+        // Don't wait for a response as this actually returns synchronously.
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached For 5 Seconds")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
+    }
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyTimeout;
+        request.cacheTimeoutInterval = 0;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached For 5 Seconds")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
+    }
+}
+
 - (void)itShouldLoadFromTheCacheIfWeAreOffline {
     NSString* baseURL = RKSpecGetBaseURL();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",

@@ -245,6 +245,27 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	return etag;
 }
 
+- (NSDate*)cacheDateForRequest:(RKRequest*)request {
+	NSDate* date;
+    NSString* dateString;
+    
+    NSDictionary* responseHeaders = [self headersForRequest:request];
+    
+    [_cacheLock lock];
+    if (responseHeaders) {
+        for (NSString* responseHeader in responseHeaders) {
+            if ([[responseHeader uppercaseString] isEqualToString:[cacheDateHeaderKey uppercaseString]]) {
+                dateString = [responseHeaders objectForKey:responseHeader];
+            }
+        }
+    }
+	[_cacheLock unlock];
+    date = [[RKRequestCache rfc1123DateFormatter] dateFromString:dateString];
+    
+    RKLogDebug(@"Found cached date '%@' for '%@'", date, request);
+	return date;
+}
+
 - (void)invalidateRequest:(RKRequest*)request {
 	[_cacheLock lock];
     RKLogDebug(@"Invalidating cache entry for '%@'", request);
