@@ -54,6 +54,30 @@
 
 @end
 
+@interface RKSpecResponseLoaderWithWillMapData : RKSpecResponseLoader {
+    id _mappableData;
+}
+
+@property (nonatomic, readonly) id mappableData;
+
+@end
+
+@implementation RKSpecResponseLoaderWithWillMapData
+
+@synthesize mappableData = _mappableData;
+
+- (void)dealloc {
+    [_mappableData release];
+    [super dealloc];
+}
+
+- (void)objectLoader:(RKObjectLoader *)loader willMapData:(id)mappableData {
+    [mappableData setValue:@"monkey!" forKey:@"newKey"];
+    _mappableData = [mappableData retain];
+}
+
+@end
+
 /////////////////////////////////////////////////////////////////////////////
 
 @interface RKObjectLoaderSpec : RKSpec {
@@ -237,6 +261,15 @@
     assertThat([[[loader objects] objectAtIndex:0] photoURL], is(equalTo(@"1308262872.jpg")));
     assertThat([[[loader objects] objectAtIndex:1] ID], is(equalToInt(235)));
     assertThat([[[loader objects] objectAtIndex:1] photoURL], is(equalTo(@"1308634984.jpg")));
+}
+
+- (void)itShouldAllowMutationOfTheParsedDataInWillMapData {
+    RKSpecResponseLoaderWithWillMapData* loader = (RKSpecResponseLoaderWithWillMapData*)[RKSpecResponseLoaderWithWillMapData responseLoader];
+    RKObjectManager* manager = RKSpecNewObjectManager();
+    RKSpecStubNetworkAvailability(YES);
+    [manager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
+    [loader waitForResponse];
+    assertThat([loader.mappableData valueForKey:@"newKey"], is(equalTo(@"monkey!")));
 }
 
 @end

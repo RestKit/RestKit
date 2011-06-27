@@ -58,7 +58,8 @@
 /**
  Invoked just after parsing has completed, but before object mapping begins. This can be helpful
  to extract data from the parsed payload that is not object mapped, but is interesting for one
- reason or another.
+ reason or another. The mappableData will be made mutable via mutableCopy before the delegate
+ method is invoked.
  */
 - (void)objectLoader:(RKObjectLoader*)loader willMapData:(id)mappableData;
 

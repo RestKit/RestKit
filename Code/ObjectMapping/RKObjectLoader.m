@@ -131,6 +131,7 @@
     }
     
     if ([self.delegate respondsToSelector:@selector(objectLoader:willMapData:)]) {
+        parsedData = [[parsedData mutableCopy] autorelease];
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self willMapData:parsedData];
     }
     
