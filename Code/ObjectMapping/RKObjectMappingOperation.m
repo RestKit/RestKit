@@ -158,6 +158,17 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
     return ComparisonSender(sourceValue, comparisonSelector, destinationValue);
 }
 
+- (BOOL)validateValue:(id)value atKeyPath:(NSString*)keyPath {
+    NSError* validationError = nil;
+    BOOL success = [self.destinationObject validateValue:&value forKey:keyPath error:&validationError];
+    if (!success && validationError) {
+        // Do something with error?
+        RKLogError(@"Validation failed while mapping attribute at key path %@ to value %@. Error: %@", keyPath, value, [validationError localizedDescription]);
+    }
+    
+    return success;
+}
+
 - (BOOL)shouldSetValue:(id)value atKeyPath:(NSString*)keyPath {
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
@@ -169,11 +180,14 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
         return NO;
 	} else if (nil == value || nil == currentValue) {
 		// One is nil and the other is not
-        return YES;
+        return [self validateValue:value atKeyPath:keyPath];
 	}
     
-    BOOL isEqual = [self isValue:value equalToValue:currentValue];
-    return !isEqual;
+    if (! [self isValue:value equalToValue:currentValue]) {
+        // Validate value for key
+        return [self validateValue:value atKeyPath:keyPath];
+    }
+    return NO;
 }
 
 - (NSArray*)applyNestingToMappings:(NSArray*)mappings {
@@ -218,6 +232,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
     // Ensure that the value is different
     if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+        
         [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
         if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
