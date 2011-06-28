@@ -60,8 +60,11 @@
  to extract data from the parsed payload that is not object mapped, but is interesting for one
  reason or another. The mappableData will be made mutable via mutableCopy before the delegate
  method is invoked.
+ 
+ Note that the mappable data is a pointer to a pointer to allow you to replace the mappable data
+ with a new object to be mapped. You must dereference it to access the value.
  */
-- (void)objectLoader:(RKObjectLoader*)loader willMapData:(id)mappableData;
+- (void)objectLoader:(RKObjectLoader*)loader willMapData:(inout id *)mappableData;
 
 @end
 

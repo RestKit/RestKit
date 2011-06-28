@@ -92,8 +92,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldLoadResultsNestedAtAKeyPath"
-            isEnabled = "NO">
+            value = "itShouldAllowMutationOfTheParsedDataInWillMapData"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

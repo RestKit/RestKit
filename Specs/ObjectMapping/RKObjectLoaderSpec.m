@@ -71,9 +71,9 @@
     [super dealloc];
 }
 
-- (void)objectLoader:(RKObjectLoader *)loader willMapData:(id)mappableData {
-    [mappableData setValue:@"monkey!" forKey:@"newKey"];
-    _mappableData = [mappableData retain];
+- (void)objectLoader:(RKObjectLoader *)loader willMapData:(inout id *)mappableData {
+    [*mappableData setValue:@"monkey!" forKey:@"newKey"];
+    _mappableData = [*mappableData retain];
 }
 
 @end
