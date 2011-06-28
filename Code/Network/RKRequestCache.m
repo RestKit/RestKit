@@ -128,6 +128,19 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	return hasEntryForRequest;
 }
 
+- (void)writeHeaders:(NSDictionary*)headers toCachePath:(NSString*)cachePath {
+    RKLogTrace(@"Writing headers to cache path: '%@'", cachePath);
+    BOOL success = [headers writeToFile:[cachePath
+                                         stringByAppendingPathExtension:headersExtension]
+                             atomically:YES];
+    if (success) {
+        RKLogTrace(@"Wrote cached response header to path '%@'", cachePath);
+        
+    } else {
+        RKLogError(@"Failed to write cached response headers to path '%@'", cachePath);
+    }
+}
+
 - (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request {
 	[_cacheLock lock];
     
@@ -166,15 +179,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
                 [headers setObject:[urlResponse.URL absoluteString]
 							forKey:cacheURLKey];
                 // Save
-                BOOL success = [headers writeToFile:[cachePath
-                                                     stringByAppendingPathExtension:headersExtension]
-                                         atomically:YES];
-                if (success) {
-                    RKLogTrace(@"Wrote cached response header to path '%@'", cachePath);
-                    
-                } else {
-                    RKLogError(@"Failed to write cached response headers to path '%@'", cachePath);
-                }
+                [self writeHeaders:headers toCachePath:cachePath];
 			}
             
 			[headers release];
@@ -243,6 +248,16 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	[_cacheLock unlock];
     RKLogDebug(@"Found cached ETag '%@' for '%@'", etag, request);
 	return etag;
+}
+
+- (void)setCacheDate:(NSDate*)date forRequest:(RKRequest*)request {
+    NSMutableDictionary* responseHeaders = [[self headersForRequest:request] mutableCopy];
+    
+    [responseHeaders setObject:[[RKRequestCache rfc1123DateFormatter] stringFromDate:date]
+                                 forKey:cacheDateHeaderKey];
+    [self writeHeaders:responseHeaders toCachePath:[self pathForRequest:request]];
+    
+    [responseHeaders release];
 }
 
 - (NSDate*)cacheDateForRequest:(RKRequest*)request {

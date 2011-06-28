@@ -286,6 +286,54 @@
     }
 }
 
+- (void)itShouldUpdateTheInternalCacheDateWhenWeRecieveA304 {
+    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
+                                                        storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
+    
+    NSDate* internalCacheDate1;
+    NSDate* internalCacheDate2;
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([cache etagForRequest:request]) should:be(@"686897696a7c876b7e")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
+        internalCacheDate1 = [cache cacheDateForRequest:request];
+    }
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
+    {
+        RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+        NSString* url = [NSString stringWithFormat:@"%@/etags/cached", RKSpecGetBaseURL()];
+        NSURL* URL = [NSURL URLWithString:url];
+        RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+        request.cachePolicy = RKRequestCachePolicyEtag;
+        request.cache = cache;
+        request.delegate = loader;
+        [request sendAsynchronously];
+        [loader waitForResponse];
+        [expectThat([loader success]) should:be(YES)];
+        [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
+        [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
+        internalCacheDate2 = [cache cacheDateForRequest:request];
+    }
+    [expectThat(internalCacheDate1) shouldNot:be(internalCacheDate2)];
+}
+
 - (void)itShouldLoadFromTheCacheIfThereIsAnError {
     NSString* baseURL = RKSpecGetBaseURL();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
@@ -325,8 +373,6 @@
 }
 
 - (void)itShouldLoadFromTheCacheIfWeAreWithinTheTimeout {
-    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
-    
     NSString* baseURL = RKSpecGetBaseURL();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
 								   [[NSURL URLWithString:baseURL] host]];

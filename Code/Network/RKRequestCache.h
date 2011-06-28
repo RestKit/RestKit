@@ -50,6 +50,8 @@ typedef enum {
 
 - (NSDate*)cacheDateForRequest:(RKRequest*)request;
 
+- (void)setCacheDate:(NSDate*)date forRequest:(RKRequest*)request;
+
 - (void)invalidateRequest:(RKRequest*)request;
 
 - (void)invalidateWithStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
