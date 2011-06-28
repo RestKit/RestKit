@@ -18,7 +18,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 @synthesize mappings = _mappings;
 @synthesize dateFormatStrings = _dateFormatStrings;
 @synthesize rootKeyPath = _rootKeyPath;
-@synthesize setNilForMissingAttributes = _setNilForMissingAttributes;
+@synthesize setDefaultValueForMissingAttributes = _setDefaultValueForMissingAttributes;
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 @synthesize forceCollectionMapping = _forceCollectionMapping;
 
@@ -33,7 +33,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     if (self) {
         _mappings = [NSMutableArray new];
         _dateFormatStrings = [[NSMutableArray alloc] initWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
-        self.setNilForMissingAttributes = NO;
+        self.setDefaultValueForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
     }
@@ -211,6 +211,10 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
         }
     }
     
+    return nil;
+}
+
+- (id)defaultValueForMissingAttribute:(NSString*)attributeName {
     return nil;
 }
 

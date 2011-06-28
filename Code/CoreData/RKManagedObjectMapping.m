@@ -73,4 +73,9 @@
     va_end(args);
 }
 
+- (id)defaultValueForMissingAttribute:(NSString*)attributeName {
+    NSAttributeDescription *desc = [[self.entity attributesByName] valueForKey:attributeName];
+    return [desc defaultValue];
+}
+
 @end

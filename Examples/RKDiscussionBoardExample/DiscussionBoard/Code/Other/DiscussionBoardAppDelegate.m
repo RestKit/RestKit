@@ -62,7 +62,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// sub-dictionaries of attributes to local classes.
     RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[DBUser class]];
     userMapping.primaryKeyAttribute = @"userID";
-    userMapping.setNilForMissingRelationships = YES; // clear out any missing attributes (token on logout)
+    userMapping.setDefaultValueForMissingAttributes = YES; // clear out any missing attributes (token on logout)
     [userMapping mapKeyPathsToAttributes:
      @"id", @"userID",
      @"email", @"email",

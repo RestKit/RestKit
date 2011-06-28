@@ -1028,7 +1028,7 @@
     [mockUser verify];
 }
 
-- (void)itShouldOptionallySetNilForAMissingKeyPath {
+- (void)itShouldOptionallySetDefaultValueForAMissingKeyPath {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
@@ -1042,7 +1042,7 @@
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = YES;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetDefaultValueForMissingAttributes];
     NSError* error = nil;
     [operation performMapping:&error];
     [mockUser verify];
@@ -1062,7 +1062,7 @@
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
     id mockMapping = [OCMockObject partialMockForObject:mapping];
     BOOL returnValue = NO;
-    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] setNilForMissingAttributes];
+    [[[mockMapping expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldSetDefaultValueForMissingAttributes];
     NSError* error = nil;
     [operation performMapping:&error];
     [expectThat(user.name) should:be(@"Blake Watters")];

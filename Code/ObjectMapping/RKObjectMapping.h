@@ -35,7 +35,7 @@ relationship. Relationships are processed using an object mapping as well.
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
     NSString* _rootKeyPath;
-    BOOL _setNilForMissingAttributes;
+    BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
     BOOL _forceCollectionMapping;
 }
@@ -79,7 +79,7 @@ relationship. Relationships are processed using an object mapping as well.
  When YES, any attributes that have mappings defined but are not present within the source
  object will be set to nil, clearing any existing value.
  */
-@property (nonatomic, assign) BOOL setNilForMissingAttributes;
+@property (nonatomic, assign, getter = shouldSetDefaultValueForMissingAttributes) BOOL setDefaultValueForMissingAttributes;
 
 /**
  When YES, any relationships that have mappings defined but are not present within the source
@@ -329,5 +329,16 @@ relationship. Relationships are processed using an object mapping as well.
  mapping will have the source and destination keyPaths swapped for all attribute and relationship mappings.
  */
 - (RKObjectMapping*)inverseMapping;
+
+/**
+ Returns the default value to be assigned to the specified attribute when it is missing from a
+ mappable payload.
+ 
+ The default implementation returns nil for transient object mappings. On managed object mappings, the
+ default value returned from the Entity definition will be used.
+ 
+ @see [RKManagedObjectMapping defaultValueForMissingAttribute:]
+ */
+- (id)defaultValueForMissingAttribute:(NSString*)attributeName;
 
 @end

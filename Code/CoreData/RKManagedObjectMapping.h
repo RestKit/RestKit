@@ -72,4 +72,10 @@
 
 - (id)initWithEntity:(NSEntityDescription*)entity;
 
+/**
+ Returns the default value for the specified attribute as expressed in the Core Data entity definition. This value will
+ be assigned if the object mapping is applied and a value for a missing attribute is not present in the payload.
+ */
+- (id)defaultValueForMissingAttribute:(NSString*)attributeName;
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "RKSpecEnvironment.h"
+#import "RKManagedObjectMapping.h"
 
 @interface RKManagedObjectMappingSpec : RKSpec {
     
@@ -17,12 +18,13 @@
 
 @implementation RKManagedObjectMappingSpec
 
-- (void)itShouldAddAMappingForConnectingRelationshipViaPrimaryKey {
+- (void)itShouldReturnTheDefaultValueForACoreDataAttribute {
+    // Load Core Data
+    RKSpecNewManagedObjectStore();
     
-}
-
-- (void)itShouldAddMappingsForConnectingAGroupOfRelationshipsByPrimaryKey {
-    
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCat"];
+    id value = [mapping defaultValueForMissingAttribute:@"name"];
+    assertThat(value, is(equalTo(@"Kitty Cat!")));
 }
 
 @end

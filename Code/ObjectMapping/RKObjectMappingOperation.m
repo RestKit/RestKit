@@ -253,9 +253,10 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
             }
             RKLogTrace(@"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
             
-            // Optionally set nil for missing values
-            if ([self.objectMapping setNilForMissingAttributes]) {
-                [self.destinationObject setValue:nil forKey:attributeMapping.destinationKeyPath];
+            // Optionally set the default value for missing values
+            if ([self.objectMapping shouldSetDefaultValueForMissingAttributes]) {
+                [self.destinationObject setValue:[self.objectMapping defaultValueForMissingAttribute:attributeMapping.destinationKeyPath] 
+                                          forKey:attributeMapping.destinationKeyPath];
                 RKLogTrace(@"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
             }
         }
