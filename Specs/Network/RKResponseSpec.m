@@ -211,7 +211,7 @@
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	[[[mock stub] andReturn:@"sad;sdvjnk;"] bodyAsString];
-    [[[mock stub] andReturn:@"application/json"] contentType];
+    [[[mock stub] andReturn:@"application/json"] MIMEType];
     NSError* error = nil;
     id object = [mock parsedBody:&error];
     assertThat(object, is(nilValue()));

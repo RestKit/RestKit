@@ -30,6 +30,7 @@
 - (void)itShouldSendMultiPartRequests {
 	NSString* URLString = [NSString stringWithFormat:@"http://127.0.0.1:4567/photo"];
 	NSURL* URL = [NSURL URLWithString:URLString];
+    RKSpecStubNetworkAvailability(YES);
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
 	RKParams* params = [[RKParams params] retain];
 	NSString* filePath = [[NSBundle mainBundle] pathForResource:@"blake" ofType:@"png"];
@@ -184,7 +185,6 @@
 }
 
 - (void)itShouldCacheTheRequestHeadersAndBodyIncludingOurOwnCustomTimestampHeader {
-    RKLogConfigureByName("RestKit/Network/Cache", RKLogLevelTrace);
     NSString* baseURL = RKSpecGetBaseURL();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
 								   [[NSURL URLWithString:baseURL] host]];
@@ -410,7 +410,10 @@
     [params setValue: @"password" forParam:@"password"];
     
     RKClient* client = RKSpecNewClient();
+    client.cachePolicy = RKRequestCachePolicyNone;
+    RKSpecStubNetworkAvailability(YES);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    loader.timeout = 20;
     [client post:@"/echo_params" params:params delegate:loader];
     [loader waitForResponse];
     assertThat([loader.response bodyAsString], is(equalTo(@"{\"username\":\"hello\",\"password\":\"password\"}")));

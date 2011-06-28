@@ -263,7 +263,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
 
-- (BOOL)shouldDispatchRequest {
+- (BOOL)shouldDispatchRequest {    
     return [RKClient sharedClient] == nil || [[RKClient sharedClient] isNetworkAvailable];
 }
 
@@ -279,7 +279,7 @@
         }
     }
     
-	if ([self shouldDispatchRequest]) {
+	if ([self shouldDispatchRequest]) {        
 #if TARGET_OS_IPHONE
         // Background Request Policy support
         UIApplication* app = [UIApplication sharedApplication];
@@ -316,6 +316,8 @@
         [self fireAsynchronousRequest];
 #endif
 	} else {
+        RKLogTrace(@"Declined to dispatch request %@: shared client reported the network is not available.", self);
+        
 	    if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
 			[self.cache hasResponseForRequest:self]) {
 
@@ -323,6 +325,7 @@
 			[self didFinishLoad:[self.cache responseForRequest:self]];
 
 		} else {
+            RKLogCritical(@"SharedClient = %@ and network availability = %d", [RKClient sharedClient], [[RKClient sharedClient] isNetworkAvailable]);
             NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
     		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
     								  errorMessage, NSLocalizedDescriptionKey,

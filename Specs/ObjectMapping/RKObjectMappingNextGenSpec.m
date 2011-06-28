@@ -409,7 +409,6 @@
 }
 
 - (void)itShouldMapACollectionOfObjectsWithDynamicKeys {
-    RKLogConfigureByName("RestKit/*", RKLogLevelTrace);
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     mapping.forceCollectionMapping = YES;
     [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];    
@@ -433,7 +432,6 @@
 }
 
 - (void)itShouldMapACollectionOfObjectsWithDynamicKeysAndRelationships {
-    RKLogConfigureByName("RestKit/*", RKLogLevelTrace);
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     mapping.forceCollectionMapping = YES;
     [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
@@ -1246,9 +1244,9 @@
 
 #pragma mark - RKObjectMappingProvider
 
-- (void)itShouldRegisterRailsIdiomaticObjects {
-    RKSpecStubNetworkAvailability(YES);
+- (void)itShouldRegisterRailsIdiomaticObjects {    
     RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKSpecStubNetworkAvailability(YES);
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     [mapping mapAttributes:@"name", @"website", nil];
     [mapping mapKeyPath:@"id" toAttribute:@"userID"];

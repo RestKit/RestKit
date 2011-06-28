@@ -66,6 +66,8 @@
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     _objectManager.router = router;
+    
+    RKSpecStubNetworkAvailability(YES);
 }
 
 - (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
@@ -109,9 +111,9 @@
 
 // TODO: Move to Core Data specific spec file...
 - (void)itShouldLoadAHuman {
-    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    assertThatBool([RKClient sharedClient].isNetworkAvailable, is(equalToBool(YES)));
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];    
 	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
-    loader.timeout = 200;
 	[loader waitForResponse];
     [expectThat(loader.failureError) should:be(nil)];
     assertThat(loader.objects, isNot(empty()));
@@ -140,6 +142,9 @@
 
 - (void)itShouldPOSTAnObject {
     RKObjectManager* manager = RKSpecNewObjectManager();
+    RKSpecStubNetworkAvailability(YES);
+    assertThatBool([RKClient sharedClient].isNetworkAvailable, is(equalToBool(YES)));
+    
     RKObjectRouter* router = [[RKObjectRouter new] autorelease];
     [router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     manager.router = router;

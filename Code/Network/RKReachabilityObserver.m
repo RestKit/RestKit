@@ -17,7 +17,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitNetwork
+#define RKLogComponent lcl_cRestKitNetworkReachability
 
 // Constants
 NSString* const RKReachabilityStateChangedNotification = @"RKReachabilityStateChangedNotification";

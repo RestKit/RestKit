@@ -28,8 +28,11 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
 
 RKClient* RKSpecNewClient() {
     RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
-    [RKClient setSharedClient:client];
+    [RKClient setSharedClient:client];    
     [client release];
+    
+    RKSpecNewRequestQueue();
+    RKSpecStubNetworkAvailability(YES);
     
     return client;
 }
@@ -47,10 +50,12 @@ RKObjectManager* RKSpecNewObjectManager() {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [RKObjectManager setSharedManager:objectManager];
     [RKClient setSharedClient:objectManager.client];
+    
     RKSpecNewRequestQueue();
+    RKSpecStubNetworkAvailability(YES);
     
     // This allows the manager to determine state.
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
     
     return objectManager;
 }

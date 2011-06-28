@@ -37,8 +37,10 @@
 // RestKit Logging Components
 //
 
-_lcl_component(RestKit,                 "restkit",                  "RestKit")
-_lcl_component(RestKitNetwork,          "restkit.network",          "RestKit/Network")
-_lcl_component(RestKitNetworkCache,     "restkit.network.cache",    "RestKit/Network/Cache")
-_lcl_component(RestKitObjectMapping,    "restkit.object_mapping",   "RestKit/ObjectMapping")
-_lcl_component(RestKitCoreData,         "restkit.core_data",        "RestKit/CoreData")
+_lcl_component(RestKit,                     "restkit",                      "RestKit")
+_lcl_component(RestKitNetwork,              "restkit.network",              "RestKit/Network")
+_lcl_component(RestKitNetworkCache,         "restkit.network.cache",        "RestKit/Network/Cache")
+_lcl_component(RestKitNetworkQueue,         "restkit.network.queue",        "RestKit/Network/Queue")
+_lcl_component(RestKitNetworkReachability,  "restkit.network.reachability", "RestKit/Network/Reachability")
+_lcl_component(RestKitObjectMapping,        "restkit.object_mapping",       "RestKit/ObjectMapping")
+_lcl_component(RestKitCoreData,             "restkit.core_data",            "RestKit/CoreData")
