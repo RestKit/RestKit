@@ -167,9 +167,11 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 	_queueTimer = nil;
 
-    NSUInteger count = [_requests count];
-    for (NSUInteger index = 0; index < count; index++) {
-        RKRequest* request = [_requests objectAtIndex:index];
+    NSUInteger initialCount = [_requests count];
+    NSUInteger requestsDequeued = 0;
+    while ([_requests count] > 0 && requestsDequeued < initialCount) {
+        RKRequest* request = [_requests objectAtIndex:0];
+        requestsDequeued++;
         RKLogTrace(@"Processing request %@ in queue %@", request, self);
         
 		if ([request isLoading]) {
