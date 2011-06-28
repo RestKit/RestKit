@@ -8,6 +8,7 @@
 
 #import "RKObjectMappingResult.h"
 #import "RKObjectMapperError.h"
+#import "../Support/RKLog.h"
 
 @implementation RKObjectMappingResult
 
@@ -50,18 +51,24 @@
 }
 
 - (id)asObject {
-    // TODO: Warn that only last object was returned...
-    return [[self asCollection] objectAtIndex:0];
+    NSArray* collection = [self asCollection];
+    if ([collection count] > 1) {
+        RKLogWarning(@"Coerced object mapping result containing %d objects into singular result.", [collection count]);
+    }
+    
+    return [collection objectAtIndex:0];
 }
 
 - (NSError*)asError {
     NSArray* collection = [self asCollection];
-    // TODO: What is the correct behavior when there is an empty collection we expect to contain an error???
-    NSAssert([collection count] > 0, @"Expected mapping result to contain at least one object to construct an error");
-    NSString* description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
-    
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:description, NSLocalizedDescriptionKey,
-                              collection, RKObjectMapperErrorObjectsKey, nil];
+    NSString* description = nil;
+    if ([collection count] > 0) {
+        description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
+    } else {
+        RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
+    }
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
+                              description, NSLocalizedDescriptionKey, nil];
     
     NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
     return error;
