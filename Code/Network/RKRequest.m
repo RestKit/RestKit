@@ -439,7 +439,9 @@
     
     // NOTE: This notification must be posted last as the request queue releases the request when it
     // receives the notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestReceivedResponseNotification 
+                                                        object:self 
+                                                      userInfo:nil];
 }
 
 - (BOOL)isGET {

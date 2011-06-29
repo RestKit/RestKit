@@ -139,7 +139,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 													 selector:@selector(loadNextInQueue)
 													 userInfo:nil
 													  repeats:NO];
-        RKLogDebug(@"Timer initialized with delay %f for queue %@", kFlushDelay, self);
+        RKLogTrace(@"Timer initialized with delay %f for queue %@", kFlushDelay, self);
 	}
 }
 
@@ -229,7 +229,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(responseDidLoad:)
-                                                 name:RKResponseReceivedNotification
+                                                 name:RKRequestReceivedResponseNotification
                                                object:request];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(responseDidLoad:)
@@ -244,7 +244,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         RKLogTrace(@"Removing request %@ from queue %@", request, self);
         [_requests removeObject:request];
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKResponseReceivedNotification object:request];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestReceivedResponseNotification object:request];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestFailedWithErrorNotification object:request];
         
         if (decrementCounter) {
@@ -330,15 +330,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
  * the completed request from the queue and continue processing
  */
 - (void)responseDidLoad:(NSNotification*)notification {
-	  if (notification.object) {
-        
+	  if (notification.object) {        
         // Get the RKRequest, so we can check if it is from this RKRequestQueue
-        RKRequest *request = nil;
-        if ([notification.object isKindOfClass:[RKResponse class]]) {
-			      request = [(RKResponse*)notification.object request];
-        } else if ([notification.object isKindOfClass:[RKRequest class]]) {
-            request = (RKRequest*)notification.object;
-        }
+        RKRequest *request = (RKRequest*)notification.object;
         
 		// Our RKRequest completed and we're notified with an RKResponse object
         if (request != nil && [self containsRequest:request]) { 

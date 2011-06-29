@@ -69,8 +69,8 @@
 
 	if (successful) {
 		_isLoaded = YES;
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification
-															object:_response
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestReceivedResponseNotification
+															object:self
 														  userInfo:nil];
 	} else {
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification
