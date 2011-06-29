@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKURLSpec"
-            isEnabled = "YES">
+            value = "RKObjectMappingNextGenSpec"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldFindExistingManagedObjectsByPrimaryKeyPath"
+            value = "itShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

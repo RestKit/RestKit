@@ -159,11 +159,17 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 }
 
 - (BOOL)validateValue:(id)value atKeyPath:(NSString*)keyPath {
-    NSError* validationError = nil;
-    BOOL success = [self.destinationObject validateValue:&value forKey:keyPath error:&validationError];
-    if (!success && validationError) {
-        // Do something with error?
-        RKLogError(@"Validation failed while mapping attribute at key path %@ to value %@. Error: %@", keyPath, value, [validationError localizedDescription]);
+    BOOL success = YES;
+    
+    if ([self.destinationObject respondsToSelector:@selector(validateValue:forKey:error:)]) {
+        success = [self.destinationObject validateValue:&value forKey:keyPath error:&_validationError];
+        if (!success) {                        
+            if (_validationError) {
+                RKLogError(@"Validation failed while mapping attribute at key path %@ to value %@. Error: %@", keyPath, value, [_validationError localizedDescription]);
+            } else {
+                RKLogWarning(@"Destination object %@ rejected attribute value %@ for keyPath %@. Skipping...", self.destinationObject, value, keyPath);
+            }
+        }
     }
     
     return success;
@@ -275,6 +281,11 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
                 RKLogTrace(@"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
             }
         }
+        
+        // Fail out if an error has occurred
+        if (_validationError) {
+            return NO;
+        }
     }
     
     return appliedMappings;
@@ -350,6 +361,11 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
             RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", mapping.sourceKeyPath, mapping.destinationKeyPath, destinationObject);
             [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
         }
+        
+        // Fail out if a validation error has occurred
+        if (_validationError) {
+            return NO;
+        }
     }
     
     return appliedMappings;
@@ -371,28 +387,33 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 }
 
 - (BOOL)performMapping:(NSError**)error {
-    RKLogDebug(@"Starting mapping operation...");    
+    RKLogDebug(@"Starting mapping operation...");
+    
     [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];
     BOOL mappedRelationships = [self applyRelationshipMappings];
-    if (mappedAttributes || mappedRelationships) {
+    if ((mappedAttributes || mappedRelationships) && _validationError == nil) {
         RKLogDebug(@"Finished mapping operation successfully...");
         return YES;
-    } else {
+    }
+    
+    // We have failed, see if its because of validation or no mappable content found
+    NSError* failureError = _validationError;
+    if (!failureError) {
+        // We have failed, but not due to validation. So no mappable content was found, construct an error
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                   @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
                                   nil];
-        NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];
-        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
-            [self.delegate objectMappingOperation:self didFailWithError:unmappableError];
-        }
-        if (error) {
-            *error = unmappableError;
-        }
-        
-        RKLogWarning(@"Failed mapping operation: %@", [unmappableError localizedDescription]);
-        return NO;
+        failureError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];                
     }
+    
+    if (error) *error = failureError;
+    if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
+        [self.delegate objectMappingOperation:self didFailWithError:failureError];
+    }
+    
+    RKLogError(@"Failed mapping operation: %@", [failureError localizedDescription]);
+    return NO;
 }
 
 - (NSString*)description {
