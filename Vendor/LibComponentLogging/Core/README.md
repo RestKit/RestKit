@@ -32,6 +32,8 @@ LogFile logger, from their repositories on GitHub:
 
 * [NSLog Logger](http://github.com/aharren/LibComponentLogging-NSLog/downloads)
 
+* [NSLogger Logger](http://github.com/aharren/LibComponentLogging-NSLogger/downloads)
+
 Extract the files and copy the extracted files to your application's source
 directory.
 
@@ -85,10 +87,19 @@ The following Git repositories are related to this repository:
   information about the log level, the log component, and the log statement's
   location (file name and line number).
 
+* [LibComponentLogging-NSLogger](http://github.com/aharren/LibComponentLogging-NSLogger):
+  A logger which integrates the logging client from Florent Pillet's NSLogger project.    
+  See [http://github.com/fpillet/NSLogger](http://github.com/fpillet/NSLogger) for more details about NSLogger.
+
+* [LibComponentLogging-qlog](http://github.com/aharren/LibComponentLogging-qlog):
+  An extension which provides a set of quick logging macros.
+
+* [LibComponentLogging-UserDefaults](http://github.com/aharren/LibComponentLogging-UserDefaults)
+  An extension which stores/restores log level settings to/from the user defaults.
 
 ## Copyright and License
 
-Copyright (c) 2008-2010 Arne Harren <ah@0xc0.de>
+Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

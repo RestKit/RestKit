@@ -3,7 +3,7 @@
 // lcl.h -- LibComponentLogging
 //
 //
-// Copyright (c) 2008-2010 Arne Harren <ah@0xc0.de>
+// Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@
 
 #define _LCL_VERSION_MAJOR  1
 #define _LCL_VERSION_MINOR  1
-#define _LCL_VERSION_BUILD  2
+#define _LCL_VERSION_BUILD  3
 #define _LCL_VERSION_SUFFIX ""
 
 //
@@ -221,7 +221,7 @@ uint32_t lcl_configure_by_name(const char *name, _lcl_level_t level);
 
 
 // Active log levels, indexed by log component.
-__attribute__((visibility("default"))) _lcl_level_narrow_t _lcl_component_level[_lcl_component_t_count];
+extern _lcl_level_narrow_t _lcl_component_level[_lcl_component_t_count];
 
 // Log component identifiers, indexed by log component.
 extern const char * const _lcl_component_identifier[_lcl_component_t_count];
