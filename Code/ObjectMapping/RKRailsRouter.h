@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKDynamicRouter.h"
+#import "RKObjectRouter.h"
 
 /**
  * An implementation of the RKRouter protocol suitable for interacting
@@ -15,7 +15,7 @@
  * the normal dynamic router and provides support for encoding properties in
  * such a way that Rails controllers expect (i.e. model_name[attribute])
  */
-@interface RKRailsRouter : RKDynamicRouter {
+@interface RKRailsRouter : RKObjectRouter {
 	NSMutableDictionary* _classToModelMappings;
 }
 
