@@ -147,16 +147,16 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 }
 
 - (void)dealloc {
-	self.baseURL = nil;
-	self.username = nil;
-	self.password = nil;
-	self.serviceUnavailableAlertTitle = nil;
-	self.serviceUnavailableAlertMessage = nil;
-	self.cache = nil;
-	[_HTTPHeaders release];
+    self.baseURL = nil;
+    self.username = nil;
+    self.password = nil;
+    self.serviceUnavailableAlertTitle = nil;
+    self.serviceUnavailableAlertMessage = nil;
+    self.cache = nil;
+    [_HTTPHeaders release];
     [_baseURLReachabilityObserver release];
 
-	[super dealloc];
+    [super dealloc];
 }
 
 - (NSString*)cachePath {

@@ -227,10 +227,22 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 @property(nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
 
+/**
+ An instance of the request cache used to store/load cacheable responses for requests
+ sent through this client
+ */
 @property (nonatomic, retain) RKRequestCache* cache;
 
+/**
+ The default cache policy to apply for all requests sent through this client
+ 
+ @see RKRequestCache
+ */
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
 
+/**
+ The path used to store response data for this client's request cache
+ */
 @property (nonatomic, readonly) NSString* cachePath;
 
 /////////////////////////////////////////////////////////////////////////
