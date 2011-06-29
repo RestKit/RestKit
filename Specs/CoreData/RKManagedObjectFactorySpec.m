@@ -60,6 +60,7 @@
 
 - (void)itShouldFindExistingManagedObjectsByPrimaryKeyPath {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    [RKHuman truncateAll];
     RKManagedObjectFactory* factory = [RKManagedObjectFactory objectFactoryWithObjectStore:store];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     mapping.primaryKeyAttribute = @"railsID";

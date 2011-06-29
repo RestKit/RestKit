@@ -16,7 +16,8 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
-static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
+static NSString* const RKManagedObjectStoreThreadDictionaryContextKey = @"RKManagedObjectStoreThreadDictionaryContextKey";
+static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RKManagedObjectStoreThreadDictionaryEntityCacheKey";
 
 @interface RKManagedObjectStore (Private)
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
@@ -56,10 +57,9 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	if (self) {
 		_storeFilename = [storeFilename retain];
 		
-		if( nilOrDirectoryPath == nil ) {
+		if (nilOrDirectoryPath == nil) {
 			nilOrDirectoryPath = [self applicationDocumentsDirectory];
-		}
-		else {
+		} else {
 			BOOL isDir;
 			NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:nilOrDirectoryPath isDirectory:&isDir] && isDir == YES, @"Specified storage directory exists", nilOrDirectoryPath);
 		}
@@ -82,18 +82,26 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	return self;
 }
 
+- (void)clearThreadLocalStorage {
+    // Clear out our Thread local information
+	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
+    if ([threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryContextKey]) {
+        [threadDictionary removeObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
+    }
+    if ([threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey]) {
+        [threadDictionary removeObjectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey];
+    }
+}
+
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self clearThreadLocalStorage];
     
 	[_storeFilename release];
 	_storeFilename = nil;
 	[_pathToStoreFile release];
 	_pathToStoreFile = nil;
-    // Clear the current managed object context. Will be re-created next time it is accessed.
-	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-    if ([threadDictionary objectForKey:kRKManagedObjectContextKey]) {
-        [threadDictionary removeObjectForKey:kRKManagedObjectContextKey];
-    }    
+    
     [_managedObjectModel release];
 	_managedObjectModel = nil;
     [_persistentStoreCoordinator release];
@@ -203,14 +211,11 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
 	[_persistentStoreCoordinator release];
 	_persistentStoreCoordinator = nil;
 	
-	// Clear the current managed object context. Will be re-created next time it is accessed.
-	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-    if ([threadDictionary objectForKey:kRKManagedObjectContextKey]) {
-        [threadDictionary removeObjectForKey:kRKManagedObjectContextKey];
-    }
+	[self clearThreadLocalStorage];
 	
-	if (seedFile)
-		[self createStoreIfNecessaryUsingSeedDatabase:seedFile];
+	if (seedFile) {
+        [self createStoreIfNecessaryUsingSeedDatabase:seedFile];
+    }
 
 	[self createPersistentStoreCoordinator];
 }
@@ -227,13 +232,14 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
  */
 -(NSManagedObjectContext*)managedObjectContext {
 	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-	NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:kRKManagedObjectContextKey];
+	NSManagedObjectContext* backgroundThreadContext = [threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
 	if (!backgroundThreadContext) {
 		backgroundThreadContext = [self newManagedObjectContext];					
-		[threadDictionary setObject:backgroundThreadContext forKey:kRKManagedObjectContextKey];			
+		[threadDictionary setObject:backgroundThreadContext forKey:RKManagedObjectStoreThreadDictionaryContextKey];			
 		[backgroundThreadContext release];
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(mergeChanges:)
+		[[NSNotificationCenter defaultCenter] addObserver:self 
+                                                 selector:@selector(mergeChanges:)
 													 name:NSManagedObjectContextDidSaveNotification
 												   object:backgroundThreadContext];
 	}
@@ -308,8 +314,13 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
     NSString* entityName = entity.name;
     NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
     
+    if (nil == [threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey]) {
+        [threadDictionary setObject:[NSMutableDictionary dictionary] forKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey];
+    }
+    
     // Construct the cache if necessary
-    if (nil == [threadDictionary objectForKey:entityName]) {
+    NSMutableDictionary* entityCache = [threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey];
+    if (nil == [entityCache objectForKey:entityName]) {
         NSFetchRequest* fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
         [fetchRequest setEntity:entity];
         [fetchRequest setReturnsObjectsAsFaults:NO];			
@@ -323,10 +334,10 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
             }
         }
         
-        [threadDictionary setObject:dictionary forKey:entityName];
+        [entityCache setObject:dictionary forKey:entityName];
     }
     
-    NSMutableDictionary* dictionary = [threadDictionary objectForKey:entityName];
+    NSMutableDictionary* dictionary = [entityCache objectForKey:entityName];
     NSAssert1(dictionary, @"Thread local cache of %@ objects should not be nil", entityName);
     object = [dictionary objectForKey:primaryKeyValue];
     

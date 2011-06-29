@@ -23,6 +23,11 @@
 
 @implementation RKRequestSpec
 
+- (void)beforeAll {
+    // Clear the cache directory
+    RKSpecClearCacheDirectory();
+}
+
 /**
  * This spec requires the test Sinatra server to be running
  * `ruby Specs/server.rb`
@@ -366,6 +371,7 @@
 								   [[NSURL URLWithString:baseURL] host]];
 	NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
 						   stringByAppendingPathComponent:cacheDirForClient];
+    
     RKRequestCache* cache = [[RKRequestCache alloc] initWithCachePath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -399,7 +405,7 @@
         [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
         [expectThat(loader.response.statusCode) should:be(200)];
         [expectThat(loader.response.MIMEType) should:be(@"text/html")];
-        [expectThat([loader.response.URL absoluteString]) should:be(@"http://localhost:4567/etags/cached")];
+        [expectThat([loader.response.URL absoluteString]) should:be(@"http://127.0.0.1:4567/etags/cached")];
     }
 }
 

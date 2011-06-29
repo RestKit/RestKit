@@ -282,6 +282,11 @@ typedef enum RKRequestBackgroundPolicy {
 - (BOOL)isLoaded;
 
 /**
+ * Returnes YES when this request has not yet been sent
+ */
+- (BOOL)isUnsent;
+
+/**
  * Returns YES when the request was sent to the specified resource path
  */
 - (BOOL)wasSentToResourcePath:(NSString*)resourcePath;

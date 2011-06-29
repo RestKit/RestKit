@@ -470,6 +470,10 @@
 	return _isLoaded;
 }
 
+- (BOOL)isUnsent {
+    return _isLoading == NO && _isLoaded == NO;
+}
+
 - (NSString*)resourcePath {
 	NSString* resourcePath = nil;
 	if ([self.URL isKindOfClass:[RKURL class]]) {

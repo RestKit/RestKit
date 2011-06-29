@@ -12,7 +12,7 @@
 NSString* RKSpecGetBaseURL() {
     char* ipAddress = getenv("RESTKIT_IP_ADDRESS");
     if (NULL == ipAddress) {
-        ipAddress = "localhost";
+        ipAddress = "127.0.0.1";
     }
     
     return [NSString stringWithFormat:@"http://%s:4567", ipAddress];
@@ -32,7 +32,6 @@ RKClient* RKSpecNewClient() {
     [client release];
     
     RKSpecNewRequestQueue();
-    RKSpecStubNetworkAvailability(YES);
     
     return client;
 }
@@ -52,7 +51,6 @@ RKObjectManager* RKSpecNewObjectManager() {
     [RKClient setSharedClient:objectManager.client];
     
     RKSpecNewRequestQueue();
-    RKSpecStubNetworkAvailability(YES);
     
     // This allows the manager to determine state.
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
@@ -67,6 +65,21 @@ RKManagedObjectStore* RKSpecNewManagedObjectStore() {
     objectManager.objectStore = store;
     [objectManager.objectStore deletePersistantStore];
     return store;
+}
+
+void RKSpecClearCacheDirectory() {
+    NSError* error = nil;
+    NSString* cachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
+    if (success) {
+        RKLogInfo(@"Cleared cache directory...");
+        success = [[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:YES attributes:nil error:&error];
+        if (!success) {
+            RKLogError(@"Failed creation of cache path '%@': %@", cachePath, [error localizedDescription]);
+        }
+    } else {
+        RKLogError(@"Failed to clear cache path '%@': %@", cachePath, [error localizedDescription]);
+    }
 }
 
 // Read a fixture from the app bundle

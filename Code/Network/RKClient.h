@@ -231,6 +231,8 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
 
+@property (nonatomic, readonly) NSString* cachePath;
+
 /////////////////////////////////////////////////////////////////////////
 /// @name Shared Client Instance
 /////////////////////////////////////////////////////////////////////////
