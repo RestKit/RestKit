@@ -11,7 +11,7 @@
     NSMutableArray *_registeredClasses; 
 }
 
-@property (nonatomic, retain) NSMutableArray *_registeredClasses;
+@property (nonatomic, retain) NSMutableArray *registeredClasses;
 
 - (void)registerClassForSyncing:(Class)someClass;
 

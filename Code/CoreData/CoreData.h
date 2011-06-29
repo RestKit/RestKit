@@ -13,4 +13,3 @@
 #import "RKManagedObjectSeeder.h"
 #import "RKManagedObjectCache.h"
 #import "RKManagedObjectMapping.h"
-#import "RKManagedObjectSyncObserver.h"
