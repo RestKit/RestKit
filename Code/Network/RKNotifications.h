@@ -18,7 +18,7 @@
  */
 extern NSString* const RKRequestSentNotification;
 extern NSString* const RKRequestDidLoadResponseNotification;
-extern NSString* const RKRequestReceivedResponseNotification;
-extern NSString* const RKRequestFailedWithErrorNotification;
-
+extern NSString* const RKRequestDidLoadResponseNotificationUserInfoResponseKey;
+extern NSString* const RKRequestDidFailWithErrorNotification;
+extern NSString* const RKRequestDidFailWithErrorNotificationUserInfoErrorKey;
 extern NSString* const RKServiceDidBecomeUnavailableNotification;

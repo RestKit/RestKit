@@ -9,7 +9,8 @@
 #import "RKNotifications.h"
 
 NSString* const RKRequestSentNotification = @"RKRequestSentNotification";
+NSString* const RKRequestDidFailWithErrorNotification = @"RKRequestDidFailWithErrorNotification";
+NSString* const RKRequestDidFailWithErrorNotificationUserInfoErrorKey = @"error";
 NSString* const RKRequestDidLoadResponseNotification = @"RKRequestDidLoadResponseNotification";
-NSString* const RKRequestFailedWithErrorNotification = @"RKRequestFailedWithErrorNotification";
+NSString* const RKRequestDidLoadResponseNotificationUserInfoResponseKey = @"response";
 NSString* const RKServiceDidBecomeUnavailableNotification = @"RKServiceDidBecomeUnavailableNotification";
-NSString* const RKRequestReceivedResponseNotification = @"RKRequestReceivedResponseNotification";

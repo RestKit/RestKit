@@ -69,11 +69,13 @@
 
 	if (successful) {
 		_isLoaded = YES;
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestReceivedResponseNotification
-															object:self
-														  userInfo:nil];
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObject:_response 
+                                                             forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification 
+                                                            object:self 
+                                                          userInfo:userInfo];
 	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
 															object:self
 														  userInfo:nil];
 	}

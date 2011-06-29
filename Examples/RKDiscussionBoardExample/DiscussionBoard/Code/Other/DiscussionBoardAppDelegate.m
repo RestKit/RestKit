@@ -159,11 +159,10 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      
      See RKLog.h and lcl_log_components.h for details on the logging macros available
      */
-//    RKLogConfigureByName("RestKit", RKLogLevelTrace);
-//    RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
-//    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
-    
-    RKLogConfigureByName("RestKit/Network/Queue", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
+    RKLogConfigureByName("RestKit/Network/Queue", RKLogLevelDebug);
     
     // Enable boatloads of trace info from the mapper
     // RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
