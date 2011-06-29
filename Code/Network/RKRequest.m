@@ -543,7 +543,14 @@
         return nil;
     }
     // Use [_params HTTPBody] because the URLRequest body may not have been set up yet.
-    NSString* compositCacheKey = [NSString stringWithFormat:@"%@-%d-%@", self.URL, _method, [_params HTTPBody]];
+    NSString* compositCacheKey = nil;
+    if (_params) {
+        if ([_params respondsToSelector:@selector(HTTPBody)]) {
+            compositCacheKey = [NSString stringWithFormat:@"%@-%d-%@", self.URL, _method, [_params HTTPBody]];
+        }
+    } else {
+        compositCacheKey = [NSString stringWithFormat:@"%@-%d", self.URL, _method];
+    }
     return [compositCacheKey MD5];
 }
 
