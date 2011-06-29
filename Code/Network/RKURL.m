@@ -18,11 +18,11 @@
 }
 
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath {
-    NSString* completeURL = [NSString stringWithFormat:@"%@%@", baseURLString, resourcePath];
+    NSString* completeURL = [NSString stringWithFormat:@"%@%@", baseURLString, resourcePath];    
+    completeURL = [(NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)completeURL, NULL, (CFStringRef)@"+", kCFStringEncodingUTF8) autorelease];
     
-    completeURL = [completeURL stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
-    if ((self = [self initWithString:completeURL])) {
+    self = [self initWithString:completeURL];
+    if (self) {
 		_baseURLString = [baseURLString copy];
 		_resourcePath = [resourcePath copy];
 	}

@@ -87,8 +87,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKManagedObjectFactorySpec"
-            isEnabled = "NO">
+            value = "RKURLSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
