@@ -39,6 +39,7 @@ RKClient* RKSpecNewClient();
 RKRequestQueue* RKSpecNewRequestQueue();
 RKObjectManager* RKSpecNewObjectManager();
 RKManagedObjectStore* RKSpecNewManagedObjectStore();
+void RKSpecClearCacheDirectory();
 
 // Read the contents of a fixture file from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName);

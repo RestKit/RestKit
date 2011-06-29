@@ -147,11 +147,6 @@
 
 @implementation RKObjectMappingNextGenSpec
 
-- (void)beforeAll {
-    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelCritical);
-    RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
-}
-
 #pragma mark - RKObjectKeyPathMapping Specs
 
 - (void)itShouldDefineElementToPropertyMapping {

@@ -37,11 +37,12 @@ static NSDateFormatter* __rfc1123DateFormatter;
 }
 
 - (id)initWithCachePath:(NSString*)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy {
-	if ((self = [super init])) {
+    self = [super init];
+	if (self) {
 		_cachePath = [cachePath copy];
 		_cacheLock = [[NSRecursiveLock alloc] init];
 
-		NSFileManager* fileManager = [[NSFileManager alloc] init];
+		NSFileManager* fileManager = [NSFileManager defaultManager];
 		NSArray* pathArray = [NSArray arrayWithObjects:
 							  _cachePath,
 							  [_cachePath stringByAppendingPathComponent:sessionCacheFolder],
@@ -62,8 +63,10 @@ static NSDateFormatter* __rfc1123DateFormatter;
 				} else {
                     RKLogDebug(@"Created cache storage at path '%@'", path);
                 }
-			} else if (!isDirectory) {
-				RKLogWarning(@"Failed to create cache directory: Directory already exists: %@", path);
+			} else {
+                if (!isDirectory) {
+                    RKLogWarning(@"Skipped creation of cache directory as non-directory file exists at path: %@", path);
+                }
 			}
 		}
 
@@ -71,6 +74,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 
 		self.storagePolicy = storagePolicy;
 	}
+    
 	return self;
 }
 
@@ -110,7 +114,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	[_cacheLock lock];
 
 	BOOL hasEntryForRequest = NO;
-	NSFileManager* fileManager = [[NSFileManager alloc] init];
+	NSFileManager* fileManager = [NSFileManager defaultManager];
 
 	NSString* cachePath = [self pathForRequest:request];
 	hasEntryForRequest = ([fileManager fileExistsAtPath:cachePath] &&
@@ -136,12 +140,12 @@ static NSDateFormatter* __rfc1123DateFormatter;
 		if (cachePath) {
 			NSData* body = response.body;
 			if (body) {
-				BOOL success = [body writeToFile:cachePath atomically:NO];
+                NSError* error = nil;
+                BOOL success = [body writeToFile:cachePath options:NSDataWritingAtomic error:&error];
                 if (success) {
-                    RKLogTrace(@"Wrote cached response body to path '%@'", cachePath);
-                    
+                    RKLogTrace(@"Wrote cached response body to path '%@'", cachePath);                    
                 } else {
-                    RKLogError(@"Failed to write cached response body to path '%@'", cachePath);
+                    RKLogError(@"Failed to write cached response body to path '%@': %@", cachePath, [error localizedDescription]);
                 }
 			}
 
@@ -247,7 +251,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
     
 	NSString* cachePath = [self pathForRequest:request];
 	if (cachePath) {
-		NSFileManager* fileManager = [[NSFileManager alloc] init];
+		NSFileManager* fileManager = [NSFileManager defaultManager];
 		[fileManager removeItemAtPath:cachePath error:NULL];
 		[fileManager removeItemAtPath:[cachePath stringByAppendingPathExtension:headersExtension]
 																		  error:NULL];
@@ -270,7 +274,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 		}
         
         RKLogInfo(@"Invalidating cache at path: %@", cachePath);
-		NSFileManager* fileManager = [[NSFileManager alloc] init];
+		NSFileManager* fileManager = [NSFileManager defaultManager];
 
 		BOOL isDirectory = NO;
 		BOOL fileExists = [fileManager fileExistsAtPath:cachePath isDirectory:&isDirectory];

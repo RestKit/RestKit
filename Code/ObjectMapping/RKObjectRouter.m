@@ -1,5 +1,5 @@
 //
-//  RKDynamicRouter.m
+//  RKObjectRouter.m
 //  RestKit
 //
 //  Created by Blake Watters on 10/18/10.

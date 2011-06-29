@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectManagerSpec"
-            isEnabled = "NO">
+            value = "RKURLSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldAllowMutationOfTheParsedDataInWillMapData"
+            value = "itShouldFindExistingManagedObjectsByPrimaryKeyPath"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

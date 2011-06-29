@@ -18,6 +18,7 @@
 - (void)loadTimeline {
     // Load the object model via RestKit	
     RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    objectManager.client.baseURL = @"http://www.twitter.com";
     RKObjectMapping* statusMapping = nil;
 
     // Twitter returns statuses as a naked array in JSON, so we instruct the loader

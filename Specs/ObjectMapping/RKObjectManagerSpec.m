@@ -25,8 +25,7 @@
 @implementation RKObjectManagerSpec
 
 - (void)beforeAll {
-	NSString* localBaseURL = [NSString stringWithFormat:@"http://localhost:4567"]; //getenv("RESTKIT_IP_ADDRESS")
-	_objectManager = [[RKObjectManager objectManagerWithBaseURL:localBaseURL] retain];
+    _objectManager = RKSpecNewObjectManager();
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
     [_objectManager.objectStore deletePersistantStore];
@@ -67,7 +66,7 @@
     [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     _objectManager.router = router;
     
-    RKSpecStubNetworkAvailability(YES);
+//    RKSpecStubNetworkAvailability(YES);
 }
 
 - (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
@@ -134,6 +133,7 @@
 - (void)itShouldHandleConnectionFailures {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
 	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
+    [RKRequestQueue sharedQueue].suspended = NO;
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
 	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];
 	[loader waitForResponse];

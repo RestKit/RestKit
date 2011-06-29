@@ -201,7 +201,8 @@
 #pragma mark - willSendWithObjectLoader:
 
 - (void)itShouldInvokeWillSendWithObjectLoaderOnSend {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+//    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
     [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];

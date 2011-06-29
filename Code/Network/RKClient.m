@@ -14,6 +14,10 @@
 #import "RKAlert.h"
 #import "RKLog.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
 
@@ -127,13 +131,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 
 - (id)initWithBaseURL:(NSString*)baseURL {
     self = [self init];
-    if (self) {
-        NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-                                       [[NSURL URLWithString:baseURL] host]];
-        NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
-                               stringByAppendingPathComponent:cacheDirForClient];
-        _cache = [[RKRequestCache alloc] initWithCachePath:cachePath
-                                             storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    if (self) {        
         self.cachePolicy = RKRequestCachePolicyDefault;
         self.baseURL = baseURL;
         
@@ -149,25 +147,32 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 }
 
 - (void)dealloc {
-	self.baseURL = nil;
-	self.username = nil;
-	self.password = nil;
-	self.serviceUnavailableAlertTitle = nil;
-	self.serviceUnavailableAlertMessage = nil;
-	self.cache = nil;
-	[_HTTPHeaders release];
+    self.baseURL = nil;
+    self.username = nil;
+    self.password = nil;
+    self.serviceUnavailableAlertTitle = nil;
+    self.serviceUnavailableAlertMessage = nil;
+    self.cache = nil;
+    [_HTTPHeaders release];
+    [_baseURLReachabilityObserver release];
 
-	[super dealloc];
+    [super dealloc];
+}
+
+- (NSString*)cachePath {
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+                                   [[NSURL URLWithString:self.baseURL] host]];
+    NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+                           stringByAppendingPathComponent:cacheDirForClient];
+    return cachePath;
 }
 
 - (BOOL)isNetworkAvailable {
 	BOOL isNetworkAvailable = NO;
 	if (self.baseURLReachabilityObserver) {
 		isNetworkAvailable = [self.baseURLReachabilityObserver isNetworkReachable];
-	} else {
-		RKReachabilityObserver* googleObserver = [RKReachabilityObserver reachabilityObserverWithHostName:@"google.com"];
-		isNetworkAvailable = [googleObserver isNetworkReachable];
 	}
+    
 	return isNetworkAvailable;
 }
 
@@ -204,14 +209,29 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	[_baseURL release];
 	_baseURL = nil;
 	_baseURL = [baseURL retain];
-
+    
 	[_baseURLReachabilityObserver release];
 	_baseURLReachabilityObserver = nil;
 
     // Don't crash if baseURL is nil'd out (i.e. dealloc)
     if (baseURL) {
+        // Configure a cache for the new base URL
+        [_cache release];
+        _cache = [[RKRequestCache alloc] initWithCachePath:[self cachePath]
+                                             storagePolicy:RKRequestCacheStoragePolicyPermanently];
+        
+        // Configure a new reachability observer
         NSURL* URL = [NSURL URLWithString:baseURL];
-        _baseURLReachabilityObserver = [[RKReachabilityObserver reachabilityObserverWithHostName:[URL host]] retain];
+        _baseURLReachabilityObserver = [[RKReachabilityObserver alloc] initWithHostname:[URL host]];
+        
+        // Suspend the queue until reachability to our new hostname is established
+        [RKRequestQueue sharedQueue].suspended = YES;
+        [[NSNotificationCenter defaultCenter] addObserver:self 
+                                                 selector:@selector(reachabilityWasDetermined:) 
+                                                     name:RKReachabilityStateWasDeterminedNotification 
+                                                   object:_baseURLReachabilityObserver];
+        RKLogDebug(@"Base URL changed for client %@, suspending main queue until reachability to host '%@' can be determined", 
+                   self, [URL host]);
     }
 }
 
@@ -263,6 +283,15 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     if (self.serviceUnavailableAlertEnabled) {
         RKAlertWithTitle(self.serviceUnavailableAlertMessage, self.serviceUnavailableAlertTitle);
     }
+}
+
+- (void)reachabilityWasDetermined:(NSNotification*)notification {
+    RKReachabilityObserver* observer = (RKReachabilityObserver*) [notification object];
+    NSAssert(observer == _baseURLReachabilityObserver, @"Received unexpected reachability notification from inappropriate reachability observer");
+    
+    RKLogDebug(@"Reachability to host '%@' determined for client %@, unsuspending main queue", observer.hostName, self);
+    [RKRequestQueue sharedQueue].suspended = NO;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityStateWasDeterminedNotification object:observer];
 }
 
 @end
