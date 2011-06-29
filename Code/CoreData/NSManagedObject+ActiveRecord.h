@@ -12,6 +12,11 @@
 
 @interface NSManagedObject (ActiveRecord)
 
+/** This property is added to all Core Data records before the persistent store is created.
+ *  It tracks the sync status of every record.
+ */
+@property (nonatomic, retain) NSNumber * _rkManagedObjectSyncStatus;
+
 /**
  * The Core Data managed object context from the RKObjectManager's objectStore
  * that is managing this model
@@ -87,6 +92,7 @@
  * Returns YES when an object has not been saved to the managed object context yet
  */
 - (BOOL)isNew;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -73,7 +73,24 @@ static NSString* const kRKManagedObjectContextKey = @"RKManagedObjectContext";
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
-		
+        
+		//Testing adding coredata attributes on the fly
+        NSArray *newEntities = [[[NSArray alloc] init] autorelease];
+        for (NSEntityDescription *entity in [_managedObjectModel entities]) {
+            NSAttributeDescription *syncAttribute = [[NSAttributeDescription alloc] init];
+            [syncAttribute setName:@"_rkManagedObjectSyncStatus"];
+            [syncAttribute setAttributeType:NSInteger16AttributeType];
+            [syncAttribute setOptional:NO];
+            [syncAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
+            
+            //TODO: Add NSExpression validation so that this throws an error when set to an invalid value
+            NSArray *newProperties = [[entity properties] arrayByAddingObject:syncAttribute];
+            [entity setProperties:newProperties];
+            newEntities = [newEntities arrayByAddingObject:entity];
+        }
+        
+        [_managedObjectModel setEntities:newEntities];
+        
         _delegate = delegate;
         
 		[self createPersistentStoreCoordinator];

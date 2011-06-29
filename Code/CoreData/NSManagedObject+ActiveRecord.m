@@ -22,6 +22,8 @@ static NSNumber *defaultBatchSize = nil;
 
 @implementation NSManagedObject (ActiveRecord)
 
+@dynamic _rkManagedObjectSyncStatus;
+
 #pragma mark - RKManagedObject methods
 
 // TODO: Not sure that we even need the objectStore...
