@@ -16,7 +16,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        _observer = [[RKReachabilityObserver reachabilityObserverWithHostName:@"restkit.org"] retain];
+        _observer = [[RKReachabilityObserver alloc] initWithHostname:@"restkit.org"];
 
         // Register for notifications
         [[NSNotificationCenter defaultCenter] addObserver:self
