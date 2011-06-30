@@ -92,7 +92,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldNotCrashWhenLoadingAnErrorResponseWithAnUnmappableMIMEType"
+            value = "itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContentViapostObject"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

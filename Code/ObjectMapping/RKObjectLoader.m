@@ -16,6 +16,7 @@
 #import "RKObjectLoader_Internals.h"
 #import "RKParserRegistry.h"
 #import "../Network/RKRequest_Internals.h"
+#import "RKObjectSerializer.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -26,6 +27,9 @@
 @synthesize objectManager = _objectManager, response = _response;
 @synthesize targetObject = _targetObject, objectMapping = _objectMapping;
 @synthesize result = _result;
+@synthesize serializationMapping = _serializationMapping;
+@synthesize serializationMIMEType = _serializationMIMEType;
+@synthesize sourceObject = _sourceObject;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate {
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
@@ -44,6 +48,8 @@
     // Weak reference
     _objectManager = nil;
     
+    [_sourceObject release];
+    _sourceObject = nil;
 	[_targetObject release];
 	_targetObject = nil;
 	[_response release];
@@ -52,6 +58,8 @@
 	_objectMapping = nil;
     [_result release];
     _result = nil;
+    [_serializationMIMEType release];
+    [_serializationMapping release];
     
 	[super dealloc];
 }
@@ -60,10 +68,14 @@
     [super reset];
     [_response release];
     _response = nil;
+    [_result release];
+    _result = nil;
 }
 
 #pragma mark - Response Processing
 
+// NOTE: This method is significant because the notifications posted are used by
+// RKRequestQueue to remove requests from the queue. All requests need to be finalized.
 - (void)finalizeLoad:(BOOL)successful error:(NSError*)error {
 	_isLoading = NO;
 
@@ -167,9 +179,11 @@
 - (RKObjectMappingResult*)performMapping:(NSError**)error {
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
+        RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider...");
         mappingProvider = [[RKObjectMappingProvider new] autorelease];
         [mappingProvider setObjectMapping:self.objectMapping forKeyPath:@""];
     } else {
+        RKLogDebug(@"No object mapping provider, using mapping provider from parent object manager to perform KVC mapping");
         mappingProvider = self.objectManager.mappingProvider;
     }
     
@@ -181,7 +195,7 @@
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
     NSError* error = nil;
-    self.result = [self performMapping:&error];
+    _result = [[self performMapping:&error] retain];
     if (self.result) {
         [self processMappingResult:self.result];
     } else {
@@ -221,6 +235,8 @@
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         }
         
+        // NOTE: We skip didFailLoadWithError: here so that we don't send the delegate
+        // conflicting messages around unexpected response and failure with error
         [self finalizeLoad:NO error:error];
         
         return NO;
@@ -250,15 +266,31 @@
 #pragma mark - RKRequest & RKRequestDelegate methods
 
 // Invoked just before request hits the network
-- (void)prepareURLRequest {
+- (BOOL)prepareURLRequest {
+    if (self.sourceObject && (self.method == RKRequestMethodPOST || self.method == RKRequestMethodPUT)) {
+        NSAssert(self.serializationMapping, @"Cannot send an object to the remote");
+        RKLogDebug(@"POST or PUT request for source object %@, serializing to MIME Type %@ for transport...", self.sourceObject, self.serializationMIMEType);
+        RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:self.sourceObject mapping:self.serializationMapping];
+        NSError* error = nil;
+        id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];	
+        
+        if (error) {
+            RKLogError(@"Serializing failed for source object %@ to MIME Type %@: %@", self.sourceObject, self.serializationMIMEType, [error localizedDescription]);
+            [self didFailLoadWithError:error];
+            return NO;
+        }
+        
+        self.params = params;
+    }
+    
     // TODO: This is an informal protocol ATM. Maybe its not obvious enough?
-    if (self.targetObject) {
-        if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
-            [self.targetObject performSelector:@selector(willSendWithObjectLoader:) withObject:self];
+    if (self.sourceObject) {
+        if ([self.sourceObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
+            [self.sourceObject performSelector:@selector(willSendWithObjectLoader:) withObject:self];
         }
     }
     
-    [super prepareURLRequest];
+    return [super prepareURLRequest];
 }
 
 - (void)didFailLoadWithError:(NSError*)error {
@@ -303,7 +335,7 @@
         // Determine if we are synchronous here or not.
         if (_sentSynchronously) {
             NSError* error = nil;
-            self.result = [self performMapping:&error];
+            _result = [[self performMapping:&error] retain];
             if (self.result) {
                 [self processMappingResult:self.result];
             } else {

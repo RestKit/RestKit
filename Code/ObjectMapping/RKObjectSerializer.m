@@ -43,7 +43,8 @@
     [super dealloc];
 }
 
-- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)MIMEType error:(NSError**)error {
+// Return it serialized into a dictionary
+- (id)serializedObject:(NSError**)error {
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withObjectMapping:_mapping];
     operation.delegate = self;
@@ -59,16 +60,31 @@
         dictionary = [NSMutableDictionary dictionaryWithObject:dictionary forKey:_mapping.rootKeyPath];
     }
     
-    if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
-        // Dictionaries are natively RKRequestSerializable as Form Encoded
-        return dictionary;
-    } else {
+    return dictionary;
+}
+
+- (id)serializedObjectForMIMEType:(NSString*)MIMEType error:(NSError**)error {
+    // TODO: This will fail for form encoded...
+    id serializedObject = [self serializedObject:error];
+    if (serializedObject) {
         id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-        NSString* string = [parser stringFromObject:dictionary error:error];
+        NSString* string = [parser stringFromObject:serializedObject error:error];
         if (string == nil) {
             return nil;
         }
         
+        return string;
+    }
+    
+    return nil;
+}
+
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)MIMEType error:(NSError**)error {    
+    if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
+        // Dictionaries are natively RKRequestSerializable as Form Encoded
+        return [self serializedObject:error];
+    } else {
+        NSString* string = [self serializedObjectForMIMEType:MIMEType error:error];        
         NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
         return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
     }

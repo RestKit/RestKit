@@ -210,7 +210,7 @@
     // Explicitly init so we don't get a managed object loader...
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [[RKObjectLoader alloc] initWithResourcePath:@"/" objectManager:objectManager delegate:responseLoader];
-    objectLoader.targetObject = mockObject;
+    objectLoader.sourceObject = mockObject;
     [[mockObject expect] willSendWithObjectLoader:objectLoader];
     [objectLoader send];
     [responseLoader waitForResponse];    
@@ -226,7 +226,7 @@
     // Explicitly init so we don't get a managed object loader...
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [[RKObjectLoader alloc] initWithResourcePath:@"/" objectManager:objectManager delegate:responseLoader];
-    objectLoader.targetObject = mockObject;
+    objectLoader.sourceObject = mockObject;
     [[mockObject expect] willSendWithObjectLoader:objectLoader];
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];    
@@ -241,7 +241,7 @@
     
     // Explicitly init so we don't get a managed object loader...
     RKObjectLoader* objectLoader = [[RKObjectLoader alloc] initWithResourcePath:@"/" objectManager:objectManager delegate:nil];
-    objectLoader.targetObject = mockObject;
+    objectLoader.sourceObject = mockObject;
     [[mockObject expect] willSendWithObjectLoader:objectLoader];
     [objectLoader sendSynchronously];
     [mockObject verify];
@@ -271,6 +271,87 @@
     [manager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
     [loader waitForResponse];
     assertThat([loader.mappableData valueForKey:@"newKey"], is(equalTo(@"monkey!")));
+}
+
+- (void)itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContent {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
+    RKObjectMapping* serializationMapping = [mapping inverseMapping];
+    
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKSpecComplexUser class] toResourcePath:@"/notNestedUser"];
+    [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKSpecComplexUser class]];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* loader = [objectManager objectLoaderForObject:user method:RKRequestMethodPOST delegate:responseLoader];
+    loader.objectMapping = mapping;
+    [loader send];
+    [responseLoader waitForResponse];
+    assertThatBool([responseLoader success], is(equalToBool(YES)));
+    assertThat(user.email, is(equalTo(@"changed")));
+}
+
+- (void)itShouldAllowYouToPOSTAnObjectOfOneTypeAndGetBackAnother {
+    RKObjectMapping* sourceMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [sourceMapping mapAttributes:@"firstname", @"lastname", @"email", nil];
+    RKObjectMapping* serializationMapping = [sourceMapping inverseMapping];
+    
+    RKObjectMapping* targetMapping = [RKObjectMapping mappingForClass:[RKObjectLoaderSpecResultModel class]];
+    [targetMapping mapAttributes:@"ID", nil];
+    
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKSpecComplexUser class] toResourcePath:@"/notNestedUser"];
+    [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKSpecComplexUser class]];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* loader = [objectManager objectLoaderForObject:user method:RKRequestMethodPOST delegate:responseLoader];
+    loader.sourceObject = user;
+    loader.targetObject = nil;
+    loader.objectMapping = targetMapping;
+    [loader send];
+    [responseLoader waitForResponse];
+    assertThatBool([responseLoader success], is(equalToBool(YES)));
+    
+    // Our original object should not have changed
+    assertThat(user.email, is(equalTo(@"blake@restkit.org")));
+    
+    // And we should have a new one
+    RKObjectLoaderSpecResultModel* newObject = [[responseLoader objects] lastObject];
+    assertThat(newObject, is(instanceOf([RKObjectLoaderSpecResultModel class])));
+    assertThat(newObject.ID, is(equalToInt(31337)));
+}
+
+// TODO: Should live in a different file...
+- (void)itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContentViapostObject {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
+    RKObjectMapping* serializationMapping = [mapping inverseMapping];
+    
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKSpecComplexUser class] toResourcePath:@"/notNestedUser"];
+    [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKSpecComplexUser class]];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    // NOTE: The postObject: should infer the target object from sourceObject and the mapping class
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    [objectManager postObject:user mapResponseWith:mapping delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThatBool([responseLoader success], is(equalToBool(YES)));
+    assertThat(user.email, is(equalTo(@"changed")));
 }
 
 @end

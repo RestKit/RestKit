@@ -77,11 +77,26 @@
  */
 @interface RKObjectLoader : RKRequest {	
     RKObjectManager* _objectManager;
-	RKResponse* _response;
+    RKResponse* _response;
     RKObjectMapping* _objectMapping;
     RKObjectMappingResult* _result;
+    RKObjectMapping* _serializationMapping;
+    NSString* _serializationMIMEType;
+    NSObject* _sourceObject;
 	NSObject* _targetObject;
 }
+
+/**
+ * The object mapping to use when processing the response. If this is nil,
+ * then RestKit will search the parsed response body for mappable keyPaths and
+ * perform mapping on all available content. For instances where your target JSON
+ * is not returned under a uniquely identifiable keyPath, you must specify the object
+ * mapping directly for RestKit to know how to map it.
+ *
+ * @default nil
+ * @see RKObjectMappingProvider
+ */
+@property (nonatomic, retain) RKObjectMapping* objectMapping;
 
 /**
  * The object manager that initialized this loader. The object manager is responsible
@@ -95,20 +110,48 @@
 @property (nonatomic, readonly) RKResponse* response;
 
 /**
- * The object mapping to apply to the response
+ * The mapping result that was produced after the request finished loading and
+ * object mapping has completed. Provides access to the final products of the
+ * object mapper in a variety of formats.
  */
-@property (nonatomic, retain) RKObjectMapping* objectMapping;
+@property (nonatomic, readonly) RKObjectMappingResult* result;
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// Serialization
 
 /**
- * The mappable object that generated this loader. This is used to map object
- * updates back to the object that sent the request
+ * The object mapping to use when serializing a target object for transport
+ * to the remote server.
+ *
+ * @see RKObjectMappingProvider
+ */
+@property (nonatomic, retain) RKObjectMapping* serializationMapping;
+
+/**
+ * The MIME Type to serialize the targetObject into according to the mapping
+ * rules in the serializationMapping. Typical MIME Types for serialization are
+ * JSON (RKMIMETypeJSON) and URL Form Encoded (RKMIMETypeFormURLEncoded).
+ *
+ * @see RKMIMEType
+ */
+@property (nonatomic, retain) NSString* serializationMIMEType;
+
+/**
+ The object being serialized for transport. This object will be transformed into a
+ serialization in the serializationMIMEType using the serializationMapping.
+ 
+ @see RKObjectSerializer
+ */
+@property (nonatomic, retain) NSObject* sourceObject;
+
+/**
+ * The target object to map results back onto. If nil, a new object instance
+ * for the appropriate mapping will be created. If not nil, the results will
+ * be used to update the targetObject's attributes and relationships.
  */
 @property (nonatomic, retain) NSObject* targetObject;
 
-/**
- * If the request was sent synchronously, this is how you get at the object mapping result.
- */
-@property (nonatomic, retain) RKObjectMappingResult* result;
+///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Initialize and return an object loader for a resource path against an object manager. The resource path
@@ -118,9 +161,10 @@
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
- * Initialize a new object loader with an object mapper, a request, and a delegate
+ * Initialize a new object loader with an object manager, a request, and a delegate
  */
 - (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate;				
+
 /**
  * Handle an error in the response preventing it from being mapped, called from -isResponseMappable
  */
