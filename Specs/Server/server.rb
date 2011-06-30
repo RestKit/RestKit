@@ -79,7 +79,7 @@ class RestKit::SpecServer < Sinatra::Base
   
   post '/notNestedUser' do
     content_type 'application/json'
-    { 'email' => 'changed' }.to_json
+    { 'email' => 'changed', 'ID' => 31337 }.to_json
   end
   
   # start the server if ruby file executed directly

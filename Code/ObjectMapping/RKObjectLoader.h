@@ -79,9 +79,10 @@
     RKObjectManager* _objectManager;
     RKResponse* _response;
     RKObjectMapping* _objectMapping;
-    RKObjectMappingResult* _result;	
+    RKObjectMappingResult* _result;
     RKObjectMapping* _serializationMapping;
-    NSString* _serializationMIMEType;    
+    NSString* _serializationMIMEType;
+    NSObject* _sourceObject;
 	NSObject* _targetObject;
 }
 
@@ -136,8 +137,17 @@
 @property (nonatomic, retain) NSString* serializationMIMEType;
 
 /**
- * The mappable object that generated this loader. This is used to map object
- * updates back to the object that sent the request
+ The object being serialized for transport. This object will be transformed into a
+ serialization in the serializationMIMEType using the serializationMapping.
+ 
+ @see RKObjectSerializer
+ */
+@property (nonatomic, retain) NSObject* sourceObject;
+
+/**
+ * The target object to map results back onto. If nil, a new object instance
+ * for the appropriate mapping will be created. If not nil, the results will
+ * be used to update the targetObject's attributes and relationships.
  */
 @property (nonatomic, retain) NSObject* targetObject;
 

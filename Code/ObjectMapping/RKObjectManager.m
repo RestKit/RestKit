@@ -158,6 +158,7 @@ static RKObjectManager* sharedManager = nil;
     NSString* resourcePath = [self.router resourcePathForObject:object method:method];
     RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
     loader.method = method;
+    loader.sourceObject = object;
     loader.targetObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
@@ -193,6 +194,11 @@ static RKObjectManager* sharedManager = nil;
 
 - (RKObjectLoader*)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodGET delegate:delegate];
+    if ([object isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = object;
+    } else {
+        loader.targetObject = nil;
+    }
     loader.objectMapping = objectMapping;
 	[loader send];
 	return loader;
@@ -200,6 +206,11 @@ static RKObjectManager* sharedManager = nil;
 
 - (RKObjectLoader*)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPOST delegate:delegate];
+    if ([object isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = object;
+    } else {
+        loader.targetObject = nil;
+    }
 	loader.objectMapping = objectMapping;
     [loader send];
 	return loader;
@@ -207,6 +218,11 @@ static RKObjectManager* sharedManager = nil;
 
 - (RKObjectLoader*)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPUT delegate:delegate];
+    if ([object isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = object;
+    } else {
+        loader.targetObject = nil;
+    }
     loader.objectMapping = objectMapping;
 	[loader send];
 	return loader;
@@ -214,10 +230,14 @@ static RKObjectManager* sharedManager = nil;
 
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodDELETE delegate:delegate];
+    if ([object isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = object;
+    } else {
+        loader.targetObject = nil;
+    }
     loader.objectMapping = objectMapping;
 	[loader send];
 	return loader;
 }
 
 @end
-  

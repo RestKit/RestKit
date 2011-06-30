@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectManagerSpec"
+            value = "RKObjectLoaderSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldHandleConnectionFailures"
+            value = "itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContentViapostObject"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

@@ -29,6 +29,7 @@
 @synthesize result = _result;
 @synthesize serializationMapping = _serializationMapping;
 @synthesize serializationMIMEType = _serializationMIMEType;
+@synthesize sourceObject = _sourceObject;
 
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate {
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
@@ -47,6 +48,8 @@
     // Weak reference
     _objectManager = nil;
     
+    [_sourceObject release];
+    _sourceObject = nil;
 	[_targetObject release];
 	_targetObject = nil;
 	[_response release];
@@ -65,6 +68,8 @@
     [super reset];
     [_response release];
     _response = nil;
+    [_result release];
+    _result = nil;
 }
 
 #pragma mark - Response Processing
@@ -262,15 +267,15 @@
 
 // Invoked just before request hits the network
 - (BOOL)prepareURLRequest {
-    if (self.targetObject && (self.method == RKRequestMethodPOST || self.method == RKRequestMethodPUT)) {
+    if (self.sourceObject && (self.method == RKRequestMethodPOST || self.method == RKRequestMethodPUT)) {
         NSAssert(self.serializationMapping, @"Cannot send an object to the remote");
-        RKLogDebug(@"POST or PUT request for target object %@, serializing to MIME Type %@ for transport...", self.targetObject, self.serializationMIMEType);
-        RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:self.targetObject mapping:self.serializationMapping];
+        RKLogDebug(@"POST or PUT request for source object %@, serializing to MIME Type %@ for transport...", self.sourceObject, self.serializationMIMEType);
+        RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:self.sourceObject mapping:self.serializationMapping];
         NSError* error = nil;
         id params = [serializer serializationForMIMEType:self.serializationMIMEType error:&error];	
         
         if (error) {
-            RKLogError(@"Serializing failed for target object %@ to MIME Type %@: %@", self.targetObject, self.serializationMIMEType, [error localizedDescription]);
+            RKLogError(@"Serializing failed for source object %@ to MIME Type %@: %@", self.sourceObject, self.serializationMIMEType, [error localizedDescription]);
             [self didFailLoadWithError:error];
             return NO;
         }
@@ -279,9 +284,9 @@
     }
     
     // TODO: This is an informal protocol ATM. Maybe its not obvious enough?
-    if (self.targetObject) {
-        if ([self.targetObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
-            [self.targetObject performSelector:@selector(willSendWithObjectLoader:) withObject:self];
+    if (self.sourceObject) {
+        if ([self.sourceObject respondsToSelector:@selector(willSendWithObjectLoader:)]) {
+            [self.sourceObject performSelector:@selector(willSendWithObjectLoader:) withObject:self];
         }
     }
     
