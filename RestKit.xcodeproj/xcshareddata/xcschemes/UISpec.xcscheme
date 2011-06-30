@@ -87,13 +87,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
-            isEnabled = "NO">
+            value = "RKObjectSerializerSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContentViapostObject"
-            isEnabled = "NO">
+            value = "itShouldSetAnErrorAndReturnNilIfItCantSerialize"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

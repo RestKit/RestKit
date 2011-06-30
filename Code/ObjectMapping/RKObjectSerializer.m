@@ -84,9 +84,11 @@
         // Dictionaries are natively RKRequestSerializable as Form Encoded
         return [self serializedObject:error];
     } else {
-        NSString* string = [self serializedObjectForMIMEType:MIMEType error:error];        
-        NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
-        return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
+        NSString* string = [self serializedObjectForMIMEType:MIMEType error:error];
+        if (string) {
+            NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+            return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
+        }
     }
     
     return nil;
