@@ -97,6 +97,15 @@ RKLogInitialize();                                                              
 lcl_configure_by_name(name, level);
 
 /**
+ Alias for configuring the LibComponentLogger logging component for the App. This
+ enables the end-user of RestKit to leverage RKLog() to log messages inside of 
+ their apps.
+ */
+#define RKLogSetAppLoggingLevel(level)                                            \
+RKLogInitialize();                                                                \
+lcl_configure_by_name("App", level);
+
+/**
  Set the Default Log Level
  
  Based on the presence of the DEBUG flag, we default the logging for the RestKit parent component

@@ -158,7 +158,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      via calls to RKLogConfigureByName as detailed below.
      
      See RKLog.h and lcl_log_components.h for details on the logging macros available
-     */
+     */    
     RKLogConfigureByName("RestKit", RKLogLevelTrace);
     RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
@@ -166,6 +166,18 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
     
     // Enable boatloads of trace info from the mapper
     // RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
+    
+    /**
+     Enable verbose logging for the App component. 
+     
+     This component is exported by RestKit to allow you to leverage the same logging
+     facilities and macros in your app that are used internally by the library. When
+     you #import <RestKit/RestKit.h>, the default logging component is set to 'App'
+     for you. Calls to RKLog() within your application will log at the level specified below.
+     */
+    RKLogSetAppLoggingLevel(RKLogLevelTrace);
+    
+    RKLogDebug(@"Discussion Board is starting up...");
     
 	// Initialize Three20
 	TTURLMap* map = [[TTNavigator navigator] URLMap];

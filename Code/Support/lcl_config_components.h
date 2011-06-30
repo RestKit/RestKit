@@ -44,3 +44,4 @@ _lcl_component(RestKitNetworkQueue,         "restkit.network.queue",        "Res
 _lcl_component(RestKitNetworkReachability,  "restkit.network.reachability", "RestKit/Network/Reachability")
 _lcl_component(RestKitObjectMapping,        "restkit.object_mapping",       "RestKit/ObjectMapping")
 _lcl_component(RestKitCoreData,             "restkit.core_data",            "RestKit/CoreData")
+_lcl_component(App,                         "app",                          "App")
