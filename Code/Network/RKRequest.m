@@ -296,7 +296,7 @@
 - (void)sendAsynchronously {
     NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     _sentSynchronously = NO;    
-	  if ([self shouldLoadFromCache]) {
+    if ([self shouldLoadFromCache]) {
         RKResponse* response = [self loadResponseFromCache];
         _isLoading = YES;
         [self didFinishLoad:response];
