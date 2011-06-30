@@ -87,13 +87,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectManagerSpec"
-            isEnabled = "YES">
+            value = "RKObjectLoaderSpec"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved"
-            isEnabled = "YES">
+            value = "itShouldNotCrashWhenLoadingAnErrorResponseWithAnUnmappableMIMEType"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

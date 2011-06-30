@@ -23,10 +23,6 @@
 @dynamic favoriteCat;
 @dynamic cats;
 
-+ (NSArray*)relationshipsToSerialize {
-    return [NSArray arrayWithObject:@"cats"];
-}
-
 - (NSString*)polymorphicResourcePath {
 	return @"/this/is/the/path";
 }

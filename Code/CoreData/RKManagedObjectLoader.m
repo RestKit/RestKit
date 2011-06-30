@@ -91,6 +91,23 @@
     [super prepareURLRequest];
 }
 
+- (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result {
+    if ([self.URL isKindOfClass:[RKURL class]]) {
+        RKURL* rkURL = (RKURL*)self.URL;
+        
+        NSArray* results = [result asCollection];
+        NSArray* cachedObjects = [self.objectStore objectsForResourcePath:rkURL.resourcePath];
+        for (id object in cachedObjects) {
+            if (NO == [results containsObject:object]) {
+                RKLogTrace(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
+                [[self.objectStore managedObjectContext] deleteObject:object];
+            }
+        }
+    } else {
+        RKLogWarning(@"Unable to perform cleanup of server-side object deletions: unable to determine resource path.");
+    }
+}
+
 // NOTE: We are on the background thread here, be mindful of Core Data's threading needs
 - (void)processMappingResult:(RKObjectMappingResult*)result {
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
@@ -101,6 +118,7 @@
     
     // If the response was successful, save the store...
     if ([self.response isSuccessful]) {
+        [self deleteCachedObjectsMissingFromResult:result];
         NSError* error = [self.objectStore save];
         if (error) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);

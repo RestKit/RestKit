@@ -405,7 +405,10 @@
 			[_delegate request:self didFailLoadWithError:error];
 		}
         
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification object:self userInfo:nil];
+        NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification 
+                                                            object:self 
+                                                          userInfo:userInfo];
 	}
 }
 
