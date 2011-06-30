@@ -412,7 +412,7 @@
 		250D5BFF13A069C400471F0E /* lcl_config_components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_components.h; sourceTree = "<group>"; };
 		250D5C0113A069EA00471F0E /* lcl_config_extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_extensions.h; sourceTree = "<group>"; };
 		250D5C0313A06A4D00471F0E /* lcl_config_logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_logger.h; sourceTree = "<group>"; };
-		2515E7B913B36A7D00E013A4 /* ArrayOfResults.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfResults.json; sourceTree = "<group>"; };
+		2515E7B913B36A7D00E013A4 /* ArrayOfResults.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ArrayOfResults.json; sourceTree = "<group>"; };
 		2515E7BB13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectLoaderSpecResultModel.h; sourceTree = "<group>"; };
 		2515E7BC13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectLoaderSpecResultModel.m; sourceTree = "<group>"; };
 		251899FB1370F4E00092B049 /* RKLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKLog.h; sourceTree = "<group>"; };
