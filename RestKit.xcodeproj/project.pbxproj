@@ -32,6 +32,7 @@
 
 /* Begin PBXBuildFile section */
 		13924B7913AAB91700DD5078 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13924B7813AAB91700DD5078 /* libUISpec.a */; };
+		2032ADE613BCB4B200BE4D75 /* RKManagedObjectSyncObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 2025159213BB9347006F208B /* RKManagedObjectSyncObserver.m */; };
 		20AED63413BBB1D4005DE16F /* RKManagedObjectSyncObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 2025159113BB9346006F208B /* RKManagedObjectSyncObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A088912551D8D00976E89 /* RKManagedObjectSeeder.m */; };
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
@@ -2030,6 +2031,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2032ADE613BCB4B200BE4D75 /* RKManagedObjectSyncObserver.m in Sources */,
 				25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */,
 				253A09271255258600976E89 /* RKManagedObjectStore.m in Sources */,
 				251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */,
@@ -2204,7 +2206,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
@@ -2225,7 +2227,7 @@
 				BUILD_STYLE = Release;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
@@ -2303,7 +2305,7 @@
 				BUILD_STYLE = Release;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;

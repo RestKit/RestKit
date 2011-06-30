@@ -8,6 +8,12 @@
 
 #import "RKManagedObjectSyncObserver.h"
 
+//////////////////////////////////
+// Shared Instance
+
+static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
+
+///////////////////////////////////
 
 @implementation RKManagedObjectSyncObserver
 @synthesize registeredClasses = _registeredClasses;
@@ -20,6 +26,16 @@
     return self;
 }
 
++ (RKManagedObjectSyncObserver*)sharedSyncObserver {
+    return sharedSyncObserver;
+}
+
++ (void)setSharedSyncObserver:(RKManagedObjectSyncObserver*)observer {
+	[observer retain];
+	[sharedSyncObserver release];
+	sharedSyncObserver = observer;
+}
+
 - (void)dealloc {
     [_registeredClasses release];
     
@@ -28,6 +44,10 @@
 
 - (void)registerClassForSyncing:(Class)someClass {
     [_registeredClasses addObject: someClass];
+}
+
+- (void)unregisterClassForSyncing:(Class)someClass {
+    [_registeredClasses removeObject:someClass];
 }
 
 @end

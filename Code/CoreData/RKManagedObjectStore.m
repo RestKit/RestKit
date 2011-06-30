@@ -7,6 +7,7 @@
 //
 
 #import "RKManagedObjectStore.h"
+#import "RKManagedObjectSyncObserver.h"
 #import "RKAlert.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
@@ -74,7 +75,6 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
         
-		//Testing adding coredata attributes on the fly
         NSArray *newEntities = [[[NSArray alloc] init] autorelease];
         for (NSEntityDescription *entity in [_managedObjectModel entities]) {
             NSAttributeDescription *syncAttribute = [[NSAttributeDescription alloc] init];
@@ -90,6 +90,8 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         }
         
         [_managedObjectModel setEntities:newEntities];
+        
+        [RKManagedObjectSyncObserver setSharedSyncObserver:[[RKManagedObjectSyncObserver alloc] init]];
         
         _delegate = delegate;
         
