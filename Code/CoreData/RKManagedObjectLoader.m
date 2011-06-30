@@ -92,6 +92,11 @@
 }
 
 - (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result {
+    if (! [self isGET]) {
+        RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
+        return;
+    }
+    
     if ([self.URL isKindOfClass:[RKURL class]]) {
         RKURL* rkURL = (RKURL*)self.URL;
         

@@ -101,6 +101,7 @@
 		25432041125618F000A315CF /* RKParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 25432040125618F000A315CF /* RKParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25432064125632A300A315CF /* RKJSONParserYAJL.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08B71255212300976E89 /* RKJSONParserYAJL.m */; };
 		25432065125632AA00A315CF /* RKJSONParserSBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08B61255212300976E89 /* RKJSONParserSBJSON.m */; };
+		2559209713BD1B8700E9C29C /* RKParamsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2559208213BD1A4000E9C29C /* RKParamsSpec.m */; };
 		255DE05E10FFA05800A85891 /* RKHuman.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05D10FFA05800A85891 /* RKHuman.m */; };
 		255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0E110FFABA500A85891 /* CoreData.framework */; };
 		255DE0F410FFAC0A00A85891 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0F310FFAC0A00A85891 /* SystemConfiguration.framework */; };
@@ -479,6 +480,7 @@
 		253E04C413798D72005D2E15 /* RKErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKErrorMessage.m; sourceTree = "<group>"; };
 		25431EBA1255640800A315CF /* CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreData.h; sourceTree = "<group>"; };
 		25432040125618F000A315CF /* RKParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKParser.h; sourceTree = "<group>"; };
+		2559208213BD1A4000E9C29C /* RKParamsSpec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKParamsSpec.m; sourceTree = "<group>"; };
 		255DE05C10FFA05800A85891 /* RKHuman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHuman.h; sourceTree = "<group>"; };
 		255DE05D10FFA05800A85891 /* RKHuman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHuman.m; sourceTree = "<group>"; };
 		255DE0E110FFABA500A85891 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -1346,6 +1348,7 @@
 				259D56B4132E706D00897272 /* RKAuthenticationSpec.m */,
 				250C296B13411E60000A3551 /* RKRequestQueueSpec.m */,
 				25ACF1AC13BB9D480067B380 /* RKURLSpec.m */,
+				2559208213BD1A4000E9C29C /* RKParamsSpec.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -2116,6 +2119,7 @@
 				25AA85D613B1065000A95E2A /* RKObjectLoaderSpec.m in Sources */,
 				2515E7BD13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m in Sources */,
 				25ACF1AD13BB9D490067B380 /* RKURLSpec.m in Sources */,
+				2559209713BD1B8700E9C29C /* RKParamsSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
