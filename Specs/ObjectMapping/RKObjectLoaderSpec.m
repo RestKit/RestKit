@@ -273,4 +273,27 @@
     assertThat([loader.mappableData valueForKey:@"newKey"], is(equalTo(@"monkey!")));
 }
 
+- (void)itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContent {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
+    RKObjectMapping* serializationMapping = [mapping inverseMapping];
+    
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKSpecComplexUser class] toResourcePath:@"/notNestedUser"];
+    [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKSpecComplexUser class]];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* loader = [objectManager objectLoaderForObject:user method:RKRequestMethodPOST delegate:responseLoader];
+    loader.objectMapping = mapping;
+    [loader send];
+    [responseLoader waitForResponse];
+    assertThatBool([responseLoader success], is(equalToBool(YES)));
+    assertThat(user.email, is(equalTo(@"changed")));
+}
+
 @end

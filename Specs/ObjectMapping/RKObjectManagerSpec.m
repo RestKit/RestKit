@@ -94,14 +94,16 @@
 
 - (void)itShouldDeleteACoreDataBackedTargetObjectOnError {
     RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
-    temporaryHuman.name = @"My Name";    
-//    [_objectManager.objectStore save];
+    temporaryHuman.name = @"My Name";
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping mapAttributes:@"name", nil];
     
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];    
     NSString* resourcePath = @"/humans/fail";
     RKObjectLoader* objectLoader = [_objectManager objectLoaderWithResourcePath:resourcePath delegate:loader];
     objectLoader.method = RKRequestMethodPOST;
     objectLoader.targetObject = temporaryHuman;
+    objectLoader.serializationMapping = mapping;
 	[objectLoader send];
     [loader waitForResponse];
 
@@ -111,6 +113,8 @@
 - (void)itShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved {
     RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
     temporaryHuman.name = @"My Name";
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping mapAttributes:@"name", nil];
     
     // Save it to suppress deletion
     [_objectManager.objectStore save];
@@ -120,6 +124,7 @@
     RKObjectLoader* objectLoader = [_objectManager objectLoaderWithResourcePath:resourcePath delegate:loader];
     objectLoader.method = RKRequestMethodPOST;
     objectLoader.targetObject = temporaryHuman;
+    objectLoader.serializationMapping = mapping;
 	[objectLoader send];
     [loader waitForResponse];
     

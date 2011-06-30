@@ -198,7 +198,7 @@
 }
 
 // Setup the NSURLRequest. The request must be prepared right before dispatching
-- (void)prepareURLRequest {
+- (BOOL)prepareURLRequest {
 	[_URLRequest setHTTPMethod:[self HTTPMethod]];
 	[self setRequestBody];
 	[self addHeadersToRequest];
@@ -206,6 +206,8 @@
     NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
     RKLogTrace(@"Prepared %@ URLRequest '%@'. HTTP Headers: %@. HTTP Body: %@.", [self HTTPMethod], _URLRequest, [_URLRequest allHTTPHeaderFields], body);
     [body release];
+    
+    return YES;
 }
 
 - (void)cancelAndInformDelegate:(BOOL)informDelegate {
@@ -249,7 +251,10 @@
 
 - (void)fireAsynchronousRequest {
     RKLogDebug(@"Sending asynchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
-    [self prepareURLRequest];
+    if (![self prepareURLRequest]) {
+        // TODO: Logging
+        return;
+    }
     
     _isLoading = YES;    
     
@@ -345,8 +350,11 @@
     _sentSynchronously = YES;
 
 	if ([self shouldDispatchRequest]) {
-		[self prepareURLRequest];        
-		RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
+        RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
+		if (![self prepareURLRequest]) {
+            // TODO: Logging
+            return nil;
+        }
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 
@@ -392,7 +400,6 @@
     [self cancelAndInformDelegate:YES];
 }
 
-// TODO: Isn't this code duplicated higher up???
 - (void)didFailLoadWithError:(NSError*)error {
 	if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
 		[self.cache hasResponseForRequest:self]) {

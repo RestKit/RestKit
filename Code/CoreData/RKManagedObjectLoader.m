@@ -74,7 +74,7 @@
     _targetObjectID = nil;
 }
 
-- (void)prepareURLRequest {
+- (BOOL)prepareURLRequest {
     // TODO: Can we just do this if the object hasn't been saved already???
     
     // NOTE: There is an important sequencing issue here. You MUST save the
@@ -88,7 +88,7 @@
         _targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
     }
     
-    [super prepareURLRequest];
+    return [super prepareURLRequest];
 }
 
 - (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result {

@@ -77,6 +77,11 @@ class RestKit::SpecServer < Sinatra::Base
     "File Not Found"
   end
   
+  post '/notNestedUser' do
+    content_type 'application/json'
+    { 'email' => 'changed' }.to_json
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

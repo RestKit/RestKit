@@ -184,27 +184,15 @@ typedef enum {
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
- Create and send an asynchronous GET request to load the objects at the specified resource path with a dictionary
- of query parameters to append to the URL and call back the delegate with the loaded objects. Remote objects will be mapped 
- to local objects by consulting the keyPath registrations set on the mapping provider.
- 
- These methods have been deprecated. You can use [resourcePath appendQueryParams:queryParams] to achieve the same effect.
-
- @deprecated
- */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-
-/**
  Load mappable objects at the specified resourcePath using the specified object mapping.
  */
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 ////////////////////////////////////////////////////////
-/// @name Mappable object helpers
+/// @name Mappable Object Loaders
 
 /**
- Update a mappable model by loading its attributes from the web
+ Fetch the data for a mappable object by performing an HTTP GET. 
  */
 - (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
 
@@ -223,8 +211,31 @@ typedef enum {
  */
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
 
-////////////////////////////////////////////////////////
-/// @name Object Loader Primitives
+//////
+
+/**
+ Fetch the data for a mappable object by performing an HTTP GET. The data returned in the response will be mapped according
+ to the object mapping provided.
+ */
+- (RKObjectLoader*)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+/**
+ Send the data for a mappable object by performing an HTTP POST. The data returned in the response will be mapped according
+ to the object mapping provided.
+ */
+- (RKObjectLoader*)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+/**
+ Send the data for a mappable object by performing an HTTP PUT. The data returned in the response will be mapped according
+ to the object mapping provided.
+ */
+- (RKObjectLoader*)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+/**
+ Delete a remote object representation by performing an HTTP DELETE. The data returned in the response will be mapped according
+ to the object mapping provided.
+ */
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
  These methods are provided for situations where the remote system you are working with has slightly different conventions

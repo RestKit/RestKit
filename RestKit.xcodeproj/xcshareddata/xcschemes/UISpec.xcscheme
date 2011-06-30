@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
+            value = "RKObjectManagerSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldNotCrashWhenLoadingAnErrorResponseWithAnUnmappableMIMEType"
+            value = "itShouldHandleConnectionFailures"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
