@@ -81,7 +81,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
             [syncAttribute setName:@"_rkManagedObjectSyncStatus"];
             [syncAttribute setAttributeType:NSInteger16AttributeType];
             [syncAttribute setOptional:NO];
-            [syncAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
+            [syncAttribute setDefaultValue:[NSNumber numberWithInteger:RKSyncStatusShouldNotSync]];
             
             //TODO: Add NSExpression validation so that this throws an error when set to an invalid value
             NSArray *newProperties = [[entity properties] arrayByAddingObject:syncAttribute];
