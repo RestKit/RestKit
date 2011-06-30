@@ -405,7 +405,10 @@
 			[_delegate request:self didFailLoadWithError:error];
 		}
         
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification object:self userInfo:nil];
+        NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification 
+                                                            object:self 
+                                                          userInfo:userInfo];
 	}
 }
 
@@ -434,12 +437,13 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
     }
     
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:finalResponse forKey:@"response"];
-	[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification object:self userInfo:userInfo];
-    
     // NOTE: This notification must be posted last as the request queue releases the request when it
     // receives the notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification object:response userInfo:nil];
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:finalResponse 
+                                                         forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification 
+                                                        object:self 
+                                                      userInfo:userInfo];
 }
 
 - (BOOL)isGET {

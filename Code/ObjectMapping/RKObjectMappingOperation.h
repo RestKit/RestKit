@@ -33,6 +33,7 @@
     id<RKObjectMappingOperationDelegate> _delegate;
     id<RKObjectFactory> _objectFactory;
     NSDictionary* _nestedAttributeSubstitution;
+    NSError* _validationError;
 }
 
 /**

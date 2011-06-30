@@ -7,6 +7,7 @@
 //
 
 #import "RKSpecEnvironment.h" 
+#import "RKObjectMapperError.h"
 
 @interface TestMappable : NSObject {
     NSURL* _url;
@@ -22,6 +23,17 @@
 
 @synthesize url = _url;
 @synthesize boolString = _boolString;
+
+- (BOOL)validateValue:(inout id *)ioValue forKey:(NSString *)inKey error:(out NSError **)outError {
+    if ([(NSObject*)*ioValue isKindOfClass:[NSString class]] && [(NSString*)*ioValue isEqualToString:@"FAIL"]) {
+        *outError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
+        return NO;
+    } else if ([(NSObject*)*ioValue isKindOfClass:[NSString class]] && [(NSString*)*ioValue isEqualToString:@"REJECT"]) {
+        return NO;
+    }
+    
+    return YES;
+}
 
 @end
 
@@ -62,6 +74,33 @@
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"true")));
+    [operation release];
+}
+
+- (void)itShouldFailTheMappingOperationIfKeyValueValidationSetsAnError {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"boolString", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"FAIL" forKey:@"boolString"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object objectMapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(NO)));
+    assertThat(error, isNot(nilValue()));
+    [operation release];
+}
+
+- (void)itShouldNotSetTheAttributeIfKeyValueValidationReturnsNo {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"boolString", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    object.boolString = @"should not change";
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"REJECT" forKey:@"boolString"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object objectMapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.boolString, is(equalTo(@"should not change")));
     [operation release];
 }
 

@@ -64,18 +64,21 @@
 
 #pragma mark - Response Processing
 
-- (void)finalizeLoad:(BOOL)successful {
+- (void)finalizeLoad:(BOOL)successful error:(NSError*)error {
 	_isLoading = NO;
 
 	if (successful) {
 		_isLoaded = YES;
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKResponseReceivedNotification
-															object:_response
-														  userInfo:nil];
+		NSDictionary* userInfo = [NSDictionary dictionaryWithObject:_response 
+                                                             forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification 
+                                                            object:self 
+                                                          userInfo:userInfo];
 	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestFailedWithErrorNotification
+        NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
 															object:self
-														  userInfo:nil];
+														  userInfo:userInfo];
 	}
 }
 
@@ -95,7 +98,7 @@
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asObject]];
     }
     
-	[self finalizeLoad:YES];
+	[self finalizeLoad:YES error:nil];
 }
 
 #pragma mark - Subclass Hooks
@@ -205,20 +208,20 @@
 	if ([self.response isFailure]) {
 		[(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:self.response.failureError];
         
-		[self finalizeLoad:NO];
+		[self finalizeLoad:NO error:self.response.failureError];
         
 		return NO;
 	} else if (NO == [self canParseMIMEType:[self.response MIMEType]]) {
         // We can't parse the response, it's unmappable regardless of the status code
         RKLogWarning(@"Encountered unexpected response with status code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
+        NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
         if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];
-        } else {
-            NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
+        } else {            
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         }
         
-        [self finalizeLoad:NO];
+        [self finalizeLoad:NO error:error];
         
         return NO;
     } else if ([self.response isError]) {
@@ -272,7 +275,7 @@
         
         [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
         
-        [self finalizeLoad:NO];
+        [self finalizeLoad:NO error:error];
     }
     
     [pool release];

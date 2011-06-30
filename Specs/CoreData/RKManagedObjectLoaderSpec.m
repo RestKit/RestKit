@@ -11,6 +11,7 @@
 #import "RKManagedObjectMapping.h"
 #import "RKHuman.h"
 #import "RKCat.h"
+#import "NSManagedObject+ActiveRecord.h"
 
 @interface RKManagedObjectLoaderSpec : RKSpec {
     
@@ -63,6 +64,46 @@
     assertThat(human, isNot(nilValue()));
     assertThat(human.favoriteCat, isNot(nilValue()));
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
+}
+
+- (void)itShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
+    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
+    [humanMapping mapAttributes:@"name", nil];
+    humanMapping.primaryKeyAttribute = @"id";
+    
+    // Create 3 objects, we will expect 2 after the load
+    [RKHuman truncateAll];    
+    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
+    RKHuman* blake = [RKHuman createEntity];
+    blake.railsID = [NSNumber numberWithInt:123];
+    RKHuman* other = [RKHuman createEntity];
+    other.railsID = [NSNumber numberWithInt:456];
+    RKHuman* deleteMe = [RKHuman createEntity];
+    deleteMe.railsID = [NSNumber numberWithInt:9999];
+    [store save];
+    assertThatInt([RKHuman count:nil], is(equalToInt(3)));
+        
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.mappingProvider setObjectMapping:humanMapping forKeyPath:@"human"];
+    RKSpecStubNetworkAvailability(YES);
+    RKSpecNewRequestQueue();
+    objectManager.objectStore = store;
+    
+    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
+    NSArray* fetchRequests = [NSArray arrayWithObject:[RKHuman fetchRequest]];
+    [[[mockObjectCache expect] andReturn:fetchRequests] fetchRequestsForResourcePath:OCMOCK_ANY];
+    objectManager.objectStore.managedObjectCache = mockObjectCache;
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    responseLoader.timeout = 25;
+    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/JSON/humans/all.json" objectManager:objectManager delegate:responseLoader]; 
+    [objectLoader send];
+    [responseLoader waitForResponse];
+    
+    assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+    assertThatBool([deleteMe isDeleted], is(equalToBool(YES)));
 }
 
 @end

@@ -158,6 +158,23 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
     return ComparisonSender(sourceValue, comparisonSelector, destinationValue);
 }
 
+- (BOOL)validateValue:(id)value atKeyPath:(NSString*)keyPath {
+    BOOL success = YES;
+    
+    if ([self.destinationObject respondsToSelector:@selector(validateValue:forKey:error:)]) {
+        success = [self.destinationObject validateValue:&value forKey:keyPath error:&_validationError];
+        if (!success) {                        
+            if (_validationError) {
+                RKLogError(@"Validation failed while mapping attribute at key path %@ to value %@. Error: %@", keyPath, value, [_validationError localizedDescription]);
+            } else {
+                RKLogWarning(@"Destination object %@ rejected attribute value %@ for keyPath %@. Skipping...", self.destinationObject, value, keyPath);
+            }
+        }
+    }
+    
+    return success;
+}
+
 - (BOOL)shouldSetValue:(id)value atKeyPath:(NSString*)keyPath {
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
@@ -169,11 +186,14 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
         return NO;
 	} else if (nil == value || nil == currentValue) {
 		// One is nil and the other is not
-        return YES;
+        return [self validateValue:value atKeyPath:keyPath];
 	}
     
-    BOOL isEqual = [self isValue:value equalToValue:currentValue];
-    return !isEqual;
+    if (! [self isValue:value equalToValue:currentValue]) {
+        // Validate value for key
+        return [self validateValue:value atKeyPath:keyPath];
+    }
+    return NO;
 }
 
 - (NSArray*)applyNestingToMappings:(NSArray*)mappings {
@@ -218,6 +238,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
     // Ensure that the value is different
     if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+        
         [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
         if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
@@ -259,6 +280,11 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
                                           forKey:attributeMapping.destinationKeyPath];
                 RKLogTrace(@"Setting nil for missing attribute value at keyPath '%@'", attributeMapping.sourceKeyPath);
             }
+        }
+        
+        // Fail out if an error has occurred
+        if (_validationError) {
+            return NO;
         }
     }
     
@@ -335,6 +361,11 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
             RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", mapping.sourceKeyPath, mapping.destinationKeyPath, destinationObject);
             [self.destinationObject setValue:destinationObject forKey:mapping.destinationKeyPath];
         }
+        
+        // Fail out if a validation error has occurred
+        if (_validationError) {
+            return NO;
+        }
     }
     
     return appliedMappings;
@@ -356,28 +387,33 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 }
 
 - (BOOL)performMapping:(NSError**)error {
-    RKLogDebug(@"Starting mapping operation...");    
+    RKLogDebug(@"Starting mapping operation...");
+    
     [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];
     BOOL mappedRelationships = [self applyRelationshipMappings];
-    if (mappedAttributes || mappedRelationships) {
+    if ((mappedAttributes || mappedRelationships) && _validationError == nil) {
         RKLogDebug(@"Finished mapping operation successfully...");
         return YES;
-    } else {
+    }
+    
+    // We have failed, see if its because of validation or no mappable content found
+    NSError* failureError = _validationError;
+    if (!failureError) {
+        // We have failed, but not due to validation. So no mappable content was found, construct an error
         NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                   @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
                                   nil];
-        NSError* unmappableError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];
-        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
-            [self.delegate objectMappingOperation:self didFailWithError:unmappableError];
-        }
-        if (error) {
-            *error = unmappableError;
-        }
-        
-        RKLogWarning(@"Failed mapping operation: %@", [unmappableError localizedDescription]);
-        return NO;
+        failureError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];                
     }
+    
+    if (error) *error = failureError;
+    if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
+        [self.delegate objectMappingOperation:self didFailWithError:failureError];
+    }
+    
+    RKLogError(@"Failed mapping operation: %@", [failureError localizedDescription]);
+    return NO;
 }
 
 - (NSString*)description {

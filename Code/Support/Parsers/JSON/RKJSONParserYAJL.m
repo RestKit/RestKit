@@ -16,7 +16,7 @@
 }
 
 - (NSString*)stringFromObject:(id)object error:(NSError **)error {
-	return [object yajl_JSONString];
+	return [object yajl_JSONStringWithOptions:YAJLGenOptionsIncludeUnsupportedTypes indentString:@"  "];
 }
 
 @end

@@ -139,7 +139,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 													 selector:@selector(loadNextInQueue)
 													 userInfo:nil
 													  repeats:NO];
-        RKLogDebug(@"Timer initialized with delay %f for queue %@", kFlushDelay, self);
+        RKLogTrace(@"Timer initialized with delay %f for queue %@", kFlushDelay, self);
 	}
 }
 
@@ -228,12 +228,12 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	[_requests addObject:request];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(responseDidLoad:)
-                                                 name:RKResponseReceivedNotification
+                                             selector:@selector(requestFinishedWithNotification:)
+                                                 name:RKRequestDidLoadResponseNotification
                                                object:request];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(responseDidLoad:)
-                                                 name:RKRequestFailedWithErrorNotification
+                                             selector:@selector(requestFinishedWithNotification:)
+                                                 name:RKRequestDidFailWithErrorNotification
                                                object:request];
     
 	[self loadNextInQueue];
@@ -244,10 +244,11 @@ static const NSTimeInterval kFlushDelay = 0.3;
         RKLogTrace(@"Removing request %@ from queue %@", request, self);
         [_requests removeObject:request];
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKResponseReceivedNotification object:request];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestFailedWithErrorNotification object:request];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidLoadResponseNotification object:request];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidFailWithErrorNotification object:request];
         
         if (decrementCounter) {
+            NSAssert(self.loadingCount > 0, @"Attempted to decrement loading count below zero");
             self.loadingCount = self.loadingCount - 1;
             RKLogTrace(@"Decremented the loading count to %d", self.loadingCount);
         }
@@ -263,7 +264,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (void)cancelRequest:(RKRequest*)request loadNext:(BOOL)loadNext {
-    if (![request isLoading]) {
+    if ([request isUnsent]) {
         RKLogDebug(@"Canceled undispatched request %@ and removed from queue %@", request, self);
         
         // Do not decrement counter
@@ -273,7 +274,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         if ([_delegate respondsToSelector:@selector(requestQueue:didCancelRequest:)]) {
             [_delegate requestQueue:self didCancelRequest:request];
         }
-    } else if ([_requests containsObject:request] && ![request isLoaded]) {
+    } else if ([_requests containsObject:request] && [request isLoading]) {
         RKLogDebug(@"Canceled loading request %@ and removed from queue %@", request, self);
         
 		[request cancel];
@@ -326,56 +327,47 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 /**
- * Invoked via observation when a request has loaded a response. Remove
+ * Invoked via observation when a request has loaded a response or failed with an error. Remove
  * the completed request from the queue and continue processing
  */
-- (void)responseDidLoad:(NSNotification*)notification {
-	  if (notification.object) {
+- (void)requestFinishedWithNotification:(NSNotification*)notification {
+    NSAssert([notification.object isKindOfClass:[RKRequest class]], @"Notification expected to contain an RKRequest, got a %@", NSStringFromClass([notification.object class]));
+    
+    RKRequest* request = (RKRequest*)notification.object;
+    NSDictionary* userInfo = [notification userInfo];
+    if ([self containsRequest:request]) {
+        // Decrement the counter
+        [self removeRequest:request decrementCounter:YES];
         
-        // Get the RKRequest, so we can check if it is from this RKRequestQueue
-        RKRequest *request = nil;
-        if ([notification.object isKindOfClass:[RKResponse class]]) {
-			      request = [(RKResponse*)notification.object request];
-        } else if ([notification.object isKindOfClass:[RKRequest class]]) {
-            request = (RKRequest*)notification.object;
-        }
-        
-		// Our RKRequest completed and we're notified with an RKResponse object
-        if (request != nil && [self containsRequest:request]) { 
-            if ([notification.object isKindOfClass:[RKResponse class]]) {
-                RKLogTrace(@"Received response for request %@, removing from queue.", request);
-                
-                // Decrement the counter
-                [self removeRequest:request decrementCounter:YES];
-                
-                if ([_delegate respondsToSelector:@selector(requestQueue:didLoadResponse:)]) {
-                    [_delegate requestQueue:self didLoadResponse:(RKResponse*)notification.object];
-                }
-				
-				// Our RKRequest failed and we're notified with the original RKRequest object
-            } else if ([notification.object isKindOfClass:[RKRequest class]]) {
-                RKLogTrace(@"Received failure notification for request %@, removing from queue.", request);
-                
-                // Decrement the counter
-                [self removeRequest:request decrementCounter:YES];
-                
-                NSDictionary* userInfo = [notification userInfo];
-                NSError* error = nil;
-                if (userInfo) {
-                    error = [userInfo objectForKey:@"error"];
-                    RKLogDebug(@"Request %@ failed loading in queue %@ with error: %@", request, self, [error localizedDescription]);
-                }
-                
-                if ([_delegate respondsToSelector:@selector(requestQueue:didFailRequest:withError:)]) {
-                    [_delegate requestQueue:self didFailRequest:request withError:error];
-                }
+        if ([notification.name isEqualToString:RKRequestDidLoadResponseNotification]) {
+            // We successfully loaded a response
+            RKLogDebug(@"Received response for request %@, removing from queue. (Now loading %d of %d)", request, _loadingCount, _concurrentRequestsLimit);
+            
+            RKResponse* response = [userInfo objectForKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];                        
+            if ([_delegate respondsToSelector:@selector(requestQueue:didLoadResponse:)]) {
+                [_delegate requestQueue:self didLoadResponse:response];
+            }            
+        } else if ([notification.name isEqualToString:RKRequestDidFailWithErrorNotification]) {
+            // We failed with an error
+            NSError* error = nil;
+            if (userInfo) {
+                error = [userInfo objectForKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
+                RKLogDebug(@"Request %@ failed loading in queue %@ with error: %@.(Now loading %d of %d)", request, self, 
+                           [error localizedDescription], _loadingCount, _concurrentRequestsLimit);
+            } else {
+                RKLogWarning(@"Received RKRequestDidFailWithErrorNotification without a userInfo, something is amiss...");
             }
-			
-            [self loadNextInQueue];
-        } else {
-            RKLogWarning(@"Request queue %@ received unexpected lifecycle notification for request %@: Request not found in queue.", self, request);
+            
+            if ([_delegate respondsToSelector:@selector(requestQueue:didFailRequest:withError:)]) {
+                [_delegate requestQueue:self didFailRequest:request withError:error];
+            }
         }
-	}
+        
+        // Load the next request
+        [self loadNextInQueue];
+    } else {
+        RKLogWarning(@"Request queue %@ received unexpected lifecycle notification %@ for request %@: Request not found in queue.", [notification name], self, request);
+    }
 }
 
 #pragma mark - Background Request Support

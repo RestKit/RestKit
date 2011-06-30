@@ -42,6 +42,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 @synthesize window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
 	// Initialize the RestKit Object Manager
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:DBRestKitBaseURL];
 
@@ -161,6 +162,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
     RKLogConfigureByName("RestKit", RKLogLevelTrace);
     RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
+    RKLogConfigureByName("RestKit/Network/Queue", RKLogLevelDebug);
     
     // Enable boatloads of trace info from the mapper
     // RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
