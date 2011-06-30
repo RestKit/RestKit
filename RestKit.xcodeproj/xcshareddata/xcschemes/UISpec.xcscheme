@@ -87,13 +87,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingNextGenSpec"
-            isEnabled = "NO">
+            value = "RKObjectManagerSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldInformTheDelegateOfAnErrorWhenMappingFailsBecauseThereIsNoMappableContent"
-            isEnabled = "NO">
+            value = "itShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

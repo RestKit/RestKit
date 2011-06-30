@@ -12,8 +12,10 @@
 #import "RKObjectMapper.h"
 #import "RKManagedObjectFactory.h"
 #import "RKManagedObjectThreadSafeInvocation.h"
+#import "NSManagedObject+ActiveRecord.h"
 #import "../ObjectMapping/RKObjectLoader_Internals.h"
 #import "../Network/RKRequest_Internals.h"
+#import "../Support/RKLog.h"
 
 @implementation RKManagedObjectLoader
 
@@ -28,6 +30,7 @@
 - (void)dealloc {
     [_targetObjectID release];
     _targetObjectID = nil;
+    _deleteObjectOnFailure = NO;
     [_managedObjectKeyPaths release];
     
     [super dealloc];
@@ -80,6 +83,7 @@
     // right before send to avoid sequencing issues where the target object is
     // set before the managed object store.
     if (self.targetObject && [self.targetObject isKindOfClass:[NSManagedObject class]]) {
+        _deleteObjectOnFailure = [(NSManagedObject*)self.targetObject isNew];
         [self.objectStore save];
         _targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
     }
@@ -90,14 +94,13 @@
 // NOTE: We are on the background thread here, be mindful of Core Data's threading needs
 - (void)processMappingResult:(RKObjectMappingResult*)result {
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
-        // TODO: Logging
         NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
-        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadObject];
+        RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
+        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadObject];        
     }
     
     // If the response was successful, save the store...
     if ([self.response isSuccessful]) {
-        // TODO: Logging or delegate notifications?
         NSError* error = [self.objectStore save];
         if (error) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
@@ -111,8 +114,6 @@
             return;
         }
     }
-    
-    // TODO: If unsuccessful and we saved the object, remove it from the store so that it is not orphaned
     
     NSDictionary* dictionary = [result asDictionary];
     NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
@@ -138,13 +139,17 @@
     [super handleResponseError];
     
     if (_targetObjectID) {
-        RKLogInfo(@"Error response encountered: Deleting existing managed object with ID: %@", _targetObjectID);
-        NSManagedObject* objectToDelete = [self.objectStore objectWithID:_targetObjectID];
-        if (objectToDelete) {
-            [[self.objectStore managedObjectContext] deleteObject:objectToDelete];
-            [self.objectStore save];
+        if (_deleteObjectOnFailure) {
+            RKLogInfo(@"Error response encountered: Deleting existing managed object with ID: %@", _targetObjectID);
+            NSManagedObject* objectToDelete = [self.objectStore objectWithID:_targetObjectID];
+            if (objectToDelete) {
+                [[self.objectStore managedObjectContext] deleteObject:objectToDelete];
+                [self.objectStore save];
+            } else {
+                RKLogWarning(@"Unable to delete existing managed object with ID: %@. Object not found in the store.", _targetObjectID);
+            }
         } else {
-            RKLogWarning(@"Unable to delete existing managed object with ID: %@. Object not found in the store.", _targetObjectID);
+            RKLogDebug(@"Skipping deletion of existing managed object");
         }
     }
 }
