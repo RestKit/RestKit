@@ -87,6 +87,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
             NSArray *newProperties = [[entity properties] arrayByAddingObject:syncAttribute];
             [entity setProperties:newProperties];
             newEntities = [newEntities arrayByAddingObject:entity];
+            [syncAttribute release];
         }
         
         [_managedObjectModel setEntities:newEntities];

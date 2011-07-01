@@ -17,21 +17,17 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 @implementation RKManagedObjectSyncObserver
 @synthesize registeredClasses = _registeredClasses;
-@synthesize client = _client;
+@synthesize isSyncing = _isSyncing;
 
 - (id)init {
     self = [super init];
     if (self) {
         _registeredClasses = [[NSMutableArray alloc] init];
-        
-        //defaulting to a shared client, since this can only exist once there's an objectmanager.
-        //added accessors in case this needs to be different from the base client
-        _client = [[RKObjectManager sharedManager] client];
-        
+        _isSyncing = NO;
         [[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)
 													 name:RKReachabilityStateChangedNotification
-												   object:_client.baseURLReachabilityObserver];
+												   object:nil];
     }
     return self;
 }
@@ -48,7 +44,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 - (void)dealloc {
     [_registeredClasses release];
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
 }
 
@@ -59,28 +55,50 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 - (void)unregisterClassForSyncing:(Class<RKObjectSync>)someClass {
     [_registeredClasses removeObject:someClass];
 }
-
-- (void)reachabilityChanged:(NSNotification*)notification {
-	BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-	if (isHostReachable) {
-        for (Class cls in _registeredClasses) {
-            for (NSManagedObject *object in [cls unsyncedObjects]) {
-               switch ([object._rkManagedObjectSyncStatus intValue]) {
-                   case RKSyncStatusShouldPost:
-                       [[RKObjectManager sharedManager] postObject:object delegate:self];
-                        break;
-                   case RKSyncStatusShouldPut:
-                       [[RKObjectManager sharedManager] putObject:object delegate:self];
-                       break;
-                   case RKSyncStatusShouldDelete:
-                       [[RKObjectManager sharedManager] deleteObject:object delegate:self];
-                       break;
-                   default:
-                       break;
-                }
+- (void) reachabilityChanged:(NSNotification*)notification {
+    NSLog(@"OMG REACH CHANGE");
+    switch ([[[[RKObjectManager sharedManager] client] baseURLReachabilityObserver] networkStatus]) {
+        case RKReachabilityIndeterminate:
+        case RKReachabilityNotReachable:
+            [self enteredOfflineMode];
+            NSLog(@"We're offline!");
+            break;
+        case RKReachabilityReachableViaWiFi:
+        case RKReachabilityReachableViaWWAN:
+            NSLog(@"We're online!");
+            [self enteredOnlineMode];
+            break;
+        default:
+            break;
+    }
+    
+}
+- (void) enteredOnlineMode {
+    _isSyncing = YES;
+    [RKRequestQueue sharedQueue].suspended = NO;
+    for (Class cls in _registeredClasses) {
+        for (NSManagedObject *object in [cls unsyncedObjects]) {
+            switch ([object._rkManagedObjectSyncStatus intValue]) {
+                case RKSyncStatusShouldPost:
+                    [[RKObjectManager sharedManager] postObject:object delegate:self];
+                    break;
+                case RKSyncStatusShouldPut:
+                    [[RKObjectManager sharedManager] putObject:object delegate:self];
+                    break;
+                case RKSyncStatusShouldDelete:
+                    [[RKObjectManager sharedManager] deleteObject:object delegate:self];
+                    break;
+                default:
+                    break;
             }
         }
+        //Need to handle if we lose connection during this loop
     }
+}
+
+- (void) enteredOfflineMode {
+    _isSyncing = NO;
+    [RKRequestQueue sharedQueue].suspended = YES;
 }
 
 #pragma mark - Sync Management
@@ -91,9 +109,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 }
 
 - (void)shouldPostObject:(NSManagedObject*)object error:(NSError**)error {
-    BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-    if (isHostReachable) {
-        NSLog(@"HOST IS REACHABLE");
+    if (_isSyncing) {
         [[RKObjectManager sharedManager] postObject:object delegate:self];
     } else {
         object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldPost];
@@ -102,8 +118,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 }
 
 - (void)shouldPutObject:(NSManagedObject*)object error:(NSError**)error {
-    BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-    if (isHostReachable) {
+    if (_isSyncing) {
         [[RKObjectManager sharedManager] putObject:object delegate:self];
     } else {
         object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldPut];
@@ -112,8 +127,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 }
 
 - (void)shouldDeleteObject:(NSManagedObject*)object error:(NSError**)error {
-    BOOL isHostReachable = [self.client.baseURLReachabilityObserver isNetworkReachable];
-    if (isHostReachable) {
+    if (_isSyncing) {
         [[RKObjectManager sharedManager] deleteObject:object delegate:self];
     } else {
         object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldDelete];
@@ -125,8 +139,8 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObject:(id)object {
     //Synced, so we can reset sync value
-    ((NSManagedObject*)object)._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
-    [[[RKObjectManager sharedManager] objectStore] save];
+    //((NSManagedObject*)object)._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
+    //[[[RKObjectManager sharedManager] objectStore] save];
 
 }
 

@@ -20,17 +20,20 @@ typedef enum {
 
 @interface RKManagedObjectSyncObserver : NSObject <RKObjectLoaderDelegate> {
     NSMutableArray *_registeredClasses; 
-    RKClient *_client;
+    BOOL _isSyncing;
 }
 
 @property (nonatomic, retain) NSMutableArray *registeredClasses;
-@property (nonatomic, retain) RKClient *client;
+@property (nonatomic, assign) BOOL isSyncing;
 
 + (RKManagedObjectSyncObserver*)sharedSyncObserver;
 + (void)setSharedSyncObserver:(RKManagedObjectSyncObserver*)observer;
 
 - (void)registerClassForSyncing:(Class<RKObjectSync>)someClass;
 - (void)unregisterClassForSyncing:(Class<RKObjectSync>)someClass;
+
+- (void)enteredOnlineMode;
+- (void)enteredOfflineMode;
 
 - (void)shouldNotSyncObject:(NSManagedObject*)object error:(NSError**)error;
 - (void)shouldPostObject:(NSManagedObject*)object error:(NSError**)error;
