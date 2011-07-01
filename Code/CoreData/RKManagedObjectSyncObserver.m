@@ -91,9 +91,9 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
                 default:
                     break;
             }
-            //Synced, so we can reset sync value
-             object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
-            //Need to handle if we lose connection during this loop
+            //If we lose connection here, the delegate will get a fail notification
+            //So the sync status won't be reset, and the object will get synced next time 
+            //there is network access.
         }
     }
 }
@@ -141,7 +141,8 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 #pragma mark RKObjectLoaderDelegate methods
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObject:(id)object {
-
+    ((NSManagedObject*)object)._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
+    [[[RKObjectManager sharedManager] objectStore] save];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
