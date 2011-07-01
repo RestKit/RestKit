@@ -70,8 +70,6 @@ static NSDateFormatter* __rfc1123DateFormatter;
 			}
 		}
 
-		[fileManager release];
-
 		self.storagePolicy = storagePolicy;
 	}
     
@@ -120,8 +118,6 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	hasEntryForRequest = ([fileManager fileExistsAtPath:cachePath] &&
 						  [fileManager fileExistsAtPath:
 						   [cachePath stringByAppendingPathExtension:headersExtension]]);
-
-	[fileManager release];
 
 	[_cacheLock unlock];
     RKLogTrace(@"Determined hasResponseForRequest: %@ => %@", request, hasEntryForRequest ? @"YES" : @"NO");
@@ -261,8 +257,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
 }
 
 - (NSDate*)cacheDateForRequest:(RKRequest*)request {
-	NSDate* date;
-    NSString* dateString;
+	NSDate* date = nil;
+    NSString* dateString = nil;
     
     NSDictionary* responseHeaders = [self headersForRequest:request];
     
@@ -291,7 +287,6 @@ static NSDateFormatter* __rfc1123DateFormatter;
 		[fileManager removeItemAtPath:cachePath error:NULL];
 		[fileManager removeItemAtPath:[cachePath stringByAppendingPathExtension:headersExtension]
 																		  error:NULL];
-		[fileManager release];
         RKLogTrace(@"Removed cache entry at path '%@' for '%@'", cachePath, request);
 	}
 
@@ -333,8 +328,6 @@ static NSDateFormatter* __rfc1123DateFormatter;
 				RKLogWarning(@"Failed to fetch list of cache entries for cache path: %@", cachePath);
 			}
 		}
-
-		[fileManager release];
 	}
 
 	[_cacheLock unlock];

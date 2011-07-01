@@ -25,7 +25,12 @@
     [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
     
     // Initialize object store
-    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:RKDefaultSeedDatabaseFileName managedObjectModel:nil delegate:nil];
+    #ifdef RESTKIT_GENERATE_SEED_DB
+    NSString* seedDatabaseName = nil;
+    #else
+    NSString* seedDatabaseName = RKDefaultSeedDatabaseFileName;
+    #endif
+    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:seedDatabaseName managedObjectModel:nil delegate:nil];
     
     // Setup our object mappings    
     /*!
@@ -73,7 +78,9 @@
     //      This is what triggers the conditional compilation to cause the seed database to be built
     //  2) Source JSON files are added to the 'Generate Seed Database' target to be copied into the bundle. This is required
     //      so that the object seeder can find the files when run in the simulator.
-#ifdef RESTKIT_GENERATE_SEED_DB    
+#ifdef RESTKIT_GENERATE_SEED_DB
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelInfo);
+    RKLogConfigureByName("RestKit/CoreData", RKLogLevelTrace);
     RKManagedObjectSeeder* seeder = [RKManagedObjectSeeder objectSeederWithObjectManager:objectManager];
     
     // Seed the database with instances of RKTStatus from a snapshot of the RestKit Twitter timeline
