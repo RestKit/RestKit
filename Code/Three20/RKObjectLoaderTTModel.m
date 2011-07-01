@@ -136,7 +136,12 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)load:(TTURLRequestCachePolicy)cachePolicy more:(BOOL)more {
+    RKRequestCachePolicy policy = self.objectLoader.cachePolicy;
+    if (!(cachePolicy & TTURLRequestCachePolicyDisk)) {
+        self.objectLoader.cachePolicy = RKRequestCachePolicyNone;
+    }
 	[self load];
+    self.objectLoader.cachePolicy = policy;
 }
 
 - (NSDate*)loadedTime {

@@ -78,21 +78,21 @@
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"
             value = "NO"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSZombieEnabled"
             value = "YES"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
-            isEnabled = "NO">
+            value = "RKParamsSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContentViapostObject"
+            value = "itShouldSetAnErrorAndReturnNilIfItCantSerialize"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

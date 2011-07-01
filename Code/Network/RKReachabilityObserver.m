@@ -127,7 +127,9 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	if (SCNetworkReachabilityGetFlags(_reachabilityRef, &flags)) {
         RKLogTrace(@"Reachability Flag Status: %c%c %c%c%c%c%c%c%c \n",
+                   #if TARGET_OS_IPHONE
                    (flags & kSCNetworkReachabilityFlagsIsWWAN)				  ? 'W' : '-',
+                   #endif
                    (flags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
                    (flags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',
                    (flags & kSCNetworkReachabilityFlagsConnectionRequired)   ? 'c' : '-',

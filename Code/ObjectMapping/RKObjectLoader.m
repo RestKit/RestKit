@@ -22,6 +22,10 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
+@interface RKRequest (Private)
+- (void)updateInternalCacheDate;
+@end
+
 @implementation RKObjectLoader
 
 @synthesize objectManager = _objectManager, response = _response;
@@ -321,6 +325,7 @@
 		[_response release];
 		_response = nil;
 		_response = [[[[RKClient sharedClient] cache] responseForRequest:self] retain];
+        [self updateInternalCacheDate];
 	}
 
 	if (![_response wasLoadedFromCache] && [_response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
