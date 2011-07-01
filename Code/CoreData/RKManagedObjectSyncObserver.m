@@ -7,6 +7,7 @@
 //
 
 #import "RKManagedObjectSyncObserver.h"
+#import "RKLog.h"
 
 //////////////////////////////////
 // Shared Instance
@@ -56,16 +57,14 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
     [_registeredClasses removeObject:someClass];
 }
 - (void) reachabilityChanged:(NSNotification*)notification {
-    NSLog(@"OMG REACH CHANGE");
+    RKLogInfo(@"Reachability was changed.");
     switch ([[[[RKObjectManager sharedManager] client] baseURLReachabilityObserver] networkStatus]) {
         case RKReachabilityIndeterminate:
         case RKReachabilityNotReachable:
             [self enteredOfflineMode];
-            NSLog(@"We're offline!");
             break;
         case RKReachabilityReachableViaWiFi:
         case RKReachabilityReachableViaWWAN:
-            NSLog(@"We're online!");
             [self enteredOnlineMode];
             break;
         default:
@@ -74,6 +73,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
     
 }
 - (void) enteredOnlineMode {
+    RKLogInfo(@"Entered online mode.");
     _isSyncing = YES;
     [RKRequestQueue sharedQueue].suspended = NO;
     for (Class cls in _registeredClasses) {
@@ -91,12 +91,15 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
                 default:
                     break;
             }
+            //Synced, so we can reset sync value
+             object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
+            //Need to handle if we lose connection during this loop
         }
-        //Need to handle if we lose connection during this loop
     }
 }
 
 - (void) enteredOfflineMode {
+    RKLogInfo(@"Entered offline mode.");
     _isSyncing = NO;
     [RKRequestQueue sharedQueue].suspended = YES;
 }
@@ -138,9 +141,6 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 #pragma mark RKObjectLoaderDelegate methods
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObject:(id)object {
-    //Synced, so we can reset sync value
-    //((NSManagedObject*)object)._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
-    //[[[RKObjectManager sharedManager] objectStore] save];
 
 }
 
