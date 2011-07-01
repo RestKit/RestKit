@@ -26,11 +26,14 @@
     
     // Initialize object store
     #ifdef RESTKIT_GENERATE_SEED_DB
-    NSString* seedDatabaseName = nil;
+        NSString *seedDatabaseName = nil;
+        NSString *databaseName = RKDefaultSeedDatabaseFileName;
     #else
-    NSString* seedDatabaseName = RKDefaultSeedDatabaseFileName;
+        NSString *seedDatabaseName = RKDefaultSeedDatabaseFileName;
+        NSString *databaseName = @"RKTwitterData.sqlite";
     #endif
-    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTwitterData.sqlite" usingSeedDatabaseName:seedDatabaseName managedObjectModel:nil delegate:nil];
+
+    objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:databaseName usingSeedDatabaseName:seedDatabaseName managedObjectModel:nil delegate:self];
     
     // Setup our object mappings    
     /*!
