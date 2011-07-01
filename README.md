@@ -1,7 +1,7 @@
 Introduction
 =========================
 
-RestKit is a library for interacting with Restful web services in Objective C. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from JSON (or XML) payloads back into domain objects. Object mapping functions with normal NSObject derived classes with properties. There is also an object mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
+RestKit is a Cocoa framework for interacting with RESTful web services in Objective C on iOS and Mac OS X. It provides a set of primitives for interacting with web services wrapping GET, POST, PUT and DELETE HTTP verbs behind a clean, simple interface. RestKit also provides a system for modeling remote resources by mapping them from JSON (or XML) payloads back into local domain objects. Object mapping functions with normal NSObject derived classes with properties. There is also an object mapping implementation included that provides a Core Data backed store for persisting objects loaded from the web.
 
 RestKit was first publicly introduced in April of 2010.
 
@@ -10,11 +10,12 @@ To get started with installation, skip down the document below the Design & Depe
 Design
 -------------------------
 
-RestKit is composed of 3 main pieces: **Network**, **Object Mapping**, and **Core Data**. Each layer provides a higher level of abstraction around the problem of accessing web services and representing the data returned as an object. The primary goal of RestKit is to allow the application programmer to think more in terms of their application's data model and less about the details of fetching, parsing, and representing resources. Functionally, each piece provides...
+RestKit is composed of three main components: **Network**, **Object Mapping**, and **Core Data**. Each layer provides a higher level of abstraction around the problem of accessing web services and representing the data returned as an object. The primary goal of RestKit is to allow the application programmer to think more in terms of their application's data model and less about the details of fetching, parsing, and representing resources. Functionally, each piece provides...
 
 1. **Network** - The network layer provides a request/response abstraction on top of NSURLConnection. The main interface for the end developer is the *RKClient*, which provides an interface for sending GET, POST, PUT, and DELETE requests asynchronously. This wraps the construction and dispatch of *RKRequest* and *RKResponse* objects, that provide a nice interface for working with HTTP requests. Sending parameters with your request is as easy as providing an NSDictionary of key/value pairs. File uploading support from NSData and files is supported through the use of an *RKParams* object, which serializes into a multipart form representation suitable for submission to a remote web server for processing. SSL & HTTP AUTH is fully supported for requests. *RKResponse* objects provide access to the string of JSON parsed versions of the response body in one line of code. There are also a number of helpful method for inspecting the request and response such as isXHTML, isJSON, isRedirect, isOK, etc.
-1. **Object Mapping** - The object mapping layer provides a simple API for turning remote JSON responses into local domain objects declaratively. Rather than working directly with *RKClient*, the developer works with *RKObjectManager*. *RKObjectManager* provides support for loading a remote resource path (see below for discussion) and calling back a delegate with object representations of the data loaded. Remote payloads are parsed to NSDictionary representation and are then mapped to local objects using Key-Value Coding. Any class implementing the *RKObjectMappable* protocol can be object mapped. For convenience, RestKit ships with a *RKObject* implementation that can serve as a turn-key superclass for modeling your resources. You need only inherit & implement *elementToPropertyMappings* to begin loading resources via *RKObjectManager*'s *loadObjectsAtResourcePath:objectClass:delegate:* method.
-1. **Core Data** - The Core Data layer provides additional support on top of the object mapper for mapping from remote resources to persist local objects. This is useful for providing offline support, holding on to transient data, and speeding up user interfaces by avoiding expensive trips to the web server. The Core Data support requires that you initialize an instance of *RKManagedObjectStore* and assign it to the *RKObjectManager*. For each persistent class you wish to model, you need to inherit from *RKManagedObject* and implement the appropriate *RKObjectMappable* methods. See the Examples/ subdirectory for examples of how to get this running. The Core Data support also provides *RKObjectSeeder*, a tool for creating a local "seed database" to bootstrap an object model from local JSON files. This allows you to ship an app to the store that already has data pre-loaded and then synchronize with the cloud to keep your clients up to date.
+1. **Object Mapping** - The object mapping layer provides a simple API for turning remote JSON/XML responses into local domain objects declaratively. Rather than working directly with *RKClient*, the developer works with *RKObjectManager*. *RKObjectManager* provides support for loading a remote resource path (see below for discussion) and calling back a delegate with object representations of the data loaded. Remote payloads are parsed to an NSDictionary representation and are then mapped to local objects using Key-Value Coding. Any KVC compliant class can be targeted for object mapping. RestKit also provides support for serializing local objects back into a wire format for submission back to your remote backend system. Local domain objects can be serialized to JSON or URL Form Encoded string representations for transport. To simplify the generation of URL's that identify remote resources, RestKit ships with an object routing implementation that can
+generate an appropriate URL based on the object and HTTP verb being utilized. Object mapping is a deep topic and is explored thoroughly in the [Object Mapping Design Document].
+1. **Core Data** - The Core Data layer provides additional support on top of the object mapper for mapping from remote resources to persist local objects. This is useful for providing offline support, holding on to transient data, and speeding up user interfaces by avoiding expensive trips to the web server. The Core Data support requires that you initialize an instance of *RKManagedObjectStore* and assign it to the *RKObjectManager*. RestKit includes a library of extensions to NSManagedObject that provide an Active Record pattern on top of the Core Data primitives. See the Examples/ subdirectory for examples of how to get this running. The Core Data support also provides *RKManagedObjectSeeder*, a tool for creating a local "seed database" to bootstrap an object model from local JSON files. This allows you to ship an app to the store that already has data pre-loaded and then synchronize with the cloud to keep your clients up to date.
 
 ### Base URL and Resource Paths
 
@@ -25,20 +26,22 @@ Note that you can send *RKRequest* objects to arbitrary URL's by constructing th
 Dependencies
 -------------------------
 
-RestKit provides JSON parser implementations using SBJSON & YAJL. The recommended parser is YAJL (as it is known to be faster), but you can use the SBJSON backend instead by adding a dependency on libRestKitJSONParserSBJSON linking against libRestKitJSONParserSBJSON.a instead of the libRestKitJSONParserYAJL.a
+RestKit provides JSON parser implementations using JSONKit, SBJSON & YAJL. The recommended parser is JSONKit (as it is known to be the fastest JSON implementation available), but you may choose whatever parser you like and they can be changed at runtime.
 
-The sources for SBJSON and YAJL are included in the Vendor/ subdirectory. The headers are copied into the RestKit headers path at build time and can be imported into your project via:
+The sources for JSONKit, SBJSON and YAJL are included in the Vendor/ subdirectory. The headers are copied into the RestKit headers path at build time and can be imported into your project via:
+    #import <RestKit/Support/JSON/JSONKit/JSONKit.h>
     #import <RestKit/Support/JSON/SBJSON/JSON.h>
     #import <RestKit/Support/JSON/YAJL/YAJL.h>
 
 Currently bundled version of these dependencies are:
 
+* **JSONKit** - 1.4
 * **YAJLIOS** - 0.2.21
 * **SBJSON** - 2.3.1
 
-If you currently link against or include SBJSON or YAJL in your project, you can disable the RKJSONParser targets and compile the appropriate RKJSONParser implementation directly into your application.
+If you currently link against or include JSONKit, SBJSON or YAJL in your project, you can disable the RKJSONParser targets and compile the appropriate RKJSONParser sources directly into your application.
 
-XML parsing is not currently supported.
+XML parsing is supported via a custom, bundled parser written against LibXML.
 
 Additional parsing backend support is expected in future versions.
 
@@ -78,7 +81,7 @@ Quick Start (aka TL;DR)
     1. **libRestKitSupport.a**
     1. **libRestKitObjectMapping.a**
     1. **libRestKitNetwork.a**
-    1. A JSON parser implementation (either **libRestKitJSONParserJSONKit.a** OR ****libRestKitJSONParserYAJL.a** OR **libRestKitJSONParserSBJSON.a** but NOT more than ONE). We recommend JSONKit or YAJL.
+    1. A JSON parser implementation (either **libRestKitJSONParserJSONKit.a**, **libRestKitJSONParserYAJL.a**, or **libRestKitJSONParserSBJSON.a**). We recommend JSONKit.
 1. Import the RestKit headers via `#import <RestKit/RestKit.h>`
 1. Build the project to verify installation is successful.
     
@@ -122,7 +125,7 @@ Xcode 4.x (Git Submodule)
 1. In the **Target Dependencies** section, click the **+** button to open the Target selection sheet. Click on the **RestKit** aggregate target (it will have the bulls-eye icon) and click the **Add** button to create a dependency.
 1. In the **Link Binary with Libraries** section, click the **+** button to open the Library selection sheet. Here we need to instruct the target to link against all the required RestKit libraries and several system libraries. Select each of the following items (one at a time or while holding down the Command key to select all of them at once) and then click the **Add** button:
     * **libRestKitCoreData.a** - Optional. Only necessary if you are using Core Data.
-    * **libRestKitJSONParserYAJL.a**
+    * **libRestKitJSONParserJSONKit.a**
     * **libRestKitNetwork.a**
     * **libRestKitObjectMapping.a**
     * **libRestKitSupport.a**
@@ -152,3 +155,5 @@ A Google Group for development and usage of library is available at: [http://gro
 Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restkit)
 
 ### RestKit is brought to you by [Two Toasters](http://www.twotoasters.com/). ###
+
+[Object Mapping Design Document]: https://github.com/twotoasters/RestKit/blob/master/Docs/Design/Object%20Mapping%202.0.md
