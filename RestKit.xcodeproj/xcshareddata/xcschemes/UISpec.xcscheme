@@ -78,7 +78,7 @@
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"
             value = "NO"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSZombieEnabled"
@@ -87,13 +87,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKParamsSpec"
+            value = "RKObjectLoaderSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldSetAnErrorAndReturnNilIfItCantSerialize"
-            isEnabled = "NO">
+            value = "itShouldRespectTheRootKeyPathWhenConstructingATemporaryObjectMappingProvider"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"
