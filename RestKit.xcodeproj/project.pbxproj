@@ -36,6 +36,7 @@
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
 		250C29FD134185D2000A3551 /* RKNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 250C29FB134185CE000A3551 /* RKNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250C29FE134185D2000A3551 /* RKNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C29FC134185D0000A3551 /* RKNetwork.m */; };
+		250CAF5813BF9F2D00A1330E /* RKManagedObjectStoreSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250CAF5713BF9F2D00A1330E /* RKManagedObjectStoreSpec.m */; };
 		250D5BF013A0698100471F0E /* lcl.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BDB13A0698100471F0E /* lcl.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250D5BF113A0698100471F0E /* lcl.m in Sources */ = {isa = PBXBuildFile; fileRef = 250D5BDC13A0698100471F0E /* lcl.m */; };
 		250D5BFA13A0698100471F0E /* LCLNSLog.h in Headers */ = {isa = PBXBuildFile; fileRef = 250D5BE913A0698100471F0E /* LCLNSLog.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -392,6 +393,7 @@
 		250C296B13411E60000A3551 /* RKRequestQueueSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestQueueSpec.m; sourceTree = "<group>"; };
 		250C29FB134185CE000A3551 /* RKNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKNetwork.h; sourceTree = "<group>"; };
 		250C29FC134185D0000A3551 /* RKNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKNetwork.m; sourceTree = "<group>"; };
+		250CAF5713BF9F2D00A1330E /* RKManagedObjectStoreSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectStoreSpec.m; sourceTree = "<group>"; };
 		250D5BDB13A0698100471F0E /* lcl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl.h; sourceTree = "<group>"; };
 		250D5BDC13A0698100471F0E /* lcl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = lcl.m; sourceTree = "<group>"; };
 		250D5BDD13A0698100471F0E /* lcl_config_components.template.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_components.template.h; sourceTree = "<group>"; };
@@ -1334,6 +1336,7 @@
 				25901D7B137B695F0002ECEB /* RKManagedObjectFactorySpec.m */,
 				257FB68613958786003A628E /* RKManagedObjectMappingSpec.m */,
 				257FB70C1395DEB5003A628E /* RKManagedObjectMappingOperationSpec.m */,
+				250CAF5713BF9F2D00A1330E /* RKManagedObjectStoreSpec.m */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -2120,6 +2123,7 @@
 				2515E7BD13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.m in Sources */,
 				25ACF1AD13BB9D490067B380 /* RKURLSpec.m in Sources */,
 				2559209713BD1B8700E9C29C /* RKParamsSpec.m in Sources */,
+				250CAF5813BF9F2D00A1330E /* RKManagedObjectStoreSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
