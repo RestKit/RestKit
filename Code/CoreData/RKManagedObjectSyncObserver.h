@@ -18,13 +18,27 @@ typedef enum {
 	RKSyncStatusShouldDelete
 } RKSyncStatus;
 
+@protocol RKManagedObjectSyncDelegate
+
+@optional
+- (void)didStartSyncing;
+- (void)didFinishSyncing;
+
+@end
+
 @interface RKManagedObjectSyncObserver : NSObject <RKObjectLoaderDelegate> {
     NSMutableArray *_registeredClasses; 
-    BOOL _isSyncing;
+    NSObject<RKManagedObjectSyncDelegate> *_delegate;
+    BOOL _isOnline;
+    BOOL _shouldAutoSync;
+    NSInteger _totalUnsynced;
 }
 
 @property (nonatomic, retain) NSMutableArray *registeredClasses;
-@property (nonatomic, assign) BOOL isSyncing;
+@property (nonatomic, retain) id<RKManagedObjectSyncDelegate> delegate;
+@property (nonatomic, assign) BOOL isOnline;
+@property (nonatomic, assign) BOOL shouldAutoSync;
+@property (nonatomic, assign) NSInteger totalUnsynced;
 
 + (RKManagedObjectSyncObserver*)sharedSyncObserver;
 + (void)setSharedSyncObserver:(RKManagedObjectSyncObserver*)observer;
@@ -34,6 +48,8 @@ typedef enum {
 
 - (void)enteredOnlineMode;
 - (void)enteredOfflineMode;
+
+- (void)sync; 
 
 - (void)shouldNotSyncObject:(NSManagedObject*)object error:(NSError**)error;
 - (void)shouldPostObject:(NSManagedObject*)object error:(NSError**)error;
