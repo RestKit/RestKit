@@ -61,8 +61,6 @@ extern NSString* cacheURLKey;
 - (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
     self = [super init];
 	if (self) {
-		// TODO: Does the lack of retain here cause problems with synchronous requests, since they
-		// are not being retained by the RKRequestQueue??
 		_request = request;
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];

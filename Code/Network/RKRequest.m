@@ -407,8 +407,6 @@
 									  nil];
 			error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
 			[self didFailLoadWithError:error];
-
-			// TODO: Is this needed here?  Or can we just return a nil response and everyone will be happy??
 			response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
 		}
 	}

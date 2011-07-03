@@ -354,4 +354,25 @@
     assertThat(user.email, is(equalTo(@"changed")));
 }
 
+- (void)itShouldRespectTheRootKeyPathWhenConstructingATemporaryObjectMappingProvider {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
+    RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
+    objectLoader.objectMapping = userMapping;
+    objectLoader.method = RKRequestMethodGET;
+    objectLoader.targetObject = user;
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    
+    NSLog(@"Response: %@", responseLoader.objects);
+    
+    [expectThat(user.firstname) should:be(@"Diego")];
+}
+
 @end

@@ -329,7 +329,10 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without a primary key attribute");
     NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
 	NSManagedObject* object = nil;
-        
+    
+    // NOTE: We coerce the primary key into a string (if possible) for convenience. Generally
+    // primary keys are expressed either as a number of a string, so this lets us support either case interchangeably
+    id lookupValue = [primaryKeyValue respondsToSelector:@selector(stringValue)] ? [primaryKeyValue stringValue] : primaryKeyValue;
     NSArray* objects = nil;
     NSString* entityName = entity.name;
     NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
@@ -347,10 +350,13 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         objects = [NSManagedObject executeFetchRequest:fetchRequest];
         RKLogInfo(@"Caching all %d %@ objects to thread local storage", [objects count], entity.name);
         NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+        BOOL coerceToString = [[[objects lastObject] valueForKey:primaryKeyAttribute] respondsToSelector:@selector(stringValue)];
         for (id theObject in objects) {			
-            id primaryKeyValue = [theObject valueForKey:primaryKeyAttribute];
+            id attributeValue = [theObject valueForKey:primaryKeyAttribute];
+            // Coerce to a string if possible
+            attributeValue = coerceToString ? [attributeValue stringValue] : attributeValue;
             if (primaryKeyValue) {
-                [dictionary setObject:theObject forKey:primaryKeyValue];
+                [dictionary setObject:theObject forKey:attributeValue];
             }
         }
         
@@ -359,7 +365,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     
     NSMutableDictionary* dictionary = [entityCache objectForKey:entityName];
     NSAssert1(dictionary, @"Thread local cache of %@ objects should not be nil", entityName);
-    object = [dictionary objectForKey:primaryKeyValue];
+    object = [dictionary objectForKey:lookupValue];
     
     if (object == nil) {
         object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
