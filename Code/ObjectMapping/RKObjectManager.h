@@ -184,6 +184,11 @@ typedef enum {
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 /**
+ Same as above, but with zanox auth
+ */
+- (RKObjectLoader*)loadObjectsAtZanoxResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+/**
  Load mappable objects at the specified resourcePath using the specified object mapping.
  */
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;

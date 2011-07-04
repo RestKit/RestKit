@@ -31,6 +31,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		00A6AE1713C20BEE00D153CF /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A6AE1413C20BB600D153CF /* Security.framework */; };
 		13924B7913AAB91700DD5078 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13924B7813AAB91700DD5078 /* libUISpec.a */; };
 		25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A088912551D8D00976E89 /* RKManagedObjectSeeder.m */; };
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
@@ -97,7 +98,7 @@
 		253A09F612552BDC00976E89 /* Support.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A09F512552BDC00976E89 /* Support.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253E04C513798D72005D2E15 /* RKErrorMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 253E04C313798D72005D2E15 /* RKErrorMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253E04C613798D72005D2E15 /* RKErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 253E04C413798D72005D2E15 /* RKErrorMessage.m */; };
-		25431EBB1255640800A315CF /* CoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 25431EBA1255640800A315CF /* CoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25431EBB1255640800A315CF /* RKCoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 25431EBA1255640800A315CF /* RKCoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2543201C1256179900A315CF /* RKManagedObjectSeeder.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A088812551D8D00976E89 /* RKManagedObjectSeeder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25432041125618F000A315CF /* RKParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 25432040125618F000A315CF /* RKParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25432064125632A300A315CF /* RKJSONParserYAJL.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08B71255212300976E89 /* RKJSONParserYAJL.m */; };
@@ -388,6 +389,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		00A6AE1413C20BB600D153CF /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		13924B6D13AAB8F400DD5078 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = UISpec/UISpec.xcodeproj; sourceTree = "<group>"; };
 		13924B7813AAB91700DD5078 /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
 		250C296B13411E60000A3551 /* RKRequestQueueSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestQueueSpec.m; sourceTree = "<group>"; };
@@ -480,7 +482,7 @@
 		253A0A8E1255300000976E89 /* Protect.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Protect.command; sourceTree = "<group>"; };
 		253E04C313798D72005D2E15 /* RKErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKErrorMessage.h; sourceTree = "<group>"; };
 		253E04C413798D72005D2E15 /* RKErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKErrorMessage.m; sourceTree = "<group>"; };
-		25431EBA1255640800A315CF /* CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreData.h; sourceTree = "<group>"; };
+		25431EBA1255640800A315CF /* RKCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCoreData.h; sourceTree = "<group>"; };
 		25432040125618F000A315CF /* RKParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKParser.h; sourceTree = "<group>"; };
 		2559208213BD1A4000E9C29C /* RKParamsSpec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKParamsSpec.m; sourceTree = "<group>"; };
 		255DE05C10FFA05800A85891 /* RKHuman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHuman.h; sourceTree = "<group>"; };
@@ -708,6 +710,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00A6AE1713C20BEE00D153CF /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -813,6 +816,7 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				00A6AE1413C20BB600D153CF /* Security.framework */,
 				73057FD11331AD2E001908EE /* libRestKitJSONParserJSONKit.a */,
 				2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */,
 				25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */,
@@ -925,7 +929,7 @@
 		253A086012551D8D00976E89 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				25431EBA1255640800A315CF /* CoreData.h */,
+				25431EBA1255640800A315CF /* RKCoreData.h */,
 				257FB681139582C5003A628E /* NSManagedObject+ActiveRecord.h */,
 				257FB682139582C5003A628E /* NSManagedObject+ActiveRecord.m */,
 				253A086312551D8D00976E89 /* RKManagedObjectStore.h */,
@@ -1543,7 +1547,7 @@
 				253A09261255258500976E89 /* RKManagedObjectStore.h in Headers */,
 				2543201C1256179900A315CF /* RKManagedObjectSeeder.h in Headers */,
 				7377FBE21268E96300868752 /* RKManagedObjectCache.h in Headers */,
-				25431EBB1255640800A315CF /* CoreData.h in Headers */,
+				25431EBB1255640800A315CF /* RKCoreData.h in Headers */,
 				257FB677139559A4003A628E /* RKManagedObjectMapping.h in Headers */,
 				257FB683139582C5003A628E /* NSManagedObject+ActiveRecord.h in Headers */,
 				258A926C1379D41F00D80034 /* RKManagedObjectFactory.h in Headers */,
