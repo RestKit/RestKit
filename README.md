@@ -140,6 +140,7 @@ Xcode 4.x (Git Submodule)
 Congratulations, you are now done adding RestKit into your Xcode 4 based project!
 
 You now only need to add includes for the RestKit libraries at the appropriate places in your application. The relevant includes are:
+
     #import <RestKit/RestKit.h>
     // And if you are using Core Data...
     #import <RestKit/CoreData/CoreData.h>
