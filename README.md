@@ -29,6 +29,7 @@ Dependencies
 RestKit provides JSON parser implementations using JSONKit, SBJSON & YAJL. The recommended parser is JSONKit (as it is known to be the fastest JSON implementation available), but you may choose whatever parser you like and they can be changed at runtime.
 
 The sources for JSONKit, SBJSON and YAJL are included in the Vendor/ subdirectory. The headers are copied into the RestKit headers path at build time and can be imported into your project via:
+
     #import <RestKit/Support/JSON/JSONKit/JSONKit.h>
     #import <RestKit/Support/JSON/SBJSON/JSON.h>
     #import <RestKit/Support/JSON/YAJL/YAJL.h>
@@ -139,6 +140,7 @@ Xcode 4.x (Git Submodule)
 Congratulations, you are now done adding RestKit into your Xcode 4 based project!
 
 You now only need to add includes for the RestKit libraries at the appropriate places in your application. The relevant includes are:
+
     #import <RestKit/RestKit.h>
     // And if you are using Core Data...
     #import <RestKit/CoreData/CoreData.h>
