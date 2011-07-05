@@ -56,7 +56,7 @@
         RKLogWarning(@"Coerced object mapping result containing %d objects into singular result.", [collection count]);
     }
     
-    return [collection objectAtIndex:0];
+    return [collection lastObject];
 }
 
 - (NSError*)asError {
