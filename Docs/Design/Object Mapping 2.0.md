@@ -2,32 +2,136 @@
 
 This document details the design of object mapping in RestKit as of version 0.9.3
 
-## The Object Mapper is Designed to...
-- Take parsing responsibilities out of the mapper entirely
-- Support arbitrarily complex mapping operations
-- Enable full transparency and insight into the mapping operation
-- Provide a clean, clear mapping API that is easy to work on and extend
-- Reduce the API foot-print of object mapping
-- Enable mapping onto vanilla NSObject and NSManagedObject classes
-- Enable mapping from model objects back into dictionaries and arrays (support for serialization)
-- Provide simple hooks for customizing the mapping decisions
-- Fully embrace key-value coding and organize the API around keyPaths
-- Support mapping multiple keyPaths from a dictionary and returning a dictionary instead of requiring encapsulation
-via relationships
+## Object Mapping Overview
 
-## Discussion
+RestKit's key differentiating feature from other HTTP toolkits in the iOS space is the
+tightly integrated support for object mapping. Object mapping is the process of taking a representation
+of data in one format and transforming it into another form. This mechanism is used extensively within 
+RestKit to streamline the serialization and deserialization of resources exchanged with a remote
+backend application server via HTTP. Object mapping operations are performed when you load a remote 
+resource via an instance of RKObjectManager and when a local object is sent to the backend for processing. 
 
-Object mapping is the process RestKit uses to transform objects between representations. Object mapping
-leverages key-value coding conventions to determine how to map keyPaths between object instances and
-attributes. The process is composed of three steps:
+### Key-Value Coding
 
-1. Identification: An `RKObjectMapper` is initialized with an arbitrary collection of key-value coding
-compliant data, a keyPath the object resides at (can be nil), and a mapping provider. The mapping provider
-supplies the mapper with mappable keyPaths 
-1. Processing of Mappable Objects: If a dictionary or array is found and a corresponding object mapping is
-available for the keyPath, an `RKObjectMappingOperation` is created to process the data. 
-1. Attribute & Relationship Mapping: Each attribute or relationship mapping within the object mapping definition 
-is evaluated against the mappable data and the result is set on the target object.
+Object mapping is built on top of the key-value coding pattern that permeates the Cocoa frameworks. KVC is a mechanism
+for expressing read and write operations on an object graph in terms of simple strings. RestKit relies on KVC to identify
+mappable content within a parsed response body and dynamically update the attributes and relationships of your local domain
+objects with the appropriate content. An understanding of key-value coding is essential to fully understand and leverage the
+capabilities of the RestKit framework. Before diving into the details of RestKit's object mapping system, be sure to get a firm
+grasp on KVC.
+
+There are two parts to the object mapping process and KVC figure prominently into both:
+1. Identification. After RestKit loads a remote resource and parses the resulting payload, it must determine how
+to handle the data and return it in the expected format to the application. To determine what to do with the data,
+RestKit iterates over
+1. Processing
+
+## Object Mapping by Example
+
+The first order of business once RestKit has loaded and parsed a JSON/XML payload containing data you are interested in
+is to figure out how to map it. This determination is made by consulting the configuration provided by the developer and
+attempting to look up each configured key path via valueForKeyPath:. Let's consider an example:
+
+We are building a system that loads a collection of news articles from a remote system. Each article has a title, a body,
+an author, and a publication date. We expect our JSON to come back something like this:
+
+```json
+{ "articles": [
+    { "title": "RestKit Object Mapping Intro",
+      "body": "This article details how to use RestKit object mapping...",
+      "author": "Blake Watters",
+      "publication_date": "7/4/2011"
+    },
+    { "title": "RestKit 1.0 Released",
+      "body": "RestKit 1.0 has been released to much fanfare across the galaxy...",
+      "author": "Blake Watters",
+      "publication_date": "9/4/2011"
+    }]
+}
+```
+
+Within our iOS application, we are going to have a table view showing the same information. We have an Objective-C
+class to hold this data that looks like the following:
+
+```objc
+@interface Article : NSObject
+    @property (nonatomic, retain) NSString* title;
+    @property (nonatomic, retain) NSString* body;
+    @property (nonatomic, retain) NSString* author;
+    @property (nonatomic, retain) NSDate*   publicationDate;
+@end
+```
+
+Our goal is to leverage RestKit's object mapping capabilities to turn the above JSON into an array of Article instances. To make
+this happen, we must first become familiar with a few RestKit classes:
+1. **RKObjectMapping**: An object mapping defines the rules for transforming a parsed data payload into a local domain object. 
+Each object mapping is composed of a collection of attribute and relationship mappings that define how to transform key paths in the 
+source data into properties on the local object.
+1. **RKObjectMappingProvider**: The object mapping provider defines the rules for what key paths in a loaded set of data correspond to
+an object mapping.
+
+Let's take a look at how we would configure RestKit to perform this operation:
+
+```objc
+    RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
+    [article mapKeyPath:@"title" toAttribute:@"title"];
+    [article mapKeyPath:@"body" toAttribute:@"body"];
+    [article mapKeyPath:@"author" toAttribute:@"author"];
+    [article mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+    
+    [[RKObjectManager sharedManager].mappingProvider setObjectMapping:articleMapping forKeyPath:@"articles"];
+```
+
+Let's consider what we've done here. In the first line, we created an instance of RKObjectMapping defining a mapping
+for the Article class. We then configured the mapping to define rules for transforming data within the parsed payload to attributes
+on an instance of Article. Finally, we instructed the mapping provider to use `articleMapping` whenever it encounters data at the "articles"
+key path. 
+
+Recall the importance of key-value coding to the process. When we load the example JSON above via RestKit with the articleMapping configuration in
+place, the following things are going to happen:
+1. RestKit will create an instance of RKObjectMapper with the parsed JSON payload and the mapping provider.
+1. The RKObjectMapper instance will ask the mapping provider for a list of mappable key paths. Each key path will be evaluated against the parsed
+payload using valueForKeyPath:. Since we configured a mapping for the "articles" key path, RestKit will invoke valueForKeyPath:@"articles" on the
+parsed data and find the mappable data.
+1. RestKit now knows that there is interesting data in the payload that needs to be mapped. RKObjectMapper notes that the mappable data is an array
+and iterates over the collection, mapping each dictionary within the array in turn. An instance of RKObjectMappingOperation is created for each element
+in the array. Each mapping operation targets one of dictionaries contained in the array returned from the "articles" key path. For the example above, this
+means that we would generate two object mapping operations:
+
+```json
+// This dictionary will processed in one mapping operation
+{ "title": "RestKit Object Mapping Intro",
+  "body": "This article details how to use RestKit object mapping...",
+  "author": "Blake Watters",
+  "publication_date": "7/4/2011"
+}
+
+// This dictionary will be processed in another mapping operation
+{ "title": "RestKit 1.0 Released",
+  "body": "RestKit 1.0 has been released to much fanfare across the galaxy...",
+  "author": "Blake Watters",
+  "publication_date": "9/4/2011"
+}
+```
+
+1. Once the object mapping operation takes over, a new set of KVC key paths is examined. The attribute mappings we defined via the calls to
+mapKeyPath:toAttribute: are now explored against the dictionary. RestKit will invoke valueForKeyPath:@"title", valueForKeyPath:@"body",
+valueForKeyPath:@"author", and valueForKeyPath:@"publication_date" against the dictionary to determine if there is any data available for
+mapping. If any data is found, it will set the data on the target object by invoking setValue:forKeyPath:. In the above example, RestKit will
+find the data for the title via valueForKeyPath:@"title" and then set the title attribute of our Article object to 
+"RestKit Object Mapping Intro" and "RestKit 1.0 Released", respectively. This process is repeated for all the attributes and relationships
+defined in the object mapping. It is worth noting that although the key paths are often symmetrical between the source and destination objects
+(i.e. mapping a title to a title), they do not have to be and you can store your data in more logical or idiomatic names as appropriate (i.e. 
+we mapped `publication_date` to `publicationDate` so that it fits better with Cocoa naming conventions).
+
+From this example, it should now be clear that object mapping can be thought of as a declarative, key-value coding chainsaw for your JSON/XML
+data.  We have declared that any time data is found underneath the "articles" keyPath, it should be processed using the articleMapping and thus
+transformed into one or more instances of the Article class. Once mappable data is found, we have declared that values existing at a given source
+key path should be assigned to the target object at the destination key path. This is the fundamental trick of object mapping and all other features
+are built upon this foundation.
+
+### Type Transformation
+### Core Data
 
 ## Class Hierarchy
 - **RKObjectManager** - The external client interface for performing object mapping operations on resources
