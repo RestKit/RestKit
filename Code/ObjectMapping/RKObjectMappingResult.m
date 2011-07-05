@@ -52,10 +52,12 @@
 
 - (id)asObject {
     NSArray* collection = [self asCollection];
-    if ([collection count] > 1) {
-        RKLogWarning(@"Coerced object mapping result containing %d objects into singular result.", [collection count]);
+    NSUInteger count = [collection count];
+    if (count == 0) {
+        return nil;
     }
     
+    if (count > 1) RKLogWarning(@"Coerced object mapping result containing %d objects into singular result.", count);
     return [collection objectAtIndex:0];
 }
 
