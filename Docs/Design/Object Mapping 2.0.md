@@ -89,6 +89,7 @@ key path.
 
 Recall the importance of key-value coding to the process. When we load the example JSON above via RestKit with the articleMapping configuration in
 place, the following things are going to happen:
+
 1. RestKit will create an instance of RKObjectMapper with the parsed JSON payload and the mapping provider.
 1. The RKObjectMapper instance will ask the mapping provider for a list of mappable key paths. Each key path will be evaluated against the parsed
 payload using valueForKeyPath:. Since we configured a mapping for the "articles" key path, RestKit will invoke valueForKeyPath:@"articles" on the
