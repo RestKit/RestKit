@@ -79,8 +79,8 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 - (void) enteredOnlineMode {
     RKLogInfo(@"Entered online mode.");
     _isOnline = YES;
-    [[RKRequestQueue sharedQueue] cancelAllRequests];
-    [[RKRequestQueue sharedQueue] setSuspended:NO];
+    //[[RKRequestQueue sharedQueue] cancelAllRequests];
+    //[[RKRequestQueue sharedQueue] setSuspended:NO];
     if (_shouldAutoSync) {
         [self sync];
     }
@@ -89,8 +89,8 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 - (void) enteredOfflineMode {
     RKLogInfo(@"Entered offline mode.");
     _isOnline = NO;
-    [[RKRequestQueue sharedQueue] cancelAllRequests];
-    [[RKRequestQueue sharedQueue] setSuspended:YES];
+    //[[RKRequestQueue sharedQueue] cancelAllRequests];
+    //[[RKRequestQueue sharedQueue] setSuspended:YES];
 }
 
 - (void) sync {
