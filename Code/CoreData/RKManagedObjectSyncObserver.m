@@ -1,4 +1,3 @@
-//
 //  RKManagedObjectSyncObserver.m
 //  RestKit
 //
@@ -152,10 +151,10 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
     }
 }
 
-#pragma mark RKObjectLoaderDelegate methods
+#pragma mark RKObjectLoaderDelegate (RKRequestDelegate) methods
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObject:(id)object {
-    if (((NSManagedObject*)object)._rkManagedObjectSyncStatus != [NSNumber numberWithInt:RKSyncStatusShouldNotSync]) {
+    if ([((NSManagedObject*)object)._rkManagedObjectSyncStatus intValue] != RKSyncStatusShouldNotSync) {
         //These are being synced from the cache and not newly added
         ((NSManagedObject*)object)._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
         [[[RKObjectManager sharedManager] objectStore] save];
