@@ -41,6 +41,11 @@ typedef enum {
 @property (nonatomic, readonly) NSString* hostName;
 
 /**
+ Returns YES if reachability has been determined
+ */
+@property (nonatomic, readonly) BOOL reachabilityEstablished;
+
+/**
  * Create a new reachability observer against a given hostname. The observer
  * will monitor the ability to reach the specified hostname and emit notifications
  * when its reachability status changes. 

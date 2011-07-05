@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKManagedObjectStoreSpec"
+            value = "RKClientSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldRespectTheRootKeyPathWhenConstructingATemporaryObjectMappingProvider"
+            value = "itShouldSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

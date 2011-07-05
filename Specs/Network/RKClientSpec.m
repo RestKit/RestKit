@@ -60,4 +60,16 @@
     assertThatBool(loader.success, is(equalToBool(YES)));
 }
 
+- (void)itShouldSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    client.baseURL = @"http://restkit.org";
+    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(YES)));
+}
+
+- (void)itShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    client.baseURL = @"http://127.0.0.1";
+    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(NO)));
+}
+
 @end
