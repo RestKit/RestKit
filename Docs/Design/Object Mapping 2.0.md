@@ -55,6 +55,7 @@ class to hold this data that looks like the following:
 
 Our goal is to leverage RestKit's object mapping capabilities to turn the above JSON into an array of Article instances. To make
 this happen, we must first become familiar with a few RestKit classes:
+
 1. **RKObjectMapping**: An object mapping defines the rules for transforming a parsed data payload into a local domain object. 
 Each object mapping is composed of a collection of attribute and relationship mappings that define how to transform key paths in the 
 source data into properties on the local object.
