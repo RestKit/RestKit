@@ -95,8 +95,8 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 - (void) sync {
     _totalUnsynced = 0;
     for (Class cls in _registeredClasses) {
-        _totalUnsynced += [[cls unsyncedObjects] count];
         for (NSManagedObject *object in [cls unsyncedObjects]) {
+            _totalUnsynced += 1;
             switch ([object._rkManagedObjectSyncStatus intValue]) {
                 case RKSyncStatusShouldPost:
                     [[RKObjectManager sharedManager] postObject:object delegate:self];
@@ -113,6 +113,13 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
             //If we lose connection here, the object loader delegate will get a fail notification
             //So the sync status won't be reset, and the object will get synced next time 
             //there is network access.
+        }
+    }
+    if (_totalUnsynced == 0) {
+        //if we don't sync anything, still notify delegate so we can reload
+        //better solution would be a more robust delegate
+        if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
+            [(NSObject<RKManagedObjectSyncDelegate>*)_delegate didFinishSyncing];
         }
     }
 }
@@ -153,12 +160,24 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 #pragma mark RKObjectLoaderDelegate (RKRequestDelegate) methods
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObject:(id)object {
-    if ([((NSManagedObject*)object)._rkManagedObjectSyncStatus intValue] != RKSyncStatusShouldNotSync) {
-        //These are being synced from the cache and not newly added
-        ((NSManagedObject*)object)._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
-        [[[RKObjectManager sharedManager] objectStore] save];
-        _totalUnsynced -= 1;
+- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
+	
+}
+
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
+    if ([response isSuccessful]) {
+        for (NSManagedObject *object in [[[RKObjectManager sharedManager] objectStore] objectsForResourcePath:[request resourcePath]]) {
+            if ([request isPOST] || [request isPUT]) {
+                object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
+                [[[RKObjectManager sharedManager] objectStore] save];
+                _totalUnsynced -= 1;
+            } else if ([request isDELETE]) {
+                [[[[RKObjectManager sharedManager] objectStore] managedObjectContext] deleteObject:object];
+                [[[RKObjectManager sharedManager] objectStore] save];
+                _totalUnsynced -= 1;
+            }
+        }
+        
         RKLogTrace(@"Total unsynced objects: %i", _totalUnsynced);
         if (_totalUnsynced == 0)
         {
@@ -168,21 +187,9 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
                 [(NSObject<RKManagedObjectSyncDelegate>*)_delegate didFinishSyncing];
             }
         }
-    } else {
-        //These are being synced directly
-        //notify the delegate
-        if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
-            [(NSObject<RKManagedObjectSyncDelegate>*)_delegate didFinishSyncing];
-        }
     }
-}
-
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
-	
-}
-
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	
+    
+    
 }
 
 @end
