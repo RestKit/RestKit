@@ -229,7 +229,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
         _baseURLReachabilityObserver = [[RKReachabilityObserver alloc] initWithHostname:[URL host]];
         
         // Suspend the queue until reachability to our new hostname is established
-        [RKRequestQueue sharedQueue].suspended = YES;
+        [RKRequestQueue sharedQueue].suspended = !_baseURLReachabilityObserver.reachabilityEstablished;
         [[NSNotificationCenter defaultCenter] addObserver:self 
                                                  selector:@selector(reachabilityWasDetermined:) 
                                                      name:RKReachabilityStateWasDeterminedNotification 
