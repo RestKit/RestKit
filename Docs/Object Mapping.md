@@ -144,57 +144,57 @@ from a source type to a destination type that are automatically applied when you
         <th>Discussion</th>
     </th>
     <tr>
-        <td><pre><code>NSString</pre></code></td>
+        <td>NSString</td>
         <td>NSDate</td>
         <td>NSString values are mapped to NSDate properties by applying the date format strings from the RKObjectMapping instance.</td>
     </tr>
     <tr>
         <td>NSString</td>
         <td>NSURL</td>
-        <td>NSString values are mapped to NSURL properties via [NSURL URLWithString:(NSString*)value]</td>
+        <td>NSString values are mapped to NSURL properties via <pre><code>[NSURL URLWithString:(NSString*)value]</pre></code></td>
     </tr>
     <tr>
         <td>NSString</td>
         <td>NSDecimalNumber</td>
-        <td>NSString values are mapped to NSDecimalNumber properties via [NSDecimalNumber decimalNumberWithString:(NSString*)value]</td>
+        <td>NSString values are mapped to NSDecimalNumber properties via <pre><code>[NSDecimalNumber decimalNumberWithString:(NSString*)value]</pre></code></td>
     </tr>
     <tr>
         <td>NSString</td>
         <td>NSNumber</td>
-        <td>NSString values are mapped to NSNumber properties via [NSNumber numberWithDouble:[(NSString*)value doubleValue]]</td>
+        <td>NSString values are mapped to NSNumber properties via <pre><code>[NSNumber numberWithDouble:[(NSString*)value doubleValue]]</pre></code></td>
     </tr>
     <tr>
         <td>NSString containing YES, NO, true, false, t, f</td>
         <td>NSNumber</td>
-        <td>NSString values containing a known boolean string are mapped to NSNumber properties via [NSNumber numberWithBool:boolValueFromString]</td>
+        <td>NSString values containing a known boolean string are mapped to NSNumber properties via <pre><code>[NSNumber numberWithBool:boolValueFromString]</pre></code></td>
     </tr>
     <tr>
-        <td>`NSSet`</td>
-        <td>`NSArray`</td>
-        <td>NSSet values are mapped to NSArray properties via [(NSSet*)value allObjects]</td>
+        <td>NSSet</td>
+        <td>NSArray</td>
+        <td>NSSet values are mapped to NSArray properties via <pre><code>[(NSSet*)value allObjects]</pre></code></td>
     </tr>
     <tr>
-        <td>`NSArray`</td>
-        <td>`NSSet`</td>
-        <td>NSArray values are mapped to NSSet properties via [NSSet setWithArray:value]</td>
+        <td>NSArray</td>
+        <td>NSSet</td>
+        <td>NSArray values are mapped to NSSet properties via <pre><code>[NSSet setWithArray:value]</pre></code></td>
     </tr>
     <tr>
-        <td>`NSNumber`</td>
-        <td>`NSDate`</td>
-        <td>NSNumber values are mapped to NSDate properties via [NSDate dateWithTimeIntervalSince1970:[(NSNumber*)value intValue]]</td>
+        <td>NSNumber</td>
+        <td>NSDate</td>
+        <td>NSNumber values are mapped to NSDate properties via <pre><code>[NSDate dateWithTimeIntervalSince1970:[(NSNumber*)value intValue]]</pre></code></td>
     </tr>
     <tr>
-        <td>`NSCFBoolean`</td>
-        <td>`NSString`</td>
+        <td>NSCFBoolean</td>
+        <td>NSString</td>
         <td>Boolean literals true and false parsed from JSON are mapped to NSString properties as @"true" and @"false"</td>
     </tr>
     <tr>
-        <td>`NSNull`</td>
+        <td>NSNull</td>
         <td>Anything</td>
         <td>NSNull entries (null in JSON) are mapped to nil for any destination property.</td>
     </tr>
     <tr>
-        <td>`@respondsToSelector:(stringValue)`</td>
+        <td>respondsToSelector:@selector(stringValue)</td>
         <td>NSString</td>
         <td>Any mappable value can be mapped to an NSString property if the object responds to the stringValue selector. This works for NSNumbers, etc.</td>
     </tr>
