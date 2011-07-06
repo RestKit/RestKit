@@ -125,7 +125,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 }
 
 - (void)shouldPostObject:(NSManagedObject*)object error:(NSError**)error {
-    if (_isOnline) {
+    if (_isOnline && _shouldAutoSync) {
         [[RKObjectManager sharedManager] postObject:object delegate:self];
     } else {
         object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldPost];
@@ -134,7 +134,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 }
 
 - (void)shouldPutObject:(NSManagedObject*)object error:(NSError**)error {
-    if (_isOnline) {
+    if (_isOnline && _shouldAutoSync) {
         [[RKObjectManager sharedManager] putObject:object delegate:self];
     } else {
         object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldPut];
@@ -143,7 +143,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 }
 
 - (void)shouldDeleteObject:(NSManagedObject*)object error:(NSError**)error {
-    if (_isOnline) {
+    if (_isOnline && _shouldAutoSync) {
         [[RKObjectManager sharedManager] deleteObject:object delegate:self];
     } else {
         object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldDelete];
