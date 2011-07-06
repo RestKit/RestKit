@@ -27,9 +27,20 @@
     }
 }
 
-- (void)itShouldEncodePlusCharacters {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/john+restkit@gmail.com"];
-    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/john%2Brestkit@gmail.com")));
+- (void)itShouldEscapeQueryParameters {
+    NSDictionary* queryParams = [NSDictionary dictionaryWithObjectsAndKeys:@"What is your #1 e-mail?", @"question", @"john+restkit@gmail.com", @"answer", nil];
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParams:queryParams];
+    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test?answer=john%2Brestkit%40gmail.com&question=What%20is%20your%20%231%20e-mail%3F")));
+}
+
+- (void)itShouldHandleNilQueryParameters {
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParams:nil];
+    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test")));
+}
+
+- (void)itShouldHandleEmptyQueryParameters {
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParams:[NSDictionary dictionary]];
+    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test")));
 }
 
 @end
