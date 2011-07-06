@@ -229,6 +229,17 @@ to represent this nested dictionary as a new type in our object model -- the Aut
 @end
 ```
 
+We also need to change `author` property type in `Article` from `NSString*` to `Author*`:
+
+```objc
+@interface Article : NSObject
+    @property (nonatomic, retain) NSString* title;
+    @property (nonatomic, retain) NSString* body;
+    @property (nonatomic, retain) Author* author;
+    @property (nonatomic, retain) NSDate*   publicationDate;
+@end
+```
+
 Now we just need to configure RestKit to map the data appropriately. Let's extend our previous articleMapping to include the new author relationship:
 
 ```objc
