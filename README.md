@@ -156,4 +156,4 @@ Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restki
 
 ### RestKit is brought to you by [Two Toasters](http://www.twotoasters.com/). ###
 
-[Object Mapping Design Document]: https://github.com/twotoasters/RestKit/blob/master/Docs/Design/Object%20Mapping%202.0.md
+[Object Mapping Design Document]: https://github.com/twotoasters/RestKit/blob/master/Docs/Object%20Mapping.md
