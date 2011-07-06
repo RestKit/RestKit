@@ -87,13 +87,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingResultSpec"
+            value = "RKObjectMappingOperationSpec"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished"
-            isEnabled = "NO">
+            value = "itShouldSuccessfullyMapBoolsToStrings"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"
