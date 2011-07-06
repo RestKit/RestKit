@@ -124,4 +124,4 @@ lcl_configure_by_name("App", level);
 /**
  Initialize the logging environment
  */
-void RKLogInitialize();
+void RKLogInitialize(void);

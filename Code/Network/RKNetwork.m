@@ -11,7 +11,7 @@
 // Global credential persistence value.
 static NSURLCredentialPersistence gCredentialPersistence = NSURLCredentialPersistenceForSession;
 
-NSURLCredentialPersistence RKNetworkGetGlobalCredentialPersistence() {
+NSURLCredentialPersistence RKNetworkGetGlobalCredentialPersistence(void) {
     return gCredentialPersistence;
 }
 
