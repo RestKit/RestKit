@@ -91,7 +91,8 @@
                                                             object:self 
                                                           userInfo:userInfo];
 	} else {
-        NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
+        NSDictionary* userInfo = [NSDictionary dictionaryWithObject:(error ? error : (NSError*)[NSNull null])
+                                                             forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
 															object:self
 														  userInfo:userInfo];
