@@ -43,5 +43,15 @@
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test")));
 }
 
+- (void)itShouldHandleResourcePathWithoutLeadingSlash {
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"test"];
+    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test")));
+}
+
+- (void)itShouldHandleEmptyResourcePath {
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@""];
+    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org")));
+}
+
 @end
  

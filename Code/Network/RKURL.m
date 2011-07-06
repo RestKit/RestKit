@@ -29,9 +29,15 @@
 
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
 	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
-	NSString* completeURL = [baseURLString stringByAppendingPathComponent:resourcePathWithQueryString];
+	NSURL *baseURL = [NSURL URLWithString:baseURLString];
+	NSURL *completeURL = [NSURL URLWithString:resourcePathWithQueryString relativeToURL:baseURL];
+	if (!completeURL) {
+		[self release];
+		return nil;
+	}
 	
-	self = [self initWithString:completeURL];
+	// You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
+	self = [self initWithString:[completeURL absoluteString]];
 	if (self) {
 		_baseURLString = [baseURLString copy];
 		_resourcePath = [resourcePath copy];
