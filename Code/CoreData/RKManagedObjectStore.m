@@ -335,7 +335,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
             id attributeValue = [theObject valueForKey:primaryKeyAttribute];
             // Coerce to a string if possible
             attributeValue = coerceToString ? [attributeValue stringValue] : attributeValue;
-            if (primaryKeyValue) {
+            if (attributeValue) {
                 [dictionary setObject:theObject forKey:attributeValue];
             }
         }

@@ -45,7 +45,6 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
     if (!observer.reachabilityEstablished) {
         RKLogInfo(@"Network availability has been determined for reachability observer %@", observer);
         observer.reachabilityEstablished = YES;        
-        [[NSNotificationCenter defaultCenter] postNotificationName:RKReachabilityStateWasDeterminedNotification object:observer];
     }
 	
 	// Post a notification to notify the client that the network reachability changed.
@@ -223,7 +222,8 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 }
 
 - (void)setReachabilityEstablished:(BOOL)reachabilityEstablished {
-    _reachabilityEstablished = reachabilityEstablished;    
+    _reachabilityEstablished = reachabilityEstablished;
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKReachabilityStateWasDeterminedNotification object:self];
 }
 
 @end
