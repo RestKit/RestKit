@@ -12,6 +12,7 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectManager.h"
 #import "RKLog.h"
+#import "RKManagedObjectSyncObserver.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -21,6 +22,8 @@ static NSUInteger const kActiveRecordDefaultBatchSize = 10;
 static NSNumber *defaultBatchSize = nil;
 
 @implementation NSManagedObject (ActiveRecord)
+
+@dynamic _rkManagedObjectSyncStatus;
 
 #pragma mark - RKManagedObject methods
 
@@ -99,6 +102,12 @@ static NSNumber *defaultBatchSize = nil;
 + (id)object {
 	id object = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[self managedObjectContext]];
 	return [object autorelease];
+}
+
++ (NSArray*)unsyncedObjects {
+    NSPredicate *predicate = [NSPredicate
+                              predicateWithFormat:@"_rkManagedObjectSyncStatus > 0"];
+    return [self objectsWithPredicate:predicate];
 }
 
 - (BOOL)isNew {

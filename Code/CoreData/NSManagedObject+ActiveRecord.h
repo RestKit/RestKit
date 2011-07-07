@@ -10,7 +10,18 @@
 
 #import <CoreData/CoreData.h>
 
-@interface NSManagedObject (ActiveRecord)
+@protocol RKObjectSync
+
++ (NSArray*)unsyncedObjects;
+
+@end
+
+@interface NSManagedObject (ActiveRecord) <RKObjectSync>
+
+/** This property is added to all Core Data records before the persistent store is created.
+ *  It tracks the sync status of every record.
+ */
+@property (nonatomic, retain) NSNumber * _rkManagedObjectSyncStatus;
 
 /**
  * The Core Data managed object context from the RKObjectManager's objectStore
@@ -87,6 +98,7 @@
  * Returns YES when an object has not been saved to the managed object context yet
  */
 - (BOOL)isNew;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

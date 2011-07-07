@@ -16,6 +16,7 @@
 #import "../ObjectMapping/RKObjectLoader_Internals.h"
 #import "../Network/RKRequest_Internals.h"
 #import "../Support/RKLog.h"
+#import "RKManagedObjectSyncObserver.h"
 
 @implementation RKManagedObjectLoader
 
@@ -104,8 +105,10 @@
         NSArray* cachedObjects = [self.objectStore objectsForResourcePath:rkURL.resourcePath];
         for (id object in cachedObjects) {
             if (NO == [results containsObject:object]) {
-                RKLogTrace(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
-                [[self.objectStore managedObjectContext] deleteObject:object];
+                if ([((NSManagedObject*)object)._rkManagedObjectSyncStatus intValue] == RKSyncStatusShouldNotSync) {
+                    RKLogTrace(@"Deleting orphaned object %@: not found in result s^et and expected at this resource path", object);
+                    [[self.objectStore managedObjectContext] deleteObject:object];
+                }
             }
         }
     } else {

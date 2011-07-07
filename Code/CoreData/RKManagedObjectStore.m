@@ -7,6 +7,7 @@
 //
 
 #import "RKManagedObjectStore.h"
+#import "RKManagedObjectSyncObserver.h"
 #import "RKAlert.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
@@ -73,7 +74,26 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
-		
+        
+        NSArray *newEntities = [[[NSArray alloc] init] autorelease];
+        for (NSEntityDescription *entity in [_managedObjectModel entities]) {
+            NSAttributeDescription *syncAttribute = [[NSAttributeDescription alloc] init];
+            [syncAttribute setName:@"_rkManagedObjectSyncStatus"];
+            [syncAttribute setAttributeType:NSInteger16AttributeType];
+            [syncAttribute setOptional:NO];
+            [syncAttribute setDefaultValue:[NSNumber numberWithInteger:RKSyncStatusShouldNotSync]];
+            
+            //TODO: Add NSExpression validation so that this throws an error when set to an invalid value
+            NSArray *newProperties = [[entity properties] arrayByAddingObject:syncAttribute];
+            [entity setProperties:newProperties];
+            newEntities = [newEntities arrayByAddingObject:entity];
+            [syncAttribute release];
+        }
+        
+        [_managedObjectModel setEntities:newEntities];
+        
+        [RKManagedObjectSyncObserver setSharedSyncObserver:[[RKManagedObjectSyncObserver alloc] init]];
+        
         _delegate = delegate;
         
 		[self createPersistentStoreCoordinator];

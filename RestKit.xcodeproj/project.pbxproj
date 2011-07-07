@@ -32,6 +32,8 @@
 
 /* Begin PBXBuildFile section */
 		13924B7913AAB91700DD5078 /* libUISpec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13924B7813AAB91700DD5078 /* libUISpec.a */; };
+		2032ADE613BCB4B200BE4D75 /* RKManagedObjectSyncObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 2025159213BB9347006F208B /* RKManagedObjectSyncObserver.m */; };
+		20AED63413BBB1D4005DE16F /* RKManagedObjectSyncObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 2025159113BB9346006F208B /* RKManagedObjectSyncObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A088912551D8D00976E89 /* RKManagedObjectSeeder.m */; };
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
 		250C29FD134185D2000A3551 /* RKNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 250C29FB134185CE000A3551 /* RKNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -392,6 +394,8 @@
 /* Begin PBXFileReference section */
 		13924B6D13AAB8F400DD5078 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = UISpec/UISpec.xcodeproj; sourceTree = "<group>"; };
 		13924B7813AAB91700DD5078 /* libUISpec.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libUISpec.a; sourceTree = SOURCE_ROOT; };
+		2025159113BB9346006F208B /* RKManagedObjectSyncObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectSyncObserver.h; sourceTree = "<group>"; };
+		2025159213BB9347006F208B /* RKManagedObjectSyncObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectSyncObserver.m; sourceTree = "<group>"; };
 		250C296B13411E60000A3551 /* RKRequestQueueSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestQueueSpec.m; sourceTree = "<group>"; };
 		250C29FB134185CE000A3551 /* RKNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKNetwork.h; sourceTree = "<group>"; };
 		250C29FC134185D0000A3551 /* RKNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKNetwork.m; sourceTree = "<group>"; };
@@ -947,6 +951,8 @@
 				257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */,
 				257FB7081395DC44003A628E /* RKManagedObjectMappingOperation.m */,
 				7377FBE11268E96300868752 /* RKManagedObjectCache.h */,
+				2025159113BB9346006F208B /* RKManagedObjectSyncObserver.h */,
+				2025159213BB9347006F208B /* RKManagedObjectSyncObserver.m */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -1552,6 +1558,7 @@
 				25431EBB1255640800A315CF /* CoreData.h in Headers */,
 				257FB677139559A4003A628E /* RKManagedObjectMapping.h in Headers */,
 				257FB683139582C5003A628E /* NSManagedObject+ActiveRecord.h in Headers */,
+				20AED63413BBB1D4005DE16F /* RKManagedObjectSyncObserver.h in Headers */,
 				258A926C1379D41F00D80034 /* RKManagedObjectFactory.h in Headers */,
 				25A1CA87137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h in Headers */,
 				257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */,
@@ -2036,6 +2043,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2032ADE613BCB4B200BE4D75 /* RKManagedObjectSyncObserver.m in Sources */,
 				25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */,
 				253A09271255258600976E89 /* RKManagedObjectStore.m in Sources */,
 				251D14AD133597B800959061 /* RKManagedObjectLoader.m in Sources */,
@@ -2214,6 +2222,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
+				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
@@ -2234,6 +2243,7 @@
 				BUILD_STYLE = Release;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
+				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
@@ -2311,6 +2321,7 @@
 				BUILD_STYLE = Release;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREFIX_HEADER = Code/Support/RestKit_Prefix.pch;
+				GCC_VERSION = 4.2;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
