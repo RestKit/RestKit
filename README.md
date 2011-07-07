@@ -66,7 +66,7 @@ Quick Start (aka TL;DR)
 1. Add Git submodule to your project: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
 1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
-1. Add **Header Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build"` directory
+1. Add **Header Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build"` directory. **DO NOT** check the `Recursive` checkbox.
 1. Add **Library Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build/$(BUILD_STYLE)-$(PLATFORM_NAME)"` directory.  
 **NOTE**: This is only necessary if you are **NOT** using DerivedData.
 1. Add **Other Linker Flags** for `-ObjC -all_load`
