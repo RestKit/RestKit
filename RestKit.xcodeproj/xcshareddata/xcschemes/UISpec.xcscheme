@@ -62,7 +62,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingNextGenSpec"
+            value = "RKManagedObjectLoaderSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -72,7 +72,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapACollectionOfObjectsWithDynamicKeysAndRelationships"
+            value = "itShouldDeleteObjectFromLocalStoreOnDELETE"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -87,13 +87,13 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingOperationSpec"
-            isEnabled = "YES">
+            value = "RKObjectLoaderSpec"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldSuccessfullyMapBoolsToStrings"
-            isEnabled = "YES">
+            value = "itShouldReturnSuccessWhenTheStatusCodeIs200ButTheResponseBodyIsEmpty"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "NSAutoreleaseHaltOnNoPool"

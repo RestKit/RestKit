@@ -85,6 +85,10 @@
 
 	if (successful) {
 		_isLoaded = YES;
+        if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
+            [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
+        }
+        
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObject:_response 
                                                              forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
         [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification 
@@ -145,7 +149,21 @@
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject error:(NSError**)error {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
-    id parsedData = [parser objectFromString:[self.response bodyAsString] error:error];
+    
+    // Check that there is actually content in the response body for mapping. It is possible to get back a 200 response
+    // with the appropriate MIME Type with no content (such as for a successful PUT or DELETE). Make sure we don't generate an error
+    // in these cases
+    id bodyAsString = [self.response bodyAsString];
+    if (bodyAsString == nil || [[bodyAsString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+        RKLogDebug(@"Mapping attempted on empty response body...");
+        if (self.targetObject) {
+            return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
+        }
+        
+        return nil;
+    }
+    
+    id parsedData = [parser objectFromString:bodyAsString error:error];
     if (parsedData == nil && error) {
         return nil;
     }
@@ -204,8 +222,11 @@
     _result = [[self performMapping:&error] retain];
     if (self.result) {
         [self processMappingResult:self.result];
-    } else {
+    } else if (error) {
         [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+    } else {
+        // A nil response with an error indicates success, but no mapping results
+        [self finalizeLoad:YES error:nil];
     }
 
 	[pool drain];
