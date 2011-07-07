@@ -160,24 +160,18 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 #pragma mark RKObjectLoaderDelegate (RKRequestDelegate) methods
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	
-}
-
-- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
-    if ([response isSuccessful]) {
-        for (NSManagedObject *object in [[[RKObjectManager sharedManager] objectStore] objectsForResourcePath:[request resourcePath]]) {
-            if ([request isPOST] || [request isPUT]) {
-                object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
-                [[[RKObjectManager sharedManager] objectStore] save];
-                _totalUnsynced -= 1;
-            } else if ([request isDELETE]) {
-                [[[[RKObjectManager sharedManager] objectStore] managedObjectContext] deleteObject:object];
-                [[[RKObjectManager sharedManager] objectStore] save];
-                _totalUnsynced -= 1;
-            }
+- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
+    NSManagedObject *object = (NSManagedObject*)(objectLoader.sourceObject);
+    if ([objectLoader.response isSuccessful]) {
+        if ([objectLoader isPOST] || [objectLoader isPUT]) {
+            object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
+            [[[RKObjectManager sharedManager] objectStore] save];
+            _totalUnsynced -= 1;
+        } else if ([objectLoader isDELETE]) {
+            [[[[RKObjectManager sharedManager] objectStore] managedObjectContext] deleteObject:object];
+            [[[RKObjectManager sharedManager] objectStore] save];
+            _totalUnsynced -= 1;
         }
-        
         RKLogTrace(@"Total unsynced objects: %i", _totalUnsynced);
         if (_totalUnsynced == 0)
         {
@@ -188,8 +182,9 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
             }
         }
     }
-    
-    
+}
+- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
+	
 }
 
 @end
