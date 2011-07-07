@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
+            value = "RKObjectMappingNextGenSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldReturnSuccessWhenTheStatusCodeIs200ButTheResponseBodyIsEmpty"
+            value = "itShouldSetTheErrorWhenMappingOperationFails"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

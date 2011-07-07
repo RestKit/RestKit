@@ -417,4 +417,18 @@
     assertThat(responseLoader.objects, hasItem(user));
 }
 
+- (void)itShouldConsiderTheLoadOfEmptyObjectsWithoutAnyMappableAttributesAsSuccess {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [userMapping mapAttributes:@"firstname", nil];
+    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"firstUser"];
+    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"secondUser"];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    [objectManager loadObjectsAtResourcePath:@"/users/empty" delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.success, is(equalToBool(YES)));
+}
+
 @end

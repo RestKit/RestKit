@@ -89,6 +89,12 @@ class RestKit::SpecServer < Sinatra::Base
     status 200
   end
   
+  get '/users/empty' do
+    content_type 'application/json'
+    status 200
+    { :firstUser => {}, :secondUser => {}}.to_json
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

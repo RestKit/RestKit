@@ -629,17 +629,28 @@
     [mockDelegate verify];
 }
 
-- (void)itShouldNotifyTheDelegateWhenItFailedToMapAnObject {
+- (BOOL)fakeValidateValue:(inout id *)ioValue forKey:(NSString *)inKey error:(out NSError **)outError {
+    *outError = [NSError errorWithDomain:RKRestKitErrorDomain code:1234 userInfo:nil];
+    return NO;
+}
+
+- (void)itShouldNotifyTheDelegateWhenItFailedToMapAnObject {    
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:NSClassFromString(@"OCPartialMockObject")];
+    [mapping mapAttributes:@"name", nil];
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     [provider setObjectMapping:mapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixture(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    RKExampleUser* exampleUser = [[RKExampleUser new] autorelease];
+    id mockObject = [OCMockObject partialMockForObject:exampleUser];
+    [[[mockObject expect] andCall:@selector(fakeValidateValue:forKey:error:) onObject:self] validateValue:[OCMArg anyPointer] forKey:OCMOCK_ANY error:[OCMArg anyPointer]];
+    mapper.targetObject = mockObject;
     [[mockDelegate expect] objectMapper:mapper didFailMappingFromObject:userInfo toObject:[OCMArg any] withError:[OCMArg any] atKeyPath:@"" usingMapping:mapping];
     mapper.delegate = mockDelegate;
     [mapper performMapping];
+    [mockObject verify];
     [mockDelegate verify];
 }
 
@@ -699,7 +710,7 @@
     [operation release];
 }
 
-- (void)itShouldFailMappingWhenGivenASourceObjectThatContainsNoMappableKeys {
+- (void)itShouldReturnNoWithoutErrorWhenGivenASourceObjectThatContainsNoMappableKeys {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"userID"];
     [mapping addAttributeMapping:idMapping];
@@ -713,7 +724,7 @@
     NSError* error = nil;
     BOOL success = [operation performMapping:&error];
     [expectThat(success) should:be(NO)];
-    [expectThat(error) shouldNot:be(nil)];
+    [expectThat(error) should:be(nil)];
     [operation release];
 }
 
@@ -742,14 +753,15 @@
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [mapping addAttributeMapping:nameMapping];
     
-    NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"blue", @"favorite_color", @"coffee", @"preferred_beverage", nil];
+    NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"FAILURE", @"id", nil];
     RKExampleUser* user = [RKExampleUser user];
+    id mockObject = [OCMockObject partialMockForObject:user];
+    [[[mockObject expect] andCall:@selector(fakeValidateValue:forKey:error:) onObject:self] validateValue:[OCMArg anyPointer] forKey:OCMOCK_ANY error:[OCMArg anyPointer]];
     
-    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user objectMapping:mapping];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:mockObject objectMapping:mapping];
     NSError* error = nil;
     [operation performMapping:&error];
     [expectThat(error) shouldNot:be(nil)];
-    [expectThat([error code]) should:be(RKObjectMapperErrorUnmappableContent)];
     [operation release];
 }
 
