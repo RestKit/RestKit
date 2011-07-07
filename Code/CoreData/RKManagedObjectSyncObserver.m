@@ -8,6 +8,8 @@
 #import "RKManagedObjectSyncObserver.h"
 #import "RKLog.h"
 
+NSString* const RKAutoSyncDidSync = @"RKAutoSyncDidSync";
+
 //////////////////////////////////
 // Shared Instance
 
@@ -17,10 +19,10 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 @implementation RKManagedObjectSyncObserver
 @synthesize registeredClasses = _registeredClasses;
-@synthesize delegate = _delegate;
 @synthesize isOnline = _isOnline;
 @synthesize shouldAutoSync = _shouldAutoSync;
 @synthesize totalUnsynced = _totalUnsynced;
+@synthesize delegate = _delegate;
 
 - (id)init {
     self = [super init];
@@ -47,6 +49,8 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 }
 
 - (void)dealloc {
+    //weak reference
+    _delegate = nil;
     [_registeredClasses release];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
@@ -78,21 +82,27 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 - (void) enteredOnlineMode {
     RKLogInfo(@"Entered online mode.");
     _isOnline = YES;
-    //[[RKRequestQueue sharedQueue] cancelAllRequests];
-    //[[RKRequestQueue sharedQueue] setSuspended:NO];
     if (_shouldAutoSync) {
-        [self sync];
+        [self syncWithDelegate:nil];
     }
 }
 
 - (void) enteredOfflineMode {
     RKLogInfo(@"Entered offline mode.");
     _isOnline = NO;
-    //[[RKRequestQueue sharedQueue] cancelAllRequests];
-    //[[RKRequestQueue sharedQueue] setSuspended:YES];
 }
 
-- (void) sync {
+- (void) syncWithDelegate: (NSObject<RKManagedObjectSyncDelegate>*)delegate {
+    /*  Should fail silently if there's no connection. 
+     *  But maybe we should check for availability and not sync if there's no network?
+     *  Or check in the loop, so that if we lose connection during a sync we exit early?
+     */
+    _delegate = delegate;
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
+        [_delegate didStartSyncing];
+    }
+    
     _totalUnsynced = 0;
     for (Class cls in _registeredClasses) {
         for (NSManagedObject *object in [cls unsyncedObjects]) {
@@ -116,10 +126,9 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
         }
     }
     if (_totalUnsynced == 0) {
-        //if we don't sync anything, still notify delegate so we can reload
-        //better solution would be a more robust delegate
-        if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
-            [(NSObject<RKManagedObjectSyncDelegate>*)_delegate didFinishSyncing];
+        //if we don't sync anything, still notify delegate so we can reload data if necessary
+        if (_delegate && [_delegate respondsToSelector:@selector(didSyncNothing)]) {
+            [_delegate didSyncNothing];
         }
     }
 }
@@ -175,16 +184,22 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
         RKLogTrace(@"Total unsynced objects: %i", _totalUnsynced);
         if (_totalUnsynced == 0)
         {
-            //finished a sync
-            //should be on the main thread already so no need to invoke specially
+            //finished a sync, notify the delegate
             if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
-                [(NSObject<RKManagedObjectSyncDelegate>*)_delegate didFinishSyncing];
+                [_delegate didFinishSyncing];
+            }
+            //if we're autosyncing, we don't have a delegate, so we send notifications
+            if (_shouldAutoSync) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:RKAutoSyncDidSync object:self];
             }
         }
     }
 }
+
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	
+	if (_delegate && [_delegate respondsToSelector:@selector(didFailSyncingWithError:)]) {
+        [_delegate didFailSyncingWithError:error];
+    }
 }
 
 @end

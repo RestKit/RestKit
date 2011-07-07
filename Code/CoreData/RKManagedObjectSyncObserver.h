@@ -11,6 +11,9 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectStore.h"
 
+// Notifications
+extern NSString* const RKAutoSyncDidSync;
+
 typedef enum {
 	RKSyncStatusShouldNotSync,
 	RKSyncStatusShouldPost,
@@ -21,24 +24,27 @@ typedef enum {
 @protocol RKManagedObjectSyncDelegate
 
 @optional
+//don't pass the observer since we use a singleton
 - (void)didStartSyncing;
 - (void)didFinishSyncing;
+- (void)didFailSyncingWithError:(NSError*)error;
+- (void)didSyncNothing;
 
 @end
 
 @interface RKManagedObjectSyncObserver : NSObject <RKObjectLoaderDelegate> {
     NSMutableArray *_registeredClasses; 
-    NSObject<RKManagedObjectSyncDelegate> *_delegate;
     BOOL _isOnline;
     BOOL _shouldAutoSync;
     NSInteger _totalUnsynced;
+    NSObject<RKManagedObjectSyncDelegate> *_delegate;
 }
 
 @property (nonatomic, retain) NSMutableArray *registeredClasses;
-@property (nonatomic, retain) id<RKManagedObjectSyncDelegate> delegate;
 @property (nonatomic, assign) BOOL isOnline;
 @property (nonatomic, assign) BOOL shouldAutoSync;
 @property (nonatomic, assign) NSInteger totalUnsynced;
+@property (nonatomic, retain) NSObject<RKManagedObjectSyncDelegate> *delegate;
 
 + (RKManagedObjectSyncObserver*)sharedSyncObserver;
 + (void)setSharedSyncObserver:(RKManagedObjectSyncObserver*)observer;
@@ -49,7 +55,7 @@ typedef enum {
 - (void)enteredOnlineMode;
 - (void)enteredOfflineMode;
 
-- (void)sync; 
+- (void)syncWithDelegate:(NSObject<RKManagedObjectSyncDelegate>*)delegate; 
 
 - (void)shouldNotSyncObject:(NSManagedObject*)object error:(NSError**)error;
 - (void)shouldPostObject:(NSManagedObject*)object error:(NSError**)error;
