@@ -19,10 +19,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 @implementation RKManagedObjectSyncObserver
 @synthesize registeredClasses = _registeredClasses;
-@synthesize isOnline = _isOnline;
 @synthesize shouldAutoSync = _shouldAutoSync;
-@synthesize totalUnsynced = _totalUnsynced;
-@synthesize delegate = _delegate;
 
 - (id)init {
     self = [super init];
