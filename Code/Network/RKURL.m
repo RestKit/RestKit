@@ -28,20 +28,16 @@
 }
 
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
-    // Ensure the resource path always has a leading slash
-    if ([resourcePath length] > 0) {
-        resourcePath = ([resourcePath characterAtIndex:0] != '/') ? [NSString stringWithFormat:@"/%@", resourcePath] : resourcePath;
-    }
 	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
 	NSURL *baseURL = [NSURL URLWithString:baseURLString];
-    NSURL *completeURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", baseURL, resourcePathWithQueryString]];
+	NSString* completePath = [[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString];
+	NSURL* completeURL = [NSURL URLWithString:completePath relativeToURL:baseURL];
 	if (!completeURL) {
 		[self release];
 		return nil;
 	}
 	
 	// You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
-    NSLog(@"Initialized the string: %@", [completeURL absoluteString]);
 	self = [self initWithString:[completeURL absoluteString]];
 	if (self) {
 		_baseURLString = [baseURLString copy];
