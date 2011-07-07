@@ -7,24 +7,42 @@
 //
 
 #import "RKURL.h"
+#import "RKClient.h"
 
 @implementation RKURL
 
 @synthesize baseURLString = _baseURLString;
 @synthesize resourcePath = _resourcePath;
+@synthesize queryParams = _queryParams;
 
 + (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath {
-	return [[[RKURL alloc] initWithBaseURLString:baseURLString resourcePath:resourcePath] autorelease];
+	return [[[self alloc] initWithBaseURLString:baseURLString resourcePath:resourcePath] autorelease];
+}
+
++ (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
+	return [[[self alloc] initWithBaseURLString:baseURLString resourcePath:resourcePath queryParams:queryParams] autorelease];
 }
 
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath {
-    NSString* completeURL = [NSString stringWithFormat:@"%@%@", baseURLString, resourcePath];    
-    completeURL = [(NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)completeURL, NULL, (CFStringRef)@"+", kCFStringEncodingUTF8) autorelease];
-    
-    self = [self initWithString:completeURL];
-    if (self) {
+	return [self initWithBaseURLString:baseURLString resourcePath:resourcePath queryParams:nil];
+}
+
+- (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
+	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
+	NSURL *baseURL = [NSURL URLWithString:baseURLString];
+	NSString* completePath = [[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString];
+	NSURL* completeURL = [NSURL URLWithString:completePath relativeToURL:baseURL];
+	if (!completeURL) {
+		[self release];
+		return nil;
+	}
+	
+	// You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
+	self = [self initWithString:[completeURL absoluteString]];
+	if (self) {
 		_baseURLString = [baseURLString copy];
 		_resourcePath = [resourcePath copy];
+		_queryParams = [queryParams retain];
 	}
 	return self;
 }
@@ -34,6 +52,8 @@
 	_baseURLString = nil;
 	[_resourcePath release];
 	_resourcePath = nil;
+	[_queryParams release];
+	_queryParams = nil;
 	[super dealloc];
 }
 

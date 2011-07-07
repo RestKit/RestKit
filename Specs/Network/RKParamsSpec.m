@@ -17,7 +17,6 @@
 @implementation RKParamsSpec
 
 - (void)itShouldNotOverReleaseTheParams {
-    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
     NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
     RKParams* params = [[RKParams alloc] initWithDictionary:dictionary];
     NSURL* URL = [NSURL URLWithString:[RKSpecGetBaseURL() stringByAppendingFormat:@"/echo_params"]];
