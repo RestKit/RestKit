@@ -30,6 +30,7 @@ static RKObjectManager* sharedManager = nil;
 @synthesize router = _router;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
+@synthesize inferMappingsFromObjectTypes = _inferMappingsFromObjectTypes;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
     self = [super init];
@@ -38,6 +39,7 @@ static RKObjectManager* sharedManager = nil;
 		_router = [RKObjectRouter new];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
         _onlineState = RKObjectManagerOnlineStateUndetermined;
+        _inferMappingsFromObjectTypes = YES;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
@@ -162,6 +164,12 @@ static RKObjectManager* sharedManager = nil;
     loader.targetObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
+    
+    if (self.inferMappingsFromObjectTypes) {
+        RKObjectMapping* objectMapping = [self.mappingProvider objectMappingForClass:[object class]];
+        RKLogDebug(@"Auto-selected object mapping %@ for object of type %@", objectMapping, NSStringFromClass([object class]));
+        loader.objectMapping = objectMapping;
+    }
 
 	return loader;
 }

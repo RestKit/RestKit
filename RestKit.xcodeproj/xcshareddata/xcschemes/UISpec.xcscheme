@@ -63,7 +63,7 @@
          <EnvironmentVariable
             key = "UISPEC_SPEC"
             value = "RKObjectMappingNextGenSpec"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -72,8 +72,8 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldMapACollectionOfObjectsWithDynamicKeysAndRelationships"
-            isEnabled = "NO">
+            value = "itShouldRegisterRailsIdiomaticObjects"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"
@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingResultSpec"
-            isEnabled = "YES">
+            value = "RKObjectLoaderSpec"
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished"
+            value = "itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContent"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

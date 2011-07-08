@@ -75,7 +75,8 @@
 }
 
 - (RKObjectMapping*)objectMappingForClass:(Class)theClass {
-    return [[self objectMappingsForClass:theClass] objectAtIndex:0];
+    NSArray* objectMappings = [self objectMappingsForClass:theClass];
+    return ([objectMappings count] > 0) ? [objectMappings objectAtIndex:0] : nil;
 }
 
 @end

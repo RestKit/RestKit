@@ -79,14 +79,26 @@ for the `Article` class. We then configured the mapping to define rules for tran
 on an instance of `Article`. Finally, we instructed the mapping provider to use `articleMapping` whenever it encounters data at the `@"articles"`
 key path. 
 
-Recall the importance of key-value coding to the process. When we load the example JSON above via RestKit with the articleMapping configuration in
-place, the following things are going to happen:
+Now that we have configured our object mapping, we can load this collection:
 
-1. RestKit will create an instance of `RKObjectMapper` with the parsed JSON payload and the mapping provider. The mapper is responsible for figuring
+```objc
+- (void)loadArticles {
+    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/articles" delegate:self;
+}
+
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
+    RKLogInfo(@"Load collection of Articles: %@", objects);
+}
+```
+
+Recall the importance of key-value coding to the process. When we loaded the example JSON above via RestKit with the articleMapping configuration in
+place, the following things happened:
+
+1. RestKit created an instance of `RKObjectMapper` with the parsed JSON payload and the mapping provider. The mapper is responsible for figuring
 out how to map an opaque collection of potentially mappable data.
-1. The `RKObjectMapper` instance will ask the mapping provider for a list of mappable key paths. Each key path will be evaluated against the parsed
-payload using valueForKeyPath:. Since we configured a mapping for the `@"articles"` key path, RestKit will invoke `valueForKeyPath:@"articles"` on the
-parsed data and find the mappable data.
+1. The `RKObjectMapper` instance asked the mapping provider for a list of mappable key paths. Each key path was evaluated against the parsed
+payload using valueForKeyPath:. Since we configured a mapping for the `@"articles"` key path, RestKit invoked `valueForKeyPath:@"articles"` on the
+parsed data and found the mappable data.
 1. RestKit now knows that there is interesting data in the payload that needs to be mapped. `RKObjectMapper` notes that the mappable data is an array
 and iterates over the collection, mapping each dictionary within the array in turn. An instance of RKObjectMappingOperation is created for each element
 in the array. Each mapping operation targets one of dictionaries contained in the array returned from the `@"articles"` key path. For the example above, this
@@ -347,7 +359,81 @@ RKObjectMapping* articleSerializationMapping = [articleMapping inverseMapping];
 ```
     
 ### Mapping without KVC
-    TODO: new registerMapping method
+
+As should be obvious by now, RestKit is a big believer in KVC and offers a very seamless workflow if your JSON conforms
+to the patterns. But sadly this is not always the case -- many web API's return their JSON without any nesting attributes that
+can be used for mapping selection. In these cases you can still work with RestKit, you just have to be explicit about how your
+content is to be handled. Let's consider another example: Imagine that our weblog services returning articles works just as before,
+but the JSON output looks like this:
+
+```json
+[
+    { "title": "RestKit Object Mapping Intro",
+      "body": "This article details how to use RestKit object mapping...",
+      "author": {
+          "name": "Blake Watters",
+          "email": "blake@restkit.org"
+      },
+      "publication_date": "7/4/2011"
+    }
+]
+```
+
+We no longer have the outer @"articles" key path to identify our content and instead have a plain old fashioned array. We'll configure
+our mappings much the same, but a slight difference in the registration with the mapping provider:
+
+```objc
+// Our familiar articlesMapping from earlier
+RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
+[article mapKeyPath:@"title" toAttribute:@"title"];
+[article mapKeyPath:@"body" toAttribute:@"body"];
+[article mapKeyPath:@"author" toAttribute:@"author"];
+[article mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+
+[[RKObjectManager sharedManager].mappingProvider addObjectMapping:articleMapping];
+```
+
+Rather than leveraging `setObjectMapping:forKeyPath:`, we have invoked `addObjectMapping:`. This method essentially adds a retained reference
+to the mapping provider so that we can easily get the mapping back later when we need it via `objectMappingForClass:`. Let's take a look at how
+we'd load this array of `Article` objects:
+
+```objc
+- (void)loadArticlesWithoutKVC {
+    RKObjectMapping* articleMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Article class]];
+    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/articles" objectMapping:articleMapping delegate:self];
+}
+
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
+    RKLogInfo(@"Load collection of Articles: %@", objects);
+}
+```
+
+We've had to take the extra step of providing the object mapping directly to the object loader so that RestKit knows what to do with
+the object. This can sometimes be necessary when using serialization as well. Consider another example: We have a system where we post an
+ArticleQuery object and get back a collection of Articles. Our ArticleQuery object looks like this:
+
+```objc
+@interface ArticleQuery
+@property (nonatomic, retain) NSString* searchTerm;
+@property (nonatomic, retain) NSNumber* pageNumber;
+@property (nonatomic, retain) NSNumber* yearPublished;
+@end
+```
+
+We have configured a serialization mapping for the object and want to fetch our results:
+
+```objc
+- (void)loadArticlesUsingQuery {
+    ArticleQuery* query = [ArticleQuery new];
+    query.searchTerm = @"Monkey";
+    query.pageNumber = [NSNumber numberWithInt:5];
+    query.yearPublished = [NSNumber numberWithInt:2011];
+    
+    RKObjectMapping* articleMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Article class]];
+    [[RKObjectManager sharedManager] postObject:query mapResponseWith:articleMapping delegate:self];
+}
+```
+    
 ### Core Data
     primary keys
     default values
