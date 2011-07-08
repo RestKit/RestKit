@@ -85,13 +85,18 @@
 
 	if (successful) {
 		_isLoaded = YES;
+        if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
+            [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
+        }
+        
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObject:_response 
                                                              forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
         [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification 
                                                             object:self 
                                                           userInfo:userInfo];
 	} else {
-        NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
+        NSDictionary* userInfo = [NSDictionary dictionaryWithObject:(error ? error : (NSError*)[NSNull null])
+                                                             forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
 															object:self
 														  userInfo:userInfo];
@@ -144,11 +149,26 @@
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject error:(NSError**)error {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
-    id parsedData = [parser objectFromString:[self.response bodyAsString] error:error];
+    
+    // Check that there is actually content in the response body for mapping. It is possible to get back a 200 response
+    // with the appropriate MIME Type with no content (such as for a successful PUT or DELETE). Make sure we don't generate an error
+    // in these cases
+    id bodyAsString = [self.response bodyAsString];
+    if (bodyAsString == nil || [[bodyAsString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+        RKLogDebug(@"Mapping attempted on empty response body...");
+        if (self.targetObject) {
+            return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
+        }
+        
+        return nil;
+    }
+    
+    id parsedData = [parser objectFromString:bodyAsString error:error];
     if (parsedData == nil && error) {
         return nil;
     }
     
+    // Allow the delegate to manipulate the data
     if ([self.delegate respondsToSelector:@selector(objectLoader:willMapData:)]) {
         parsedData = [[parsedData mutableCopy] autorelease];
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self willMapData:&parsedData];
@@ -160,20 +180,15 @@
     mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];
     
-    if (nil == result && RKRequestMethodDELETE == self.method && [mapper.errors count] == 1) {
-        NSError* error = [mapper.errors objectAtIndex:0];
-        if (error.domain == RKRestKitErrorDomain && error.code == RKObjectMapperErrorUnmappableContent) {
-            // If this is a delete request, and the error is an "unmappable content" error, return an empty result
-            // because delete requests should allow for no objects to come back in the response (you just deleted the object).
-            result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
-        }
+    // Log any mapping errors
+    if (mapper.errorCount > 0) {
+        RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
     }
     
+    // The object mapper will return a nil result if mapping failed
     if (nil == result) {
-        RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
-        
-        // TODO: Construct a composite error that wraps up all the other errors
-        if (error) *error = [mapper.errors lastObject];   
+        // TODO: Construct a composite error that wraps up all the other errors. Should probably make it performMapping:&error when we have this?
+        if (error) *error = [mapper.errors lastObject];
         return nil;
     }
     
@@ -203,8 +218,11 @@
     _result = [[self performMapping:&error] retain];
     if (self.result) {
         [self processMappingResult:self.result];
-    } else {
+    } else if (error) {
         [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+    } else {
+        // A nil response with an error indicates success, but no mapping results
+        [self finalizeLoad:YES error:nil];
     }
 
 	[pool drain];

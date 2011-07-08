@@ -398,22 +398,19 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
         return YES;
     }
     
-    // We have failed, see if its because of validation or no mappable content found
-    NSError* failureError = _validationError;
-    if (!failureError) {
-        // We have failed, but not due to validation. So no mappable content was found, construct an error
-        NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  @"No mappable attributes or relationships found.", NSLocalizedDescriptionKey,
-                                  nil];
-        failureError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:userInfo];                
-    }
+    if (_validationError) {
+        // We failed out due to validation
+        if (error) *error = _validationError;
+        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
+            [self.delegate objectMappingOperation:self didFailWithError:_validationError];
+        }
+        
+        RKLogError(@"Failed mapping operation: %@", [_validationError localizedDescription]);
+    } else {
+        // We did not find anything to do
+        RKLogDebug(@"Mapping operation did not find any mappable content");
+    }    
     
-    if (error) *error = failureError;
-    if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
-        [self.delegate objectMappingOperation:self didFailWithError:failureError];
-    }
-    
-    RKLogError(@"Failed mapping operation: %@", [failureError localizedDescription]);
     return NO;
 }
 
