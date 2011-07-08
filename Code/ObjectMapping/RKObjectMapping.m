@@ -35,7 +35,7 @@ static NSTimeZone* defaultTimeZone = nil;
 }
 
 + (void)setDefaultTimeZone:(NSTimeZone *)timeZone {
-    [timeZone retain];o
+    [timeZone retain];
     [defaultTimeZone release];
     defaultTimeZone = timeZone;
 }
