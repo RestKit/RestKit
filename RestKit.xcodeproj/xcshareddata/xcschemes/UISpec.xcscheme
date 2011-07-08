@@ -63,7 +63,7 @@
          <EnvironmentVariable
             key = "UISPEC_SPEC"
             value = "RKObjectMappingNextGenSpec"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "RESTKIT_IP_ADDRESS"
@@ -73,7 +73,7 @@
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
             value = "itShouldRegisterRailsIdiomaticObjects"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXIT_ON_FINISH"

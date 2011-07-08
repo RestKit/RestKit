@@ -66,10 +66,10 @@ Let's take a look at how we would configure RestKit to perform this operation:
 
 ```objc
 RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
-[article mapKeyPath:@"title" toAttribute:@"title"];
-[article mapKeyPath:@"body" toAttribute:@"body"];
-[article mapKeyPath:@"author" toAttribute:@"author"];
-[article mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+[articleMapping mapKeyPath:@"title" toAttribute:@"title"];
+[articleMapping mapKeyPath:@"body" toAttribute:@"body"];
+[articleMapping mapKeyPath:@"author" toAttribute:@"author"];
+[articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 [[RKObjectManager sharedManager].mappingProvider setObjectMapping:articleMapping forKeyPath:@"articles"];
 ```
@@ -262,10 +262,10 @@ RKObjectMapping* authorMapping = [RKObjectMapping mappingForClass:[Author class]
 
 // Now configure the Article mapping
 RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
-[article mapKeyPath:@"title" toAttribute:@"title"];
-[article mapKeyPath:@"body" toAttribute:@"body"];
-[article mapKeyPath:@"author" toAttribute:@"author"];
-[article mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+[articleMapping mapKeyPath:@"title" toAttribute:@"title"];
+[articleMapping mapKeyPath:@"body" toAttribute:@"body"];
+[articleMapping mapKeyPath:@"author" toAttribute:@"author"];
+[articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 // Define the relationship mapping
 [article mapKeyPath:@"author" toRelationship:@"author" withObjectMapping:authorMapping];
@@ -347,10 +347,10 @@ understands and recognizes this relationship between our mappings and provides s
 ```objc
 // Our familiar articlesMapping from earlier
 RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
-[article mapKeyPath:@"title" toAttribute:@"title"];
-[article mapKeyPath:@"body" toAttribute:@"body"];
-[article mapKeyPath:@"author" toAttribute:@"author"];
-[article mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+[articleMapping mapKeyPath:@"title" toAttribute:@"title"];
+[articleMapping mapKeyPath:@"body" toAttribute:@"body"];
+[articleMapping mapKeyPath:@"author" toAttribute:@"author"];
+[articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 // Build a serialization mapping by inverting our object mapping. Includes attributes and relationships
 RKObjectMapping* articleSerializationMapping = [articleMapping inverseMapping];
@@ -385,10 +385,10 @@ our mappings much the same, but a slight difference in the registration with the
 ```objc
 // Our familiar articlesMapping from earlier
 RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
-[article mapKeyPath:@"title" toAttribute:@"title"];
-[article mapKeyPath:@"body" toAttribute:@"body"];
-[article mapKeyPath:@"author" toAttribute:@"author"];
-[article mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+[articleMapping mapKeyPath:@"title" toAttribute:@"title"];
+[articleMapping mapKeyPath:@"body" toAttribute:@"body"];
+[articleMapping mapKeyPath:@"author" toAttribute:@"author"];
+[articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 [[RKObjectManager sharedManager].mappingProvider addObjectMapping:articleMapping];
 ```
@@ -435,10 +435,78 @@ We have configured a serialization mapping for the object and want to fetch our 
 ```
     
 ### Core Data
-    primary keys
-    default values
+
+Until now we have focused on transient objects within RestKit. For many applications transient objects are completely the right choice --
+if your data set is constantly changing and your use-cases can rely on the availability of network access, using transient objects is a 
+simpler, easier way forward. But for some applications, you really need the full power of a queryable, persistent object model for performance,
+flexibility, offline access, etc. Apple has provided a great solution in Core Data. RestKit integrates with Core Data to bridge the gap between
+your remote server backend and your local object model. Since Core Data managed objects are KVC compliant, we get much of the integration "for free".
+But there are some Core Data specific steps and features that you must understand to leverage the persistence.
+
+First off, when you begin using Core Data you must import the Core Data headers, then configure an object store and connect it your object manager. 
+The object store is a RestKit component that handles the details of setting of a Core Data environment that is backed with a SQLite database. Let's
+take a look at how this works:
+
+```objc
+#import <RestKit/RestKit.h>
+#import <RestKit/CoreData/CoreData.h>
+
+RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
+RKManagedObjectStore* objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"MyApp.sqlite"];
+objectManager.objectStore = objectStore;
+```
+
+Now that we have set up the object store, we can configure persistent mappings. Let's say that we want to take our familiar Article object
+and make it persistent. You'll have to create a Core Data Managed Object Model and add it to your project. The configuration is outside the
+scope of this document, but there are great resources about how this works all over the net. Having done that, we'll update the Article 
+interface & implementation, then configure a managed object mapping:
+
+```objc
+@interface Article : NSManagedObject
+    @property (nonatomic, retain) NSNumber* articleID;
+    @property (nonatomic, retain) NSString* title;
+    @property (nonatomic, retain) NSString* body;
+    @property (nonatomic, retain) NSDate*   publicationDate;
+@end
+
+@implementation Article
+// We use @dynamic for the properties in Core Data
+@dynamic title;
+@dynamic body;
+@dynamic author;
+@dynamic publicationDate;
+@end
+
+// Now for the object mappings
+RKManagedObjectMapping* articleMapping = [RKManagedObjectMapping objectMappingForClass:[Article class]];
+[articleMapping mapKeyPath:@"id" toAttribute:@"articleID"];
+[articleMapping mapKeyPath:@"title" toAttribute:@"title"];
+[articleMapping mapKeyPath:@"body" toAttribute:@"body"];
+[articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+articleMapping.primaryKeyAttribute = @"articleID";
+```
+
+The astute reader will notice a couple of things:
+1. We changed our inheritance to NSManagedObject from NSObject
+1. Our properties are now implemented via @dynamic instead of @synthesize
+1. We have added a new property -- articleID. Typically when you load a remote object it is going to include a unique
+primary key attribute that uniquely identifies that particular entity. This attribute is typically either an integer or
+a string (i.e. a UUID or permalink).
+1. We instantiated `RKManagedObjectMapping` instead of `RKObjectMapping`.
+1. We have added a new key-path to attribute mapping specifying that we expect an "id" attribute in the payload. In our JSON,
+we'd see a fragment like `"id": 12345` added to the dictionary for each Article.
+1. We have a new property set on the articleMapping: `primaryKeyAttribute`. This property is significant because it helps RestKit
+understand how to uniquely identify your objects and perform intelligently update existing instances. The primaryKeyAttribute is used
+to look up an existing object instance by server-side primary key and map updates onto that object instance. If you do not specify a 
+primaryKeyAttribute, then you will get new objects created every time you trigger object mapping.
+
 ### Handling Dynamic Nesting Attributes
+
+TODO
+
 ### Key-value Validation
+
+TODO
 
 ## Class Hierarchy
 - **RKObjectManager** - The external client interface for performing object mapping operations on resources
