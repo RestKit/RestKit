@@ -63,7 +63,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
     
 	NSDate* date = nil;
 	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-    formatter.timeZone = [NSTimeZone localTimeZone];
+    formatter.timeZone = self.objectMapping.timeZone;
 	for (NSString* formatString in self.objectMapping.dateFormatStrings) {
 		[formatter setDateFormat:formatString];
 		date = [formatter dateFromString:string];
