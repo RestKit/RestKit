@@ -502,11 +502,121 @@ primaryKeyAttribute, then you will get new objects created every time you trigge
 
 ### Handling Dynamic Nesting Attributes
 
-TODO
+A common, though somewhat annoying pattern in some JSON API's is the use of dynamic attributes as the keys for mappable object data.
+This commonly shows up with JSON like the following:
+
+```json
+{ "blake": {
+    "email": "blake@restkit.org",
+    "favorite_animal": "Monkey"
+    }
+}
+```
+
+We might have a User class like the following:
+
+@interface User : NSObject
+@property (nonatomic, retain) NSString* email
+@property (nonatomic, retain) NSString* username;
+@property (nonatomic, retain) NSString* favoriteAnimal;
+@end
+
+You will note that this JSON is problematic compared to our earlier examples because the `email` attribute's data
+exists as the key in a dictionary, rather than a value. We handle this by creating an object mapping and using a new
+type of mapping definition:
+
+```json
+RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[User class]];
+[mapping mapKeyOfNestedDictionaryToAttribute:@"username"];
+[mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
+[mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
+```
+
+What happens with this type of object mapping is that when applied against a dictionary of data,
+the keys are interpreted to contain the value for the nesting attribute (so "blake" becomes username). When
+the remaining attribute and relationship key paths are evaluated against the parsed data, the value of the nesting attribute
+is substituted into the key path before it is applied. So your @"(username).email" key path becomes @"blake.email" and the
+mapping continues.
+
+Note that there annoying limitations with this. It is common for many API's to use e-mail addresses as dynamic keys in this
+fashion. This doesn't fly with KVC because the @ character is used to denote array operations.
+
+There is also a subtlety with nesting mappings and collections like this:
+
+```json
+{
+  "blake": {        
+    "email": "blake@restkit.org",        
+    "favorite_animal": "Monkey"    
+  },    
+  "sarah": {
+    "email": "sarah@restkit.org",   
+    "favorite_animal": "Cat"
+  }
+}
+```
+
+In these cases it is impossible for RestKit to automatically determine if the dictionary represents a single object or
+a collection with dynamic attributes. In these cases, you must give RestKit a hint if you have a collection:
+
+```json
+RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[User class]];
+mapping.forceCollectionMapping = YES;
+[mapping mapKeyOfNestedDictionaryToAttribute:@"username"];
+[mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
+[mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
+```
 
 ### Key-value Validation
 
-TODO
+RestKit supports the use of key-value validation at mapping time. This permits a number of helpful additions to your
+workflow. Using KVC validation, you can:
+
+1. Reject inappropriate values coming back from the server.
+1. Perform custom transformations of values returned from the server.
+1. Fail out the mapping operation using custom logic.
+
+Unlike the vast majority of the work we have done thus far, key-value validation is performed by adding methods onto your model class. KVC validation is
+a standard part of the Cocoa stack, but must be manually invoked on NSObject's. It is always performed for you on Core Data 
+managed object when the managed object context is saved. RestKit provides KVC validation for you when object mapping is taking place.
+
+Let's take a look at how you can leverage key-value validation to perform the above three tasks on our familiar Article object:
+
+```objc
+@implementation Article
+- (BOOL)validateTitle:(id *)ioValue error:(NSError **)outError {
+    // Force the title to uppercase
+    *iovalue = [(NSString*)iovalue uppercaseString];
+    return YES;
+}
+
+- (BOOL)validateArticleID:(id *)ioValue error:(NSError **)outError {
+    // Reject an article ID of zero. By returning NO, we refused the assignment and the value will not be set
+    if ([(NSNumber*)ioValue intValue] == 0) {
+        return NO;
+    }
+    
+    return YES;
+}
+ 
+- (BOOL)validateBody:(id *)ioValue error:(NSError **)outError {
+    // If the body is blank, return NO and fail out the operation.
+    if ([(NSString*)ioValue length] == 0) {
+        *outError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
+        return NO;
+    }
+    
+    return YES;
+}
+@end
+```
+
+These three methods will get invoked when the appropriate attribute is going to be set on the Article objects being mapped. The ioValue
+is a pointer to a pointer of the object reference that will be assigned to attribute. This means that we can completely change the value
+being assigned to anything that we want. If we return NO from the function, the assignment will not take place. We can also return NO
+and construct an error object and set the `outError`. This will cause mapping to fail and the error will bubble back up the RestKit stack.
+
+Look at the NSKeyValueCoding.h and search the web for more info about key-value validation in general.
 
 ## Class Hierarchy
 - **RKObjectManager** - The external client interface for performing object mapping operations on resources
@@ -595,23 +705,41 @@ RKObjectRelationshipMapping* articleCommentsMapping = [RKObjectRelationshipMappi
 ```
 
 ### Configuring a Core Data Object Mapping
-TODO - Finish up
 ```objc
-// TODO: Not yet implemented.
-[mapping belongsTo:@"author" withObjectMapping:[User objectMapping] andPrimaryKey:@"author_id"];
+#import <RestKit/RestKit.h>
+#import <RestKit/CoreData/CoreData.h>
+
+RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
+RKManagedObjectStore* objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"MyApp.sqlite"];
+objectManager.objectStore = objectStore;
+
+RKManagedObjectMapping* articleMapping = [RKManagedObjectMapping objectMappingForClass:[Article class]];
+[articleMapping mapKeyPath:@"id" toAttribute:@"articleID"];
+[articleMapping mapKeyPath:@"title" toAttribute:@"title"];
+[articleMapping mapKeyPath:@"body" toAttribute:@"body"];
+[articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
+articleMapping.primaryKeyAttribute = @"articleID";
 ```
 
 ### Loading Using KeyPath Mapping Lookup
 ```objc
-RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" delegate:self];
-// The object mapper will try to determine the mappings by examining keyPaths in the loaded payload
+RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
+RKManagedObjectMapping* articleMapping = [RKObjectMapping objectMappingForClass:[Article class]];
+[articleMapping mapKeyPath:@"id" toAttribute:@"articleID"];
+[objectManager.mappingProvider setObjectMapping:articleMapping forKeyPath:@"articles"];
+
+RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/articles" delegate:self];
+
+/**
+ The object mapper will try to determine the mappings by examining keyPaths in the loaded payload. If 
+ the payload contains a dictionary with data at the 'articles' key, it will be mapped
+ */
 ```
 
 ### Load using an explicit mapping
 ```objc
 RKObjectMapping* articleMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Article class]];
-RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/objects" withMapping:articleMapping delegate:self];
-loader.mappingDelegate = self;
+[RKObjectManager loadObjectsAtResourcePath:@"/objects" objectMapping:articleMapping delegate:self];
 ```
 
 ### Configuring the Serialization Format
@@ -623,7 +751,7 @@ loader.mappingDelegate = self;
 [RKObjectManager sharedManager].serializationMIMEType = RKMIMETypeJSON;
 ```
 
-### Serialization from an object to a Dictionary
+### Object Serialization Tasks
 This is handled for you when using postObject and putObject, presented here for reference
 
 ```objc
@@ -636,7 +764,15 @@ RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]
 
 RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:serializationMapping];
 NSError* error = nil;
-id serialization = [serializer serializationForMIMEType:RKMIMETypeJSON error:&error];
+
+// Turn an object into a dictionary
+NSMutableDictionary* dictionary = [serializer serializedObject:&error];
+
+// Serialize the object to JSON
+NSString* JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+
+// Turn it into a RKRequestSerializable
+id<RKRequestSerializable>serializable = [serializer serializationForMIMEType:RKMIMETypeJSON error:&error];
 ```
 
 ### Performing a Mapping

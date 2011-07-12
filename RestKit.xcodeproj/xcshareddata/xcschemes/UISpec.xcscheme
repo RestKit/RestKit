@@ -87,7 +87,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectLoaderSpec"
+            value = "RKObjectMappingOperationSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

@@ -38,6 +38,7 @@ relationship. Relationships are processed using an object mapping as well.
     BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
     BOOL _forceCollectionMapping;
+    BOOL _performKeyValueValidation;
 }
 
 /**
@@ -86,6 +87,14 @@ relationship. Relationships are processed using an object mapping as well.
  object will be set to nil, clearing any existing value.
  */
 @property (nonatomic, assign) BOOL setNilForMissingRelationships;
+
+/**
+ When YES, RestKit will invoke key-value validation at object mapping time. 
+ 
+ **Default**: YES
+ @see validateValue:forKey:error:
+ */
+@property (nonatomic, assign) BOOL performKeyValueValidation;
 
 /**
  Forces the mapper to treat the mapped keyPath as a collection even if it does not
