@@ -18,12 +18,15 @@
 #import "NSString+MD5.h"
 #import "RKLog.h"
 #import "RKRequestCache.h"
+//#import "TDOAuth.h"
+
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
 @implementation RKRequest
+@class TDOAuth;
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
             params = _params, userData = _userData, username = _username, password = _password, method = _method,
@@ -265,7 +268,15 @@
     }
     
     RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-    _connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+    NSURLRequest *echo = [TDOAuth URLRequestForPath:@"/1/statuses/home_timeline.json"
+                                      GETParameters:nil
+                                             scheme:@"https"
+                                               host:@"api.twitter.com"
+                                        consumerKey:@"Q93lF1U7DDKlINbYCyMN1A"
+                                     consumerSecret:@"IgWmSDUvdJhkFjQQ1DmKZLXYNtYdyVRgVbC8uM1MA"
+                                        accessToken:@"9717582-ZL0VMdytzcdRhcCyM0lSodZI1qvTRveH3xDsQ1aXwS"
+                                        tokenSecret:@"mjHXBd3nbjyXDbh8MvfVQPsPrRdtTB2RH7ZqkjT2U4"];
+    _connection = [[NSURLConnection connectionWithRequest:echo delegate:response] retain];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
