@@ -35,6 +35,8 @@ relationship. Relationships are processed using an object mapping as well.
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
     NSString* _rootKeyPath;
+    NSString* _internalKeyPath;
+    NSString* _internalValue;
     BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
     BOOL _forceCollectionMapping;
@@ -74,6 +76,26 @@ relationship. Relationships are processed using an object mapping as well.
  @see RKObjectSerializer
  */
 @property (nonatomic, retain) NSString* rootKeyPath;
+
+/**
+ If multiple mappings are registered for the same keyPath then the internalKeyPath and internalValue are used to decide which mapping to use.
+ This helps to initialize a "Woman" Class for the following object:
+ 
+ person: {
+    name: "Jenny",
+    gender: "female"
+ }
+ 
+ ... and a "Man" Class for this object with the same keyPath:
+
+ person: {
+    name: "Peter",
+    gender: "male"
+ }
+ 
+ */
+@property (nonatomic, readonly) NSString* internalKeyPath;
+@property (nonatomic, readonly) NSString* internalValue;
 
 /**
  When YES, any attributes that have mappings defined but are not present within the source
@@ -340,5 +362,10 @@ relationship. Relationships are processed using an object mapping as well.
  @see [RKManagedObjectMapping defaultValueForMissingAttribute:]
  */
 - (id)defaultValueForMissingAttribute:(NSString*)attributeName;
+
+/**
+ Register an internalKeyPath and internalValue to match in case multiple mappings are configured for one keyPath
+ */
+- (void)mapOnConflictByInternalKeyPath:(NSString*)keyPath withValue:(NSString*)value;
 
 @end

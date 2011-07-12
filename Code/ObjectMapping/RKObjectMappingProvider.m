@@ -27,15 +27,26 @@
 }
 
 - (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath {
-    return [_objectMappingsByKeyPath objectForKey:keyPath];
+    NSArray* array = [self objectMappingsForKeyPath:keyPath];
+    return [array count] ? [array objectAtIndex:0] : nil;
+}
+
+- (NSArray*)objectMappingsForKeyPath:(NSString*)keyPath {
+    return (NSArray*)[_objectMappingsByKeyPath objectForKey:keyPath];
 }
 
 - (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath {
-    [_objectMappingsByKeyPath setValue:mapping forKey:keyPath];
+    [self setObjectMapping:mapping forKeyPath:keyPath];
 }
 
 - (void)setObjectMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath {
-    [_objectMappingsByKeyPath setValue:mapping forKey:keyPath];
+    NSMutableArray* array = (NSMutableArray*)[self objectMappingsForKeyPath:keyPath];
+    if (!array) {
+        array = [NSMutableArray array];
+        [_objectMappingsByKeyPath setValue:array forKey:keyPath];
+    }
+    
+    [array addObject:mapping];
 }
 
 - (void)setSerializationMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass {
@@ -64,7 +75,12 @@
 
 - (NSArray*)objectMappingsForClass:(Class)theClass {
     NSMutableArray* mappings = [NSMutableArray array];
-    NSArray* mappingsToSearch = [[NSArray arrayWithArray:_objectMappings] arrayByAddingObjectsFromArray:[_objectMappingsByKeyPath allValues]];
+    NSMutableArray* mappingsToSearch = [NSMutableArray arrayWithArray:_objectMappings];
+    
+    for (NSMutableArray* array in [_objectMappingsByKeyPath allValues]) {
+      [mappingsToSearch addObjectsFromArray:array];
+    }
+  
     for (RKObjectMapping* objectMapping in mappingsToSearch) {
         if (objectMapping.objectClass == theClass && ![mappings containsObject:objectMapping]) {
             [mappings addObject:objectMapping];

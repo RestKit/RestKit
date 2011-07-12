@@ -33,6 +33,9 @@
 - (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping;
+
+- (RKObjectMapping*)objectMapper:(RKObjectMapper*)objectMapper didFindMultipleMappings:(NSArray*)mappings atKeyPath:(NSString *)keyPath withMappableObject:(id)object;
+
 @end
 
 @interface RKObjectMapper : NSObject {
