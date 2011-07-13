@@ -94,6 +94,11 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 @synthesize serviceUnavailableAlertEnabled = _serviceUnavailableAlertEnabled;
 @synthesize cache = _cache;
 @synthesize cachePolicy = _cachePolicy;
+@synthesize consumerKey =_consumerKey;
+@synthesize consumerSecret = _consumerSecret;
+@synthesize accessToken = _accessToken;
+@synthesize accessTokenSecret = _accessTokenSecret;
+@synthesize forceOAuthUse = _forceOAuthUse;
 
 + (RKClient*)sharedClient {
 	return sharedClient;
@@ -203,6 +208,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     request.forceBasicAuthentication = self.forceBasicAuthentication;
 	request.cachePolicy = self.cachePolicy;
     request.cache = self.cache;
+    
 }
 
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header {

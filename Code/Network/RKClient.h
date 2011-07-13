@@ -128,6 +128,11 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	NSString* _serviceUnavailableAlertTitle;
 	NSString* _serviceUnavailableAlertMessage;
 	BOOL _serviceUnavailableAlertEnabled;
+    NSString* _consumerKey;
+    NSString* _consumerSecret;
+    NSString* _accessToken;
+    NSString* _accessTokenSecret;
+    BOOL _forceOAuthUse;
 	RKRequestCache* _cache;
 	RKRequestCachePolicy _cachePolicy;
 }
@@ -371,6 +376,38 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see RKRequestDelegate
  */
 - (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate>*)delegate;
+
+
+/////////////////////////////////////////////////////////////////////////
+/// @name OAuth 2 Support
+/////////////////////////////////////////////////////////////////////////
+
+/**
+ * The consumer key obtained from the OAuth authority 
+ */
+
+@property(nonatomic,retain) NSString* consumerKey;
+
+/**
+ * The consumer secret obtained from the OAuth authority 
+ */
+@property(nonatomic,retain) NSString* consumerSecret;
+
+/**
+ * The access token obtained from the OAuth authority 
+ */
+@property(nonatomic,retain) NSString* accessToken;
+
+/**
+ * The secret token obtained from the OAuth authority 
+ */
+@property(nonatomic,retain) NSString* accessTokenSecret;
+
+/**
+ * Force the RKClient to use OAuth
+ */
+@property(nonatomic,assign) BOOL forceOAuthUse;
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
