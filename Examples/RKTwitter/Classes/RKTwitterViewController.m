@@ -18,12 +18,9 @@
 - (void)loadTimeline {
     // Load the object model via RestKit	
     RKObjectManager* objectManager = [RKObjectManager sharedManager];
-    objectManager.client.baseURL = @"https://api.twitter.com";
-    objectManager.client.consumerKey = @"YOUR CONSUMER KEY HERE";
-    objectManager.client.consumerSecret = @"YOUR CONSUMER SECRET HERE";
-    objectManager.client.accessToken = @"YOUR ACCESS TOKEN HERE";
-    objectManager.client.accessTokenSecret = @"YOUR ACCESS TOKEN SECRET HERE";
-    objectManager.client.forceOAuthUse = YES;
+    objectManager.client.baseURL = @"http://discovery.excelsys.prod:5555";
+    objectManager.client.oAuth2AccessToken = @"36a69183-7425-457c-9139-d668be4e8a1f";
+    objectManager.client.forceOAuth2Use = YES;
     RKObjectMapping* statusMapping = nil;
 
     // Twitter returns statuses as a naked array in JSON, so we instruct the loader
@@ -32,7 +29,7 @@
         statusMapping = [objectManager.mappingProvider objectMappingForKeyPath:@"status"];
     }
 
-    [objectManager loadObjectsAtResourcePath:@"/1/statuses/home_timeline.json" objectMapping:statusMapping delegate:self];
+    [objectManager loadObjectsAtResourcePath:@"/mobile/rest/me" objectMapping:statusMapping delegate:self];
 }
 
 - (void)loadView {

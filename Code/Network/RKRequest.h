@@ -87,6 +87,9 @@ typedef enum RKRequestBackgroundPolicy {
     NSString* _accessToken;
     NSString* _accessTokenSecret;
     BOOL _forceOAuthUse;
+    NSString* _oAuth2AccessToken;
+    NSString* _oAuth2RefreshToken;
+    BOOL _forceOAuth2Use;
 	RKRequestMethod _method;
 	BOOL _isLoading;
 	BOOL _isLoaded;
@@ -208,6 +211,17 @@ typedef enum RKRequestBackgroundPolicy {
 @property(nonatomic,retain) NSString* accessToken;
 @property(nonatomic,retain) NSString* accessTokenSecret;
 @property(nonatomic,assign) BOOL forceOAuthUse;
+ 
+/**
+ * The OAuth2 Secrets
+ *
+ **/
+
+
+@property(nonatomic,retain) NSString* oAuth2AccessToken;
+@property(nonatomic,retain) NSString* oAuth2RefreshToken;
+@property(nonatomic,assign) BOOL forceOAuth2Use;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

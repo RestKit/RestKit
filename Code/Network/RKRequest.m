@@ -31,7 +31,7 @@
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
             params = _params, userData = _userData, username = _username, password = _password, method = _method,
             forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache,
-            cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consumerSecret = _consumerSecret, accessToken = _accessToken, accessTokenSecret = _accessTokenSecret, forceOAuthUse = _forceOAuthUse;
+cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consumerSecret = _consumerSecret, accessToken = _accessToken, accessTokenSecret = _accessTokenSecret, forceOAuthUse = _forceOAuthUse, oAuth2AccessToken = _oAuth2AccessToken, oAuth2RefreshToken = _oAuth2RefreshToken, forceOAuth2Use = _forceOAuth2Use;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -196,7 +196,7 @@
     }
     
     // Add OAuth headers if is need it
-    
+    // OAuth 1
     if(_forceOAuthUse){
         NSURLRequest *echo = [TDOAuth URLRequestForPath:[self resourcePath]
                                           GETParameters:nil
@@ -209,6 +209,12 @@
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Authorization"] forHTTPHeaderField:@"Authorization"];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Accept-Encoding"] forHTTPHeaderField:@"Accept-Encoding"];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"User-Agent"] forHTTPHeaderField:@"User-Agent"];
+    }
+    
+    // OAuth 2 valid request
+    if(_forceOAuth2Use){
+        NSString *authorizationString = [NSString stringWithFormat:@"OAuth2 %@",_oAuth2AccessToken];
+        [_URLRequest setValue:authorizationString forHTTPHeaderField:@"Authorization"];
     }
     
     if (self.cachePolicy & RKRequestCachePolicyEtag) {

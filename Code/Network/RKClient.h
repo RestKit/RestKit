@@ -133,6 +133,9 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     NSString* _accessToken;
     NSString* _accessTokenSecret;
     BOOL _forceOAuthUse;
+    NSString* _oAuth2AccessToken;
+    NSString* _oAuth2RefreshToken;
+    BOOL _forceOAuth2Use;
 	RKRequestCache* _cache;
 	RKRequestCachePolicy _cachePolicy;
 }
@@ -379,7 +382,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 
 
 /////////////////////////////////////////////////////////////////////////
-/// @name OAuth 2 Support
+/// @name OAuth 1 Support
 /////////////////////////////////////////////////////////////////////////
 
 /**
@@ -407,6 +410,24 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * Force the RKClient to use OAuth
  */
 @property(nonatomic,assign) BOOL forceOAuthUse;
+
+
+
+/////////////////////////////////////////////////////////////////////////
+/// @name OAuth 2 Support
+/////////////////////////////////////////////////////////////////////////
+
+/**
+ * Access token to sign a request
+ */
+@property(nonatomic,retain) NSString* oAuth2AccessToken;
+
+/**
+ * This token is for get a new accessToken before the experitation date
+ */
+
+@property(nonatomic,retain) NSString* oAuth2RefreshToken;
+@property(nonatomic,assign) BOOL forceOAuth2Use;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
