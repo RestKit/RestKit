@@ -82,6 +82,11 @@ typedef enum RKRequestBackgroundPolicy {
 	id _userData;
 	NSString* _username;
 	NSString* _password;
+    NSString* _consumerKey;
+    NSString* _consumerSecret;
+    NSString* _accessToken;
+    NSString* _accessTokenSecret;
+    BOOL _forceOAuthUse;
 	RKRequestMethod _method;
 	BOOL _isLoading;
 	BOOL _isLoaded;
@@ -191,6 +196,18 @@ typedef enum RKRequestBackgroundPolicy {
  * includes RKRequestCachePolicyTimeout
  */
 @property (nonatomic, assign) NSTimeInterval cacheTimeoutInterval;
+
+
+/**
+ * The OAuth Secrets
+ *
+ **/
+
+@property(nonatomic,retain) NSString* consumerKey;
+@property(nonatomic,retain) NSString* consumerSecret;
+@property(nonatomic,retain) NSString* accessToken;
+@property(nonatomic,retain) NSString* accessTokenSecret;
+@property(nonatomic,assign) BOOL forceOAuthUse;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

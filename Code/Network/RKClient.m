@@ -118,7 +118,6 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	RKClient* client = [RKClient clientWithBaseURL:baseURL];
 	client.username = username;
 	client.password = password;
-
 	return client;
 }
 
@@ -208,6 +207,11 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     request.forceBasicAuthentication = self.forceBasicAuthentication;
 	request.cachePolicy = self.cachePolicy;
     request.cache = self.cache;
+    request.accessToken = self.accessToken;
+    request.accessTokenSecret = self.accessTokenSecret;
+    request.consumerKey = self.consumerKey;
+    request.consumerSecret = self.consumerSecret;
+    request.forceOAuthUse = self.forceOAuthUse;
     
 }
 
