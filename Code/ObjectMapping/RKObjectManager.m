@@ -30,6 +30,7 @@ static RKObjectManager* sharedManager = nil;
 @synthesize router = _router;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
+@synthesize cacheTimeoutInterval = _cacheTimeoutInterval;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
     self = [super init];
@@ -38,6 +39,7 @@ static RKObjectManager* sharedManager = nil;
 		_router = [RKObjectRouter new];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
         _onlineState = RKObjectManagerOnlineStateUndetermined;
+		_cacheTimeoutInterval = 0;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
@@ -129,6 +131,8 @@ static RKObjectManager* sharedManager = nil;
         objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
     }	
     
+	objectLoader.cacheTimeoutInterval = self.cacheTimeoutInterval;
+	
 	return objectLoader;
 }
 
@@ -160,6 +164,7 @@ static RKObjectManager* sharedManager = nil;
     loader.method = method;
     loader.sourceObject = object;
     loader.targetObject = object;
+	loader.cacheTimeoutInterval = self.cacheTimeoutInterval;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
 

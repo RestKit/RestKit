@@ -167,6 +167,13 @@ typedef enum {
  */
 @property (nonatomic, assign) NSString* acceptMIMEType;
 
+/**
+ * The timeout interval within which the requests should not be sent
+ * and the cached response should be used. Used if the cache policy
+ * includes RKRequestCachePolicyTimeout
+ */
+@property (nonatomic, assign) NSTimeInterval cacheTimeoutInterval;
+
 ////////////////////////////////////////////////////////
 /// @name Registered Object Loaders
 
