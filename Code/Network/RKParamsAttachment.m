@@ -91,7 +91,7 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (NSString *)mimeTypeForExtension:(NSString *)extension {
-	if (NULL != UTTypeCreatePreferredIdentifierForTag) {
+	if (0 != UTTypeCreatePreferredIdentifierForTag) {
 		CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)extension, NULL);
 		if (uti != NULL) {
 			CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
