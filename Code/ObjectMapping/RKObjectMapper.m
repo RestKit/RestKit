@@ -188,7 +188,7 @@
         if ([self.delegate respondsToSelector:@selector(objectMapper:didMapFromObject:toObject:atKeyPath:usingMapping:)]) {
             [self.delegate objectMapper:self didMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
         }
-    } else {
+    } else if (error) {
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFailMappingFromObject:toObject:withError:atKeyPath:usingMapping:)]) {
             [self.delegate objectMapper:self didFailMappingFromObject:mappableObject toObject:destinationObject withError:error atKeyPath:keyPath usingMapping:mapping];
         }
@@ -259,14 +259,9 @@
         [self.delegate objectMapperDidFinishMapping:self];
     }
     
+    // If we found nothing eligible for mapping in the content, add an unmappable key path error and fail mapping
     if (foundMappable == NO) {
         [self addErrorForUnmappableKeyPath:@""];
-        return nil;
-    }
-    
-    // If we found a mappable and a mapping but the results remains empty, then an
-    // error occured in the underlying operation and we should return nil to indicate the failure
-    if ([results count] == 0) {
         return nil;
     }
     

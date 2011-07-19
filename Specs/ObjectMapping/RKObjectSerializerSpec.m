@@ -120,15 +120,13 @@
     [expectThat(data) should:be(@"{\"key2-form-name\":\"value2\",\"key1-form-name\":\"value1\"}")];
 }
 
-- (void)itShouldSetAnErrorAndReturnNilIfItCantSerialize {
+- (void)itShouldSetReturnNilIfItDoesNotFindAnythingToSerialize {
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:mapping];
     NSError* error = nil;
     id<RKRequestSerializable> serialization = [serializer serializationForMIMEType:@"application/json" error:&error];
-    
-    [expectThat(error) shouldNot:be(nil)];
     [expectThat(serialization) should:be(nil)];
 }
 

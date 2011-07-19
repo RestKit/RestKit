@@ -47,6 +47,11 @@
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjectDictionary:(NSDictionary*)dictionary;
 
 /**
+ Invoked when the object loader has finished loading
+ */
+- (void)objectLoaderDidFinishLoading:(RKObjectLoader*)objectLoader;
+
+/**
  Sent when an object loader encounters a response status code it does not know how to handle.
  2xx, 4xx, and 5xx responses are all handled appropriately. This should only occur when the remote
  service sends back a really odd-ball response.

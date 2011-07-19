@@ -9,7 +9,9 @@
 #import "RKSpecEnvironment.h"
 #import "RKParserRegistry.h"
 
-NSString* RKSpecGetBaseURL() {
+NSString* RKSpecMIMETypeForFixture(NSString* fileName);
+
+NSString* RKSpecGetBaseURL(void) {
     char* ipAddress = getenv("RESTKIT_IP_ADDRESS");
     if (NULL == ipAddress) {
         ipAddress = "127.0.0.1";
@@ -26,7 +28,7 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
     }
 }
 
-RKClient* RKSpecNewClient() {
+RKClient* RKSpecNewClient(void) {
     RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
     [RKClient setSharedClient:client];    
     [client release];
@@ -36,7 +38,7 @@ RKClient* RKSpecNewClient() {
     return client;
 }
 
-RKRequestQueue* RKSpecNewRequestQueue() {
+RKRequestQueue* RKSpecNewRequestQueue(void) {
     RKRequestQueue* requestQueue = [RKRequestQueue new];
     requestQueue.suspended = NO;
     [RKRequestQueue setSharedQueue:requestQueue];
@@ -45,7 +47,7 @@ RKRequestQueue* RKSpecNewRequestQueue() {
     return requestQueue;
 }
 
-RKObjectManager* RKSpecNewObjectManager() {
+RKObjectManager* RKSpecNewObjectManager(void) {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [RKObjectManager setSharedManager:objectManager];
     [RKClient setSharedClient:objectManager.client];
@@ -59,7 +61,7 @@ RKObjectManager* RKSpecNewObjectManager() {
 }
 
 // TODO: Store initialization should not be coupled to object manager...
-RKManagedObjectStore* RKSpecNewManagedObjectStore() {
+RKManagedObjectStore* RKSpecNewManagedObjectStore(void) {
     RKManagedObjectStore* store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     objectManager.objectStore = store;
@@ -67,7 +69,7 @@ RKManagedObjectStore* RKSpecNewManagedObjectStore() {
     return store;
 }
 
-void RKSpecClearCacheDirectory() {
+void RKSpecClearCacheDirectory(void) {
     NSError* error = nil;
     NSString* cachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];

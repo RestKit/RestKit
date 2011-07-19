@@ -29,17 +29,17 @@
 #define OCMOCK_VALUE(variable) [NSValue value:&variable withObjCType:@encode(__typeof(variable))]
 
 // The Base URL for the Spec server. See Specs/Server/
-NSString* RKSpecGetBaseURL();
+NSString* RKSpecGetBaseURL(void);
 
 // Stub out the return value of the Shared Client instance's isNetworkAvailable method
 void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable);
 
 // Helpers for returning new instances that clear global state
-RKClient* RKSpecNewClient();
-RKRequestQueue* RKSpecNewRequestQueue();
-RKObjectManager* RKSpecNewObjectManager();
-RKManagedObjectStore* RKSpecNewManagedObjectStore();
-void RKSpecClearCacheDirectory();
+RKClient* RKSpecNewClient(void);
+RKRequestQueue* RKSpecNewRequestQueue(void);
+RKObjectManager* RKSpecNewObjectManager(void);
+RKManagedObjectStore* RKSpecNewManagedObjectStore(void);
+void RKSpecClearCacheDirectory(void);
 
 // Read the contents of a fixture file from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName);

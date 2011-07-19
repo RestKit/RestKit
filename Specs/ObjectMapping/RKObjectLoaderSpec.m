@@ -375,4 +375,60 @@
     [expectThat(user.firstname) should:be(@"Diego")];
 }
 
+- (void)itShouldReturnSuccessWhenTheStatusCodeIs200AndTheResponseBodyIsEmpty {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* objectLoader = [RKObjectLoader loaderWithResourcePath:@"/humans/1234" objectManager:objectManager delegate:responseLoader];
+    objectLoader.method = RKRequestMethodDELETE;
+    objectLoader.objectMapping = userMapping;
+    objectLoader.targetObject = user;
+    [objectLoader send];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.success, is(equalToBool(YES)));
+}
+
+- (void)itShouldInvokeTheDelegateWithTheTargetObjectWhenTheStatusCodeIs200AndTheResponseBodyIsEmpty {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* objectLoader = [RKObjectLoader loaderWithResourcePath:@"/humans/1234" objectManager:objectManager delegate:responseLoader];
+    objectLoader.method = RKRequestMethodDELETE;
+    objectLoader.objectMapping = userMapping;
+    objectLoader.targetObject = user;
+    [objectLoader send];
+    [responseLoader waitForResponse];
+    assertThat(responseLoader.objects, hasItem(user));
+}
+
+- (void)itShouldConsiderTheLoadOfEmptyObjectsWithoutAnyMappableAttributesAsSuccess {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [userMapping mapAttributes:@"firstname", nil];
+    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"firstUser"];
+    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"secondUser"];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    [objectManager loadObjectsAtResourcePath:@"/users/empty" delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.success, is(equalToBool(YES)));
+}
+
 @end

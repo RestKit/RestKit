@@ -110,7 +110,7 @@
         }
     } else {
         RKLogWarning(@"Unable to perform cleanup of server-side object deletions: unable to determine resource path.");
-    }
+    } 
 }
 
 // NOTE: We are on the background thread here, be mindful of Core Data's threading needs

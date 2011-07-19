@@ -72,7 +72,11 @@ NSString* RKMakePathWithObject(NSString* path, id object) {
 }
 
 NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryParams) {
-    return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+	if ([queryParams count] > 0) {
+		return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+	} else {
+		return resourcePath;
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +195,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 }
 
 - (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams {
-	return [self URLForResourcePath:RKPathAppendQueryParams(resourcePath, queryParams)];
+	return [RKURL URLWithBaseURLString:self.baseURL resourcePath:resourcePath queryParams:queryParams];
 }
 
 - (void)setupRequest:(RKRequest*)request {
@@ -227,7 +231,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
         _baseURLReachabilityObserver = [[RKReachabilityObserver alloc] initWithHostname:[URL host]];
         
         // Suspend the queue until reachability to our new hostname is established
-        [RKRequestQueue sharedQueue].suspended = YES;
+        [RKRequestQueue sharedQueue].suspended = !_baseURLReachabilityObserver.reachabilityEstablished;
         [[NSNotificationCenter defaultCenter] addObserver:self 
                                                  selector:@selector(reachabilityWasDetermined:) 
                                                      name:RKReachabilityStateWasDeterminedNotification 
@@ -250,11 +254,19 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (RKRequest*)load:(NSString*)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate {
-	RKRequest* request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate];
+	NSURL* resourcePathURL = nil;
+	if (method == RKRequestMethodGET) {
+		resourcePathURL = [self URLForResourcePath:resourcePath queryParams:(NSDictionary*)params];
+	} else {
+		resourcePathURL = [self URLForResourcePath:resourcePath];
+	}
+	RKRequest* request = [[RKRequest alloc] initWithURL:resourcePathURL delegate:delegate];
 	[self setupRequest:request];
 	[request autorelease];
 	request.method = method;
-	request.params = params;
+	if (method != RKRequestMethodGET) {
+		request.params = params;
+	}
 	[request send];
 
 	return request;
@@ -265,8 +277,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 }
 
 - (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(id)delegate {
-	NSString* resourcePathWithQueryString = [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
-	return [self load:resourcePathWithQueryString method:RKRequestMethodGET params:nil delegate:delegate];
+	return [self load:resourcePath method:RKRequestMethodGET params:queryParams delegate:delegate];
 }
 
 - (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(id)delegate {

@@ -335,7 +335,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
             id attributeValue = [theObject valueForKey:primaryKeyAttribute];
             // Coerce to a string if possible
             attributeValue = coerceToString ? [attributeValue stringValue] : attributeValue;
-            if (primaryKeyValue) {
+            if (attributeValue) {
                 [dictionary setObject:theObject forKey:attributeValue];
             }
         }
@@ -349,7 +349,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     
     if (object == nil) {
         object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
-        [dictionary setObject:object forKey:primaryKeyValue];
+        [dictionary setObject:object forKey:lookupValue];
     }
         
 	return object;

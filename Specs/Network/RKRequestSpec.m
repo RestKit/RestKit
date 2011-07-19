@@ -287,7 +287,6 @@
 }
 
 - (void)itShouldUpdateTheInternalCacheDateWhenWeRecieveA304 {
-    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     NSString* baseURL = RKSpecGetBaseURL();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
 								   [[NSURL URLWithString:baseURL] host]];
