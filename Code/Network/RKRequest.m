@@ -221,6 +221,10 @@
     if (informDelegate && [_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
         [_delegate requestDidCancelLoad:self];
     }
+
+    // notify RKRequestQueue that we've canceled
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidCancelNotification
+                                                        object:self];
 }
 
 - (NSString*)HTTPMethod {
