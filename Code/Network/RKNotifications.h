@@ -22,4 +22,3 @@ extern NSString* const RKRequestDidLoadResponseNotificationUserInfoResponseKey;
 extern NSString* const RKRequestDidFailWithErrorNotification;
 extern NSString* const RKRequestDidFailWithErrorNotificationUserInfoErrorKey;
 extern NSString* const RKServiceDidBecomeUnavailableNotification;
-extern NSString* const RKRequestDidCancelNotification;

@@ -235,10 +235,6 @@ static const NSTimeInterval kFlushDelay = 0.3;
                                              selector:@selector(requestFinishedWithNotification:)
                                                  name:RKRequestDidFailWithErrorNotification
                                                object:request];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(requestFinishedWithNotification:)
-                                                 name:RKRequestDidCancelNotification
-                                               object:request];
     
 	[self loadNextInQueue];
 }
@@ -250,7 +246,6 @@ static const NSTimeInterval kFlushDelay = 0.3;
         
         [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidLoadResponseNotification object:request];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidFailWithErrorNotification object:request];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidCancelNotification object:request];
         
         if (decrementCounter) {
             NSAssert(self.loadingCount > 0, @"Attempted to decrement loading count below zero");
@@ -366,15 +361,6 @@ static const NSTimeInterval kFlushDelay = 0.3;
             if ([_delegate respondsToSelector:@selector(requestQueue:didFailRequest:withError:)]) {
                 [_delegate requestQueue:self didFailRequest:request withError:error];
             }
-        } else if ([notification.name isEqualToString:RKRequestDidCancelNotification]) {
-            // We canceled
-            RKLogDebug(@"Request %@ canceled loading in queue %@. (Now loading %d of %d)",
-                       request, self, _loadingCount, _concurrentRequestsLimit);
-            
-            if ([_delegate respondsToSelector:@selector(requestQueue:didCancelRequest:)]) {
-                [_delegate requestQueue:self didCancelRequest:request];
-            }
-
         }
         
         // Load the next request

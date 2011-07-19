@@ -173,9 +173,4 @@
  */
 - (void)requestQueue:(RKRequestQueue*)queue didFailRequest:(RKRequest*)request withError:(NSError*)error;
 
-/**
- * Sent when a request is canceled
- */
-- (void)requestQueue:(RKRequestQueue*)queue didCancelRequest:(RKRequest*)request;
-
 @end
