@@ -75,6 +75,7 @@ RKParserRegistry* gSharedRegistry;
     parserClass = NSClassFromString(@"RKXMLParserLibXML");
     if (parserClass) {
         [self setParserClass:parserClass forMIMEType:RKMIMETypeXML];
+        [self setParserClass:parserClass forMIMEType:RKMIMETypeXMLText];
     }
 }
 

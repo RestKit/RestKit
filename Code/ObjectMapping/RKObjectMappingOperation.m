@@ -15,6 +15,7 @@
 #import "RKObjectMapper.h"
 #import "../Support/Errors.h"
 #import "../Support/RKLog.h"
+#import "../Support/Parsers/ISO8601DateFormatter.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -65,8 +66,16 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
     formatter.timeZone = [NSTimeZone localTimeZone];
 	for (NSString* formatString in self.objectMapping.dateFormatStrings) {
-		[formatter setDateFormat:formatString];
-		date = [formatter dateFromString:string];
+        [formatter setDateFormat:formatString];
+        
+        // Workaround for datestring given bij zanox API
+        if ([@"ISO8601" isEqualToString:formatString]) {
+            ISO8601DateFormatter *formatter8601 = [[ISO8601DateFormatter alloc] init];
+            date = [formatter8601 dateFromString:string];
+        } else {
+            date = [formatter dateFromString:string];
+        }
+        
 		if (date) {
 			break;
 		}
@@ -75,7 +84,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 	[formatter release];
 	return date;
 }
-
+                    
 - (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];

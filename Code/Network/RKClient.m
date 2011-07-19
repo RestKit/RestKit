@@ -91,6 +91,8 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 @synthesize cache = _cache;
 @synthesize cachePolicy = _cachePolicy;
 
+@synthesize zanoxAuth = _zanoxAuth;
+
 + (RKClient*)sharedClient {
 	return sharedClient;
 }

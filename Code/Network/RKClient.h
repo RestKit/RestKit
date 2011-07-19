@@ -13,6 +13,15 @@
 #import "RKReachabilityObserver.h"
 #import "RKRequestCache.h"
 
+@class RKObjectLoader;
+
+// Protocol for providing zanox auth
+@protocol ZanoxAuthDelegate <NSObject>
+
+- (RKObjectLoader *)addAuthenticationToLoader:(RKObjectLoader *)loader;
+
+@end
+
 /////////////////////////////////////////////////////////////////////////
 
 /**
@@ -130,6 +139,8 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	BOOL _serviceUnavailableAlertEnabled;
 	RKRequestCache* _cache;
 	RKRequestCachePolicy _cachePolicy;
+    
+    id<ZanoxAuthDelegate> _zanoxAuth;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -244,6 +255,9 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  The path used to store response data for this client's request cache
  */
 @property (nonatomic, readonly) NSString* cachePath;
+
+
+@property (nonatomic, retain) id<ZanoxAuthDelegate> zanoxAuth;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Shared Client Instance

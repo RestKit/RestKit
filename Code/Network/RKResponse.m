@@ -310,8 +310,9 @@ extern NSString* cacheURLKey;
 - (BOOL)isXML {
 	NSString* contentType = [self contentType];
 	return (contentType &&
-			[contentType rangeOfString:@"application/xml"
-							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
+			([contentType rangeOfString:@"application/xml"
+                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 || [contentType rangeOfString:@"text/xml"
+                                                                                                                   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0));
 }
 
 - (BOOL)isJSON {
