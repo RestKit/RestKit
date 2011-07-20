@@ -1942,7 +1942,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm -f \"${TARGET_BUILD_DIR}/include/RestKit/RestKit.h\"\ncp \"${SOURCE_ROOT}/Code/RestKit.h\" \"${TARGET_BUILD_DIR}/include/RestKit\"";
+			shellScript = "cp -pf \"${SOURCE_ROOT}/Code/RestKit.h\" \"${TARGET_BUILD_DIR}/include/RestKit\"";
 		};
 		25E5F253133C2B5900C33091 /* Copy Headers to Legacy Build Location */ = {
 			isa = PBXShellScriptBuildPhase;
