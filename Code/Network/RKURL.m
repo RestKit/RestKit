@@ -30,7 +30,12 @@
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
 	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
 	NSURL *baseURL = [NSURL URLWithString:baseURLString];
-	NSString* completePath = [[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString];
+	/*
+	* reverting to the more reliable method, as the Foundation call to the stringByAppendingPathComponent not
+	* only should be only used on the filesystems, but also removes the trailing slash, important to the RESTful
+	* notion of collections
+	/*
+	NSString* completePath = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", baseURL, resourcePathWithQueryString]];
 	NSURL* completeURL = [NSURL URLWithString:completePath relativeToURL:baseURL];
 	if (!completeURL) {
 		[self release];
