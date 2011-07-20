@@ -45,7 +45,7 @@
     return self.data;
 }
 
-- (NSUInteger)HTTPHeaderValueForContentLength {
+- (unsigned long long)HTTPHeaderValueForContentLength {
     return [self.data length];
 }
 

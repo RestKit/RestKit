@@ -16,15 +16,23 @@
  */
 @interface RKParams : NSInputStream <RKRequestSerializable> {
 	NSMutableArray* _attachments;
+	NSMutableArray *_attachmentStreams;
 	
-	@private
+@private;
+	NSInputStream *_currentAttachmentStream;
+	NSUInteger _currentAttachmentIndex;
 	NSStreamStatus _streamStatus;
-	NSData* _footer;
-	NSUInteger _bytesDelivered;
-	NSUInteger _length;
-	NSUInteger _footerLength;
-	NSUInteger _currentPart;
+	BOOL _constructed;
+	unsigned long long _length;
+
+	CFRunLoopRef _scheduledRunLoop;
+	CFRunLoopSourceRef _runLoopSource;
+	CFReadStreamClientCallBack _clientCallback;
+	CFOptionFlags _streamEvents;
+	void *_clientInfo;
+	NSMutableArray *_eventQueue;
 }
+
 
 /**
  * Returns an empty params object ready for population

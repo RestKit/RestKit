@@ -41,7 +41,7 @@
 /**
  * Returns the length of the HTTP Content-Length header
  */
-- (NSUInteger)HTTPHeaderValueForContentLength;
+- (unsigned long long)HTTPHeaderValueForContentLength;
 
 /**
  * The value of the Content-Type header for the HTTP Body representation of the serialization

@@ -176,7 +176,7 @@
 			[_URLRequest setValue:[_params performSelector:@selector(ContentTypeHTTPHeader)] forHTTPHeaderField:@"Content-Type"];
 		}
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
-			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
+			[_URLRequest setValue:[NSString stringWithFormat:@"%qu", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
 	}
     

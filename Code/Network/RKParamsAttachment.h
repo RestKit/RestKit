@@ -19,12 +19,9 @@
 	NSString* _MIMEType;
 
 	@private
-	NSData*			_MIMEHeader;
-	NSUInteger		_MIMEHeaderLength;
-	NSInputStream*  _bodyStream;
-	NSUInteger		_bodyLength;
-	NSUInteger		_length;
-	NSUInteger		_delivered;
+	NSString*				_MIMEHeader;
+	NSInputStream*			_bodyStream;
+	unsigned long long		_bodyLength;
 }
 
 /**
@@ -47,11 +44,6 @@
 @property (nonatomic, retain) NSString* MIMEType;
 
 /**
- * The MIME boundary string
- */
-@property (nonatomic, readonly) NSString* MIMEBoundary;
-
-/**
  * Initialize a new attachment with a given parameter name and a value
  */
 - (id)initWithName:(NSString*)name value:(id<NSObject>)value;
@@ -66,20 +58,9 @@
  */
 - (id)initWithName:(NSString*)name file:(NSString*)filePath;
 
-/**
- * Open the attachment stream to begin reading. This will generate a MIME header and prepare the
- * attachment for writing to an RKParams stream
- */
-- (void)open;
+@property (readonly) NSString* MIMEHeader;
+@property (readonly) NSInputStream *bodyStream;
+@property (readonly) unsigned long long bodyLength;
 
-/**
- * The length of the entire attachment (including the MIME Header and the body)
- */
-- (NSUInteger)length;
-
-/**
- * Read the attachment body in a streaming fashion
- */
-- (NSUInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len;
 
 @end
