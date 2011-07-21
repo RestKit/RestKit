@@ -19,8 +19,6 @@
 				255B758F133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7591133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7593133BABCD00ED76AD /* PBXTargetDependency */,
-				255B7595133BABCD00ED76AD /* PBXTargetDependency */,
-				255B7597133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7599133BABCD00ED76AD /* PBXTargetDependency */,
 				259DF78A134029BB00233DF4 /* PBXTargetDependency */,
 				255B759B133BABCD00ED76AD /* PBXTargetDependency */,
@@ -337,20 +335,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 253A080B12551D3000976E89;
 			remoteInfo = RestKitSupport;
-		};
-		255B7594133BABCD00ED76AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2590E64E125231F600531FA8;
-			remoteInfo = "RestKitJSONParser+YAJL";
-		};
-		255B7596133BABCD00ED76AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 2590E66A1252353700531FA8;
-			remoteInfo = "RestKitJSONParser+SBJSON";
 		};
 		255B7598133BABCD00ED76AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2166,16 +2150,6 @@
 			isa = PBXTargetDependency;
 			target = 253A080B12551D3000976E89 /* RestKitSupport */;
 			targetProxy = 255B7592133BABCD00ED76AD /* PBXContainerItemProxy */;
-		};
-		255B7595133BABCD00ED76AD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2590E64E125231F600531FA8 /* RestKitJSONParser+YAJL */;
-			targetProxy = 255B7594133BABCD00ED76AD /* PBXContainerItemProxy */;
-		};
-		255B7597133BABCD00ED76AD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */;
-			targetProxy = 255B7596133BABCD00ED76AD /* PBXContainerItemProxy */;
 		};
 		255B7599133BABCD00ED76AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
