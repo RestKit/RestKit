@@ -162,6 +162,12 @@ static RKObjectManager* sharedManager = nil;
     loader.targetObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
+	
+	// TODO: This is an informal protocol ATM. Maybe its not obvious enough?
+	if ([loader.sourceObject respondsToSelector:@selector(willPrepareObjectLoader:)]) {
+		[loader.sourceObject performSelector:@selector(willPrepareObjectLoader:) 
+								  withObject:loader];
+	}
 
 	return loader;
 }
