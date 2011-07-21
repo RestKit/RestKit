@@ -51,7 +51,7 @@
                     [nodes addObject:attrs];
                 }
             }
-        } else if (currentNode->type == XML_TEXT_NODE) {
+        } else if (currentNode->type == XML_TEXT_NODE || currentNode->type == XML_CDATA_SECTION_NODE) {
             xmlChar* str = xmlNodeGetContent(currentNode);
             NSString* part = [NSString stringWithCString:(const char*)str encoding:NSUTF8StringEncoding];
             if ([[part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] > 0) {
