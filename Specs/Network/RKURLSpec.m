@@ -63,5 +63,10 @@
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/this/test")));
 }
 
+- (void)itShouldPreserveTrailingSlash {
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test/" queryParams:nil];
+    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test/")));    
+}
+
 @end
  

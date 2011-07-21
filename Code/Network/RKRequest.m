@@ -178,7 +178,9 @@
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
-	}
+	} else {
+        [_URLRequest setValue:@"0" forHTTPHeaderField:@"Content-Length"];
+    }
     
     // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
     if (self.forceBasicAuthentication) {        

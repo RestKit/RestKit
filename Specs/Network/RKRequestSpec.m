@@ -535,4 +535,39 @@
     [loader waitForResponse];
     assertThat([loader.response bodyAsString], is(equalTo(@"{\"username\":\"hello\",\"password\":\"password\"}")));
 }
+
+- (void)itShouldSetAnEmptyContentBodyWhenParamsIsNil {
+    RKClient* client = RKSpecNewClient();
+    client.cachePolicy = RKRequestCachePolicyNone;
+    RKSpecStubNetworkAvailability(YES);
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    loader.timeout = 20;
+    RKRequest* request = [client get:@"/echo_params" delegate:loader];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+- (void)itShouldSetAnEmptyContentBodyWhenQueryParamsIsAnEmptyDictionary {
+    RKClient* client = RKSpecNewClient();
+    client.cachePolicy = RKRequestCachePolicyNone;
+    RKSpecStubNetworkAvailability(YES);
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    loader.timeout = 20;
+    RKRequest* request = [client get:@"/echo_params" queryParams:[NSDictionary dictionary] delegate:loader];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+- (void)itShouldPUTWithParams {
+    RKClient* client = RKSpecNewClient();
+    RKParams *params = [RKParams params];    
+    [params setValue:@"ddss" forParam:@"username"];    
+    [params setValue:@"aaaa@aa.com" forParam:@"email"];    
+    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [client put:@"/ping" params:params delegate:loader];
+    [loader waitForResponse];
+    assertThat([loader.response bodyAsString], is(equalTo(@"{\"username\":\"ddss\",\"email\":\"aaaa@aa.com\"}")));
+}
+
 @end

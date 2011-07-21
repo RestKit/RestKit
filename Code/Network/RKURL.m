@@ -31,6 +31,10 @@
 	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
 	NSURL *baseURL = [NSURL URLWithString:baseURLString];
 	NSString* completePath = [[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString];
+    // Preserve trailing slash in resourcePath
+    if (resourcePath && [resourcePath characterAtIndex:[resourcePath length] - 1] == '/') {
+        completePath = [completePath stringByAppendingString:@"/"];
+    }
 	NSURL* completeURL = [NSURL URLWithString:completePath relativeToURL:baseURL];
 	if (!completeURL) {
 		[self release];
