@@ -190,4 +190,40 @@
     assertThat(human.name, is(equalTo(@"My Name")));
 }
 
+- (void)itShouldNotSetAContentBodyOnAGET {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans/1"];
+    
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    [mapping mapAttributes:@"name", @"age", nil];
+    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
+    human.name = @"Blake Watters";
+    human.age = [NSNumber numberWithInt:28];
+    RKObjectLoader* loader = [objectManager getObject:human delegate:responseLoader];
+    [responseLoader waitForResponse];
+    RKLogCritical(@"%@", [loader.URLRequest allHTTPHeaderFields]);
+    assertThat([loader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+- (void)itShouldNotSetAContentBodyOnADELETE {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans/1"];
+    
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    [mapping mapAttributes:@"name", @"age", nil];
+    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
+    human.name = @"Blake Watters";
+    human.age = [NSNumber numberWithInt:28];
+    RKObjectLoader* loader = [objectManager deleteObject:human delegate:responseLoader];
+    [responseLoader waitForResponse];
+    RKLogCritical(@"%@", [loader.URLRequest allHTTPHeaderFields]);
+    assertThat([loader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
 @end
