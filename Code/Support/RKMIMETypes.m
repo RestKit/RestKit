@@ -11,4 +11,5 @@
 NSString* const RKMIMETypeJSON = @"application/json";
 NSString* const RKMIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";
 NSString* const RKMIMETypeXML = @"application/xml";
+NSString* const RKMIMETypeMultipartFormData = @"multipart/form-data";
 

@@ -13,6 +13,7 @@
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKParserRegistry.h"
 #import "RKLog.h"
+#import "RKParams.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -83,6 +84,15 @@
     if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
         // Dictionaries are natively RKRequestSerializable as Form Encoded
         return [self serializedObject:error];
+	} else if ([MIMEType isEqualToString:RKMIMETypeMultipartFormData]) {
+		RKParams *params = [RKParams params];
+		NSDictionary *objectSerialization = [self serializedObject:error];
+		
+		for (id key in objectSerialization) {
+			[params setValue:[objectSerialization objectForKey:key] forParam:key];
+		}
+		
+		return params;
     } else {
         NSString* string = [self serializedObjectForMIMEType:MIMEType error:error];
         if (string) {

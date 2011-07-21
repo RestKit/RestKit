@@ -12,3 +12,4 @@
 extern NSString* const RKMIMETypeJSON;
 extern NSString* const RKMIMETypeFormURLEncoded;
 extern NSString* const RKMIMETypeXML;
+extern NSString* const RKMIMETypeMultipartFormData;
