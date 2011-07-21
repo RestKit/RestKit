@@ -281,6 +281,8 @@
 		73FE56C8126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
 		AF75462C13CCFA9D0077E95D /* TDOAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = AF7545B513CCF3CF0077E95D /* TDOAuth.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AF75462D13CCFAAE0077E95D /* TDOAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = AF7545B613CCF3CF0077E95D /* TDOAuth.m */; };
+		AFD8CC8D13D8E61200E63E62 /* RKClientOAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = AFD8CC8B13D8E61200E63E62 /* RKClientOAuth.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AFD8CC8E13D8E61200E63E62 /* RKClientOAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = AFD8CC8C13D8E61200E63E62 /* RKClientOAuth.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -694,6 +696,8 @@
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AF7545B513CCF3CF0077E95D /* TDOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDOAuth.h; sourceTree = "<group>"; };
 		AF7545B613CCF3CF0077E95D /* TDOAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDOAuth.m; sourceTree = "<group>"; };
+		AFD8CC8B13D8E61200E63E62 /* RKClientOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKClientOAuth.h; sourceTree = "<group>"; };
+		AFD8CC8C13D8E61200E63E62 /* RKClientOAuth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKClientOAuth.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -993,6 +997,8 @@
 				25A1CB3B1383F7DF00A7D5C9 /* RKRequestSerialization.h */,
 				25A1CB3C1383F7E100A7D5C9 /* RKRequestSerialization.m */,
 				257FB7051395DABB003A628E /* RKRequest_Internals.h */,
+				AFD8CC8B13D8E61200E63E62 /* RKClientOAuth.h */,
+				AFD8CC8C13D8E61200E63E62 /* RKClientOAuth.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -1489,6 +1495,7 @@
 				AF75462C13CCFA9D0077E95D /* TDOAuth.h in Headers */,
 				73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */,
 				2538C05C12A6C44A0006903C /* RKRequestQueue.h in Headers */,
+				AFD8CC8D13D8E61200E63E62 /* RKClientOAuth.h in Headers */,
 				250C29FD134185D2000A3551 /* RKNetwork.h in Headers */,
 				3F278A44139D2AFF009AC3FA /* RKRequestCache.h in Headers */,
 				25A1CB3F138404CF00A7D5C9 /* RKRequestSerialization.h in Headers */,
@@ -1999,6 +2006,7 @@
 				3F278A41139D2AFF009AC3FA /* NSData+MD5.m in Sources */,
 				3F278A43139D2AFF009AC3FA /* NSString+MD5.m in Sources */,
 				3F278A45139D2AFF009AC3FA /* RKRequestCache.m in Sources */,
+				AFD8CC8E13D8E61200E63E62 /* RKClientOAuth.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
