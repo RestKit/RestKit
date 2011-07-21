@@ -73,9 +73,9 @@
 /**
  * Sets the value for a named parameter to a data object with the specified MIME Type and attachment file name
  *
- * @deprecated Set the MIMEType and fileName on the returned RKParamsAttachment instead
+ * Set the MIMEType and fileName on the returned RKParamsAttachment instead
  */
-- (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param DEPRECATED_ATTRIBUTE;
+- (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param;
 
 /**
  * Sets the value for a named parameter to the data contained in a file at the given path with the specified MIME Type and attachment file name
