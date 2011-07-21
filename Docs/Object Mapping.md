@@ -83,7 +83,7 @@ Now that we have configured our object mapping, we can load this collection:
 
 ```objc
 - (void)loadArticles {
-    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/articles" delegate:self;
+    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/articles" delegate:self];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
