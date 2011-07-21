@@ -78,9 +78,19 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 }
 
 - (RKParamsAttachment*)setValue:(id <NSObject>)value forParam:(NSString*)param {
-	RKParamsAttachment* attachment = [[RKParamsAttachment alloc] initWithName:param value:value];
-	[_attachments addObject:attachment];
-	[attachment release];
+	RKParamsAttachment* attachment = nil;
+	
+	if ([value isKindOfClass:[NSDictionary class]]) {
+		NSDictionary *dict = (NSDictionary *)value;
+		for (id key in dict) {
+			attachment = [self setValue:[dict objectForKey:key] 
+							   forParam:[NSString stringWithFormat:@"%@[%@]", param, key]];
+		}
+	} else {
+		attachment = [[RKParamsAttachment alloc] initWithName:param value:value];
+		[_attachments addObject:attachment];
+		[attachment release];
+	}
 	
 	return attachment;
 }
