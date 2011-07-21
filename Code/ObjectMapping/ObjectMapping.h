@@ -8,6 +8,7 @@
 
 #import "RKObjectManager.h"
 #import "RKObjectLoader.h"
+#import "RKObjectLoaderCompletionHandlerDelegate.h"
 #import "RKObjectMapping.h"
 #import "RKObjectSerializer.h"
 #import "RKObjectMappingProvider.h"
