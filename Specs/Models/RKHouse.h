@@ -6,10 +6,9 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKManagedObject.h"
+#import <CoreData/CoreData.h>
 
-
-@interface RKHouse : RKManagedObject {
+@interface RKHouse : NSManagedObject {
 
 }
 

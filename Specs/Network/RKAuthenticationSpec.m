@@ -13,7 +13,7 @@
 static NSString* const RKAuthenticationSpecUsername = @"restkit";
 static NSString* const RKAuthenticationSpecPassword = @"authentication";
 
-@interface RKAuthenticationSpec : NSObject <UISpec> {
+@interface RKAuthenticationSpec : RKSpec {
     
 }
 
@@ -27,7 +27,7 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
                                             
 - (void)itShouldAccessUnprotectedResourcePaths {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
+    RKClient* client = RKSpecNewClient();
     [client get:@"/authentication/none" delegate:loader];
     [loader waitForResponse];
     [expectThat([loader.response isOK]) should:be(YES)];
@@ -35,7 +35,7 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 
 - (void)itShouldAuthenticateViaHTTPAuthBasic {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
+    RKClient* client = RKSpecNewClient();
     client.username = RKAuthenticationSpecUsername;
     client.password = RKAuthenticationSpecPassword;
     [client get:@"/authentication/basic" delegate:loader];
@@ -45,7 +45,7 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 
 - (void)itShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
+    RKClient* client = RKSpecNewClient();
     client.username = RKAuthenticationSpecUsername;
     client.password = @"INVALID";
     [client get:@"/authentication/basic" delegate:loader];
@@ -57,7 +57,7 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 
 - (void)itShouldAuthenticateViaHTTPAuthDigest {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
+    RKClient* client = RKSpecNewClient();
     client.username = RKAuthenticationSpecUsername;
     client.password = RKAuthenticationSpecPassword;
     [client get:@"/authentication/digest" delegate:loader];

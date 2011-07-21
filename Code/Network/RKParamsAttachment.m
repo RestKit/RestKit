@@ -6,8 +6,15 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
 #import <MobileCoreServices/UTType.h>
+#endif
 #import "RKParamsAttachment.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 /**
  * The multi-part boundary. See RKParams.m
@@ -24,7 +31,8 @@ extern NSString* const kRKStringBoundary;
 
 - (id)initWithName:(NSString*)name {
 	if ((self = [self init])) {
-		_name = [name retain];
+        self.name = name;
+        self.fileName = name;
 	}
 	
 	return self;
@@ -39,7 +47,7 @@ extern NSString* const kRKStringBoundary;
 			[body appendData:[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding]];
 		}
 		
-		_bodyStream    = [[NSInputStream inputStreamWithData:body] retain];
+		_bodyStream    = [[NSInputStream alloc] initWithData:body];
 		_bodyLength    = [body length];
 	}
 	
@@ -48,7 +56,7 @@ extern NSString* const kRKStringBoundary;
 
 - (id)initWithName:(NSString*)name data:(NSData*)data {
 	if ((self = [self initWithName:name])) {		
-		_bodyStream    = [[NSInputStream inputStreamWithData:data] retain];
+		_bodyStream    = [[NSInputStream alloc] initWithData:data];
 		_bodyLength    = [data length];
 	}
 	
@@ -60,12 +68,15 @@ extern NSString* const kRKStringBoundary;
 		NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:filePath], @"Expected file to exist at path: %@", filePath);
 		_fileName = [[filePath lastPathComponent] retain];
 		_MIMEType = [[self mimeTypeForExtension:[filePath pathExtension]] retain];
-		_bodyStream    = [[NSInputStream inputStreamWithFileAtPath:filePath] retain];
+		_bodyStream    = [[NSInputStream alloc] initWithFileAtPath:filePath];
 		
-		NSError* error = nil;		
-		_bodyLength    = [[[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error] objectForKey:NSFileSize] unsignedIntegerValue];		
-		if (error) {
-			NSLog(@"Encountered an error while determining file size: %@", error);
+		NSError* error;
+		NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+		if (attributes) {
+			_bodyLength    = [[attributes objectForKey:NSFileSize] unsignedIntegerValue];
+		}
+		else {
+			RKLogError(@"Encountered an error while determining file size: %@", error);
 		}
 	}
 	
@@ -73,16 +84,17 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (void)dealloc {
-	[_fileName release];
-	[_MIMEType release];
-	
-	[_MIMEHeader release];
-	_MIMEHeader = nil;
-	
+    [_name release];
+    [_fileName release];
+    [_MIMEType release];
+
+    [_MIMEHeader release];
+    _MIMEHeader = nil;
+
     [_bodyStream close];
-	[_bodyStream release];
-	_bodyStream = nil;
-	
+    [_bodyStream release];
+    _bodyStream = nil;
+
     [super dealloc];
 }
 
@@ -153,11 +165,11 @@ extern NSString* const kRKStringBoundary;
 		NSUInteger headerBytesRemaining, bytesRemainingInBuffer;
 		
 		headerBytesRemaining = _MIMEHeaderLength - _delivered;
-		bytesRemainingInBuffer = maxLength - sent;
+		bytesRemainingInBuffer = maxLength;
 		
 		// Send the entire header if there is room
         read       = (headerBytesRemaining < bytesRemainingInBuffer) ? headerBytesRemaining : bytesRemainingInBuffer;
-        [_MIMEHeader getBytes:buffer + sent range:NSMakeRange(_delivered, read)];
+        [_MIMEHeader getBytes:buffer range:NSMakeRange(_delivered, read)];
 		
         sent += read;
         _delivered += sent;

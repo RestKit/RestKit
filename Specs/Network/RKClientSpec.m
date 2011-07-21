@@ -7,8 +7,9 @@
 //
 
 #import "RKSpecEnvironment.h"
+#import "RKURL.h"
 
-@interface RKClientSpec : NSObject <UISpec> {
+@interface RKClientSpec : RKSpec {
 }
 
 @end
@@ -28,6 +29,47 @@
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
 	RKReachabilityNetworkStatus status = [client.baseURLReachabilityObserver networkStatus];
 	[expectThat(status) shouldNot:be(RKReachabilityIndeterminate)];	
+}
+- (void)itShouldSetTheCachePolicyOfTheRequest {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    client.cachePolicy = RKRequestCachePolicyLoadIfOffline;
+    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+	[expectThat(request.cachePolicy) should:be(RKRequestCachePolicyLoadIfOffline)];
+}
+
+- (void)itShouldInitializeTheCacheOfTheRequest {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    client.cache = [[[RKRequestCache alloc] init] autorelease];
+    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+	[expectThat(request.cache) should:be(client.cache)];
+}
+
+- (void)itShouldAllowYouToChangeTheBaseURL {
+    NSLog(@"PENDING -> Unable to get this test to pass reliably...");
+    return;
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:15]]; // Let the runloop cycle
+    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    client.baseURL = @"http://www.google.com";
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:3.5]]; // Let the runloop cycle
+    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [client requestWithResourcePath:@"/" delegate:loader];
+    [request send];
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(YES)));
+}
+
+- (void)itShouldSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    client.baseURL = @"http://restkit.org";
+    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(YES)));
+}
+
+- (void)itShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    client.baseURL = @"http://127.0.0.1";
+    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(NO)));
 }
 
 @end

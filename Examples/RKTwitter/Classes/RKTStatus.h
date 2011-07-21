@@ -6,10 +6,9 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import <RestKit/RestKit.h>
 #import "RKTUser.h"
 
-@interface RKTStatus : RKObject {
+@interface RKTStatus : NSObject {
 	NSNumber* _statusID;
 	NSDate* _createdAt;
 	NSString* _text;

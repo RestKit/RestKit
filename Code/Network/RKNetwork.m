@@ -1,5 +1,5 @@
 //
-//  MyClass.m
+//  RKNetwork.m
 //  RestKit
 //
 //  Created by Blake Watters on 3/28/11.
@@ -11,7 +11,7 @@
 // Global credential persistence value.
 static NSURLCredentialPersistence gCredentialPersistence = NSURLCredentialPersistenceForSession;
 
-NSURLCredentialPersistence RKNetworkGetGlobalCredentialPersistence() {
+NSURLCredentialPersistence RKNetworkGetGlobalCredentialPersistence(void) {
     return gCredentialPersistence;
 }
 

@@ -12,6 +12,8 @@
 @interface RKSpecResponseLoader : NSObject <RKObjectLoaderDelegate> {
 	BOOL _awaitingResponse;
 	BOOL _success;
+    BOOL _wasCancelled;
+    BOOL _unknownResponse;
 	RKResponse* _response;
     NSArray* _objects;
 	NSError* _failureError;
@@ -27,6 +29,11 @@
 
 // True when the response is success
 @property (nonatomic, readonly) BOOL success;
+
+// YES when the request was cancelled
+@property (nonatomic, readonly) BOOL wasCancelled;
+
+@property (nonatomic, readonly) BOOL unknownResponse;
 
 // The error that was returned from a failure to connect
 @property (nonatomic, readonly) NSError* failureError;

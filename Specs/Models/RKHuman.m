@@ -7,6 +7,7 @@
 //
 
 #import "RKHuman.h"
+#import "NSDictionary+RKAdditions.h"
 
 @implementation RKHuman
 
@@ -19,25 +20,11 @@
 @dynamic createdAt;
 @dynamic updatedAt;
 
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-			@"name", @"name",
-			@"nickName", @"nick-name",
-			@"birthday", @"birthday",
-			@"sex", @"sex",
-			@"age", @"age",
-			@"createdAt", @"created-at",
-			@"updatedAt", @"updated-at",
-			@"railsID", @"id",
-			nil];
-}
+@dynamic favoriteCat;
+@dynamic cats;
 
 - (NSString*)polymorphicResourcePath {
 	return @"/this/is/the/path";
-}
-
-+ (NSString*)primaryKeyProperty {
-	return @"railsID";
 }
 
 @end

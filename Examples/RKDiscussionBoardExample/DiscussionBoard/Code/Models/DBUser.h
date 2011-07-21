@@ -15,7 +15,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface DBUser : RKManagedObject <RKObjectLoaderDelegate> {
+@interface DBUser : NSManagedObject <RKObjectLoaderDelegate> {
 	// Transient. Used for login & sign-up
 	NSString* _password;
 	NSString* _passwordConfirmation;

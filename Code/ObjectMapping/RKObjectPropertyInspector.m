@@ -7,10 +7,24 @@
 //
 
 #import <objc/message.h>
-
 #import "RKObjectPropertyInspector.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitObjectMapping
+
+static RKObjectPropertyInspector* sharedInspector = nil;
 
 @implementation RKObjectPropertyInspector
+
++ (RKObjectPropertyInspector*)sharedInspector {
+    if (sharedInspector == nil) {
+        sharedInspector = [RKObjectPropertyInspector new];
+    }
+    
+    return sharedInspector;
+}
 
 - (id)init {
 	if ((self = [super init])) {
@@ -77,8 +91,14 @@
 		currentClass = [currentClass superclass];
 	}
 	
-	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:class];	
+	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:class];
+    RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(class), propertyNames);
 	return propertyNames;
+}
+
+- (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass {
+    NSDictionary* dictionary = [self propertyNamesAndTypesForClass:objectClass];
+    return [dictionary objectForKey:propertyName];
 }
 
 @end

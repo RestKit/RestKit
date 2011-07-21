@@ -16,7 +16,7 @@ GEM
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
     tilt (1.2.2)
-    uispecrunner (0.4.2)
+    uispecrunner (0.4.5)
       open4 (= 1.0.1)
 
 PLATFORMS
@@ -28,7 +28,4 @@ DEPENDENCIES
   shotgun (>= 0.9)
   sinatra (>= 1.2.0)
   thin (>= 1.2.8)
-  uispecrunner (>= 0.4.2)
-
-METADATA
-  version: 1.0.6
+  uispecrunner (>= 0.4.5)

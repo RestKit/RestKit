@@ -6,10 +6,11 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
-#import "RKManagedObject.h"
+#import "NSManagedObject+ActiveRecord.h"
 
+@class RKCat;
 
-@interface RKHuman : RKManagedObject {	
+@interface RKHuman : NSManagedObject {	
 }
 
 @property (nonatomic, retain) NSNumber* railsID;
@@ -20,5 +21,16 @@
 @property (nonatomic, retain) NSNumber* age;
 @property (nonatomic, retain) NSDate* createdAt;
 @property (nonatomic, retain) NSDate* updatedAt;
+
+@property (nonatomic, retain) NSSet* cats;
+@property (nonatomic, retain) RKCat* favoriteCat;
+
+@end
+
+@interface RKHuman (CoreDataGeneratedAccessors)
+- (void)addCatsObject:(RKCat *)value;
+- (void)removeCatsObject:(RKCat *)value;
+- (void)addCats:(NSSet *)value;
+- (void)removeCats:(NSSet *)value;
 
 @end

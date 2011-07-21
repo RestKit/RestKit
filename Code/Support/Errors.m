@@ -9,3 +9,5 @@
 #import "Errors.h"
 
 NSString* const RKRestKitErrorDomain = @"com.twotoasters.RestKit.ErrorDomain";
+
+NSString* const RKObjectMapperErrorObjectsKey = @"RKObjectMapperErrorObjectsKey";

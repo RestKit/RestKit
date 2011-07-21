@@ -6,10 +6,12 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
+#import <RestKit/RestKit.h>
+#import <RestKit/Three20/Three20.h>
 #import "DBResourceListTableViewController.h"
-#import "DBManagedObjectCache.h"
-#import "DBUser.h"
-#import "DBContentObject.h"
+#import "../Other/DBManagedObjectCache.h"
+#import "../Models/DBUser.h"
+#import "../Models/DBContentObject.h"
 
 @implementation UINavigationBar (CustomImage)
 
@@ -73,15 +75,11 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)createModel {
-	self.model = [[[RKRequestTTModel alloc] initWithResourcePath:_resourcePath] autorelease];
-}
-
 - (void)didLoadModel:(BOOL)firstTime {
 	[super didLoadModel:firstTime];
 
-	if ([self.model isKindOfClass:[RKRequestTTModel class]]) {
-		RKRequestTTModel* model = (RKRequestTTModel*)self.model;
+	if ([self.model isKindOfClass:[RKObjectLoaderTTModel class]]) {
+		RKObjectLoaderTTModel* model = (RKObjectLoaderTTModel*)self.model;
 
 		NSDateFormatter* formatter = [[[NSDateFormatter alloc] init] autorelease];
 		[formatter setDateFormat:@"hh:mm:ss MM/dd/yy"];

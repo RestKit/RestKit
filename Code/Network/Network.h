@@ -12,3 +12,4 @@
 #import "RKRequestSerializable.h"
 #import "RKReachabilityObserver.h"
 #import "RKRequestQueue.h"
+#import "RKNotifications.h"

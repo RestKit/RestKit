@@ -34,4 +34,9 @@
  */
 @property (nonatomic, retain) NSNumber* topicID;
 
+/**
+ The Three20 Navigator URL to this Topic
+ */
+@property (nonatomic, readonly) NSString* topicNavURL;
+
 @end

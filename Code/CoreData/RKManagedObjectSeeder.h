@@ -15,7 +15,7 @@ extern NSString* const RKDefaultSeedDatabaseFileName;
 @required
 
 // Invoked when the seeder creates a new object
-- (void)didSeedObject:(NSObject<RKObjectMappable>*)object fromFile:(NSString*)fileName;
+- (void)didSeedObject:(NSManagedObject*)object fromFile:(NSString*)fileName;
 @end
 
 /**
@@ -54,10 +54,9 @@ extern NSString* const RKDefaultSeedDatabaseFileName;
 - (void)seedObjectsFromFiles:(NSString*)fileName, ...;
 
 /**
- * Seed the database with objects from the specified file. Optionally use the specified mappable class and
- * keyPath to traverse the object graph before seeding
+ * Seed the database with objects from the specified file using the supplied object mapping.
  */
-- (void)seedObjectsFromFile:(NSString*)fileName toClass:(Class<RKObjectMappable>)nilOrMppableClass keyPath:(NSString*)nilOrKeyPath;
+- (void)seedObjectsFromFile:(NSString*)fileName withObjectMapping:(RKObjectMapping*)nilOrObjectMapping;
 
 /**
  * Completes a seeding session by persisting the store, outputing an informational message

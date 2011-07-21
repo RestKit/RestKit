@@ -8,8 +8,8 @@
 
 #import <RestKit/Three20/Three20.h>
 #import "DBPostsTableViewController.h"
-#import "DBPost.h"
-#import "DBUser.h"
+#import "../Models/DBPost.h"
+#import "../Models/DBUser.h"
 
 @implementation DBPostsTableViewController
 
@@ -17,13 +17,8 @@
 
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStylePlain]) {
-		_topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
-		
+		_topic = [[DBTopic findFirstByAttribute:@"topicID" withValue:topicID] retain];		
 		self.title = @"Posts";
-		
-		_resourcePath = RKMakePathWithObject(@"/topics/(topicID)/posts", self.topic);
-		[_resourcePath retain];
-		_resourceClass = [DBPost class];
 	}
 	return self;
 }
@@ -37,9 +32,10 @@
 	[super loadView];
 
 	self.variableHeightRows = YES;
-	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
-																							target:self
-																							action:@selector(addButtonWasPressed:)] autorelease];
+	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] 
+                                               initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                               target:self
+                                               action:@selector(addButtonWasPressed:)] autorelease];
 }
 
 - (void)addButtonWasPressed:(id)sender {
@@ -53,6 +49,10 @@
 		[self.navigationController popToRootViewControllerAnimated:YES];
 		return;
 	}
+    
+    NSString* resourcePath = RKMakePathWithObject(@"/topics/(topicID)/posts", self.topic);
+    RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:resourcePath delegate:nil];
+    self.model = [RKObjectLoaderTTModel modelWithObjectLoader:objectLoader];
 
 	[super createModel];
 }
@@ -60,8 +60,8 @@
 - (void)didLoadModel:(BOOL)firstTime {
 	[super didLoadModel:firstTime];
 
-	if ([self.model isKindOfClass:[RKRequestTTModel class]]) {
-		RKRequestTTModel* model = (RKRequestTTModel*)self.model;
+	if ([self.model isKindOfClass:[RKObjectLoaderTTModel class]]) {
+		RKObjectLoaderTTModel* model = (RKObjectLoaderTTModel*)self.model;
 		NSMutableArray* postItems = [NSMutableArray arrayWithCapacity:[model.objects count]];
 		NSMutableArray* topicItems = [NSMutableArray arrayWithCapacity:2];
 

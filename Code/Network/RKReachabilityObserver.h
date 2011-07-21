@@ -13,6 +13,7 @@
  * Posted when the network state has changed
  */
 extern NSString* const RKReachabilityStateChangedNotification;
+extern NSString* const RKReachabilityStateWasDeterminedNotification;
 
 typedef enum {
 	RKReachabilityIndeterminate,
@@ -23,11 +24,26 @@ typedef enum {
 
 /**
  * Provides a notification based interface for monitoring changes
- * to network status
+ * to network status8
+ *
+ * Portions of this software are derived from the Apple Reachability
+ * code sample: http://developer.apple.com/library/ios/#samplecode/Reachability/Listings/Classes_Reachability_m.html
  */
 @interface RKReachabilityObserver : NSObject {
-	SCNetworkReachabilityRef _reachabilityRef;	
+    NSString* _hostName;
+	SCNetworkReachabilityRef _reachabilityRef;
+	BOOL _reachabilityEstablished;
 }
+
+/**
+ The hostname we are observing reachability to
+ */
+@property (nonatomic, readonly) NSString* hostName;
+
+/**
+ Returns YES if reachability has been determined
+ */
+@property (nonatomic, readonly) BOOL reachabilityEstablished;
 
 /**
  * Create a new reachability observer against a given hostname. The observer
@@ -36,7 +52,7 @@ typedef enum {
  *
  * Note that the observer will be scheduled in the current run loop.
  */
-+ (RKReachabilityObserver*)reachabilityObserverWithHostName:(NSString*)hostName;
+- (id)initWithHostname:(NSString*)hostName;
 
 /**
  * Returns the current network status

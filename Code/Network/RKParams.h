@@ -29,17 +29,17 @@
 /**
  * Returns an empty params object ready for population
  */
-+ (id)params;
++ (RKParams*)params;
 
 /**
  * Initialize a params object from a dictionary of key/value pairs
  */
-+ (id)paramsWithDictionary:(NSDictionary*)dictionary;
++ (RKParams*)paramsWithDictionary:(NSDictionary*)dictionary;
 
 /**
  * Initalize a params object from a dictionary of key/value pairs
  */
-- (id)initWithDictionary:(NSDictionary*)dictionary;
+- (RKParams*)initWithDictionary:(NSDictionary*)dictionary;
 
 /**
  * Sets the value for a named parameter

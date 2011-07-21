@@ -7,6 +7,11 @@
 //
 
 #import "RKParams.h"
+#import "../Support/RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
 
 /**
  * The boundary used used for multi-part headers
@@ -26,7 +31,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 }
 
 - (id)init {
-	if (self = [super init]) {
+    self = [super init];
+	if (self) {
 		_attachments = [NSMutableArray new];
 		_footer       = [[[NSString stringWithFormat:@"--%@--\r\n", kRKStringBoundary] dataUsingEncoding:NSUTF8StringEncoding] retain];
 		_footerLength = [_footer length];
@@ -37,11 +43,14 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 - (void)dealloc {
 	[_attachments release];
+    [_footer release];
+    
 	[super dealloc];
 }
 
 - (RKParams*)initWithDictionary:(NSDictionary*)dictionary {
-	if ((self = [self init])) {
+    self = [self init];
+	if (self) {
 		for (NSString* key in dictionary) {
 			id value = [dictionary objectForKey:key];
 			[self setValue:value forParam:key];
@@ -179,10 +188,20 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 - (void)open {
     _streamStatus = NSStreamStatusOpen;
+    RKLogTrace(@"RKParams stream opened...");
 }
 
 - (void)close {
-    _streamStatus = NSStreamStatusClosed;
+    if (_streamStatus != NSStreamStatusClosed) {
+        _streamStatus = NSStreamStatusClosed;
+        
+        RKLogTrace(@"RKParams stream closed. Releasing self.");        
+        
+        // NOTE: When we are assigned to the URL request, we get
+        // retained. We release ourselves here to ensure the retain
+        // count will hit zero after upload is complete.
+        [self release];
+    }
 }
 
 - (NSStreamStatus)streamStatus {

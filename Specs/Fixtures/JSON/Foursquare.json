@@ -1,0 +1,423 @@
+{
+    meta: {
+        code: 200
+    }
+    response: {
+        user: {
+            id: "777834"
+            firstName: "Erin"
+            lastName: "Ellison"
+            photo: "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/2D1A2G5CURCHN50E.jpg"
+            gender: "female"
+            homeCity: "Durham, NC"
+            relationship: "friend"
+            type: "user"
+            pings: true
+            contact: {
+                email: "erynrasmusson@gmail.com"
+            }
+            badges: {
+                count: 22
+            }
+            mayorships: {
+                count: 9
+                items: [
+                {
+                    id: "4c560b23fe84d13a93c0158e"
+                    name: "Casa de Ellison"
+                    contact: {}
+                    location: {
+                        address: "Copper hill"
+                        city: "Durham"
+                        state: "NC"
+                        lat: 35.922447
+                        lng: -78.940174
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d103941735"
+                        name: "Home"
+                        pluralName: "Homes"
+                        icon: "https://foursquare.com/img/categories/building/home.png"
+                        parents: [
+                        "Homes, Work, Others"
+                        ]
+                        primary: true
+                    }
+                    ]
+                    verified: false
+                    stats: {
+                        checkinsCount: 155
+                        usersCount: 4
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4b5b10e8f964a520c5e128e3"
+                    name: "Carrboro High School"
+                    contact: {}
+                    location: {
+                        address: "201 Rock Haven Rd."
+                        city: "Carrboro"
+                        state: "NC"
+                        postalCode: "27516"
+                        lat: 35.8918592
+                        lng: -79.0812934
+                    }
+                    categories: []
+                    verified: false
+                    stats: {
+                        checkinsCount: 111
+                        usersCount: 31
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4ae77a18f964a520b5ab21e3"
+                    name: "Carrburritos"
+                    contact: {}
+                    location: {
+                        address: "711 W Rosemary St."
+                        city: "Carrboro"
+                        state: "NC"
+                        lat: 35.9109319
+                        lng: -79.0665896
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d1c1941735"
+                        name: "Mexican Restaurant"
+                        pluralName: "Mexican Restaurants"
+                        icon: "https://foursquare.com/img/categories/food/default.png"
+                        parents: [
+                        "Food"
+                        ]
+                        primary: true
+                    }
+                    {
+                        id: "4bf58dd8d48988d153941735"
+                        name: "Burrito Place"
+                        pluralName: "Burrito Places"
+                        icon: "https://foursquare.com/img/categories/food/default.png"
+                        parents: [
+                        "Food"
+                        ]
+                    }
+                    ]
+                    verified: false
+                    stats: {
+                        checkinsCount: 616
+                        usersCount: 288
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4b243dd5f964a520846424e3"
+                    name: "Lowe's"
+                    contact: {
+                        phone: "9192064800"
+                    }
+                    location: {
+                        address: "4402 Fayetteville Rd"
+                        crossStreet: "Martin Luther King Jr Pkwy"
+                        city: "Durham"
+                        state: "NC"
+                        postalCode: "27713"
+                        country: "USA"
+                        lat: 35.94153238861061
+                        lng: -78.90861511230469
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d112951735"
+                        name: "Hardware Store"
+                        pluralName: "Hardware Stores"
+                        icon: "https://foursquare.com/img/categories/shops/hardware.png"
+                        parents: [
+                        "Shops"
+                        ]
+                        primary: true
+                    }
+                    ]
+                    verified: true
+                    stats: {
+                        checkinsCount: 493
+                        usersCount: 149
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4c7319538efc3704a4df147d"
+                    name: "Wine Bottle"
+                    contact: {}
+                    location: {
+                        address: "Copper Hill"
+                        city: "Durham"
+                        state: "NC"
+                        lat: 35.922447
+                        lng: -78.940174
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d123941735"
+                        name: "Wine Bar"
+                        pluralName: "Wine Bars"
+                        icon: "https://foursquare.com/img/categories/nightlife/wine.png"
+                        parents: [
+                        "Nightlife Spots"
+                        ]
+                        primary: true
+                    }
+                    ]
+                    verified: false
+                    stats: {
+                        checkinsCount: 17
+                        usersCount: 2
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4b7c923ef964a520ae9b2fe3"
+                    name: "TCBY"
+                    contact: {}
+                    location: {
+                        address: "Hwy 54"
+                        city: "Durham"
+                        state: "NC"
+                        lat: 35.91018621631764
+                        lng: -78.937668800354
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d1d0941735"
+                        name: "Dessert Shop"
+                        pluralName: "Dessert Shops"
+                        icon: "https://foursquare.com/img/categories/food/dessert.png"
+                        parents: [
+                        "Food"
+                        ]
+                        primary: true
+                    }
+                    ]
+                    verified: false
+                    stats: {
+                        checkinsCount: 83
+                        usersCount: 54
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4c98257b671db60c3b51b7f6"
+                    name: "Rasmusson Residence"
+                    contact: {}
+                    location: {
+                        address: "Los Serranos"
+                        city: "Laguna Niguel"
+                        state: "CA"
+                        lat: 33.522575
+                        lng: -117.705623
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d103941735"
+                        name: "Home"
+                        pluralName: "Homes"
+                        icon: "https://foursquare.com/img/categories/building/home.png"
+                        parents: [
+                        "Homes, Work, Others"
+                        ]
+                        primary: true
+                    }
+                    ]
+                    verified: false
+                    stats: {
+                        checkinsCount: 8
+                        usersCount: 1
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4b4776e7f964a520ea3226e3"
+                    name: "El Cuscatleco"
+                    contact: {}
+                    location: {
+                        address: "4212 garret rd"
+                        city: "Durham"
+                        state: "North Carolina"
+                        postalCode: "27707"
+                        lat: 35.960262
+                        lng: -78.976395
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d1c1941735"
+                        name: "Mexican Restaurant"
+                        pluralName: "Mexican Restaurants"
+                        icon: "https://foursquare.com/img/categories/food/default.png"
+                        parents: [
+                        "Food"
+                        ]
+                        primary: true
+                    }
+                    ]
+                    verified: false
+                    stats: {
+                        checkinsCount: 23
+                        usersCount: 17
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                {
+                    id: "4d338ca12e56236a3f3027b4"
+                    name: "Ryan's Governors Club Penthouse"
+                    contact: {}
+                    location: {
+                        lat: 35.853638
+                        lng: -79.022959
+                    }
+                    categories: [
+                    {
+                        id: "4bf58dd8d48988d103941735"
+                        name: "Home"
+                        pluralName: "Homes"
+                        icon: "https://foursquare.com/img/categories/building/home.png"
+                        parents: [
+                        "Homes, Work, Others"
+                        ]
+                        primary: true
+                    }
+                    ]
+                    verified: false
+                    stats: {
+                        checkinsCount: 6
+                        usersCount: 3
+                    }
+                    todos: {
+                        count: 0
+                    }
+                }
+                ]
+            }
+            checkins: {
+                count: 1065
+                items: [
+                {
+                    id: "4db9eceda86ede8c0f8ebd0a"
+                    createdAt: 1304030445
+                    type: "checkin"
+                    timeZone: "America/Kentucky/Monticello"
+                    venue: {
+                        id: "4b6c5697f964a520d2312ce3"
+                        name: "Two Toasters HQ"
+                        contact: {
+                            twitter: "twotoasters"
+                        }
+                        location: {
+                            address: "334 Blackwell Street"
+                            city: "Durham"
+                            state: "NC"
+                            lat: 35.992912
+                            lng: -78.904404
+                        }
+                        categories: [
+                        {
+                            id: "4bf58dd8d48988d124941735"
+                            name: "Office"
+                            pluralName: "Offices"
+                            icon: "https://foursquare.com/img/categories/building/default.png"
+                            parents: [
+                            "Homes, Work, Others"
+                            ]
+                            primary: true
+                        }
+                        ]
+                        verified: false
+                        stats: {
+                            checkinsCount: 157
+                            usersCount: 8
+                        }
+                        todos: {
+                            count: 0
+                        }
+                    }
+                }
+                ]
+            }
+            friends: {
+                count: 30
+                groups: [
+                {
+                    type: "friends"
+                    name: "mutual friends"
+                    count: 3
+                    items: [
+                    {
+                        id: "75766"
+                        firstName: "Jeremy"
+                        lastName: "Ellison"
+                        photo: "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/XXY3HVS1RGRZWMYY.jpg"
+                        gender: "male"
+                        homeCity: "Chapel Hill, NC"
+                        relationship: "friend"
+                    }
+                    {
+                        id: "14209"
+                        firstName: "Rachit"
+                        lastName: "Shukla"
+                        photo: "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/WC3X0KKK0WZ0G5N0.jpg"
+                        gender: "male"
+                        homeCity: "New York, NY"
+                        relationship: "friend"
+                    }
+                    {
+                        id: "1001025"
+                        firstName: "Stevie"
+                        lastName: "Watters"
+                        photo: "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/KMO5P2PNCJ2GDWV4.jpg"
+                        gender: "female"
+                        homeCity: "Carrboro, NC"
+                        relationship: "friend"
+                    }
+                    ]
+                }
+                {
+                    type: "others"
+                    name: "other friends"
+                    count: 27
+                    items: []
+                }
+                ]
+            }
+            following: {
+                count: 0
+            }
+            tips: {
+                count: 3
+            }
+            todos: {
+                count: 1
+            }
+            scores: {
+                recent: 101
+                max: 146
+                checkinsCount: 36
+            }
+        }
+    }
+}

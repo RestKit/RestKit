@@ -17,6 +17,8 @@
 @synthesize errorMessage = _errorMessage;
 @synthesize success = _success;
 @synthesize timeout = _timeout;
+@synthesize wasCancelled = _wasCancelled;
+@synthesize unknownResponse = _unknownResponse;
 
 + (RKSpecResponseLoader*)responseLoader {
     return [[[self alloc] init] autorelease];
@@ -62,12 +64,27 @@
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     NSLog(@"Loaded response: %@", response);
 	_response = [response retain];
-	_awaitingResponse = NO;
-	_success = YES;
+    
+    // If request is an Object Loader, then objectLoader:didLoadObjects:
+    // will be sent after didLoadResponse:
+    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
+        _awaitingResponse = NO;
+        _success = YES;
+    }
 }
 
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
-    [self loadError:error];
+    // If request is an Object Loader, then objectLoader:didFailWithError:
+    // will be sent after didFailLoadWithError:
+    if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
+        [self loadError:error];
+    }
+}
+
+- (void)requestDidCancelLoad:(RKRequest *)request {
+    _awaitingResponse = NO;
+    _success = NO;
+    _wasCancelled = YES;
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
@@ -80,6 +97,13 @@
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error; {	
 	[self loadError:error];
+}
+
+- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader*)objectLoader {
+    NSLog(@"*** Loaded unexpected response in spec response loader");
+    _success = NO;
+    _awaitingResponse = NO;
+    _unknownResponse = YES;
 }
 
 @end

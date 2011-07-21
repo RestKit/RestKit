@@ -8,12 +8,18 @@
 
 #import "NSDictionary+RKRequestSerialization.h"
 
-// private helper function to convert any object to its string representation
+/**
+ * private helper function to convert any object to its string representation
+ * @private
+ */
 static NSString *toString(id object) {
 	return [NSString stringWithFormat: @"%@", object];
 }
 
-// private helper function to convert string to UTF-8 and URL encode it
+/**
+ * private helper function to convert string to UTF-8 and URL encode it
+ * @private
+ */
 static NSString *urlEncode(id object) {
 	NSString *string = toString(object);
 	NSString *encodedString = (NSString*)CFURLCreateStringByAddingPercentEscapes(NULL,
@@ -27,17 +33,36 @@ static NSString *urlEncode(id object) {
 
 @implementation NSDictionary (RKRequestSerialization)
 
+// TODO: Need a more robust, recursive implementation of URLEncoding...
 - (NSString*)URLEncodedString {
 	NSMutableArray *parts = [NSMutableArray array];
 	for (id key in self) {
 		id value = [self objectForKey:key];
 		if ([value isKindOfClass:[NSArray class]]) {
 			for (id item in value) {
-				NSString *part = [NSString stringWithFormat: @"%@[]=%@",
-								  urlEncode(key), urlEncode(item)];
-				[parts addObject:part];
+                if ([item isKindOfClass:[NSDictionary class]] || [item isKindOfClass:[NSMutableDictionary class]]) {
+                    // Handle nested object one level deep
+                    for( NSString *nKey in [item allKeys] ) {
+                        id nValue = [item objectForKey:nKey];
+                        NSString *part = [NSString stringWithFormat: @"%@[][%@]=%@",
+                                          urlEncode(key), urlEncode(nKey), urlEncode(nValue)];
+                        [parts addObject:part];
+                    }
+                } else {
+                    // Stringify
+                    NSString *part = [NSString stringWithFormat: @"%@[]=%@",
+                                      urlEncode(key), urlEncode(item)];
+                    [parts addObject:part];
+                }
 			}
-		} else {
+		} else if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]]) {
+            for ( NSString *nKey in [value allKeys] ) {
+                id nValue = [value objectForKey:nKey];
+                NSString *part = [NSString stringWithFormat: @"%@[%@]=%@",
+                                  urlEncode(key), urlEncode(nKey), urlEncode(nValue)];
+                [parts addObject:part];
+            }
+        } else {
 			NSString *part = [NSString stringWithFormat: @"%@=%@",
 							  urlEncode(key), urlEncode(value)];
 			[parts addObject:part];

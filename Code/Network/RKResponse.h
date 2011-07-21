@@ -15,6 +15,7 @@
 	NSMutableData* _body;
 	NSError* _failureError;
 	BOOL _loading;
+	NSDictionary* _responseHeaders;
 }
 
 /**
@@ -63,9 +64,14 @@
 - (id)initWithRequest:(RKRequest*)request;
 
 /**
+ * Initialize a new response object from a cached request
+ */
+- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers;
+
+/**
  * Initializes a response object from the results of a synchronous request
  */
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error;
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error;
 
 /**
  * Return the localized human readable representation of the HTTP Status Code returned
@@ -77,15 +83,26 @@
  */
 - (NSString*)bodyAsString;
 
+/*!
+ * Return the response body parsed as JSON into an object
+ * @deprecated in version 2.0
+ */
+- (id)bodyAsJSON;
+
 /**
  * Return the response body parsed as JSON into an object
  */
-- (id)bodyAsJSON;
+- (id)parsedBody:(NSError**)error;
 
 /**
  * Will determine if there is an error object and use it's localized message
  */
 - (NSString*)failureErrorDescription;
+
+/**
+ * Indicates whether the response was loaded from RKCache
+ */
+- (BOOL)wasLoadedFromCache;
 
 /**
  * Indicates that the connection failed to reach the remote server. The details of the failure
@@ -139,6 +156,11 @@
 - (BOOL)isCreated;
 
 /**
+ * Indicates an HTTP response code of 304
+ */
+- (BOOL)isNotModified;
+
+/**
  * Indicates an HTTP response code of 401
  */
 - (BOOL)isUnauthorized;
@@ -152,6 +174,16 @@
  * Indicates an HTTP response code of 404
  */
 - (BOOL)isNotFound;
+
+/**
+ * Indicates an HTTP response code of 409
+ */
+- (BOOL)isConflict;
+
+/**
+ * Indicates an HTTP response code of 410
+ */
+- (BOOL)isGone;
 
 /**
  * Indicates an HTTP response code of 422
@@ -204,7 +236,7 @@
 - (BOOL)isXML;
 
 /**
- * True when the server turned an XML response (MIME type is application/json)
+ * True when the server turned an JSON response (MIME type is application/json)
  */
 - (BOOL)isJSON;
 

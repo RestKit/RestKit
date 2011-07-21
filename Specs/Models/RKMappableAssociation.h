@@ -7,12 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMappable.h"
 
-@interface RKMappableAssociation : NSObject <RKObjectMappable> {
+@interface RKMappableAssociation : NSObject {
 	NSString* _testString;
+    NSDate* _date;
 }
 
 @property (nonatomic, retain) NSString* testString;
+@property (nonatomic, retain) NSDate* date;
 
 @end
