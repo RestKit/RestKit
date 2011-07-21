@@ -307,7 +307,7 @@
         if (self.backgroundPolicy == RKRequestBackgroundPolicyNone || 
             NO == [app respondsToSelector:@selector(beginBackgroundTaskWithExpirationHandler:)]) {
             // No support for background (iOS 3.x) or the policy is none -- just fire the request
-            [self fireAsynchronousRequest];
+            [self performSelectorOnMainThread:@selector(fireAsynchronousRequest) withObject:nil waitUntilDone:YES];
         } else if (self.backgroundPolicy == RKRequestBackgroundPolicyCancel || self.backgroundPolicy == RKRequestBackgroundPolicyRequeue) {
             // For cancel or requeue behaviors, we watch for background transition notifications
             [[NSNotificationCenter defaultCenter] addObserver:self 
