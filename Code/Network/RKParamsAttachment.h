@@ -19,7 +19,6 @@
 	NSString* _MIMEType;
 
 	@private
-	NSString*				_MIMEHeader;
 	NSInputStream*			_bodyStream;
 	unsigned long long		_bodyLength;
 }

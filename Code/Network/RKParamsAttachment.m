@@ -27,12 +27,11 @@
 @implementation RKParamsAttachment
 
 @synthesize fileName = _fileName, MIMEType = _MIMEType, name = _name;
-@synthesize bodyStream = _bodyStream, bodyLength = _bodyLength, MIMEHeader = _MIMEHeader;
+@synthesize bodyStream = _bodyStream, bodyLength = _bodyLength;
 
 - (id)initWithName:(NSString*)name {
 	if ((self = [self init])) {
         self.name = name;
-        self.fileName = name;
 	}
 	
 	return self;
@@ -49,7 +48,6 @@
 		
 		_bodyStream    = [[NSInputStream alloc] initWithData:body];
 		_bodyLength    = [body length];
-		_MIMEHeader	   = [[NSString alloc] initWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", name];
 	}
 	
 	return self;
@@ -59,7 +57,6 @@
 	if ((self = [self initWithName:name])) {		
 		_bodyStream    = [[NSInputStream alloc] initWithData:data];
 		_bodyLength    = [data length];
-		_MIMEHeader	   = [[NSString alloc] initWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", name];
 	}
 	
 	return self;
@@ -71,8 +68,6 @@
 		_fileName = [[filePath lastPathComponent] retain];
 		_MIMEType = [[self mimeTypeForExtension:[filePath pathExtension]] retain];
 		_bodyStream = [[NSInputStream alloc] initWithFileAtPath:filePath];
-		_MIMEHeader = [[NSString alloc] initWithFormat:@"Content-Disposition: form-data; name=\"%@\"; "
-						 @"filename=\"%@\"\r\nContent-Type: %@\r\n\r\n", name, _fileName, _MIMEType];
 		
 		NSError* error;
 		NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
@@ -87,13 +82,21 @@
 	return self;
 }
 
+- (NSString *)MIMEHeader {
+	if (_fileName) {
+		return [[NSString alloc] initWithFormat:@"Content-Disposition: form-data; name=\"%@\"; "
+								   @"filename=\"%@\"\r\nContent-Type: %@\r\n\r\n", 
+									_name, _fileName, _MIMEType];
+	}
+	
+	return [[NSString alloc] initWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",
+											_name];
+}
+
 - (void)dealloc {
     [_name release];
     [_fileName release];
     [_MIMEType release];
-
-    [_MIMEHeader release];
-    _MIMEHeader = nil;
 
     [_bodyStream close];
     [_bodyStream release];
