@@ -5,7 +5,7 @@ RestKit ships with a testing infrastructure built around UISpec and
 an associated Ruby Gem called UISpecRunner. To be able to run the
 tests, you need to do a little bit of setup:
 
-1. Install the Ruby Bundler Gem (if necessary): `sudo gem install bundler`
+1. Install the Ruby Bundler Gem (if necessary): `gem install bundler`
 1. Install the other required Gems via Bundler: `bundle`
 1. Start the spec server: `rake uispec:server`
 1. Verify the configuration by running the specs: `uispec -v`
@@ -27,10 +27,10 @@ variables.
 You can use the `uispec` executable to target and run specific specs or grouping of specs
 (i.e. unit, functional, integration):
 
-* Run all specs: `uispec`
-* Run a specific spec class: `uispec -s RKClientSpec`
-* Run a specific spec example: `uispec -s RKClientSpec -e itShouldDetectNetworkStatusWithAHostname`
-* Run all specs conforming to a protocol: `uispec -p UISpecUnit`
+* Run all specs: `bundle exec uispec`
+* Run a specific spec class: `bundle exec uispec -s RKClientSpec`
+* Run a specific spec example: `bundle exec uispec -s RKClientSpec -e itShouldDetectNetworkStatusWithAHostname`
+* Run all specs conforming to a protocol: `bundle exec uispec -p UISpecUnit`
 
 Common spec groupings (i.e. Units and Integration) are configured for execution via the Rakefile. Execute
 `rake -T` for a full listing of the pre-configured spec groups available.
