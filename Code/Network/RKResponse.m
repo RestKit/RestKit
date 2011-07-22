@@ -83,8 +83,19 @@ extern NSString* cacheURLKey;
 	[super dealloc];
 }
 
+- (BOOL)hasCredentials {
+    return _request.username && _request.password;
+}
+
 // Handle basic auth
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    RKLogDebug(@"Received authentication challenge");
+    if (! [self hasCredentials]) {
+        RKLogWarning(@"Received an authentication challenge without any credentials to satify the request.");
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+        return;
+    }
+    
     if ([challenge previousFailureCount] == 0) {
         NSURLCredential *newCredential;
         newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
@@ -93,6 +104,7 @@ extern NSString* cacheURLKey;
         [[challenge sender] useCredential:newCredential
                forAuthenticationChallenge:challenge];
     } else {
+        RKLogWarning(@"Failed authentication challenge after %d failures", [challenge previousFailureCount]);
         [[challenge sender] cancelAuthenticationChallenge:challenge];
     }
 }
@@ -115,6 +127,11 @@ extern NSString* cacheURLKey;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
 	[_request didFailLoadWithError:_failureError];
+}
+
+- (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
+    RKLogWarning(@"RestKit was asked to retransmit a new body stream for a request. Possible connection error or authentication challenge?");
+    return [self.request.params HTTPBodyStream];
 }
 
 // In the event that the url request is a post, this delegate method will be called before
