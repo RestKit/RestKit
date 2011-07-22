@@ -82,11 +82,12 @@
 // RKRequestQueue to remove requests from the queue. All requests need to be finalized.
 - (void)finalizeLoad:(BOOL)successful error:(NSError*)error {
 	_isLoading = NO;
-
+    
 	if (successful) {
 		_isLoaded = YES;
         if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
-            [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
+            [(NSObject<RKObjectLoaderDelegate>*)self.delegate performSelectorOnMainThread:@selector(objectLoaderDidFinishLoading:)
+                                                                               withObject:self waitUntilDone:YES];            
         }
         
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObject:_response 
@@ -105,6 +106,8 @@
 
 // Invoked on the main thread. Inform the delegate.
 - (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary*)resultDictionary {
+    NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
+    
 	RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:resultDictionary];
 
     if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
@@ -141,6 +144,7 @@
  @protected
  */
 - (void)processMappingResult:(RKObjectMappingResult*)result {
+    NSAssert(![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithResultDictionary:) withObject:[result asDictionary] waitUntilDone:YES];
 }
 
@@ -196,6 +200,9 @@
 }
 
 - (RKObjectMappingResult*)performMapping:(NSError**)error {
+    NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping should occur on a background thread");
+    
+    // TODO: Assert that we are on the background thread
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         NSString* rootKeyPath = self.objectMapping.rootKeyPath ? self.objectMapping.rootKeyPath : @"";
@@ -219,8 +226,10 @@
     if (self.result) {
         [self processMappingResult:self.result];
     } else if (error) {
-        [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+        [self didFailLoadWithError:error];
     } else {
+        // TODO: This is causing no didLoadObject: flavored delegate methods to be invoked.
+        
         // A nil response with an error indicates success, but no mapping results
         [self finalizeLoad:YES error:nil];
     }
@@ -338,6 +347,7 @@
 
 // NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
 - (void)didFinishLoad:(RKResponse*)response {
+    NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
 	_response = [response retain];
 
 	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {

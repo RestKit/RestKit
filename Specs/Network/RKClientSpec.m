@@ -79,7 +79,6 @@
     [params setValue:@"username" forParam:@"username"];
     [params setValue:@"Dear Daniel" forParam:@"fullName"];
     [params setValue:@"aa@aa.com" forParam:@"email"];
-    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     loader.timeout = 15;
     [client put:@"/userprofile" params:params delegate:loader];    
