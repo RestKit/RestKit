@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface RKOAuthClient : NSObject {
+@interface RKClientOAuth : NSObject {
 	NSString* _clientID;
     NSString* _clientSecret;
 	NSString* _authorizationCode;

@@ -9,7 +9,7 @@
 #import "RKClientOAuth.h"
 #import "JSONKit.h"
 
-@implementation RKOAuthClient
+@implementation RKClientOAuth
 @synthesize clientID = _clientID, clientSecret = _clientSecret, authorizationCode = _authorizationCode, authorizationURL = _authorizationURL, accessTokenURL = _accessTokenURL;
 
 
