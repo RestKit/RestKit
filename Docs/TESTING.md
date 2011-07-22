@@ -5,13 +5,12 @@ RestKit ships with a testing infrastructure built around UISpec and
 an associated Ruby Gem called UISpecRunner. To be able to run the
 tests, you need to do a little bit of setup:
 
-1. Initialize the UISpec submodule: `git submodule init && git submodule update`
 1. Install the Ruby Bundler Gem (if necessary): `sudo gem install bundler`
 1. Install the other required Gems via Bundler: `bundle`
 1. Start the spec server: `rake uispec:server`
 1. Verify the configuration by running the specs: `uispec -v`
 
-If the project builds the UISpec target correctly and executes the suite, then
+If the project builds the Specs target correctly and executes the suite, then
 you are all set. If there are any issues, you may need to reach out to the mailing
 list for help debugging.
 

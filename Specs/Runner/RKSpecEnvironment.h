@@ -7,8 +7,6 @@
 //
 
 #import "UISpec.h"
-#import "UIBug.h"
-#import "UIQuery.h"
 #import "UIExpectation.h"
 
 #import <OCMock/OCMock.h>
