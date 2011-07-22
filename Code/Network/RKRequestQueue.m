@@ -54,7 +54,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	if (gSharedQueue != requestQueue) {
         RKLogDebug(@"Shared queue instance changed from %@ to %@", gSharedQueue, requestQueue);
 		[gSharedQueue release];
-		gSharedQueue = [requestQueue retain];        
+		gSharedQueue = [requestQueue retain];
 	}
 }
 
@@ -66,13 +66,13 @@ static const NSTimeInterval kFlushDelay = 0.3;
 		_concurrentRequestsLimit = 5;
 		_requestTimeout = 300;
         _showsNetworkActivityIndicatorWhenBusy = NO;
-                
+
 #if TARGET_OS_IPHONE
         BOOL backgroundOK = &UIApplicationDidEnterBackgroundNotification != NULL;
         if (backgroundOK) {
-            [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                     selector:@selector(willTransitionToBackground) 
-                                                         name:UIApplicationDidEnterBackgroundNotification 
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(willTransitionToBackground)
+                                                         name:UIApplicationDidEnterBackgroundNotification
                                                        object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self
                                                      selector:@selector(willTransitionToForeground)
@@ -108,7 +108,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
             [_delegate requestQueueDidBeginLoading:self];
         }
 
-#if TARGET_OS_IPHONE        
+#if TARGET_OS_IPHONE
         if (self.showsNetworkActivityIndicatorWhenBusy) {
             [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         }
@@ -155,7 +155,14 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (void)loadNextInQueue {
-	// This makes sure that the Request Queue does not fire off any requests until the Reachability state has been determined.
+    // We always want to dispatch requests from the main thread so the current thread does not terminate
+    // and cause us to lose the delegate callbacks
+    if (! [NSThread isMainThread]) {
+        [self performSelectorOnMainThread:@selector(loadNextInQueue) withObject:nil waitUntilDone:NO];
+        return;
+    }
+    
+	// Make sure that the Request Queue does not fire off any requests until the Reachability state has been determined.
 	if (self.suspended) {
 		_queueTimer = nil;
 		[self loadNextInQueueDelayed];
@@ -165,27 +172,28 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	}
 
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
 	_queueTimer = nil;
+    
+    @synchronized(self) {
+        RKRequest* request = [self nextRequest];
+        while (request && self.loadingCount < _concurrentRequestsLimit) {
+            RKLogTrace(@"Processing request %@ in queue %@", request, self);
+            if ([_delegate respondsToSelector:@selector(requestQueue:willSendRequest:)]) {
+                [_delegate requestQueue:self willSendRequest:request];
+            }
 
-    RKRequest* request = [self nextRequest];
-    while (request && self.loadingCount < _concurrentRequestsLimit) {
-        RKLogTrace(@"Processing request %@ in queue %@", request, self);
-        if ([_delegate respondsToSelector:@selector(requestQueue:willSendRequest:)]) {
-            [_delegate requestQueue:self willSendRequest:request];
-        }
-        
-        self.loadingCount = self.loadingCount + 1;
-        [request sendAsynchronously];
-        RKLogDebug(@"Sent request %@ from queue %@. Loading count = %d of %d", request, self, self.loadingCount, _concurrentRequestsLimit);
+            self.loadingCount = self.loadingCount + 1;
+            [request sendAsynchronously];
+            RKLogDebug(@"Sent request %@ from queue %@. Loading count = %d of %d", request, self, self.loadingCount, _concurrentRequestsLimit);
 
-        if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
-            [_delegate requestQueue:self didSendRequest:request];
+            if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
+                [_delegate requestQueue:self didSendRequest:request];
+            }
+
+            request = [self nextRequest];
         }
-        
-        request = [self nextRequest];
-	}
-	
+    }
+
 	if (_requests.count && !_suspended) {
 		[self loadNextInQueueDelayed];
 	}
@@ -224,9 +232,11 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (void)addRequest:(RKRequest*)request {
     RKLogTrace(@"Request %@ added to queue %@", request, self);
-    
-	[_requests addObject:request];
-    
+
+    @synchronized(self) {
+        [_requests addObject:request];
+    }
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(requestFinishedWithNotification:)
                                                  name:RKRequestDidLoadResponseNotification
@@ -242,8 +252,10 @@ static const NSTimeInterval kFlushDelay = 0.3;
 - (BOOL)removeRequest:(RKRequest*)request decrementCounter:(BOOL)decrementCounter {
     if ([self containsRequest:request]) {
         RKLogTrace(@"Removing request %@ from queue %@", request, self);
-        [_requests removeObject:request];
-        
+        @synchronized(self) {
+            [_requests removeObject:request];
+        }
+
         [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidLoadResponseNotification object:request];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidFailWithErrorNotification object:request];
         
@@ -299,7 +311,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (void)cancelRequestsWithDelegate:(NSObject<RKRequestDelegate>*)delegate {
     RKLogDebug(@"Cancelling all request in queue %@ with delegate %@", self, delegate);
-    
+
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
 	for (RKRequest* request in requestsCopy) {
