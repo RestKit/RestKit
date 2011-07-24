@@ -521,6 +521,13 @@
 	return resourcePath;
 }
 
+- (void)setURL:(NSURL *)URL {
+    [URL retain];
+    [_URL release];
+    _URL = URL;
+    _URLRequest.URL = URL;
+}
+
 - (void)setResourcePath:(NSString *)resourcePath {
     if ([self.URL isKindOfClass:[RKURL class]]) {
         self.URL = [RKURL URLWithBaseURLString:[(RKURL*)self.URL baseURLString] resourcePath:resourcePath];
