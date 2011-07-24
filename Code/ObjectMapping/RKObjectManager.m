@@ -190,6 +190,31 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
+#pragma mark - Block Configured Object Loaders
+
+- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    RKObjectLoader* loader = [self objectLoaderForObject:object method:method delegate:delegate];
+    block(loader);
+    [loader send];
+    return loader;
+}
+
+- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodGET delegate:delegate block:block];
+}
+
+- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodPOST delegate:delegate block:block];
+}
+
+- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodPUT delegate:delegate block:block];
+}
+
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodDELETE delegate:delegate block:block];
+}
+
 #pragma mark - Object Instance Loaders for Non-nested JSON
 
 - (RKObjectLoader*)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {

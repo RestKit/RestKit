@@ -27,12 +27,12 @@
 
 - (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethodName:(NSString*)methodName {
 	NSString* className = NSStringFromClass(class);
-	if (nil == [_routes objectForKey:className]) {
+	if (nil == [_routes objectForKey:class]) {
 		NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-		[_routes setObject:dictionary forKey:className];		 
+		[_routes setObject:dictionary forKey:class];		 
 	}
 	
-	NSMutableDictionary* classRoutes = [_routes objectForKey:className];
+	NSMutableDictionary* classRoutes = [_routes objectForKey:class];
 	if ([classRoutes objectForKey:methodName]) {
 		[NSException raise:nil format:@"A route has already been registered for class '%@' and HTTP method '%@'", className, methodName];
 	}
@@ -75,8 +75,26 @@
 
 - (NSString*)resourcePathForObject:(NSObject*)object method:(RKRequestMethod)method {
 	NSString* methodName = [self HTTPVerbForMethod:method];
-	NSString* className  = NSStringFromClass([object class]);
-	NSDictionary* classRoutes = [_routes objectForKey:className];
+	NSString* className  = NSStringFromClass([object class]);    
+	NSDictionary* classRoutes = nil;
+    
+    // Check for exact matches
+    for (Class possibleClass in _routes) {
+        if ([object isMemberOfClass:possibleClass]) {
+            classRoutes = [_routes objectForKey:possibleClass];
+            break;
+        }
+    }
+    
+    // Check for superclass matches
+    if (! classRoutes) {
+        for (Class possibleClass in _routes) {
+            if ([object isKindOfClass:possibleClass]) {
+                classRoutes = [_routes objectForKey:possibleClass];
+                break;
+            }
+        }
+    }
 	
 	NSString* resourcePath = nil;
 	if ((resourcePath = [classRoutes objectForKey:methodName])) {
