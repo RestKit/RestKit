@@ -521,6 +521,14 @@
 	return resourcePath;
 }
 
+- (void)setResourcePath:(NSString *)resourcePath {
+    if ([self.URL isKindOfClass:[RKURL class]]) {
+        self.URL = [RKURL URLWithBaseURLString:[(RKURL*)self.URL baseURLString] resourcePath:resourcePath];
+	} else {
+        [NSException raise:NSInvalidArgumentException format:@"Resource path can only be mutated when self.URL is an RKURL instance"];
+    }
+}
+
 - (BOOL)wasSentToResourcePath:(NSString*)resourcePath {
 	return [[self resourcePath] isEqualToString:resourcePath];
 }
