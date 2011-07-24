@@ -433,7 +433,19 @@ We have configured a serialization mapping for the object and want to fetch our 
     [[RKObjectManager sharedManager] postObject:query mapResponseWith:articleMapping delegate:self];
 }
 ```
-    
+One inconvenience of working with non-KVC data is that RestKit is completely unable to automatically infer the appropriate mappings for you. If you
+happen to be working with data where you post/put an object and receive the same object back, you can instruct RestKit to automatically select the
+appropriate object mapping for you:
+
+```objc
+    [RKObjectManager sharedManager].inferMappingsFromObjectTypes = YES;
+    [[RKObjectManager sharedManager] postObject:article delegate:self];
+```
+
+This will cause RestKit to search the mapping provider for the first registered mapping targeting the `Article` class and configure the
+object loader to map the results with that mapping. This is provided as a convenience for users who cannot use KVC mappings and is disabled by 
+default.
+
 ### Core Data
 
 Until now we have focused on transient objects within RestKit. For many applications transient objects are completely the right choice --

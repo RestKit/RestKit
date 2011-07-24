@@ -39,7 +39,7 @@ static RKObjectManager* sharedManager = nil;
 		_router = [RKObjectRouter new];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
         _onlineState = RKObjectManagerOnlineStateUndetermined;
-        _inferMappingsFromObjectTypes = YES;
+        _inferMappingsFromObjectTypes = NO;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
