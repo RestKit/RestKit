@@ -373,7 +373,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     
     if (object == nil) {
         object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
-        [dictionary setObject:object forKey:primaryKeyValue];
+        [dictionary setObject:object forKey:lookupValue];
     }
         
 	return object;

@@ -62,7 +62,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKManagedObjectLoaderSpec"
+            value = "RKObjectMappingNextGenSpec"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -72,7 +72,7 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldDeleteObjectFromLocalStoreOnDELETE"
+            value = "itShouldRegisterRailsIdiomaticObjects"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
@@ -87,12 +87,12 @@
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_SPEC"
-            value = "RKObjectMappingNextGenSpec"
-            isEnabled = "NO">
+            value = "RKManagedObjectStoreSpec"
+            isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "UISPEC_EXAMPLE"
-            value = "itShouldSetTheErrorWhenMappingOperationFails"
+            value = "itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContent"
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable

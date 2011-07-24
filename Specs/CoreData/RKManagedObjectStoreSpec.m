@@ -24,4 +24,11 @@
     assertThat(newReference, is(equalTo(human)));
 }
 
+- (void)itShouldStoreNewInstancesOfCreatedObjectsByStringKey {
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    NSManagedObject* firstInstance = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:[NSNumber numberWithInt:1234]];
+    NSManagedObject* secondInstance = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:[NSNumber numberWithInt:1234]];
+    assertThat(secondInstance, is(equalTo(firstInstance)));
+}
+
 @end

@@ -121,10 +121,10 @@
 		257FB68913959884003A628E /* RKManagedObjectMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 257FB68613958786003A628E /* RKManagedObjectMappingSpec.m */; };
 		257FB6FF1395D36D003A628E /* RKObjectMapperError.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB6FE1395D36D003A628E /* RKObjectMapperError.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257FB7061395DABB003A628E /* RKRequest_Internals.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7051395DABB003A628E /* RKRequest_Internals.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257FB70A1395DC44003A628E /* RKManagedObjectMappingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 257FB7081395DC44003A628E /* RKManagedObjectMappingOperation.m */; };
 		258A92691379D18A00D80034 /* RKObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A92681379D18A00D80034 /* RKObjectFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		258A926C1379D41F00D80034 /* RKManagedObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A926A1379D41F00D80034 /* RKManagedObjectFactory.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		258A926C1379D41F00D80034 /* RKManagedObjectFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 258A926A1379D41F00D80034 /* RKManagedObjectFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258A926D1379D41F00D80034 /* RKManagedObjectFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 258A926B1379D41F00D80034 /* RKManagedObjectFactory.m */; };
 		258E490113C51FE600C9C883 /* RKJSONParserJSONKitSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 258E490013C51FE600C9C883 /* RKJSONParserJSONKitSpec.m */; };
 		25901D7C137B6CF60002ECEB /* RKManagedObjectFactorySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25901D7B137B695F0002ECEB /* RKManagedObjectFactorySpec.m */; };
@@ -218,7 +218,7 @@
 		259DF7861340294400233DF4 /* RKXMLParserLibXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 259DF7831340294400233DF4 /* RKXMLParserLibXML.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259DF7871340294400233DF4 /* RKXMLParserLibXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 259DF7851340294400233DF4 /* RKXMLParserLibXML.m */; };
 		25A1CA84137C37E300A7D5C9 /* RKManagedObjectThreadSafeInvocationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CA83137C37E300A7D5C9 /* RKManagedObjectThreadSafeInvocationSpec.m */; };
-		25A1CA87137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CA85137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		25A1CA87137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CA85137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25A1CA88137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A1CA86137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.m */; };
 		25A1CA8A137DD33900A7D5C9 /* RKObjectLoader_Internals.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CA89137DD33800A7D5C9 /* RKObjectLoader_Internals.h */; };
 		25A1CB36137F5C6300A7D5C9 /* RKJSONParserYAJL.h in Headers */ = {isa = PBXBuildFile; fileRef = 25A1CB35137F5C6300A7D5C9 /* RKJSONParserYAJL.h */; settings = {ATTRIBUTES = (Public, ); }; };
