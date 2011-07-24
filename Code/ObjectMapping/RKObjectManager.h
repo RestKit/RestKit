@@ -172,7 +172,14 @@ typedef enum {
  When YES, RestKit will auto-select the appropriate object mapping for a particular object
  passed through getObject:, postObject:, putObject:, and deleteObject:.
  
- Default: YES
+ This is useful when you are working with mappable data that is not identifiable via KVC
+ and you are sending/receiving objects of the same type. When YES, RestKit will search the
+ mappingProvider for an object mapping targeting the same type of object that you passed into
+ getObject:, postObject:, :putObject, or deleteObject: and configure the RKObjectLoader to map
+ the payload using that mapping. This is merely a convenience for users who are working entirely
+ with non-KVC mappable data and saves the added step of searching the mapping provider manually.
+ 
+ Default: NO
  */
 @property (nonatomic, assign) BOOL inferMappingsFromObjectTypes;
 
