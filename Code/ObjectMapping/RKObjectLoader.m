@@ -164,7 +164,7 @@
             return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
         }
         
-        return nil;
+        return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     }
     
     id parsedData = [parser objectFromString:bodyAsString error:error];
@@ -223,15 +223,11 @@
     
     NSError* error = nil;
     _result = [[self performMapping:&error] retain];
+    NSAssert(_result || error, @"Expected performMapping to return a mapping result or an error.");
     if (self.result) {
         [self processMappingResult:self.result];
     } else if (error) {
         [self didFailLoadWithError:error];
-    } else {
-        // TODO: This is causing no didLoadObject: flavored delegate methods to be invoked.
-        
-        // A nil response with an error indicates success, but no mapping results
-        [self finalizeLoad:YES error:nil];
     }
 
 	[pool drain];

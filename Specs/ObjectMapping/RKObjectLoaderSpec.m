@@ -431,4 +431,36 @@
     assertThatBool(responseLoader.success, is(equalToBool(YES)));
 }
 
+- (void)itShouldInvokeTheDelegateOnSuccessIfTheResponseIsAnEmptyArray {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    responseLoader.timeout = 20;
+    [objectManager loadObjectsAtResourcePath:@"/empty/array" delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThat(responseLoader.objects, isNot(nilValue()));
+    assertThatBool([responseLoader.objects isKindOfClass:[NSArray class]], is(equalToBool(YES)));
+    assertThat(responseLoader.objects, is(empty()));
+}
+
+- (void)itShouldInvokeTheDelegateOnSuccessIfTheResponseIsAnEmptyDictionary {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    responseLoader.timeout = 20;
+    [objectManager loadObjectsAtResourcePath:@"/empty/dictionary" delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThat(responseLoader.objects, isNot(nilValue()));
+    assertThatBool([responseLoader.objects isKindOfClass:[NSArray class]], is(equalToBool(YES)));
+    assertThat(responseLoader.objects, is(empty()));
+}
+
+- (void)itShouldInvokeTheDelegateOnSuccessIfTheResponseIsAnEmptyString {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    responseLoader.timeout = 20;
+    [objectManager loadObjectsAtResourcePath:@"/empty/string" delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThat(responseLoader.objects, isNot(nilValue()));
+    assertThatBool([responseLoader.objects isKindOfClass:[NSArray class]], is(equalToBool(YES)));
+    assertThat(responseLoader.objects, is(empty()));
+}
 @end
