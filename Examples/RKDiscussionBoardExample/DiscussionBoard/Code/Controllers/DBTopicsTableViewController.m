@@ -16,13 +16,22 @@
 - (id)initWithNavigatorURL:(NSURL *)URL query:(NSDictionary *)query {
 	if (self = [super initWithNavigatorURL:URL query:query]) {
 		self.title = @"Topics";
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLogoutButton) name:DBUserDidLoginNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLogoutButton) name:DBUserDidLogoutNotification object:nil];
 	}
 	return self;
 }
 
-- (void)loadView {
-    [super loadView];
-    
+- (void)updateLogoutButton {
+    UIBarButtonItem* item = nil;
+    if ([[DBUser currentUser] isLoggedIn]) {
+		item = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleBordered target:self action:@selector(logoutButtonWasPressed:)];
+	}
+	self.navigationItem.leftBarButtonItem = item;
+    [item release];
+}
+
+- (void)createModel {
     /**
      Map loaded objects into Three20 Table Item instances!
      */
@@ -34,13 +43,20 @@
     RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/topics" delegate:nil];
     dataSource.model = [RKObjectLoaderTTModel modelWithObjectLoader:objectLoader];
     self.dataSource = dataSource;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     
-	UIBarButtonItem* item = nil;
-	if ([[DBUser currentUser] isLoggedIn]) {
-		item = [[UIBarButtonItem alloc] initWithTitle:@"Logout" style:UIBarButtonItemStyleBordered target:self action:@selector(logoutButtonWasPressed:)];
-	}
-	self.navigationItem.leftBarButtonItem = item;
-	[item release];
+    // On subsequent appearances, refresh the table
+    if (self.model) {
+        [self createModel];
+    }
+}
+
+- (void)loadView {
+    [super loadView];
+	[self updateLogoutButton];
 
 	UIButton* newButton = [UIButton buttonWithType:UIButtonTypeCustom];
 	UIImage* newButtonImage = [UIImage imageNamed:@"add.png"];
