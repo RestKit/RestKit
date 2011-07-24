@@ -169,9 +169,9 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 }
 
 - (BOOL)validateValue:(id)value atKeyPath:(NSString*)keyPath {
-    BOOL success = YES;
+    BOOL success = YES;        
     
-    if ([self.destinationObject respondsToSelector:@selector(validateValue:forKey:error:)]) {
+    if (self.objectMapping.performKeyValueValidation && [self.destinationObject respondsToSelector:@selector(validateValue:forKey:error:)]) {
         success = [self.destinationObject validateValue:&value forKey:keyPath error:&_validationError];
         if (!success) {                        
             if (_validationError) {
@@ -262,6 +262,10 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 - (BOOL)applyAttributeMappings {
     // If we have a nesting substitution value, we have alread
     BOOL appliedMappings = (_nestedAttributeSubstitution != nil);
+    
+    if (!self.objectMapping.performKeyValueValidation) {
+        RKLogDebug(@"Key-value validation is disabled for mapping, skipping...");
+    }
     
     for (RKObjectAttributeMapping* attributeMapping in [self attributeMappings]) {
         if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {

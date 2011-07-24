@@ -100,6 +100,7 @@ typedef enum {
 	RKObjectManagerOnlineState _onlineState;
     RKObjectMappingProvider* _mappingProvider;
     NSString* _serializationMIMEType;
+    BOOL _inferMappingsFromObjectTypes;
 }
 
 /// @name Configuring the Shared Manager Instance
@@ -166,6 +167,14 @@ typedef enum {
  The value for the HTTP Accept header to specify the preferred format for retrieved data
  */
 @property (nonatomic, assign) NSString* acceptMIMEType;
+
+/**
+ When YES, RestKit will auto-select the appropriate object mapping for a particular object
+ passed through getObject:, postObject:, putObject:, and deleteObject:.
+ 
+ Default: YES
+ */
+@property (nonatomic, assign) BOOL inferMappingsFromObjectTypes;
 
 ////////////////////////////////////////////////////////
 /// @name Registered Object Loaders
