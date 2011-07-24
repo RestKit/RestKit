@@ -260,7 +260,9 @@
     }
     
     // If we found nothing eligible for mapping in the content, add an unmappable key path error and fail mapping
-    if (foundMappable == NO) {
+    // If the content is empty, we don't consider it an error
+    BOOL isEmpty = [self.sourceObject respondsToSelector:@selector(count)] && ([self.sourceObject count] == 0);
+    if (foundMappable == NO && !isEmpty) {
         [self addErrorForUnmappableKeyPath:@""];
         return nil;
     }

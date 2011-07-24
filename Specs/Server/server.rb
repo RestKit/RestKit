@@ -101,6 +101,24 @@ class RestKit::SpecServer < Sinatra::Base
     params.to_json
   end
   
+  get '/empty/array' do
+    status 200
+    content_type 'application/json'
+    [].to_json
+  end
+  
+  get '/empty/dictionary' do
+    status 200
+    content_type 'application/json'
+    {}.to_json
+  end
+  
+  get '/empty/string' do
+    status 200
+    content_type 'application/json'
+    ""
+  end
+  
   # start the server if ruby file executed directly
   run! if app_file == $0
 end
