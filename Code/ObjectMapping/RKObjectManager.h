@@ -211,6 +211,63 @@ typedef enum {
  */
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
 
+////////////////////////////////////////////////////////
+/// @name Block Configured Object Loaders
+
+#if NS_BLOCKS_AVAILABLE
+
+/**
+ Configure and send an object loader after yielding it to a block for configuration. This allows for very succinct on-the-fly
+ configuration of the request without obtaining an object reference via objectLoaderForObject: and then sending it yourself.
+ 
+ For example:
+ 
+    - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
+        if ([self validatePassword:newPassword error:error]) {
+            self.password = newPassword;
+            [[RKObjectManager sharedManager] sendObject:self method:RKRequestMethodPOST delegate:self block:^(RKObjectLoader* loader) {
+                loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
+                loader.targetObject = nil;  // Map the results back onto a new object instead of self
+                // Set up a custom serialization mapping to handle this request
+                loader.serializationMapping = [RKObjectMapping serializationMappingWithBlock:^(RKObjectMapping* mapping) {
+                    [mapping mapAttributes:@"password", nil];
+                }];
+            }];
+        }
+    }
+ */
+- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+
+/**
+ GET a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ */
+- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+
+/**
+ POST a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ */
+- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+
+/**
+ PUT a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ */
+- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+
+/**
+ DELETE a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ */
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+
+#endif
+
 //////
 
 /**

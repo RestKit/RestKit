@@ -28,6 +28,23 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     return [mapping autorelease];
 }
 
++ (id)serializationMapping {
+    return [self mappingForClass:[NSMutableDictionary class]];
+}
+
++ (id)mappingForClass:(Class)objectClass block:(void(^)(RKObjectMapping*))block {
+    RKObjectMapping* mapping = [self mappingForClass:objectClass];
+    block(mapping);
+    return mapping;
+}
+
++ (id)serializationMappingWithBlock:(void(^)(RKObjectMapping*))block {
+    RKObjectMapping* mapping = [self serializationMapping];
+    block(mapping);
+    return mapping;
+}
+
+
 - (id)init {
     self = [super init];
     if (self) {
