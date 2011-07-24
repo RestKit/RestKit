@@ -8,6 +8,7 @@
 
 #import "RKParams.h"
 #import "../Support/RKLog.h"
+#import <objc/runtime.h>
 
 // Set Logging Component
 #undef RKLogComponent
@@ -20,6 +21,9 @@
 -(void)_perfom;
 -(void)_queueEvents:(NSStreamEvent) eventCode second:(NSStreamEvent) secondCode;
 -(void)_queueEvent:(NSStreamEvent) eventCode;
+
+- (void)scheduleInCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)mode;
+- (void)unscheduleFromCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)mode;
 
 @end
 
@@ -36,13 +40,11 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 @implementation RKParams
 
 + (RKParams*)params {
-	RKParams* params = [[[RKParams alloc] init] autorelease];
-	return params;
+	return [[[RKParams alloc] init] autorelease];
 }
 
 + (RKParams*)paramsWithDictionary:(NSDictionary*)dictionary {
-	RKParams* params = [[[RKParams alloc] initWithDictionary:dictionary] autorelease];
-	return params;
+	return [[[RKParams alloc] initWithDictionary:dictionary] autorelease];
 }
 
 - (id)init {
@@ -50,7 +52,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 	if (self) {
 		_attachments = [NSMutableArray new];
 		_attachmentStreams = [NSMutableArray new];
-		
+        _eventQueue = [[NSMutableArray alloc] init];
+        
 		_runLoopSource = nil;
 		_constructed = NO;
 	}
@@ -59,8 +62,12 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 }
 
 - (void)dealloc {
+    [self close];
+    
+    NSLog(@"DEALLOCING");
 	[_attachments release];
 	[_attachmentStreams release];
+    [_eventQueue release];
 	
 	[super dealloc];
 }
@@ -187,63 +194,84 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 #pragma mark NSInputStream methods
 
+- (NSStreamStatus)streamStatus {
+    return _streamStatus;
+}
+
 - (void)open {
-    _currentAttachmentStream = nil;
-	_eventQueue = [[NSMutableArray alloc] init];
-	
-    if ([_attachmentStreams count] > 0) {
-		[_attachmentStreams makeObjectsPerformSelector:@selector(open)];
-		_currentAttachmentIndex = 0;
-        _currentAttachmentStream = [_attachmentStreams objectAtIndex:_currentAttachmentIndex];
-	}
-	
-	_streamStatus = NSStreamStatusOpen;
-    RKLogTrace(@"RKParams stream opened...");
+    @synchronized (self) {
+        _currentAttachmentStream = nil;
+        _streamStatus = NSStreamStatusOpening;
+        NSLog(@"OPENING");
+        
+        if ([_attachmentStreams count] > 0) {
+            [_attachmentStreams makeObjectsPerformSelector:@selector(open)];
+            _currentAttachmentIndex = 0;
+            _currentAttachmentStream = [_attachmentStreams objectAtIndex:_currentAttachmentIndex];
+        }
+        
+        _streamStatus = NSStreamStatusOpen;
+        RKLogTrace(@"RKParams stream opened...");
+    }
 }
 
 - (void)close {
-    if (_streamStatus != NSStreamStatusClosed) {
-        _streamStatus = NSStreamStatusClosed;
-        
-        RKLogTrace(@"RKParams stream closed. Releasing self.");   
-		
-		@synchronized (self) {
-			[_eventQueue release]; _eventQueue = nil;
-			[_attachmentStreams makeObjectsPerformSelector:@selector(close)];
-			
-			CFRunLoopSourceInvalidate(_runLoopSource);
-			CFRelease(_runLoopSource); _runLoopSource = nil;   
-		}
-        
-        // NOTE: When we are assigned to the URL request, we get
-        // retained. We release ourselves here to ensure the retain
-        // count will hit zero after upload is complete.
-        [self release];
+    @synchronized (self) {
+        if (_streamStatus != NSStreamStatusClosed) {
+            _streamStatus = NSStreamStatusClosed;
+            
+            NSLog(@"CLOSING");
+            RKLogTrace(@"RKParams stream closed. Releasing self.");      
+            
+            [_attachmentStreams makeObjectsPerformSelector:@selector(close)];
+            
+            CFRunLoopSourceInvalidate(_runLoopSource);
+            CFRelease(_runLoopSource); _runLoopSource = nil;
+            
+            // NOTE: When we are assigned to the URL request, we get
+            // retained. We release ourselves here to ensure the retain
+            // count will hit zero after upload is complete.
+            //[self release];
+        }
     }
 }
 
 
 - (BOOL)hasBytesAvailable {
-    return _currentAttachmentStream != nil;
+    return [_currentAttachmentStream hasBytesAvailable];
 }
 
-- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)len {
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLen {
     if (_currentAttachmentStream == nil) {
         return 0;
 	}
     
-    NSInteger result = [_currentAttachmentStream read:buffer maxLength:len];
-    if (result == 0 && (_currentAttachmentIndex < [_attachmentStreams count] - 1)) {
-        _currentAttachmentIndex++;
-        _currentAttachmentStream = [_attachmentStreams objectAtIndex:_currentAttachmentIndex];
-        result = [self read:buffer maxLength:len];
+    NSInteger result = 0;
+    
+    do {
+        NSInteger incrementalRead = [_currentAttachmentStream read:&buffer[result] maxLength:(maxLen - result)];
+        
+        if (incrementalRead == 0) {
+            _currentAttachmentIndex++;
+            if (_currentAttachmentIndex < [_attachmentStreams count]) {
+                _currentAttachmentStream = [_attachmentStreams objectAtIndex:_currentAttachmentIndex];
+            } else {
+                _currentAttachmentStream = nil;
+            }
+        } else {
+            result += incrementalRead;
+        }
+    } while (_currentAttachmentStream && result < maxLen);
+    
+    if (_currentAttachmentStream) {
+        _streamStatus = NSStreamStatusReading;
+        [self _queueEvent:NSStreamEventHasBytesAvailable];
+    } else {
+        _streamStatus = NSStreamStatusAtEnd;
+        [self _queueEvent:NSStreamEventEndEncountered];
     }
     
-    if (result == 0) {
-        _currentAttachmentStream = nil;
-	}
-	
-	[self _queueEvent:NSStreamEventHasBytesAvailable];	
+    NSLog(@"Read %d bytes but wanted %d!", result, maxLen);
 	
     return result;
 }
@@ -252,40 +280,79 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return NO;
 }
 
+- (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode {
+    NSLog(@"SCHEDULING");
+    [self scheduleInCFRunLoop:[aRunLoop getCFRunLoop] forMode:(CFStringRef) mode];
+}
+
+- (void)removeFromRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode {
+    NSLog(@"REMOVING");
+    [self unscheduleFromCFRunLoop:[aRunLoop getCFRunLoop] forMode:(CFStringRef) mode];
+}
+
 #pragma mark Core Foundation stream methods
 
-- (BOOL)_setCFClientFlags:(CFOptionFlags)theStreamEvents 
-				 callback:(CFReadStreamClientCallBack)clientCB 
-				  context:(CFStreamClientContext*)clientContext {
-	_clientCallback = clientCB;
-	_streamEvents = theStreamEvents;
++ (BOOL)resolveInstanceMethod:(SEL) selector {
+    NSString * name = NSStringFromSelector(selector);
+    
+    if ([name hasPrefix:@"_"]) {
+        name = [name substringFromIndex:1];
+        SEL aSelector = NSSelectorFromString(name);
+        Method method = class_getInstanceMethod(self, aSelector);
+        
+        if (method) {
+            class_addMethod(self,
+                            selector,
+                            method_getImplementation(method),
+                            method_getTypeEncoding(method));
+            return YES;
+        }
+    }
+    
+    return [super resolveInstanceMethod:selector];
+}
+
+- (BOOL)setCFClientFlags:(CFOptionFlags)inFlags
+                callback:(CFReadStreamClientCallBack)inCallback
+                context:(CFStreamClientContext *)inContext {
 	
-	if (clientContext) {
-		_clientInfo = clientContext->info;
+	if (inCallback != NULL) {
+        NSLog(@"Setting flags!");
+		_clientFlags = inFlags;
+		_clientCallback = inCallback;
+        
+		memcpy(&_clientContext, inContext, sizeof(CFStreamClientContext));
+		if (_clientContext.info && _clientContext.retain) {
+			_clientContext.retain(_clientContext.info);
+		}
 	} else {
-		_clientInfo = nil;
+        NSLog(@"Clearing flags!");
+		_clientFlags = kCFStreamEventNone;
+		_clientCallback = NULL;
+        
+		if (_clientContext.info && _clientContext.release) {
+			_clientContext.release(_clientContext.info);
+		}
+		
+		memset(&_clientContext, 0, sizeof(CFStreamClientContext));
 	}
 	
-	return YES;
+	return YES;	
 }
 
-- (void)scheduleInRunLoop:(NSRunLoop *)aRunLoop forMode:(NSString *)mode {
-	// no-op
-}
-
-- (void)_scheduleInCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)runLoopMode {
-	@synchronized (self) {		
+- (void)scheduleInCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)runLoopMode {
+	@synchronized (self) {	
 		if (!_runLoopSource) {
+            NSLog(@"SCHEDULED IN RUN LOOP");
+            
 			CFRunLoopSourceContext context;
-			
-			// Setup the context.
 			context.version = 0;
 			context.info = self;
 			context.retain = NULL;
 			context.release = NULL;
-			context.copyDescription = CFCopyDescription;
-			context.equal = CFEqual;
-			context.hash = CFHash;
+			context.copyDescription = NULL;
+			context.equal = NULL;
+			context.hash = NULL;
 			context.schedule = RKParamsStreamRunLoopSourceScheduleRoutine;
 			context.cancel = RKParamsStreamRunLoopSourceCancelRoutine;
 			context.perform = RKParamsStreamRunLoopSourcePerformRoutine;
@@ -298,8 +365,9 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 	}
 }
 
-- (void) _unscheduleFromCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)runLoopMode {
+- (void)unscheduleFromCFRunLoop:(CFRunLoopRef)runLoop forMode:(CFStringRef)runLoopMode {
 	@synchronized (self) {
+        NSLog(@"UNSCHEDULED IN RUN LOOP");
 		_scheduledRunLoop = nil;
 		CFRunLoopRemoveSource(runLoop, _runLoopSource, (CFStringRef)runLoopMode);
 	}
@@ -315,6 +383,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 -(void)_perfom {
 	@synchronized (self) {
+        NSLog(@"PERFROMING EVENT");
 		for (NSInteger index = 0; index < [_eventQueue count]; index++) {
 			NSStreamEvent eventCode = [[_eventQueue objectAtIndex:0] unsignedIntegerValue];
 			
@@ -323,8 +392,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 				[_eventQueue removeObjectAtIndex:0];
 			}
 			
-			if ( (eventCode & _streamEvents) == eventCode) {
-				(*_clientCallback)((CFReadStreamRef)self, eventCode, _clientInfo);
+			if ((eventCode & _clientFlags) == eventCode) {
+				(*_clientCallback)((CFReadStreamRef)self, eventCode, _clientContext.info);
 			}
 		}
 	}
@@ -332,6 +401,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 -(void)_queueEvents:(NSStreamEvent) eventCode second:(NSStreamEvent) secondCode {
 	@synchronized (self) {
+        NSLog(@"ENQUEUEING TWO EVENTS");
 		if (!_scheduledRunLoop || !_eventQueue) {
 			return;
 		}
@@ -349,6 +419,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 -(void)_queueEvent:(NSStreamEvent) eventCode {
 	@synchronized (self) {
+        NSLog(@"ENQUEUEING EVENT");
 		if (!_scheduledRunLoop || !_eventQueue) {
 			return;
 		}

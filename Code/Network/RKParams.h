@@ -27,9 +27,12 @@
 
 	CFRunLoopRef _scheduledRunLoop;
 	CFRunLoopSourceRef _runLoopSource;
+    
 	CFReadStreamClientCallBack _clientCallback;
-	CFOptionFlags _streamEvents;
-	void *_clientInfo;
+    CFStreamClientContext _clientContext;
+	CFOptionFlags _clientFlags;
+    BOOL _scheduled;
+    
 	NSMutableArray *_eventQueue;
 }
 

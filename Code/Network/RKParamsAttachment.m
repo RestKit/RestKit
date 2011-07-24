@@ -84,12 +84,12 @@
 
 - (NSString *)MIMEHeader {
 	if (_fileName) {
-		return [[NSString alloc] initWithFormat:@"Content-Disposition: form-data; name=\"%@\"; "
+		return [NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; "
 								   @"filename=\"%@\"\r\nContent-Type: %@\r\n\r\n", 
 									_name, _fileName, _MIMEType];
 	}
 	
-	return [[NSString alloc] initWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",
+	return [NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n",
 											_name];
 }
 
