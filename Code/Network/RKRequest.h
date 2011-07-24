@@ -100,12 +100,12 @@ typedef enum RKRequestBackgroundPolicy {
 /**
  * The URL this request is loading
  */
-@property(nonatomic, readonly) NSURL* URL;
+@property(nonatomic, retain) NSURL* URL;
 
 /**
  * The resourcePath portion of this loader's URL
  */
-@property (nonatomic, readonly) NSString* resourcePath;
+@property (nonatomic, retain) NSString* resourcePath;
 
 /**
  * The HTTP verb the request is sent via
