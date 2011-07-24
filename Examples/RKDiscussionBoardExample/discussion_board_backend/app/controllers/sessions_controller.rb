@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
     @user_session = UserSession.new(params[:user])
     if @user_session.save
       @user = @user_session.user
-      render :json => {:username => @user.username, :single_access_token => @user.single_access_token, :id => @user.id, :email => @user.email}
+      render :json => {:user => {:username => @user.username, :single_access_token => @user.single_access_token, :id => @user.id, :email => @user.email}}
     else
       render :json => {:errors => ["Invalid username or password"]}, :status => 401
     end

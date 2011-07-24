@@ -82,26 +82,26 @@ static DBUser* currentUser = nil;
  */
 - (void)loginWithUsername:(NSString*)username andPassword:(NSString*)password delegate:(NSObject<DBUserAuthenticationDelegate>*)delegate {
 	_delegate = delegate;
+    self.username = username;
+    self.password = password;
 	
-	RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/login" delegate:self];
-	objectLoader.method = RKRequestMethodPOST;
-	objectLoader.params = [NSDictionary dictionaryWithKeysAndObjects:@"user[username]", username, @"user[password]", password, nil];
-	objectLoader.targetObject = self;
-    
-    // TODO: Temporary to work around bug in Rails serialization on the Heroku app
-    objectLoader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForKeyPath:@"user"];
-	[objectLoader send];
+    [[RKObjectManager sharedManager] postObject:self delegate:self block:^(RKObjectLoader* loader) {
+        loader.resourcePath = @"/login";
+        loader.serializationMapping = [RKObjectMapping serializationMappingWithBlock:^(RKObjectMapping* mapping) {
+            mapping.rootKeyPath = @"user";
+            [mapping mapAttributes:@"username", @"password", nil];            
+        }];
+    }];
 }
 
 /**
  * Implementation of a RESTful logout pattern. We POST an object loader to
  * the /logout resource path. This destroys the remote session
  */
-- (void)logout {	
-	RKObjectLoader* objectLoader = [[RKObjectManager sharedManager] objectLoaderWithResourcePath:@"/logout" delegate:self];
-	objectLoader.method = RKRequestMethodPOST;
-	objectLoader.targetObject = self;
-	[objectLoader send];
+- (void)logout {
+    [[RKObjectManager sharedManager] postObject:self delegate:self block:^(RKObjectLoader* loader) {
+        loader.resourcePath = @"/logout";
+    }];
 }
 
 - (void)loginWasSuccessful {
