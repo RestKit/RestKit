@@ -33,6 +33,7 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    humanMapping.rootKeyPath = @"human";
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
@@ -87,6 +88,7 @@
     [_objectManager postObject:temporaryHuman delegate:loader];
     [loader waitForResponse];
     
+    assertThat(loader.objects, isNot(empty()));
     RKHuman* human = (RKHuman*)[loader.objects objectAtIndex:0];
     assertThat(human, is(equalTo(temporaryHuman)));
     assertThat(human.railsID, is(equalToInt(1)));
@@ -173,6 +175,7 @@
     manager.router = router;
     
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    mapping.rootKeyPath = @"human";
     [mapping mapAttributes:@"name", @"age", nil];
     [manager.mappingProvider setObjectMapping:mapping forKeyPath:@"human"];
     [manager.mappingProvider setSerializationMapping:mapping forClass:[RKObjectMapperSpecModel class]];

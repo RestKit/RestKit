@@ -24,7 +24,7 @@
 @synthesize url = _url;
 @synthesize boolString = _boolString;
 
-- (BOOL)validateValue:(inout id *)ioValue forKey:(NSString *)inKey error:(out NSError **)outError {
+- (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError {
     if ([(NSObject*)*ioValue isKindOfClass:[NSString class]] && [(NSString*)*ioValue isEqualToString:@"FAIL"]) {
         *outError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
         return NO;
