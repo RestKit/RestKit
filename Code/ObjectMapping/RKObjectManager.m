@@ -88,6 +88,9 @@ static RKObjectManager* sharedManager = nil;
 	_objectStore = nil;
     [_serializationMIMEType release];
     _serializationMIMEType = nil;
+    [_mappingProvider release];
+    _mappingProvider = nil;
+    
 	[super dealloc];
 }
 
