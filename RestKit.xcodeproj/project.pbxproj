@@ -16,10 +16,10 @@
 				255B759F133BAC2400ED76AD /* Copy Headers to Legacy Build Location */,
 			);
 			dependencies = (
-				20808E0913DE9137000A156A /* PBXTargetDependency */,
 				255B758F133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7591133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7593133BABCD00ED76AD /* PBXTargetDependency */,
+				20808E0913DE9137000A156A /* PBXTargetDependency */,
 				255B7595133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7597133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7599133BABCD00ED76AD /* PBXTargetDependency */,
@@ -32,8 +32,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		20808DDD13DE8DB1000A156A /* RKJSONParserNXJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DDB13DE8DB1000A156A /* RKJSONParserNXJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		20808DDE13DE8DB1000A156A /* RKJSONParserNXJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 20808DDC13DE8DB1000A156A /* RKJSONParserNXJSON.m */; };
 		20808DFF13DE90F5000A156A /* NSError+Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DF613DE90F5000A156A /* NSError+Extensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		20808E0013DE90F6000A156A /* NSError+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 20808DF713DE90F5000A156A /* NSError+Extensions.m */; };
 		20808E0113DE90F6000A156A /* NXDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DF813DE90F5000A156A /* NXDebug.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -361,14 +359,14 @@
 			remoteGlobalIDString = 253A081312551D5300976E89;
 			remoteInfo = RestKitCoreData;
 		};
-		2583B31E13E2116C008A3034 /* PBXContainerItemProxy */ = {
+		2583B33C13E21342008A3034 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
 			remoteInfo = UISpec_Simulator;
 		};
-		2583B32013E2116C008A3034 /* PBXContainerItemProxy */ = {
+		2583B33E13E21342008A3034 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
 			proxyType = 2;
@@ -399,9 +397,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRestKitJSONParser+NXJSON.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		20808DDB13DE8DB1000A156A /* RKJSONParserNXJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKJSONParserNXJSON.h; sourceTree = "<group>"; };
-		20808DDC13DE8DB1000A156A /* RKJSONParserNXJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKJSONParserNXJSON.m; sourceTree = "<group>"; };
+		20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libRestKitJSONParser+NXJSON.a"; path = libRestKitJSONParserNXJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		20808DF613DE90F5000A156A /* NSError+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSError+Extensions.h"; path = "Vendor/NXJSON/NSError+Extensions.h"; sourceTree = "<group>"; };
 		20808DF713DE90F5000A156A /* NSError+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSError+Extensions.m"; path = "Vendor/NXJSON/NSError+Extensions.m"; sourceTree = "<group>"; };
 		20808DF813DE90F5000A156A /* NXDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NXDebug.h; path = Vendor/NXJSON/NXDebug.h; sourceTree = "<group>"; };
@@ -883,8 +879,8 @@
 		250BC42C11F6260100F3FE5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2583B31F13E2116C008A3034 /* UISpec_Simulator.a */,
-				2583B32113E2116C008A3034 /* UISpec_Device.a */,
+				2583B33D13E21342008A3034 /* UISpec_Simulator.a */,
+				2583B33F13E21342008A3034 /* UISpec_Device.a */,
 				250BC43711F6260100F3FE5A /* Specs.app */,
 			);
 			name = Products;
@@ -1129,11 +1125,9 @@
 				253A08B61255212300976E89 /* RKJSONParserSBJSON.m */,
 				253A08B71255212300976E89 /* RKJSONParserYAJL.m */,
 				73057FC41331A8F6001908EE /* RKJSONParserJSONKit.m */,
-				20808DDC13DE8DB1000A156A /* RKJSONParserNXJSON.m */,
 				25A1CB35137F5C6300A7D5C9 /* RKJSONParserYAJL.h */,
 				25A1CB37137F5C7700A7D5C9 /* RKJSONParserSBJSON.h */,
 				25A1CB39137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h */,
-				20808DDB13DE8DB1000A156A /* RKJSONParserNXJSON.h */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -1509,7 +1503,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20808DDD13DE8DB1000A156A /* RKJSONParserNXJSON.h in Headers */,
 				20808DFF13DE90F5000A156A /* NSError+Extensions.h in Headers */,
 				20808E0113DE90F6000A156A /* NXDebug.h in Headers */,
 				20808E0313DE90F6000A156A /* NXJsonParser.h in Headers */,
@@ -1926,18 +1919,18 @@
 			remoteRef = 250BC43611F6260100F3FE5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2583B31F13E2116C008A3034 /* UISpec_Simulator.a */ = {
+		2583B33D13E21342008A3034 /* UISpec_Simulator.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = UISpec_Simulator.a;
-			remoteRef = 2583B31E13E2116C008A3034 /* PBXContainerItemProxy */;
+			remoteRef = 2583B33C13E21342008A3034 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2583B32113E2116C008A3034 /* UISpec_Device.a */ = {
+		2583B33F13E21342008A3034 /* UISpec_Device.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = UISpec_Device.a;
-			remoteRef = 2583B32013E2116C008A3034 /* PBXContainerItemProxy */;
+			remoteRef = 2583B33E13E21342008A3034 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -2034,7 +2027,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20808DDE13DE8DB1000A156A /* RKJSONParserNXJSON.m in Sources */,
 				20808E0013DE90F6000A156A /* NSError+Extensions.m in Sources */,
 				20808E0213DE90F6000A156A /* NXDebug.m in Sources */,
 				20808E0413DE90F6000A156A /* NXJsonParser.m in Sources */,
@@ -2339,7 +2331,7 @@
 				COPY_PHASE_STRIP = NO;
 				DSTROOT = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
@@ -2351,7 +2343,7 @@
 					"-ObjC",
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON/Private;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RestKitJSONParserNXJSON;
 				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON;
 			};
 			name = Debug;
@@ -2362,7 +2354,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DSTROOT = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = Vendor/NSJSON;
@@ -2372,7 +2364,7 @@
 					"-ObjC",
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON/Private;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RestKitJSONParserNXJSON;
 				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON;
 			};
 			name = Release;
@@ -2383,7 +2375,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				DSTROOT = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				HEADER_SEARCH_PATHS = Vendor/NSJSON;
@@ -2393,7 +2385,7 @@
 					"-ObjC",
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON/Private;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RestKitJSONParserNXJSON;
 				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON;
 			};
 			name = Distribution;
