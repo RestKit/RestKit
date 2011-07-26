@@ -62,7 +62,7 @@ RKParserRegistry* gSharedRegistry;
     Class parserClass = nil;
     
     // JSON
-    NSSet* JSONParserClassNames = [NSSet setWithObjects:@"RKJSONParserJSONKit", @"RKJSONParserYAJL", @"RKJSONParserSBJSON", nil];    
+    NSSet* JSONParserClassNames = [NSSet setWithObjects:@"RKJSONParserJSONKit", @"RKJSONParserYAJL", @"RKJSONParserSBJSON", @"RKJSONParserNXJSON", nil];    
     for (NSString* parserClassName in JSONParserClassNames) {
         parserClass = NSClassFromString(parserClassName);
         if (parserClass) {
