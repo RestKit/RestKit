@@ -291,6 +291,29 @@
     [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
 }
 
+#pragma mark - RKObjectMapperDelegate methods
+
+// 
+- (RKObjectMapping*)objectMapper:(RKObjectMapper*)objectMapper didFindMultipleMappings:(NSArray*)mappings atKeyPath:(NSString *)keyPath withMappableObject:(id)object {
+    // QUESTION: call the RKObjectLoader delegate and ask for help, so that the user can customize this for really complicated situations?
+    
+    // iterate over available mappings and see if object contains the specified mapping's internal keyPath/value
+    if ([object isKindOfClass:[NSDictionary class]]) {
+      for (RKObjectMapping* mapping in mappings) {
+          NSString* internalKey = [object valueForKeyPath:[mapping internalKeyPath]];
+          
+          if ([internalKey isEqualToString:[mapping internalValue]]) {
+              RKLogDebug(@"Selecting %@ mapping by internal key/value for key path: %@", mapping, keyPath);
+              return mapping;
+          }
+      }
+    }
+
+    RKLogDebug(@"Guessing mapping for keypath '%@' to be the first one", keyPath);
+    return [mappings objectAtIndex:0];
+}
+
+
 #pragma mark - RKRequest & RKRequestDelegate methods
 
 // Invoked just before request hits the network

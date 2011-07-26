@@ -159,8 +159,10 @@
         return nil;
     }
     for (id mappableObject in objectsToMap) {
-        id destinationObject = [self objectWithMapping:mapping andData:mappableObject];
-        BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
+        // determine the mapping individuall for each object, as we could have an array on keyPath "person" with Man and Woman objects
+        RKObjectMapping* internalMapping = [self mappingForKeyPath:keyPath forMappableObject:mappableObject];      
+        id destinationObject = [self objectWithMapping:internalMapping andData:mappableObject];
+        BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:internalMapping];
         if (success) {
             [mappedObjects addObject:destinationObject];
         }
@@ -238,7 +240,10 @@
         
         // Found something to map
         foundMappable = YES;
-        RKObjectMapping* objectMapping = [keyPathsAndObjectMappings objectForKey:keyPath];
+      
+        RKObjectMapping* objectMapping = [self mappingForKeyPath:keyPath forMappableObject:mappableValue];      
+      
+      
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:objectMapping];
         }        
@@ -270,6 +275,18 @@
     RKLogDebug(@"Finished performing object mapping. Results: %@", results);
     
     return [RKObjectMappingResult mappingResultWithDictionary:results];
+}
+
+// Determine an object mapping by asking our delegate for help. If there is no delegate, guess the first one.
+- (RKObjectMapping*)mappingForKeyPath:(NSString*)keyPath forMappableObject:(id)object {
+    NSArray* mappings = [[self.mappingProvider objectMappingsByKeyPath] objectForKey:keyPath]; 
+    
+    if ([mappings count] > 1 && [self.delegate respondsToSelector:@selector(objectMapper:didFindMultipleMappings:atKeyPath:withMappableObject:)]) {
+        return [self.delegate objectMapper:self didFindMultipleMappings:mappings atKeyPath:keyPath withMappableObject:object];
+    }
+    else {
+        return [mappings objectAtIndex:0];
+    }
 }
 
 #pragma - RKObjectFactory methods

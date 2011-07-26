@@ -32,9 +32,14 @@
 - (void)setObjectMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath;
 
 /**
- Returns the object mapping to use for mapping the specified keyPath into an object graph
+ Returns the first object mapping to use for mapping the specified keyPath into an object graph
  */
 - (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
+
+/**
+ Returns the all object mappings to use for mapping the specified keyPath into an object graph
+ */
+- (NSArray*)objectMappingsForKeyPath:(NSString*)keyPath;
 
 /**
  Returns a dictionary where the keys are mappable keyPaths and the values are the object
