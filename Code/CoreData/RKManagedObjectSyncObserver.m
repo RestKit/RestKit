@@ -96,7 +96,7 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
      */
     _delegate = delegate;
     
-    if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
+    if (_delegate && [_delegate respondsToSelector:@selector(didStartSyncing)]) {
         [_delegate didStartSyncing];
     }
     
@@ -122,11 +122,9 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
             //there is network access.
         }
     }
-    if (_totalUnsynced == 0) {
-        //if we don't sync anything, still notify delegate so we can reload data if necessary
-        if (_delegate && [_delegate respondsToSelector:@selector(didSyncNothing)]) {
-            [_delegate didSyncNothing];
-        }
+    //if we don't sync anything, still notify delegate so we can reload data if necessary
+    if (_totalUnsynced == 0 && _delegate && [_delegate respondsToSelector:@selector(didSyncNothing)]) {
+        [_delegate didSyncNothing];
     }
 }
 
