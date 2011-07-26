@@ -289,6 +289,7 @@
     }
     
     [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+    [self finalizeLoad:NO error:error];    
 }
 
 #pragma mark - RKRequest & RKRequestDelegate methods
