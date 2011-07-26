@@ -16,6 +16,7 @@
 				255B759F133BAC2400ED76AD /* Copy Headers to Legacy Build Location */,
 			);
 			dependencies = (
+				20808E0913DE9137000A156A /* PBXTargetDependency */,
 				255B758F133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7591133BABCD00ED76AD /* PBXTargetDependency */,
 				255B7593133BABCD00ED76AD /* PBXTargetDependency */,
@@ -31,6 +32,17 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		20808DDD13DE8DB1000A156A /* RKJSONParserNXJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DDB13DE8DB1000A156A /* RKJSONParserNXJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20808DDE13DE8DB1000A156A /* RKJSONParserNXJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 20808DDC13DE8DB1000A156A /* RKJSONParserNXJSON.m */; };
+		20808DFF13DE90F5000A156A /* NSError+Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DF613DE90F5000A156A /* NSError+Extensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20808E0013DE90F6000A156A /* NSError+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 20808DF713DE90F5000A156A /* NSError+Extensions.m */; };
+		20808E0113DE90F6000A156A /* NXDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DF813DE90F5000A156A /* NXDebug.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20808E0213DE90F6000A156A /* NXDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 20808DF913DE90F5000A156A /* NXDebug.m */; };
+		20808E0313DE90F6000A156A /* NXJsonParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DFA13DE90F5000A156A /* NXJsonParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20808E0413DE90F6000A156A /* NXJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 20808DFB13DE90F5000A156A /* NXJsonParser.m */; };
+		20808E0513DE90F6000A156A /* NXJsonSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DFC13DE90F5000A156A /* NXJsonSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20808E0613DE90F6000A156A /* NXJsonSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 20808DFD13DE90F5000A156A /* NXJsonSerializer.m */; };
+		20808E0713DE90F6000A156A /* NXSerializable.h in Headers */ = {isa = PBXBuildFile; fileRef = 20808DFE13DE90F5000A156A /* NXSerializable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25064735138DF17C0002F2FE /* RKManagedObjectSeeder.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A088912551D8D00976E89 /* RKManagedObjectSeeder.m */; };
 		250C296C13411E60000A3551 /* RKRequestQueueSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 250C296B13411E60000A3551 /* RKRequestQueueSpec.m */; };
 		250C29FD134185D2000A3551 /* RKNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = 250C29FB134185CE000A3551 /* RKNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -286,19 +298,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		250BC43211F6260100F3FE5A /* PBXContainerItemProxy */ = {
+		20808E0813DE9137000A156A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
-			remoteInfo = UISpec_Simulator;
-		};
-		250BC43411F6260100F3FE5A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C76EB5DA0F7458C100EF8398;
-			remoteInfo = UISpec_Device;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 20808DBC13DE8CDC000A156A;
+			remoteInfo = "RestKitJSONParser+NXJSON";
 		};
 		250BC43611F6260100F3FE5A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -356,6 +361,20 @@
 			remoteGlobalIDString = 253A081312551D5300976E89;
 			remoteInfo = RestKitCoreData;
 		};
+		2583B31E13E2116C008A3034 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C76EB5D20F74586B00EF8398;
+			remoteInfo = UISpec_Simulator;
+		};
+		2583B32013E2116C008A3034 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C76EB5DA0F7458C100EF8398;
+			remoteInfo = UISpec_Device;
+		};
 		258C6836133CDF97004388A4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -380,6 +399,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRestKitJSONParser+NXJSON.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		20808DDB13DE8DB1000A156A /* RKJSONParserNXJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKJSONParserNXJSON.h; sourceTree = "<group>"; };
+		20808DDC13DE8DB1000A156A /* RKJSONParserNXJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKJSONParserNXJSON.m; sourceTree = "<group>"; };
+		20808DF613DE90F5000A156A /* NSError+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSError+Extensions.h"; path = "Vendor/NXJSON/NSError+Extensions.h"; sourceTree = "<group>"; };
+		20808DF713DE90F5000A156A /* NSError+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSError+Extensions.m"; path = "Vendor/NXJSON/NSError+Extensions.m"; sourceTree = "<group>"; };
+		20808DF813DE90F5000A156A /* NXDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NXDebug.h; path = Vendor/NXJSON/NXDebug.h; sourceTree = "<group>"; };
+		20808DF913DE90F5000A156A /* NXDebug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NXDebug.m; path = Vendor/NXJSON/NXDebug.m; sourceTree = "<group>"; };
+		20808DFA13DE90F5000A156A /* NXJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NXJsonParser.h; path = Vendor/NXJSON/NXJsonParser.h; sourceTree = "<group>"; };
+		20808DFB13DE90F5000A156A /* NXJsonParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NXJsonParser.m; path = Vendor/NXJSON/NXJsonParser.m; sourceTree = "<group>"; };
+		20808DFC13DE90F5000A156A /* NXJsonSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NXJsonSerializer.h; path = Vendor/NXJSON/NXJsonSerializer.h; sourceTree = "<group>"; };
+		20808DFD13DE90F5000A156A /* NXJsonSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NXJsonSerializer.m; path = Vendor/NXJSON/NXJsonSerializer.m; sourceTree = "<group>"; };
+		20808DFE13DE90F5000A156A /* NXSerializable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NXSerializable.h; path = Vendor/NXJSON/NXSerializable.h; sourceTree = "<group>"; };
 		250C296B13411E60000A3551 /* RKRequestQueueSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestQueueSpec.m; sourceTree = "<group>"; };
 		250C29FB134185CE000A3551 /* RKNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKNetwork.h; sourceTree = "<group>"; };
 		250C29FC134185D0000A3551 /* RKNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKNetwork.m; sourceTree = "<group>"; };
@@ -684,6 +715,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		20808DBA13DE8CDC000A156A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2523360311E79F090048F9B4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -786,6 +824,7 @@
 				253A080C12551D3000976E89 /* libRestKitSupport.a */,
 				253A081412551D5300976E89 /* libRestKitCoreData.a */,
 				3F6C39A510FE5C95008F47C5 /* UISpec.app */,
+				20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */,
 			);
 			name = Products;
 			path = ../..;
@@ -825,11 +864,27 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		20808DB713DE8C7C000A156A /* NXJSON */ = {
+			isa = PBXGroup;
+			children = (
+				20808DF613DE90F5000A156A /* NSError+Extensions.h */,
+				20808DF713DE90F5000A156A /* NSError+Extensions.m */,
+				20808DF813DE90F5000A156A /* NXDebug.h */,
+				20808DF913DE90F5000A156A /* NXDebug.m */,
+				20808DFA13DE90F5000A156A /* NXJsonParser.h */,
+				20808DFB13DE90F5000A156A /* NXJsonParser.m */,
+				20808DFC13DE90F5000A156A /* NXJsonSerializer.h */,
+				20808DFD13DE90F5000A156A /* NXJsonSerializer.m */,
+				20808DFE13DE90F5000A156A /* NXSerializable.h */,
+			);
+			name = NXJSON;
+			sourceTree = "<group>";
+		};
 		250BC42C11F6260100F3FE5A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				250BC43311F6260100F3FE5A /* UISpec_Simulator.a */,
-				250BC43511F6260100F3FE5A /* UISpec_Device.a */,
+				2583B31F13E2116C008A3034 /* UISpec_Simulator.a */,
+				2583B32113E2116C008A3034 /* UISpec_Device.a */,
 				250BC43711F6260100F3FE5A /* Specs.app */,
 			);
 			name = Products;
@@ -1074,9 +1129,11 @@
 				253A08B61255212300976E89 /* RKJSONParserSBJSON.m */,
 				253A08B71255212300976E89 /* RKJSONParserYAJL.m */,
 				73057FC41331A8F6001908EE /* RKJSONParserJSONKit.m */,
+				20808DDC13DE8DB1000A156A /* RKJSONParserNXJSON.m */,
 				25A1CB35137F5C6300A7D5C9 /* RKJSONParserYAJL.h */,
 				25A1CB37137F5C7700A7D5C9 /* RKJSONParserSBJSON.h */,
 				25A1CB39137F5C8C00A7D5C9 /* RKJSONParserJSONKit.h */,
+				20808DDB13DE8DB1000A156A /* RKJSONParserNXJSON.h */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -1119,6 +1176,7 @@
 			children = (
 				250D5BD913A0698100471F0E /* LibComponentLogging */,
 				25952FD71370959900D04F93 /* NSLogger */,
+				20808DB713DE8C7C000A156A /* NXJSON */,
 				73057FC61331AA28001908EE /* JSONKit */,
 				2590E69A1252372800531FA8 /* YAJL */,
 				2590E673125235C200531FA8 /* SBJSON */,
@@ -1447,6 +1505,19 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		20808DBB13DE8CDC000A156A /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				20808DDD13DE8DB1000A156A /* RKJSONParserNXJSON.h in Headers */,
+				20808DFF13DE90F5000A156A /* NSError+Extensions.h in Headers */,
+				20808E0113DE90F6000A156A /* NXDebug.h in Headers */,
+				20808E0313DE90F6000A156A /* NXJsonParser.h in Headers */,
+				20808E0513DE90F6000A156A /* NXJsonSerializer.h in Headers */,
+				20808E0713DE90F6000A156A /* NXSerializable.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2523360111E79F090048F9B4 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1610,6 +1681,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		20808DBC13DE8CDC000A156A /* RestKitJSONParser+NXJSON */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 20808DC213DE8CDC000A156A /* Build configuration list for PBXNativeTarget "RestKitJSONParser+NXJSON" */;
+			buildPhases = (
+				20808DBB13DE8CDC000A156A /* Headers */,
+				20808DB913DE8CDC000A156A /* Sources */,
+				20808DBA13DE8CDC000A156A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RestKitJSONParser+NXJSON";
+			productName = "RestKitJSONParser+NSJSON";
+			productReference = 20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		2523360411E79F090048F9B4 /* RestKitThree20 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2523361C11E79F170048F9B4 /* Build configuration list for PBXNativeTarget "RestKitThree20" */;
@@ -1818,6 +1906,7 @@
 				253A07FB1255161B00976E89 /* RestKitNetwork */,
 				253A08021255162C00976E89 /* RestKitObjectMapping */,
 				253A080B12551D3000976E89 /* RestKitSupport */,
+				20808DBC13DE8CDC000A156A /* RestKitJSONParser+NXJSON */,
 				2590E64E125231F600531FA8 /* RestKitJSONParser+YAJL */,
 				2590E66A1252353700531FA8 /* RestKitJSONParser+SBJSON */,
 				73057FD01331AD2E001908EE /* RestKitJSONParser+JSONKit */,
@@ -1830,25 +1919,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		250BC43311F6260100F3FE5A /* UISpec_Simulator.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = UISpec_Simulator.a;
-			remoteRef = 250BC43211F6260100F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		250BC43511F6260100F3FE5A /* UISpec_Device.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = UISpec_Device.a;
-			remoteRef = 250BC43411F6260100F3FE5A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		250BC43711F6260100F3FE5A /* Specs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = Specs.app;
 			remoteRef = 250BC43611F6260100F3FE5A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2583B31F13E2116C008A3034 /* UISpec_Simulator.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = UISpec_Simulator.a;
+			remoteRef = 2583B31E13E2116C008A3034 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2583B32113E2116C008A3034 /* UISpec_Device.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = UISpec_Device.a;
+			remoteRef = 2583B32013E2116C008A3034 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1941,6 +2030,18 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		20808DB913DE8CDC000A156A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				20808DDE13DE8DB1000A156A /* RKJSONParserNXJSON.m in Sources */,
+				20808E0013DE90F6000A156A /* NSError+Extensions.m in Sources */,
+				20808E0213DE90F6000A156A /* NXDebug.m in Sources */,
+				20808E0413DE90F6000A156A /* NXJsonParser.m in Sources */,
+				20808E0613DE90F6000A156A /* NXJsonSerializer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2523360211E79F090048F9B4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2132,6 +2233,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		20808E0913DE9137000A156A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 20808DBC13DE8CDC000A156A /* RestKitJSONParser+NXJSON */;
+			targetProxy = 20808E0813DE9137000A156A /* PBXContainerItemProxy */;
+		};
 		255B758F133BABCD00ED76AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 253A07FB1255161B00976E89 /* RestKitNetwork */;
@@ -2225,6 +2331,72 @@
 				VALID_ARCHS = "armv6 armv7 i386 x86_64";
 			};
 			name = Release;
+		};
+		20808DC313DE8CDC000A156A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = Vendor/NSJSON;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON/Private;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON;
+			};
+			name = Debug;
+		};
+		20808DC413DE8CDC000A156A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = Vendor/NSJSON;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON/Private;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON;
+			};
+			name = Release;
+		};
+		20808DC513DE8CDC000A156A /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = Vendor/NSJSON;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRIVATE_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON/Private;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit/Support/JSON/NXJSON;
+			};
+			name = Distribution;
 		};
 		2523360611E79F0A0048F9B4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -3140,6 +3312,16 @@
 				1DEB922408733DC00010E9CD /* Release */,
 				253216491338CA940099A5DB /* Distribution */,
 				255920CC13BDEDB400E9C29C /* Ad Hoc */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		20808DC213DE8CDC000A156A /* Build configuration list for PBXNativeTarget "RestKitJSONParser+NXJSON" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				20808DC313DE8CDC000A156A /* Debug */,
+				20808DC413DE8CDC000A156A /* Release */,
+				20808DC513DE8CDC000A156A /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
