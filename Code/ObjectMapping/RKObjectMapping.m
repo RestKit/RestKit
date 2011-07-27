@@ -61,6 +61,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 }
 
 - (void)dealloc {
+    [_rootKeyPath release];
     [_mappings release];
     [_dateFormatStrings release];
     [super dealloc];
