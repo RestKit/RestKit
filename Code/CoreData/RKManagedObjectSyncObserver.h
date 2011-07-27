@@ -138,7 +138,7 @@ typedef enum {
  * @param object The NSManagedObject to modify
  * @param error An error reference to pass back saving errors
  */
-- (void)shouldNotSyncObject:(NSManagedObject*)object error:(NSError**)error;
+- (void)shouldNotSyncObject:(NSManagedObject*)object;
 
 /**
  * Sets the _rkManagedObjectSyncStatus on the object to RKSyncStatusShouldPost
@@ -146,7 +146,7 @@ typedef enum {
  * @param object The NSManagedObject to modify
  * @param error An error reference to pass back saving errors
  */
-- (void)shouldPostObject:(NSManagedObject*)object error:(NSError**)error;
+- (void)shouldPostObject:(NSManagedObject*)object;
 
 /**
  * Sets the _rkManagedObjectSyncStatus on the object to RKSyncStatusShouldPut
@@ -154,7 +154,7 @@ typedef enum {
  * @param object The NSManagedObject to modify
  * @param error An error reference to pass back saving errors
  */
-- (void)shouldPutObject:(NSManagedObject*)object error:(NSError**)error;
+- (void)shouldPutObject:(NSManagedObject*)object;
 
 /**
  * Sets the _rkManagedObjectSyncStatus on the object to RKSyncStatusShouldDelete
@@ -162,7 +162,7 @@ typedef enum {
  * @param object The NSManagedObject to modify
  * @param error An error reference to pass back saving errors
  */
-- (void)shouldDeleteObject:(NSManagedObject*)object error:(NSError**)error;
+- (void)shouldDeleteObject:(NSManagedObject*)object;
 
 
 @end

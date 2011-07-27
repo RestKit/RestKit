@@ -130,48 +130,43 @@ static RKManagedObjectSyncObserver* sharedSyncObserver = nil;
 
 #pragma mark - Sync Management
 
-- (void)shouldNotSyncObject:(NSManagedObject*)object error:(NSError**)error {
+- (void)shouldNotSyncObject:(NSManagedObject*)object {
     object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldNotSync];
-    *error = [[[RKObjectManager sharedManager] objectStore] save];
 }
 
-- (void)shouldPostObject:(NSManagedObject*)object error:(NSError**)error {
+- (void)shouldPostObject:(NSManagedObject*)object {
     if (_isOnline && _shouldAutoSync) {
         [[RKObjectManager sharedManager] postObject:object delegate:self];
     } else { 
         if ([object._rkManagedObjectSyncStatus intValue] == RKSyncStatusShouldNotSync ||
             [object._rkManagedObjectSyncStatus intValue] == RKSyncStatusShouldPost) {
             object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldPost];
-            *error = [[[RKObjectManager sharedManager] objectStore] save];
         } else {
             RKLogError(@"Trying to post an object that exists on the server.");
         }
     }
 }
 
-- (void)shouldPutObject:(NSManagedObject*)object error:(NSError**)error {
+- (void)shouldPutObject:(NSManagedObject*)object {
     if (_isOnline && _shouldAutoSync) {
         [[RKObjectManager sharedManager] putObject:object delegate:self];
     } else {
         //if set to post already, we want to just change the data the will be posted, not switch to a put
         if ([object._rkManagedObjectSyncStatus intValue] != RKSyncStatusShouldPost) {
             object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldPut];
-            *error = [[[RKObjectManager sharedManager] objectStore] save];
         }
     }
 }
 
-- (void)shouldDeleteObject:(NSManagedObject*)object error:(NSError**)error {
+- (void)shouldDeleteObject:(NSManagedObject*)object {
     if (_isOnline && _shouldAutoSync) {
         [[RKObjectManager sharedManager] deleteObject:object delegate:self];
     } else {
         if ([object._rkManagedObjectSyncStatus intValue] == RKSyncStatusShouldPost) {
             //if deleting an object that hasn't been posted yet, just delete it locally
             [object deleteEntity];
-            *error = [[[RKObjectManager sharedManager] objectStore] save];
         } else {
             object._rkManagedObjectSyncStatus = [NSNumber numberWithInt:RKSyncStatusShouldDelete];
-            *error = [[[RKObjectManager sharedManager] objectStore] save];
         }
     }
 }
