@@ -38,6 +38,7 @@ relationship. Relationships are processed using an object mapping as well.
     BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
     BOOL _forceCollectionMapping;
+    BOOL _performKeyValueValidation;
 }
 
 /**
@@ -88,6 +89,14 @@ relationship. Relationships are processed using an object mapping as well.
 @property (nonatomic, assign) BOOL setNilForMissingRelationships;
 
 /**
+ When YES, RestKit will invoke key-value validation at object mapping time. 
+ 
+ **Default**: YES
+ @see validateValue:forKey:error:
+ */
+@property (nonatomic, assign) BOOL performKeyValueValidation;
+
+/**
  Forces the mapper to treat the mapped keyPath as a collection even if it does not
  return an array or a set of objects. This permits mapping where a dictionary identifies
  a collection of objects.
@@ -122,6 +131,53 @@ relationship. Relationships are processed using an object mapping as well.
  Returns an object mapping for the specified class that is ready for configuration
  */
 + (id)mappingForClass:(Class)objectClass;
+
+/**
+ Returns an object mapping useful for configuring a serialization mapping. The object
+ class is configured as NSMutableDictionary
+ */
++ (id)serializationMapping;
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ Returns an object mapping targeting the specified class. The RKObjectMapping instance will
+ be yieled to the block so that you can perform on the fly configuration without having to
+ obtain a reference variable for the mapping.
+ 
+ For example, consider we have a one-off request that will load a few attributes for our object. 
+ Using blocks, this is very succinct:
+ 
+    [[RKObjectManager sharedManager] postObject:self delegate:self block:^(RKObjectLoader* loader) {
+        loader.objectMapping = [RKObjectMapping mappingForClass:[Person class] block:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"email", @"first_name", nil];
+        }];
+    }];
+ */
++ (id)mappingForClass:(Class)objectClass block:(void(^)(RKObjectMapping*))block;
+
+/**
+ Returns serialization mapping for encoding a local object to a dictionary for transport. The RKObjectMapping instance will
+ be yieled to the block so that you can perform on the fly configuration without having to
+ obtain a reference variable for the mapping.
+ 
+ For example, consider we have a one-off request within which we want to post a subset of our object
+ data. Using blocks, this is very succinct:
+ 
+    - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
+        if ([self validatePassword:newPassword error:error]) {
+            self.password = newPassword;
+            [[RKObjectManager sharedManager] putObject:self delegate:self block:^(RKObjectLoader* loader) {
+                loader.serializationMapping = [RKObjectMapping serializationMappingWithBlock:^(RKObjectMapping* mapping) {
+                    [mapping mapAttributes:@"password", nil];
+                }];
+            }];
+        }
+    }
+ 
+ Using the block forms we are able to quickly configure and send this request on the fly.
+ */
++ (id)serializationMappingWithBlock:(void(^)(RKObjectMapping*))block;
+#endif
 
 /**
  Add a configured attribute mapping to this object mapping

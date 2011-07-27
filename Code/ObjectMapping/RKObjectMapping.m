@@ -21,12 +21,30 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 @synthesize setDefaultValueForMissingAttributes = _setDefaultValueForMissingAttributes;
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 @synthesize forceCollectionMapping = _forceCollectionMapping;
+@synthesize performKeyValueValidation = _performKeyValueValidation;
 
 + (id)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [self new];
     mapping.objectClass = objectClass;    
     return [mapping autorelease];
 }
+
++ (id)serializationMapping {
+    return [self mappingForClass:[NSMutableDictionary class]];
+}
+
++ (id)mappingForClass:(Class)objectClass block:(void(^)(RKObjectMapping*))block {
+    RKObjectMapping* mapping = [self mappingForClass:objectClass];
+    block(mapping);
+    return mapping;
+}
+
++ (id)serializationMappingWithBlock:(void(^)(RKObjectMapping*))block {
+    RKObjectMapping* mapping = [self serializationMapping];
+    block(mapping);
+    return mapping;
+}
+
 
 - (id)init {
     self = [super init];
@@ -36,6 +54,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
         self.setDefaultValueForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
+        self.performKeyValueValidation = YES;
     }
     
     return self;

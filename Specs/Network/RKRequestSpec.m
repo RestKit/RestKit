@@ -10,6 +10,7 @@
 #import "RKRequest.h"
 #import "RKParams.h"
 #import "RKResponse.h"
+#import "RKURL.h"
 
 @interface RKRequest (Private)
 - (void)fireAsynchronousRequest;
@@ -568,6 +569,35 @@
     [client put:@"/ping" params:params delegate:loader];
     [loader waitForResponse];
     assertThat([loader.response bodyAsString], is(equalTo(@"{\"username\":\"ddss\",\"email\":\"aaaa@aa.com\"}")));
+}
+
+- (void)itShouldAllowYouToChangeTheURL {
+    NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    request.URL = [NSURL URLWithString:@"http://restkit.org/gorilla"];
+    assertThat([request.URL absoluteString], is(equalTo(@"http://restkit.org/gorilla")));
+}
+
+- (void)itShouldAllowYouToChangeTheResourcePath {
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/monkey"];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    request.resourcePath = @"/gorilla";
+    assertThat(request.resourcePath, is(equalTo(@"/gorilla")));
+}
+
+- (void)itShouldRaiseAnExceptionWhenAttemptingToMutateResourcePathOnAnNSURL {
+    NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    NSException* exception = nil;
+    @try {
+        request.resourcePath = @"/gorilla";
+    }
+    @catch (NSException* e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(notNilValue()));
+    }
 }
 
 @end

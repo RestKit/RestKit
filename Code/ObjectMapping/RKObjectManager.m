@@ -30,6 +30,7 @@ static RKObjectManager* sharedManager = nil;
 @synthesize router = _router;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
+@synthesize inferMappingsFromObjectTypes = _inferMappingsFromObjectTypes;
 
 - (id)initWithBaseURL:(NSString*)baseURL {
     self = [super init];
@@ -38,6 +39,7 @@ static RKObjectManager* sharedManager = nil;
 		_router = [RKObjectRouter new];
 		_client = [[RKClient clientWithBaseURL:baseURL] retain];
         _onlineState = RKObjectManagerOnlineStateUndetermined;
+        _inferMappingsFromObjectTypes = NO;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
@@ -86,6 +88,9 @@ static RKObjectManager* sharedManager = nil;
 	_objectStore = nil;
     [_serializationMIMEType release];
     _serializationMIMEType = nil;
+    [_mappingProvider release];
+    _mappingProvider = nil;
+    
 	[super dealloc];
 }
 
@@ -162,6 +167,12 @@ static RKObjectManager* sharedManager = nil;
     loader.targetObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
+    
+    if (self.inferMappingsFromObjectTypes) {
+        RKObjectMapping* objectMapping = [self.mappingProvider objectMappingForClass:[object class]];
+        RKLogDebug(@"Auto-selected object mapping %@ for object of type %@", objectMapping, NSStringFromClass([object class]));
+        loader.objectMapping = objectMapping;
+    }
 
 	return loader;
 }
@@ -188,6 +199,31 @@ static RKObjectManager* sharedManager = nil;
 	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodDELETE delegate:delegate];
 	[loader send];
 	return loader;
+}
+
+#pragma mark - Block Configured Object Loaders
+
+- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    RKObjectLoader* loader = [self objectLoaderForObject:object method:method delegate:delegate];
+    block(loader);
+    [loader send];
+    return loader;
+}
+
+- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodGET delegate:delegate block:block];
+}
+
+- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodPOST delegate:delegate block:block];
+}
+
+- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodPUT delegate:delegate block:block];
+}
+
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object method:RKRequestMethodDELETE delegate:delegate block:block];
 }
 
 #pragma mark - Object Instance Loaders for Non-nested JSON
