@@ -88,6 +88,10 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 @synthesize password = _password;
 @synthesize forceBasicAuthentication = _forceBasicAuthentication;
 @synthesize HTTPHeaders = _HTTPHeaders;
+#ifdef RESTKIT_SSL_VALIDATION
+@synthesize additionalRootCertificates = _additionalRootCertificates;
+#endif
+@synthesize disableCertificateValidation = _disableCertificateValidation;
 @synthesize baseURLReachabilityObserver = _baseURLReachabilityObserver;
 @synthesize serviceUnavailableAlertTitle = _serviceUnavailableAlertTitle;
 @synthesize serviceUnavailableAlertMessage = _serviceUnavailableAlertMessage;
@@ -121,6 +125,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     self = [super init];
 	if (self) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
+        _additionalRootCertificates = [[NSMutableSet alloc] init];
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
 		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
@@ -158,6 +163,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     self.serviceUnavailableAlertMessage = nil;
     self.cache = nil;
     [_HTTPHeaders release];
+    [_additionalRootCertificates release];
     [_baseURLReachabilityObserver release];
 
     [super dealloc];
@@ -208,6 +214,12 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header {
 	[_HTTPHeaders setValue:value forKey:header];
 }
+
+#ifdef RESTKIT_SSL_VALIDATION
+- (void)addRootCertificate:(SecCertificateRef)cert {
+    [_additionalRootCertificates addObject:(id)cert];
+}
+#endif
 
 - (void)setBaseURL:(NSString*)baseURL {
 	[_baseURL release];
