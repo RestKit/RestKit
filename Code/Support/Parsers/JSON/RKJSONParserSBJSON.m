@@ -25,7 +25,7 @@
 
 - (NSString*)stringFromObject:(id)object error:(NSError **)error {
     SBJsonWriter *jsonWriter = [SBJsonWriter new];    
-    NSString *json = [jsonWriter stringWithObject:self];
+    NSString *json = [jsonWriter stringWithObject:object];
     if (!json) {
         if (error) *error = [[jsonWriter errorTrace] lastObject];
     }
