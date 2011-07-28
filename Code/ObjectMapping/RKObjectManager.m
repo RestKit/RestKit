@@ -205,6 +205,18 @@ static RKObjectManager* sharedManager = nil;
 
 #pragma mark - Block Configured Object Loaders
 
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
+	loader.method = RKRequestMethodGET;
+    
+    // Yield to the block for setup
+    block(loader);
+    
+	[loader send];
+    
+	return loader;
+}
+
 - (RKObjectLoader*)sendObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
     RKObjectLoader* loader = [self objectLoaderWithResourcePath:nil delegate:delegate];
     loader.sourceObject = object;
