@@ -527,11 +527,13 @@ This commonly shows up with JSON like the following:
 
 We might have a User class like the following:
 
+```objc
 @interface User : NSObject
 @property (nonatomic, retain) NSString* email
 @property (nonatomic, retain) NSString* username;
 @property (nonatomic, retain) NSString* favoriteAnimal;
 @end
+```
 
 You will note that this JSON is problematic compared to our earlier examples because the `email` attribute's data
 exists as the key in a dictionary, rather than a value. We handle this by creating an object mapping and using a new
