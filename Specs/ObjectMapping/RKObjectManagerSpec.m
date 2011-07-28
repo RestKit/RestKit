@@ -231,6 +231,21 @@
 
 #pragma mark - Block Helpers
 
+- (void)itShouldLetYouLoadObjectsWithABlock {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    [mapping mapAttributes:@"name", @"age", nil];
+    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    [objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:responseLoader block:^(RKObjectLoader* loader) {
+        loader.objectMapping = mapping;
+    }];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.success, is(equalToBool(YES)));
+    assertThat(responseLoader.objects, hasCountOf(1));
+}
+
 - (void)itShouldAllowYouToOverrideTheRoutedResourcePath {
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     [objectManager.router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans/2"];
