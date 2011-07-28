@@ -241,7 +241,8 @@ typedef enum {
     - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
         if ([self validatePassword:newPassword error:error]) {
             self.password = newPassword;
-            [[RKObjectManager sharedManager] sendObject:self method:RKRequestMethodPOST delegate:self block:^(RKObjectLoader* loader) {
+            [[RKObjectManager sharedManager] sendObject:self delegate:self block:^(RKObjectLoader* loader) {
+                loader.method = RKRequestMethodPOST;
                 loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
                 loader.targetObject = nil;  // Map the results back onto a new object instead of self
                 // Set up a custom serialization mapping to handle this request
@@ -252,7 +253,7 @@ typedef enum {
         }
     }
  */
-- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+- (RKObjectLoader*)sendObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
 
 /**
  GET a remote object instance and yield the object loader to the block before sending
