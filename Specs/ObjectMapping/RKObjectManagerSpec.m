@@ -229,4 +229,60 @@
     assertThat([loader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
 }
 
+#pragma mark - Block Helpers
+
+- (void)itShouldAllowYouToOverrideTheRoutedResourcePath {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans/2"];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    [mapping mapAttributes:@"name", @"age", nil];
+    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
+    human.name = @"Blake Watters";
+    human.age = [NSNumber numberWithInt:28];
+    RKObjectLoader* loader = [objectManager deleteObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+        loader.resourcePath = @"/humans/1";
+    }];
+    [responseLoader waitForResponse];
+    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
+}
+
+- (void)itShouldAllowYouToUseObjectHelpersWithoutRouting {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    [mapping mapAttributes:@"name", @"age", nil];
+    [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
+    human.name = @"Blake Watters";
+    human.age = [NSNumber numberWithInt:28];
+    RKObjectLoader* loader = [objectManager deleteObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+        loader.resourcePath = @"/humans/1";
+    }];
+    [responseLoader waitForResponse];
+    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
+}
+
+- (void)itShouldAllowYouToSkipTheMappingProvider {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    mapping.rootKeyPath = @"human";
+    [mapping mapAttributes:@"name", @"age", nil];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
+    human.name = @"Blake Watters";
+    human.age = [NSNumber numberWithInt:28];
+    RKObjectLoader* loader = [objectManager deleteObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+        loader.resourcePath = @"/humans/1";
+        loader.objectMapping = mapping;
+    }];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.success, is(equalToBool(YES)));
+    assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));    
+}
+
 @end
