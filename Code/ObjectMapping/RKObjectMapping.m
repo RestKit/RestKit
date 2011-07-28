@@ -33,6 +33,8 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     return [self mappingForClass:[NSMutableDictionary class]];
 }
 
+#if NS_BLOCKS_AVAILABLE
+
 + (id)mappingForClass:(Class)objectClass block:(void(^)(RKObjectMapping*))block {
     RKObjectMapping* mapping = [self mappingForClass:objectClass];
     block(mapping);
@@ -45,6 +47,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     return mapping;
 }
 
+#endif // NS_BLOCKS_AVAILABLE
 
 - (id)init {
     self = [super init];
