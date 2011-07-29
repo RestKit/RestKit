@@ -35,21 +35,19 @@
                     [nodes addObject:attrs];
                 }
             } else {
-                NSDictionary* elem = [NSDictionary dictionaryWithObject:val forKey:nodeName];
-                [nodes addObject:elem];
-            }
-            xmlElement* element = (xmlElement*)currentNode;
-            xmlAttribute* currentAttribute = NULL;
-            for (currentAttribute = (xmlAttribute*)element->attributes; currentAttribute; currentAttribute = (xmlAttribute*)currentAttribute->next) {
-                NSString* name = [NSString stringWithCString:(char*)currentAttribute->name encoding:NSUTF8StringEncoding];
-                xmlChar* str = xmlNodeGetContent((xmlNode*)currentAttribute);
-                NSString* val = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
-                xmlFree(str);
-                [attrs setValue:val forKey:name];
-                // Only add attributes to nodes if there actually is one.
-                if (![nodes containsObject:attrs]) {
-                    [nodes addObject:attrs];
+                xmlElement* element = (xmlElement*)currentNode;
+                xmlAttribute* currentAttribute = NULL;
+                for (currentAttribute = (xmlAttribute*)element->attributes; currentAttribute; currentAttribute = (xmlAttribute*)currentAttribute->next) {
+                    NSString* name = [NSString stringWithCString:(char*)currentAttribute->name encoding:NSUTF8StringEncoding];
+                    xmlChar* str = xmlNodeGetContent((xmlNode*)currentAttribute);
+                    NSString* valattr = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
+                    xmlFree(str);
+                    [val setValue:valattr forKey:name];
                 }
+                
+                NSMutableDictionary* elem = [NSMutableDictionary dictionaryWithObject:val forKey:nodeName];
+                
+                [nodes addObject:elem];
             }
         } else if (currentNode->type == XML_TEXT_NODE || currentNode->type == XML_CDATA_SECTION_NODE) {
             xmlChar* str = xmlNodeGetContent(currentNode);
@@ -66,6 +64,7 @@
     if ([nodes count] == 0) {
         return @"";
     }
+    
     if (YES || [nodes containsObject:attrs]) {
         // We have both attributes and children. merge everything together.
         NSMutableDictionary* results = [NSMutableDictionary dictionary];
