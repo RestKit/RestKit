@@ -70,7 +70,7 @@ static RKObjectManager* sharedManager = nil;
 }
 
 + (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL {
-	RKObjectManager* manager = [[[RKObjectManager alloc] initWithBaseURL:baseURL] autorelease];
+	RKObjectManager* manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];
 	if (nil == sharedManager) {
 		[RKObjectManager setSharedManager:manager];
 	}
@@ -201,13 +201,53 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
+#if NS_BLOCKS_AVAILABLE
+
 #pragma mark - Block Configured Object Loaders
 
-- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
-    RKObjectLoader* loader = [self objectLoaderForObject:object method:method delegate:delegate];
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:delegate];
+	loader.method = RKRequestMethodGET;
+    
+    // Yield to the block for setup
     block(loader);
+    
+	[loader send];
+    
+	return loader;
+}
+
+- (RKObjectLoader*)sendObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    RKObjectLoader* loader = [self objectLoaderWithResourcePath:nil delegate:delegate];
+    loader.sourceObject = object;
+    loader.targetObject = object;
+    loader.serializationMIMEType = self.serializationMIMEType;
+    loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
+    
+    // Yield to the block for setup
+    block(loader);
+    
+    if (loader.resourcePath == nil) {
+        loader.resourcePath = [self.router resourcePathForObject:object method:loader.method];
+    }
+    
+    if (loader.objectMapping == nil) {
+        if (self.inferMappingsFromObjectTypes) {
+            RKObjectMapping* objectMapping = [self.mappingProvider objectMappingForClass:[object class]];
+            RKLogDebug(@"Auto-selected object mapping %@ for object of type %@", objectMapping, NSStringFromClass([object class]));
+            loader.objectMapping = objectMapping;
+        }
+    }
+    
     [loader send];
     return loader;
+}
+                                                                                                        
+- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+    return [self sendObject:object delegate:delegate block:^(RKObjectLoader* loader) {
+        loader.method = method;
+        block(loader);
+    }];
 }
 
 - (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
@@ -225,6 +265,8 @@ static RKObjectManager* sharedManager = nil;
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
     return [self sendObject:object method:RKRequestMethodDELETE delegate:delegate block:block];
 }
+
+#endif // NS_BLOCKS_AVAILABLE
 
 #pragma mark - Object Instance Loaders for Non-nested JSON
 

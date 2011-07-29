@@ -127,6 +127,12 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 	return _length;
 }
 
+- (void)reset {
+    _bytesDelivered = 0;
+    _length = 0;
+    _streamStatus = NSStreamStatusNotOpen;
+}
+
 - (NSInputStream*)HTTPBodyStream {
 	// Open each of our attachments
 	[_attachments makeObjectsPerformSelector:@selector(open)];

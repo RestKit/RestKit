@@ -233,6 +233,21 @@ typedef enum {
 #if NS_BLOCKS_AVAILABLE
 
 /**
+ Load the objects at the specified resource path and perform object mapping on the response payload. Prior to sending the object loader, the
+ block will be invoked to allow you to configure the object loader as you see fit. This can be used to change the response type, set custom
+ parameters, choose an object mapping, etc.
+ 
+ For example:
+    
+    - (void)loadObjectWithBlockExample {
+        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" delegate:self block:^(RKObjectLoader* loader) {
+            loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
+        }
+    }
+ */
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+
+/**
  Configure and send an object loader after yielding it to a block for configuration. This allows for very succinct on-the-fly
  configuration of the request without obtaining an object reference via objectLoaderForObject: and then sending it yourself.
  
@@ -241,7 +256,8 @@ typedef enum {
     - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
         if ([self validatePassword:newPassword error:error]) {
             self.password = newPassword;
-            [[RKObjectManager sharedManager] sendObject:self method:RKRequestMethodPOST delegate:self block:^(RKObjectLoader* loader) {
+            [[RKObjectManager sharedManager] sendObject:self delegate:self block:^(RKObjectLoader* loader) {
+                loader.method = RKRequestMethodPOST;
                 loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
                 loader.targetObject = nil;  // Map the results back onto a new object instead of self
                 // Set up a custom serialization mapping to handle this request
@@ -252,7 +268,7 @@ typedef enum {
         }
     }
  */
-- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+- (RKObjectLoader*)sendObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
 
 /**
  GET a remote object instance and yield the object loader to the block before sending
