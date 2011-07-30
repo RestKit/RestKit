@@ -387,7 +387,7 @@ NSString* const kNextiveJsonParserErrorDomain = @"com.nextive.NXJsonParser";
 			value = NO;
 			break;
 		default:
-			ASSERT(!@"I should never be here. Fault the calling function."); 
+			ASSERT(@"I should never be here. Fault the calling function." != nil ? 1 : 0);  
 			break;
 	}
 	
