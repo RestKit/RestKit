@@ -6,7 +6,6 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import <RestKit/RestKit.h>
 #import "RKMacOSXAppDelegate.h"
 
 @implementation RKMacOSXAppDelegate

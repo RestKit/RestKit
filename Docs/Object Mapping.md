@@ -71,7 +71,7 @@ RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article clas
 [articleMapping mapKeyPath:@"author" toAttribute:@"author"];
 [articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
-[[RKObjectManager sharedManager].mappingProvider setObjectMapping:articleMapping forKeyPath:@"articles"];
+[[RKObjectManager sharedManager].mappingProvider setMapping:articleMapping forKeyPath:@"articles"];
 ```
 
 Let's consider what we've done here. In the first line, we created an instance of `RKObjectMapping` defining a mapping
@@ -268,9 +268,9 @@ RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article clas
 [articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 // Define the relationship mapping
-[article mapKeyPath:@"author" toRelationship:@"author" withObjectMapping:authorMapping];
+[article mapKeyPath:@"author" toRelationship:@"author" withMapping:authorMapping];
 
-[[RKObjectManager sharedManager].mappingProvider setObjectMapping:articleMapping forKeyPath:@"articles"];
+[[RKObjectManager sharedManager].mappingProvider setMapping:articleMapping forKeyPath:@"articles"];
 ```
 
 That's all there is to it. RestKit is now configured to map the above JSON into an array of Article objects, each of which has a related Author object. The
@@ -393,7 +393,7 @@ RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article clas
 [[RKObjectManager sharedManager].mappingProvider addObjectMapping:articleMapping];
 ```
 
-Rather than leveraging `setObjectMapping:forKeyPath:`, we have invoked `addObjectMapping:`. This method essentially adds a retained reference
+Rather than leveraging `setMapping:forKeyPath:`, we have invoked `addObjectMapping:`. This method essentially adds a retained reference
 to the mapping provider so that we can easily get the mapping back later when we need it via `objectMappingForClass:`. Let's take a look at how
 we'd load this array of `Article` objects:
 
@@ -580,6 +580,113 @@ mapping.forceCollectionMapping = YES;
 [mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
 [mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
 ```
+### Polymorphic Object Mapping
+
+Thus far we have examined clear-cut cases where the appropriate object mapping can be determined either by consulting the
+key path or by the developer directly providing the mapping. Sometimes it is desirable to dynamically determine the appropriate
+object mapping to use at mapping time. Perhaps we have a collection of objects with identical attribute names, but we wish
+to represent them differently. Or maybe we are loading a collection of objects that are not KVC compliant, but contain a mixture
+of types that we would like to model. RestKit supports such use cases via the RKObjectPolymorphicMapping class. 
+RKObjectPolymorphicMapping is a sibling class to RKObjectMapping and can be added to instances of RKObjectMappingProvider and
+used to configure RKObjectMappingOperation instances. RKObjectPolymorphicMapping allows you to hook into the mapping process
+and determine an appropriate RKObjectMapping to use on a per-object basis. 
+
+When RestKit is performing a mapping operation and the current mapping being applied is an RKObjectPolymorphicMapping instance,
+the polymorphic mapping will be sent the `objectMappingForDictionary:` message with the NSDictionary that is currently being 
+mapped. The polymorphic mapping is responsible for introspecting the contents of the dictionary and returning an RKObjectMapping
+instance that can be used to map the data into a concrete object.
+
+There are three ways in which the determination of the appropriate object mapping can be made:
+1. Via a declarative matcher on an attribute within the mappable data. If your polymorphic data contains an attribute that can
+be used to infer the appropriate object type, then you are in luck -- RestKit can handle the polymorphic mapping via simple 
+configuration.
+2. Via a delegate callback. If your data requires some special analysis or you want to dynamically construct an object mapping
+to handle the data, you can assign a delegate to the RKObjectPolymorphicMapping and you will be called back to perform whatever
+logic you need to implement the object mapping lookup/construction.
+3. Via a delegate block invocation. Similar to the delegate configuration, you can assign a delegateBlock to the RKObjectPolymorphicMapping that will be invoked to determine the appropriate RKObjectMapping to use for the mappable data.
+
+To illustrate these concepts, let's consider the following JSON fragment:
+
+```json
+{
+    "people": [
+        {
+            "name": "Blake Watters",
+            "type": "Boy",
+            "friends": [
+                {
+                    "name": "John Doe",
+                    "type": "Boy"
+                },
+                {
+                    "name": "Jane Doe",
+                    "type": "Girl"
+                }
+            ]
+        },
+        {
+            "name": "Sarah",
+            "type": "Girl"
+        }
+    ]
+}
+```
+
+In this JSON we have a dictionary containing an array of people at the "people" key path. We want to map each of the 
+people within that collection into different classes: `Boy` and `Girl`. Our meaningful attributes are the name and
+the friends, which is itself a polymorphic collection of people. The `type` attribute will be used to determine what
+the appropriate destination mapping and class will be. Let's set it up:
+
+```objc
+// Basic setup
+RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+[boyMapping mapAttributes:@"name", nil];
+RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+[girlMapping mapAttributes:@"name", nil];
+RKObjectPolymorphicMapping* polymorphicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+[boyMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:polymorphicMapping];
+[girlMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:polymorphicMapping];
+
+// Connect our mapping to RestKit's mapping provider
+[[RKObjectManager sharedManager].mappingProvider setMapping:polymorphicMapping forKeyPath:@"people"];
+
+// Configure the polymorphic mapping via matchers
+[polymorphicMapping setObjectMapping:boyMapping whenValueOfKey:@"type" isEqualTo:@"Boy"];
+[polymorphicMapping setObjectMapping:girlMapping whenValueOfKey:@"type" isEqualTo:@"Girl"];
+
+// Configure the polymorphic mapping via a delegate
+polymorphicMapping.delegate = self;
+
+- (RKObjectMapping*)objectMappingForData:(id)data {
+    // Dynamically construct an object mapping for the data
+    if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
+        return [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    } else if ([[data valueForKey:@"type"] isEqualToString:@"Boy"]) {
+        return [RKObjectMapping mappingForClass:[Boy class] block:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }
+    
+    return nil;
+}
+
+// Configure the polymorphic mapping via a block
+polymorphicMapping.delegateBlock = ^ RKObjectMapping* (id mappableData) {
+    if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
+        return boyMapping;
+    } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
+        return girlMapping;
+    }
+    
+    return nil;
+};
+```
+
+That's all there is to it. RestKit will invoke the polymorphic mapping with the data and apply whatever object
+mapping is returned to that data. You can even decline the mapping of individual elements by returning a nil mapping.
+This can be useful to filter out unwanted information deep within an object graph.
 
 ### Key-value Validation
 
@@ -706,13 +813,13 @@ RKObjectAttributeMapping* titleMapping = [RKObjectAttributeMapping mappingFromKe
 // Configure relationship mappings
 RKObjectMapping* commentMapping = [[RKObjectManager sharedManager] objectMappingForClass:[Comment class]];
 // Direct configuration of instances
-RKObjectRelationshipMapping* articleCommentsMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"comments" toKeyPath:@"comments" objectMapping:commentMapping];
+RKObjectRelationshipMapping* articleCommentsMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"comments" toKeyPath:@"comments" withMapping:commentMapping];
 [mapping addRelationshipMapping:articleCommentsMapping];
 
 // Configuration using helper methods
-[mapping mapRelationship:@"comments" withObjectMapping:commentMapping];
-[mapping hasMany:@"comments" withObjectMapping:commentMapping];
-[mapping belongsTo:@"user" withObjectMapping:userMapping];    
+[mapping mapRelationship:@"comments" withMapping:commentMapping];
+[mapping hasMany:@"comments" withMapping:commentMapping];
+[mapping belongsTo:@"user" withMapping:userMapping];    
 
 // Register the mapping with the object manager
 [objectManager.mappingProvider setMapping:mapping forKeyPath:@"article"];
@@ -740,7 +847,7 @@ articleMapping.primaryKeyAttribute = @"articleID";
 RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
 RKManagedObjectMapping* articleMapping = [RKObjectMapping objectMappingForClass:[Article class]];
 [articleMapping mapKeyPath:@"id" toAttribute:@"articleID"];
-[objectManager.mappingProvider setObjectMapping:articleMapping forKeyPath:@"articles"];
+[objectManager.mappingProvider setMapping:articleMapping forKeyPath:@"articles"];
 
 RKObjectLoader* loader = [RKObjectManager loadObjectsAtResourcePath:@"/articles" delegate:self];
 

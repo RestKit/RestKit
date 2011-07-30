@@ -101,7 +101,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      * primary key lookup with the value in 'userID' property. This is the declarative
      * equivalent of doing self.user = [DBUser objectWithPrimaryKeyValue:self.userID];
      */
-    [topicMapping mapRelationship:@"user" withObjectMapping:userMapping];
+    [topicMapping mapRelationship:@"user" withMapping:userMapping];
     
     RKManagedObjectMapping* postMapping = [RKManagedObjectMapping mappingForClass:[DBPost class]];
     postMapping.primaryKeyAttribute = @"postID";
@@ -118,7 +118,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
      @"attachment_updated_at", @"attachmentUpdatedAt",
      @"body", @"body",
     nil];
-    [postMapping mapRelationship:@"user" withObjectMapping:userMapping];
+    [postMapping mapRelationship:@"user" withMapping:userMapping];
     
     // Register the mappings with the mapping provider. Use of registerMapping:withRootKeyPath:
     // configures the mapping provider with both object and serialization mappings for the specified

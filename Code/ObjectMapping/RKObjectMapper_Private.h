@@ -6,10 +6,11 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-@interface RKObjectMapper (Private) <RKObjectFactory>
+@interface RKObjectMapper (Private)
 
-- (id)mapObject:(id)mappableObject atKeyPath:keyPath usingMapping:(RKObjectMapping*)mapping;
-- (NSArray*)mapCollection:(NSArray*)mappableObjects atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)mapping;
-- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:keyPath usingMapping:(RKObjectMapping*)mapping;
+- (id)mapObject:(id)mappableObject atKeyPath:keyPath usingMapping:(RKObjectAbstractMapping*)mapping;
+- (NSArray*)mapCollection:(NSArray*)mappableObjects atKeyPath:(NSString*)keyPath usingMapping:(RKObjectAbstractMapping*)mapping;
+- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:keyPath usingMapping:(RKObjectAbstractMapping*)mapping;
+- (id)objectWithMapping:(RKObjectAbstractMapping*)objectMapping andData:(id)mappableData;
 
 @end

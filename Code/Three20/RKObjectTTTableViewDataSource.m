@@ -78,7 +78,7 @@
         if (mapping) {
             NSError* error = nil;
             TTTableItem* tableItem = [[mapping.objectClass new] autorelease];
-            RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:mappableObject toObject:tableItem withObjectMapping:mapping];
+            RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:mappableObject toObject:tableItem withMapping:mapping];
             BOOL success = [operation performMapping:&error];
             if (success) {
                 return tableItem;

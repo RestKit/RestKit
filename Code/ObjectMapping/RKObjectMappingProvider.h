@@ -7,6 +7,7 @@
 //
 
 #import "RKObjectMapping.h"
+#import "RKObjectPolymorphicMapping.h"
 
 /**
  Responsible for providing object mappings to an instance of the object mapper
@@ -14,33 +15,27 @@
  */
 @interface RKObjectMappingProvider : NSObject {
     NSMutableArray* _objectMappings;
-    NSMutableDictionary* _objectMappingsByKeyPath;
+    NSMutableDictionary* _mappingsByKeyPath;
     NSMutableDictionary* _serializationMappings;
 }
 
 /**
- Set a mapping for a keypath that comes back in your payload
- 
- @deprecated
+ Instructs the mapping provider to use the mapping provided when it encounters content at the specified
+ key path
  */
-- (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath DEPRECATED_ATTRIBUTE;
+- (void)setMapping:(RKObjectAbstractMapping*)objectOrPolymorphicMapping forKeyPath:(NSString*)keyPath;
 
 /**
- Configure an object mapping to handle data that appears at a particular keyPath in
- a payload loaded from a 
+ Returns the RKObjectMapping or RKObjectPolymorphic mapping configured for use 
+ when mappable content is encountered at keyPath
  */
-- (void)setObjectMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath;
+- (RKObjectAbstractMapping*)mappingForKeyPath:(NSString*)keyPath;
 
 /**
- Returns the object mapping to use for mapping the specified keyPath into an object graph
+ Returns a dictionary where the keys are mappable keyPaths and the values are the RKObjectMapping
+ or RKObjectPolymorphic mappings to use for mappable data that appears at the keyPath.
  */
-- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath;
-
-/**
- Returns a dictionary where the keys are mappable keyPaths and the values are the object
- mapping to use for objects that appear at the keyPath.
- */
-- (NSDictionary*)objectMappingsByKeyPath;
+- (NSDictionary*)mappingsByKeyPath;
 
 /**
  Registers an object mapping as being rooted at a specific keyPath. The keyPath will be registered
@@ -110,5 +105,31 @@
  which has been previously registered.
  */
 - (RKObjectMapping*)serializationMappingForClass:(Class)objectClass;
+
+////////////////////////////////////////////////////////////////////////////////////
+/// @name Deprecated Object Mapping Methods
+
+/**
+ Configure an object mapping to handle data that appears at a particular keyPath in
+ a payload loaded from a 
+ 
+ @deprecated
+ */
+- (void)setObjectMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath DEPRECATED_ATTRIBUTE;
+
+/**
+ Returns the object mapping to use for mapping the specified keyPath into an object graph
+ 
+ @deprecated
+ */
+- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath DEPRECATED_ATTRIBUTE;
+
+/**
+ Returns a dictionary where the keys are mappable keyPaths and the values are the object
+ mapping to use for objects that appear at the keyPath.
+ 
+ @deprecated
+ */
+- (NSDictionary*)objectMappingsByKeyPath DEPRECATED_ATTRIBUTE;
 
 @end

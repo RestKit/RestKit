@@ -39,15 +39,15 @@
          @"in_reply_to_screen_name", @"inReplyToScreenName",
          @"favorited", @"isFavorited",
          nil];
-    [statusMapping mapRelationship:@"user" withObjectMapping:userMapping];
+    [statusMapping mapRelationship:@"user" withMapping:userMapping];
     
     // Update date format so that we can parse Twitter dates properly
 	// Wed Sep 29 15:31:08 +0000 2010
 	[statusMapping.dateFormatStrings addObject:@"E MMM d HH:mm:ss Z y"];
     
     // Register our mappings with the provider
-    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"user"];
-    [objectManager.mappingProvider setObjectMapping:statusMapping forKeyPath:@"status"];
+    [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
+    [objectManager.mappingProvider setMapping:statusMapping forKeyPath:@"status"];
     
     // Uncomment this to use XML, comment it to use JSON
 //  objectManager.acceptMIMEType = RKMIMETypeXML;

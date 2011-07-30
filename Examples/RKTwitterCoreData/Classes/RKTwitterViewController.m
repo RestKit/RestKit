@@ -53,9 +53,11 @@
 - (void)loadData {
     // Load the object model via RestKit	
     RKObjectManager* objectManager = [RKObjectManager sharedManager];
-    RKObjectMapping* statusMapping = [objectManager.mappingProvider objectMappingForKeyPath:@"status"];
-    
-    [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" objectMapping:statusMapping delegate:self];
+    [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" delegate:self block:^(RKObjectLoader* loader) {
+        // Twitter returns statuses as a naked array in JSON, so we instruct the loader
+        // to user the appropriate object mapping
+        loader.objectMapping = [objectManager.mappingProvider objectMappingForClass:[RKTStatus class]];
+    }];
 }
 
 - (void)reloadButtonWasPressed:(id)sender {

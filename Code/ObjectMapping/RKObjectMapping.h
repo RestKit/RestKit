@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RKObjectAbstractMapping.h"
 #import "RKObjectAttributeMapping.h"
 #import "RKObjectRelationshipMapping.h"
 
@@ -30,7 +31,7 @@ relationship. Relationships are processed using an object mapping as well.
  Instances of RKObjectMapping are used to configure RKObjectMappingOperation instances, which actually
  perform the mapping work. Both object loading and serialization are defined in terms of object mappings.
  */
-@interface RKObjectMapping : NSObject {
+@interface RKObjectMapping : RKObjectAbstractMapping {
     Class _objectClass;
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
@@ -247,9 +248,9 @@ relationship. Relationships are processed using an object mapping as well.
   
  @param relationshipKey A key-value coding key corresponding to a value in the mappable source object and a property 
     on the destination class that have the same name.
- @param objectMapping An object mapping to use for processing the relationship.
+ @param objectOrPolymorphicMapping An RKObjectMapping or RKObjectPolymorphic mapping to apply when mapping the relationship
  */
-- (void)mapRelationship:(NSString*)relationshipKey withObjectMapping:(RKObjectMapping*)objectMapping;
+- (void)mapRelationship:(NSString*)relationshipKey withMapping:(RKObjectAbstractMapping*)objectOrPolymorphicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -257,7 +258,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasMany:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping;
+- (void)hasMany:(NSString*)keyPath withMapping:(RKObjectAbstractMapping*)objectOrPolymorphicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -265,7 +266,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasOne:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping;
+- (void)hasOne:(NSString*)keyPath withMapping:(RKObjectAbstractMapping*)objectOrPolymorphicMapping;
 
 /**
  Instantiate and add an RKObjectAttributeMapping instance targeting a keyPath within the mappable
@@ -306,7 +307,7 @@ relationship. Relationships are processed using an object mapping as well.
  @param objectMapping An object mapping to use when processing the nested objects
  @see RKObjectRelationshipMapping
  */
-- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString*)destinationRelationship withObjectMapping:(RKObjectMapping *)objectMapping;
+- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString*)destinationRelationship withMapping:(RKObjectAbstractMapping *)objectOrPolymorphicMapping;
 
 /**
  Instantiate and add an RKObjectRelationshipMapping instance targeting a keyPath within the mappable
@@ -321,7 +322,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  @see mapKeyPath:toRelationship:withObjectMapping:
  */
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping serialize:(BOOL)serialize;
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(RKObjectAbstractMapping *)objectOrPolymorphicMapping serialize:(BOOL)serialize;
 
 /**
  Quickly define a group of attribute mappings using alternating keyPath and attribute names. You must provide
@@ -396,5 +397,13 @@ relationship. Relationships are processed using an object mapping as well.
  @see [RKManagedObjectMapping defaultValueForMissingAttribute:]
  */
 - (id)defaultValueForMissingAttribute:(NSString*)attributeName;
+
+/**
+ Returns an auto-released object that can be used to apply this object mapping
+ given a set of mappable data. For transient objects, this generally returns an
+ instance of the objectClass. For Core Data backed persistent objects, mappableData
+ will be inspected to search for primary key data to lookup existing object instances.
+ */
+- (id)mappableObjectForData:(id)mappableData;
 
 @end

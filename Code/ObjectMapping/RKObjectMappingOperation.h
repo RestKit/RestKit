@@ -8,7 +8,6 @@
 
 #import "RKObjectMapping.h"
 #import "RKObjectAttributeMapping.h"
-#import "RKObjectFactory.h"
 
 @class RKObjectMappingOperation;
 
@@ -31,7 +30,6 @@
     id _destinationObject;
     RKObjectMapping* _objectMapping;    
     id<RKObjectMappingOperationDelegate> _delegate;
-    id<RKObjectFactory> _objectFactory;
     NSDictionary* _nestedAttributeSubstitution;
     NSError* _validationError;
 }
@@ -58,21 +56,15 @@
 @property (nonatomic, assign) id<RKObjectMappingOperationDelegate> delegate;
 
 /**
- An object factory responsible for creating new instances of mappable objects
- necessary for the processing of relationship mappings
- */
-@property (nonatomic, assign) id<RKObjectFactory> objectFactory;
-
-/**
  Create a new mapping operation configured to transform the object representation
  in a source object to a new destination object according to an object mapping definition
  */
-+ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withObjectMapping:(RKObjectMapping*)objectMapping;
++ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectAbstractMapping*)mapping;
 
 /**
  Initialize a mapping operation for an object and set of data at a particular key path with an object mapping definition
  */
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject objectMapping:(RKObjectMapping*)objectMapping;
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKObjectAbstractMapping*)mapping;
 
 /**
  Process all mappable values from the mappable dictionary and assign them to the target object

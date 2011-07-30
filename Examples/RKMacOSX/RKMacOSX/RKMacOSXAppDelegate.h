@@ -7,8 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <RestKit/RestKit.h>
 
-@interface RKMacOSXAppDelegate : NSObject <NSApplicationDelegate> {
+@interface RKMacOSXAppDelegate : NSObject <NSApplicationDelegate, RKRequestDelegate> {
 @private
     NSWindow *window;
 }
