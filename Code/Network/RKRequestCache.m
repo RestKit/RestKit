@@ -126,12 +126,13 @@ static NSDateFormatter* __rfc1123DateFormatter;
 
 - (void)writeHeaders:(NSDictionary*)headers toCachePath:(NSString*)cachePath {
     RKLogTrace(@"Writing headers to cache path: '%@'", cachePath);
-    BOOL success = [headers writeToFile:[cachePath
-                                         stringByAppendingPathExtension:headersExtension]
+    [[NSFileManager defaultManager] createDirectoryAtPath:[cachePath stringByDeletingLastPathComponent] 
+                              withIntermediateDirectories:YES attributes:nil error:NULL];
+    
+    BOOL success = [headers writeToFile:[cachePath stringByAppendingPathExtension:headersExtension]
                              atomically:YES];
     if (success) {
         RKLogTrace(@"Wrote cached response header to path '%@'", cachePath);
-        
     } else {
         RKLogError(@"Failed to write cached response headers to path '%@'", cachePath);
     }
