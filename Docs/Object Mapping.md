@@ -651,8 +651,8 @@ RKObjectPolymorphicMapping* polymorphicMapping = [RKObjectPolymorphicMapping pol
 [[RKObjectManager sharedManager].mappingProvider setMapping:polymorphicMapping forKeyPath:@"people"];
 
 // Configure the polymorphic mapping via matchers
-[polymorphicMapping setObjectMapping:boyMapping whenValueOfKey:@"type" isEqualTo:@"Boy"];
-[polymorphicMapping setObjectMapping:girlMapping whenValueOfKey:@"type" isEqualTo:@"Girl"];
+[polymorphicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
+[polymorphicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
 
 // Configure the polymorphic mapping via a delegate
 polymorphicMapping.delegate = self;
@@ -683,6 +683,12 @@ polymorphicMapping.delegateBlock = ^ RKObjectMapping* (id mappableData) {
     return nil;
 };
 ```
+
+Notable within this code are the calls to `setObjectMapping:whenValueOfKeyPath:isEqualTo:`. This is the declarative
+matcher form of polymorphic configuration. When you use these matchers, RestKit will invoke `valueForKeyPath:` on your
+mappable data and then attempt to compare the resulting value with the value provided in the invocation. If you have
+a simple string or numeric value that can be used to differentiate your mappings, then you don't need to use the 
+delegate or block callbacks at all to perform polymorphic mapping.
 
 That's all there is to it. RestKit will invoke the polymorphic mapping with the data and apply whatever object
 mapping is returned to that data. You can even decline the mapping of individual elements by returning a nil mapping.

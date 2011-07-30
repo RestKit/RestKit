@@ -52,7 +52,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 - (BOOL)isMatchForData:(id)data {
-    return RKObjectIsValueEqualToValue([data valueForKey:_key], _value);
+    return RKObjectIsValueEqualToValue([data valueForKeyPath:_key], _value);
 }
 
 - (NSString*)matchDescription {
@@ -97,7 +97,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [super dealloc];
 }
 
-- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKey:(NSString*)key isEqualTo:(id)value {
+- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)key isEqualTo:(id)value {
     RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", key, value, NSStringFromClass(objectMapping.objectClass));
     RKObjectPolymorphicMappingMatcher* matcher = [[RKObjectPolymorphicMappingMatcher alloc] initWithKey:key value:value objectMapping:objectMapping];
     [_matchers addObject:matcher];

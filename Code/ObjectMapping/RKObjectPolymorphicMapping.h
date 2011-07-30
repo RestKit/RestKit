@@ -86,10 +86,10 @@ typedef RKObjectMapping*(^RKObjectPolymorphicMappingDelegateBlock)(id);
  is 'female' we want to use the Girl class. We might define our polymorphic mapping like so:
  
     RKObjectPolymorphicMapping* mapping = [RKObjectPolymorphicMapping polymorphicMapping];
-    [mapping setObjectMapping:boyMapping whenValueOfKey:@"gender" isEqualTo:@"male"];
-    [mapping setObjectMapping:boyMapping whenValueOfKey:@"gender" isEqualTo:@"female"];
+    [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"male"];
+    [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
  */
-- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKey:(NSString*)key isEqualTo:(id)value;
+- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)key isEqualTo:(id)value;
 
 /**
  Invoked by the RKObjectMapper and RKObjectMappingOperation to determine the appropriate RKObjectMapping to use
