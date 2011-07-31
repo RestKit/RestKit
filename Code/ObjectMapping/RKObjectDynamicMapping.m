@@ -6,7 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKObjectPolymorphicMapping.h"
+#import "RKObjectDynamicMapping.h"
 #import "../Support/RKLog.h"
 
 // Set Logging Component
@@ -16,8 +16,8 @@
 // Implemented in RKObjectMappingOperation
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
-@interface RKObjectPolymorphicMappingMatcher : NSObject {
-    NSString* _key;
+@interface RKObjectDynamicMappingMatcher : NSObject {
+    NSString* _keyPath;
     id _value;
     RKObjectMapping* _objectMapping;
 }
@@ -29,14 +29,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 - (NSString*)matchDescription;
 @end
 
-@implementation RKObjectPolymorphicMappingMatcher
+@implementation RKObjectDynamicMappingMatcher
 
 @synthesize objectMapping = _objectMapping;
 
 - (id)initWithKey:(NSString*)key value:(id)value objectMapping:(RKObjectMapping*)objectMapping {
     self = [super init];
     if (self) {
-        _key = [key retain];
+        _keyPath = [key retain];
         _value = [value retain];
         _objectMapping = [objectMapping retain];
     }
@@ -45,38 +45,38 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 - (void)dealloc {
-    [_key release];
+    [_keyPath release];
     [_value release];
     [_objectMapping release];
     [super dealloc];
 }
 
 - (BOOL)isMatchForData:(id)data {
-    return RKObjectIsValueEqualToValue([data valueForKeyPath:_key], _value);
+    return RKObjectIsValueEqualToValue([data valueForKeyPath:_keyPath], _value);
 }
 
 - (NSString*)matchDescription {
-    return [NSString stringWithFormat:@"%@ == %@", _key, _value];
+    return [NSString stringWithFormat:@"%@ == %@", _keyPath, _value];
 }
 
 @end
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation RKObjectPolymorphicMapping
+@implementation RKObjectDynamicMapping
 
 @synthesize delegate = _delegate;
-@synthesize delegateBlock = _delegateBlock;
+@synthesize objectMappingForDataBlock = _objectMappingForDataBlock;
 @synthesize forceCollectionMapping = _forceCollectionMapping;
 
-+ (RKObjectPolymorphicMapping*)polymorphicMapping {
++ (RKObjectDynamicMapping*)dynamicMapping {
     return [[self new] autorelease];
 }
 
 #if NS_BLOCKS_AVAILABLE
 
-+ (RKObjectPolymorphicMapping*)polymorphicMappingWithBlock:(void(^)(RKObjectPolymorphicMapping*))block {
-    RKObjectPolymorphicMapping* mapping = [self polymorphicMapping];
++ (RKObjectDynamicMapping*)dynamicMappingWithBlock:(void(^)(RKObjectDynamicMapping*))block {
+    RKObjectDynamicMapping* mapping = [self dynamicMapping];
     block(mapping);
     return mapping;
 }
@@ -97,9 +97,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [super dealloc];
 }
 
-- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)key isEqualTo:(id)value {
-    RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", key, value, NSStringFromClass(objectMapping.objectClass));
-    RKObjectPolymorphicMappingMatcher* matcher = [[RKObjectPolymorphicMappingMatcher alloc] initWithKey:key value:value objectMapping:objectMapping];
+- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value {
+    RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, value, NSStringFromClass(objectMapping.objectClass));
+    RKObjectDynamicMappingMatcher* matcher = [[RKObjectDynamicMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
     [_matchers addObject:matcher];
     [matcher release];
 }
@@ -111,7 +111,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     RKLogTrace(@"Performing dynamic object mapping for mappable data: %@", data);
     
     // Consult the declarative matchers first
-    for (RKObjectPolymorphicMappingMatcher* matcher in _matchers) {
+    for (RKObjectDynamicMappingMatcher* matcher in _matchers) {
         if ([matcher isMatchForData:data]) {
             RKLogTrace(@"Found declarative match for data: %@.", [matcher matchDescription]);
             return matcher.objectMapping;
@@ -127,10 +127,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         }
     }
     
-    if (self.delegateBlock) {        
-        mapping = self.delegateBlock(data);
+    if (self.objectMappingForDataBlock) {        
+        mapping = self.objectMappingForDataBlock(data);
         if (mapping) {
-            RKLogTrace(@"Found dynamic delegateBlock match. DelegateBlock = %@", self.delegateBlock);
+            RKLogTrace(@"Found dynamic delegateBlock match. objectMappingForDataBlock = %@", self.objectMappingForDataBlock);
         }
     }
     

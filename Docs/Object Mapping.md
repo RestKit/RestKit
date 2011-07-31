@@ -580,30 +580,30 @@ mapping.forceCollectionMapping = YES;
 [mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
 [mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
 ```
-### Polymorphic Object Mapping
+### Dynamic Object Mapping
 
 Thus far we have examined clear-cut cases where the appropriate object mapping can be determined either by consulting the
 key path or by the developer directly providing the mapping. Sometimes it is desirable to dynamically determine the appropriate
 object mapping to use at mapping time. Perhaps we have a collection of objects with identical attribute names, but we wish
 to represent them differently. Or maybe we are loading a collection of objects that are not KVC compliant, but contain a mixture
-of types that we would like to model. RestKit supports such use cases via the RKObjectPolymorphicMapping class. 
-RKObjectPolymorphicMapping is a sibling class to RKObjectMapping and can be added to instances of RKObjectMappingProvider and
-used to configure RKObjectMappingOperation instances. RKObjectPolymorphicMapping allows you to hook into the mapping process
+of types that we would like to model. RestKit supports such use cases via the RKObjectDynamicMapping class. 
+RKObjectDynamicMapping is a sibling class to RKObjectMapping and can be added to instances of RKObjectMappingProvider and
+used to configure RKObjectMappingOperation instances. RKObjectDynamicMapping allows you to hook into the mapping process
 and determine an appropriate RKObjectMapping to use on a per-object basis. 
 
-When RestKit is performing a mapping operation and the current mapping being applied is an RKObjectPolymorphicMapping instance,
-the polymorphic mapping will be sent the `objectMappingForDictionary:` message with the NSDictionary that is currently being 
-mapped. The polymorphic mapping is responsible for introspecting the contents of the dictionary and returning an RKObjectMapping
+When RestKit is performing a mapping operation and the current mapping being applied is an RKObjectDynamicMapping instance,
+the dynamic mapping will be sent the `objectMappingForDictionary:` message with the NSDictionary that is currently being 
+mapped. The dynamic mapping is responsible for introspecting the contents of the dictionary and returning an RKObjectMapping
 instance that can be used to map the data into a concrete object.
 
 There are three ways in which the determination of the appropriate object mapping can be made:
-1. Via a declarative matcher on an attribute within the mappable data. If your polymorphic data contains an attribute that can
-be used to infer the appropriate object type, then you are in luck -- RestKit can handle the polymorphic mapping via simple 
+1. Via a declarative matcher on an attribute within the mappable data. If your dynamic data contains an attribute that can
+be used to infer the appropriate object type, then you are in luck -- RestKit can handle the dynamic mapping via simple 
 configuration.
 2. Via a delegate callback. If your data requires some special analysis or you want to dynamically construct an object mapping
-to handle the data, you can assign a delegate to the RKObjectPolymorphicMapping and you will be called back to perform whatever
+to handle the data, you can assign a delegate to the RKObjectDynamicMapping and you will be called back to perform whatever
 logic you need to implement the object mapping lookup/construction.
-3. Via a delegate block invocation. Similar to the delegate configuration, you can assign a delegateBlock to the RKObjectPolymorphicMapping that will be invoked to determine the appropriate RKObjectMapping to use for the mappable data.
+3. Via a delegate block invocation. Similar to the delegate configuration, you can assign a delegateBlock to the RKObjectDynamicMapping that will be invoked to determine the appropriate RKObjectMapping to use for the mappable data.
 
 To illustrate these concepts, let's consider the following JSON fragment:
 
@@ -634,7 +634,7 @@ To illustrate these concepts, let's consider the following JSON fragment:
 
 In this JSON we have a dictionary containing an array of people at the "people" key path. We want to map each of the 
 people within that collection into different classes: `Boy` and `Girl`. Our meaningful attributes are the name and
-the friends, which is itself a polymorphic collection of people. The `type` attribute will be used to determine what
+the friends, which is itself a dynamic collection of people. The `type` attribute will be used to determine what
 the appropriate destination mapping and class will be. Let's set it up:
 
 ```objc
@@ -643,19 +643,19 @@ RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
 [boyMapping mapAttributes:@"name", nil];
 RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
 [girlMapping mapAttributes:@"name", nil];
-RKObjectPolymorphicMapping* polymorphicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
-[boyMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:polymorphicMapping];
-[girlMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:polymorphicMapping];
+RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+[boyMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:dynamicMapping];
+[girlMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:dynamicMapping];
 
 // Connect our mapping to RestKit's mapping provider
-[[RKObjectManager sharedManager].mappingProvider setMapping:polymorphicMapping forKeyPath:@"people"];
+[[RKObjectManager sharedManager].mappingProvider setMapping:dynamicMapping forKeyPath:@"people"];
 
-// Configure the polymorphic mapping via matchers
-[polymorphicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
-[polymorphicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
+// Configure the dynamic mapping via matchers
+[dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
+[dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
 
-// Configure the polymorphic mapping via a delegate
-polymorphicMapping.delegate = self;
+// Configure the dynamic mapping via a delegate
+dynamicMapping.delegate = self;
 
 - (RKObjectMapping*)objectMappingForData:(id)data {
     // Dynamically construct an object mapping for the data
@@ -672,8 +672,8 @@ polymorphicMapping.delegate = self;
     return nil;
 }
 
-// Configure the polymorphic mapping via a block
-polymorphicMapping.delegateBlock = ^ RKObjectMapping* (id mappableData) {
+// Configure the dynamic mapping via a block
+dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
     if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
         return boyMapping;
     } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
@@ -685,12 +685,12 @@ polymorphicMapping.delegateBlock = ^ RKObjectMapping* (id mappableData) {
 ```
 
 Notable within this code are the calls to `setObjectMapping:whenValueOfKeyPath:isEqualTo:`. This is the declarative
-matcher form of polymorphic configuration. When you use these matchers, RestKit will invoke `valueForKeyPath:` on your
+matcher form of dynamic configuration. When you use these matchers, RestKit will invoke `valueForKeyPath:` on your
 mappable data and then attempt to compare the resulting value with the value provided in the invocation. If you have
 a simple string or numeric value that can be used to differentiate your mappings, then you don't need to use the 
-delegate or block callbacks at all to perform polymorphic mapping.
+delegate or block callbacks at all to perform dynamic mapping.
 
-That's all there is to it. RestKit will invoke the polymorphic mapping with the data and apply whatever object
+That's all there is to it. RestKit will invoke the dynamic mapping with the data and apply whatever object
 mapping is returned to that data. You can even decline the mapping of individual elements by returning a nil mapping.
 This can be useful to filter out unwanted information deep within an object graph.
 

@@ -26,12 +26,12 @@
 - (void)objectMapperWillBeginMapping:(RKObjectMapper*)objectMapper;
 - (void)objectMapperDidFinishMapping:(RKObjectMapper*)objectMapper;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didAddError:(NSError*)error;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString*)keyPath withMapping:(RKObjectAbstractMapping*)mapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)mapping;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didNotFindMappableObjectAtKeyPath:(NSString*)keyPath;
 
-- (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectAbstractMapping*)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectAbstractMapping*)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(RKObjectAbstractMapping*)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(id<RKObjectMappingDefinition>)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(id<RKObjectMappingDefinition>)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(id<RKObjectMappingDefinition>)objectMapping;
 @end
 
 @interface RKObjectMapper : NSObject {

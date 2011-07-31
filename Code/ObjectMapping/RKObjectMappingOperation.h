@@ -59,12 +59,12 @@
  Create a new mapping operation configured to transform the object representation
  in a source object to a new destination object according to an object mapping definition
  */
-+ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectAbstractMapping*)mapping;
++ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(id<RKObjectMappingDefinition>)mapping;
 
 /**
  Initialize a mapping operation for an object and set of data at a particular key path with an object mapping definition
  */
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKObjectAbstractMapping*)mapping;
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(id<RKObjectMappingDefinition>)mapping;
 
 /**
  Process all mappable values from the mappable dictionary and assign them to the target object

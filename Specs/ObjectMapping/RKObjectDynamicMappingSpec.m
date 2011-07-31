@@ -1,5 +1,5 @@
 //
-//  RKObjectPolymorphicMappingSpec.m
+//  RKObjectDynamicMappingSpec.m
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
@@ -7,17 +7,17 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKObjectPolymorphicMapping.h"
-#import "RKPolymorphicMappingModels.h"
+#import "RKObjectDynamicMapping.h"
+#import "RKDynamicMappingModels.h"
 
-@interface RKObjectPolymorphicMappingSpec : RKSpec <RKObjectPolymorphicMappingDelegate>
+@interface RKObjectDynamicMappingSpec : RKSpec <RKObjectDynamicMappingDelegate>
 
 @end
 
-@implementation RKObjectPolymorphicMappingSpec
+@implementation RKObjectDynamicMappingSpec
 
 - (void)itShouldPickTheAppropriateMappingBasedOnAnAttributeValue {
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
@@ -35,7 +35,7 @@
 }
 
 - (void)itShouldMatchOnAnNSNumberAttributeValue {
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
@@ -53,7 +53,7 @@
 }
 
 - (void)itShouldPickTheAppropriateMappingBasedOnDelegateCallback {
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
     dynamicMapping.delegate = self;
     RKObjectMapping* mapping = [dynamicMapping objectMappingForDictionary:RKSpecParseFixture(@"girl.json")];
     assertThat(mapping, is(notNilValue()));
@@ -64,8 +64,8 @@
 }
 
 - (void)itShouldPickTheAppropriateMappingBasedOnBlockDelegateCallback {
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
-    dynamicMapping.delegateBlock = ^ RKObjectMapping* (id data) {
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id data) {
         if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
             return [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
                 [mapping mapAttributes:@"name", nil];
@@ -88,7 +88,7 @@
 
 - (void)itShouldFailAnAssertionWhenInvokedWithSomethingOtherThanADictionary {
     NSException* exception = nil;
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
     @try {
         [dynamicMapping objectMappingForDictionary:(NSDictionary*)[NSArray array]];
     }

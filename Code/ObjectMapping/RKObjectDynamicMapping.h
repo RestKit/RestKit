@@ -6,13 +6,13 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "RKObjectAbstractMapping.h"
+#import "RKObjectMappingDefinition.h"
 #import "RKObjectMapping.h"
 
 /**
  Return the appropriate object mapping given a mappable data
  */
-@protocol RKObjectPolymorphicMappingDelegate <NSObject>
+@protocol RKObjectDynamicMappingDelegate <NSObject>
 
 @required
 - (RKObjectMapping*)objectMappingForData:(id)data;
@@ -20,19 +20,19 @@
 @end
 
 #ifdef NS_BLOCKS_AVAILABLE
-typedef RKObjectMapping*(^RKObjectPolymorphicMappingDelegateBlock)(id);
+typedef RKObjectMapping*(^RKObjectDynamicMappingDelegateBlock)(id);
 #endif
 
 /**
- Defines a polymorphic object mapping that determines the appropriate concrete
+ Defines a dynamic object mapping that determines the appropriate concrete
  object mapping to apply at mapping time. This allows you to map very similar payloads
  differently depending on the type of data contained therein.
  */
-@interface RKObjectPolymorphicMapping : RKObjectAbstractMapping {
+@interface RKObjectDynamicMapping : NSObject <RKObjectMappingDefinition> {
     NSMutableArray* _matchers;
-    id<RKObjectPolymorphicMappingDelegate> _delegate;
+    id<RKObjectDynamicMappingDelegate> _delegate;
     #ifdef NS_BLOCKS_AVAILABLE
-    RKObjectPolymorphicMappingDelegateBlock _delegateBlock;
+    RKObjectDynamicMappingDelegateBlock _objectMappingForDataBlock;
     #endif
     BOOL _forceCollectionMapping;
 }
@@ -43,14 +43,14 @@ typedef RKObjectMapping*(^RKObjectPolymorphicMappingDelegateBlock)(id);
  
  @see RKDynamicObjectMappingDelegate
  */
-@property (nonatomic, assign) id<RKObjectPolymorphicMappingDelegate> delegate;
+@property (nonatomic, assign) id<RKObjectDynamicMappingDelegate> delegate;
 
 #ifdef NS_BLOCKS_AVAILABLE
 /**
  A block to invoke to determine the appropriate concrete object mapping
  to apply to the mappable data.
  */
-@property (nonatomic, copy) RKObjectPolymorphicMappingDelegateBlock delegateBlock;
+@property (nonatomic, copy) RKObjectDynamicMappingDelegateBlock objectMappingForDataBlock;
 #endif
 
 /**
@@ -61,35 +61,32 @@ typedef RKObjectMapping*(^RKObjectPolymorphicMappingDelegateBlock)(id);
 @property (nonatomic, assign) BOOL forceCollectionMapping;
 
 /**
- Return a new auto-released polymorphic object mapping
+ Return a new auto-released dynamic object mapping
  */
-+ (RKObjectPolymorphicMapping*)polymorphicMapping;
++ (RKObjectDynamicMapping*)dynamicMapping;
 
 #if NS_BLOCKS_AVAILABLE
     
 /**
- Return a new auto-released polymorphic object mapping after yielding it to the block for configuration
+ Return a new auto-released dynamic object mapping after yielding it to the block for configuration
  */
-+ (RKObjectPolymorphicMapping*)polymorphicMappingWithBlock:(void(^)(RKObjectPolymorphicMapping*))block;
++ (RKObjectDynamicMapping*)dynamicMappingWithBlock:(void(^)(RKObjectDynamicMapping*))block;
 
 #endif
 
-//+ (id)mappingForClass:(Class)objectClass block:(void(^)(RKObjectMapping*))block {
-// TODO: polymorphicMappingWithBlock
-
 /**
- Defines a polymorphic mapping rule stating that when the value of the key property matches the specified
+ Defines a dynamic mapping rule stating that when the value of the key property matches the specified
  value, the objectMapping should be used.
  
  For example, suppose that we have a JSON fragment for a person that we want to map differently based on
  the gender of the person. When the gender is 'male', we want to use the Boy class and when then the gender
- is 'female' we want to use the Girl class. We might define our polymorphic mapping like so:
+ is 'female' we want to use the Girl class. We might define our dynamic mapping like so:
  
-    RKObjectPolymorphicMapping* mapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectdynamicMapping* mapping = [RKObjectdynamicMapping dynamicMapping];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"male"];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
  */
-- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)key isEqualTo:(id)value;
+- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value;
 
 /**
  Invoked by the RKObjectMapper and RKObjectMappingOperation to determine the appropriate RKObjectMapping to use

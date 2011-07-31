@@ -7,7 +7,7 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKObjectPolymorphicMapping.h"
+#import "RKObjectDynamicMapping.h"
 
 /**
  Responsible for providing object mappings to an instance of the object mapper
@@ -20,20 +20,25 @@
 }
 
 /**
+ Returns a new auto-released mapping provider
+ */
++ (RKObjectMappingProvider*)mappingProvider;
+
+/**
  Instructs the mapping provider to use the mapping provided when it encounters content at the specified
  key path
  */
-- (void)setMapping:(RKObjectAbstractMapping*)objectOrPolymorphicMapping forKeyPath:(NSString*)keyPath;
+- (void)setMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString*)keyPath;
 
 /**
- Returns the RKObjectMapping or RKObjectPolymorphic mapping configured for use 
+ Returns the RKObjectMapping or RKObjectDynamic mapping configured for use 
  when mappable content is encountered at keyPath
  */
-- (RKObjectAbstractMapping*)mappingForKeyPath:(NSString*)keyPath;
+- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString*)keyPath;
 
 /**
  Returns a dictionary where the keys are mappable keyPaths and the values are the RKObjectMapping
- or RKObjectPolymorphic mappings to use for mappable data that appears at the keyPath.
+ or RKObjectDynamic mappings to use for mappable data that appears at the keyPath.
  */
 - (NSDictionary*)mappingsByKeyPath;
 

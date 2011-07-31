@@ -58,11 +58,11 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 @synthesize objectMapping = _objectMapping;
 @synthesize delegate = _delegate;
 
-+ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectAbstractMapping*)objectMapping {
++ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(id<RKObjectMappingDefinition>)objectMapping {
     return [[[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectMapping] autorelease];
 }
 
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKObjectAbstractMapping*)objectMapping {
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(id<RKObjectMappingDefinition>)objectMapping {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
     NSAssert(objectMapping != nil, @"Cannot perform a mapping operation without a mapping");
@@ -72,9 +72,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         _sourceObject = [sourceObject retain];        
         _destinationObject = [destinationObject retain];
         
-        if ([objectMapping isKindOfClass:[RKObjectPolymorphicMapping class]]) {
-            _objectMapping = [[(RKObjectPolymorphicMapping*)objectMapping objectMappingForDictionary:_sourceObject] retain];
-            RKLogDebug(@"RKObjectMappingOperation was initialized with a polymorphic mapping. Determined concrete mapping = %@", _objectMapping);
+        if ([objectMapping isKindOfClass:[RKObjectDynamicMapping class]]) {
+            _objectMapping = [[(RKObjectDynamicMapping*)objectMapping objectMappingForDictionary:_sourceObject] retain];
+            RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", _objectMapping);
         } else if ([objectMapping isKindOfClass:[RKObjectMapping class]]) {
             _objectMapping = (RKObjectMapping*)[objectMapping retain];
         }
@@ -352,18 +352,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
             for (id nestedObject in value) {                
-                RKObjectAbstractMapping* abstractMapping = relationshipMapping.mapping;
+                id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
                 RKObjectMapping* objectMapping = nil;
-                if ([abstractMapping isKindOfClass:[RKObjectPolymorphicMapping class]]) {
-                    objectMapping = [(RKObjectPolymorphicMapping*)abstractMapping objectMappingForDictionary:nestedObject];
+                if ([mapping isKindOfClass:[RKObjectDynamicMapping class]]) {
+                    objectMapping = [(RKObjectDynamicMapping*)mapping objectMappingForDictionary:nestedObject];
                     if (! objectMapping) {
-                        RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", abstractMapping, nestedObject);
+                        RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", mapping, nestedObject);
                         continue;
                     }
-                } else if ([abstractMapping isKindOfClass:[RKObjectMapping class]]) {
-                    objectMapping = (RKObjectMapping*)abstractMapping;
+                } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+                    objectMapping = (RKObjectMapping*)mapping;
                 } else {
-                    NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([abstractMapping class]));
+                    NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
                 }
                 id mappedObject = [objectMapping mappableObjectForData:nestedObject];
                 if ([self mapNestedObject:nestedObject toObject:mappedObject withRealtionshipMapping:relationshipMapping]) {
@@ -380,14 +380,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             // One to one relationship
             RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);            
             
-            RKObjectAbstractMapping* abstractMapping = relationshipMapping.mapping;
+            id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
             RKObjectMapping* objectMapping = nil;
-            if ([abstractMapping isKindOfClass:[RKObjectPolymorphicMapping class]]) {
-                objectMapping = [(RKObjectPolymorphicMapping*)abstractMapping objectMappingForDictionary:value];
-            } else if ([abstractMapping isKindOfClass:[RKObjectMapping class]]) {
-                objectMapping = (RKObjectMapping*)abstractMapping;
+            if ([mapping isKindOfClass:[RKObjectDynamicMapping class]]) {
+                objectMapping = [(RKObjectDynamicMapping*)mapping objectMappingForDictionary:value];
+            } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+                objectMapping = (RKObjectMapping*)mapping;
             }
-            NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([abstractMapping class]));
+            NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
             destinationObject = [objectMapping mappableObjectForData:value];
             if ([self mapNestedObject:value toObject:destinationObject withRealtionshipMapping:relationshipMapping]) {
                 appliedMappings = YES;

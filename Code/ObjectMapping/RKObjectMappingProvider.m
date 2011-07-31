@@ -10,6 +10,10 @@
 
 @implementation RKObjectMappingProvider
 
++ (RKObjectMappingProvider*)mappingProvider {
+    return [[self new] autorelease];
+}
+
 - (id)init {
     if ((self = [super init])) {
         _objectMappings = [NSMutableArray new];
@@ -30,7 +34,7 @@
     [_mappingsByKeyPath setValue:mapping forKey:keyPath];
 }
 
-- (RKObjectAbstractMapping*)mappingForKeyPath:(NSString*)keyPath {
+- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString*)keyPath {
     return [_mappingsByKeyPath objectForKey:keyPath];
 }
 

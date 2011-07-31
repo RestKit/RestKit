@@ -1,5 +1,5 @@
 //
-//  RKPolymorphicMappingModels.h
+//  RKDynamicMappingModels.h
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.

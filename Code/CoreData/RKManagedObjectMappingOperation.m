@@ -50,12 +50,12 @@
         for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
             NSString* primaryKeyAttribute = [relationshipsAndPrimaryKeyAttributes objectForKey:relationshipName];
             RKObjectRelationshipMapping* relationshipMapping = [self.objectMapping mappingForKeyPath:relationshipName];
-            RKObjectAbstractMapping* abstractMapping = relationshipMapping.mapping;
-            if (! [abstractMapping isKindOfClass:[RKObjectMapping class]]) {
-                RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([abstractMapping class]));
+            id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
+            if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
+                RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));
                 continue;
             }
-            RKObjectMapping* objectMapping = (RKObjectMapping*)abstractMapping;
+            RKObjectMapping* objectMapping = (RKObjectMapping*)mapping;
             NSAssert(relationshipMapping, @"Unable to find relationship mapping '%@' to connect by primaryKey", relationshipName);
             NSAssert([relationshipMapping isKindOfClass:[RKObjectRelationshipMapping class]], @"Expected mapping for %@ to be a relationship mapping", relationshipName);
             NSAssert([relationshipMapping.mapping isKindOfClass:[RKManagedObjectMapping class]], @"Can only connect RKManagedObjectMapping relationships");

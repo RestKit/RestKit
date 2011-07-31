@@ -1,12 +1,12 @@
 //
-//  RKPolymorphicMappingModels.m
+//  RKDynamicMappingModels.m
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
 //  Copyright 2011 RestKit. All rights reserved.
 //
 
-#import "RKPolymorphicMappingModels.h"
+#import "RKDynamicMappingModels.h"
 
 @implementation Person
 @synthesize name;

@@ -17,7 +17,7 @@
 #import "RKObjectMapper.h"
 #import "RKObjectMapper_Private.h"
 #import "RKObjectMapperError.h"
-#import "RKPolymorphicMappingModels.h"
+#import "RKDynamicMappingModels.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1291,15 +1291,15 @@
     assertThat([mappingProvider objectMappingsForClass:[RKExampleUser class]], is(equalTo([NSArray arrayWithObjects:firstMapping, secondMapping, thirdMapping, nil])));
 }
 
-#pragma mark - RKObjectPolymorphicMapping
+#pragma mark - RKObjectDynamicMapping
 
 - (void)itShouldMapASingleObjectDynamically {
     RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
     [boyMapping mapAttributes:@"name", nil];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping mapAttributes:@"name", nil];
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
-    dynamicMapping.delegateBlock = ^ RKObjectMapping* (id mappableData) {
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
         if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
         } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
@@ -1325,7 +1325,7 @@
     [boyMapping mapAttributes:@"name", nil];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping mapAttributes:@"name", nil];
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
     [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
     
@@ -1340,12 +1340,12 @@
     assertThat(user.name, is(equalTo(@"Blake Watters")));
 }
 
-- (void)itShouldACollectionOfObjectsPolymorphically {
+- (void)itShouldACollectionOfObjectsDynamically {
     RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
     [boyMapping mapAttributes:@"name", nil];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping mapAttributes:@"name", nil];
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
     [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
     
@@ -1365,12 +1365,12 @@
     assertThat(girl.name, is(equalTo(@"Sarah")));
 }
 
-- (void)itShouldMapAPolymorphicRelationship {
+- (void)itShouldMapARelationshipDynamically {
     RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
     [boyMapping mapAttributes:@"name", nil];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping mapAttributes:@"name", nil];
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
     [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
     [boyMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:dynamicMapping];
@@ -1398,8 +1398,8 @@
     [boyMapping mapAttributes:@"name", nil];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping mapAttributes:@"name", nil];
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
-    dynamicMapping.delegateBlock = ^ RKObjectMapping* (id mappableData) {
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
         if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
         } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
@@ -1428,8 +1428,8 @@
     [boyMapping mapAttributes:@"name", nil];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
     [girlMapping mapAttributes:@"name", nil];
-    RKObjectPolymorphicMapping* dynamicMapping = [RKObjectPolymorphicMapping polymorphicMapping];
-    dynamicMapping.delegateBlock = ^ RKObjectMapping* (id mappableData) {
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
         if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
         } else if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
@@ -1457,6 +1457,74 @@
     assertThat([friends objectAtIndex:0], is(instanceOf([Boy class])));
     Boy* boy = [friends objectAtIndex:0];
     assertThat(boy.name, is(equalTo(@"John Doe")));
+}
+
+- (void)itShouldMapATargetObjectWithADynamicMapping {
+    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping mapAttributes:@"name", nil];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
+        if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
+            return boyMapping;
+        }
+        
+        return nil;
+    };
+    
+    RKObjectMappingProvider* provider = [RKObjectMappingProvider mappingProvider];
+    [provider setMapping:dynamicMapping forKeyPath:@""];
+    
+    id userInfo = RKSpecParseFixture(@"boy.json");
+    Boy* blake = [[Boy new] autorelease];
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    mapper.targetObject = blake;
+    Boy* user = [[mapper performMapping] asObject];
+    assertThat(user, is(instanceOf([Boy class])));
+    assertThat(user.name, is(equalTo(@"Blake Watters")));
+}
+
+- (void)itShouldFailWithAnErrorIfATargetObjectIsProvidedAndTheDynamicMappingReturnsNil {
+    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping mapAttributes:@"name", nil];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
+        return nil;
+    };
+    
+    RKObjectMappingProvider* provider = [RKObjectMappingProvider mappingProvider];
+    [provider setMapping:dynamicMapping forKeyPath:@""];
+    
+    id userInfo = RKSpecParseFixture(@"boy.json");
+    Boy* blake = [[Boy new] autorelease];
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    mapper.targetObject = blake;
+    Boy* user = [[mapper performMapping] asObject];
+    assertThat(user, is(nilValue()));
+    assertThat(mapper.errors, hasCountOf(1));
+}
+
+- (void)itShouldFailWithAnErrorIfATargetObjectIsProvidedAndTheDynamicMappingReturnsTheIncorrectType {
+    RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+    [girlMapping mapAttributes:@"name", nil];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
+        if ([[mappableData valueForKey:@"type"] isEqualToString:@"Girl"]) {
+            return girlMapping;
+        }
+        
+        return nil;
+    };
+    
+    RKObjectMappingProvider* provider = [RKObjectMappingProvider mappingProvider];
+    [provider setMapping:dynamicMapping forKeyPath:@""];
+    
+    id userInfo = RKSpecParseFixture(@"girl.json");
+    Boy* blake = [[Boy new] autorelease];
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    mapper.targetObject = blake;
+    Boy* user = [[mapper performMapping] asObject];
+    assertThat(user, is(nilValue()));
+    assertThat(mapper.errors, hasCountOf(1));
 }
 
 @end
