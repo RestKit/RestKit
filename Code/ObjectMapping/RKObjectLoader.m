@@ -82,11 +82,12 @@
 // RKRequestQueue to remove requests from the queue. All requests need to be finalized.
 - (void)finalizeLoad:(BOOL)successful error:(NSError*)error {
 	_isLoading = NO;
-
+    
 	if (successful) {
 		_isLoaded = YES;
         if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
-            [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
+            [(NSObject<RKObjectLoaderDelegate>*)self.delegate performSelectorOnMainThread:@selector(objectLoaderDidFinishLoading:)
+                                                                               withObject:self waitUntilDone:YES];            
         }
         
 		NSDictionary* userInfo = [NSDictionary dictionaryWithObject:_response 
@@ -105,6 +106,8 @@
 
 // Invoked on the main thread. Inform the delegate.
 - (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary*)resultDictionary {
+    NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
+    
 	RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:resultDictionary];
 
     if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
@@ -125,22 +128,13 @@
 #pragma mark - Subclass Hooks
 
 /**
- Overloaded by RKManagedObjectLoader to provide support for creation
- and find/update of managed object instances
- 
- @protected
- */
-- (id<RKObjectFactory>)createObjectFactory {
-    return nil;
-}
-
-/**
  Overloaded by RKManagedObjectLoader to serialize/deserialize managed objects
  at thread boundaries. 
  
  @protected
  */
 - (void)processMappingResult:(RKObjectMappingResult*)result {
+    NSAssert(![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
     [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithResultDictionary:) withObject:[result asDictionary] waitUntilDone:YES];
 }
 
@@ -160,7 +154,7 @@
             return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
         }
         
-        return nil;
+        return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     }
     
     id parsedData = [parser objectFromString:bodyAsString error:error];
@@ -175,7 +169,6 @@
     }
     
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
-    mapper.objectFactory = [self createObjectFactory];
     mapper.targetObject = targetObject;
     mapper.delegate = self;
     RKObjectMappingResult* result = [mapper performMapping];
@@ -196,12 +189,15 @@
 }
 
 - (RKObjectMappingResult*)performMapping:(NSError**)error {
+    NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping should occur on a background thread");
+    
+    // TODO: Assert that we are on the background thread
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         NSString* rootKeyPath = self.objectMapping.rootKeyPath ? self.objectMapping.rootKeyPath : @"";
         RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider %@", (rootKeyPath ? @"for keyPath '%@'" : nil));
         mappingProvider = [[RKObjectMappingProvider new] autorelease];        
-        [mappingProvider setObjectMapping:self.objectMapping forKeyPath:rootKeyPath];
+        [mappingProvider setMapping:self.objectMapping forKeyPath:rootKeyPath];
     } else {
         RKLogDebug(@"No object mapping provider, using mapping provider from parent object manager to perform KVC mapping");
         mappingProvider = self.objectManager.mappingProvider;
@@ -216,13 +212,11 @@
     
     NSError* error = nil;
     _result = [[self performMapping:&error] retain];
+    NSAssert(_result || error, @"Expected performMapping to return a mapping result or an error.");
     if (self.result) {
         [self processMappingResult:self.result];
     } else if (error) {
-        [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
-    } else {
-        // A nil response with an error indicates success, but no mapping results
-        [self finalizeLoad:YES error:nil];
+        [self didFailLoadWithError:error];
     }
 
 	[pool drain];
@@ -284,6 +278,7 @@
     }
     
     [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+    [self finalizeLoad:NO error:error];    
 }
 
 #pragma mark - RKRequest & RKRequestDelegate methods
@@ -338,6 +333,7 @@
 
 // NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
 - (void)didFinishLoad:(RKResponse*)response {
+    NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
 	_response = [response retain];
 
 	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {

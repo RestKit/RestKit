@@ -25,21 +25,21 @@
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
-        [objectManager.mappingProvider setObjectMapping:taskMapping forKeyPath:@"task"];
+        [objectManager.mappingProvider setMapping:taskMapping forKeyPath:@"task"];
         
         RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class]];
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
-        [userMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
-        [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"user"];
+        [userMapping mapRelationship:@"tasks" withMapping:taskMapping];
+        [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
         
         // NOTE - Project is not backed by Core Data
         RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
         [projectMapping mapKeyPath:@"id" toAttribute:@"projectID"];
         [projectMapping mapAttributes:@"name", @"description", nil];
-        [projectMapping mapRelationship:@"user" withObjectMapping:userMapping];
-        [projectMapping mapRelationship:@"tasks" withObjectMapping:taskMapping];
-        [objectManager.mappingProvider setObjectMapping:projectMapping forKeyPath:@"project"];
+        [projectMapping mapRelationship:@"user" withMapping:userMapping];
+        [projectMapping mapRelationship:@"tasks" withMapping:taskMapping];
+        [objectManager.mappingProvider setMapping:projectMapping forKeyPath:@"project"];
     }
     
     return self;

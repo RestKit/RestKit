@@ -63,7 +63,7 @@ Installation
 Quick Start (aka TL;DR)
 -----------
 
-1. Add Git submodule to your project: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
+1. Add Git submodule to your project: `git submodule add git://github.com/RestKit/RestKit.git RestKit`
 1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
 1. Add **Header Search Path** to the `"$(SOURCE_ROOT)/RestKit/Build"` directory. **DO NOT** check the `Recursive` checkbox.
@@ -91,7 +91,7 @@ Xcode 3.x (Git Submodule)
 
 To add RestKit to your project (you're using git, right?):
 
-1. Add the submodule: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
+1. Add the submodule: `git submodule add git://github.com/RestKit/RestKit.git RestKit`
 1. Open RestKit.xcodeproj and drag the RestKit project file into your XCode project.
 1. Click on the entry for RestKit.xcodeproj in your project's **Groups & Files** section. In the right hand pane, find the entries for **libRestKitSupport.a** **libRestKitObjectMapping.a** **libRestKitNetwork.a** and **libRestKitJSONParserYAJL.a** and click the checkboxes on the far right underneath the silver target icon. This will link your project against RestKit. If you wish to use the Core Data support, click the checkbox next to **libRestKitCoreData.a** also.
 1. Look to the bottom of the **General** pane labeled **Linked Libraries**. You will need to add the following frameworks:
@@ -110,7 +110,7 @@ To add RestKit to your project (you're using git, right?):
 Xcode 4.x (Git Submodule)
 -------------------------
 
-1. Add the submodule: `git submodule add git://github.com/twotoasters/RestKit.git RestKit`
+1. Add the submodule: `git submodule add git://github.com/RestKit/RestKit.git RestKit`
 1. Open the project you wish to add RestKit to in Xcode.
 1. Focus your project and select the "View" menu > "Navigators" > "Project" to bring the project file list into view.
 1. Drag the RestKit.xcodeproj file from the Finder and drop it on your "<Your Project's Name>".xcodeproj.
@@ -158,4 +158,4 @@ Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restki
 
 ### RestKit is brought to you by [Two Toasters](http://www.twotoasters.com/). ###
 
-[Object Mapping Design Document]: https://github.com/twotoasters/RestKit/blob/master/Docs/Design/Object%20Mapping%202.0.md
+[Object Mapping Design Document]: https://github.com/RestKit/RestKit/blob/master/Docs/Object%20Mapping.md

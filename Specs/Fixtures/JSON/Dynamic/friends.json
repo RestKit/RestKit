@@ -1,0 +1,14 @@
+{
+    "name": "Blake Watters",
+    "type": "Boy",
+    "friends": [
+    {
+        "name": "John Doe",
+        "type": "Boy"
+    },
+    {
+        "name": "Jane Doe",
+        "type": "Girl"
+    }
+    ]
+}

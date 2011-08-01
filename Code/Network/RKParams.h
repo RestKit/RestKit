@@ -76,4 +76,9 @@
  */
 - (RKParamsAttachment*)setFile:(NSString*)filePath MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param DEPRECATED_ATTRIBUTE;
 
+/**
+ * Resets the state of the RKParams stream
+ */
+- (void)reset;
+
 @end

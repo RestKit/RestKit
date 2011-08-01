@@ -8,6 +8,8 @@
 
 #import "RKManagedObjectMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
+#import "RKObjectManager.h"
+#import "RKManagedObjectStore.h"
 
 @implementation RKManagedObjectMapping
 
@@ -76,6 +78,51 @@
 - (id)defaultValueForMissingAttribute:(NSString*)attributeName {
     NSAttributeDescription *desc = [[self.entity attributesByName] valueForKey:attributeName];
     return [desc defaultValue];
+}
+
+- (id)mappableObjectForData:(id)mappableData {    
+    NSAssert(mappableData, @"Mappable data cannot be nil");
+    
+    // TODO: We do not want to be using this singleton reference to the object store.
+    // Clean this up when we update the Core Data internals
+    RKManagedObjectStore* objectStore = [RKObjectManager sharedManager].objectStore;
+    NSAssert(objectStore, @"Object store cannot be nil");
+    
+    id object = nil;
+    id primaryKeyValue = nil;
+    NSString* primaryKeyAttribute;
+    
+    NSEntityDescription* entity = [self entity];
+    RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;        
+    
+    primaryKeyAttribute = [self primaryKeyAttribute];
+    if (primaryKeyAttribute) {
+        // If a primary key has been set on the object mapping, find the attribute mapping
+        // so that we can extract any existing primary key from the mappable data
+        for (RKObjectAttributeMapping* attributeMapping in self.attributeMappings) {
+            if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
+                primaryKeyAttributeMapping = attributeMapping;
+                break;
+            }
+        }
+        
+        // Get the primary key value out of the mappable data (if any)
+        NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
+        if (keyPathForPrimaryKeyElement) {
+            primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
+        }
+    }
+    
+    // If we have found the primary key attribute & value, try to find an existing instance to update
+    if (primaryKeyAttribute && primaryKeyValue) {                
+        object = [objectStore findOrCreateInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
+        NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
+    } else {
+        object = [[[NSManagedObject alloc] initWithEntity:entity
+                           insertIntoManagedObjectContext:objectStore.managedObjectContext] autorelease];
+    }
+    
+    return object;
 }
 
 @end

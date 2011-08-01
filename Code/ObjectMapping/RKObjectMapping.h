@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "RKObjectMappingDefinition.h"
 #import "RKObjectAttributeMapping.h"
 #import "RKObjectRelationshipMapping.h"
 
@@ -30,7 +31,7 @@ relationship. Relationships are processed using an object mapping as well.
  Instances of RKObjectMapping are used to configure RKObjectMappingOperation instances, which actually
  perform the mapping work. Both object loading and serialization are defined in terms of object mappings.
  */
-@interface RKObjectMapping : NSObject {
+@interface RKObjectMapping : NSObject <RKObjectMappingDefinition> {
     Class _objectClass;
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
@@ -38,6 +39,7 @@ relationship. Relationships are processed using an object mapping as well.
     BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
     BOOL _forceCollectionMapping;
+    BOOL _performKeyValueValidation;
 }
 
 /**
@@ -88,6 +90,14 @@ relationship. Relationships are processed using an object mapping as well.
 @property (nonatomic, assign) BOOL setNilForMissingRelationships;
 
 /**
+ When YES, RestKit will invoke key-value validation at object mapping time. 
+ 
+ **Default**: YES
+ @see validateValue:forKey:error:
+ */
+@property (nonatomic, assign) BOOL performKeyValueValidation;
+
+/**
  Forces the mapper to treat the mapped keyPath as a collection even if it does not
  return an array or a set of objects. This permits mapping where a dictionary identifies
  a collection of objects.
@@ -122,6 +132,53 @@ relationship. Relationships are processed using an object mapping as well.
  Returns an object mapping for the specified class that is ready for configuration
  */
 + (id)mappingForClass:(Class)objectClass;
+
+/**
+ Returns an object mapping useful for configuring a serialization mapping. The object
+ class is configured as NSMutableDictionary
+ */
++ (id)serializationMapping;
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ Returns an object mapping targeting the specified class. The RKObjectMapping instance will
+ be yieled to the block so that you can perform on the fly configuration without having to
+ obtain a reference variable for the mapping.
+ 
+ For example, consider we have a one-off request that will load a few attributes for our object. 
+ Using blocks, this is very succinct:
+ 
+    [[RKObjectManager sharedManager] postObject:self delegate:self block:^(RKObjectLoader* loader) {
+        loader.objectMapping = [RKObjectMapping mappingForClass:[Person class] block:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"email", @"first_name", nil];
+        }];
+    }];
+ */
++ (id)mappingForClass:(Class)objectClass block:(void(^)(RKObjectMapping*))block;
+
+/**
+ Returns serialization mapping for encoding a local object to a dictionary for transport. The RKObjectMapping instance will
+ be yieled to the block so that you can perform on the fly configuration without having to
+ obtain a reference variable for the mapping.
+ 
+ For example, consider we have a one-off request within which we want to post a subset of our object
+ data. Using blocks, this is very succinct:
+ 
+    - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
+        if ([self validatePassword:newPassword error:error]) {
+            self.password = newPassword;
+            [[RKObjectManager sharedManager] putObject:self delegate:self block:^(RKObjectLoader* loader) {
+                loader.serializationMapping = [RKObjectMapping serializationMappingWithBlock:^(RKObjectMapping* mapping) {
+                    [mapping mapAttributes:@"password", nil];
+                }];
+            }];
+        }
+    }
+ 
+ Using the block forms we are able to quickly configure and send this request on the fly.
+ */
++ (id)serializationMappingWithBlock:(void(^)(RKObjectMapping*))block;
+#endif
 
 /**
  Add a configured attribute mapping to this object mapping
@@ -191,9 +248,9 @@ relationship. Relationships are processed using an object mapping as well.
   
  @param relationshipKey A key-value coding key corresponding to a value in the mappable source object and a property 
     on the destination class that have the same name.
- @param objectMapping An object mapping to use for processing the relationship.
+ @param objectOrDynamicMapping An RKObjectMapping or RKObjectDynamic mapping to apply when mapping the relationship
  */
-- (void)mapRelationship:(NSString*)relationshipKey withObjectMapping:(RKObjectMapping*)objectMapping;
+- (void)mapRelationship:(NSString*)relationshipKey withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -201,7 +258,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasMany:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping;
+- (void)hasMany:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -209,7 +266,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasOne:(NSString*)keyPath withObjectMapping:(RKObjectMapping*)mapping;
+- (void)hasOne:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
 
 /**
  Instantiate and add an RKObjectAttributeMapping instance targeting a keyPath within the mappable
@@ -250,7 +307,7 @@ relationship. Relationships are processed using an object mapping as well.
  @param objectMapping An object mapping to use when processing the nested objects
  @see RKObjectRelationshipMapping
  */
-- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString*)destinationRelationship withObjectMapping:(RKObjectMapping *)objectMapping;
+- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString*)destinationRelationship withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
 
 /**
  Instantiate and add an RKObjectRelationshipMapping instance targeting a keyPath within the mappable
@@ -265,7 +322,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  @see mapKeyPath:toRelationship:withObjectMapping:
  */
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withObjectMapping:(RKObjectMapping *)objectMapping serialize:(BOOL)serialize;
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping serialize:(BOOL)serialize;
 
 /**
  Quickly define a group of attribute mappings using alternating keyPath and attribute names. You must provide
@@ -340,5 +397,13 @@ relationship. Relationships are processed using an object mapping as well.
  @see [RKManagedObjectMapping defaultValueForMissingAttribute:]
  */
 - (id)defaultValueForMissingAttribute:(NSString*)attributeName;
+
+/**
+ Returns an auto-released object that can be used to apply this object mapping
+ given a set of mappable data. For transient objects, this generally returns an
+ instance of the objectClass. For Core Data backed persistent objects, mappableData
+ will be inspected to search for primary key data to lookup existing object instances.
+ */
+- (id)mappableObjectForData:(id)mappableData;
 
 @end

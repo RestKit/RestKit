@@ -11,6 +11,7 @@
 #import "RKNetwork.h"
 #import "RKLog.h"
 #import "RKParserRegistry.h"
+#import "RKClient.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -83,18 +84,94 @@ extern NSString* cacheURLKey;
 	[super dealloc];
 }
 
-// Handle basic auth
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    if ([challenge previousFailureCount] == 0) {
-        NSURLCredential *newCredential;
-        newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                   password:[NSString stringWithFormat:@"%@", _request.password]
-                                                persistence:RKNetworkGetGlobalCredentialPersistence()];
-        [[challenge sender] useCredential:newCredential
-               forAuthenticationChallenge:challenge];
-    } else {
-        [[challenge sender] cancelAuthenticationChallenge:challenge];
+- (BOOL)hasCredentials {
+    return _request.username && _request.password;
+}
+
+- (BOOL)isServerTrusted:(SecTrustRef)trust {
+    RKClient* client = [RKClient sharedClient];
+    BOOL proceed = NO;
+    
+    if( client.disableCertificateValidation ) {
+        proceed = YES;
     }
+#ifdef RESTKIT_SSL_VALIDATION
+    else if( [client.additionalRootCertificates count] > 0 ) {
+        CFArrayRef rootCerts = (CFArrayRef)[client.additionalRootCertificates allObjects];
+        SecTrustResultType result;
+        OSStatus returnCode;
+        
+        if( rootCerts && CFArrayGetCount(rootCerts) ) {
+            // this could fail, but the trust evaluation will proceed (it's likely to fail, of course)
+            SecTrustSetAnchorCertificates(trust, rootCerts);
+        }
+        
+        returnCode = SecTrustEvaluate(trust, &result);
+        
+        if( returnCode == errSecSuccess ) {
+            proceed = (result == kSecTrustResultProceed || result == kSecTrustResultConfirm || result == kSecTrustResultUnspecified);
+            if( result == kSecTrustResultRecoverableTrustFailure ) {
+                // TODO: should try to recover here
+                // call SecTrustGetCssmResult() for more information about the failure
+            }
+        }
+    }
+#endif
+    
+    return proceed;
+}
+
+// Handle basic auth & SSL certificate validation
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    RKLogDebug(@"Received authentication challenge");
+    
+	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		SecTrustRef trust = [[challenge protectionSpace] serverTrust];
+		if ([self isServerTrusted:trust]) {
+			[challenge.sender useCredential:[NSURLCredential credentialForTrust:trust] forAuthenticationChallenge:challenge];
+		} else {
+			[[challenge sender] cancelAuthenticationChallenge:challenge];
+		}
+		return;
+	}
+	
+	if ([challenge previousFailureCount] == 0) {
+		NSURLCredential *newCredential;
+		newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+		                                         password:[NSString stringWithFormat:@"%@", _request.password]
+		                                      persistence:RKNetworkGetGlobalCredentialPersistence()];
+		[[challenge sender] useCredential:newCredential
+		       forAuthenticationChallenge:challenge];
+	} else {
+	    RKLogWarning(@"Failed authentication challenge after %d failures", [challenge previousFailureCount]);
+		[[challenge sender] cancelAuthenticationChallenge:challenge];
+	}
+}
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)space {
+    RKLogDebug(@"Asked if canAuthenticateAgainstProtectionSpace: with authenticationMethod = %@", [space authenticationMethod]);
+	if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		// server is using an SSL certificate that the OS can't validate
+		// see whether the client settings allow validation here
+		RKClient* client = [RKClient sharedClient];
+		if (client.disableCertificateValidation
+#ifdef RESTKIT_SSL_VALIDATION
+            || [client.additionalRootCertificates count] > 0
+#endif
+            ) {
+			return YES;
+		} else { 
+			return NO;
+		} 
+	}
+	
+    // Handle non-SSL challenges
+    BOOL hasCredentials = [self hasCredentials];
+    if (! hasCredentials) {
+        RKLogWarning(@"Received an authentication challenge without any credentials to satisfy the request.");
+    }
+    
+    return hasCredentials;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
@@ -115,6 +192,11 @@ extern NSString* cacheURLKey;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
 	[_request didFailLoadWithError:_failureError];
+}
+
+- (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
+    RKLogWarning(@"RestKit was asked to retransmit a new body stream for a request. Possible connection error or authentication challenge?");
+    return [self.request.params HTTPBodyStream];
 }
 
 // In the event that the url request is a post, this delegate method will be called before
