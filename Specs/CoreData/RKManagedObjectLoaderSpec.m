@@ -54,8 +54,8 @@
     [humanMapping mapAttributes:@"name", nil];
     RKObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     [catMapping mapAttributes:@"name", nil];
-    [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withObjectMapping:catMapping];
-    [objectManager.mappingProvider setObjectMapping:humanMapping forKeyPath:@"human"];
+    [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
+    [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/JSON/humans/with_to_one_relationship.json" objectManager:objectManager delegate:responseLoader];
     [objectLoader send];
@@ -86,7 +86,7 @@
     assertThatInt([RKHuman count:nil], is(equalToInt(3)));
         
     RKObjectManager* objectManager = RKSpecNewObjectManager();
-    [objectManager.mappingProvider setObjectMapping:humanMapping forKeyPath:@"human"];
+    [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     RKSpecStubNetworkAvailability(YES);
     RKSpecNewRequestQueue();
     objectManager.objectStore = store;

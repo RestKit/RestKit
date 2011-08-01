@@ -10,30 +10,29 @@
 
 @implementation RKObjectRelationshipMapping
 
-@synthesize objectMapping = _objectMapping;
+@synthesize mapping = _mapping;
 @synthesize reversible = _reversible;
 
-+ (RKObjectRelationshipMapping*) mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath objectMapping:(RKObjectMapping*)objectMapping reversible:(BOOL)reversible {
-    RKObjectRelationshipMapping* mapping = (RKObjectRelationshipMapping*) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
-    mapping.objectMapping = objectMapping;
-    mapping.reversible = reversible;
-    return mapping;
++ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping reversible:(BOOL)reversible {
+    RKObjectRelationshipMapping* relationshipMapping = (RKObjectRelationshipMapping*) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];    
+    relationshipMapping.reversible = reversible;
+    relationshipMapping.mapping = objectOrDynamicMapping;
+    return relationshipMapping;
 }
 
-+ (RKObjectRelationshipMapping*) mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath objectMapping:(RKObjectMapping*)objectMapping {
-    RKObjectRelationshipMapping* mapping = [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath objectMapping:objectMapping reversible:YES];
-    return mapping;
++ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping {
+    return [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping reversible:YES];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
     RKObjectRelationshipMapping* copy = [super copyWithZone:zone];
-    copy.objectMapping = self.objectMapping;
+    copy.mapping = self.mapping;
     copy.reversible = self.reversible;
     return copy;
 }
 
 - (void)dealloc {
-    [_objectMapping release];
+    [_mapping release];
     [super dealloc];
 }
 

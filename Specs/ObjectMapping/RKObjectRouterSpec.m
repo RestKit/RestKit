@@ -12,6 +12,16 @@
 #import "RKHuman.h"
 #import "RKCat.h"
 
+@interface RKSpecObject : NSObject
+@end
+@implementation RKSpecObject
+@end
+
+@interface RKSpecSubclassedObject : RKSpecObject
+@end
+@implementation RKSpecSubclassedObject
+@end
+
 @interface RKObjectRouterSpec : RKSpec {
 }
 
@@ -61,6 +71,23 @@
 	NSString* path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodGET];
 	[expectThat(path) should:be(@"/HumanService.asp")];
 	path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodPOST];
+	[expectThat(path) should:be(@"/HumanService.asp")];
+}
+
+- (void)itShouldReturnPathsIfTheSuperclassIsRegistered {
+    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+	[router routeClass:[RKSpecObject class] toResourcePath:@"/HumanService.asp"];
+	NSString* path = [router resourcePathForObject:[RKSpecSubclassedObject new] method:RKRequestMethodGET];
+	[expectThat(path) should:be(@"/HumanService.asp")];
+}
+
+- (void)itShouldFavorExactMatcherOverSuperclassMatches {
+    RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+	[router routeClass:[RKSpecObject class] toResourcePath:@"/HumanService.asp"];
+    [router routeClass:[RKSpecSubclassedObject class] toResourcePath:@"/SubclassedHumanService.asp"];
+	NSString* path = [router resourcePathForObject:[RKSpecSubclassedObject new] method:RKRequestMethodGET];
+	[expectThat(path) should:be(@"/SubclassedHumanService.asp")];
+	path = [router resourcePathForObject:[RKSpecObject new] method:RKRequestMethodPOST];
 	[expectThat(path) should:be(@"/HumanService.asp")];
 }
 

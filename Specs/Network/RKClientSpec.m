@@ -72,4 +72,18 @@
     assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(NO)));
 }
 
+- (void)itShouldPerformAPUTWithParams {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://ohblockhero.appspot.com/api/v1"];
+    client.cachePolicy = RKRequestCachePolicyNone;
+    RKParams *params=[RKParams params];
+    [params setValue:@"username" forParam:@"username"];
+    [params setValue:@"Dear Daniel" forParam:@"fullName"];
+    [params setValue:@"aa@aa.com" forParam:@"email"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+//    loader.timeout = 15;
+    [client put:@"/userprofile" params:params delegate:loader];    
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(NO)));
+}
+    
 @end

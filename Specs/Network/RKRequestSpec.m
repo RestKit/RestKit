@@ -10,6 +10,7 @@
 #import "RKRequest.h"
 #import "RKParams.h"
 #import "RKResponse.h"
+#import "RKURL.h"
 
 @interface RKRequest (Private)
 - (void)fireAsynchronousRequest;
@@ -535,4 +536,67 @@
     [loader waitForResponse];
     assertThat([loader.response bodyAsString], is(equalTo(@"{\"username\":\"hello\",\"password\":\"password\"}")));
 }
+
+- (void)itShouldSetAnEmptyContentBodyWhenParamsIsNil {
+    RKClient* client = RKSpecNewClient();
+    client.cachePolicy = RKRequestCachePolicyNone;
+    RKSpecStubNetworkAvailability(YES);
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    loader.timeout = 20;
+    RKRequest* request = [client get:@"/echo_params" delegate:loader];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+- (void)itShouldSetAnEmptyContentBodyWhenQueryParamsIsAnEmptyDictionary {
+    RKClient* client = RKSpecNewClient();
+    client.cachePolicy = RKRequestCachePolicyNone;
+    RKSpecStubNetworkAvailability(YES);
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    loader.timeout = 20;
+    RKRequest* request = [client get:@"/echo_params" queryParams:[NSDictionary dictionary] delegate:loader];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+- (void)itShouldPUTWithParams {
+    RKClient* client = RKSpecNewClient();
+    RKParams *params = [RKParams params];    
+    [params setValue:@"ddss" forParam:@"username"];    
+    [params setValue:@"aaaa@aa.com" forParam:@"email"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [client put:@"/ping" params:params delegate:loader];
+    [loader waitForResponse];
+    assertThat([loader.response bodyAsString], is(equalTo(@"{\"username\":\"ddss\",\"email\":\"aaaa@aa.com\"}")));
+}
+
+- (void)itShouldAllowYouToChangeTheURL {
+    NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    request.URL = [NSURL URLWithString:@"http://restkit.org/gorilla"];
+    assertThat([request.URL absoluteString], is(equalTo(@"http://restkit.org/gorilla")));
+}
+
+- (void)itShouldAllowYouToChangeTheResourcePath {
+    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/monkey"];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    request.resourcePath = @"/gorilla";
+    assertThat(request.resourcePath, is(equalTo(@"/gorilla")));
+}
+
+- (void)itShouldRaiseAnExceptionWhenAttemptingToMutateResourcePathOnAnNSURL {
+    NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    NSException* exception = nil;
+    @try {
+        request.resourcePath = @"/gorilla";
+    }
+    @catch (NSException* e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(notNilValue()));
+    }
+}
+
 @end

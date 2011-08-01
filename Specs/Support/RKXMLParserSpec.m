@@ -67,7 +67,7 @@
     id data = RKSpecParseFixture(@"tab_data.xml");
     NSLog(@"%@", data);
     assertThat([data valueForKeyPath:@"tabdata.item"], is(instanceOf([NSArray class])));
-    [provider setObjectMapping:mapping forKeyPath:@"tabdata.item"];
+    [provider setMapping:mapping forKeyPath:@"tabdata.item"];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:data mappingProvider:provider];
     RKObjectMappingResult* result = [mapper performMapping];
     assertThatInt([[result asCollection] count], is(equalToInt(2)));

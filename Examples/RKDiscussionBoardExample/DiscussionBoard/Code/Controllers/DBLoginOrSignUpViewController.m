@@ -57,7 +57,7 @@
 	_usernameField.returnKeyType = UIReturnKeyNext;
 
 	_passwordField = [[UITextField alloc] initWithFrame:CGRectZero];
-	[_passwordField setSecureTextEntry:YES];
+    _passwordField.secureTextEntry = YES;
 	_passwordField.delegate = self;
 
 	_passwordConfirmationField = [[UITextField alloc] initWithFrame:CGRectZero];

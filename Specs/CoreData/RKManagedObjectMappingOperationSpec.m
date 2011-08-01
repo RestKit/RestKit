@@ -25,7 +25,7 @@
     RKManagedObjectMapping* managedMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     NSDictionary* sourceObject = [NSDictionary dictionary];
     RKHuman* human = [RKHuman createEntity];
-    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:human withObjectMapping:managedMapping];
+    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:human withMapping:managedMapping];
     assertThat(operation, is(instanceOf([RKManagedObjectMappingOperation class])));
 }
 
@@ -33,7 +33,7 @@
     RKObjectMapping* vanillaMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     NSDictionary* sourceObject = [NSDictionary dictionary];
     NSMutableDictionary* destinationObject = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:destinationObject withObjectMapping:vanillaMapping];
+    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:destinationObject withMapping:vanillaMapping];
     assertThat(operation, is(instanceOf([RKObjectMappingOperation class])));
 }
 
@@ -47,7 +47,7 @@
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
-    [humanMapping hasOne:@"favoriteCat" withObjectMapping:catMapping];
+    [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
     
     // Create a cat to connect
@@ -58,7 +58,7 @@
     
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human objectMapping:humanMapping];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
     NSError* error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));

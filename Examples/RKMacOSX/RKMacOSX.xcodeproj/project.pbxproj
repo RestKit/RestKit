@@ -101,6 +101,13 @@
 			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
 			remoteInfo = RestKit;
 		};
+		25FB6D9F13E4848200F48969 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 20808DBD13DE8CDC000A156A;
+			remoteInfo = "RestKitJSONParser+NXJSON";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -218,6 +225,7 @@
 				25D63958135184F1000879B1 /* libRestKitNetwork.a */,
 				25D6395A135184F1000879B1 /* libRestKitObjectMapping.a */,
 				25D6395C135184F1000879B1 /* libRestKitSupport.a */,
+				25FB6DA013E4848200F48969 /* libRestKitJSONParser+NXJSON.a */,
 				25D6395E135184F1000879B1 /* libRestKitJSONParserYAJL.a */,
 				25D63960135184F1000879B1 /* libRestKitJSONParserSBJSON.a */,
 				25D63962135184F1000879B1 /* libRestKitJSONParserJSONKit.a */,
@@ -269,6 +277,9 @@
 /* Begin PBXProject section */
 		25D6390B135184CE000879B1 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = 25D6390E135184CE000879B1 /* Build configuration list for PBXProject "RKMacOSX" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -361,6 +372,14 @@
 			fileType = wrapper.application;
 			path = UISpec.app;
 			remoteRef = 25D63969135184F1000879B1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25FB6DA013E4848200F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			name = "libRestKitJSONParser+NXJSON.a";
+			path = libRestKitJSONParserNXJSON.a;
+			remoteRef = 25FB6D9F13E4848200F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
