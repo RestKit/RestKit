@@ -100,7 +100,7 @@ namespace :docs do
   desc "Generate & install a docset into Xcode from the current sources"
   task :install do
     command = apple_doc_command << " --install-docset Code/"
-    run(command)
+    run(command, 1)
   end
   
   desc "Build and upload the documentation set to the remote server"
