@@ -108,6 +108,6 @@ If you want to contribute documentation, the process is simple:
 1. Edit the headers in Code/ and regenerate the docs via `rake docs`
 1. Repeat the editing and reload cycle until your are happy.
 1. Commit the code and push to Github
-1. Submit a Pull Request to the Two Toasters branch on Github at: https://github.com/twotoasters/RestKit/pull/new/master
+1. Submit a Pull Request to the RestKit repository on Github at: https://github.com/RestKit/RestKit/pull/new/master
 
 You may want to coordinate your efforts via the mailing list to ensure nobody else is working on documentation in the same place.

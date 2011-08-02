@@ -45,11 +45,11 @@ configured and there are integration tests that test the full request/response l
 1. Spec files live in sub-directories under Specs/ appropriate to the layer the code under test belongs to
 1. UISpec executes Specs via categories. Adding the `UISpec` category to your spec class definition will cause it to be picked up and executed.
 1. Specs begin with "it" and should be camel-cased descriptive. i.e. itShouldConsiderA200ResponseSuccessful
-1. UISpec expectations are implemented via the `expectThat` macro:
+1. Expectations are provided using OCHamcrest. Details of the matchers are available on the [OCHamcrest Github Page](http://jonreid.github.com/OCHamcrest/). Generally the matchers are of the form:
 
-        [expectThat([someObject someMethod]) should:be(YES)];
-    There is a corresponding `shouldNot` method available as well.
-1. The RKSpecEnvironment.h header includes a number of helpers.
+        assertThat([someObject someMethod], is(equalTo(@"some value")));
+    There is a corresponding `isNot` method available as well.
+1. The RKSpecEnvironment.h header includes a number of helpers for initializing and configuring a clean testing environment.
 1. OCMock is available for mock objects support. See [http://www.mulle-kybernetik.com/software/OCMock/](http://www.mulle-kybernetik.com/software/OCMock/) for details
 
 ### Writing Integration Tests
@@ -101,9 +101,9 @@ Let's take a look at an example of how to use the response loader to test some f
         client.password = @"INVALID";
         [client get:@"/authentication/basic" delegate:loader];
         [loader waitForResponse];
-        [expectThat([loader.response isOK]) should:be(NO)]; 
-        [expectThat([loader.response statusCode]) should:be(0)];
-        [expectThat([loader.failureError code]) should:be(NSURLErrorUserCancelledAuthentication)];
+        assertThatBool([loader.response isOK], is(equalToBool(NO)));
+        assertThatInt([loader.response statusCode], is(equalToInt(0)));
+        assertThatInt([loader.failureError code], is(equalToInt(NSURLErrorUserCancelledAuthentication)));
       }
 
 That's really all there is to it. Consult the existing test code in Specs/ for reference. 
