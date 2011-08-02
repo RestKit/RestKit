@@ -76,7 +76,7 @@ task :docs => 'docs:generate'
 namespace :docs do
   task :generate do
     command = apple_doc_command << " --no-create-docset --keep-intermediate-files --create-html Code/"
-    run(command)
+    run(command, 1)
     puts "Generated HTML documentationa at Docs/API/html"
   end
   
