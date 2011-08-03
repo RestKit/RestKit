@@ -20,7 +20,7 @@
 +(void)runSpec:(NSTimer *)timer;
 +(void)runSpecExample:(NSTimer *)timer;
 +(void)runSpecClasses:(NSArray *)specClasses;
-+(void)runExamples:(NSArray *)examples onSpec:(Class *)class;
++(void)runExamples:(NSArray *)examples onSpec:(Class)class;
 +(void)setLog:(UILog *)log;
 +(NSDictionary *)specsAndExamples;
 
@@ -45,6 +45,12 @@
 
 @end
 
-@protocol UISpec
-@end
+@protocol UISpec <NSObject>
 
+@optional
+- (void)beforeAll;
+- (void)before;
+- (void)after;
+- (void)afterAll;
+
+@end

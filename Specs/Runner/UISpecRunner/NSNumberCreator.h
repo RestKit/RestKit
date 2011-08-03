@@ -17,6 +17,6 @@ __typeof__(aValue) __aValue = (aValue); \
 }) \
 
 @interface NSNumberCreator : NSObject
-+ numberWithValue:(const void *)aValue objCType:(const char *)aTypeDescription;
-- initWithValue:(const void *)aValue objCType:(const char *)aTypeDescription;
++ (NSValue*)numberWithValue:(const void *)aValue objCType:(const char *)aTypeDescription;
+- (NSValue*)initWithValue:(const void *)aValue objCType:(const char *)aTypeDescription;
 @end

@@ -1,4 +1,5 @@
 
+#import <objc/message.h>
 #import "UIMatcher.h"
 #import "NSNumberCreator.h"
 
@@ -20,7 +21,9 @@
 }
 
 -(BOOL)matches:(id)value {
-	return [self performSelector:matchSelector withObject:value];
+//	return [self performSelector:matchSelector withObject:value];
+    BOOL (*BoolReturnPerformSelector)(id, SEL, id) = (BOOL (*)(id, SEL, id)) objc_msgSend;
+    return BoolReturnPerformSelector(self, matchSelector, value);
 }
 
 -(BOOL)be:(id)value {
@@ -35,7 +38,7 @@
 	if ('@' == *typeDescription) {
 		return [NSString stringWithFormat:@"%@", *(id *)value];
 	}
-	return [[NSNumber numberWithValue:value objCType:typeDescription] stringValue];
+	return [(NSNumber*)[NSNumberCreator numberWithValue:value objCType:typeDescription] stringValue];
 }
 
 - (void)dealloc {
