@@ -10,7 +10,6 @@
 #import "RKManagedObjectLoader.h"
 #import "RKURL.h"
 #import "RKObjectMapper.h"
-#import "RKManagedObjectFactory.h"
 #import "RKManagedObjectThreadSafeInvocation.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "../ObjectMapping/RKObjectLoader_Internals.h"
@@ -148,14 +147,6 @@
     [invocation setArgument:&dictionary atIndex:2];
     [invocation setManagedObjectKeyPaths:_managedObjectKeyPaths forArgument:2];
     [invocation invokeOnMainThread];
-}
-
-- (id<RKObjectFactory>)createObjectFactory {
-    if (self.objectManager.objectStore) {
-        return [RKManagedObjectFactory objectFactoryWithObjectStore:self.objectStore];
-    }
-    
-    return nil;    
 }
 
 // Overloaded to handle deleting an object orphaned by a failed postObject:

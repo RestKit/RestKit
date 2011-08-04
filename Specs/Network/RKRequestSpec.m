@@ -563,8 +563,7 @@
     RKClient* client = RKSpecNewClient();
     RKParams *params = [RKParams params];    
     [params setValue:@"ddss" forParam:@"username"];    
-    [params setValue:@"aaaa@aa.com" forParam:@"email"];    
-    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
+    [params setValue:@"aaaa@aa.com" forParam:@"email"];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     [client put:@"/ping" params:params delegate:loader];
     [loader waitForResponse];

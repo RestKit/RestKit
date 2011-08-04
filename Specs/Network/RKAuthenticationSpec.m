@@ -34,7 +34,6 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 }
 
 - (void)itShouldAuthenticateViaHTTPAuthBasic {
-    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKClient* client = RKSpecNewClient();
     client.username = RKAuthenticationSpecUsername;

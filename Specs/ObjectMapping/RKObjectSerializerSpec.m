@@ -142,7 +142,7 @@
     [objectMapping mapAttributes:@"stringTest", nil];    
     RKObjectMapping* relationshipMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [relationshipMapping mapAttributes:@"date", nil];
-    [objectMapping mapRelationship:@"hasOne" withObjectMapping:relationshipMapping];
+    [objectMapping mapRelationship:@"hasOne" withMapping:relationshipMapping];
     
     // Serialize
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:objectMapping];
@@ -182,7 +182,7 @@
     [objectMapping mapAttributes:@"stringTest", nil];    
     RKObjectMapping* relationshipMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [relationshipMapping mapAttributes:@"date", nil];
-    [objectMapping mapRelationship:@"hasMany" withObjectMapping:relationshipMapping];
+    [objectMapping mapRelationship:@"hasMany" withMapping:relationshipMapping];
     
     // Serialize
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:object mapping:objectMapping];

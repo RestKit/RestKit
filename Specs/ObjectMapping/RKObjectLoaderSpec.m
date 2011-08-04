@@ -99,7 +99,7 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"firstname" toKeyPath:@"firstname"]];
-    [provider setObjectMapping:userMapping forKeyPath:@"data.STUser"];
+    [provider setMapping:userMapping forKeyPath:@"data.STUser"];
     return provider;
 }
 
@@ -107,8 +107,8 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
     [errorMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"" toKeyPath:@"errorMessage"]];
-    [provider setObjectMapping:errorMapping forKeyPath:@"error"];
-    [provider setObjectMapping:errorMapping forKeyPath:@"errors"];
+    [provider setMapping:errorMapping forKeyPath:@"error"];
+    [provider setMapping:errorMapping forKeyPath:@"errors"];
     return provider;
 }
 
@@ -253,7 +253,7 @@
     [objectMapping mapKeyPath:@"id" toAttribute:@"ID"];
     [objectMapping mapKeyPath:@"ends_at" toAttribute:@"endsAt"];
     [objectMapping mapKeyPath:@"photo_url" toAttribute:@"photoURL"];
-    [objectManager.mappingProvider setObjectMapping:objectMapping forKeyPath:@"results"];
+    [objectManager.mappingProvider setMapping:objectMapping forKeyPath:@"results"];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     [objectManager loadObjectsAtResourcePath:@"/JSON/ArrayOfResults.json" delegate:loader];
     [loader waitForResponse];
@@ -422,8 +422,8 @@
     
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
     [userMapping mapAttributes:@"firstname", nil];
-    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"firstUser"];
-    [objectManager.mappingProvider setObjectMapping:userMapping forKeyPath:@"secondUser"];
+    [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"firstUser"];
+    [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"secondUser"];
     
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     [objectManager loadObjectsAtResourcePath:@"/users/empty" delegate:responseLoader];

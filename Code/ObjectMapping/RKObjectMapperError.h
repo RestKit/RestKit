@@ -9,8 +9,9 @@
 #import "../Support/Errors.h"
 
 typedef enum RKObjectMapperErrors {
-    RKObjectMapperErrorObjectMappingNotFound,       // No mapping found
-    RKObjectMapperErrorObjectMappingTypeMismatch,   // Target class and object mapping are in disagreement
-    RKObjectMapperErrorUnmappableContent,           // No mappable attributes or relationships were found
-    RKObjectMapperErrorFromMappingResult
+    RKObjectMapperErrorObjectMappingNotFound        = 1001,     // No mapping found
+    RKObjectMapperErrorObjectMappingTypeMismatch    = 1002,     // Target class and object mapping are in disagreement
+    RKObjectMapperErrorUnmappableContent            = 1003,     // No mappable attributes or relationships were found
+    RKObjectMapperErrorFromMappingResult            = 1004,     // The error was returned from the mapping result
+    RKObjectMapperErrorValidationFailure            = 1005      // Generic error code for use when constructing validation errors
 } RKObjectMapperErrorCode;

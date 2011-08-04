@@ -127,6 +127,13 @@
 			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
 			remoteInfo = RestKit;
 		};
+		25FB6D4E13E4830800F48969 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2501DE8113607B74003DE9E4 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 20808DBD13DE8CDC000A156A;
+			remoteInfo = "RestKitJSONParser+NXJSON";
+		};
 		3F7C3F6D1379ADFC00B4A357 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2501DE8113607B74003DE9E4 /* RestKit.xcodeproj */;
@@ -283,6 +290,7 @@
 				2501DEA113607B74003DE9E4 /* libRestKitNetwork.a */,
 				2501DEA313607B74003DE9E4 /* libRestKitObjectMapping.a */,
 				2501DEA513607B74003DE9E4 /* libRestKitSupport.a */,
+				25FB6D4F13E4830800F48969 /* libRestKitJSONParser+NXJSON.a */,
 				2501DEA713607B74003DE9E4 /* libRestKitJSONParserYAJL.a */,
 				2501DEA913607B74003DE9E4 /* libRestKitJSONParserSBJSON.a */,
 				2501DEAB13607B74003DE9E4 /* libRestKitJSONParserJSONKit.a */,
@@ -530,6 +538,14 @@
 			fileType = wrapper.application;
 			path = UISpec.app;
 			remoteRef = 2501DEB213607B74003DE9E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25FB6D4F13E4830800F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			name = "libRestKitJSONParser+NXJSON.a";
+			path = libRestKitJSONParserNXJSON.a;
+			remoteRef = 25FB6D4E13E4830800F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

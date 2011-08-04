@@ -46,9 +46,8 @@
 // Return it serialized into a dictionary
 - (id)serializedObject:(NSError**)error {
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withObjectMapping:_mapping];
+    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withMapping:_mapping];
     operation.delegate = self;
-    operation.objectFactory = self;
     BOOL success = [operation performMapping:error];
     if (!success) {
         return nil;
@@ -111,13 +110,6 @@
         RKLogDebug(@"Serialized %@ value at keyPath to %@ (%@)", NSStringFromClass([value class]), NSStringFromClass([transformedValue class]), value);
         [operation.destinationObject setValue:transformedValue forKey:keyPath];
     }
-}
-
-#pragma mark - RKObjectFactory
-
-// We always serialize back to a dictionary
-- (id)objectWithMapping:(RKObjectMapping*)objectMapping andData:(id)mappableData {
-    return [NSMutableDictionary dictionary];
 }
 
 @end

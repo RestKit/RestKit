@@ -1,4 +1,4 @@
-
+#import <objc/message.h>
 #import "UIExpectation.h"
 // #import "UIRedoer.h"
 // #import "UIQueryExpectation.h"
@@ -79,7 +79,10 @@
 	if (![value respondsToSelector:sel] && [value respondsToSelector:[UIExpectation makeIsSelector:sel]]) {
 		sel = [UIExpectation makeIsSelector:sel];
 	}
-	BOOL result = [value performSelector:sel];
+    BOOL (*BoolReturnPerformSelector)(id, SEL) = (BOOL (*)(id, SEL)) objc_msgSend;
+    BOOL result = BoolReturnPerformSelector(self, sel);
+	//BOOL result = [value performSelector:sel];
+    
 	if ((result == YES && isNot) || (result == NO && !isNot)) {
 		if (!isFailureTest) {
 			[NSException raise:nil format:@"%@ did not pass condition: [%@ be %@]\n%s:%d", [self valueAsString], (isNot ? @"should not" : @"should"), origSelector, file, line];
@@ -95,7 +98,7 @@
 	BOOL foundErrors = NO;
 	NSMutableArray *errors = [NSMutableArray array];
 	int i = 2;
-	const void * expected = nil;
+	id<NSObject> expected = nil;
 	for (NSString *key in selectors) {
 		if (![key isEqualToString:@""]) {
 			SEL selector = NSSelectorFromString(key);
@@ -108,7 +111,7 @@
 			NSString *returnType = [NSString stringWithFormat:@"%s", [[value methodSignatureForSelector:selector] methodReturnType]];
 			if ([returnType isEqualToString:@"@"]) {
 				if ([expected isKindOfClass:[NSString class]]) {
-					if ([[value performSelector:selector] rangeOfString:expected].length == 0) {
+					if ([[value performSelector:selector] rangeOfString:(NSString*)expected].length == 0) {
 						[errors addObject:[NSString stringWithFormat:@"%@ : '%@' doesn't contain '%@'", key, [value performSelector:selector], expected]];
 						foundErrors = YES;
 						continue;
@@ -139,7 +142,6 @@
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
-	NSMutableString *selector = NSStringFromSelector(aSelector);
 	if (isBe) {
 		if (![value respondsToSelector:aSelector] && [value respondsToSelector:[UIExpectation makeIsSelector:aSelector]]) {
 			aSelector = [UIExpectation makeIsSelector:aSelector];
@@ -168,7 +170,6 @@
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
-	NSMutableString *selector = [NSMutableString stringWithString:NSStringFromSelector([anInvocation selector])];
 	if (isBe) {
 		[self be:[anInvocation selector]];
 	} else if (isHave) {
