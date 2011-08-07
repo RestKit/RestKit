@@ -28,7 +28,7 @@
 
 #define _LCL_VERSION_MAJOR  1
 #define _LCL_VERSION_MINOR  1
-#define _LCL_VERSION_BUILD  3
+#define _LCL_VERSION_BUILD  4
 #define _LCL_VERSION_SUFFIX ""
 
 //
@@ -162,16 +162,20 @@ typedef uint32_t _lcl_component_t;
 // logging back-end. _lcl_logger has the same signature as lcl_log.
 //
 #ifdef _LCL_NO_LOGGING
-#   define lcl_log(_component, _level, _format, ...)
+#   define lcl_log(_component, _level, _format, ...)                           \
+        do {                                                                   \
+        } while (false)
 #else
 #   define lcl_log(_component, _level, _format, ...)                           \
-        if ((_lcl_component_level[(__lcl_log_symbol(_component))]) >=          \
-            (__lcl_log_symbol(_level))) {                                      \
-                _lcl_logger(_component,                                        \
-                            _level,                                            \
-                            _format,                                           \
-                            ##__VA_ARGS__);                                    \
-        }
+        do {                                                                   \
+            if ((_lcl_component_level[(__lcl_log_symbol(_component))]) >=      \
+                (__lcl_log_symbol(_level))) {                                  \
+                    _lcl_logger(_component,                                    \
+                                _level,                                        \
+                                _format,                                       \
+                                ##__VA_ARGS__);                                \
+            }                                                                  \
+        } while (false)
 #endif
 
 // lcl_configure_by_component(<component>, <level>)
