@@ -52,7 +52,7 @@
  For example, if we configure have a simple resource called 'person' that returns JSON in the following
  format:
  
-    { "person": { "first_name": "Blake", "last_name": "Watters } }
+    { "person": { "first_name": "Blake", "last_name": "Watters" } }
  
  We might configure a mapping like so:
     
@@ -62,7 +62,7 @@
  If we want to parse the above JSON and serialize it such that using postObject: or putObject: use the same format,
  we can auto-generate the serialization mapping and set the whole thing up in one shot:
  
-    [[RKObjectManager sharedManager].mappingProvider registerMapping:mapping withRootKeyPath:@"user"];
+    [[RKObjectManager sharedManager].mappingProvider registerMapping:mapping withRootKeyPath:@"person"];
  
  This will call setMapping:forKeyPath: for you, then generate a serialization mapping and set the root
  keyPath as well.
