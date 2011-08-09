@@ -1,3 +1,23 @@
+/**
+ * Lifecycle events for RKClientOAuth
+ */
+@protocol RKOAuth2Delegate
+@required
+
+/**
+ * Sent when a new access token has being acquired
+ */
+- (void)accessTokenAcquired;
+
+/**
+ * Sent when an access token request has failed due to an error
+ */
+- (void)accessTokenAcquiredWithProblems;
+
+
+@end
+
+
 //
 //  RKClientOAuth.h
 //  RestKit
@@ -8,14 +28,19 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "RKClient.h"
+#import "RKRequest.h"
+#import "JSONKit.h"
 
-@interface RKClientOAuth : NSObject {
+
+@interface RKClientOAuth : NSObject <RKRequestDelegate>{
 	NSString* _clientID;
     NSString* _clientSecret;
 	NSString* _authorizationCode;
     NSString* _authorizationURL;
-    NSString* _accessTokenURL;
+    NSString* _callbackURL;
     NSString* _accessToken;
+    id <RKOAuth2Delegate> _oauth2Delegate;
 }
 
 // General properties of the client
@@ -27,15 +52,22 @@
 
 // OAuth EndPoints
 @property(nonatomic,retain) NSString* authorizationURL;
-@property(nonatomic,retain) NSString* accessTokenURL;
+@property(nonatomic,retain) NSString* callbackURL;
 
 // OAuth accessToken getter
 - (NSString *)getAccessToken;
 
+// Client Delegate
+@property(nonatomic,retain) id <RKOAuth2Delegate> oauth2Delegate;
 
 - (id)initWithClientID:(NSString *)clientId 
-                secret:(NSString *)secret;
+                secret:(NSString *)secret
+              delegate:(id <RKOAuth2Delegate>)delegate;
 
 - (void)validateAuthorizationCode;
+
++ (RKClientOAuth *)clientWithClientID:(NSString *)clientId 
+                               secret:(NSString *)secret 
+                             delegate:(id <RKOAuth2Delegate>)delegate;
 
 @end

@@ -7,48 +7,63 @@
 //
 
 #import "RKClientOAuth.h"
-#import "JSONKit.h"
 
 @implementation RKClientOAuth
-@synthesize clientID = _clientID, clientSecret = _clientSecret, authorizationCode = _authorizationCode, authorizationURL = _authorizationURL, accessTokenURL = _accessTokenURL;
+@synthesize clientID = _clientID, clientSecret = _clientSecret, authorizationCode = _authorizationCode, authorizationURL = _authorizationURL, callbackURL = _callbackURL, oauth2Delegate = _oauth2Delegate;
 
 
 - (id)initWithClientID:(NSString *)clientId 
-                secret:(NSString *)secret
+                secret:(NSString *)secret 
+              delegate:(id <RKOAuth2Delegate>)delegate
 {
     self = [super init];
     if (self) {
         _clientID = [clientId copy];
         _clientSecret = [secret copy];
+        _oauth2Delegate = delegate;
     }
     
     return self;
 }
 
 -(void)validateAuthorizationCode{
-    NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:_accessTokenURL]] autorelease];
-    NSString *httpBody = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@&redirect_uri=%@",_clientID,_clientSecret,_authorizationCode,@"http://discovery.excelsys.prod:5555/mobile/oauth/showcode"];
-    NSData *postData = [ httpBody dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:NO];
-    NSString *postLength = [NSString stringWithFormat:@"%d", [postData length]];    
-    
-    [request setHTTPBody:postData];
-    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    [request setHTTPMethod:@"POST"];
-    
+    NSString *httpBody = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@&redirect_uri=%@",_clientID,_clientSecret,_authorizationCode,_callbackURL];
+    RKClient* requestClient = [RKClient clientWithBaseURL:_authorizationURL];
+    RKRequest* theRequest = [requestClient requestWithResourcePath:@"" delegate:self];
+    [theRequest setHTTPBodyString:httpBody];
+    [theRequest setMethod:RKRequestMethodPOST];
+    [theRequest send];
+}
+
++ (RKClientOAuth *)clientWithClientID:(NSString *)clientId 
+                               secret:(NSString *)secret 
+                             delegate:(id <RKOAuth2Delegate>)delegate{
+    RKClientOAuth* client = [[[self alloc] initWithClientID:clientId secret:secret delegate:delegate] autorelease];
+    return client;
+}
+
+
+-(NSString *)getAccessToken{
+    return _accessToken;
+}
+
+- (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response{
     NSError* error = nil;
-    NSData* responseData = [NSURLConnection sendSynchronousRequest:request  returningResponse:nil error:&error];
-    id json = [[JSONDecoder decoder] objectWithData:responseData error:&error];
+    id json = [[JSONDecoder decoder] objectWithData:[response body] error:&error];
     if ([json isKindOfClass:[NSDictionary class]]) {
         NSDictionary *tokens = (NSDictionary *) json;
         if ((_accessToken = [tokens objectForKey:@"access_token"])) {
             NSLog(@"A new access token has being acquired");
+            [_oauth2Delegate accessTokenAcquired];
         }
     }
+
 }
 
--(NSString *)getAccessToken{
-    return _accessToken;
+
+- (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error{
+    NSLog(@"An error has being detected in the access token request %@", [error debugDescription]);
+    [_oauth2Delegate accessTokenAcquiredWithProblems];
 }
 
 
