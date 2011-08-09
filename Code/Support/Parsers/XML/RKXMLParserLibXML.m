@@ -22,7 +22,14 @@
             if ([val isKindOfClass:[NSString class]]) {
                 id oldVal = [attrs valueForKey:nodeName];
                 if (nil == oldVal) {
-                    [attrs setValue:val forKey:nodeName];
+                    // Assume that empty strings are irrelevant and go for an attribute-collection instead
+                    if ([val length] == 0) {
+                        val = [NSMutableDictionary dictionary];
+                        NSDictionary* elem = [NSDictionary dictionaryWithObject:val forKey:nodeName];
+                        [nodes addObject:elem];
+                    } else {
+                        [attrs setValue:val forKey:nodeName];
+                    }
                 } else if ([oldVal isKindOfClass:[NSMutableArray class]]) {
                     [oldVal addObject:val];
                 } else {
@@ -43,11 +50,14 @@
             for (currentAttribute = (xmlAttribute*)element->attributes; currentAttribute; currentAttribute = (xmlAttribute*)currentAttribute->next) {
                 NSString* name = [NSString stringWithCString:(char*)currentAttribute->name encoding:NSUTF8StringEncoding];
                 xmlChar* str = xmlNodeGetContent((xmlNode*)currentAttribute);
-                NSString* val = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
+                NSString* value = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
                 xmlFree(str);
-                [attrs setValue:val forKey:name];
-                // Only add attributes to nodes if there actually is one.
-                if (![nodes containsObject:attrs]) {
+                [attrs setValue:value forKey:name];
+                if ([val isKindOfClass:[NSDictionary class]]) {
+                    // Add attributes as properties of the class
+                    [val setObject:value forKey:name];
+                } else if (![nodes containsObject:attrs]) {
+                    // Only add attributes to nodes if there actually is one.
                     [nodes addObject:attrs];
                 }
             }
