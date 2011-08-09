@@ -106,4 +106,16 @@
     _unknownResponse = YES;
 }
 
+- (void)accessTokenAcquired{
+    _awaitingResponse = NO;
+    _success = YES;
+    
+}
+
+
+- (void)accessTokenAcquiredWithProblems{
+    _awaitingResponse = NO;
+    _success = NO;
+}
+
 @end

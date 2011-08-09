@@ -38,6 +38,12 @@ RKClient* RKSpecNewClient(void) {
     return client;
 }
 
+RKClientOAuth* RKSpecNewClientOAuth(RKSpecResponseLoader* loader){
+    RKClientOAuth* client = [RKClientOAuth clientWithClientID:@"appID" secret:@"appSecret" delegate:loader];
+    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize",RKSpecGetBaseURL()];
+    return client;
+}
+
 RKRequestQueue* RKSpecNewRequestQueue(void) {
     RKRequestQueue* requestQueue = [RKRequestQueue new];
     requestQueue.suspended = NO;

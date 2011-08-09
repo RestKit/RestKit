@@ -36,6 +36,7 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable);
 RKClient* RKSpecNewClient(void);
 RKRequestQueue* RKSpecNewRequestQueue(void);
 RKObjectManager* RKSpecNewObjectManager(void);
+RKClientOAuth* RKSpecNewClientOAuth(RKSpecResponseLoader* loader);
 RKManagedObjectStore* RKSpecNewManagedObjectStore(void);
 void RKSpecClearCacheDirectory(void);
 
