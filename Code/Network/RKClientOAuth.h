@@ -1,23 +1,3 @@
-/**
- * Lifecycle events for RKClientOAuth
- */
-@protocol RKOAuth2Delegate
-@required
-
-/**
- * Sent when a new access token has being acquired
- */
-- (void)accessTokenAcquired;
-
-/**
- * Sent when an access token request has failed due to an error
- */
-- (void)accessTokenAcquiredWithProblems;
-
-
-@end
-
-
 //
 //  RKClientOAuth.h
 //  RestKit
@@ -26,12 +6,13 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 #import "RKClient.h"
 #import "RKRequest.h"
 #import "JSONKit.h"
 
+@protocol RKOAuth2Delegate;
 
 @interface RKClientOAuth : NSObject <RKRequestDelegate>{
 	NSString* _clientID;
@@ -69,5 +50,24 @@
 + (RKClientOAuth *)clientWithClientID:(NSString *)clientId 
                                secret:(NSString *)secret 
                              delegate:(id <RKOAuth2Delegate>)delegate;
+
+@end
+
+/**
+ * Lifecycle events for RKClientOAuth
+ */
+@protocol RKOAuth2Delegate
+@required
+
+/**
+ * Sent when a new access token has being acquired
+ */
+- (void)accessTokenAcquired;
+
+/**
+ * Sent when an access token request has failed due to an error
+ */
+- (void)accessTokenAcquiredWithProblems;
+
 
 @end
