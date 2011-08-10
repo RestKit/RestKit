@@ -10,7 +10,6 @@
 #import <Foundation/Foundation.h>
 #import "RKClient.h"
 #import "RKRequest.h"
-#import "JSONKit.h"
 
 @protocol RKOAuth2Delegate;
 
