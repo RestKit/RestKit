@@ -49,7 +49,7 @@
 
 - (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response{
     NSError* error = nil;
-    id json = [[JSONDecoder decoder] objectWithData:[response body] error:&error];
+    id json = [response parsedBody:&error];
     if ([json isKindOfClass:[NSDictionary class]]) {
         NSDictionary *tokens = (NSDictionary *) json;
         if ((_accessToken = [tokens objectForKey:@"access_token"])) {

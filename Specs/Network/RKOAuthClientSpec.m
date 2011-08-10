@@ -22,7 +22,7 @@
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
     [loader waitForResponse];
-    assertThat([client getAccessToken], is(equalTo(@"581b50dca15a9d41eb280d5cbd52c7da4fb564621247848171508dd9d0dfa551a2efe9d06e110e62335abf13b6446a5c49e4sdaf6007cd90518fbbb0d1535b4dbc")));
+    assertThat([client getAccessToken], is(equalTo(@"581b50dca15a9d41eb280d5cbd52c7da4fb564621247848171508dd9d0dfa551a2efe9d06e110e62335abf13b6446a5c49e4bf6007cd90518fbbb0d1535b4dbc")));
 }
 
 - (void)itShouldGetProtectedResource{
@@ -40,6 +40,7 @@
     requestClient.forceOAuth2Use = true;
     RKRequest* request = [requestClient requestWithResourcePath:@"/me" delegate:resourceLoader];
     [request send];
+    [resourceLoader waitForResponse];
     assertThatBool(loader.success, is(equalToBool(YES)));
 }
 
