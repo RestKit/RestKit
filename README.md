@@ -113,7 +113,7 @@ Xcode 4.x (Git Submodule)
 1. Add the submodule: `git submodule add git://github.com/RestKit/RestKit.git RestKit`
 1. Open the project you wish to add RestKit to in Xcode.
 1. Focus your project and select the "View" menu > "Navigators" > "Project" to bring the project file list into view.
-1. Drag the RestKit.xcodeproj file from the Finder and drop it on your "<Your Project's Name>".xcodeproj.
+1. Drag the RestKit.xcodeproj file from the Finder and drop it on your "(Your Project's Name)".xcodeproj.
 1. Click on your project's name in the sidebar on the left to open the project settings view in the right pane of the window.
 1. In the middle pane you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
 1. Find the **Header Search Paths** setting. Double click and add a new entry. Add a search path to the `"$(SOURCE_ROOT)/RestKit/Build"` directory you have added to your project. **DO NOT** check the `Recursive` checkbox.

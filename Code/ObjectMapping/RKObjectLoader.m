@@ -348,7 +348,7 @@
 	}
 
     if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
-        [_delegate request:self didLoadResponse:response];
+        [_delegate request:self didLoadResponse:_response];
     }
     
 	if ([self isResponseMappable]) {

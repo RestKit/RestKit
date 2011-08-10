@@ -2,12 +2,17 @@
 #import "objc/runtime.h"
 #import "UIConsoleLog.h"
 
+@interface UISpec ()
++(NSArray *)examplesForSpecClass:(Class)specClass;
++(NSArray*)specClasses;
+@end
+
 @implementation UISpec
 
 static UILog *logger = nil;
 
 +(void)initialize {
-	logger = [[UIConsoleLog alloc] init];
+	logger = (UILog *) [[UIConsoleLog alloc] init];
 }
 
 +(void)setLog:(UILog *)log{
@@ -33,12 +38,12 @@ static UILog *logger = nil;
 }
 
 +(void)runSpec:(NSTimer *)timer {
-	Class *class = NSClassFromString(timer.userInfo);
+	Class class = NSClassFromString(timer.userInfo);
 	[self runSpecClasses:[NSArray arrayWithObject:class]];
 }
 
 +(void)runSpecExample:(NSTimer *)timer {
-	Class *class = NSClassFromString([timer.userInfo objectAtIndex:0]);
+	Class class = NSClassFromString([timer.userInfo objectAtIndex:0]);
 	NSString *exampleName = [timer.userInfo objectAtIndex:1];
 	[logger onStart];
 	[self runExamples:[NSArray arrayWithObject:exampleName] onSpec:class];
@@ -58,8 +63,8 @@ static UILog *logger = nil;
 	[logger onFinish:examplesCount];
 }
 
-+(void)runExamples:(NSArray *)examples onSpec:(Class *)class {
-	UISpec *spec = [[[class alloc] init] autorelease];
++(void)runExamples:(NSArray *)examples onSpec:(Class)class {
+	id<UISpec> spec = [[[class alloc] init] autorelease];
 	[logger onSpec:spec];
 	if ([spec respondsToSelector:@selector(beforeAll)]) {
 		@try {
@@ -110,13 +115,13 @@ static UILog *logger = nil;
 	for (Class specClass in specClasses) {
 		NSArray *examples = [self examplesForSpecClass:specClass];
 		if ([examples count]) {
-			[specsAndExamples addObject:examples forKey:NSStringFromClass(specClass)];
+			[specsAndExamples setObject:examples forKey:NSStringFromClass(specClass)];
 		}
 	}
 	return specsAndExamples;
 }
 
-+(NSArray *)examplesForSpecClass:(Class *)specClass {
++(NSArray *)examplesForSpecClass:(Class)specClass {
 	NSMutableArray *array = [NSMutableArray array];
 	unsigned int methodCount;
 	Method *methods = class_copyMethodList(specClass, &methodCount);
@@ -150,7 +155,7 @@ static UILog *logger = nil;
         (void) objc_getClassList (classes, numClasses);
         int i;
         for (i = 0; i < numClasses; i++) {
-            Class *c = classes[i];
+            Class c = classes[i];
 			if ([self isASpec:c]) {
 				[array addObject:c];
 			}

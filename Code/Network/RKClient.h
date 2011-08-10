@@ -55,7 +55,7 @@ NSString* RKMakePathWithObject(NSString* path, id object);
  *
  * This is a convenience method for constructing a new resource path that includes a query. For example,
  * when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
- * will return /contacts?foo=bar&color=red
+ * will return /contacts?foo=bar&amp;color=red
  *
  * *NOTE* - Assumes that the resource path does not already contain any query parameters.
  *
@@ -355,7 +355,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  *
  * This is a convenience method for constructing a new resource path that includes a query. For example,
  * when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
- * will return /contacts?foo=bar&color=red
+ * will return /contacts?foo=bar&amp;color=red
  *
  * *NOTE* - Assumes that the resource path does not already contain any query parameters.
  *
@@ -373,7 +373,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  *
  * This is a convenience method for constructing a new resource path that includes a query. For example,
  * when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
- * will return /contacts?foo=bar&color=red
+ * will return /contacts?foo=bar&amp;color=red
  *
  * *NOTE* - Assumes that the resource path does not already contain any query parameters.
  *

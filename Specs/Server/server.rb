@@ -3,6 +3,7 @@
 
 require 'rubygems'
 require 'sinatra/base'
+require "sinatra/reloader"
 require 'json'
 require 'ruby-debug'
 Debugger.start
@@ -22,9 +23,11 @@ class RestKit::SpecServer < Sinatra::Base
   use RestKit::Network::OAuth2
   
   configure do
+    register Sinatra::Reloader
     set :logging, true
     set :dump_errors, true
     set :public, Proc.new { File.join(root, '../Fixtures') }
+    set :uploads_path, Proc.new { File.join(root, '../Fixtures/Uploads') }
   end
   
   get '/' do
@@ -120,7 +123,21 @@ class RestKit::SpecServer < Sinatra::Base
     content_type 'application/json'
     ""
   end
-    
+  
+  # Expects an uploaded 'file' param
+  post '/upload' do
+    unless params['file']
+      status 500
+      return "No file parameter was provided"
+    end
+    upload_path = File.join(settings.uploads_path, params['file'][:filename])
+    File.open(upload_path, "w") do |f|
+      f.write(params['file'][:tempfile].read)
+    end
+    status 200
+    "Uploaded successfully to '#{upload_path}'"
+  end
+
   # start the server if ruby file executed directly
   run! if app_file == $0
 end
