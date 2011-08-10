@@ -12,12 +12,14 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
 require 'restkit/network/authentication'
 require 'restkit/network/etags'
 require 'restkit/network/timeout'
+require 'restkit/network/oauth2'
 
 class RestKit::SpecServer < Sinatra::Base
   self.app_file = __FILE__
   use RestKit::Network::Authentication
   use RestKit::Network::ETags
   use RestKit::Network::Timeout
+  use RestKit::Network::OAuth2
   
   configure do
     set :logging, true
@@ -118,7 +120,7 @@ class RestKit::SpecServer < Sinatra::Base
     content_type 'application/json'
     ""
   end
-  
+    
   # start the server if ruby file executed directly
   run! if app_file == $0
 end
