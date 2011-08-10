@@ -6,7 +6,7 @@
 @end
 
 
-@interface UIMatcher : NSObject <UIMatcher>{
+@interface UIMatcher : NSObject { // <UIMatcher>{
 	id expectedValue;
 	const char * expectedTypeDescription;
 	SEL matchSelector;

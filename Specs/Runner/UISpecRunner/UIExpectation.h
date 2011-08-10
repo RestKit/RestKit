@@ -36,7 +36,7 @@ __typeof__(aValue) __aValue = (aValue); \
 }
 
 @property(nonatomic, readonly) UIExpectation *not, *have, *be, *should, *shouldNot;
-@property(nonatomic, readonly) BOOL exist;
+//@property(nonatomic, readonly) BOOL exist;
 
 +(id)withValue:(const void *)aValue objCType:(const char *)aTypeDescription file:(const char *)aFile line:(int)aLine isFailureTest:(BOOL)failureTest;
 +(SEL)makeIsSelector:(SEL)aSelector;

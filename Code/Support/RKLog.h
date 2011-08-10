@@ -49,22 +49,22 @@
  than the level the message was logged at (in this case, Info).
  */
 #define RKLogCritical(...)                                                        \
-lcl_log(RKLogComponent, lcl_vCritical, @"" __VA_ARGS__);
+lcl_log(RKLogComponent, lcl_vCritical, @"" __VA_ARGS__)
 
 #define RKLogError(...)                                                           \
-lcl_log(RKLogComponent, lcl_vError, @"" __VA_ARGS__);
+lcl_log(RKLogComponent, lcl_vError, @"" __VA_ARGS__)
 
 #define RKLogWarning(...)                                                         \
-lcl_log(RKLogComponent, lcl_vWarning, @"" __VA_ARGS__);
+lcl_log(RKLogComponent, lcl_vWarning, @"" __VA_ARGS__)
 
 #define RKLogInfo(...)                                                            \
-lcl_log(RKLogComponent, lcl_vInfo, @"" __VA_ARGS__);
+lcl_log(RKLogComponent, lcl_vInfo, @"" __VA_ARGS__)
 
 #define RKLogDebug(...)                                                           \
-lcl_log(RKLogComponent, lcl_vDebug, @"" __VA_ARGS__);
+lcl_log(RKLogComponent, lcl_vDebug, @"" __VA_ARGS__)
 
 #define RKLogTrace(...)                                                           \
-lcl_log(RKLogComponent, lcl_vTrace, @"" __VA_ARGS__);
+lcl_log(RKLogComponent, lcl_vTrace, @"" __VA_ARGS__)
 
 /**
  Log Level Aliases
