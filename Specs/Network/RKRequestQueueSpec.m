@@ -84,6 +84,24 @@
     [queue release];
 }
 
+- (void)itShouldInformTheDelegateOnTransitionFromProcessingToEmptyForQueuesWithASingleRequest {
+    OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+
+    NSString* url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", RKSpecGetBaseURL()];
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest * request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loader;
+
+    RKRequestQueue* queue = [RKRequestQueue new];
+    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    [[delegateMock expect] requestQueueDidFinishLoading:queue];
+    [queue addRequest:request];
+    [queue start];
+    [loader waitForResponse];
+    [delegateMock verify];
+}
+
 - (void)itShouldBeginSpinningTheNetworkActivityIfAsked {
     [[UIApplication sharedApplication] rk_resetNetworkActivity];
     RKRequestQueue* queue = [RKRequestQueue new];
