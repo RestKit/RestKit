@@ -56,6 +56,11 @@
             NSLog(@"A new access token has being acquired");
             [_oauth2Delegate accessTokenAcquired];
         }
+        else{
+            [_oauth2Delegate accessTokenAcquiredWithErrors];
+            NSLog(@"An error has being detected in the access token request %@", [response body]);
+
+        }
     }
 
 }
@@ -63,7 +68,7 @@
 
 - (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error{
     NSLog(@"An error has being detected in the access token request %@", [error debugDescription]);
-    [_oauth2Delegate accessTokenAcquiredWithProblems];
+    [_oauth2Delegate accessTokenAcquiredWithErrors];
 }
 
 

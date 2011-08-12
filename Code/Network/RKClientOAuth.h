@@ -66,7 +66,7 @@
 /**
  * Sent when an access token request has failed due to an error
  */
-- (void)accessTokenAcquiredWithProblems;
+- (void)accessTokenAcquiredWithErrors;
 
 
 @end
