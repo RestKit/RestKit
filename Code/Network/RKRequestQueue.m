@@ -110,7 +110,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 #if TARGET_OS_IPHONE
         if (self.showsNetworkActivityIndicatorWhenBusy) {
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+            [[UIApplication sharedApplication] rk_pushNetworkActivity];
         }
 #endif
     } else if (_loadingCount > 0 && count == 0) {
@@ -123,7 +123,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         
 #if TARGET_OS_IPHONE
         if (self.showsNetworkActivityIndicatorWhenBusy) {
-            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+            [[UIApplication sharedApplication] rk_popNetworkActivity];
         }
 #endif
     }
@@ -398,3 +398,55 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 @end
+
+#if TARGET_OS_IPHONE
+
+@implementation UIApplication (RKNetworkActivity)
+
+static NSInteger rk_networkActivityCount;
+
+- (NSInteger)rk_networkActivityCount {
+    @synchronized(self) {
+        return rk_networkActivityCount;
+    }
+}
+
+- (void)rk_refreshActivityIndicator {
+    if(![NSThread isMainThread]) {
+        SEL sel_refresh = @selector(rk_refreshActivityIndicator);
+        [self performSelectorOnMainThread:sel_refresh withObject:nil waitUntilDone:NO];
+        return;
+    }
+    BOOL active = (self.rk_networkActivityCount > 0);
+    self.networkActivityIndicatorVisible = active;
+}
+
+- (void)rk_pushNetworkActivity {
+    @synchronized(self) {
+        rk_networkActivityCount++;
+    }
+    [self rk_refreshActivityIndicator];
+}
+
+- (void)rk_popNetworkActivity {
+    @synchronized(self) {
+        if (rk_networkActivityCount > 0) {
+            rk_networkActivityCount--;
+        } else {
+            rk_networkActivityCount = 0;
+            RKLogError(@"Unbalanced network activity: count already 0.");
+        }
+    }
+    [self rk_refreshActivityIndicator];
+}
+
+- (void)rk_resetNetworkActivity {
+    @synchronized(self) {
+        rk_networkActivityCount = 0;
+    }
+    [self rk_refreshActivityIndicator];
+}
+
+@end
+
+#endif
