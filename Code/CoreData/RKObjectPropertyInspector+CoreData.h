@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 RestKit. All rights reserved.
 //
 
-#import "RKObjectPropertyInspector.h"
+#import "../ObjectMapping/RKObjectPropertyInspector.h"
 
 @interface RKObjectPropertyInspector (CoreData)
 
