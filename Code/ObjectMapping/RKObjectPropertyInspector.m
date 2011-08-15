@@ -98,6 +98,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 
 - (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass {
     NSDictionary* dictionary = [self propertyNamesAndTypesForClass:objectClass];
+    NSLog(@"Looking up type for property %@ for class %@", propertyName, NSStringFromClass(objectClass));
     return [dictionary objectForKey:propertyName];
 }
 

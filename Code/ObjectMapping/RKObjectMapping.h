@@ -406,4 +406,13 @@ relationship. Relationships are processed using an object mapping as well.
  */
 - (id)mappableObjectForData:(id)mappableData;
 
+/**
+ Returns the class of the attribute or relationship property of the target objectClass
+ 
+ Given the name of a string property, this will return an NSString, etc.
+ 
+ @param propertyName The name of the property we would like to retrieve the type of
+ */
+- (Class)classForProperty:(NSString*)propertyName;
+
 @end

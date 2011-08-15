@@ -137,6 +137,8 @@
 		257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257FB70A1395DC44003A628E /* RKManagedObjectMappingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 257FB7081395DC44003A628E /* RKManagedObjectMappingOperation.m */; };
 		258E490113C51FE600C9C883 /* RKJSONParserJSONKitSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 258E490013C51FE600C9C883 /* RKJSONParserJSONKitSpec.m */; };
+		259050F413F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 259050F213F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		259050F513F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 259050F313F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m */; };
 		2590E67F125235C200531FA8 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E674125235C200531FA8 /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E680125235C200531FA8 /* NSObject+SBJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E675125235C200531FA8 /* NSObject+SBJSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2590E681125235C200531FA8 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 2590E676125235C200531FA8 /* NSObject+SBJSON.m */; };
@@ -539,6 +541,8 @@
 		257FB70C1395DEB5003A628E /* RKManagedObjectMappingOperationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationSpec.m; sourceTree = "<group>"; };
 		258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */ = {isa = PBXFileReference; lastKnownFileType = text; path = CopyHeadersToLegacyBuildDir.command; sourceTree = "<group>"; };
 		258E490013C51FE600C9C883 /* RKJSONParserJSONKitSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKJSONParserJSONKitSpec.m; sourceTree = "<group>"; };
+		259050F213F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKObjectPropertyInspector+CoreData.h"; sourceTree = "<group>"; };
+		259050F313F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKObjectPropertyInspector+CoreData.m"; sourceTree = "<group>"; };
 		2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserYAJL.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E66B1252353700531FA8 /* libRestKitJSONParserSBJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserSBJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2590E674125235C200531FA8 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
@@ -998,6 +1002,8 @@
 				257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */,
 				257FB7081395DC44003A628E /* RKManagedObjectMappingOperation.m */,
 				7377FBE11268E96300868752 /* RKManagedObjectCache.h */,
+				259050F213F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h */,
+				259050F313F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -1636,6 +1642,7 @@
 				257FB683139582C5003A628E /* NSManagedObject+ActiveRecord.h in Headers */,
 				25A1CA87137C521C00A7D5C9 /* RKManagedObjectThreadSafeInvocation.h in Headers */,
 				257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */,
+				259050F413F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2146,6 +2153,7 @@
 				257FB678139559A4003A628E /* RKManagedObjectMapping.m in Sources */,
 				257FB684139582C5003A628E /* NSManagedObject+ActiveRecord.m in Sources */,
 				257FB70A1395DC44003A628E /* RKManagedObjectMappingOperation.m in Sources */,
+				259050F513F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

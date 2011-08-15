@@ -66,4 +66,42 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
+- (void)itShouldLoadNestedHasManyRelationship {  
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    catMapping.primaryKeyAttribute = @"railsID";
+    [catMapping mapAttributes:@"name", nil];
+    
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    humanMapping.primaryKeyAttribute = @"railsID";
+    [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
+    [humanMapping hasMany:@"cats" withMapping:catMapping];
+    
+    NSArray* catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
+    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], @"cats", catsData, nil];
+    RKHuman* human = [RKHuman object];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+}
+
+- (void)itShouldLoadNestedHasManyRelationshipWithoutABackingClass {
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* cloudMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCloud"];
+    [cloudMapping mapAttributes:@"name", nil];
+    
+    RKManagedObjectMapping* stormMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKStorm"];
+    [stormMapping mapAttributes:@"name", @"favoriteCatID", nil];
+    [stormMapping hasMany:@"clouds" withMapping:cloudMapping];
+    
+    NSArray* cloudsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Nimbus" forKey:@"name"]];
+    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Hurricane", @"clouds", cloudsData, nil];
+    NSEntityDescription* entity = [NSEntityDescription entityForName:@"RKStorm" inManagedObjectContext:objectStore.managedObjectContext];
+    NSManagedObject* storm = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:objectStore.managedObjectContext];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:storm mapping:stormMapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+}
+
 @end
