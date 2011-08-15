@@ -426,6 +426,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 - (BOOL)performMapping:(NSError**)error {
     RKLogDebug(@"Starting mapping operation...");
+    RKLogTrace(@"Performing mapping operation: %@", self);
     
     [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];
