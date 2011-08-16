@@ -71,9 +71,6 @@
  * requests
  *
  * *Default*: NO
- *
- * @bug Currently, this implementation does not work across queues at the moment. Each queue
- * will manipulate the activity indicator independently of all others.
  */
 @property (nonatomic) BOOL showsNetworkActivityIndicatorWhenBusy;
 #endif
@@ -174,3 +171,22 @@
 - (void)requestQueue:(RKRequestQueue*)queue didFailRequest:(RKRequest*)request withError:(NSError*)error;
 
 @end
+
+/**
+ *  A category on UIApplication to allow for jointly managing of network activity indicator.
+ *  Adopted from 'iOS Recipes' book: http://pragprog.com/book/cdirec/ios-recipes
+ */
+
+#if TARGET_OS_IPHONE
+
+@interface UIApplication (RKNetworkActivity)
+
+@property (nonatomic, assign, readonly) NSInteger rk_networkActivityCount;
+
+- (void)rk_pushNetworkActivity;
+- (void)rk_popNetworkActivity;
+- (void)rk_resetNetworkActivity;
+
+@end
+
+#endif

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class NSEntityDescription;
 
 @interface RKObjectPropertyInspector : NSObject {
 	NSMutableDictionary* _cachedPropertyNamesAndTypes;

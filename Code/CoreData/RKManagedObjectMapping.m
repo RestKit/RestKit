@@ -10,6 +10,7 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
+#import "RKObjectPropertyInspector+CoreData.h"
 
 @implementation RKManagedObjectMapping
 
@@ -123,6 +124,15 @@
     }
     
     return object;
+}
+
+- (Class)classForProperty:(NSString*)propertyName {
+    Class propertyClass = [super classForProperty:propertyName];
+    if (! propertyClass) {
+        propertyClass = [[RKObjectPropertyInspector sharedInspector] typeForProperty:propertyName ofEntity:self.entity];
+    }
+    
+    return propertyClass;
 }
 
 @end

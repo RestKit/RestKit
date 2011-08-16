@@ -84,7 +84,26 @@
     [queue release];
 }
 
+- (void)itShouldInformTheDelegateOnTransitionFromProcessingToEmptyForQueuesWithASingleRequest {
+    OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+
+    NSString* url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", RKSpecGetBaseURL()];
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest * request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loader;
+
+    RKRequestQueue* queue = [RKRequestQueue new];
+    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    [[delegateMock expect] requestQueueDidFinishLoading:queue];
+    [queue addRequest:request];
+    [queue start];
+    [loader waitForResponse];
+    [delegateMock verify];
+}
+
 - (void)itShouldBeginSpinningTheNetworkActivityIfAsked {
+    [[UIApplication sharedApplication] rk_resetNetworkActivity];
     RKRequestQueue* queue = [RKRequestQueue new];
     queue.showsNetworkActivityIndicatorWhenBusy = YES;
     [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(NO)];
@@ -94,6 +113,7 @@
 }
 
 - (void)itShouldStopSpinningTheNetworkActivityIfAsked {
+    [[UIApplication sharedApplication] rk_resetNetworkActivity];
     RKRequestQueue* queue = [RKRequestQueue new];
     queue.showsNetworkActivityIndicatorWhenBusy = YES;
     [queue setValue:[NSNumber numberWithInt:1] forKey:@"loadingCount"];
@@ -101,6 +121,38 @@
     [queue setValue:[NSNumber numberWithInt:0] forKey:@"loadingCount"];
     [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(NO)];
     [queue release];
+}
+
+- (void)itShouldJointlyManageTheNetworkActivityIndicator {
+    [[UIApplication sharedApplication] rk_resetNetworkActivity];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    loader.timeout = 10;
+
+    RKRequestQueue *queue1 = [RKRequestQueue new];
+    queue1.showsNetworkActivityIndicatorWhenBusy = YES;
+    NSString* url1 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", RKSpecGetBaseURL()];
+    NSURL* URL1 = [NSURL URLWithString:url1];
+    RKRequest * request1 = [[RKRequest alloc] initWithURL:URL1];
+    request1.delegate = loader;
+
+    RKRequestQueue *queue2 = [RKRequestQueue new];
+    queue2.showsNetworkActivityIndicatorWhenBusy = YES;
+    NSString* url2 = [NSString stringWithFormat:@"%@/ok-with-delay/5.0", RKSpecGetBaseURL()];
+    NSURL* URL2 = [NSURL URLWithString:url2];
+    RKRequest * request2 = [[RKRequest alloc] initWithURL:URL2];
+    request2.delegate = loader;
+
+    [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(NO)];
+    [queue1 addRequest:request1];
+    [queue1 start];
+    [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(YES)];
+    [queue2 addRequest:request2];
+    [queue2 start];
+    [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(YES)];
+    [loader waitForResponse];
+    [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(YES)];
+    [loader waitForResponse];
+    [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(NO)];
 }
 
 @end

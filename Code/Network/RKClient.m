@@ -156,6 +156,8 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     self.baseURL = nil;
     self.username = nil;
     self.password = nil;

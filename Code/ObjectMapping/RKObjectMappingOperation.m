@@ -242,7 +242,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
     
     // Inspect the property type to handle any value transformations
-    Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:attributeMapping.destinationKeyPath ofClass:[self.destinationObject class]];
+    Class type = [self.objectMapping classForProperty:attributeMapping.destinationKeyPath];
+//    Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:attributeMapping.destinationKeyPath ofClass:[self.destinationObject class]];
     if (type && NO == [[value class] isSubclassOfClass:type]) {
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
     }
@@ -372,7 +373,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             }
             
             // Transform from NSSet <-> NSArray if necessary
-            Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:relationshipMapping.destinationKeyPath ofClass:[self.destinationObject class]];
+            Class type = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
+//            Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:relationshipMapping.destinationKeyPath ofClass:[self.destinationObject class]];
             if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
                 destinationObject = [self transformValue:destinationObject atKeyPath:relationshipMapping.sourceKeyPath toType:type];
             }
@@ -426,6 +428,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 - (BOOL)performMapping:(NSError**)error {
     RKLogDebug(@"Starting mapping operation...");
+    RKLogTrace(@"Performing mapping operation: %@", self);
     
     [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];
