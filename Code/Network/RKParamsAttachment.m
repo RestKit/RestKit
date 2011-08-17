@@ -42,8 +42,11 @@
 		NSMutableData* body = [NSMutableData data];
 		if ([value respondsToSelector:@selector(dataUsingEncoding:)]) {
 			[body appendData:[(NSString*)value dataUsingEncoding:NSUTF8StringEncoding]];
-		} else {
+			// Prevent (null) from being sent if the value is nil
+		} else if (value) {
 			[body appendData:[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding]];
+		} else {
+			[body appendData:[@"" dataUsingEncoding:NSUTF8StringEncoding]];
 		}
 		
 		_bodyStream    = [[NSInputStream alloc] initWithData:body];
