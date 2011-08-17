@@ -327,9 +327,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* RKTwitter */ = {
+		1D6058900D05DD3D006BFB54 /* RKTwitterCoreData */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitter" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitterCoreData" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -340,7 +340,7 @@
 			dependencies = (
 				3F3CE2E4125B93EB0083FDCB /* PBXTargetDependency */,
 			);
-			name = RKTwitter;
+			name = RKTwitterCoreData;
 			productName = RKTwitter;
 			productReference = 1D6058910D05DD3D006BFB54 /* RKTwitterCoreData.app */;
 			productType = "com.apple.product-type.application";
@@ -391,7 +391,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* RKTwitter */,
+				1D6058900D05DD3D006BFB54 /* RKTwitterCoreData */,
 				25F2A1751322D59400A33DE4 /* Generate Seed Database */,
 			);
 		};
@@ -663,7 +663,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitter" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitterCoreData" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,

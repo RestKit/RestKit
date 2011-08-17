@@ -599,4 +599,15 @@
     }
 }
 
+- (void)itShouldOptionallySkipSSLValidation {
+    RKClient* client = RKSpecNewClient();
+    client.disableCertificateValidation = YES;
+    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    [request send];
+    [loader waitForResponse];
+    assertThatBool([loader.response isOK], is(equalToBool(YES)));
+}
+
 @end
