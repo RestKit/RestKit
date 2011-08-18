@@ -118,6 +118,7 @@
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyRequeue;
     request.delegate = loader;
+    request.queue = queue;
     [request sendAsynchronously];
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
     [expectThat([request isLoading]) should:be(NO)];

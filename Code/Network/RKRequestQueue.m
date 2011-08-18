@@ -15,7 +15,8 @@
 #import "RKNotifications.h"
 #import "../Support/RKLog.h"
 
-static RKRequestQueue* gSharedQueue = nil;
+static RKRequestQueue* RKRequestQueueSharedQueue = nil;
+static NSMutableArray* RKRequestQueueInstances = nil;
 
 static const NSTimeInterval kFlushDelay = 0.3;
 
@@ -23,14 +24,16 @@ static const NSTimeInterval kFlushDelay = 0.3;
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetworkQueue
 
-@interface RKRequestQueue (Private)
+@interface RKRequestQueue ()
+@property (nonatomic, retain, readwrite) NSString* name;
 
 // Declare the loading count read-write
-@property (nonatomic, readwrite) NSUInteger loadingCount;
+@property (nonatomic, assign, readwrite) NSUInteger loadingCount;
 @end
 
 @implementation RKRequestQueue
 
+@synthesize name = _name;
 @synthesize delegate = _delegate;
 @synthesize concurrentRequestsLimit = _concurrentRequestsLimit;
 @synthesize requestTimeout = _requestTimeout;
@@ -42,22 +45,59 @@ static const NSTimeInterval kFlushDelay = 0.3;
 #endif
 
 + (RKRequestQueue*)sharedQueue {
-	if (!gSharedQueue) {
-		gSharedQueue = [[RKRequestQueue alloc] init];
-		gSharedQueue.suspended = NO;
-        RKLogDebug(@"Shared queue initialized: %@", gSharedQueue);
+	if (!RKRequestQueueSharedQueue) {
+		RKRequestQueueSharedQueue = [[RKRequestQueue alloc] init];
+		RKRequestQueueSharedQueue.suspended = NO;
+        RKLogDebug(@"Shared queue initialized: %@", RKRequestQueueSharedQueue);
 	}
-	return gSharedQueue;
+	return RKRequestQueueSharedQueue;
 }
 
 + (void)setSharedQueue:(RKRequestQueue*)requestQueue {
-	if (gSharedQueue != requestQueue) {
-        RKLogDebug(@"Shared queue instance changed from %@ to %@", gSharedQueue, requestQueue);
-		[gSharedQueue release];
-		gSharedQueue = [requestQueue retain];
+	if (RKRequestQueueSharedQueue != requestQueue) {
+        RKLogDebug(@"Shared queue instance changed from %@ to %@", RKRequestQueueSharedQueue, requestQueue);
+		[RKRequestQueueSharedQueue release];
+		RKRequestQueueSharedQueue = [requestQueue retain];
 	}
 }
 
++ (id)requestQueue {
+    return [[self new] autorelease];
+}
+
++ (id)requestQueueWithName:(NSString *)name {
+    if (RKRequestQueueInstances == nil) {
+        RKRequestQueueInstances = [NSMutableArray new];        
+    }
+    
+    // Find existing reference
+    for (NSValue* value in RKRequestQueueInstances) {
+        RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
+        if ([queue.name isEqualToString:name]) {
+            return queue;
+        }
+    }
+    
+    RKRequestQueue* queue = [self requestQueue];
+    queue.name = name;
+    [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
+    
+    return queue;
+}
+
++ (BOOL)requestQueueExistsWithName:(NSString*)name {
+    if (RKRequestQueueInstances) {
+        for (NSValue* value in RKRequestQueueInstances) {
+            RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
+            if ([queue.name isEqualToString:name]) {
+                return YES;
+            }
+        }
+    }
+    
+    return NO;
+}
+            
 - (id)init {
 	if ((self = [super init])) {
 		_requests = [[NSMutableArray alloc] init];
@@ -84,9 +124,23 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	return self;
 }
 
+- (void)removeFromNamedQueues {
+    if (self.name) {
+        for (NSValue* value in RKRequestQueueInstances) {
+            RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
+            if ([queue.name isEqualToString:self.name]) {
+                [RKRequestQueueInstances removeObject:value];
+                return;
+            }
+        }
+    }
+}
+
 - (void)dealloc {
     RKLogDebug(@"Queue instance is being deallocated: %@", self);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [self removeFromNamedQueues];
 
     [_queueTimer invalidate];
     [_requests release];
@@ -97,6 +151,12 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (NSUInteger)count {
     return [_requests count];
+}
+
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: %p name=%@ suspended=%@ requestCount=%d loadingCount=%d/%d>", 
+            NSStringFromClass([self class]), self, self.name, self.suspended ? @"YES" : @"NO", 
+            self.count, self.loadingCount, self.concurrentRequestsLimit];
 }
 
 - (void)setLoadingCount:(NSUInteger)count {
@@ -183,7 +243,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
             }
 
             self.loadingCount = self.loadingCount + 1;
-            [request sendAsynchronously];
+            [request sendAsynchronously];            
             RKLogDebug(@"Sent request %@ from queue %@. Loading count = %d of %d", request, self, self.loadingCount, _concurrentRequestsLimit);
 
             if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
@@ -235,6 +295,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
     @synchronized(self) {
         [_requests addObject:request];
+        request.queue = self;
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -254,6 +315,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         RKLogTrace(@"Removing request %@ from queue %@", request, self);
         @synchronized(self) {
             [_requests removeObject:request];
+            request.queue = nil;
         }
 
         [[NSNotificationCenter defaultCenter] removeObserver:self name:RKRequestDidLoadResponseNotification object:request];

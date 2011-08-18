@@ -137,7 +137,7 @@
 
     RKRequestQueue *queue2 = [RKRequestQueue new];
     queue2.showsNetworkActivityIndicatorWhenBusy = YES;
-    NSString* url2 = [NSString stringWithFormat:@"%@/ok-with-delay/5.0", RKSpecGetBaseURL()];
+    NSString* url2 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", RKSpecGetBaseURL()];
     NSURL* URL2 = [NSURL URLWithString:url2];
     RKRequest * request2 = [[RKRequest alloc] initWithURL:URL2];
     request2.delegate = loader;
@@ -153,6 +153,39 @@
     [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(YES)];
     [loader waitForResponse];
     [expectThat([UIApplication sharedApplication].networkActivityIndicatorVisible) should:be(NO)];
+}
+
+- (void)itShouldLetYouReturnAQueueByName {
+    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images"];
+    assertThat(queue, isNot(nilValue()));
+    assertThat(queue.name, is(equalTo(@"Images")));
+}
+
+- (void)itShouldReturnAnExistingQueueByName {
+    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images2"];
+    assertThat(queue, isNot(nilValue()));
+    RKRequestQueue* secondQueue = [RKRequestQueue requestQueueWithName:@"Images2"];
+    assertThat(queue, is(equalTo(secondQueue)));
+}
+
+- (void)itShouldReturnTheQueueWithoutAModifiedRetainCount {
+    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images3"];
+    assertThat(queue, isNot(nilValue()));
+    assertThatInt([queue retainCount], is(equalToInt(1)));
+}
+
+- (void)itShouldReturnYESWhenAQueueExistsWithAGivenName {
+    assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images4"], is(equalToBool(NO)));
+    [RKRequestQueue requestQueueWithName:@"Images4"];
+    assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images4"], is(equalToBool(YES)));
+}
+
+- (void)itShouldRemoveTheQueueFromTheNamedInstancesOnDealloc {
+    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images5"];
+    assertThat(queue, isNot(nilValue()));
+    assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images5"], is(equalToBool(YES)));
+    [queue release];
+    assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images5"], is(equalToBool(NO)));
 }
 
 @end

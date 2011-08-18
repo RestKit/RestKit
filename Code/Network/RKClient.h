@@ -12,6 +12,7 @@
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKReachabilityObserver.h"
 #import "RKRequestCache.h"
+#import "RKRequestQueue.h"
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -132,6 +133,10 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
+    
+    // Queue suspension flags
+    BOOL _previousQueueSuspensionState;
+    BOOL _awaitingReachabilityDetermination;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -139,22 +144,23 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 /////////////////////////////////////////////////////////////////////////
 
 /**
- * The base URL all resources are nested underneath
+ The base URL all resources are nested underneath. All requests created through
+ the client will be nested under this baseURL.
+ 
+ Changing the baseURL has side-effects for the client:
+    1) RKClient maintains a reachability reference to track reachability to the
+        remote base URL hostname or IP address. This reference is rebuilt upon
+        baseURL change and reachability will be indeterminate for a few moments.
+    2) The requestQueue reference associated with the client will be suspended until
+        reachability can be determined. This prevents requests dispatched immediately after
+        client initialization from failing to be sent.
  */
-@property(nonatomic, retain) NSString* baseURL;
+@property (nonatomic, retain) NSString* baseURL;
 
 /**
  * A dictionary of headers to be sent with each request
  */
-@property(nonatomic, readonly) NSMutableDictionary* HTTPHeaders;
-
-#ifdef RESTKIT_SSL_VALIDATION
-/**
- * A set of additional certificates to be used in evaluating server
- * SSL certificates.
- */
-@property(nonatomic, readonly) NSSet* additionalRootCertificates;
-#endif
+@property (nonatomic, readonly) NSMutableDictionary* HTTPHeaders;
 
 /**
  * Accept all SSL certificates. This is a potential security exposure,
@@ -162,7 +168,14 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  *
  * *Default*: _NO_
  */
-@property(nonatomic, assign) BOOL disableCertificateValidation;
+@property (nonatomic, assign) BOOL disableCertificateValidation;
+
+/**
+ The request queue to push asynchronous requests onto.
+ 
+ *Default*: [RKRequestQueue sharedQueue]
+ */
+@property (nonatomic, retain) RKRequestQueue* requestQueue;
 
 /**
  *  Will check for network connectivity to the host specified in the baseURL
@@ -182,7 +195,17 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 - (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
 
+/////////////////////////////////////////////////////////////////////////
+/// @name SSL Validation
+/////////////////////////////////////////////////////////////////////////
+
 #ifdef RESTKIT_SSL_VALIDATION
+/**
+ * A set of additional certificates to be used in evaluating server
+ * SSL certificates.
+ */
+@property(nonatomic, readonly) NSSet* additionalRootCertificates;
+
 /**
  * Adds an additional certificate that will be used to evaluate server SSL certs
  *
@@ -254,6 +277,10 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * *Default*: _NO_
  */
 @property(nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
+
+/////////////////////////////////////////////////////////////////////////
+/// @name Cacheing
+/////////////////////////////////////////////////////////////////////////
 
 /**
  An instance of the request cache used to store/load cacheable responses for requests

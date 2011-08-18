@@ -7,7 +7,6 @@
 //
 
 #import "RKRequest.h"
-#import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
@@ -29,6 +28,7 @@
             params = _params, userData = _userData, username = _username, password = _password, method = _method,
             forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache,
             cacheTimeoutInterval = _cacheTimeoutInterval;
+@synthesize queue = _queue;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -248,9 +248,15 @@
 	}
 }
 
+// TODO: We may want to eliminate the coupling between the request queue and individual queue instances.
+// We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
 - (void)send {
     NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
-	[[RKRequestQueue sharedQueue] addRequest:self];
+    if (self.queue) {
+        [self.queue addRequest:self];
+    } else {
+        [self sendAsynchronously];
+    }
 }
 
 - (void)fireAsynchronousRequest {
