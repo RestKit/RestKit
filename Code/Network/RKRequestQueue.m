@@ -65,6 +65,22 @@ static const NSTimeInterval kFlushDelay = 0.3;
     return [[self new] autorelease];
 }
 
++ (id)newRequestQueueWithName:(NSString*)name {
+    if (RKRequestQueueInstances == nil) {
+        RKRequestQueueInstances = [NSMutableArray new];        
+    }
+    
+    if ([self requestQueueExistsWithName:name]) {
+        return nil;
+    }
+    
+    RKRequestQueue* queue = [self new];
+    queue.name = name;
+    [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
+    
+    return queue;
+}
+
 + (id)requestQueueWithName:(NSString *)name {
     if (RKRequestQueueInstances == nil) {
         RKRequestQueueInstances = [NSMutableArray new];        

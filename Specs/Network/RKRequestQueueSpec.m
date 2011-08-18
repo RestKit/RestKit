@@ -188,4 +188,17 @@
     assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images5"], is(equalToBool(NO)));
 }
 
+- (void)itShouldReturnANewOwningReferenceViaNewRequestWithName {
+    RKRequestQueue* requestQueue = [RKRequestQueue newRequestQueueWithName:@"Images6"];
+    assertThat(requestQueue, isNot(nilValue()));
+    assertThatInt([requestQueue retainCount], is(equalToInt(1)));
+}
+
+- (void)itShouldReturnNilIfNewRequestQueueWithNameIsCalledForAnExistingName {
+    RKRequestQueue* queue = [RKRequestQueue newRequestQueueWithName:@"Images7"];
+    assertThat(queue, isNot(nilValue()));
+    RKRequestQueue* queue2 = [RKRequestQueue newRequestQueueWithName:@"Images7"];
+    assertThat(queue2, is(nilValue()));
+}
+
 @end

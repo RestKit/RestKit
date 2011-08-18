@@ -97,6 +97,12 @@
 + (id)requestQueue;
 
 /**
+ Returns a new retained request queue with the given name. If there is already
+ an existing queue with the given name, nil will be returned.
+ */
++ (id)newRequestQueueWithName:(NSString*)name;
+
+/**
  Returns queue with the specified name. If no queue is found with
  the name provided, a new queue will be initialized and returned.
  */
