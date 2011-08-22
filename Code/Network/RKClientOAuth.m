@@ -8,6 +8,8 @@
 
 #import "RKClientOAuth.h"
 
+
+
 @implementation RKClientOAuth
 @synthesize clientID = _clientID, clientSecret = _clientSecret, authorizationCode = _authorizationCode, authorizationURL = _authorizationURL, callbackURL = _callbackURL, oauth2Delegate = _oauth2Delegate;
 
@@ -49,16 +51,46 @@
 
 - (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response{
     NSError* error = nil;
-    id json = [response parsedBody:&error];
-    if ([json isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *tokens = (NSDictionary *) json;
-        if ((_accessToken = [tokens objectForKey:@"access_token"])) {
-            NSLog(@"A new access token has being acquired");
-            [_oauth2Delegate accessTokenAcquired];
-        }
-        else{
-            [_oauth2Delegate accessTokenAcquiredWithErrors];
-            NSLog(@"An error has being detected in the access token request %@", [response body]);
+    NSString* errorResponse = nil;
+    
+    //Use the parsedBody answer in NSDictionary
+    
+    NSDictionary* oauthResponse = (NSDictionary *) [response parsedBody:&error];
+    if ([oauthResponse isKindOfClass:[NSDictionary class]]) {
+        
+        //Check the if an access token comes in the response
+        
+        if ((_accessToken = [oauthResponse objectForKey:@"access_token"])) {
+           
+            // W00T We got an accessToken
+            
+            [_oauth2Delegate accessTokenAcquired:_accessToken];
+            }
+        
+        //Heads-up! There is an error in the response
+        //The possible errors are defined in the OAuth2 Protocol
+        else if((errorResponse = [oauthResponse objectForKey:@"error"] )){
+            
+            if([errorResponse isEqualToString:@"invalid_grant"]){
+                [_oauth2Delegate errInvalidGrant:[oauthResponse objectForKey:@"error_description"]];
+
+            }
+            else if([errorResponse isEqualToString:@"unauthorized_client"]){
+                [_oauth2Delegate errUnauthorizedClient:[oauthResponse objectForKey:@"error_description"]];
+
+            }
+            else if([errorResponse isEqualToString:@"invalid_client"]){
+                [_oauth2Delegate errInvalidClient:[oauthResponse objectForKey:@"error_description"]];
+            }
+            else if([errorResponse isEqualToString:@"invalid_request"]){
+                [_oauth2Delegate errInvalidRequest:[oauthResponse objectForKey:@"error_description"]];
+            }
+            else if([errorResponse isEqualToString:@"unsupported_grant_type"]){
+                [_oauth2Delegate errUnauthorizedClient:[oauthResponse objectForKey:@"error_description"]];
+            }
+            else if([errorResponse isEqualToString:@"invalid_scope"]){
+                [_oauth2Delegate errInvalidScope:[oauthResponse objectForKey:@"error_description"]];
+            }
 
         }
     }
@@ -67,8 +99,7 @@
 
 
 - (void)request:(RKRequest*)request didFailLoadWithError:(NSError*)error{
-    NSLog(@"An error has being detected in the access token request %@", [error debugDescription]);
-    [_oauth2Delegate accessTokenAcquiredWithErrors];
+    [_oauth2Delegate tokenRequestDidFailWithError:[error debugDescription]];
 }
 
 

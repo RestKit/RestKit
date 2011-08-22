@@ -61,12 +61,32 @@
 /**
  * Sent when a new access token has being acquired
  */
-- (void)accessTokenAcquired;
+- (void)accessTokenAcquired:(NSString *)token;
 
 /**
- * Sent when an access token request has failed due to an error
+ * Sent when an access token request has failed due an invalid authorization code
  */
-- (void)accessTokenAcquiredWithErrors;
+- (void)errInvalidGrant:(NSString *)description;
 
+@optional
+
+/**
+ * Other OAuth2 protocol exceptions for the authorization code flow
+ */
+
+- (void)errUnauthorizedClient:(NSString *)description;
+
+- (void)errInvalidClient:(NSString *)description;
+
+- (void)errInvalidRequest:(NSString *)description;
+
+- (void)errUnsupportedGrantType:(NSString *)description;
+
+- (void)errInvalidScope:(NSString *)description;
+
+/** The access_token request has ended with an error.
+ */
+
+- (void)tokenRequestDidFailWithError:(NSString *)description;
 
 @end

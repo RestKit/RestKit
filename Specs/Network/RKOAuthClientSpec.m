@@ -22,9 +22,20 @@
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
     [loader waitForResponse];
-    assertThat([client getAccessToken], is(equalTo(@"581b50dca15a9d41eb280d5cbd52c7da4fb564621247848171508dd9d0dfa551a2efe9d06e110e62335abf13b6446a5c49e4bf6007cd90518fbbb0d1535b4dbc")));
+    assertThatBool(loader.success, is(equalToBool(YES)));
 }
 
+- (void)itShouldNotGetAccessToken{
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKClientOAuth *client = RKSpecNewClientOAuth(loader);
+    client.authorizationCode = @"someInvalidAuthorizationCode";
+    client.callbackURL = @"http://someURL.com";
+    [client validateAuthorizationCode];
+    [loader waitForResponse];
+    
+    assertThatBool(loader.success, is(equalToBool(NO)));
+
+}
 - (void)itShouldGetProtectedResource{
     //TODO: Encapsulate this code in a correct manner
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];

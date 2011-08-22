@@ -27,7 +27,7 @@
 - (id)init {
     self = [super init];
 	if (self) {
-		_timeout = 3;
+		_timeout = 4;
 		_awaitingResponse = NO;
 	}
 	
@@ -106,14 +106,15 @@
     _unknownResponse = YES;
 }
 
-- (void)accessTokenAcquired{
+#pragma mark - OAuth delegates
+
+- (void)accessTokenAcquired:(NSString *)token{
     _awaitingResponse = NO;
     _success = YES;
-    
 }
 
 
-- (void)accessTokenAcquiredWithProblems{
+- (void)errInvalidGrant:(NSString *)description{
     _awaitingResponse = NO;
     _success = NO;
 }
