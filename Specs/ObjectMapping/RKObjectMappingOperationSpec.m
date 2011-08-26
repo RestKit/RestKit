@@ -16,6 +16,7 @@
 
 @property (nonatomic, retain) NSURL* url;
 @property (nonatomic, retain) NSString* boolString;
+@property (nonatomic, retain) NSNumber* boolNumber;
 
 @end
 
@@ -23,6 +24,7 @@
 
 @synthesize url = _url;
 @synthesize boolString = _boolString;
+@synthesize boolNumber = _boolNumber;
 
 - (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError {
     if ([(NSObject*)*ioValue isKindOfClass:[NSString class]] && [(NSString*)*ioValue isEqualToString:@"FAIL"]) {
@@ -74,6 +76,36 @@
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"true")));
+    [operation release];
+}
+
+- (void)itShouldSuccessfullyMapTrueBoolsToNSNumbers {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"boolNumber", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id data = [parser objectFromString:@"{\"boolNumber\":true}" error:nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThatInt([object.boolNumber intValue], is(equalToInt(1)));
+    [operation release];
+}
+
+- (void)itShouldSuccessfullyMapFalseBoolsToNSNumbers {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"boolNumber", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id data = [parser objectFromString:@"{\"boolNumber\":false}" error:nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThatInt([object.boolNumber intValue], is(equalToInt(0)));
     [operation release];
 }
 

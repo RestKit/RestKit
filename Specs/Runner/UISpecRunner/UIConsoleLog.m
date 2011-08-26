@@ -86,6 +86,7 @@
     if (self.exitOnFinish) {        
         int exitStatus = [errors count] > 0 ? EXIT_FAILURE : EXIT_SUCCESS;
         NSLog(@"Exiting with status code: %d", exitStatus);
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
         exit(exitStatus);
     }
 }
