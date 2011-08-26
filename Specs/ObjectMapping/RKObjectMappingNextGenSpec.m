@@ -919,6 +919,22 @@
     [expectThat(user.name) should:be(@"187")]; 
 }
 
+- (void)itShouldMapANumberToANSDecimalNumber {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* websiteMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"lucky_number" toKeyPath:@"weight"];
+    [mapping addAttributeMapping:websiteMapping];
+    
+    NSDictionary* dictionary = RKSpecParseFixture(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    NSDecimalNumber* weight = user.weight;
+    [expectThat([weight isKindOfClass:[NSDecimalNumber class]]) should:be(YES)];
+    [expectThat([weight compare:[NSDecimalNumber decimalNumberWithString:@"187"]]) should:be(NSOrderedSame)];
+}
+
 - (void)itShouldMapANumberToADate {
     NSDateFormatter* dateFormatter = [[NSDateFormatter new] autorelease];
     [dateFormatter setDateFormat:@"MM/dd/yyyy"];
