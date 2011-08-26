@@ -125,6 +125,8 @@
 		256FD651112C7B780077F340 /* RKMappableObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FD64F112C7B780077F340 /* RKMappableObject.m */; };
 		256FD652112C7B780077F340 /* RKMappableAssociation.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FD650112C7B780077F340 /* RKMappableAssociation.m */; };
 		256FDE55112DB0B90077F340 /* RKObjectMapperSpecModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */; };
+		25769F0C1409C5A0003FCDBC /* RKChild.m in Sources */ = {isa = PBXBuildFile; fileRef = 25769F091409C5A0003FCDBC /* RKChild.m */; };
+		25769F0D1409C5A0003FCDBC /* RKParent.m in Sources */ = {isa = PBXBuildFile; fileRef = 25769F0B1409C5A0003FCDBC /* RKParent.m */; };
 		257D2D7013759D70008E9649 /* RKObjectMappingResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 257D2D6E13759D6F008E9649 /* RKObjectMappingResult.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257D2D7113759D70008E9649 /* RKObjectMappingResult.m in Sources */ = {isa = PBXBuildFile; fileRef = 257D2D6F13759D6F008E9649 /* RKObjectMappingResult.m */; };
 		257FB677139559A4003A628E /* RKManagedObjectMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB675139559A4003A628E /* RKManagedObjectMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -529,6 +531,10 @@
 		256FD650112C7B780077F340 /* RKMappableAssociation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappableAssociation.m; sourceTree = "<group>"; };
 		256FDE53112DB0B90077F340 /* RKObjectMapperSpecModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapperSpecModel.h; sourceTree = "<group>"; };
 		256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMapperSpecModel.m; sourceTree = "<group>"; };
+		25769F081409C5A0003FCDBC /* RKChild.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKChild.h; sourceTree = "<group>"; };
+		25769F091409C5A0003FCDBC /* RKChild.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKChild.m; sourceTree = "<group>"; };
+		25769F0A1409C5A0003FCDBC /* RKParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKParent.h; sourceTree = "<group>"; };
+		25769F0B1409C5A0003FCDBC /* RKParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKParent.m; sourceTree = "<group>"; };
 		257D2D6E13759D6F008E9649 /* RKObjectMappingResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingResult.h; sourceTree = "<group>"; };
 		257D2D6F13759D6F008E9649 /* RKObjectMappingResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingResult.m; sourceTree = "<group>"; };
 		257FB675139559A4003A628E /* RKManagedObjectMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectMapping.h; sourceTree = "<group>"; };
@@ -1176,6 +1182,10 @@
 		255DE05B10FFA04200A85891 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				25769F081409C5A0003FCDBC /* RKChild.h */,
+				25769F091409C5A0003FCDBC /* RKChild.m */,
+				25769F0A1409C5A0003FCDBC /* RKParent.h */,
+				25769F0B1409C5A0003FCDBC /* RKParent.m */,
 				256FD64C112C7AF50077F340 /* RKMappableObject.h */,
 				256FD64F112C7B780077F340 /* RKMappableObject.m */,
 				256FD64D112C7AF50077F340 /* RKMappableAssociation.h */,
@@ -2256,6 +2266,8 @@
 				258E490113C51FE600C9C883 /* RKJSONParserJSONKitSpec.m in Sources */,
 				252CF8B613E254C60093BBD6 /* RKObjectDynamicMappingSpec.m in Sources */,
 				252CF8C013E25FE00093BBD6 /* RKDynamicMappingModels.m in Sources */,
+				25769F0C1409C5A0003FCDBC /* RKChild.m in Sources */,
+				25769F0D1409C5A0003FCDBC /* RKParent.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

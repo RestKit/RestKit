@@ -395,6 +395,26 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
                 destinationObject = [self transformValue:destinationObject atKeyPath:relationshipMapping.sourceKeyPath toType:type];
             }
+
+            // If the relationship has changed, set it
+            if ([self shouldSetValue:destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+                Class managedObjectClass = NSClassFromString(@"NSManagedObject");
+                if (managedObjectClass && [self.destinationObject isKindOfClass:managedObjectClass]) {
+                    RKLogTrace(@"Found a managedObject collection. About to apply value via mutable[Set|Array]ValueForKey");
+                    if ([destinationObject isKindOfClass:[NSSet class]]) {
+                        RKLogTrace(@"Mapped NSSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
+                        NSMutableSet* destinationSet = [self.destinationObject mutableSetValueForKey:relationshipMapping.destinationKeyPath];
+                        [destinationSet setSet:destinationObject];
+                    } else if ([destinationObject isKindOfClass:[NSArray class]]) {
+                        RKLogTrace(@"Mapped NSArray relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
+                        NSMutableArray* destinationArray = [self.destinationObject mutableArrayValueForKey:relationshipMapping.destinationKeyPath];
+                        [destinationArray setArray:destinationObject];
+                    }
+                } else {
+                    RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
+                    [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
+                }
+            }
         } else {
             // One to one relationship
             RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);            

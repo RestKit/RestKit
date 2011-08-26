@@ -11,6 +11,8 @@
 #import "RKManagedObjectMappingOperation.h"
 #import "RKCat.h"
 #import "RKHuman.h"
+#import "RKChild.h"
+#import "RKParent.h"
 
 @interface RKManagedObjectMappingOperationSpec : RKSpec {
     
@@ -102,6 +104,34 @@
     NSError* error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
+}
+
+- (void)itShouldConnectManyToManyRelationships {
+    RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class]];
+    childMapping.primaryKeyAttribute = @"railsID";
+    [childMapping mapAttributes:@"name", nil];
+
+    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class]];
+    parentMapping.primaryKeyAttribute = @"railsID";
+    [parentMapping mapAttributes:@"name", @"age", nil];
+    [parentMapping hasMany:@"children" withMapping:childMapping];
+
+    NSArray* childMappableData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithKeysAndObjects:@"name", @"Maya", nil],
+                                  [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Brady", nil], nil];
+    NSDictionary* parentMappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Win",
+                                        @"age", [NSNumber numberWithInt:34],
+                                        @"children", childMappableData, nil];
+    RKParent* parent = [RKParent object];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:parentMappableData destinationObject:parent mapping:parentMapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(parent.children, isNot(nilValue()));
+    assertThatInt([parent.children count], is(equalToInt(2)));
+    assertThat([[parent.children anyObject] parents], isNot(nilValue()));
+    assertThatBool([[[parent.children anyObject] parents] containsObject:parent], is(equalToBool(YES)));
+    assertThatInt([[[parent.children anyObject] parents] count], is(equalToInt(1)));
 }
 
 @end
