@@ -93,6 +93,17 @@
     return nil;
 }
 
+- (NSString *)formattedStringFromDate:(NSDate*)date {
+    RKLogTrace(@"Transforming date value '%@' to NSString...", date);
+    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
+    formatter.timeZone = [NSTimeZone localTimeZone];
+    NSString *formatString = [_mapping.dateFormatStrings objectAtIndex:0];
+    [formatter setDateFormat:formatString];
+    NSString *dateString = [formatter stringFromDate:date];
+	[formatter release];
+	return dateString;
+}
+
 #pragma mark - RKObjectMappingOperationDelegate
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
@@ -100,7 +111,11 @@
     
     if ([value isKindOfClass:[NSDate class]]) {
         // Date's are not natively serializable, must be encoded as a string
-        transformedValue = [value description];
+        if(_mapping.dateFormatStrings && [_mapping.dateFormatStrings count] == 0) {
+            transformedValue = [value description];
+        } else {
+            transformedValue = [self formattedStringFromDate:value];
+        }
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
         transformedValue = [(NSDecimalNumber*)value stringValue];        
