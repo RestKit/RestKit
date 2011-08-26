@@ -1097,6 +1097,28 @@
     [expectThat(user.address) shouldNot:be(nil)];
 }
 
+- (void)itShouldMapANestedObjectToCollection {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    RKObjectAttributeMapping* cityMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"city" toKeyPath:@"city"];
+    [addressMapping addAttributeMapping:cityMapping];
+    
+    RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"friends" withMapping:addressMapping];
+    [userMapping addRelationshipMapping:hasOneMapping];
+    
+    RKObjectMapper* mapper = [RKObjectMapper new];
+    id userInfo = RKSpecParseFixture(@"user.json");
+    RKExampleUser* user = [RKExampleUser user];
+    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    [mapper release];
+    [expectThat(success) should:be(YES)];
+    [expectThat(user.name) should:be(@"Blake Watters")];
+    [expectThat(user.friends) shouldNot:be(nil)];
+    [expectThat([user.friends count]) should:be(1)];
+}
+
 - (void)itShouldMapANestedObjectCollection {
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];

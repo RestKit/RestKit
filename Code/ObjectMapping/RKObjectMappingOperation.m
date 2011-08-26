@@ -345,8 +345,23 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             
             continue;
         }
-                
-        if ([self isValueACollection:value]) {
+        
+        // Handle case where incoming content is a single object, but we want a collection
+        Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
+        BOOL mappingToCollection = (relationshipType && 
+                                    ([relationshipType isSubclassOfClass:[NSSet class]] || [relationshipType isSubclassOfClass:[NSArray class]]));
+        if (mappingToCollection && ![self isValueACollection:value]) {
+            RKLogDebug(@"Asked to map a single object into a collection relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipType));
+            if ([relationshipType isSubclassOfClass:[NSArray class]]) {
+                value = [relationshipType arrayWithObject:value];
+            } else if ([relationshipType isSubclassOfClass:[NSSet class]]) {
+                value = [relationshipType setWithObject:value];
+            } else {
+                RKLogWarning(@"Failed to transform single object");
+            }
+        }
+        
+        if ([self isValueACollection:value]) {        
             // One to many relationship
             RKLogDebug(@"Mapping one to many relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
             appliedMappings = YES;
@@ -374,7 +389,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             
             // Transform from NSSet <-> NSArray if necessary
             Class type = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
-//            Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:relationshipMapping.destinationKeyPath ofClass:[self.destinationObject class]];
             if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
                 destinationObject = [self transformValue:destinationObject atKeyPath:relationshipMapping.sourceKeyPath toType:type];
             }
