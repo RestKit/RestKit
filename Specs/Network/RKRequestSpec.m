@@ -118,6 +118,7 @@
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyRequeue;
     request.delegate = loader;
+    request.queue = queue;
     [request sendAsynchronously];
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
     [expectThat([request isLoading]) should:be(NO)];
@@ -597,6 +598,17 @@
     @finally {
         assertThat(exception, is(notNilValue()));
     }
+}
+
+- (void)itShouldOptionallySkipSSLValidation {
+    RKClient* client = RKSpecNewClient();
+    client.disableCertificateValidation = YES;
+    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    [request send];
+    [loader waitForResponse];
+    assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
 
 @end

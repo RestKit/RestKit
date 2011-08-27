@@ -28,7 +28,7 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
     }
 }
 
-RKClient* RKSpecNewClient(void) {
+RKClient* RKSpecNewClient(void) {    
     RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
     [RKClient setSharedClient:client];    
     [client release];

@@ -69,7 +69,7 @@ typedef enum RKRequestBackgroundPolicy {
 } RKRequestBackgroundPolicy;
 #endif
 
-@class RKResponse;
+@class RKResponse, RKRequestQueue;
 @protocol RKRequestDelegate;
 
 @interface RKRequest : NSObject {
@@ -169,6 +169,15 @@ typedef enum RKRequestBackgroundPolicy {
  * The HTTP method as a string used for this request
  */
 @property(nonatomic, readonly) NSString* HTTPMethod;
+
+/**
+ The request queue that this request belongs to
+ */
+@property (nonatomic, assign) RKRequestQueue* queue;
+
+/////////////////////////////////////////////////////////////////////////
+/// @name Cacheing
+/////////////////////////////////////////////////////////////////////////
 
 @property (nonatomic, readonly) NSString* cacheKey;
 

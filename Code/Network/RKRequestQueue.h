@@ -27,6 +27,12 @@
 }
 
 /**
+ A symbolic name for the queue. Used to return existing queue references
+ via [RKRequestQueue queueWithName:]
+ */
+@property (nonatomic, retain, readonly) NSString* name;
+
+/**
  * The delegate to inform when the request queue state machine changes
  *
  * If the object implements the RKRequestQueueDelegate protocol,
@@ -84,6 +90,28 @@
  * Set the global queue
  */
 + (void)setSharedQueue:(RKRequestQueue*)requestQueue;
+
+/**
+ Returns a new auto-released request queue
+ */
++ (id)requestQueue;
+
+/**
+ Returns a new retained request queue with the given name. If there is already
+ an existing queue with the given name, nil will be returned.
+ */
++ (id)newRequestQueueWithName:(NSString*)name;
+
+/**
+ Returns queue with the specified name. If no queue is found with
+ the name provided, a new queue will be initialized and returned.
+ */
++ (id)requestQueueWithName:(NSString*)name;
+
+/**
+ Returns YES when there is a queue with the given name
+ */
++ (BOOL)requestQueueExistsWithName:(NSString*)name;
 
 /**
  * Add an asynchronous request to the queue and send it as
