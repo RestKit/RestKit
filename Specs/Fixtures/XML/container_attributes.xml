@@ -1,0 +1,8 @@
+<elements>
+    <element attribute="1">
+        <subelement>text</subelement>
+    </element>
+    <element attribute="2">
+        <subelement>text2</subelement>
+    </element>
+</elements>

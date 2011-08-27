@@ -247,6 +247,8 @@
 		25A1CB52138419D900A7D5C9 /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */; };
 		25AA85D613B1065000A95E2A /* RKObjectLoaderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25D1983F1368A9CE0090B617 /* RKObjectLoaderSpec.m */; };
 		25ACF1AD13BB9D490067B380 /* RKURLSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25ACF1AC13BB9D480067B380 /* RKURLSpec.m */; };
+		25B72A5813FBEDEE009A340D /* container_attributes.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25B72A5713FBEDEE009A340D /* container_attributes.xml */; };
+		25B72A5A13FBF13B009A340D /* attributes_without_text_content.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25B72A5913FBF13B009A340D /* attributes_without_text_content.xml */; };
 		25BA443513ABB34900ADC7D0 /* tab_data.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25915ACF13A2E82200EA63B0 /* tab_data.xml */; };
 		25C66B0113A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 25C66AF913A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25C66B0213A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C66AFA13A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.m */; };
@@ -661,6 +663,8 @@
 		25A1CB49138413DF00A7D5C9 /* RKMIMETypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMIMETypes.h; sourceTree = "<group>"; };
 		25A1CB4A138413E000A7D5C9 /* RKMIMETypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMIMETypes.m; sourceTree = "<group>"; };
 		25ACF1AC13BB9D480067B380 /* RKURLSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURLSpec.m; sourceTree = "<group>"; };
+		25B72A5713FBEDEE009A340D /* container_attributes.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = container_attributes.xml; sourceTree = "<group>"; };
+		25B72A5913FBF13B009A340D /* attributes_without_text_content.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = attributes_without_text_content.xml; sourceTree = "<group>"; };
 		25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitXMLParserLibxml.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C66AF913A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKFilterableObjectLoaderTTModel.h; sourceTree = "<group>"; };
 		25C66AFA13A43A4900FEA8CB /* RKFilterableObjectLoaderTTModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFilterableObjectLoaderTTModel.m; sourceTree = "<group>"; };
@@ -1329,6 +1333,8 @@
 			isa = PBXGroup;
 			children = (
 				25915ACF13A2E82200EA63B0 /* tab_data.xml */,
+				25B72A5713FBEDEE009A340D /* container_attributes.xml */,
+				25B72A5913FBF13B009A340D /* attributes_without_text_content.xml */,
 			);
 			path = XML;
 			sourceTree = "<group>";
@@ -1994,6 +2000,8 @@
 				252CF8BB13E255E20093BBD6 /* girl.json in Resources */,
 				252CF8BD13E255EB0093BBD6 /* mixed.json in Resources */,
 				250F060C13E3B2F900FAAFBF /* friends.json in Resources */,
+				25B72A5813FBEDEE009A340D /* container_attributes.xml in Resources */,
+				25B72A5A13FBF13B009A340D /* attributes_without_text_content.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

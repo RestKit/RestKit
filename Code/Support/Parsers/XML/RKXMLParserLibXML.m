@@ -2,7 +2,7 @@
 //  RKXMLParserLibXML.m
 //
 //  Created by Jeremy Ellison on 2011-02-28.
-//  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2011 RestKit. All rights reserved.
 //
 
 #import <libxml2/libxml/parser.h>
@@ -22,7 +22,14 @@
             if ([val isKindOfClass:[NSString class]]) {
                 id oldVal = [attrs valueForKey:nodeName];
                 if (nil == oldVal) {
-                    [attrs setValue:val forKey:nodeName];
+                    // Assume that empty strings are irrelevant and go for an attribute-collection instead
+                    if ([val length] == 0) {
+                        val = [NSMutableDictionary dictionary];
+                        NSDictionary* elem = [NSDictionary dictionaryWithObject:val forKey:nodeName];
+                        [nodes addObject:elem];
+                    } else {
+                        [attrs setValue:val forKey:nodeName];
+                    }
                 } else if ([oldVal isKindOfClass:[NSMutableArray class]]) {
                     [oldVal addObject:val];
                 } else {
@@ -35,19 +42,24 @@
                     [nodes addObject:attrs];
                 }
             } else {
-                xmlElement* element = (xmlElement*)currentNode;
-                xmlAttribute* currentAttribute = NULL;
-                for (currentAttribute = (xmlAttribute*)element->attributes; currentAttribute; currentAttribute = (xmlAttribute*)currentAttribute->next) {
-                    NSString* name = [NSString stringWithCString:(char*)currentAttribute->name encoding:NSUTF8StringEncoding];
-                    xmlChar* str = xmlNodeGetContent((xmlNode*)currentAttribute);
-                    NSString* valattr = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
-                    xmlFree(str);
-                    [val setValue:valattr forKey:name];
-                }
-                
-                NSMutableDictionary* elem = [NSMutableDictionary dictionaryWithObject:val forKey:nodeName];
-                
+                NSDictionary* elem = [NSDictionary dictionaryWithObject:val forKey:nodeName];
                 [nodes addObject:elem];
+            }
+            xmlElement* element = (xmlElement*)currentNode;
+            xmlAttribute* currentAttribute = NULL;
+            for (currentAttribute = (xmlAttribute*)element->attributes; currentAttribute; currentAttribute = (xmlAttribute*)currentAttribute->next) {
+                NSString* name = [NSString stringWithCString:(char*)currentAttribute->name encoding:NSUTF8StringEncoding];
+                xmlChar* str = xmlNodeGetContent((xmlNode*)currentAttribute);
+                NSString* value = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
+                xmlFree(str);
+                [attrs setValue:value forKey:name];
+                if ([val isKindOfClass:[NSDictionary class]]) {
+                    // Add attributes as properties of the class
+                    [val setObject:value forKey:name];
+                } else if (![nodes containsObject:attrs]) {
+                    // Only add attributes to nodes if there actually is one.
+                    [nodes addObject:attrs];
+                }
             }
         } else if (currentNode->type == XML_TEXT_NODE) {
             xmlChar* str = xmlNodeGetContent(currentNode);
@@ -64,7 +76,6 @@
     if ([nodes count] == 0) {
         return @"";
     }
-    
     if (YES || [nodes containsObject:attrs]) {
         // We have both attributes and children. merge everything together.
         NSMutableDictionary* results = [NSMutableDictionary dictionary];
@@ -91,7 +102,7 @@
     xmlParserCtxtPtr ctxt; /* the parser context */
     xmlDocPtr doc; /* the resulting document tree */
     id result = nil;;
-
+    
     /* create a parser context */
     ctxt = xmlNewParserCtxt();
     if (ctxt == NULL) {

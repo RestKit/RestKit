@@ -1,0 +1,5 @@
+<exchange_rate type="XML_RATE_TYPE_EBNK_MIDDLE" valid_from="2011-08-03 00:00:00.0">
+    <currency name="AUD" quota="1" rate="18.416"/>
+    <currency name="HRK" quota="1" rate="3.25017"/>
+    <currency name="DKK" quota="1" rate="3.251"/>
+</exchange_rate>

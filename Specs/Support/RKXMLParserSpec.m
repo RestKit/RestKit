@@ -65,7 +65,6 @@
     [mapping mapAttributes:@"title", @"summary", nil];
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider alloc] init];
     id data = RKSpecParseFixture(@"tab_data.xml");
-    NSLog(@"%@", data);
     assertThat([data valueForKeyPath:@"tabdata.item"], is(instanceOf([NSArray class])));
     [provider setMapping:mapping forKeyPath:@"tabdata.item"];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:data mappingProvider:provider];
@@ -73,6 +72,52 @@
     assertThatInt([[result asCollection] count], is(equalToInt(2)));
     assertThatInt([[data valueForKeyPath:@"tabdata.title"] count], is(equalToInt(2)));
     assertThatInt([[data valueForKeyPath:@"tabdata.item"] count], is(equalToInt(2)));
+}
+
+- (void)itShouldParseXMLWithAttributes {
+    NSString* XML = RKSpecReadFixture(@"container_attributes.xml");
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSDictionary* result = [parser parseXML:XML];
+    assertThat(result, is(instanceOf([NSDictionary class])));
+    NSArray* elements = [[result objectForKey:@"elements"] objectForKey:@"element"];
+    assertThat(elements, isNot(nilValue()));
+    assertThat(elements, is(instanceOf([NSArray class])));
+    assertThat(elements, hasCountOf(2));
+    NSDictionary* firstElement = [elements objectAtIndex:0];
+    assertThat([firstElement objectForKey:@"attribute"], is(equalTo(@"1")));
+    assertThat([firstElement objectForKey:@"subelement"], is(equalTo(@"text")));
+    NSDictionary* secondElement = [elements objectAtIndex:1];
+    assertThat([secondElement objectForKey:@"attribute"], is(equalTo(@"2")));
+    assertThat([secondElement objectForKey:@"subelement"], is(equalTo(@"text2")));
+}
+
+- (void)itShouldParseXMLWithAttributesInTextNodes {
+    NSString* XML = RKSpecReadFixture(@"attributes_without_text_content.xml");
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSDictionary* result = [parser parseXML:XML];
+    NSDictionary* exchangeRate = [result objectForKey:@"exchange_rate"];
+    assertThat(exchangeRate, is(notNilValue()));
+    assertThat([exchangeRate objectForKey:@"type"], is(equalTo(@"XML_RATE_TYPE_EBNK_MIDDLE")));
+    assertThat([exchangeRate objectForKey:@"valid_from"], is(equalTo(@"2011-08-03 00:00:00.0")));    
+    NSArray* currency = [exchangeRate objectForKey:@"currency"];
+    assertThat(currency, hasCountOf(3));
+    NSDictionary* firstCurrency = [currency objectAtIndex:0];
+    assertThat(firstCurrency, is(instanceOf([NSDictionary class])));
+    assertThat([firstCurrency objectForKey:@"name"], is(equalTo(@"AUD")));
+    assertThat([firstCurrency objectForKey:@"quota"], is(equalTo(@"1")));
+    assertThat([firstCurrency objectForKey:@"rate"], is(equalTo(@"18.416")));
+    
+    NSDictionary* secondCurrency = [currency objectAtIndex:1];
+    assertThat(secondCurrency, is(instanceOf([NSDictionary class])));
+    assertThat([secondCurrency objectForKey:@"name"], is(equalTo(@"HRK")));
+    assertThat([secondCurrency objectForKey:@"quota"], is(equalTo(@"1")));
+    assertThat([secondCurrency objectForKey:@"rate"], is(equalTo(@"3.25017")));
+    
+    NSDictionary* thirdCurrency = [currency objectAtIndex:2];
+    assertThat(thirdCurrency, is(instanceOf([NSDictionary class])));
+    assertThat([thirdCurrency objectForKey:@"name"], is(equalTo(@"DKK")));
+    assertThat([thirdCurrency objectForKey:@"quota"], is(equalTo(@"1")));
+    assertThat([thirdCurrency objectForKey:@"rate"], is(equalTo(@"3.251")));
 }
 
 @end
