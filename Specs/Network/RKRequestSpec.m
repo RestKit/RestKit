@@ -611,4 +611,29 @@
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
 
+- (void)itShouldNotAddANonZeroContentLengthHeaderIfParamsIsSetAndThisIsAGETRequest {
+    RKClient* client = RKSpecNewClient();
+    client.disableCertificateValidation = YES;
+    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    request.params = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
+    [request send];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+- (void)itShouldNotAddANonZeroContentLengthHeaderIfParamsIsSetAndThisIsAHEADRequest {
+    RKClient* client = RKSpecNewClient();
+    client.disableCertificateValidation = YES;
+    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    request.method = RKRequestMethodHEAD;
+    request.params = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
+    [request send];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
 @end

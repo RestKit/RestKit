@@ -133,8 +133,11 @@
     [super dealloc];
 }
 
+- (BOOL)shouldSendParams {
+    return (_params && (_method != RKRequestMethodGET && _method != RKRequestMethodHEAD));
+}
 - (void)setRequestBody {
-	if (_params && (_method != RKRequestMethodGET && _method != RKRequestMethodHEAD)) {
+	if ([self shouldSendParams]) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
             // NOTE: This causes the stream to be retained. For RKParams, this will
@@ -168,7 +171,7 @@
 		[_URLRequest setValue:[_additionalHTTPHeaders valueForKey:header] forHTTPHeaderField:header];
 	}
 
-	if (_params != nil) {
+	if ([self shouldSendParams]) {
 		// Temporarily support older RKRequestSerializable implementations
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentType)]) {
 			[_URLRequest setValue:[_params HTTPHeaderValueForContentType] forHTTPHeaderField:@"Content-Type"];
