@@ -76,6 +76,11 @@ class RestKit::SpecServer < Sinatra::Base
     params.to_json
   end
   
+  post '/204' do
+    content_type 'application/json'
+    ""
+  end
+  
   get '/404' do
     status 404
     content_type 'text/html'
