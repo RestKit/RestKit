@@ -109,6 +109,21 @@
     [operation release];
 }
 
+- (void)itShouldSuccessfullyMapNumbersToStrings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapKeyPath:@"number" toAttribute:@"boolString"];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id data = [parser objectFromString:@"{\"number\":123}" error:nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.boolString, is(equalTo(@"123")));
+    [operation release];
+}
+
 - (void)itShouldFailTheMappingOperationIfKeyValueValidationSetsAnError {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolString", nil];

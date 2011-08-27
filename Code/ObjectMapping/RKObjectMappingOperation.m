@@ -150,17 +150,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         if ([destinationType isSubclassOfClass:[NSSet class]]) {
             return [NSSet setWithArray:value];
         }
-    } else if ([sourceType isSubclassOfClass:[NSNumber class]]) {
-        if ([destinationType isSubclassOfClass:[NSDate class]]) {
-            // Number -> Date
-            return [NSDate dateWithTimeIntervalSince1970:[(NSNumber*)value intValue]];
-        } else if (([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] || [sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")]) && [destinationType isSubclassOfClass:[NSString class]]) {
-            // Boolean -> String
-            return ([value boolValue] ? @"true" : @"false");
-        } else if ([destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
-            // Number -> Decimal Number
-            return [NSDecimalNumber decimalNumberWithDecimal:[value decimalValue]];
-        }
+    } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDate class]]) {
+        // Number -> Date
+        return [NSDate dateWithTimeIntervalSince1970:[(NSNumber*)value intValue]];
+    } else if ([sourceType isSubclassOfClass:[NSNumber class]] && [destinationType isSubclassOfClass:[NSDecimalNumber class]]) {
+        // Number -> Decimal Number
+        return [NSDecimalNumber decimalNumberWithDecimal:[value decimalValue]];
+    } else if ( ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] ||
+                 [sourceType isSubclassOfClass:NSClassFromString(@"NSCFBoolean")] ) &&
+               [destinationType isSubclassOfClass:[NSString class]]) {
+        return ([value boolValue] ? @"true" : @"false");
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
         return [value stringValue];
     }
