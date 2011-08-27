@@ -84,6 +84,8 @@
     [_URLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
     [_connection release];
     _connection = nil;
+    [_params release];
+    _params = nil;
     _isLoading = NO;
     _isLoaded = NO;
 }
