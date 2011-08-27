@@ -35,6 +35,7 @@ relationship. Relationships are processed using an object mapping as well.
     Class _objectClass;
     NSMutableArray* _mappings;
     NSMutableArray* _dateFormatStrings;
+    NSTimeZone* _timeZone;
     NSString* _rootKeyPath;
     BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
@@ -127,6 +128,12 @@ relationship. Relationships are processed using an object mapping as well.
  until the date formatter does not return nil.
  */
 @property (nonatomic, retain) NSMutableArray* dateFormatStrings;
+
+/**
+ The timeZone to be used for dateMappings when a time zone is not included
+ in the date format string. Defaults to [NSTimeZone localTimeZone];
+ */
+@property (nonatomic, retain) NSTimeZone* timeZone;
 
 /**
  Returns an object mapping for the specified class that is ready for configuration
