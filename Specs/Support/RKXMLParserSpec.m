@@ -120,4 +120,19 @@
     assertThat([thirdCurrency objectForKey:@"rate"], is(equalTo(@"3.251")));
 }
 
+- (void)itShouldNotCrashWhileParsingOrdersXML {
+    NSString *XML = RKSpecReadFixture(@"orders.xml");
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSException *exception = nil;
+    @try {
+        [parser parseXML:XML];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(nilValue()));
+    }
+}
+
 @end
