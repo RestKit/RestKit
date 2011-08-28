@@ -52,9 +52,25 @@
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader*)objectLoader;
 
 /**
- Sent when an object loader encounters a response status code it does not know how to handle.
- 2xx, 4xx, and 5xx responses are all handled appropriately. This should only occur when the remote
- service sends back a really odd-ball response.
+ Sent when an object loader encounters a response status code or MIME Type that RestKit does not know how to handle.
+ 
+ Response codes in the 2xx, 4xx, and 5xx range are all handled as you would expect. 2xx (successful) response codes
+ are considered a successful content load and object mapping will be attempted. 4xx and 5xx are interpretted as
+ errors and RestKit will attempt to object map an error out of the payload (provided the MIME Type is mappable)
+ and will invoke objectLoader:didFailWithError: after constructing an NSError. Any other status code is considered
+ unexpected and will cause objectLoaderDidLoadUnexpectedResponse: to be invoked provided that you have provided 
+ an implementation in your delegate class.
+ 
+ RestKit will also invoke objectLoaderDidLoadUnexpectedResponse: in the event that content is loaded, but there
+ is not a parser registered to handle the MIME Type of the payload. This often happens when the remote backend
+ system RestKit is talking to generates an HTML error page on failure. If your remote system returns content
+ in a MIME Type other than application/json or application/xml, you must register the MIME Type and an appropriate
+ parser with the [RKParserRegistry sharedParser] instance.
+ 
+ Also note that in the event RestKit encounters an unexpected status code or MIME Type response an error will be 
+ constructed and sent to the delegate via objectLoader:didFailsWithError: unless your delegate provides an 
+ implementation of objectLoaderDidLoadUnexpectedResponse:. It is recommended that you provide an implementation
+ and attempt to handle common unexpected MIME types (particularly text/html and text/plain).
  
  @optional
  */
