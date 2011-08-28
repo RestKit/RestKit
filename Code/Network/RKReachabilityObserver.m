@@ -109,7 +109,8 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
     if (_reachabilityRef) {
         CFRelease(_reachabilityRef);
     }
-	
+	[_hostName release];
+    
     [super dealloc];
 }
 
