@@ -713,7 +713,7 @@
 		3F4EAF57134205CF00F944E4 /* RKXMLParserSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKXMLParserSpec.m; sourceTree = "<group>"; };
 		3F4EAF5A1342071B00F944E4 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		3F5356EC13785DA300132100 /* RKObjectSerializerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectSerializerSpec.m; sourceTree = "<group>"; };
-		3F6C39A510FE5C95008F47C5 /* UISpec.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UISpec.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3F6C39A510FE5C95008F47C5 /* RestKitSpecs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RestKitSpecs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F6C39B610FE738A008F47C5 /* UISpec.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UISpec.xcodeproj; path = /Users/blake/Projects/two_toasters/InMotion/Libraries/UISpec/xcode/UISpec/UISpec.xcodeproj; sourceTree = "<absolute>"; };
 		3F6C3A2D10FE749C008F47C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3F6C3A9510FE7524008F47C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -846,7 +846,7 @@
 				253A08031255162C00976E89 /* libRestKitObjectMapping.a */,
 				253A080C12551D3000976E89 /* libRestKitSupport.a */,
 				253A081412551D5300976E89 /* libRestKitCoreData.a */,
-				3F6C39A510FE5C95008F47C5 /* UISpec.app */,
+				3F6C39A510FE5C95008F47C5 /* RestKitSpecs.app */,
 				20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */,
 			);
 			name = Products;
@@ -1880,9 +1880,9 @@
 			productReference = 25BD43BD1340315800DBACDD /* libRestKitXMLParserLibxml.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		3F6C39A410FE5C95008F47C5 /* UISpec */ = {
+		3F6C39A410FE5C95008F47C5 /* RestKit Specs */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 3F6C39AA10FE5C95008F47C5 /* Build configuration list for PBXNativeTarget "UISpec" */;
+			buildConfigurationList = 3F6C39AA10FE5C95008F47C5 /* Build configuration list for PBXNativeTarget "RestKit Specs" */;
 			buildPhases = (
 				3F6C39A110FE5C95008F47C5 /* Resources */,
 				3F6C39A210FE5C95008F47C5 /* Sources */,
@@ -1893,9 +1893,9 @@
 			dependencies = (
 				258C6837133CDF97004388A4 /* PBXTargetDependency */,
 			);
-			name = UISpec;
+			name = "RestKit Specs";
 			productName = "UI Spec";
-			productReference = 3F6C39A510FE5C95008F47C5 /* UISpec.app */;
+			productReference = 3F6C39A510FE5C95008F47C5 /* RestKitSpecs.app */;
 			productType = "com.apple.product-type.application";
 		};
 		73057FD01331AD2E001908EE /* RestKitJSONParser+JSONKit */ = {
@@ -1957,7 +1957,7 @@
 				259DF7791340290600233DF4 /* RestKitXMLParser+Libxml */,
 				253A081312551D5300976E89 /* RestKitCoreData */,
 				2523360411E79F090048F9B4 /* RestKitThree20 */,
-				3F6C39A410FE5C95008F47C5 /* UISpec */,
+				3F6C39A410FE5C95008F47C5 /* RestKit Specs */,
 			);
 		};
 /* End PBXProject section */
@@ -2712,7 +2712,7 @@
 					SenTestingKit,
 					"-lgcov",
 				);
-				PRODUCT_NAME = UISpec;
+				PRODUCT_NAME = RestKitSpecs;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				ZERO_LINK = NO;
@@ -3065,7 +3065,7 @@
 					SenTestingKit,
 					"-lgcov",
 				);
-				PRODUCT_NAME = UISpec;
+				PRODUCT_NAME = RestKitSpecs;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				ZERO_LINK = NO;
@@ -3269,7 +3269,7 @@
 					SenTestingKit,
 					"-lgcov",
 				);
-				PRODUCT_NAME = UISpec;
+				PRODUCT_NAME = RestKitSpecs;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -3315,7 +3315,7 @@
 					SenTestingKit,
 					"-lgcov",
 				);
-				PRODUCT_NAME = UISpec;
+				PRODUCT_NAME = RestKitSpecs;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				ZERO_LINK = NO;
@@ -3479,7 +3479,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		3F6C39AA10FE5C95008F47C5 /* Build configuration list for PBXNativeTarget "UISpec" */ = {
+		3F6C39AA10FE5C95008F47C5 /* Build configuration list for PBXNativeTarget "RestKit Specs" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3F6C39A810FE5C95008F47C5 /* Debug */,
