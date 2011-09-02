@@ -31,9 +31,16 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
  *
  */
 - (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding {
+    NSString *stringToParse = self;
+    NSRange chopRange = [stringToParse rangeOfString:@"?"];
+    if (chopRange.length > 0) {
+        chopRange.location+=1; // we want inclusive chopping up *through* "?"
+        if (chopRange.location < [stringToParse length])
+            stringToParse = [stringToParse substringFromIndex:chopRange.location];
+    }
     NSCharacterSet* delimiterSet = [NSCharacterSet characterSetWithCharactersInString:@"&;"];
     NSMutableDictionary* pairs = [NSMutableDictionary dictionary];
-    NSScanner* scanner = [[[NSScanner alloc] initWithString:self] autorelease];
+    NSScanner* scanner = [[[NSScanner alloc] initWithString:stringToParse] autorelease];
     while (![scanner isAtEnd]) {
         NSString* pairString = nil;
         [scanner scanUpToCharactersFromSet:delimiterSet intoString:&pairString];
