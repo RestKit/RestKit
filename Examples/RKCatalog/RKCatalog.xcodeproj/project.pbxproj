@@ -290,7 +290,7 @@
 				2501DEA113607B74003DE9E4 /* libRestKitNetwork.a */,
 				2501DEA313607B74003DE9E4 /* libRestKitObjectMapping.a */,
 				2501DEA513607B74003DE9E4 /* libRestKitSupport.a */,
-				25FB6D4F13E4830800F48969 /* libRestKitJSONParser+NXJSON.a */,
+				25FB6D4F13E4830800F48969 /* libRestKitJSONParserNXJSON.a */,
 				2501DEA713607B74003DE9E4 /* libRestKitJSONParserYAJL.a */,
 				2501DEA913607B74003DE9E4 /* libRestKitJSONParserSBJSON.a */,
 				2501DEAB13607B74003DE9E4 /* libRestKitJSONParserJSONKit.a */,
@@ -540,10 +540,9 @@
 			remoteRef = 2501DEB213607B74003DE9E4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		25FB6D4F13E4830800F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+		25FB6D4F13E4830800F48969 /* libRestKitJSONParserNXJSON.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			name = "libRestKitJSONParser+NXJSON.a";
 			path = libRestKitJSONParserNXJSON.a;
 			remoteRef = 25FB6D4E13E4830800F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -660,7 +659,6 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -680,7 +678,6 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = (
@@ -700,10 +697,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "App/RKCatalog-Prefix.pch";
 				INFOPLIST_FILE = "App/RKCatalog-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"",
-					"\"$(SRCROOT)\"",
-				);
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)\"";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -718,10 +712,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "App/RKCatalog-Prefix.pch";
 				INFOPLIST_FILE = "App/RKCatalog-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"",
-					"\"$(SRCROOT)\"",
-				);
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)\"";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;

@@ -257,7 +257,7 @@
 				3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */,
 				3F3CE2C7125B93780083FDCB /* libRestKitObjectMapping.a */,
 				3F3CE2C9125B93780083FDCB /* libRestKitSupport.a */,
-				25FB6DDD13E4868300F48969 /* libRestKitJSONParser+NXJSON.a */,
+				25FB6DDD13E4868300F48969 /* libRestKitJSONParserNXJSON.a */,
 				3F3CE2CB125B93780083FDCB /* libRestKitJSONParserYAJL.a */,
 				3F3CE2CD125B93780083FDCB /* libRestKitJSONParserSBJSON.a */,
 				25E5EEB4133BB2D700C33091 /* libRestKitJSONParserJSONKit.a */,
@@ -426,10 +426,9 @@
 			remoteRef = 25E5EEB3133BB2D700C33091 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		25FB6DDD13E4868300F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+		25FB6DDD13E4868300F48969 /* libRestKitJSONParserNXJSON.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			name = "libRestKitJSONParser+NXJSON.a";
 			path = libRestKitJSONParserNXJSON.a;
 			remoteRef = 25FB6DDC13E4868300F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -554,14 +553,12 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Debug;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
@@ -571,12 +568,10 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Release;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
@@ -587,7 +582,6 @@
 		25F2A1941322D59400A33DE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Debug;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -595,7 +589,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
-				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";
@@ -605,13 +598,11 @@
 		25F2A1951322D59400A33DE4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Release;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
-				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";
