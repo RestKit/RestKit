@@ -270,6 +270,7 @@
 		25F5182613724866009B2E22 /* RKObjectRelationshipMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */; };
 		25FB6D5613E4836C00F48969 /* RKObjectDynamicMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 252CF8B013E250730093BBD6 /* RKObjectDynamicMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FB6DBD13E4858400F48969 /* RKObjectDynamicMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 252CF8B113E250730093BBD6 /* RKObjectDynamicMapping.m */; };
+		37CA4C501410A4D1009A3DCE /* RKFixCategoryBug.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F846E1410574B007AABCD /* RKFixCategoryBug.h */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -1671,6 +1672,7 @@
 				2590E85F1252515400531FA8 /* GHNSBundle+Utils.h in Headers */,
 				2590E8611252515400531FA8 /* GTMBase64.h in Headers */,
 				25A1CB36137F5C6300A7D5C9 /* RKJSONParserYAJL.h in Headers */,
+				37CA4C501410A4D1009A3DCE /* RKFixCategoryBug.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
