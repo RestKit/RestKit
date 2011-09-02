@@ -12,6 +12,8 @@
 			buildConfigurationList = 255B7589133BABBF00ED76AD /* Build configuration list for PBXAggregateTarget "RestKit" */;
 			buildPhases = (
 				25E5EE67133BB0A700C33091 /* Copy RestKit Header */,
+				255B759E133BAC1900ED76AD /* Copy Protected Headers */,
+				255B759F133BAC2400ED76AD /* Copy Headers to Legacy Build Location */,
 			);
 			dependencies = (
 				255B758F133BABCD00ED76AD /* PBXTargetDependency */,
@@ -138,7 +140,6 @@
 		257FB7091395DC44003A628E /* RKManagedObjectMappingOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 257FB7071395DC44003A628E /* RKManagedObjectMappingOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257FB70A1395DC44003A628E /* RKManagedObjectMappingOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 257FB7081395DC44003A628E /* RKManagedObjectMappingOperation.m */; };
 		258E490113C51FE600C9C883 /* RKJSONParserJSONKitSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 258E490013C51FE600C9C883 /* RKJSONParserJSONKitSpec.m */; };
-		258F846F1410574B007AABCD /* RKFixCategoryBug.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F846E1410574B007AABCD /* RKFixCategoryBug.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		259050F413F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 259050F213F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259050F513F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 259050F313F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m */; };
 		2590E67F125235C200531FA8 /* JSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 2590E674125235C200531FA8 /* JSON.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -202,6 +203,8 @@
 		25952F0F136F8F7700D04F93 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25952F0C136F8F7700D04F93 /* users.json */; };
 		25952F12136F97B300D04F93 /* RKObjectSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25952F10136F97B300D04F93 /* RKObjectSerializer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25952F13136F97B300D04F93 /* RKObjectSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25952F11136F97B300D04F93 /* RKObjectSerializer.m */; };
+		25952FDD1370959900D04F93 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 25952FD81370959900D04F93 /* LICENSE.txt */; };
+		25952FDF1370959900D04F93 /* README.markdown in Resources */ = {isa = PBXBuildFile; fileRef = 25952FDC1370959900D04F93 /* README.markdown */; };
 		259562E4126D3B36004BAC4C /* RKObjectRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 259562E2126D3B36004BAC4C /* RKObjectRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		259562E5126D3B36004BAC4C /* RKObjectRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 259562E3126D3B36004BAC4C /* RKObjectRouter.m */; };
 		25956983126DF1AE004BAC4C /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 253A081412551D5300976E89 /* libRestKitCoreData.a */; };
@@ -270,6 +273,8 @@
 		25F5182613724866009B2E22 /* RKObjectRelationshipMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */; };
 		25FB6D5613E4836C00F48969 /* RKObjectDynamicMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 252CF8B013E250730093BBD6 /* RKObjectDynamicMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FB6DBD13E4858400F48969 /* RKObjectDynamicMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 252CF8B113E250730093BBD6 /* RKObjectDynamicMapping.m */; };
+		37406F9614108050003695D3 /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 37406F8914108050003695D3 /* SOCKit.h */; };
+		37406F9714108050003695D3 /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 37406F8A14108050003695D3 /* SOCKit.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -406,7 +411,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		20808DBD13DE8CDC000A156A /* libRestKitJSONParserNXJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserNXJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "libRestKitJSONParser+NXJSON.a"; path = libRestKitJSONParserNXJSON.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		20808DF613DE90F5000A156A /* NSError+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSError+Extensions.h"; path = "Vendor/NXJSON/NSError+Extensions.h"; sourceTree = "<group>"; };
 		20808DF713DE90F5000A156A /* NSError+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSError+Extensions.m"; path = "Vendor/NXJSON/NSError+Extensions.m"; sourceTree = "<group>"; };
 		20808DF813DE90F5000A156A /* NXDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NXDebug.h; path = Vendor/NXJSON/NXDebug.h; sourceTree = "<group>"; };
@@ -548,8 +553,6 @@
 		257FB70C1395DEB5003A628E /* RKManagedObjectMappingOperationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationSpec.m; sourceTree = "<group>"; };
 		258C65EF133C317A004388A4 /* CopyHeadersToLegacyBuildDir.command */ = {isa = PBXFileReference; lastKnownFileType = text; path = CopyHeadersToLegacyBuildDir.command; sourceTree = "<group>"; };
 		258E490013C51FE600C9C883 /* RKJSONParserJSONKitSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKJSONParserJSONKitSpec.m; sourceTree = "<group>"; };
-		258F846E1410574B007AABCD /* RKFixCategoryBug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKFixCategoryBug.h; sourceTree = "<group>"; };
-		258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = PortableStaticLibrary.xcconfig; path = Vendor/PortableStaticLibrary.xcconfig; sourceTree = "<group>"; };
 		259050F213F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKObjectPropertyInspector+CoreData.h"; sourceTree = "<group>"; };
 		259050F313F8BDEB00694498 /* RKObjectPropertyInspector+CoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKObjectPropertyInspector+CoreData.m"; sourceTree = "<group>"; };
 		2590E64F125231F600531FA8 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitJSONParserYAJL.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -627,6 +630,11 @@
 		25952F0C136F8F7700D04F93 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = users.json; sourceTree = "<group>"; };
 		25952F10136F97B300D04F93 /* RKObjectSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectSerializer.h; sourceTree = "<group>"; };
 		25952F11136F97B300D04F93 /* RKObjectSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectSerializer.m; sourceTree = "<group>"; };
+		25952FD81370959900D04F93 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		25952FD91370959900D04F93 /* LoggerClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerClient.h; sourceTree = "<group>"; };
+		25952FDA1370959900D04F93 /* LoggerClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggerClient.m; sourceTree = "<group>"; };
+		25952FDB1370959900D04F93 /* LoggerCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerCommon.h; sourceTree = "<group>"; };
+		25952FDC1370959900D04F93 /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.markdown; sourceTree = "<group>"; };
 		259562E2126D3B36004BAC4C /* RKObjectRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectRouter.h; sourceTree = "<group>"; };
 		259562E3126D3B36004BAC4C /* RKObjectRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRouter.m; sourceTree = "<group>"; };
 		259BEF5013C3B12B00487F66 /* RKObjectMappingResultSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingResultSpec.m; sourceTree = "<group>"; };
@@ -690,6 +698,8 @@
 		25E9682D13E6156100ABAE92 /* RKObjectMappingDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingDefinition.h; sourceTree = "<group>"; };
 		25F5182313724865009B2E22 /* RKObjectRelationshipMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectRelationshipMapping.h; sourceTree = "<group>"; };
 		25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRelationshipMapping.m; sourceTree = "<group>"; };
+		37406F8914108050003695D3 /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = "<group>"; };
+		37406F8A14108050003695D3 /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = "<group>"; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
 		3F032AA610FFBBCD00F35142 /* RKHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHouse.h; sourceTree = "<group>"; };
@@ -841,7 +851,7 @@
 				253A080C12551D3000976E89 /* libRestKitSupport.a */,
 				253A081412551D5300976E89 /* libRestKitCoreData.a */,
 				3F6C39A510FE5C95008F47C5 /* RestKitSpecs.app */,
-				20808DBD13DE8CDC000A156A /* libRestKitJSONParserNXJSON.a */,
+				20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */,
 			);
 			name = Products;
 			path = ../..;
@@ -1124,7 +1134,6 @@
 				253A09F512552BDC00976E89 /* Support.h */,
 				251939B213A94B5F0073A39B /* NSString+RestKit.h */,
 				251939B313A94B5F0073A39B /* NSString+RestKit.m */,
-				258F846E1410574B007AABCD /* RKFixCategoryBug.h */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1209,8 +1218,9 @@
 		2590E6711252357200531FA8 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */,
 				250D5BD913A0698100471F0E /* LibComponentLogging */,
+				25952FD71370959900D04F93 /* NSLogger */,
+				37406F8614108050003695D3 /* SOCKit */,
 				20808DB713DE8C7C000A156A /* NXJSON */,
 				73057FC61331AA28001908EE /* JSONKit */,
 				2590E69A1252372800531FA8 /* YAJL */,
@@ -1395,6 +1405,19 @@
 			path = humans;
 			sourceTree = "<group>";
 		};
+		25952FD71370959900D04F93 /* NSLogger */ = {
+			isa = PBXGroup;
+			children = (
+				25952FD81370959900D04F93 /* LICENSE.txt */,
+				25952FD91370959900D04F93 /* LoggerClient.h */,
+				25952FDA1370959900D04F93 /* LoggerClient.m */,
+				25952FDB1370959900D04F93 /* LoggerCommon.h */,
+				25952FDC1370959900D04F93 /* README.markdown */,
+			);
+			name = NSLogger;
+			path = Vendor/NSLogger;
+			sourceTree = "<group>";
+		};
 		259D510D1328547000897272 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
@@ -1490,6 +1513,16 @@
 				25D638E31351268D000879B1 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		37406F8614108050003695D3 /* SOCKit */ = {
+			isa = PBXGroup;
+			children = (
+				37406F8914108050003695D3 /* SOCKit.h */,
+				37406F8A14108050003695D3 /* SOCKit.m */,
+			);
+			name = SOCKit;
+			path = Vendor/SOCKit;
 			sourceTree = "<group>";
 		};
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
@@ -1627,7 +1660,7 @@
 				250D5C0213A069EA00471F0E /* lcl_config_extensions.h in Headers */,
 				250D5C0413A06A4D00471F0E /* lcl_config_logger.h in Headers */,
 				251939B613A94B670073A39B /* NSString+RestKit.h in Headers */,
-				258F846F1410574B007AABCD /* RKFixCategoryBug.h in Headers */,
+				37406F9614108050003695D3 /* SOCKit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1722,7 +1755,7 @@
 			);
 			name = "RestKitJSONParser+NXJSON";
 			productName = "RestKitJSONParser+NSJSON";
-			productReference = 20808DBD13DE8CDC000A156A /* libRestKitJSONParserNXJSON.a */;
+			productReference = 20808DBD13DE8CDC000A156A /* libRestKitJSONParser+NXJSON.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		2523360411E79F090048F9B4 /* RestKitThree20 */ = {
@@ -1732,6 +1765,7 @@
 				2523360111E79F090048F9B4 /* Headers */,
 				2523360211E79F090048F9B4 /* Sources */,
 				2523360311E79F090048F9B4 /* Frameworks */,
+				25E5F253133C2B5900C33091 /* Copy Headers to Legacy Build Location */,
 			);
 			buildRules = (
 			);
@@ -1983,6 +2017,8 @@
 				25952F0D136F8F7700D04F93 /* nested_user.json in Resources */,
 				25952F0E136F8F7700D04F93 /* user.json in Resources */,
 				25952F0F136F8F7700D04F93 /* users.json in Resources */,
+				25952FDD1370959900D04F93 /* LICENSE.txt in Resources */,
+				25952FDF1370959900D04F93 /* README.markdown in Resources */,
 				251939E913AABED40073A39B /* DynamicKeys.json in Resources */,
 				251939EA13AABED40073A39B /* error.json in Resources */,
 				251939EB13AABED40073A39B /* errors.json in Resources */,
@@ -2002,6 +2038,34 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		255B759E133BAC1900ED76AD /* Copy Protected Headers */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Protected Headers";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh Scripts/Protect.command";
+			shellScript = "";
+		};
+		255B759F133BAC2400ED76AD /* Copy Headers to Legacy Build Location */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Headers to Legacy Build Location";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh Scripts/CopyHeadersToLegacyBuildDir.command";
+			shellScript = "";
+		};
 		25E5EE67133BB0A700C33091 /* Copy RestKit Header */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2015,6 +2079,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cp -pf \"${SOURCE_ROOT}/Code/RestKit.h\" \"${TARGET_BUILD_DIR}/include/RestKit\"";
+		};
+		25E5F253133C2B5900C33091 /* Copy Headers to Legacy Build Location */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Headers to Legacy Build Location";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh Scripts/CopyHeadersToLegacyBuildDir.command";
+			shellScript = "";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2099,6 +2177,7 @@
 				250D5BFB13A0698100471F0E /* LCLNSLog.m in Sources */,
 				25DBB3A113A2486400CE90F1 /* RKLog.m in Sources */,
 				251939B713A94B670073A39B /* NSString+RestKit.m in Sources */,
+				37406F9714108050003695D3 /* SOCKit.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2285,7 +2364,6 @@
 /* Begin XCBuildConfiguration section */
 		1DEB922308733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"ARCHS[sdk=macosx*]" = "$(ARCHS_STANDARD_32_64_BIT)";
@@ -2298,6 +2376,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SYMROOT = Build;
 				VALID_ARCHS = "armv6 armv7 i386 x86_64";
@@ -2306,7 +2385,6 @@
 		};
 		1DEB922408733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"ARCHS[sdk=macosx*]" = "$(ARCHS_STANDARD_32_64_BIT)";
@@ -2318,6 +2396,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SYMROOT = Build;
 				VALID_ARCHS = "armv6 armv7 i386 x86_64";
@@ -2449,7 +2528,6 @@
 		};
 		253216491338CA940099A5DB /* Distribution */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"ARCHS[sdk=macosx*]" = "$(ARCHS_STANDARD_32_64_BIT)";
@@ -2461,6 +2539,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SYMROOT = Build;
 				VALID_ARCHS = "armv6 armv7 i386 x86_64";
@@ -2644,6 +2723,7 @@
 					"-force_load",
 					"$(PROJECT_DIR)/Specs/Runner/OCMock/libOCMock.a",
 					"-ObjC",
+					"-all_load",
 					"-lstdc++",
 					"-framework",
 					SenTestingKit,
@@ -2776,7 +2856,6 @@
 		};
 		255920CC13BDEDB400E9C29C /* Ad Hoc */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"ARCHS[sdk=macosx*]" = "$(ARCHS_STANDARD_32_64_BIT)";
@@ -2788,6 +2867,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 				SYMROOT = Build;
 				VALID_ARCHS = "armv6 armv7 i386 x86_64";
@@ -2799,7 +2879,6 @@
 			buildSettings = {
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 			};
 			name = "Ad Hoc";
@@ -2997,6 +3076,7 @@
 					"-force_load",
 					"$(PROJECT_DIR)/Specs/Runner/OCMock/libOCMock.a",
 					"-ObjC",
+					"-all_load",
 					"-lstdc++",
 					"-framework",
 					SenTestingKit,
@@ -3014,7 +3094,6 @@
 			buildSettings = {
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 			};
 			name = Debug;
@@ -3024,7 +3103,6 @@
 			buildSettings = {
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 			};
 			name = Release;
@@ -3034,7 +3112,6 @@
 			buildSettings = {
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = NO;
 				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos macosx";
 			};
 			name = Distribution;
@@ -3203,6 +3280,7 @@
 					"-force_load",
 					"$(PROJECT_DIR)/Specs/Runner/OCMock/libOCMock.a",
 					"-ObjC",
+					"-all_load",
 					"-lstdc++",
 					"-framework",
 					SenTestingKit,
@@ -3248,6 +3326,7 @@
 					"-force_load",
 					"$(PROJECT_DIR)/Specs/Runner/OCMock/libOCMock.a",
 					"-ObjC",
+					"-all_load",
 					"-lstdc++",
 					"-framework",
 					SenTestingKit,
