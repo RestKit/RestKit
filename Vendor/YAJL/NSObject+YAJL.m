@@ -30,6 +30,9 @@
 #import "NSObject+YAJL.h"
 #import "YAJLGen.h"
 #import "YAJLDocument.h"
+#import "RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSObject_YAJL)
 
 @implementation NSObject (YAJL)
 

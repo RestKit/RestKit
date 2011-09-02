@@ -7,6 +7,9 @@
 //
 
 #import "NSDictionary+RKRequestSerialization.h"
+#import "../Support/RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSDictionary_RKRequestSerialization)
 
 /**
  * private helper function to convert any object to its string representation

@@ -14,7 +14,11 @@
 #import "RKResponse.h"
 #import "RKNotifications.h"
 #import "../Support/RKLog.h"
+#import "../Support/RKFixCategoryBug.h"
 
+RK_FIX_CATEGORY_BUG(UIApplication_RKNetworkActivity)
+
+// Constants
 static RKRequestQueue* RKRequestQueueSharedQueue = nil;
 static NSMutableArray* RKRequestQueueInstances = nil;
 

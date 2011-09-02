@@ -12,7 +12,7 @@
  A library of helpful additions to the NSString class to simplify
  common tasks within RestKit
  */
-@interface NSString (NSString)
+@interface NSString (RestKit)
 
 /**
  Returns a resource path with a dictionary of query parameters URL encoded and appended

@@ -264,7 +264,7 @@
 				251E0D53134189230017A6DA /* libRestKitXMLParserLibxml.a */,
 				3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */,
 				2538E808123417E500ACB5D7 /* libRestKitThree20.a */,
-				2538E80A123417E500ACB5D7 /* UISpec.app */,
+				2538E80A123417E500ACB5D7 /* RestKitSpecs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -412,10 +412,10 @@
 			remoteRef = 2538E807123417E500ACB5D7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2538E80A123417E500ACB5D7 /* UISpec.app */ = {
+		2538E80A123417E500ACB5D7 /* RestKitSpecs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = UISpec.app;
+			path = RestKitSpecs.app;
 			remoteRef = 2538E809123417E500ACB5D7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -563,10 +563,7 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
 			};
 			name = Debug;
@@ -581,10 +578,7 @@
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -603,10 +597,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
 				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";
 			};
 			name = Debug;
@@ -622,10 +613,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
 				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";
 				VALIDATE_PRODUCT = YES;
 			};

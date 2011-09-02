@@ -1114,7 +1114,7 @@
 				25A7B1DB13421D28004816AA /* libRestKitXMLParserLibxml.a */,
 				A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */,
 				A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */,
-				A7A2D3B912D7822D00683D6F /* UISpec.app */,
+				A7A2D3B912D7822D00683D6F /* RestKitSpecs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1248,10 +1248,10 @@
 			remoteRef = A7A2D3B612D7822D00683D6F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7A2D3B912D7822D00683D6F /* UISpec.app */ = {
+		A7A2D3B912D7822D00683D6F /* RestKitSpecs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = UISpec.app;
+			path = RestKitSpecs.app;
 			remoteRef = A7A2D3B812D7822D00683D6F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1378,10 +1378,7 @@
 					"\"$(SRCROOT)/Libraries/three20\"",
 					"\"$(SRCROOT)\"",
 				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Discussion Board";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1401,10 +1398,7 @@
 					../../../Build,
 					Libraries/three20/Build/Products/three20,
 				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;

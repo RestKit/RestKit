@@ -297,7 +297,7 @@
 				2501DEAD13607B74003DE9E4 /* libRestKitXMLParserLibxml.a */,
 				2501DEAF13607B74003DE9E4 /* libRestKitCoreData.a */,
 				2501DEB113607B74003DE9E4 /* libRestKitThree20.a */,
-				2501DEB313607B74003DE9E4 /* UISpec.app */,
+				2501DEB313607B74003DE9E4 /* RestKitSpecs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -533,10 +533,10 @@
 			remoteRef = 2501DEB013607B74003DE9E4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2501DEB313607B74003DE9E4 /* UISpec.app */ = {
+		2501DEB313607B74003DE9E4 /* RestKitSpecs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = UISpec.app;
+			path = RestKitSpecs.app;
 			remoteRef = 2501DEB213607B74003DE9E4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -704,6 +704,7 @@
 					"\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"",
 					"\"$(SRCROOT)\"",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -721,6 +722,7 @@
 					"\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"",
 					"\"$(SRCROOT)\"",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;

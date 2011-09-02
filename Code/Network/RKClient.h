@@ -129,6 +129,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	NSString* _serviceUnavailableAlertTitle;
 	NSString* _serviceUnavailableAlertMessage;
 	BOOL _serviceUnavailableAlertEnabled;
+    RKRequestQueue *_requestQueue;
 	RKRequestCache* _cache;
 	RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;

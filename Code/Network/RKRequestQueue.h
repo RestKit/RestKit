@@ -16,6 +16,7 @@
  * for dispatching and managing RKRequest objects
  */
 @interface RKRequestQueue : NSObject {
+    NSString *_name;
 	NSMutableArray* _requests;
     NSObject<RKRequestQueueDelegate>* _delegate;
 	NSUInteger _loadingCount;

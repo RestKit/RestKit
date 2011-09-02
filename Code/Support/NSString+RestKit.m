@@ -8,6 +8,9 @@
 
 #import "NSString+RestKit.h"
 #import "../Network/RKClient.h"
+#import "RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSString_RestKit)
 
 @implementation NSString (RestKit)
 

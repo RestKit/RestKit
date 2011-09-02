@@ -90,6 +90,7 @@ typedef enum RKRequestBackgroundPolicy {
     BOOL _forceBasicAuthentication;
     RKRequestCache* _cache;
     NSTimeInterval _cacheTimeoutInterval;
+    RKRequestQueue *_queue;
     
     #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
