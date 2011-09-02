@@ -166,6 +166,7 @@
 		660B688414088B4900EAAFDC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Jeff Verkoeyen";
 			};
 			buildConfigurationList = 660B688714088B4900EAAFDC /* Build configuration list for PBXProject "SOCKit" */;
