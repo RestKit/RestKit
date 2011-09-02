@@ -9,21 +9,6 @@
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
 
-void testForwardOrder() {
-    NSDictionary *arguments = nil;
-    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/this/is/my/crazy/backend?foo=bar&this=that"];
-    if ([pathMatcher matchesPattern:@"/this/is/(controllerName)/(entityName)" tokenizeQueryStrings:YES parsedArguments:&arguments]) {
-            // It matched the pattern, arguments is a dictionary with all the keys. Build your NSFetchRequest
-    }
-}
-void testReverseOrder() {
-    NSDictionary *arguments = nil;
-    RKPathMatcher* patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/:username"];
-    if ([patternMatcher matchesPath:@"github.com/jverkoey" tokenizeQueryStrings:YES parsedArguments:&arguments]) {
-            // It matched the pattern, arguments is a dictionary with all the keys. Build your NSFetchRequest
-    }
-}
-
 @interface RKPathMatcher() 
 @property (nonatomic,retain) SOCPattern *socPattern;
 @property (nonatomic,copy) NSString *sourcePath;
