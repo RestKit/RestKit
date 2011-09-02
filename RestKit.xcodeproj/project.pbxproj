@@ -273,6 +273,8 @@
 		37CA4C501410A4D1009A3DCE /* RKFixCategoryBug.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F846E1410574B007AABCD /* RKFixCategoryBug.h */; };
 		37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C6F1410A7CF009A3DCE /* SOCKit.h */; };
 		37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 37CA4C701410A7CF009A3DCE /* SOCKit.m */; };
+		37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */; };
+		37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 37CA4C861410ABD2009A3DCE /* RKPathMatcher.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -695,6 +697,8 @@
 		25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRelationshipMapping.m; sourceTree = "<group>"; };
 		37CA4C6F1410A7CF009A3DCE /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = "<group>"; };
 		37CA4C701410A7CF009A3DCE /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = "<group>"; };
+		37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPathMatcher.h; sourceTree = "<group>"; };
+		37CA4C861410ABD2009A3DCE /* RKPathMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcher.m; sourceTree = "<group>"; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
 		3F032AA610FFBBCD00F35142 /* RKHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHouse.h; sourceTree = "<group>"; };
@@ -1107,6 +1111,8 @@
 			isa = PBXGroup;
 			children = (
 				253A08B41255212300976E89 /* Parsers */,
+				37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */,
+				37CA4C861410ABD2009A3DCE /* RKPathMatcher.m */,
 				253A089412551D8D00976E89 /* Errors.h */,
 				253A089512551D8D00976E89 /* Errors.m */,
 				253A089612551D8D00976E89 /* NSDictionary+RKAdditions.h */,
@@ -1645,6 +1651,7 @@
 				251939B613A94B670073A39B /* NSString+RestKit.h in Headers */,
 				258F846F1410574B007AABCD /* RKFixCategoryBug.h in Headers */,
 				37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */,
+				37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2118,6 +2125,7 @@
 				25DBB3A113A2486400CE90F1 /* RKLog.m in Sources */,
 				251939B713A94B670073A39B /* NSString+RestKit.m in Sources */,
 				37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */,
+				37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

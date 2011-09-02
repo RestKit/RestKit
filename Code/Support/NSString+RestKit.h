@@ -15,7 +15,7 @@
 @interface NSString (RestKit)
 
 /**
- Returns a resource path with a dictionary of query parameters URL encoded and appended
+ Returns a resource path from a dictionary of query parameters URL encoded and appended
  This is a convenience method for constructing a new resource path that includes a query. For example,
  when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
  will return /contacts?foo=bar&amp;color=red
@@ -39,5 +39,18 @@
  @param object The object to interpolate the properties against
  */
 - (NSString*)interpolateWithObject:(id)object;
+
+/**
+ Returns a dictionary of parameter keys and values given a URL-style query string
+ on the receiving object. For example, when given the string /contacts?foo=bar&amp;color=red, 
+ this will return a dictionary of parameters containing foo=bar and color=red
+ 
+ This method originally appeared as queryContentsUsingEncoding: in the Three20 project:
+ https://github.com/facebook/three20/blob/master/src/Three20Core/Sources/NSStringAdditions.m
+ 
+ @param encoding The encoding for to use while parsing the query string.
+ @return A new dictionary of query parameters
+ */
+- (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding;
 
 @end
