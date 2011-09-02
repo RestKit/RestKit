@@ -44,7 +44,7 @@ BOOL RKPathUsesParentheticalParameters(NSString *path) {
 NSString* RKMakePathWithObject(NSString* path, id object) {
     NSCParameterAssert(path != NULL);
     if (RKPathUsesParentheticalParameters(path)) {
-        RKLogWarning(@"Use of parentheses for resource path parameter matching is depricated.  Use a single colon instead");
+        RKLogWarning(@"Use of parentheses for resource path parameter matching is deprecated.  Use a single colon instead.");
         NSString *noTrailingParen = [path stringByReplacingOccurrencesOfString:@")" withString:@""];
         path = [noTrailingParen stringByReplacingOccurrencesOfString:@"(" withString:@":"];
     }
