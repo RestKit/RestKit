@@ -86,7 +86,6 @@
 }
 
 - (void)itShouldObserveForAppBackgroundTransitionsAndCancelTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
-    RKRequestQueue* queue = [[RKRequestQueue new] autorelease];
     NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyCancel;
