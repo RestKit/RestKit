@@ -83,46 +83,10 @@ Quick Start (aka TL;DR)
 1. Import the RestKit headers via `#import <RestKit/RestKit.h>`
 1. Build the project to verify installation is successful.
 
-Xcode 4.x (Git Submodule)
+Visual Install Guide
 -------------------------
 
-**NOTE** RestKit requires the use of the Derived Data directory for the build products to simplify
-installation. If you are not using Derived Data, you may have issues when attempting to import the headers.
-
-1. Add the submodule: `git submodule add git://github.com/RestKit/RestKit.git RestKit`
-1. Open the project you wish to add RestKit to in Xcode.
-1. Focus your project and select the "View" menu > "Navigators" > "Project" to bring the project file list into view.
-1. Drag the RestKit.xcodeproj file from the Finder and drop it on your "(Your Project's Name)".xcodeproj.
-1. Click on your project's name in the sidebar on the left to open the project settings view in the right pane of the window.
-1. In the middle pane you will see **PROJECT** and **TARGETS** headers for your project. Click on your project name, then select **Build Settings** along the top to open the Build Settings editor for your entire project.
-**NOTE**: This is only necessary if you are **NOT** using DerivedData.
-1. Find the **Other Linker Flags** entry and double click it. Use the **+** button to add a new entry and enter `-ObjC`. Dismiss the editor with the **Done** button.
-1. Locate the target you wish to add RestKit to in the **TARGETS** list in the middle of the editor pane. Select it to open the target settings editor in the right pane of the window.
-1. Click the **Build Phases** tab along the top of the window to open the Build Phases editor.
-1. Click the disclosure triangles next to the **Target Dependencies** and **Link Binary with Libraries** items.
-1. In the **Target Dependencies** section, click the **+** button to open the Target selection sheet. Click on the **RestKit** aggregate target (it will have the bulls-eye icon) and click the **Add** button to create a dependency.
-1. In the **Link Binary with Libraries** section, click the **+** button to open the Library selection sheet. Here we need to instruct the target to link against all the required RestKit libraries and several system libraries. Select each of the following items (one at a time or while holding down the Command key to select all of them at once) and then click the **Add** button:
-    * **libRestKitCoreData.a** - Optional. Only necessary if you are using Core Data.
-    * **libRestKitJSONParserJSONKit.a**
-    * **libRestKitNetwork.a**
-    * **libRestKitObjectMapping.a**
-    * **libRestKitSupport.a**
-    * **CFNetwork.framework**
-    * **CoreData.framework** - Optional. Only necessary if you are using Core Data
-    * **MobileCoreServices.framework**
-    * **SystemConfiguration.framework**
-    * **libxml2.dylib** - Optional. Only necessary if you are mapping from XML payloads and link libRestKitXMLParserLibxml.a into your app.
-1. Verify that all of the libraries are showing up in the **Link Binary with Libraries** section before continuing.
-
-Congratulations, you are now done adding RestKit into your Xcode 4 based project!
-
-You now only need to add includes for the RestKit libraries at the appropriate places in your application. The relevant includes are:
-
-    #import <RestKit/RestKit.h>
-    // And if you are using Core Data...
-    #import <RestKit/CoreData/CoreData.h>
-
-Please see the Examples/ directory for details on utilizing the library.
+An step-by-step visual install guide for Xcode 4.x is available on the RestKit Wiki: https://github.com/RestKit/RestKit/wiki/Installing-RestKit-in-Xcode-4.x
 
 Contributing
 -------------------------
