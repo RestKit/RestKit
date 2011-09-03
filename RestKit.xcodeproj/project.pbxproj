@@ -72,6 +72,7 @@
 		2530078E137838D30074F3FD /* RKObjectMapper_Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 2530078D137838D30074F3FD /* RKObjectMapper_Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		253007A2137876770074F3FD /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 253007A1137876770074F3FD /* OCHamcrestIOS.framework */; };
 		2537ABF31412A3B90043BE9F /* zend.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2537ABF21412A3B90043BE9F /* zend.xml */; };
+		2537ACFC1412E0380043BE9F /* national_weather_service.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2537ACFB1412E0380043BE9F /* national_weather_service.xml */; };
 		2538C05C12A6C44A0006903C /* RKRequestQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2538C05A12A6C44A0006903C /* RKRequestQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2538C05D12A6C44A0006903C /* RKRequestQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538C05B12A6C44A0006903C /* RKRequestQueue.m */; };
 		253A08AF12551EA500976E89 /* Network.h in Headers */ = {isa = PBXBuildFile; fileRef = 253A08AE12551EA500976E89 /* Network.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -468,6 +469,7 @@
 		2530078D137838D30074F3FD /* RKObjectMapper_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMapper_Private.h; sourceTree = "<group>"; };
 		253007A1137876770074F3FD /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
 		2537ABF21412A3B90043BE9F /* zend.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = zend.xml; sourceTree = "<group>"; };
+		2537ACFB1412E0380043BE9F /* national_weather_service.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = national_weather_service.xml; sourceTree = "<group>"; };
 		2538C05A12A6C44A0006903C /* RKRequestQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRequestQueue.h; sourceTree = "<group>"; };
 		2538C05B12A6C44A0006903C /* RKRequestQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRequestQueue.m; sourceTree = "<group>"; };
 		253A07FC1255161B00976E89 /* libRestKitNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1347,6 +1349,7 @@
 				25B72A5913FBF13B009A340D /* attributes_without_text_content.xml */,
 				25769F181409CC9C003FCDBC /* orders.xml */,
 				2537ABF21412A3B90043BE9F /* zend.xml */,
+				2537ACFB1412E0380043BE9F /* national_weather_service.xml */,
 			);
 			path = XML;
 			sourceTree = "<group>";
@@ -2002,6 +2005,7 @@
 				25B72A5A13FBF13B009A340D /* attributes_without_text_content.xml in Resources */,
 				25769F191409CC9C003FCDBC /* orders.xml in Resources */,
 				2537ABF31412A3B90043BE9F /* zend.xml in Resources */,
+				2537ACFC1412E0380043BE9F /* national_weather_service.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
