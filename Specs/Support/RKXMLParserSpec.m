@@ -147,4 +147,13 @@
     assertThat([[map objectAtIndex:2] valueForKey:@"subtitle"], is(equalTo(@"Kary lives here.")));
 }
 
+- (void)itShouldConsiderASingleCloseTagAnEmptyContainer {
+    NSString *XML = @"<users />";
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSDictionary *output = [parser parseXML:XML];
+    NSDictionary *users = [output valueForKey:@"users"];
+    assertThat(users, is(notNilValue()));
+    assertThatBool([users isKindOfClass:[NSDictionary class]], is(equalToBool(YES)));
+}
+
 @end
