@@ -84,7 +84,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)dealloc {
-	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
+	[[RKClient sharedClient].requestQueue cancelRequestsWithDelegate:self];
 	[_objects release];
 	_objects = nil;
     [_objectLoader release];
@@ -126,7 +126,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 }
 
 - (void)cancel {
-	[[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
+	[[RKClient sharedClient].requestQueue cancelRequestsWithDelegate:self];
 	[self didCancelLoad];
 }
 

@@ -59,7 +59,6 @@
     // Clear the singleton instances to isolate the examples
     [RKClient setSharedClient:nil];
     [RKObjectManager setSharedManager:nil];
-    [RKRequestQueue setSharedQueue:nil];
     
     NSString* exampleName = [_exampleTableItems objectAtIndex:indexPath.row];
     Class exampleClass = NSClassFromString(exampleName);

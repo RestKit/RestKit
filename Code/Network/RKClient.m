@@ -104,7 +104,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
                                                  selector:@selector(serviceDidBecomeUnavailableNotification:) 
                                                      name:RKServiceDidBecomeUnavailableNotification 
                                                    object:nil];
-        self.requestQueue = [RKRequestQueue sharedQueue];
+        self.requestQueue = [RKRequestQueue requestQueue];
         
         [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
         [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
@@ -228,7 +228,6 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
         _baseURLReachabilityObserver = [[RKReachabilityObserver alloc] initWithHostname:[URL host]];
         
         // Suspend the queue until reachability to our new hostname is established
-        _previousQueueSuspensionState = self.requestQueue.suspended;
         self.requestQueue.suspended = !_baseURLReachabilityObserver.reachabilityEstablished;
         [[NSNotificationCenter defaultCenter] addObserver:self 
                                                  selector:@selector(reachabilityWasDetermined:) 
@@ -249,18 +248,11 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     }
     
     // If we are awaiting reachability determination, suspend the new queue
-    // update the previous state to the new queue's state
-    RKRequestQueue *oldQueue = [change objectForKey:NSKeyValueChangeOldKey];
     RKRequestQueue *newQueue = [change objectForKey:NSKeyValueChangeNewKey];
-    
-    if (! [oldQueue isEqual:[NSNull null]]) {
-        oldQueue.suspended = _previousQueueSuspensionState;
-    }
     
     if (! [newQueue isEqual:[NSNull null]]) {
         // The request queue has changed while we were awaiting reachability. 
-        // Suspend the queue and remember its previous state
-        _previousQueueSuspensionState = newQueue.suspended;
+        // Suspend the queue until reachability is determined
         newQueue.suspended = !_baseURLReachabilityObserver.reachabilityEstablished;
     }
 }
@@ -335,9 +327,9 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     RKReachabilityObserver* observer = (RKReachabilityObserver*) [notification object];
     NSAssert(observer == _baseURLReachabilityObserver, @"Received unexpected reachability notification from inappropriate reachability observer");
     
-    RKLogDebug(@"Reachability to host '%@' determined for client %@, restore suspension value for queue %@ to %d", observer.hostName, self, self.requestQueue, _previousQueueSuspensionState);
-    self.requestQueue.suspended = _previousQueueSuspensionState;
+    RKLogDebug(@"Reachability to host '%@' determined for client %@, unsuspending queue %@", observer.hostName, self, self.requestQueue);
     _awaitingReachabilityDetermination = NO;
+    self.requestQueue.suspended = NO;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityStateWasDeterminedNotification object:observer];
 }
 

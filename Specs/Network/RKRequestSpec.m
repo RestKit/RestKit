@@ -87,7 +87,6 @@
 
 - (void)itShouldObserveForAppBackgroundTransitionsAndCancelTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
     RKRequestQueue* queue = [[RKRequestQueue new] autorelease];
-    [RKRequestQueue setSharedQueue:queue];
     NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyCancel;
@@ -111,8 +110,7 @@
 
 - (void)itShouldPutTheRequestBackOntoTheQueueWhenBackgroundPolicyIsRKRequestBackgroundPolicyRequeue {
     RKRequestQueue* queue = [[RKRequestQueue new] autorelease];
-    [RKRequestQueue setSharedQueue:queue];
-    [RKRequestQueue sharedQueue].suspended = YES;
+    queue.suspended = YES;
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
@@ -122,7 +120,7 @@
     [request sendAsynchronously];
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
     [expectThat([request isLoading]) should:be(NO)];
-    [expectThat([[RKRequestQueue sharedQueue] containsRequest:request]) should:be(YES)];
+    [expectThat([queue containsRequest:request]) should:be(YES)];
 }
 
 - (void)itShouldCreateABackgroundTaskWhenBackgroundPolicyIsRKRequestBackgroundPolicyContinue {

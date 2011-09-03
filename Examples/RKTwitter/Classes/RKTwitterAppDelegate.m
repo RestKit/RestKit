@@ -23,7 +23,7 @@
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:@"http://twitter.com"];
     
     // Enable automatic network activity indicator management
-    [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
+    objectManager.client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
     
     // Setup our object mappings
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTUser class]];

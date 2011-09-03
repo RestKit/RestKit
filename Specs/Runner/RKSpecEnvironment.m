@@ -32,27 +32,15 @@ RKClient* RKSpecNewClient(void) {
     RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
     [RKClient setSharedClient:client];    
     [client release];
-    
-    RKSpecNewRequestQueue();
+    client.requestQueue.suspended = NO;
     
     return client;
-}
-
-RKRequestQueue* RKSpecNewRequestQueue(void) {
-    RKRequestQueue* requestQueue = [RKRequestQueue new];
-    requestQueue.suspended = NO;
-    [RKRequestQueue setSharedQueue:requestQueue];
-    [requestQueue release];
-    
-    return requestQueue;
 }
 
 RKObjectManager* RKSpecNewObjectManager(void) {
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [RKObjectManager setSharedManager:objectManager];
     [RKClient setSharedClient:objectManager.client];
-    
-    RKSpecNewRequestQueue();
     
     // This allows the manager to determine state.
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
