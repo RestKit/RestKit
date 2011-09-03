@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Api generator="zend" version="1.0">
+    <getList>
+        <map id_map="4">
+            <title><![CDATA[ Main World Map ]]></title>
+            <subtitle><![CDATA[ ]]></subtitle>
+            <description><![CDATA[ ]]></description>
+        </map>
+        <map id_map="3">
+            <title><![CDATA[ Section Map: Narshe Village ]]></title>
+            <subtitle><![CDATA[ ]]></subtitle>
+            <description><![CDATA[ ]]></description>
+        </map>
+        <map id_map="2">
+            <title><![CDATA[ Section Map: Gulgu Volcano Level 1 ]]></title>
+            <subtitle><![CDATA[ Kary lives here. ]]></subtitle>
+            <description><![CDATA[ ]]></description>
+        </map>
+        <map id_map="1">
+            <title><![CDATA[ Section Map: Dime Tower Level 4 ]]></title>
+            <subtitle><![CDATA[ Upper Floor ]]></subtitle>
+            <description><![CDATA[ ]]></description>
+        </map>
+        <total><![CDATA[ 4 ]]></total>
+        <status>success</status>
+    </getList>
+</Api>

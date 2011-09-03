@@ -135,4 +135,16 @@
     }
 }
 
+- (void)itShouldParseXMLWithCDATA {
+    NSString *XML = RKSpecReadFixture(@"zend.xml");
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSDictionary *output = [parser parseXML:XML];
+    NSArray *map = [output valueForKeyPath:@"Api.getList.map"];
+    assertThat(map, isNot(nilValue()));
+    assertThat(map, hasCountOf(4));
+    assertThat([[map objectAtIndex:0] valueForKey:@"title"], is(equalTo(@"Main World Map")));
+    assertThat([[map objectAtIndex:1] valueForKey:@"title"], is(equalTo(@"Section Map: Narshe Village")));
+    assertThat([[map objectAtIndex:2] valueForKey:@"subtitle"], is(equalTo(@"Kary lives here.")));
+}
+
 @end

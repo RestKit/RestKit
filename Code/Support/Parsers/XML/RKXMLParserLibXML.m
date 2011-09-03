@@ -25,7 +25,7 @@
                     // Assume that empty strings are irrelevant and go for an attribute-collection instead
                     if ([val length] == 0) {
                         val = [NSMutableDictionary dictionary];
-                        NSDictionary* elem = [NSDictionary dictionaryWithObject:val forKey:nodeName];
+                        NSMutableDictionary* elem = [NSMutableDictionary dictionaryWithObject:val forKey:nodeName];
                         [nodes addObject:elem];
                     } else {
                         [attrs setValue:val forKey:nodeName];
@@ -42,7 +42,7 @@
                     [nodes addObject:attrs];
                 }
             } else {
-                NSDictionary* elem = [NSDictionary dictionaryWithObject:val forKey:nodeName];
+                NSMutableDictionary* elem = [NSMutableDictionary dictionaryWithObject:val forKey:nodeName];
                 [nodes addObject:elem];
             }
             xmlElement* element = (xmlElement*)currentNode;
@@ -61,10 +61,10 @@
                     [nodes addObject:attrs];
                 }
             }
-        } else if (currentNode->type == XML_TEXT_NODE) {
+        } else if (currentNode->type == XML_TEXT_NODE || currentNode->type == XML_CDATA_SECTION_NODE) {
             xmlChar* str = xmlNodeGetContent(currentNode);
-            NSString* part = [NSString stringWithCString:(const char*)str encoding:NSUTF8StringEncoding];
-            if ([[part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length] > 0) {
+            NSString* part = [[NSString stringWithCString:(const char*)str encoding:NSUTF8StringEncoding] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            if ([part length] > 0) {
                 [nodes addObject:part];
             }
             xmlFree(str);
