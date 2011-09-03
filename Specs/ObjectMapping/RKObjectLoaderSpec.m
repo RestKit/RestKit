@@ -88,13 +88,6 @@
 
 @implementation RKObjectLoaderSpec
 
-- (void)beforeAll {
-    RKRequestQueue* queue = [[RKRequestQueue alloc] init];
-    queue.suspended = NO;
-    [RKRequestQueue setSharedQueue:queue];
-    [queue release];
-}
-
 - (RKObjectMappingProvider*)providerForComplexUser {
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
@@ -113,7 +106,7 @@
 }
 
 - (void)itShouldHandleTheErrorCaseAppropriately {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/errors.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;

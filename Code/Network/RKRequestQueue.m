@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #endif
 
+#import "RKClient.h"
 #import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "RKNotifications.h"
@@ -19,7 +20,6 @@
 RK_FIX_CATEGORY_BUG(UIApplication_RKNetworkActivity)
 
 // Constants
-static RKRequestQueue* RKRequestQueueSharedQueue = nil;
 static NSMutableArray* RKRequestQueueInstances = nil;
 
 static const NSTimeInterval kFlushDelay = 0.3;
@@ -49,20 +49,13 @@ static const NSTimeInterval kFlushDelay = 0.3;
 #endif
 
 + (RKRequestQueue*)sharedQueue {
-	if (!RKRequestQueueSharedQueue) {
-		RKRequestQueueSharedQueue = [[RKRequestQueue alloc] init];
-		RKRequestQueueSharedQueue.suspended = NO;
-        RKLogDebug(@"Shared queue initialized: %@", RKRequestQueueSharedQueue);
-	}
-	return RKRequestQueueSharedQueue;
+    RKLogWarning(@"Deprecated invocation of [RKRequestQueue sharedQueue]. Returning [RKClient sharedClient].requestQueue. Update your code to reference the queue you want explicitly.");
+    return [RKClient sharedClient].requestQueue;
 }
 
 + (void)setSharedQueue:(RKRequestQueue*)requestQueue {
-	if (RKRequestQueueSharedQueue != requestQueue) {
-        RKLogDebug(@"Shared queue instance changed from %@ to %@", RKRequestQueueSharedQueue, requestQueue);
-		[RKRequestQueueSharedQueue release];
-		RKRequestQueueSharedQueue = [requestQueue retain];
-	}
+    RKLogWarning(@"Deprecated access to [RKRequestQueue setSharedQueue:]. Invoking [[RKClient sharedClient] setRequestQueue:]. Update your code to reference the specific queue instance you want.");
+    [RKClient sharedClient].requestQueue = requestQueue;
 }
 
 + (id)requestQueue {

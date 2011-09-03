@@ -157,7 +157,7 @@
 - (void)itShouldHandleConnectionFailures {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
 	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
-    [RKRequestQueue sharedQueue].suspended = NO;
+    modelManager.client.requestQueue.suspended = NO;
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
 	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];
 	[loader waitForResponse];

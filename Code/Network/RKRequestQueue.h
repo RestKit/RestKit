@@ -83,14 +83,22 @@
 #endif
 
 /**
- * Return the global queue
+ Return the global queue
+ 
+ Deprecated. All RKClient instances now own their own individual request queues.
+ 
+ @see [RKClient requestQueue]
  */
-+ (RKRequestQueue*)sharedQueue;
++ (RKRequestQueue*)sharedQueue DEPRECATED_ATTRIBUTE;
 
 /**
- * Set the global queue
+ Set the global queue
+ 
+ Deprecated. All RKClient instances now own their own individual request queues.
+ 
+ @see [RKClient requestQueue]
  */
-+ (void)setSharedQueue:(RKRequestQueue*)requestQueue;
++ (void)setSharedQueue:(RKRequestQueue*)requestQueue DEPRECATED_ATTRIBUTE;
 
 /**
  Returns a new auto-released request queue

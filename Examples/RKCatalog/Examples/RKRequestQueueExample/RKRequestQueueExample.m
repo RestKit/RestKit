@@ -21,8 +21,8 @@
         [RKClient setSharedClient:client];
         
         // Ask RestKit to spin the network activity indicator for us
-        [RKRequestQueue sharedQueue].delegate = self;
-        [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
+        client.requestQueue.delegate = self;
+        client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
     }
     
     return self;
@@ -30,7 +30,7 @@
 
 // We have been dismissed -- clean up any open requests
 - (void)dealloc {
-    [[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
+    [[RKClient sharedClient].requestQueue cancelRequestsWithDelegate:self];
     [_queue cancelAllRequests];
     [_queue release];
     
@@ -39,19 +39,19 @@
 
 // We have been obscured -- cancel any pending requests
 - (void)viewWillDisappear:(BOOL)animated {
-    [[RKRequestQueue sharedQueue] cancelRequestsWithDelegate:self];
+    [[RKClient sharedClient].requestQueue cancelRequestsWithDelegate:self];
 }
 
 - (IBAction)sendRequest {
     /**
      * Ask RKClient to load us some data. This causes an RKRequest object to be created
-     * transparently pushed onto the RKRequestQueue sharedQueue instance
+     * transparently pushed onto the RKClient's RKRequestQueue instance
      */
     [[RKClient sharedClient] get:@"/RKRequestQueueExample" delegate:self];
 }
 
 - (IBAction)queueRequests {
-    RKRequestQueue* queue = [[RKRequestQueue alloc] init];
+    RKRequestQueue* queue = [RKRequestQueue new];
     queue.delegate = self;
     queue.concurrentRequestsLimit = 1;
     queue.showsNetworkActivityIndicatorWhenBusy = YES;
@@ -71,7 +71,7 @@
 }
 
 - (void)requestQueue:(RKRequestQueue *)queue didSendRequest:(RKRequest *)request {
-    _statusLabel.text = [NSString stringWithFormat:@"RKRequestQueue %@ sharedQueue is current loading %d of %d requests", 
+    _statusLabel.text = [NSString stringWithFormat:@"RKRequestQueue %@ is current loading %d of %d requests", 
                          queue, [queue loadingCount], [queue count]];
 }
 

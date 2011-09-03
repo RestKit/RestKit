@@ -25,7 +25,6 @@
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecStubNetworkAvailability(YES);
-    RKSpecNewRequestQueue();
     objectManager.objectStore = store;
     RKHuman* human = [RKHuman object];
     human.name = @"Blake Watters";
@@ -47,7 +46,6 @@
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecStubNetworkAvailability(YES);
-    RKSpecNewRequestQueue();
     objectManager.objectStore = store;
     
     RKObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
@@ -88,7 +86,6 @@
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     RKSpecStubNetworkAvailability(YES);
-    RKSpecNewRequestQueue();
     objectManager.objectStore = store;
     
     id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];

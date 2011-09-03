@@ -242,7 +242,7 @@ typedef enum {
     - (void)loadObjectWithBlockExample {
         [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" delegate:self block:^(RKObjectLoader* loader) {
             loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
-        }
+        }];
     }
  */
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;

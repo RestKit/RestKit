@@ -205,7 +205,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
         RKLogWarning(@"%@: SCNetworkReachabilitySetCallback() failed: %s", self, SCErrorString(SCError()));
         return;
     }
-    if (!SCNetworkReachabilitySetDispatchQueue(_reachabilityRef, dispatch_get_current_queue())) {
+    if (!SCNetworkReachabilitySetDispatchQueue(_reachabilityRef, dispatch_get_main_queue())) {
         RKLogWarning("%@: SCNetworkReachabilitySetDispatchQueue() failed: %s", self, SCErrorString(SCError()));
         return;
     }

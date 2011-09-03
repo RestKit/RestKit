@@ -102,7 +102,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * -----------------
  *
  * Note that memory management of requests sent via RKClient instances are automatically managed
- * for you. When sent, the request is retained by the [shared request queue]([RKRequestQueue sharedQueue])
+ * for you. When sent, the request is retained by the requestQueue
  * and is released all request processing has completed. Generally speaking this means that you can dispatch
  * requests and work with the response in the delegate methods without regard for memory management.
  *
@@ -136,7 +136,6 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     BOOL _disableCertificateValidation;
     
     // Queue suspension flags
-    BOOL _previousQueueSuspensionState;
     BOOL _awaitingReachabilityDetermination;
 }
 
@@ -174,7 +173,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 /**
  The request queue to push asynchronous requests onto.
  
- *Default*: [RKRequestQueue sharedQueue]
+ *Default*: A new request queue is instantiated for you during init
  */
 @property (nonatomic, retain) RKRequestQueue* requestQueue;
 

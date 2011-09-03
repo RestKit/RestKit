@@ -60,16 +60,16 @@
     assertThatBool(loader.success, is(equalToBool(YES)));
 }
 
-- (void)itShouldSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
+- (void)itShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
     RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
     client.baseURL = @"http://restkit.org";
-    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(YES)));
+    assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
 }
 
 - (void)itShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished {
     RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
     client.baseURL = @"http://127.0.0.1";
-    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(NO)));
+    assertThatBool(client.requestQueue.suspended, is(equalToBool(NO)));
 }
 
 - (void)itShouldPerformAPUTWithParams {
@@ -88,27 +88,4 @@
     assertThatBool(loader.success, is(equalToBool(NO)));
 }
 
-- (void)itShouldRestoreQueueSuspensionStateIfRequestQueueChangesDuringReachabilityDetermination {
-    RKRequestQueue *sharedQueue = [RKRequestQueue sharedQueue];
-    assertThatBool(sharedQueue.suspended, is(equalToBool(NO)));
-    RKClient *client = [RKClient clientWithBaseURL:@"http://restkit.org"];
-    assertThatBool(sharedQueue.suspended, is(equalToBool(YES)));
-    RKRequestQueue *newQueue = [RKRequestQueue requestQueue];
-    newQueue.suspended = NO;
-    client.requestQueue = newQueue;
-    assertThatBool(newQueue.suspended, is(equalToBool(YES)));
-    assertThatBool(sharedQueue.suspended, is(equalToBool(NO)));
-}
-
-- (void)itShouldRestoreQueueSuspensionStateIfClientIsDeallocatedBeforeReachabilityDetermination {
-    RKRequestQueue *sharedQueue = [RKRequestQueue sharedQueue];
-    assertThatBool(sharedQueue.suspended, is(equalToBool(NO)));
-    RKClient *client = [RKClient new];
-    client.baseURL = @"http://restkit.org";
-    assertThat(client.requestQueue, is(equalTo(sharedQueue)));
-    assertThatBool(sharedQueue.suspended, is(equalToBool(YES)));
-    [client release];
-    assertThatBool(sharedQueue.suspended, is(equalToBool(NO)));
-}
-    
 @end
