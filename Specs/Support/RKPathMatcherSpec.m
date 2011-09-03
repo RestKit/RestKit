@@ -44,6 +44,25 @@
     assertThat(arguments, hasEntry(@"username", @"jverkoey"));
 }
 
+- (void)itShouldMatchPathsWithoutAnyArguments {
+    NSDictionary *arguments = nil;
+    RKPathMatcher* patternMatcher = [RKPathMatcher matcherWithPattern:@"/metadata"];
+    BOOL isMatchingPattern = [patternMatcher matchesPath:@"/metadata" tokenizeQueryStrings:NO parsedArguments:&arguments];
+    assertThatBool(isMatchingPattern, is(equalToBool(YES)));
+    assertThat(arguments, is(empty()));
+}
+
+- (void)itShouldPerformTwoMatchesInARow {
+    NSDictionary *arguments = nil;
+    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/metadata?apikey=GC12d0c6af"];
+    BOOL isMatchingPattern1 = [pathMatcher matchesPattern:@"/metadata/:stateID" tokenizeQueryStrings:YES parsedArguments:&arguments];
+    assertThatBool(isMatchingPattern1, is(equalToBool(NO)));
+    BOOL isMatchingPattern2 = [pathMatcher matchesPattern:@"/metadata" tokenizeQueryStrings:YES parsedArguments:&arguments];    
+    assertThatBool(isMatchingPattern2, is(equalToBool(YES)));
+    assertThat(arguments, isNot(empty()));
+    assertThat(arguments, hasEntry(@"apikey", @"GC12d0c6af"));
+}
+
 - (void)itShouldNotMatchPathsUsingDeprecatedParentheses {
     NSDictionary *arguments = nil;
     RKPathMatcher* patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/(username)"];

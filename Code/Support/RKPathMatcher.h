@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+@class SOCPattern;
 
 /**
  This class performs pattern matching and parameter parsing of strings, usually resource paths.
@@ -18,7 +19,13 @@
  @see RKMakePathWithObject
  @see RKRouter
  */
-@interface RKPathMatcher : NSObject
+@interface RKPathMatcher : NSObject {
+@private
+    SOCPattern *socPattern_;
+    NSString *sourcePath_;
+    NSString *rootPath_;
+    NSDictionary *queryParameters_;
+}
 @property (retain,readonly) NSDictionary *queryParameters;
 
 /**

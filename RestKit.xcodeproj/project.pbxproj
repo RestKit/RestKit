@@ -273,7 +273,7 @@
 		37CA4C501410A4D1009A3DCE /* RKFixCategoryBug.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F846E1410574B007AABCD /* RKFixCategoryBug.h */; };
 		37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C6F1410A7CF009A3DCE /* SOCKit.h */; };
 		37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 37CA4C701410A7CF009A3DCE /* SOCKit.m */; };
-		37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */; };
+		37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 37CA4C861410ABD2009A3DCE /* RKPathMatcher.m */; };
 		37DEBA62141123BB00FDF847 /* RKPathMatcherSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 37DEBA61141123BB00FDF847 /* RKPathMatcherSpec.m */; };
 		37DEBA651411298300FDF847 /* NSStringRestKitSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 37DEBA641411298300FDF847 /* NSStringRestKitSpec.m */; };
