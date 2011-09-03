@@ -22,15 +22,11 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
     return RKMakePathWithObject(self, object);
 }
 
-/**
- * Returns a dictionary of parameter keys and values given a URL-style query string
- * on the receiving object.
- *
- * This method originally appeared as queryContentsUsingEncoding: in the Three20 project:
- * https://github.com/facebook/three20/blob/master/src/Three20Core/Sources/NSStringAdditions.m
- *
- */
 - (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding {
+    return [self queryParametersUsingArrays:NO encoding:encoding];
+}
+
+- (NSDictionary*)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding {
     NSString *stringToParse = self;
     NSRange chopRange = [stringToParse rangeOfString:@"?"];
     if (chopRange.length > 0) {
@@ -46,26 +42,37 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
         [scanner scanUpToCharactersFromSet:delimiterSet intoString:&pairString];
         [scanner scanCharactersFromSet:delimiterSet intoString:NULL];
         NSArray* kvPair = [pairString componentsSeparatedByString:@"="];
-        if (kvPair.count == 1 || kvPair.count == 2) {
-            NSString* key = [[kvPair objectAtIndex:0]
-                             stringByReplacingPercentEscapesUsingEncoding:encoding];
-            NSMutableArray* values = [pairs objectForKey:key];
-            if (nil == values) {
-                values = [NSMutableArray array];
-                [pairs setObject:values forKey:key];
-            }
-            if (kvPair.count == 1) {
-                [values addObject:[NSNull null]];
-                
-            } else if (kvPair.count == 2) {
+        
+        if (!shouldUseArrays) {
+            if (kvPair.count == 2) {
+                NSString* key = [[kvPair objectAtIndex:0]
+                                 stringByReplacingPercentEscapesUsingEncoding:encoding];
                 NSString* value = [[kvPair objectAtIndex:1]
                                    stringByReplacingPercentEscapesUsingEncoding:encoding];
-                [values addObject:value];
+                [pairs setObject:value forKey:key];
+            }
+        }
+        else {
+            if (kvPair.count == 1 || kvPair.count == 2) {
+                NSString* key = [[kvPair objectAtIndex:0]
+                                 stringByReplacingPercentEscapesUsingEncoding:encoding];
+                NSMutableArray* values = [pairs objectForKey:key];
+                if (nil == values) {
+                    values = [NSMutableArray array];
+                    [pairs setObject:values forKey:key];
+                }
+                if (kvPair.count == 1) {
+                    [values addObject:[NSNull null]];
+                    
+                } else if (kvPair.count == 2) {
+                    NSString* value = [[kvPair objectAtIndex:1]
+                                       stringByReplacingPercentEscapesUsingEncoding:encoding];
+                    [values addObject:value];
+                }
             }
         }
     }
     return [NSDictionary dictionaryWithDictionary:pairs];
 }
-
 
 @end

@@ -54,4 +54,20 @@
  */
 - (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding;
 
+/**
+ Returns a dictionary of parameter keys and values arrays (if requested) given a URL-style query string
+ on the receiving object. For example, when given the string /contacts?foo=bar&amp;color=red, 
+ this will return a dictionary of parameters containing foo=[bar] and color=[red], excludes the path "/contacts?"
+ 
+ This method originally appeared as queryContentsUsingEncoding: in the Three20 project:
+ https://github.com/facebook/three20/blob/master/src/Three20Core/Sources/NSStringAdditions.m
+ 
+ @param receiver A string in the form of @"/object?sortBy=name", or @"/object?sortBy=name&color=red"
+ @param shouldUseArrays If NO, it yields the same results as queryParametersUsingEncoding:, otherwise it creates value arrays instead of value strings.
+ @param encoding The encoding for to use while parsing the query string.
+ @return A new dictionary of query parameters, with keys like 'sortBy' and value arrays (if requested) like ['name'].
+ @see queryParametersUsingEncoding:
+ */
+- (NSDictionary*)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding;
+
 @end

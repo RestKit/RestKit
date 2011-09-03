@@ -51,11 +51,11 @@
 }
 
 - (void)itShouldParseQueryParameters {
-    NSString *resourcePath = @"/controller/objects/?sortOrder=ascend&groupBy=name";
+    NSString *resourcePath = @"/views/thing/?keyA=valA&keyB=valB";
     NSDictionary *queryParams = [resourcePath queryParametersUsingEncoding:NSASCIIStringEncoding];
-    NSArray *expectedKeysAndValues = [NSArray arrayWithObjects:@"sortOrder", @"ascend", @"groupBy", @"name", nil];
-    assertThat(queryParams, isNot(equalTo(nil)));
-    assertThat(queryParams, hasEntries(expectedKeysAndValues, nil));
+    assertThat(queryParams, isNot(empty()));
+    assertThat(queryParams, hasCountOf(2));
+    assertThat(queryParams, hasEntries(@"keyA", @"valA", @"keyB", @"valB", nil));
 }
 
 @end

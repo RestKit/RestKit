@@ -1297,7 +1297,7 @@
     [mapping mapAttributes:@"name", @"website", nil];
     [mapping mapKeyPath:@"id" toAttribute:@"userID"];
     
-    [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans/(userID)"];
+    [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans/:userID"];
     [objectManager.router routeClass:[RKExampleUser class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
     

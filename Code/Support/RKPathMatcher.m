@@ -8,23 +8,25 @@
 
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
+#import "NSString+RestKit.h"
+#import "NSDictionary+RKAdditions.h"
+#import "RKLog.h"
 
 @interface RKPathMatcher() 
 @property (nonatomic,retain) SOCPattern *socPattern;
 @property (nonatomic,copy) NSString *sourcePath;
-@property (nonatomic,retain) NSMutableDictionary *parsedArguments;
+@property (retain,readwrite) NSDictionary *queryParameters;
 @end
-
 
 @implementation RKPathMatcher
 @synthesize socPattern;
 @synthesize sourcePath;
-@synthesize parsedArguments;
+@synthesize queryParameters;
 
 - (void)dealloc {
     self.socPattern = nil;
     self.sourcePath = nil;
-    self.parsedArguments = nil;
+    self.queryParameters = nil;
     [super dealloc];
 }
 
@@ -46,31 +48,47 @@
     return [self.socPattern stringMatches:self.sourcePath];
 }
 
-- (NSMutableDictionary *)extractParameters {
-    return [[[self.socPattern extractParameterKeyValuesFromSourceString:self.sourcePath] mutableCopy] autorelease];
+- (BOOL)bifurcateSourcePathFromQueryParameters {
+    NSArray *components = [self.sourcePath componentsSeparatedByString:@"?"];
+    if ([components count] > 1) {
+        self.sourcePath = [components objectAtIndex:0];
+        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSASCIIStringEncoding]; 
+        return YES;
+    }
+    return NO;
 }
 
-- (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)tokenizeQueryStrings parsedArguments:(NSDictionary **)arguments {
+- (BOOL)itMatchesAndHasParsedArguments:(NSDictionary **)arguments tokenizeQueryStrings:(BOOL)shouldTokenize {
+    NSCParameterAssert(self.socPattern != NULL);
+    if (![self matches])
+        return NO;
+    if (!arguments) {
+        RKLogWarning(@"The parsed arguments dictionary reference is nil.");
+        return YES;
+    }
+    NSMutableDictionary *argumentsCollection = [NSMutableDictionary dictionary];
+    if ([self bifurcateSourcePathFromQueryParameters]) {
+        if (shouldTokenize) {
+            [argumentsCollection addEntriesFromDictionary:self.queryParameters];
+        }
+    }
+    NSDictionary *extracted = [self.socPattern extractParameterKeyValuesFromSourceString:self.sourcePath];
+    if (extracted)
+        [argumentsCollection addEntriesFromDictionary:[extracted removePercentEscapesFromKeysAndObjects]];
+    NSLog(@"parsed = %@", argumentsCollection);
+    *arguments = argumentsCollection;
+    return YES;
+}
+
+- (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments {
     NSCParameterAssert(patternString != NULL);
     self.socPattern = [SOCPattern patternWithString:patternString];
-    BOOL isMatching = [self matches];
-    if (isMatching && tokenizeQueryStrings == YES && arguments) {
-        self.parsedArguments = [self extractParameters];
-        *arguments = parsedArguments;
-        return YES;
-    }
-    return isMatching;
+    return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
 }
 
-- (BOOL)matchesPath:(NSString *)sourceString tokenizeQueryStrings:(BOOL)tokenizeQueryStrings parsedArguments:(NSDictionary **)arguments {
+- (BOOL)matchesPath:(NSString *)sourceString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments {
     self.sourcePath = sourceString;
-    BOOL isMatching = [self matches];
-    if (isMatching && tokenizeQueryStrings == YES && arguments) {
-        self.parsedArguments = [self extractParameters];
-        *arguments = parsedArguments;
-        return YES;
-    }
-    return isMatching;
+    return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
 }
 
 @end

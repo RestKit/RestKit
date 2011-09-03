@@ -28,4 +28,17 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
     return [self dictionaryWithObjects:values forKeys:keys];
 }
 
+- (NSDictionary *)removePercentEscapesFromKeysAndObjects {
+    NSMutableDictionary *results = [NSMutableDictionary dictionaryWithCapacity:[self count]];
+    [self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
+     {
+         NSString *escapedKey = [key stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+         id escapedValue = value;
+         if ([value respondsToSelector:@selector(stringByReplacingPercentEscapesUsingEncoding:)])
+             escapedValue = [value stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+         [results setObject:escapedValue forKey:escapedKey];
+     }];
+    return results;
+}
+
 @end
