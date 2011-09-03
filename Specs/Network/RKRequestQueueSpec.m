@@ -201,4 +201,15 @@
     assertThat(queue2, is(nilValue()));
 }
 
+- (void)itShouldRemoveItemsFromTheQueueWithAnUnmappableResponse {
+    RKRequestQueue *queue = [RKRequestQueue requestQueue];
+    RKObjectManager *objectManager = RKSpecNewObjectManager();
+    RKSpecResponseLoader *loader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader *objectLoader = [RKObjectLoader loaderWithResourcePath:@"/403" objectManager:objectManager delegate:loader];
+    [queue addRequest:(RKRequest *)objectLoader];
+    [queue start];
+    [loader waitForResponse];
+    assertThatInt(queue.loadingCount, is(equalToInt(0)));
+}
+
 @end
