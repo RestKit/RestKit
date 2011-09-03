@@ -156,4 +156,19 @@
     assertThatBool([users isKindOfClass:[NSDictionary class]], is(equalToBool(YES)));
 }
 
+- (void)itShouldParseRelativelyComplexXML {
+    NSString *XML = RKSpecReadFixture(@"national_weather_service.xml");
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSException *exception = nil;
+    @try {
+        [parser parseXML:XML];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(nilValue()));
+    }
+}
+
 @end
