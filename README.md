@@ -67,6 +67,7 @@ Quick Start (aka TL;DR)
 1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
 1. Add **Other Linker Flags** for `-ObjC`
+1. Add **Header Search Path** for `$(SOURCE_ROOT)/RestKit/Build`
 1. Open target settings editor for the target you want to link RestKit into
 1. Add direct dependency on the **RestKit** aggregate target
 1. Link against required frameworks:
