@@ -1,7 +1,7 @@
 # the build
 Build
 build
-DerivedData
+# DerivedData
 Docs/API
 
 # temp nibs and swap files
