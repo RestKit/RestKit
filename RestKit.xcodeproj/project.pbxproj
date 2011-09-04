@@ -12,6 +12,8 @@
 			buildConfigurationList = 255B7589133BABBF00ED76AD /* Build configuration list for PBXAggregateTarget "RestKit" */;
 			buildPhases = (
 				25E5EE67133BB0A700C33091 /* Copy RestKit Header */,
+				251C5AC5141413A4009F3630 /* Copy Headers to Build */,
+				251C5ACB1414141D009F3630 /* Protect Copied Headers */,
 			);
 			dependencies = (
 				255B758F133BABCD00ED76AD /* PBXTargetDependency */,
@@ -1740,6 +1742,7 @@
 				2523360111E79F090048F9B4 /* Headers */,
 				2523360211E79F090048F9B4 /* Sources */,
 				2523360311E79F090048F9B4 /* Frameworks */,
+				251C5ACC141417D9009F3630 /* Copy Headers to Build */,
 			);
 			buildRules = (
 			);
@@ -2012,6 +2015,48 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		251C5AC5141413A4009F3630 /* Copy Headers to Build */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Headers to Build";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh Scripts/CopyHeadersToLegacyBuildDir.command";
+			shellScript = "";
+		};
+		251C5ACB1414141D009F3630 /* Protect Copied Headers */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Protect Copied Headers";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh Scripts/Protect.command";
+			shellScript = "";
+		};
+		251C5ACC141417D9009F3630 /* Copy Headers to Build */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Headers to Build";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh Scripts/CopyHeadersToLegacyBuildDir.command";
+			shellScript = "";
+		};
 		25E5EE67133BB0A700C33091 /* Copy RestKit Header */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
