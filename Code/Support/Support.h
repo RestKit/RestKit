@@ -11,3 +11,4 @@
 #import "RKMIMETypes.h"
 #import "RKLog.h"
 #import "NSString+RestKit.h"
+#import "RKPathMatcher.h"

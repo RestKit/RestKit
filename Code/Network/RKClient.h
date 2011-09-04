@@ -41,13 +41,16 @@ NSString* RKMakeURLPath(NSString* resourcePath);
 
 /**
  * Convenience method for generating a path against the properties of an object. Takes
- * a string with property names encoded in parentheses and interpolates the values of
+ * a string with property names encoded with colons and interpolates the values of
  * the properties specified and returns the generated path.
  *
- * For example, given an 'article' object with an 'articleID' property of 12345
- * RKMakePathWithObject(@"articles/(articleID)", article) would generate @"articles/12345"
+ * For example, given an 'article' object with an 'articleID' property of 12345 and a 'name' of Blake,
+ * RKMakePathWithObject(@"articles/:articleID/:name", article) would generate @"articles/12345/Blake"
  *
  * This functionality is the basis for resource path generation in the Router.
+ * @param path The colon encoded path pattern string to use for interpolation.
+ * @param object The object containing the properties needed for interpolation.
+ * @return A new path string, replacing the pattern's parameters with the object's actual property values.
  */
 NSString* RKMakePathWithObject(NSString* path, id object);
 

@@ -13,6 +13,7 @@
 #import "RKNotifications.h"
 #import "RKAlert.h"
 #import "RKLog.h"
+#import "SOCKit.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -34,41 +35,21 @@ NSString* RKMakeURLPath(NSString* resourcePath) {
 	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
 }
 
+BOOL RKPathUsesParentheticalParameters(NSString *path) {
+    NSCharacterSet *parens = [NSCharacterSet characterSetWithCharactersInString:@"()"];
+    NSArray *parenComponents = [path componentsSeparatedByCharactersInSet:parens];
+    return (parenComponents != NULL && [parenComponents count] > 1);
+}
+
 NSString* RKMakePathWithObject(NSString* path, id object) {
-	NSMutableDictionary* substitutions = [NSMutableDictionary dictionary];
-	NSScanner* scanner = [NSScanner scannerWithString:path];
-
-	BOOL startsWithParentheses = [[path substringToIndex:1] isEqualToString:@"("];
-	while ([scanner isAtEnd] == NO) {
-		NSString* keyPath = nil;
-		if (startsWithParentheses || [scanner scanUpToString:@"(" intoString:nil]) {
-			// Advance beyond the opening parentheses
-			if (NO == [scanner isAtEnd]) {
-				[scanner setScanLocation:[scanner scanLocation] + 1];
-			}
-			if ([scanner scanUpToString:@")" intoString:&keyPath]) {
-				NSString* searchString = [NSString stringWithFormat:@"(%@)", keyPath];
-                // TODO: Add warning when the value generated a nil? Only for paths values (i.e. contaning '.')?
-				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
-				[substitutions setObject:propertyStringValue forKey:searchString];
-			}
-		}
-	}
-
-	if (0 == [substitutions count]) {
-		return path;
-	}
-
-	NSMutableString* interpolatedPath = [[path mutableCopy] autorelease];
-	for (NSString* find in substitutions) {
-		NSString* replace = [substitutions valueForKey:find];
-		[interpolatedPath replaceOccurrencesOfString:find
-										  withString:replace
-											 options:NSLiteralSearch
-											   range:NSMakeRange(0, [interpolatedPath length])];
-	}
-
-	return [NSString stringWithString:interpolatedPath];
+    NSCParameterAssert(path != NULL);
+    if (RKPathUsesParentheticalParameters(path)) {
+        RKLogWarning(@"Use of parentheses for resource path parameter matching is deprecated.  Use a single colon instead.");
+        NSString *noTrailingParen = [path stringByReplacingOccurrencesOfString:@")" withString:@""];
+        path = [noTrailingParen stringByReplacingOccurrencesOfString:@"(" withString:@":"];
+    }
+    NSString *interpolatedPath = SOCStringFromStringWithObject(path, object);
+    return interpolatedPath;
 }
 
 NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryParams) {
