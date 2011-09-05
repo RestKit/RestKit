@@ -33,13 +33,14 @@ relationship. Relationships are processed using an object mapping as well.
  */
 @interface RKObjectMapping : NSObject <RKObjectMappingDefinition> {
     Class _objectClass;
-    NSMutableArray* _mappings;
-    NSMutableArray* _dateFormatStrings;
-    NSString* _rootKeyPath;
+    NSMutableArray *_mappings;
+    NSString *_rootKeyPath;
     BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
     BOOL _forceCollectionMapping;
     BOOL _performKeyValueValidation;
+    NSArray *_dateFormatters;
+    NSDateFormatter *_preferredDateFormatter;
 }
 
 /**
@@ -121,12 +122,32 @@ relationship. Relationships are processed using an object mapping as well.
  */
 @property (nonatomic, assign) BOOL forceCollectionMapping;
 
+
 /**
- An array of date format strings to apply when mapping a
- String attribute to a NSDate property. Each format string will be applied
- until the date formatter does not return nil.
+ An array of NSDateFormatter objects to use when mapping string values
+ into NSDate attributes on the target objectClass. Each date formatter
+ will be invoked with the string value being mapped until one of the date
+ formatters does not return nil.
+ 
+ Defaults to the application-wide collection of date formatters configured via:
+ [RKObjectMapping setDefaultDateFormatters:]
+ 
+ @see [RKObjectMapping defaultDateFormatters]
  */
-@property (nonatomic, retain) NSMutableArray* dateFormatStrings;
+@property (nonatomic, retain) NSArray *dateFormatters;
+
+/**
+ The NSDateFormatter instance for your application's preferred date
+ and time configuration. This date formatter will be used when generating
+ string representations of NSDate attributes (i.e. during serialization to
+ URL form encoded or JSON format).
+ 
+ Defaults to the application-wide preferred date formatter configured via:
+ [RKObjectMapping setPreferredDateFormatter:]
+ 
+ @see [RKObjectMapping preferredDateFormatter]
+ */
+@property (nonatomic, retain) NSDateFormatter *preferredDateFormatter;
 
 /**
  Returns an object mapping for the specified class that is ready for configuration
@@ -414,5 +435,80 @@ relationship. Relationships are processed using an object mapping as well.
  @param propertyName The name of the property we would like to retrieve the type of
  */
 - (Class)classForProperty:(NSString*)propertyName;
+
+@end
+
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ Defines the inteface for configuring time and date formatting handling within RestKit
+ object mappings. For performance reasons, RestKit reuses a pool of date formatters rather
+ than constructing them at mapping time. This collection of date formatters can be configured
+ on a per-object mapping or application-wide basis using the static methods exposed in this
+ category.
+ */
+@interface RKObjectMapping (DateAndTimeFormatting)
+
+/**
+ Returns the collection of default date formatters that will be used for all object mappings
+ that have not been configured specifically.
+ 
+ Out of the box, RestKit initializes the following default date formatters for you in the
+ UTC time zone:
+    * yyyy-MM-dd'T'HH:mm:ss'Z'
+    * MM/dd/yyyy
+ 
+ @return An array of NSDateFormatter objects used when mapping strings into NSDate attributes
+ */
++ (NSArray *)defaultDateFormatters;
+
+/**
+ Sets the collection of default date formatters to the specified array. The array should
+ contain configured instances of NSDateFormatter in the order in which you want them applied
+ during object mapping operations.
+ 
+ @param dateFormatters An array of date formatters to replace the existing defaults
+ @see defaultDateFormatters
+ */
++ (void)setDefaultDateFormatters:(NSArray *)dateFormatters;
+
+/**
+ Adds a date formatter instance to the default collection
+ 
+ @param dateFormatter An NSDateFormatter object to append to the end of the default formatters collection
+ @see defaultDateFormatters
+ */
++ (void)addDefaultDateFormatter:(NSDateFormatter *)dateFormatter;
+
+/**
+ Convenience method for quickly constructing a date formatter and adding it to the collection of default
+ date formatters
+ 
+ @param dateFormatString The dateFormat string to assign to the newly constructed NSDateFormatter instance
+ @param nilOrTimeZone The NSTimeZone object to configure on the NSDateFormatter instance. Defaults to UTC time.
+ @result A new NSDateFormatter will be appended to the defaultDateFormatters with the specified date format and time zone
+ @see NSDateFormatter
+ */
++ (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone;
+
+/**
+ Returns the preferred date formatter to use when generating NSString representations from NSDate attributes.
+ This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations
+ that do not have a native time construct.
+ 
+ Defaults to a date formatter configured for the UTC Time Zone with a format string of "yyyy-MM-dd HH:mm:ss Z"
+ 
+ @return The preferred NSDateFormatter to use when serializing dates into strings
+ */
++ (NSDateFormatter *)preferredDateFormatter;
+
+/**
+ Sets the preferred date formatter to use when generating NSString representations from NSDate attributes.
+ This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations
+ that do not have a native time construct.
+ 
+ @param dateFormatter The NSDateFormatter to configured as the new preferred instance
+ */
++ (void)setPreferredDateFormatter:(NSDateFormatter *)dateFormatter;
 
 @end

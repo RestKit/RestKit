@@ -38,6 +38,7 @@ RKClient* RKSpecNewClient(void) {
 }
 
 RKObjectManager* RKSpecNewObjectManager(void) {
+    [RKObjectMapping setDefaultDateFormatters:nil];
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [RKObjectManager setSharedManager:objectManager];
     [RKClient setSharedClient:objectManager.client];
