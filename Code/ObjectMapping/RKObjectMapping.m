@@ -322,6 +322,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone {
     NSDateFormatter *dateFormatter = [NSDateFormatter new];
     dateFormatter.dateFormat = dateFormatString;
+    dateFormatter.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
     if (nilOrTimeZone) {
         dateFormatter.timeZone = nilOrTimeZone;
     } else {
@@ -337,6 +338,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
         preferredDateFormatter = [NSDateFormatter new];
         [preferredDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss Z"];
         preferredDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        preferredDateFormatter.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
     }
     
     return preferredDateFormatter;
