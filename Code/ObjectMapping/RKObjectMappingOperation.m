@@ -97,18 +97,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
     
 	NSDate* date = nil;
-	NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-    formatter.timeZone = [NSTimeZone localTimeZone];
-	for (NSString* formatString in self.objectMapping.dateFormatStrings) {
-		[formatter setDateFormat:formatString];
-		date = [formatter dateFromString:string];
-		if (date) {
+    for (NSDateFormatter *dateFormatter in self.objectMapping.dateFormatters) {
+        @synchronized(dateFormatter) {
+            date = [dateFormatter dateFromString:string];
+        }
+        if (date) {
 			break;
 		}
-	}
-	
-	[formatter release];
-	return date;
+    }
+    
+    return date;
 }
 
 - (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType {
@@ -162,6 +160,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         return ([value boolValue] ? @"true" : @"false");
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
         return [value stringValue];
+    } else if ([destinationType isSubclassOfClass:[NSString class]] && [value isKindOfClass:[NSDate class]]) {
+        // NSDate -> NSString
+        // Transform using the preferred date formatter
+        NSString* dateString = nil;
+        @synchronized(self.objectMapping.preferredDateFormatter) {
+            dateString = [self.objectMapping.preferredDateFormatter stringFromDate:value];
+        }
+        return dateString;
     }
     
     RKLogWarning(@"Failed transformation of value at keyPath '%@'. No strategy for transforming from '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));

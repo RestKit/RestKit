@@ -14,16 +14,34 @@
 // Constants
 NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
 
+// Default NSTimeZone
+static NSTimeZone* defaultTimeZone = nil;
+
 @implementation RKObjectMapping
 
 @synthesize objectClass = _objectClass;
 @synthesize mappings = _mappings;
-@synthesize dateFormatStrings = _dateFormatStrings;
+@synthesize dateFormatters = _dateFormatters;
+@synthesize preferredDateFormatter = _preferredDateFormatter;
 @synthesize rootKeyPath = _rootKeyPath;
 @synthesize setDefaultValueForMissingAttributes = _setDefaultValueForMissingAttributes;
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 @synthesize forceCollectionMapping = _forceCollectionMapping;
 @synthesize performKeyValueValidation = _performKeyValueValidation;
+
++ (NSTimeZone *)defaultTimeZone {
+    if (defaultTimeZone) {
+        return defaultTimeZone;
+    } else {
+        return [NSTimeZone defaultTimeZone];
+    }
+}
+
++ (void)setDefaultTimeZone:(NSTimeZone *)timeZone {
+    [timeZone retain];
+    [defaultTimeZone release];
+    defaultTimeZone = timeZone;
+}
 
 + (id)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [self new];
@@ -55,7 +73,6 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     self = [super init];
     if (self) {
         _mappings = [NSMutableArray new];
-        _dateFormatStrings = [[NSMutableArray alloc] initWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
         self.setDefaultValueForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
@@ -68,7 +85,8 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 - (void)dealloc {
     [_rootKeyPath release];
     [_mappings release];
-    [_dateFormatStrings release];
+    [_dateFormatters release];
+    [_preferredDateFormatter release];
     [super dealloc];
 }
 
@@ -254,6 +272,80 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 
 - (Class)classForProperty:(NSString*)propertyName {
     return [[RKObjectPropertyInspector sharedInspector] typeForProperty:propertyName ofClass:self.objectClass];
+}
+
+#pragma mark - Date and Time
+
+- (NSDateFormatter *)preferredDateFormatter {
+    return _preferredDateFormatter ? _preferredDateFormatter : [RKObjectMapping preferredDateFormatter];
+}
+
+- (NSArray *)dateFormatters {
+    return _dateFormatters ? _dateFormatters : [RKObjectMapping defaultDateFormatters];
+}
+
+@end
+
+/////////////////////////////////////////////////////////////////////////////
+
+static NSMutableArray *defaultDateFormatters = nil;
+static NSDateFormatter *preferredDateFormatter = nil;
+
+@implementation RKObjectMapping (DateAndTimeFormatting)
+
++ (NSArray *)defaultDateFormatters {
+    if (!defaultDateFormatters) {
+        defaultDateFormatters = [[NSMutableArray alloc] initWithCapacity:2];
+        
+        // Setup the default formatters
+        [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
+        [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
+    }
+    
+    return defaultDateFormatters;
+}
+
++ (void)setDefaultDateFormatters:(NSArray *)dateFormatters {
+    [defaultDateFormatters release];
+    defaultDateFormatters = nil;
+    if (dateFormatters) {
+        defaultDateFormatters = [[NSMutableArray alloc] initWithArray:dateFormatters];
+    }
+}
+
+
++ (void)addDefaultDateFormatter:(NSDateFormatter *)dateFormatter {
+    [self defaultDateFormatters];
+    [defaultDateFormatters addObject:dateFormatter];
+}
+
++ (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone {
+    NSDateFormatter *dateFormatter = [NSDateFormatter new];
+    dateFormatter.dateFormat = dateFormatString;
+    if (nilOrTimeZone) {
+        dateFormatter.timeZone = nilOrTimeZone;
+    } else {
+        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    }
+    
+    [self addDefaultDateFormatter:dateFormatter];
+}
+
++ (NSDateFormatter *)preferredDateFormatter {
+    if (!preferredDateFormatter) {
+        // A date formatter that matches the output of [NSDate description]
+        preferredDateFormatter = [NSDateFormatter new];
+        [preferredDateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss Z"];
+        preferredDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    }
+    
+    return preferredDateFormatter;
+}
+
++ (void)setPreferredDateFormatter:(NSDateFormatter *)dateFormatter {
+    [dateFormatter retain];
+    [preferredDateFormatter release];
+    preferredDateFormatter = dateFormatter;
 }
 
 @end
