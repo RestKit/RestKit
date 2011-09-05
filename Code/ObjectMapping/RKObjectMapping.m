@@ -14,16 +14,34 @@
 // Constants
 NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
 
+// Default NSTimeZone
+static NSTimeZone* defaultTimeZone = nil;
+
 @implementation RKObjectMapping
 
 @synthesize objectClass = _objectClass;
 @synthesize mappings = _mappings;
 @synthesize dateFormatStrings = _dateFormatStrings;
+@synthesize timeZone = _timeZone;
 @synthesize rootKeyPath = _rootKeyPath;
 @synthesize setDefaultValueForMissingAttributes = _setDefaultValueForMissingAttributes;
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 @synthesize forceCollectionMapping = _forceCollectionMapping;
 @synthesize performKeyValueValidation = _performKeyValueValidation;
+
++ (NSTimeZone *)defaultTimeZone {
+    if (defaultTimeZone) {
+        return defaultTimeZone;
+    } else {
+        return [NSTimeZone defaultTimeZone];
+    }
+}
+
++ (void)setDefaultTimeZone:(NSTimeZone *)timeZone {
+    [timeZone retain];
+    [defaultTimeZone release];
+    defaultTimeZone = timeZone;
+}
 
 + (id)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [self new];
@@ -56,6 +74,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     if (self) {
         _mappings = [NSMutableArray new];
         _dateFormatStrings = [[NSMutableArray alloc] initWithObjects:@"yyyy-MM-dd'T'HH:mm:ss'Z'", @"MM/dd/yyyy", nil];
+        _timeZone = [RKObjectMapping defaultTimeZone];
         self.setDefaultValueForMissingAttributes = NO;
         self.setNilForMissingRelationships = NO;
         self.forceCollectionMapping = NO;
@@ -69,6 +88,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [_rootKeyPath release];
     [_mappings release];
     [_dateFormatStrings release];
+    [_timeZone release];
     [super dealloc];
 }
 
