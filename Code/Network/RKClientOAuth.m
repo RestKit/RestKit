@@ -29,7 +29,7 @@
 }
 
 -(void)validateAuthorizationCode{
-    NSString *httpBody = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@&redirect_uri=%@",_clientID,_clientSecret,_authorizationCode,_callbackURL];
+    NSString *httpBody = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@&redirect_uri=%@&grant_type=authorization_code",_clientID,_clientSecret,_authorizationCode,_callbackURL];
     RKClient* requestClient = [RKClient clientWithBaseURL:_authorizationURL];
     RKRequest* theRequest = [requestClient requestWithResourcePath:@"" delegate:self];
     [theRequest setHTTPBodyString:httpBody];
