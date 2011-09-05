@@ -482,7 +482,7 @@ relationship. Relationships are processed using an object mapping as well.
 
 /**
  Convenience method for quickly constructing a date formatter and adding it to the collection of default
- date formatters
+ date formatters. The locale is auto-configured to en_US_POSIX
  
  @param dateFormatString The dateFormat string to assign to the newly constructed NSDateFormatter instance
  @param nilOrTimeZone The NSTimeZone object to configure on the NSDateFormatter instance. Defaults to UTC time.
