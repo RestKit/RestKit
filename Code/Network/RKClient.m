@@ -13,6 +13,7 @@
 #import "RKNotifications.h"
 #import "RKAlert.h"
 #import "RKLog.h"
+#import "RKPathMatcher.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -34,49 +35,23 @@ NSString * RKMakeURLPath(NSString *resourcePath) {
 	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
 }
 
-NSString* RKMakePathWithObject(NSString* path, id object) {
-	NSMutableDictionary* substitutions = [NSMutableDictionary dictionary];
-	NSScanner* scanner = [NSScanner scannerWithString:path];
-
-	BOOL startsWithParentheses = [[path substringToIndex:1] isEqualToString:@"("];
-	while ([scanner isAtEnd] == NO) {
-		NSString* keyPath = nil;
-		if (startsWithParentheses || [scanner scanUpToString:@"(" intoString:nil]) {
-			// Advance beyond the opening parentheses
-			if (NO == [scanner isAtEnd]) {
-				[scanner setScanLocation:[scanner scanLocation] + 1];
-			}
-			if ([scanner scanUpToString:@")" intoString:&keyPath]) {
-				NSString* searchString = [NSString stringWithFormat:@"(%@)", keyPath];
-                // TODO: Add warning when the value generated a nil? Only for paths values (i.e. contaning '.')?
-				NSString* propertyStringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:keyPath]];
-				[substitutions setObject:propertyStringValue forKey:searchString];
-			}
-		}
-	}
-
-	if (0 == [substitutions count]) {
-		return path;
-	}
-
-	NSMutableString* interpolatedPath = [[path mutableCopy] autorelease];
-	for (NSString* find in substitutions) {
-		NSString* replace = [substitutions valueForKey:find];
-		[interpolatedPath replaceOccurrencesOfString:find
-										  withString:replace
-											 options:NSLiteralSearch
-											   range:NSMakeRange(0, [interpolatedPath length])];
-	}
-
-	return [NSString stringWithString:interpolatedPath];
+NSString* RKMakePathWithObject(NSString* pattern, id object) {
+    NSCAssert(pattern != NULL, @"Pattern string must not be empty in order to create a path from an interpolated object.");
+    NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pattern];
+    NSString *interpolatedPath = [matcher pathFromObject:object];
+    return interpolatedPath;
 }
 
+<<<<<<< HEAD
 NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) {
 	if ([queryParams count] > 0) {
+=======
+NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryParams) {
+	if ([queryParams count] > 0)
+>>>>>>> Updated header docs and specs to reflect new style of colonized pattern matching, like "/stuff/:things/:moreThings".  Beefed up RKPathMatcher to act as a more capable front-end to SOCKit, to eliminate overt coupling with SOCKit elsewhere in the framework.
 		return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
-	} else {
-		return resourcePath;
-	}
+    return resourcePath;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
