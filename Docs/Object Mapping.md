@@ -579,7 +579,7 @@ RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[User class]];
 mapping.forceCollectionMapping = YES;
 [mapping mapKeyOfNestedDictionaryToAttribute:@"username"];
 [mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
-[mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
+[mapping mapFromKeyPath:@"(username).favorite_animal" toAttribute:"favoriteAnimal"];
 ```
 ### Dynamic Object Mapping
 
