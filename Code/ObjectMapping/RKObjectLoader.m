@@ -315,9 +315,9 @@
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     
 	if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
-		[[[RKClient sharedClient] cache] hasResponseForRequest:self]) {
+		[self.cache hasResponseForRequest:self]) {
 
-		[self didFinishLoad:[[[RKClient sharedClient] cache] responseForRequest:self]];
+		[self didFinishLoad:[self.cache responseForRequest:self]];
 	} else {
         if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
             [_delegate request:self didFailLoadWithError:error];
@@ -339,12 +339,12 @@
 	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
 		[_response release];
 		_response = nil;
-		_response = [[[[RKClient sharedClient] cache] responseForRequest:self] retain];
+		_response = [[self.cache responseForRequest:self] retain];
         [self updateInternalCacheDate];
 	}
 
 	if (![_response wasLoadedFromCache] && [_response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
-		[[[RKClient sharedClient] cache] storeResponse:_response forRequest:self];
+		[self.cache storeResponse:_response forRequest:self];
 	}
 
     if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {

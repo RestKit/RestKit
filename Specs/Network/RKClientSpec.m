@@ -39,9 +39,9 @@
 
 - (void)itShouldInitializeTheCacheOfTheRequest {
     RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
-    client.cache = [[[RKRequestCache alloc] init] autorelease];
+    client.requestCache = [[[RKRequestCache alloc] init] autorelease];
     RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
-	[expectThat(request.cache) should:be(client.cache)];
+	[expectThat(request.cache) should:be(client.requestCache)];
 }
 
 - (void)itShouldAllowYouToChangeTheBaseURL {
