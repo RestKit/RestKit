@@ -598,6 +598,7 @@ mapped. The dynamic mapping is responsible for introspecting the contents of the
 instance that can be used to map the data into a concrete object.
 
 There are three ways in which the determination of the appropriate object mapping can be made:
+
 1. Via a declarative matcher on an attribute within the mappable data. If your dynamic data contains an attribute that can
 be used to infer the appropriate object type, then you are in luck -- RestKit can handle the dynamic mapping via simple 
 configuration.
