@@ -499,6 +499,7 @@ articleMapping.primaryKeyAttribute = @"articleID";
 ```
 
 The astute reader will notice a couple of things:
+
 1. We changed our inheritance to NSManagedObject from NSObject
 1. Our properties are now implemented via @dynamic instead of @synthesize
 1. We have added a new property -- articleID. Typically when you load a remote object it is going to include a unique
@@ -535,7 +536,7 @@ We might have a User class like the following:
 @end
 ```
 
-You will note that this JSON is problematic compared to our earlier examples because the `email` attribute's data
+You will note that this JSON is problematic compared to our earlier examples because the `username` attribute's data
 exists as the key in a dictionary, rather than a value. We handle this by creating an object mapping and using a new
 type of mapping definition:
 
@@ -543,7 +544,7 @@ type of mapping definition:
 RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[User class]];
 [mapping mapKeyOfNestedDictionaryToAttribute:@"username"];
 [mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
-[mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
+[mapping mapFromKeyPath:@"(username).favorite_animal" toAttribute:"favoriteAnimal"];
 ```
 
 What happens with this type of object mapping is that when applied against a dictionary of data,
