@@ -276,6 +276,12 @@
 		25FB6D5613E4836C00F48969 /* RKObjectDynamicMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 252CF8B013E250730093BBD6 /* RKObjectDynamicMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FB6DBD13E4858400F48969 /* RKObjectDynamicMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 252CF8B113E250730093BBD6 /* RKObjectDynamicMapping.m */; };
 		37CA4C501410A4D1009A3DCE /* RKFixCategoryBug.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F846E1410574B007AABCD /* RKFixCategoryBug.h */; };
+		37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C6F1410A7CF009A3DCE /* SOCKit.h */; };
+		37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 37CA4C701410A7CF009A3DCE /* SOCKit.m */; };
+		37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 37CA4C861410ABD2009A3DCE /* RKPathMatcher.m */; };
+		37DEBA62141123BB00FDF847 /* RKPathMatcherSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 37DEBA61141123BB00FDF847 /* RKPathMatcherSpec.m */; };
+		37DEBA651411298300FDF847 /* NSStringRestKitSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 37DEBA641411298300FDF847 /* NSStringRestKitSpec.m */; };
 		3F032A7910FFB89100F35142 /* RKCat.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032A7810FFB89100F35142 /* RKCat.m */; };
 		3F032AA810FFBBCD00F35142 /* RKHouse.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AA710FFBBCD00F35142 /* RKHouse.m */; };
 		3F032AAB10FFBC1F00F35142 /* RKResident.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F032AAA10FFBC1F00F35142 /* RKResident.m */; };
@@ -697,6 +703,12 @@
 		25E9682D13E6156100ABAE92 /* RKObjectMappingDefinition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingDefinition.h; sourceTree = "<group>"; };
 		25F5182313724865009B2E22 /* RKObjectRelationshipMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectRelationshipMapping.h; sourceTree = "<group>"; };
 		25F5182413724866009B2E22 /* RKObjectRelationshipMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectRelationshipMapping.m; sourceTree = "<group>"; };
+		37CA4C6F1410A7CF009A3DCE /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = "<group>"; };
+		37CA4C701410A7CF009A3DCE /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = "<group>"; };
+		37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPathMatcher.h; sourceTree = "<group>"; };
+		37CA4C861410ABD2009A3DCE /* RKPathMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcher.m; sourceTree = "<group>"; };
+		37DEBA61141123BB00FDF847 /* RKPathMatcherSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPathMatcherSpec.m; sourceTree = "<group>"; };
+		37DEBA641411298300FDF847 /* NSStringRestKitSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSStringRestKitSpec.m; sourceTree = "<group>"; };
 		3F032A7710FFB89100F35142 /* RKCat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCat.h; sourceTree = "<group>"; };
 		3F032A7810FFB89100F35142 /* RKCat.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCat.m; sourceTree = "<group>"; };
 		3F032AA610FFBBCD00F35142 /* RKHouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHouse.h; sourceTree = "<group>"; };
@@ -1109,6 +1121,8 @@
 			isa = PBXGroup;
 			children = (
 				253A08B41255212300976E89 /* Parsers */,
+				37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */,
+				37CA4C861410ABD2009A3DCE /* RKPathMatcher.m */,
 				253A089412551D8D00976E89 /* Errors.h */,
 				253A089512551D8D00976E89 /* Errors.m */,
 				253A089612551D8D00976E89 /* NSDictionary+RKAdditions.h */,
@@ -1218,6 +1232,7 @@
 			children = (
 				258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */,
 				250D5BD913A0698100471F0E /* LibComponentLogging */,
+				37CA4C5D1410A7CE009A3DCE /* SOCKit */,
 				20808DB713DE8C7C000A156A /* NXJSON */,
 				73057FC61331AA28001908EE /* JSONKit */,
 				2590E69A1252372800531FA8 /* YAJL */,
@@ -1455,6 +1470,8 @@
 				259D511B1328547000897272 /* NSDictionary+RKRequestSerializationSpec.m */,
 				3F4EAF57134205CF00F944E4 /* RKXMLParserSpec.m */,
 				258E490013C51FE600C9C883 /* RKJSONParserJSONKitSpec.m */,
+				37DEBA61141123BB00FDF847 /* RKPathMatcherSpec.m */,
+				37DEBA641411298300FDF847 /* NSStringRestKitSpec.m */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1499,6 +1516,16 @@
 				25D638E31351268D000879B1 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		37CA4C5D1410A7CE009A3DCE /* SOCKit */ = {
+			isa = PBXGroup;
+			children = (
+				37CA4C6F1410A7CF009A3DCE /* SOCKit.h */,
+				37CA4C701410A7CF009A3DCE /* SOCKit.m */,
+			);
+			name = SOCKit;
+			path = Vendor/SOCKit;
 			sourceTree = "<group>";
 		};
 		3F6C3A9210FE750E008F47C5 /* Specs */ = {
@@ -1637,6 +1664,8 @@
 				250D5C0413A06A4D00471F0E /* lcl_config_logger.h in Headers */,
 				251939B613A94B670073A39B /* NSString+RestKit.h in Headers */,
 				258F846F1410574B007AABCD /* RKFixCategoryBug.h in Headers */,
+				37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */,
+				37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2154,6 +2183,8 @@
 				250D5BFB13A0698100471F0E /* LCLNSLog.m in Sources */,
 				25DBB3A113A2486400CE90F1 /* RKLog.m in Sources */,
 				251939B713A94B670073A39B /* NSString+RestKit.m in Sources */,
+				37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */,
+				37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2265,6 +2296,8 @@
 				25769F0C1409C5A0003FCDBC /* RKChild.m in Sources */,
 				25769F0D1409C5A0003FCDBC /* RKParent.m in Sources */,
 				25E5E66B1415665C00233720 /* RKObjectSerializerSpec.m in Sources */,
+				37DEBA62141123BB00FDF847 /* RKPathMatcherSpec.m in Sources */,
+				37DEBA651411298300FDF847 /* NSStringRestKitSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
