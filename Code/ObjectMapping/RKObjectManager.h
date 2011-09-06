@@ -128,12 +128,24 @@ typedef enum {
  */
 - (id)initWithBaseURL:(NSString*)baseURL;
 
-/// @name Other Methods
+/// @name Network Integration
 
 /**
  The underlying HTTP client for this manager
  */
 @property (nonatomic, retain) RKClient* client;
+
+/**
+ The request cache used to store and load responses for requests sent
+ through this object manager's underlying client object
+ */
+@property (nonatomic, readonly) RKRequestQueue *requestQueue;
+
+/**
+ The request queue used to dispatch asynchronous requests sent
+ through this object manager's underlying client object
+ */
+@property (nonatomic, readonly) RKRequestCache *requestCache;
 
 /**
  True when we are in online mode
