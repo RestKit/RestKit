@@ -22,7 +22,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
 
-static RKClient *sharedClient = nil;
+static RKClient* sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // URL Conveniences functions
@@ -43,13 +43,8 @@ NSString* RKMakePathWithObject(NSString* pattern, id object) {
     return interpolatedPath;
 }
 
-<<<<<<< HEAD
 NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) {
-	if ([queryParams count] > 0) {
-=======
-NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryParams) {
 	if ([queryParams count] > 0)
->>>>>>> Updated header docs and specs to reflect new style of colonized pattern matching, like "/stuff/:things/:moreThings".  Beefed up RKPathMatcher to act as a more capable front-end to SOCKit, to eliminate overt coupling with SOCKit elsewhere in the framework.
 		return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
     return resourcePath;
 }
@@ -79,12 +74,12 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	return sharedClient;
 }
 
-+ (void)setSharedClient:(RKClient*)client {
++ (void)setSharedClient:(RKClient *)client {
 	[sharedClient release];
 	sharedClient = [client retain];
 }
 
-+ (RKClient *)clientWithBaseURL:(NSString*)baseURL {
++ (RKClient *)clientWithBaseURL:(NSString *)baseURL {
 	RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
 	return client;
 }
