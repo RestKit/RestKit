@@ -121,6 +121,17 @@
 	blake.name = @"blake";
 	blake.railsID = [NSNumber numberWithInt:31337];
 	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+	[router routeClass:[RKHuman class] toResourcePath:@"/humans/:railsID/:name" forMethod:RKRequestMethodGET];
+	
+	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+	[expectThat(resourcePath) should:be(@"/humans/31337/blake")];
+}
+
+- (void)itShouldInterpolatePropertyNamesReferencedInTheMappingWithDeprecatedParentheses {
+	RKHuman* blake = [RKHuman object];
+	blake.name = @"blake";
+	blake.railsID = [NSNumber numberWithInt:31337];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
 	[router routeClass:[RKHuman class] toResourcePath:@"/humans/(railsID)/(name)" forMethod:RKRequestMethodGET];
 	
 	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
@@ -128,6 +139,17 @@
 }
 
 - (void)itShouldAllowForPolymorphicURLsViaMethodCalls {
+	RKHuman* blake = [RKHuman object];
+	blake.name = @"blake";
+	blake.railsID = [NSNumber numberWithInt:31337];
+	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
+	[router routeClass:[RKHuman class] toResourcePath:@":polymorphicResourcePath" forMethod:RKRequestMethodGET];
+	
+	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
+	[expectThat(resourcePath) should:be(@"/this/is/the/path")];
+}
+
+- (void)itShouldAllowForPolymorphicURLsViaMethodCallsWithDeprecatedParentheses {
 	RKHuman* blake = [RKHuman object];
 	blake.name = @"blake";
 	blake.railsID = [NSNumber numberWithInt:31337];

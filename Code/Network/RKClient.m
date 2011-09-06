@@ -13,7 +13,7 @@
 #import "RKNotifications.h"
 #import "RKAlert.h"
 #import "RKLog.h"
-#import "SOCKit.h"
+#import "RKPathMatcher.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -35,29 +35,18 @@ NSString* RKMakeURLPath(NSString* resourcePath) {
 	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
 }
 
-BOOL RKPathUsesParentheticalParameters(NSString *path) {
-    NSCharacterSet *parens = [NSCharacterSet characterSetWithCharactersInString:@"()"];
-    NSArray *parenComponents = [path componentsSeparatedByCharactersInSet:parens];
-    return (parenComponents != NULL && [parenComponents count] > 1);
-}
-
-NSString* RKMakePathWithObject(NSString* path, id object) {
-    NSCParameterAssert(path != NULL);
-    if (RKPathUsesParentheticalParameters(path)) {
-        RKLogWarning(@"Use of parentheses for resource path parameter matching is deprecated.  Use a single colon instead.");
-        NSString *noTrailingParen = [path stringByReplacingOccurrencesOfString:@")" withString:@""];
-        path = [noTrailingParen stringByReplacingOccurrencesOfString:@"(" withString:@":"];
-    }
-    NSString *interpolatedPath = SOCStringFromStringWithObject(path, object);
+NSString* RKMakePathWithObject(NSString* pattern, id object) {
+    NSCAssert(pattern != NULL, @"Pattern string must not be empty in order to create a path from an interpolated object.");
+    NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pattern];
+    NSString *interpolatedPath = [matcher pathFromObject:object];
     return interpolatedPath;
 }
 
 NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryParams) {
-	if ([queryParams count] > 0) {
+	if ([queryParams count] > 0)
 		return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
-	} else {
-		return resourcePath;
-	}
+    return resourcePath;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

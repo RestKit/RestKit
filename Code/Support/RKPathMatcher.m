@@ -12,6 +12,21 @@
 #import "NSDictionary+RKAdditions.h"
 #import "RKLog.h"
 
+BOOL RKPathUsesParentheticalParameters(NSString *path) {
+    NSCharacterSet *parens = [NSCharacterSet characterSetWithCharactersInString:@"()"];
+    NSArray *parenComponents = [path componentsSeparatedByCharactersInSet:parens];
+    return (parenComponents != NULL && [parenComponents count] > 1);
+}
+
+NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
+    if (RKPathUsesParentheticalParameters(pattern)) {
+        RKLogWarning(@"Use of encapsulating parentheses for pattern parameters is deprecated.  Use a single colon instead. For example, instead of /group/(role)/(user) you should use /group/:role/:user");
+        NSString *noTrailingParen = [pattern stringByReplacingOccurrencesOfString:@")" withString:@""];
+        pattern = [noTrailingParen stringByReplacingOccurrencesOfString:@"(" withString:@":"];
+    }
+    return pattern;
+}
+
 @interface RKPathMatcher()
 @property (nonatomic,retain) SOCPattern *socPattern;
 @property (nonatomic,copy) NSString *sourcePath;
@@ -34,7 +49,8 @@
 }
 
 +(RKPathMatcher *)matcherWithPattern:(NSString *)patternString {
-    NSCParameterAssert(patternString != NULL);
+    NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform pattern matching.");
+    patternString = RKPathPatternFindAndReplaceParensWithColons(patternString);
     RKPathMatcher *matcher = [[[RKPathMatcher alloc] init] autorelease];
     matcher.socPattern = [SOCPattern patternWithString:patternString];
     return matcher;
@@ -48,7 +64,7 @@
 }
 
 - (BOOL)matches {
-    NSCParameterAssert(self.socPattern != NULL && self.rootPath != NULL);
+    NSAssert( (self.socPattern != NULL && self.rootPath != NULL) , @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
     return [self.socPattern stringMatches:self.rootPath];
 }
 
@@ -63,7 +79,7 @@
 }
 
 - (BOOL)itMatchesAndHasParsedArguments:(NSDictionary **)arguments tokenizeQueryStrings:(BOOL)shouldTokenize {
-    NSCParameterAssert(self.socPattern != NULL);
+    NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using matcherWithPattern: before attempting a pattern match.");
     NSMutableDictionary *argumentsCollection = [NSMutableDictionary dictionary];
     if ([self bifurcateSourcePathFromQueryParameters]) {
         if (shouldTokenize) {
@@ -84,7 +100,8 @@
 }
 
 - (BOOL)matchesPattern:(NSString *)patternString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments {
-    NSCParameterAssert(patternString != NULL);
+    NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform patterm matching.");
+    patternString = RKPathPatternFindAndReplaceParensWithColons(patternString);
     self.socPattern = [SOCPattern patternWithString:patternString];
     return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
 }
@@ -93,6 +110,12 @@
     self.sourcePath = sourceString;
     self.rootPath = sourceString;
     return [self itMatchesAndHasParsedArguments:arguments tokenizeQueryStrings:shouldTokenize];
+}
+
+- (NSString *)pathFromObject:(id)object {
+    NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using matcherWithPattern: before calling pathFromObject:");
+    NSAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
+    return [self.socPattern stringFromObject:object];
 }
 
 @end

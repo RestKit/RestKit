@@ -782,7 +782,7 @@ The currently available result coercions are:
         is useful when you encountered a server side error and want to coerce the mapping results into an NSError. This is how `objectLoader:didFailWithError`
         returns server side error messages to you.
 - **RKObjectRouter** - Responsible for generating resource paths for accessing remote representations of objects. Capable of generating a resource
-path by interpolating property values into a string. For example, a path of "/articles/(articleID)" when applied to an Article object with a `articleID` property
+path by interpolating property values into a string. For example, a path of "/articles/:articleID" when applied to an Article object with a `articleID` property
 with the value 12345, would generate "/articles/12345". The object router is used to generate resource paths when getObject, postObject, putObject and deleteObject
 are invoked.
 - **RKErrorMessage** - A simple class providing for the mapping of server-side error messages back to NSError objects. Contains a single `errorMessage` property. When an

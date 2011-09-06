@@ -63,12 +63,31 @@
     assertThat(arguments, hasEntry(@"apikey", @"GC12d0c6af"));
 }
 
-- (void)itShouldNotMatchPathsUsingDeprecatedParentheses {
+- (void)itShouldMatchPathsWithDeprecatedParentheses {
     NSDictionary *arguments = nil;
     RKPathMatcher* patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/(username)"];
     BOOL isMatchingPattern = [patternMatcher matchesPath:@"github.com/jverkoey" tokenizeQueryStrings:NO parsedArguments:&arguments];
-    assertThatBool(isMatchingPattern, is(equalToBool(NO)));
+    assertThatBool(isMatchingPattern, is(equalToBool(YES)));
 }
 
+- (void)itShouldCreatePathsFromInterpolatedObjects {
+    NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:name/:age"];
+    NSString *interpolatedPath = [matcher pathFromObject:person];
+    assertThat(interpolatedPath, isNot(equalTo(nil)));
+    NSString *expectedPath = @"/people/CuddleGuts/6";
+    assertThat(interpolatedPath, is(equalTo(expectedPath)));
+}
+
+- (void)itShouldCreatePathsFromInterpolatedObjectsWithDeprecatedParentheses {
+    NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/(name)/(age)"];
+    NSString *interpolatedPath = [matcher pathFromObject:person];
+    assertThat(interpolatedPath, isNot(equalTo(nil)));
+    NSString *expectedPath = @"/people/CuddleGuts/6";
+    assertThat(interpolatedPath, is(equalTo(expectedPath)));
+}
 
 @end

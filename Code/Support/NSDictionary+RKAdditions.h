@@ -17,7 +17,7 @@
 + (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
- * Strips out any percent escapes (like %20) from the receiving dictionary's key and objects.
+ * Strips out any percent escapes (such as %20) from the receiving dictionary's key and objects.
  */
 - (NSDictionary *)removePercentEscapesFromKeysAndObjects;
 

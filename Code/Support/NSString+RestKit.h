@@ -29,14 +29,16 @@
 
 /**
  Convenience method for generating a path against the properties of an object. Takes
- a string with property names encoded in parentheses and interpolates the values of
+ a string with property names prefixed with a colon and interpolates the values of
  the properties specified and returns the generated path.
  
  For example, given an 'article' object with an 'articleID' property of 12345
- [@"articles/(articleID)" interpolateWithObject:article] would generate @"articles/12345"
+ [@"articles/:articleID" interpolateWithObject:article] would generate @"articles/12345"
  This functionality is the basis for resource path generation in the Router.
  
  @param object The object to interpolate the properties against
+ @see RKMakePathWithObject
+ @see RKPathMatcher
  */
 - (NSString*)interpolateWithObject:(id)object;
 

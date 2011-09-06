@@ -12,8 +12,10 @@
 /**
  This class performs pattern matching and parameter parsing of strings, usually resource paths.
  It provides much of the necessary tools to map a given resource path to local objects (the inverse 
- of RKRouter's purpose).  This makes it easier to implement RKManagedObjectCache, and generate fetched
- requests from a given resource path.
+ of RKRouter's function).  This makes it easier to implement RKManagedObjectCache, and generate fetched
+ requests from a given resource path.  There are two means of instantiating and using a matcher object
+ in order to provide more flexibility in implementations, and to improve efficiency by eliminating
+ repetitive and costly pattern initializations.
    
  @see RKManagedObjectCache
  @see RKMakePathWithObject
@@ -33,7 +35,7 @@
  matchesPattern:tokenizeQueryStrings:parsedArguments:
  
  @param pathString The string to evaluate and parse, such as /districts/tx/upper/?apikey=GC5512354
- @return An instantiated RKPathMatcher. 
+ @return An instantiated RKPathMatcher without an established pattern.
  */
 +(RKPathMatcher *)matcherWithPath:(NSString *)pathString;
 
@@ -64,7 +66,7 @@
  /:key1/:key2/:key3/ is acceptable.
  
  @param patternString The pattern to use for evaluating, such as /:entityName/:stateID/:chamber/
- @return An instantiated RKPathMatcher. 
+ @return An instantiated RKPathMatcher with an established pattern. 
  */
 +(RKPathMatcher *)matcherWithPattern:(NSString *)patternString;
 
@@ -78,4 +80,24 @@
  @return A boolean indicating if the path string successfully matched the pattern. 
  */
 - (BOOL)matchesPath:(NSString *)pathString tokenizeQueryStrings:(BOOL)shouldTokenize parsedArguments:(NSDictionary **)arguments;
+
+/**
+ This generates a resource path by interpolating the properties of the 'object' argument, assuming the existence
+ of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
+ function to RKMakePathWithObject (in fact it is a shortcut for this method).
+  
+ For example, given an 'article' object with an 'articleID' property value of 12345 ...
+ 
+   RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID"];
+   NSString *resourcePath = [matcher pathFromObject:article];
+ 
+ ... will produce a 'resourcePath' containing the string "/articles/12345"
+    
+ @param object The object containing the properties to interpolate.
+ @return A string with the object's interpolated property values inserted into the receiver's established pattern.
+ @see RKMakePathWithObject
+ @see RKRouter
+ */
+- (NSString *)pathFromObject:(id)object;
+
 @end
