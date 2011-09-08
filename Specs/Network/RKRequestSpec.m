@@ -633,4 +633,37 @@
     assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
 }
 
+// TODO: Move to RKRequestCacheSpec
+- (void)itShouldReturnNilForCachePathWhenTheRequestIsUsingRKParams {
+    RKParams *params = [RKParams params];
+    [params setValue:@"foo" forParam:@"bar"];
+    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/"];
+    RKRequest *request = [RKRequest requestWithURL:URL delegate:nil];
+    request.params = params;
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache *requestCache = [[RKRequestCache alloc] initWithCachePath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
+    NSString *requestCachePath = [requestCache pathForRequest:request];
+    assertThat(requestCachePath, is(nilValue()));
+}
+
+- (void)itShouldReturnNilForCachePathWhenTheRequestIsADELETE {
+    RKParams *params = [RKParams params];
+    [params setValue:@"foo" forParam:@"bar"];
+    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/"];
+    RKRequest *request = [RKRequest requestWithURL:URL delegate:nil];
+    request.method = RKRequestMethodDELETE;
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache *requestCache = [[RKRequestCache alloc] initWithCachePath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
+    NSString *requestCachePath = [requestCache pathForRequest:request];
+    assertThat(requestCachePath, is(nilValue()));
+}
+
 @end

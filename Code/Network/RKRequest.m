@@ -562,20 +562,36 @@
 #endif
 }
 
-- (NSString*)cacheKey {
+- (BOOL)isCacheable {
+    // DELETE is not cacheable
     if (_method == RKRequestMethodDELETE) {
+        return NO;
+    }
+    
+    // Multi-part file uploads are not cacheable
+    if (_params && ![_params respondsToSelector:@selector(HTTPBody)]) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (NSString*)cacheKey {
+    if (! [self isCacheable]) {
+        RKLogDebug(@"Asked to return cacheKey for uncacheable request: %@", self);
         return nil;
     }
+    
     // Use [_params HTTPBody] because the URLRequest body may not have been set up yet.
-    NSString* compositCacheKey = nil;
-    if (_params) {
-        if ([_params respondsToSelector:@selector(HTTPBody)]) {
-            compositCacheKey = [NSString stringWithFormat:@"%@-%d-%@", self.URL, _method, [_params HTTPBody]];
-        }
+    NSString* compositeCacheKey = nil;
+    if (_params && [_params respondsToSelector:@selector(HTTPBody)]) {
+        compositeCacheKey = [NSString stringWithFormat:@"%@-%d-%@", self.URL, _method, [_params HTTPBody]];
     } else {
-        compositCacheKey = [NSString stringWithFormat:@"%@-%d", self.URL, _method];
+        compositeCacheKey = [NSString stringWithFormat:@"%@-%d", self.URL, _method];
     }
-    return [compositCacheKey MD5];
+    
+    NSAssert(compositeCacheKey, @"Expected a cacheKey to be generated for request %@, but got nil", compositeCacheKey);
+    return [compositeCacheKey MD5];
 }
 
 @end
