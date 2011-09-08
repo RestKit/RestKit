@@ -6,13 +6,12 @@
 //  Copyright 2009 Two Toasters. All rights reserved.
 //
 
-#import <SystemConfiguration/SCNetworkReachability.h>
 #import "RKClient.h"
 #import "RKURL.h"
 #import "RKNotifications.h"
-#import "RKAlert.h"
-#import "RKLog.h"
-#import "RKPathMatcher.h"
+#import "../Support/RKAlert.h"
+#import "../Support/RKLog.h"
+#import "../Support/RKPathMatcher.h"
 
 // Set Logging Component
 #undef RKLogComponent
