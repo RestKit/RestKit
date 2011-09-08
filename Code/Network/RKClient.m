@@ -8,7 +8,6 @@
 
 #import <SystemConfiguration/SCNetworkReachability.h>
 #import "RKClient.h"
-#import "RKObjectLoader.h"
 #import "RKURL.h"
 #import "RKNotifications.h"
 #import "RKAlert.h"
