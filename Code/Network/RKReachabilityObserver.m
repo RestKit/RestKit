@@ -82,6 +82,10 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
             
             // We can immediately determine reachability to an IP address
             _reachabilityEstablished = YES;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // Fire reachability observer after giving other objects a chance to observe us
+                [[NSNotificationCenter defaultCenter] postNotificationName:RKReachabilityStateWasDeterminedNotification object:self];
+            });
             
             RKLogInfo(@"Reachability observer initialized with IP address %@.", hostName);
             RKLogDebug(@"Reachability observer initialized with IP address, automatically marking reachability as determined.");            
