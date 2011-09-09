@@ -19,6 +19,17 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 
 @implementation RKDotNetDateFormatter
 
++ (RKDotNetDateFormatter *)dotNetDateFormatter {
+    return [RKDotNetDateFormatter dotNetDateFormatterWithTimeZone:nil];
+}
+
++ (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone {
+    RKDotNetDateFormatter *formatter = [[[RKDotNetDateFormatter alloc] init] autorelease];
+    if (newTimeZone)
+		formatter.timeZone = newTimeZone;
+    return formatter;
+}
+
 - (NSDate *)dateFromString:(NSString *)string {
     NSString *milliseconds = [self millisecondsFromString:string];
     if (!milliseconds) {

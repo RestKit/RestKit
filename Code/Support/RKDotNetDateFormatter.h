@@ -18,6 +18,26 @@
 }
 
 /**
+ Instantiates an autoreleased RKDotNetDateFormatter object with the timezone set to UTC 
+ (Greenwich Mean Time).
+
+ @return An autoreleased RKDotNetDateFormatter object
+ @see dotNetDateFormatterWithTimeZone
+ */
++ (RKDotNetDateFormatter *)dotNetDateFormatter;
+
+/**
+ Instantiates an autoreleased RKDotNetDateFormatter object.  
+ The supplied timeZone, such as one produced with [NSTimeZone timeZoneWithName:@"UTC"],
+ is only used during calls to stringFromDate:, for a detailed explanation see dateFromString:
+
+ @param timeZone An NSTimeZone object.
+ @return An autoreleased RKDotNetDateFormatter object
+ @see dotNetDateFormatter
+ */
++ (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)timeZone;
+
+/**
  Returns an NSDate object from an ASP.NET style date string respresentation, as seen in JSON.
  Acceptable examples are:
     /Date(1112715000000-0500)/
