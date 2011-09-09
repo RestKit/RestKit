@@ -18,7 +18,7 @@
 #import "NSString+MD5.h"
 #import "RKLog.h"
 #import "RKRequestCache.h"
-//#import "TDOAuth.h"
+#import "TDOAuth.h"
 
 
 // Set Logging Component
@@ -200,8 +200,15 @@ cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consum
     // Add OAuth headers if is need it
     // OAuth 1
     if(_forceOAuthUse){
+        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+        for(NSString *parameter in [[_URL query] componentsSeparatedByString:@"&"]) {
+            NSArray *keyValuePair = [parameter componentsSeparatedByString:@"="];
+            [parameters setValue:[[keyValuePair objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
+                          forKey:[keyValuePair objectAtIndex:0]];
+        }
+        
         NSURLRequest *echo = [TDOAuth URLRequestForPath:[self resourcePath]
-                                          GETParameters:nil
+                                          GETParameters:parameters
                                                  scheme:[_URL scheme]
                                                    host:[_URL host]
                                             consumerKey:_consumerKey
