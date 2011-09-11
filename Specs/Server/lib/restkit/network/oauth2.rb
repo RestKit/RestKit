@@ -9,7 +9,7 @@ module RestKit
         if "1234" == authorization_code
           response = { 'access_token' => ACCESS_TOKEN, 'timeout' => 31337 }.to_json
         else
-          response = { 'OAuth Exception' => {'error_code' => '100', 'description' => 'authorization code not valid'}}.to_json
+          response = {'error' => 'invalid_grant', 'error_description' => 'authorization code not valid'}.to_json
         end
           content_type 'application/json'
           response
@@ -20,11 +20,13 @@ module RestKit
         tokenHeader = 'OAuth2 ' + ACCESS_TOKEN
         response = ''
         if access_token.nil?
-          response = { 'OAuth Exception' => {'error_code' => '201', 'description' => 'An access token is requerid to access to this resource'}}.to_json
+          status 401
+          response = {'message' => "A valid access_token is required to access."}.to_json
         elsif tokenHeader == access_token
           response = {'user_id' => 1, 'name' => 'Rod'}
         else
-          response = { 'OAuth Exception' => {'error_code' => '200', 'description' => 'access token not valid'}}.to_json
+          status 401
+          response = {'message' => "Bad credentials"}.to_json
         end
           content_type 'application/json'
           response      

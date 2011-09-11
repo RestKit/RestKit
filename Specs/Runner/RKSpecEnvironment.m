@@ -38,6 +38,7 @@ RKClient* RKSpecNewClient(void) {
 }
 
 RKClientOAuth* RKSpecNewClientOAuth(RKSpecResponseLoader* loader){
+    [loader setTimeout:10];
     RKClientOAuth* client = [RKClientOAuth clientWithClientID:@"appID" secret:@"appSecret" delegate:loader];
     client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize",RKSpecGetBaseURL()];
     return client;
