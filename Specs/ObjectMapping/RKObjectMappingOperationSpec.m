@@ -10,12 +10,15 @@
 #import "RKObjectMapperError.h"
 
 @interface TestMappable : NSObject {
-    NSURL* _url;
-    NSString* _boolString;
+    NSURL *_url;
+    NSString *_boolString;
+    NSDate *_date;
 }
 
-@property (nonatomic, retain) NSURL* url;
-@property (nonatomic, retain) NSString* boolString;
+@property (nonatomic, retain) NSURL *url;
+@property (nonatomic, retain) NSString *boolString;
+@property (nonatomic, retain) NSNumber *boolNumber;
+@property (nonatomic, retain) NSDate *date;
 
 @end
 
@@ -23,12 +26,14 @@
 
 @synthesize url = _url;
 @synthesize boolString = _boolString;
+@synthesize boolNumber = _boolNumber;
+@synthesize date = _date;
 
 - (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError {
-    if ([(NSObject*)*ioValue isKindOfClass:[NSString class]] && [(NSString*)*ioValue isEqualToString:@"FAIL"]) {
+    if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"FAIL"]) {
         *outError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
         return NO;
-    } else if ([(NSObject*)*ioValue isKindOfClass:[NSString class]] && [(NSString*)*ioValue isEqualToString:@"REJECT"]) {
+    } else if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"REJECT"]) {
         return NO;
     }
     
@@ -77,6 +82,51 @@
     [operation release];
 }
 
+- (void)itShouldSuccessfullyMapTrueBoolsToNSNumbers {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"boolNumber", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id data = [parser objectFromString:@"{\"boolNumber\":true}" error:nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThatInt([object.boolNumber intValue], is(equalToInt(1)));
+    [operation release];
+}
+
+- (void)itShouldSuccessfullyMapFalseBoolsToNSNumbers {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"boolNumber", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id data = [parser objectFromString:@"{\"boolNumber\":false}" error:nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThatInt([object.boolNumber intValue], is(equalToInt(0)));
+    [operation release];
+}
+
+- (void)itShouldSuccessfullyMapNumbersToStrings {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapKeyPath:@"number" toAttribute:@"boolString"];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id data = [parser objectFromString:@"{\"number\":123}" error:nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.boolString, is(equalTo(@"123")));
+    [operation release];
+}
+
 - (void)itShouldFailTheMappingOperationIfKeyValueValidationSetsAnError {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolString", nil];
@@ -102,6 +152,74 @@
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"should not change")));
     [operation release];
+}
+
+#pragma mark - TimeZone Handling
+
+- (void)itShouldMapAUTCDateWithoutChangingTheTimeZone {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"date", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"2011-07-07T04:35:28Z" forKey:@"date"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.date, isNot(nilValue()));
+    assertThat([object.date description], is(equalTo(@"2011-07-07 04:35:28 +0000")));
+    [operation release];
+}
+
+- (void)itShouldMapASimpleDateStringAppropriately {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"date", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"08/09/2011" forKey:@"date"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.date, isNot(nilValue()));
+    assertThat([object.date description], is(equalTo(@"2011-08-09 00:00:00 +0000")));
+    [operation release];
+}
+
+- (void)itShouldMapAStringIntoTheLocalTimeZone {
+    NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
+    dateFormatter.dateFormat = @"MM-dd-yyyy";
+    dateFormatter.timeZone = EDTTimeZone;
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"date", nil];
+    mapping.dateFormatters = [NSArray arrayWithObject:dateFormatter];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"11-27-1982" forKey:@"date"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.date, isNot(nilValue()));
+    // Since there is no time date, our description will be midnight + UTC offset (5 hours)
+    assertThat([object.date description], is(equalTo(@"1982-11-27 05:00:00 +0000")));
+    [operation release];
+}
+
+- (void)itShouldMapADateToAStringUsingThePreferredDateFormatter {
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapKeyPath:@"date" toAttribute:@"boolString"];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
+    dateFormatter.dateFormat = @"MM-dd-yyyy";
+    dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    object.date = [dateFormatter dateFromString:@"11-27-1982"];
+    mapping.preferredDateFormatter = dateFormatter;
+    TestMappable *newObject = [TestMappable new];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:newObject mapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(newObject.boolString, is(equalTo(@"11-27-1982")));
 }
 
 @end

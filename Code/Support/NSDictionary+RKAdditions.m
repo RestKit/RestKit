@@ -7,6 +7,9 @@
 //
 
 #import "NSDictionary+RKAdditions.h"
+#import "RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 
 @implementation NSDictionary (RKAdditions)
 
@@ -23,6 +26,19 @@
     va_end(args);
     
     return [self dictionaryWithObjects:values forKeys:keys];
+}
+
+- (NSDictionary *)removePercentEscapesFromKeysAndObjects {
+    NSMutableDictionary *results = [NSMutableDictionary dictionaryWithCapacity:[self count]];
+    [self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
+     {
+         NSString *escapedKey = [key stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+         id escapedValue = value;
+         if ([value respondsToSelector:@selector(stringByReplacingPercentEscapesUsingEncoding:)])
+             escapedValue = [value stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+         [results setObject:escapedValue forKey:escapedKey];
+     }];
+    return results;
 }
 
 @end

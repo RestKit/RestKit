@@ -257,14 +257,14 @@
 				3F3CE2C5125B93780083FDCB /* libRestKitNetwork.a */,
 				3F3CE2C7125B93780083FDCB /* libRestKitObjectMapping.a */,
 				3F3CE2C9125B93780083FDCB /* libRestKitSupport.a */,
-				25FB6DDD13E4868300F48969 /* libRestKitJSONParser+NXJSON.a */,
+				25FB6DDD13E4868300F48969 /* libRestKitJSONParserNXJSON.a */,
 				3F3CE2CB125B93780083FDCB /* libRestKitJSONParserYAJL.a */,
 				3F3CE2CD125B93780083FDCB /* libRestKitJSONParserSBJSON.a */,
 				25E5EEB4133BB2D700C33091 /* libRestKitJSONParserJSONKit.a */,
 				251E0D53134189230017A6DA /* libRestKitXMLParserLibxml.a */,
 				3F3CE2CF125B93780083FDCB /* libRestKitCoreData.a */,
 				2538E808123417E500ACB5D7 /* libRestKitThree20.a */,
-				2538E80A123417E500ACB5D7 /* UISpec.app */,
+				2538E80A123417E500ACB5D7 /* RestKitSpecs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -327,9 +327,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1D6058900D05DD3D006BFB54 /* RKTwitter */ = {
+		1D6058900D05DD3D006BFB54 /* RKTwitterCoreData */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitter" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitterCoreData" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -340,7 +340,7 @@
 			dependencies = (
 				3F3CE2E4125B93EB0083FDCB /* PBXTargetDependency */,
 			);
-			name = RKTwitter;
+			name = RKTwitterCoreData;
 			productName = RKTwitter;
 			productReference = 1D6058910D05DD3D006BFB54 /* RKTwitterCoreData.app */;
 			productType = "com.apple.product-type.application";
@@ -391,7 +391,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* RKTwitter */,
+				1D6058900D05DD3D006BFB54 /* RKTwitterCoreData */,
 				25F2A1751322D59400A33DE4 /* Generate Seed Database */,
 			);
 		};
@@ -412,10 +412,10 @@
 			remoteRef = 2538E807123417E500ACB5D7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		2538E80A123417E500ACB5D7 /* UISpec.app */ = {
+		2538E80A123417E500ACB5D7 /* RestKitSpecs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = UISpec.app;
+			path = RestKitSpecs.app;
 			remoteRef = 2538E809123417E500ACB5D7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -426,10 +426,9 @@
 			remoteRef = 25E5EEB3133BB2D700C33091 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		25FB6DDD13E4868300F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+		25FB6DDD13E4868300F48969 /* libRestKitJSONParserNXJSON.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			name = "libRestKitJSONParser+NXJSON.a";
 			path = libRestKitJSONParserNXJSON.a;
 			remoteRef = 25FB6DDC13E4868300F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -554,19 +553,14 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Debug;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
 			};
 			name = Debug;
@@ -574,17 +568,12 @@
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Release;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -593,7 +582,6 @@
 		25F2A1941322D59400A33DE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Debug;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -601,12 +589,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
-				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";
 			};
 			name = Debug;
@@ -614,18 +598,13 @@
 		25F2A1951322D59400A33DE4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Release;
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
-				HEADER_SEARCH_PATHS = ../../Build;
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -663,7 +642,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitter" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "RKTwitterCoreData" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,

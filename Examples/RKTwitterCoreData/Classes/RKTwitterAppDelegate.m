@@ -22,7 +22,7 @@
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:@"http://twitter.com"];
     
     // Enable automatic network activity indicator management
-    [RKRequestQueue sharedQueue].showsNetworkActivityIndicatorWhenBusy = YES;
+    objectManager.client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
     
     // Initialize object store
     #ifdef RESTKIT_GENERATE_SEED_DB

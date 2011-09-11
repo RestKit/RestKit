@@ -318,4 +318,12 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
+- (RKRequestCache *)requestCache {
+    return self.client.requestCache;
+}
+
+- (RKRequestQueue *)requestQueue {
+    return self.client.requestQueue;
+}
+
 @end

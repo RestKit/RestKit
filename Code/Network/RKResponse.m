@@ -196,7 +196,7 @@ extern NSString* cacheURLKey;
 
 - (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
     RKLogWarning(@"RestKit was asked to retransmit a new body stream for a request. Possible connection error or authentication challenge?");
-    return [self.request.params HTTPBodyStream];
+    return nil;
 }
 
 // In the event that the url request is a post, this delegate method will be called before

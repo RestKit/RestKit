@@ -88,13 +88,6 @@
 
 @implementation RKObjectLoaderSpec
 
-- (void)beforeAll {
-    RKRequestQueue* queue = [[RKRequestQueue alloc] init];
-    queue.suspended = NO;
-    [RKRequestQueue setSharedQueue:queue];
-    [queue release];
-}
-
 - (RKObjectMappingProvider*)providerForComplexUser {
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
@@ -113,7 +106,7 @@
 }
 
 - (void)itShouldHandleTheErrorCaseAppropriately {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/errors.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
@@ -271,6 +264,29 @@
     [manager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
     [loader waitForResponse];
     assertThat([loader.mappableData valueForKey:@"newKey"], is(equalTo(@"monkey!")));
+}
+
+- (void)itShouldAllowYouToPostAnObjectAndHandleAnEmpty204Response {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
+    RKObjectMapping* serializationMapping = [mapping inverseMapping];
+    
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKSpecComplexUser class] toResourcePath:@"/204"];
+    [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKSpecComplexUser class]];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* loader = [objectManager objectLoaderForObject:user method:RKRequestMethodPOST delegate:responseLoader];
+    loader.objectMapping = mapping;
+    [loader send];
+    [responseLoader waitForResponse];
+    assertThatBool([responseLoader success], is(equalToBool(YES)));
+    assertThat(user.email, is(equalTo(@"blake@restkit.org")));
 }
 
 - (void)itShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContent {

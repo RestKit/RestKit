@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		25354DDF138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25354DDE138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a */; };
-		25354DE1138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25354DE0138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a */; };
 		25359E6512E3E0A5008BF33D /* libThree20.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25359D4212E3E0A4008BF33D /* libThree20.a */; };
 		25359E6612E3E0A5008BF33D /* libThree20Core.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25359D4312E3E0A4008BF33D /* libThree20Core.a */; };
 		25359E6712E3E0A5008BF33D /* libThree20Network.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25359D4412E3E0A4008BF33D /* libThree20Network.a */; };
@@ -24,6 +22,11 @@
 		25359ED712E512BB008BF33D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ED612E512BB008BF33D /* main.m */; };
 		25359F4112E53966008BF33D /* RKObjectLoaderTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.m */; };
 		253E163412E8BA6500F3E4B0 /* DBContentObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 253E163312E8BA6500F3E4B0 /* DBContentObject.m */; };
+		258F853614106746007AABCD /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25825AF41337CEAC00C0E3D2 /* libRestKitJSONParserJSONKit.a */; };
+		258F853714106746007AABCD /* libRestKitJSONParserNXJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25FB6D6E13E483DE00F48969 /* libRestKitJSONParserNXJSON.a */; };
+		258F853814106746007AABCD /* libRestKitJSONParserSBJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B312D7822D00683D6F /* libRestKitJSONParserSBJSON.a */; };
+		258F853914106746007AABCD /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */; };
+		258F853A14106746007AABCD /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A7B1DB13421D28004816AA /* libRestKitXMLParserLibxml.a */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */; };
 		3F255C9812DB70E200AFD2D1 /* DBPostsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255C9312DB70E200AFD2D1 /* DBPostsTableViewController.m */; };
@@ -169,8 +172,6 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* Discussion Board.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Discussion Board.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		25354DDE138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitJSONParserJSONKit.a; sourceTree = SOURCE_ROOT; };
-		25354DE0138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitJSONParserYAJL.a; sourceTree = SOURCE_ROOT; };
 		25359D4212E3E0A4008BF33D /* libThree20.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20.a; sourceTree = "<group>"; };
 		25359D4312E3E0A4008BF33D /* libThree20Core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20Core.a; sourceTree = "<group>"; };
 		25359D4412E3E0A4008BF33D /* libThree20Network.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libThree20Network.a; sourceTree = "<group>"; };
@@ -460,9 +461,6 @@
 		25359ED612E512BB008BF33D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Code/Other/main.m; sourceTree = SOURCE_ROOT; };
 		253E163212E8BA6500F3E4B0 /* DBContentObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBContentObject.h; sourceTree = "<group>"; };
 		253E163312E8BA6500F3E4B0 /* DBContentObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBContentObject.m; sourceTree = "<group>"; };
-		25DE017C138EE6EA006769D4 /* libRestKitJSONParserYAJL.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitJSONParserYAJL.a; path = "/Users/blake/Projects/two_toasters/RestKit-object-mapping-2.0/Build/Release-iphoneos/libRestKitJSONParserYAJL.a"; sourceTree = "<absolute>"; };
-		25DE017E138EE6F2006769D4 /* libRestKitJSONParserSBJSON.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; name = libRestKitJSONParserSBJSON.a; path = "/Users/blake/Projects/two_toasters/RestKit-object-mapping-2.0/Build/Release-iphoneos/libRestKitJSONParserSBJSON.a"; sourceTree = "<absolute>"; };
-		25DE0182138EE79B006769D4 /* libRestKitJSONParserJSONKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRestKitJSONParserJSONKit.a; sourceTree = SOURCE_ROOT; };
 		25FED6E512E7D60600D94325 /* DiscussionBoard-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy.plist"; path = "Resources/DiscussionBoard-Info copy.plist"; sourceTree = "<group>"; };
 		25FED7BC12E7D6EC00D94325 /* DiscussionBoard-Info copy 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info copy 2.plist"; path = "Resources/DiscussionBoard-Info copy 2.plist"; sourceTree = "<group>"; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -520,6 +518,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				258F853614106746007AABCD /* libRestKitJSONParserJSONKit.a in Frameworks */,
+				258F853714106746007AABCD /* libRestKitJSONParserNXJSON.a in Frameworks */,
+				258F853814106746007AABCD /* libRestKitJSONParserSBJSON.a in Frameworks */,
+				258F853914106746007AABCD /* libRestKitJSONParserYAJL.a in Frameworks */,
+				258F853A14106746007AABCD /* libRestKitXMLParserLibxml.a in Frameworks */,
 				3F8CF774131D78D70023C5EA /* libxml2.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -534,8 +537,6 @@
 				3F45615F12D7E31700BE25AD /* libRestKitObjectMapping.a in Frameworks */,
 				3F45616012D7E31800BE25AD /* libRestKitSupport.a in Frameworks */,
 				3F45616112D7E31900BE25AD /* libRestKitThree20.a in Frameworks */,
-				25354DDF138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a in Frameworks */,
-				25354DE1138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a in Frameworks */,
 				25359E6512E3E0A5008BF33D /* libThree20.a in Frameworks */,
 				25359E6612E3E0A5008BF33D /* libThree20Core.a in Frameworks */,
 				25359E6712E3E0A5008BF33D /* libThree20Network.a in Frameworks */,
@@ -1091,11 +1092,6 @@
 			children = (
 				25359D4112E3E0A4008BF33D /* three20 */,
 				A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */,
-				25354DE0138EEDEC0099B4E2 /* libRestKitJSONParserYAJL.a */,
-				25354DDE138EEDDD0099B4E2 /* libRestKitJSONParserJSONKit.a */,
-				25DE0182138EE79B006769D4 /* libRestKitJSONParserJSONKit.a */,
-				25DE017E138EE6F2006769D4 /* libRestKitJSONParserSBJSON.a */,
-				25DE017C138EE6EA006769D4 /* libRestKitJSONParserYAJL.a */,
 				3F8CF773131D78D70023C5EA /* libxml2.dylib */,
 			);
 			name = Libraries;
@@ -1107,14 +1103,14 @@
 				A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */,
 				A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */,
 				A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */,
-				25FB6D6E13E483DE00F48969 /* libRestKitJSONParser+NXJSON.a */,
+				25FB6D6E13E483DE00F48969 /* libRestKitJSONParserNXJSON.a */,
 				A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */,
 				A7A2D3B312D7822D00683D6F /* libRestKitJSONParserSBJSON.a */,
 				25825AF41337CEAC00C0E3D2 /* libRestKitJSONParserJSONKit.a */,
 				25A7B1DB13421D28004816AA /* libRestKitXMLParserLibxml.a */,
 				A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */,
 				A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */,
-				A7A2D3B912D7822D00683D6F /* UISpec.app */,
+				A7A2D3B912D7822D00683D6F /* RestKitSpecs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1191,10 +1187,9 @@
 			remoteRef = 25A7B1DA13421D28004816AA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		25FB6D6E13E483DE00F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+		25FB6D6E13E483DE00F48969 /* libRestKitJSONParserNXJSON.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			name = "libRestKitJSONParser+NXJSON.a";
 			path = libRestKitJSONParserNXJSON.a;
 			remoteRef = 25FB6D6D13E483DE00F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -1248,10 +1243,10 @@
 			remoteRef = A7A2D3B612D7822D00683D6F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7A2D3B912D7822D00683D6F /* UISpec.app */ = {
+		A7A2D3B912D7822D00683D6F /* RestKitSpecs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = UISpec.app;
+			path = RestKitSpecs.app;
 			remoteRef = A7A2D3B812D7822D00683D6F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1342,10 +1337,7 @@
 					"DB_ENVIRONMENT=0",
 					"DEBUG=1",
 				);
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20,
-				);
+				HEADER_SEARCH_PATHS = Libraries/three20;
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
@@ -1368,20 +1360,14 @@
 					"DB_ENVIRONMENT=2",
 					"DEBUG=1",
 				);
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20,
-				);
+				HEADER_SEARCH_PATHS = Libraries/three20;
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/Libraries/three20\"",
 					"\"$(SRCROOT)\"",
 				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Discussion Board";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1397,14 +1383,8 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20/Build/Products/three20,
-				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				HEADER_SEARCH_PATHS = Libraries/three20/Build/Products/three20;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -1419,10 +1399,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20/Build/Products/three20,
-				);
+				HEADER_SEARCH_PATHS = Libraries/three20/Build/Products/three20;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 			};

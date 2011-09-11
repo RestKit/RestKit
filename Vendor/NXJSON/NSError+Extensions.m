@@ -22,7 +22,9 @@
  */
 
 #import "NSError+Extensions.h"
+#import "RKFixCategoryBug.h"
 
+RK_FIX_CATEGORY_BUG(NSError_Extensions)
 
 @implementation NSError(Extensions)
 +(NSError*)errorWithDomain:(NSString*)domain code:(NSInteger)code description:(NSString*)description

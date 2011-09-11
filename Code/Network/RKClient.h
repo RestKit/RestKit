@@ -12,6 +12,7 @@
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKReachabilityObserver.h"
 #import "RKRequestCache.h"
+#import "RKRequestQueue.h"
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -40,13 +41,16 @@ NSString* RKMakeURLPath(NSString* resourcePath);
 
 /**
  * Convenience method for generating a path against the properties of an object. Takes
- * a string with property names encoded in parentheses and interpolates the values of
+ * a string with property names encoded with colons and interpolates the values of
  * the properties specified and returns the generated path.
  *
- * For example, given an 'article' object with an 'articleID' property of 12345
- * RKMakePathWithObject(@"articles/(articleID)", article) would generate @"articles/12345"
+ * For example, given an 'article' object with an 'articleID' property of 12345 and a 'name' of Blake,
+ * RKMakePathWithObject(@"articles/:articleID/:name", article) would generate @"articles/12345/Blake"
  *
  * This functionality is the basis for resource path generation in the Router.
+ * @param path The colon encoded path pattern string to use for interpolation.
+ * @param object The object containing the properties needed for interpolation.
+ * @return A new path string, replacing the pattern's parameters with the object's actual property values.
  */
 NSString* RKMakePathWithObject(NSString* path, id object);
 
@@ -101,7 +105,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * -----------------
  *
  * Note that memory management of requests sent via RKClient instances are automatically managed
- * for you. When sent, the request is retained by the [shared request queue]([RKRequestQueue sharedQueue])
+ * for you. When sent, the request is retained by the requestQueue
  * and is released all request processing has completed. Generally speaking this means that you can dispatch
  * requests and work with the response in the delegate methods without regard for memory management.
  *
@@ -119,15 +123,17 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see RKRequestSerializable
  */
 @interface RKClient : NSObject {
-	NSString* _baseURL;
-	NSString* _username;
-	NSString* _password;
+	NSString *_baseURL;
+	NSString *_username;
+	NSString *_password;
     BOOL _forceBasicAuthentication;
-	NSMutableDictionary* _HTTPHeaders;
-	RKReachabilityObserver* _baseURLReachabilityObserver;
-	NSString* _serviceUnavailableAlertTitle;
-	NSString* _serviceUnavailableAlertMessage;
+	NSMutableDictionary *_HTTPHeaders;
+	RKReachabilityObserver *_baseURLReachabilityObserver;
+	NSString *_serviceUnavailableAlertTitle;
+	NSString *_serviceUnavailableAlertMessage;
 	BOOL _serviceUnavailableAlertEnabled;
+    RKRequestQueue *_requestQueue;
+	RKRequestCache *_requestCache;
     NSString* _consumerKey;
     NSString* _consumerSecret;
     NSString* _accessToken;
@@ -136,10 +142,12 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
     NSString* _oAuth2AccessToken;
     NSString* _oAuth2RefreshToken;
     BOOL _forceOAuth2Use;
-	RKRequestCache* _cache;
 	RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
+    
+    // Queue suspension flags
+    BOOL _awaitingReachabilityDetermination;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -147,22 +155,23 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 /////////////////////////////////////////////////////////////////////////
 
 /**
- * The base URL all resources are nested underneath
+ The base URL all resources are nested underneath. All requests created through
+ the client will be nested under this baseURL.
+ 
+ Changing the baseURL has side-effects for the client:
+    1) RKClient maintains a reachability reference to track reachability to the
+        remote base URL hostname or IP address. This reference is rebuilt upon
+        baseURL change and reachability will be indeterminate for a few moments.
+    2) The requestQueue reference associated with the client will be suspended until
+        reachability can be determined. This prevents requests dispatched immediately after
+        client initialization from failing to be sent.
  */
-@property(nonatomic, retain) NSString* baseURL;
+@property (nonatomic, retain) NSString *baseURL;
 
 /**
  * A dictionary of headers to be sent with each request
  */
-@property(nonatomic, readonly) NSMutableDictionary* HTTPHeaders;
-
-#ifdef RESTKIT_SSL_VALIDATION
-/**
- * A set of additional certificates to be used in evaluating server
- * SSL certificates.
- */
-@property(nonatomic, readonly) NSSet* additionalRootCertificates;
-#endif
+@property (nonatomic, readonly) NSMutableDictionary *HTTPHeaders;
 
 /**
  * Accept all SSL certificates. This is a potential security exposure,
@@ -170,7 +179,14 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  *
  * *Default*: _NO_
  */
-@property(nonatomic, assign) BOOL disableCertificateValidation;
+@property (nonatomic, assign) BOOL disableCertificateValidation;
+
+/**
+ The request queue to push asynchronous requests onto.
+ 
+ *Default*: A new request queue is instantiated for you during init
+ */
+@property (nonatomic, retain) RKRequestQueue *requestQueue;
 
 /**
  *  Will check for network connectivity to the host specified in the baseURL
@@ -188,9 +204,19 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param header The HTTP header to add
  * @see HTTPHeaders
  */
-- (void)setValue:(NSString*)value forHTTPHeaderField:(NSString*)header;
+- (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header;
+
+/////////////////////////////////////////////////////////////////////////
+/// @name SSL Validation
+/////////////////////////////////////////////////////////////////////////
 
 #ifdef RESTKIT_SSL_VALIDATION
+/**
+ * A set of additional certificates to be used in evaluating server
+ * SSL certificates.
+ */
+@property(nonatomic, readonly) NSSet *additionalRootCertificates;
+
 /**
  * Adds an additional certificate that will be used to evaluate server SSL certs
  *
@@ -207,12 +233,12 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 /**
  * The username to use for authentication via HTTP AUTH
  */
-@property(nonatomic, retain) NSString* username;
+@property(nonatomic, retain) NSString *username;
 
 /**
  * The password to use for authentication via HTTP AUTH
  */
-@property(nonatomic, retain) NSString* password;
+@property(nonatomic, retain) NSString *password;
 
 /**
  When YES, RKRequest objects dispatched through the client will have an HTTP Basic
@@ -233,7 +259,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  *
  * @see RKReachabilityObserver
  */
-@property(nonatomic, readonly) RKReachabilityObserver* baseURLReachabilityObserver;
+@property(nonatomic, readonly) RKReachabilityObserver *baseURLReachabilityObserver;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Service Availability Alerting
@@ -245,7 +271,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  *
  * *Default*: _"Service Unavailable"_
  */
-@property(nonatomic, retain) NSString* serviceUnavailableAlertTitle;
+@property(nonatomic, retain) NSString *serviceUnavailableAlertTitle;
 
 /**
  * The message to use in the alert shown when a request encounters a
@@ -253,7 +279,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  *
  * *Default*: _"The remote resource is unavailable. Please try again later."_
  */
-@property(nonatomic, retain) NSString* serviceUnavailableAlertMessage;
+@property(nonatomic, retain) NSString *serviceUnavailableAlertMessage;
 
 /**
  * Flag that determines whether the Service Unavailable alert is shown in response
@@ -263,11 +289,21 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 @property(nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
 
+/////////////////////////////////////////////////////////////////////////
+/// @name Cacheing
+/////////////////////////////////////////////////////////////////////////
+
 /**
  An instance of the request cache used to store/load cacheable responses for requests
  sent through this client
  */
-@property (nonatomic, retain) RKRequestCache* cache;
+@property (nonatomic, retain) RKRequestCache *cache DEPRECATED_ATTRIBUTE;
+
+/**
+ An instance of the request cache used to store/load cacheable responses for requests
+ sent through this client
+ */
+@property (nonatomic, retain) RKRequestCache *requestCache;
 
 /**
  The default cache policy to apply for all requests sent through this client
@@ -279,7 +315,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 /**
  The path used to store response data for this client's request cache
  */
-@property (nonatomic, readonly) NSString* cachePath;
+@property (nonatomic, readonly) NSString *cachePath;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Shared Client Instance
@@ -288,14 +324,14 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 /**
  * Return the configured singleton instance of the client
  */
-+ (RKClient*)sharedClient;
++ (RKClient *)sharedClient;
 
 /**
  * Set the shared singleton issue of the client, releasing the current singleton (if any)
  *
  * @param client The RKClient instance to set as the new singleton
  */
-+ (void)setSharedClient:(RKClient*)client;
++ (void)setSharedClient:(RKClient *)client;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Initializing a Client
@@ -308,7 +344,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see baseURL
  * @return A configured RKClient instance ready to send requests
  */
-+ (RKClient*)clientWithBaseURL:(NSString*)baseURL;
++ (RKClient *)clientWithBaseURL:(NSString *)baseURL;
 
 /**
  * Return a Rest client scoped to a particular base URL with a set of HTTP AUTH credentials. 
@@ -319,7 +355,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param password The password to use for HTTP Authentication challenges
  * @return A configured RKClient instance ready to send requests
  */
-+ (RKClient*)clientWithBaseURL:(NSString*)baseURL username:(NSString*)username password:(NSString*)password;
++ (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password;
 
 /**
  * Return a client scoped to a particular base URL. If the singleton client is nil, the return client is set as the singleton
@@ -328,7 +364,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see baseURL
  * @return A configured RKClient instance ready to send requests
  */
-- (id)initWithBaseURL:(NSString*)baseURL;
+- (id)initWithBaseURL:(NSString *)baseURL;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Constructing Resource Paths and URLs
@@ -340,7 +376,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param resourcePath The resource path to build a URL against
  * @return An NSURL constructed by concatenating the baseURL and the resourcePath
  */
-- (NSURL*)URLForResourcePath:(NSString*)resourcePath;
+- (NSURL *)URLForResourcePath:(NSString *)resourcePath;
 
 /**
  * Returns an NSString by adding a resource path to the base URL
@@ -348,7 +384,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param resourcePath The resource path to build a URL against
  * @return A string URL constructed by concatenating the baseURL and the resourcePath
  */
-- (NSString*)URLPathForResourcePath:(NSString*)resourcePath;
+- (NSString *)URLPathForResourcePath:(NSString *)resourcePath;
 
 /**
  * Returns a resource path with a dictionary of query parameters URL encoded and appended
@@ -366,7 +402,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see RKPathAppendQueryParams()
  * @deprecated Use RKPathAppendQueryParams instead
  */
-- (NSString*)resourcePath:(NSString*)resourcePath withQueryParams:(NSDictionary*)queryParams DEPRECATED_ATTRIBUTE;
+- (NSString *)resourcePath:(NSString *)resourcePath withQueryParams:(NSDictionary *)queryParams DEPRECATED_ATTRIBUTE;
 
 /**
  * Returns a NSURL by adding a resource path to the base URL and appending a URL encoded set of query parameters
@@ -381,7 +417,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
  * @return A URL constructed by concatenating the baseURL and the resourcePath with the query parameters appended
  */
-- (NSURL*)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary*)queryParams;
+- (NSURL *)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Building Requests
@@ -395,7 +431,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see username
  * @see password
  */
-- (void)setupRequest:(RKRequest*)request;
+- (void)setupRequest:(RKRequest *)request;
 
 /**
  * Return a request object targetted at a resource path relative to the base URL. By default the method is set to GET
@@ -406,7 +442,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @return A fully configured RKRequest instance ready for sending
  * @see RKRequestDelegate
  */
-- (RKRequest*)requestWithResourcePath:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate>*)delegate;
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -475,7 +511,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param delegate A delegate object to inform of the results
  * @return The RKRequest object built and sent to the remote system
  */
-- (RKRequest*)get:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate>*)delegate;
+- (RKRequest *)get:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
  * Fetch a resource via an HTTP GET with a dictionary of params
@@ -488,7 +524,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param delegate A delegate object to inform of the results
  * @return The RKRequest object built and sent to the remote system
  */
-- (RKRequest*)get:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams delegate:(NSObject<RKRequestDelegate>*)delegate;
+- (RKRequest *)get:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
  * Create a resource via an HTTP POST with a set of form parameters
@@ -499,7 +535,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @return The RKRequest object built and sent to the remote system
  * @see RKRequestSerializable
  */
-- (RKRequest*)post:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKRequestDelegate>*)delegate;
+- (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
  * Update a resource via an HTTP PUT
@@ -510,7 +546,7 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @return The RKRequest object built and sent to the remote system
  * @see RKRequestSerializable
  */
-- (RKRequest*)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable>*)params delegate:(NSObject<RKRequestDelegate>*)delegate;
+- (RKRequest *)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
  * Destroy a resource via an HTTP DELETE
@@ -519,6 +555,6 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @param delegate A delegate object to inform of the results
  * @return The RKRequest object built and sent to the remote system
  */
-- (RKRequest*)delete:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate>*)delegate;
+- (RKRequest *)delete:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 @end

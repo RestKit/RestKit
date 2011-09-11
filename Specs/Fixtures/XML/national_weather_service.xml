@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<dwml xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0" xsi:noNamespaceSchemaLocation="http://www.nws.noaa.gov/mdl/survey/pgb_survey/dev/DWMLgen/schema/DWML.xsd">
+    <head>
+        <product concise-name="dwmlByDay" operational-mode="operational" srsName="WGS 1984">
+            <creation-date refresh-frequency="PT1H">2011-09-03T17:37:57-05:00</creation-date>
+        </product>
+        <source>
+            <production-center>Raleigh, NC</production-center>
+            <credit>http://www.erh.noaa.gov/rah/</credit>
+            <more-information>http://www.nws.noaa.gov/forecasts/xml/</more-information>
+        </source>
+    </head>
+    <data>
+        <location>
+            <location-key>point1</location-key>
+            <description>Carrboro NC, NC</description>
+            <point latitude="35.9" longitude="-79.08"/>
+            <city state="NC">Carrboro NC</city>
+            <height datum="mean sea level">400</height>
+        </location>
+        <moreWeatherInformation applicable-location="point1">http://forecast.weather.gov/MapClick.php?lat=35.9&amp;lon=-79.08</moreWeatherInformation>
+        <time-layout time-coordinate="local" summarization="12hourly">
+            <layout-key>k-p6h-n1-1</layout-key>
+            <start-valid-time>2011-09-03T09:48:00-05:00</start-valid-time>
+            <end-valid-time>2011-09-04T11:15:00-05:00</end-valid-time>
+        </time-layout>
+        <time-layout time-coordinate="local" summarization="12hourly">
+            <layout-key>k-p12h-n14-1</layout-key>
+            <start-valid-time period-name="Tonight">2011-09-03T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Sunday">2011-09-04T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Sunday Night">2011-09-04T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Labor Day">2011-09-05T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Monday Night">2011-09-05T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Tuesday">2011-09-06T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Tuesday Night">2011-09-06T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Wednesday">2011-09-07T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Wednesday Night">2011-09-07T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Thursday">2011-09-08T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Thursday Night">2011-09-08T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Friday">2011-09-09T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Friday Night">2011-09-09T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Saturday">2011-09-10T06:00:00-05:00</start-valid-time>
+        </time-layout>
+        <time-layout time-coordinate="local" summarization="12hourly">
+            <layout-key>k-p24h-n7-1</layout-key>
+            <start-valid-time period-name="Tonight">2011-09-03T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Sunday Night">2011-09-04T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Monday Night">2011-09-05T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Tuesday Night">2011-09-06T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Wednesday Night">2011-09-07T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Thursday Night">2011-09-08T18:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Friday Night">2011-09-09T18:00:00-05:00</start-valid-time>
+        </time-layout>
+        <time-layout time-coordinate="local" summarization="12hourly">
+            <layout-key>k-p24h-n7-2</layout-key>
+            <start-valid-time period-name="Sunday">2011-09-04T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Labor Day">2011-09-05T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Tuesday">2011-09-06T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Wednesday">2011-09-07T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Thursday">2011-09-08T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Friday">2011-09-09T06:00:00-05:00</start-valid-time>
+            <start-valid-time period-name="Saturday">2011-09-10T06:00:00-05:00</start-valid-time>
+        </time-layout>
+        <parameters applicable-location="point1">
+            <temperature type="minimum" units="Fahrenheit" time-layout="k-p24h-n7-1">
+                <name>Daily Minimum Temperature</name>
+                <value>66</value>
+                <value>69</value>
+                <value>69</value>
+                <value>62</value>
+                <value>63</value>
+                <value>63</value>
+                <value>65</value>
+            </temperature>
+            <temperature type="maximum" units="Fahrenheit" time-layout="k-p24h-n7-2">
+                <name>Daily Maximum Temperature</name>
+                <value>88</value>
+                <value>82</value>
+                <value>80</value>
+                <value>79</value>
+                <value>79</value>
+                <value>82</value>
+                <value>83</value>
+            </temperature>
+            <probability-of-precipitation type="12 hour" units="percent" time-layout="k-p12h-n14-1">
+                <name>12 Hourly Probability of Precipitation</name>
+                <value xsi:nil="true"/>
+                <value xsi:nil="true"/>
+                <value xsi:nil="true"/>
+                <value>60</value>
+                <value>70</value>
+                <value>70</value>
+                <value>50</value>
+                <value>50</value>
+                <value>40</value>
+                <value>30</value>
+                <value xsi:nil="true"/>
+                <value xsi:nil="true"/>
+                <value xsi:nil="true"/>
+                <value xsi:nil="true"/>
+            </probability-of-precipitation>
+            <weather time-layout="k-p12h-n14-1">
+                <name>Weather Type, Coverage, Intensity</name>
+                <weather-conditions weather-summary="Partly Cloudy"/>
+                <weather-conditions weather-summary="Mostly Sunny"/>
+                <weather-conditions weather-summary="Mostly Cloudy"/>
+                <weather-conditions weather-summary="Showers Likely"/>
+                <weather-conditions weather-summary="Tstms Likely"/>
+                <weather-conditions weather-summary="Tstms Likely"/>
+                <weather-conditions weather-summary="Chance Showers"/>
+                <weather-conditions weather-summary="Chance Tstms"/>
+                <weather-conditions weather-summary="Chance Tstms"/>
+                <weather-conditions weather-summary="Chance Tstms"/>
+                <weather-conditions weather-summary="Partly Cloudy"/>
+                <weather-conditions weather-summary="Mostly Sunny"/>
+                <weather-conditions weather-summary="Partly Cloudy"/>
+                <weather-conditions weather-summary="Mostly Sunny"/>
+            </weather>
+            <conditions-icon type="forecast-NWS" time-layout="k-p12h-n14-1">
+                <name>Conditions Icon</name>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/nsct.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/sct.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/nbkn.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/shra60.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/ntsra70.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/tsra70.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/nra50.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/tsra50.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/nscttsra40.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/scttsra30.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/nsct.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/sct.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/nsct.jpg</icon-link>
+                <icon-link>http://www.nws.noaa.gov/weather/images/fcicons/sct.jpg</icon-link>
+            </conditions-icon>
+            <hazards time-layout="k-p6h-n1-1">
+                <name>Watches, Warnings, and Advisories</name>
+                <hazard-conditions>
+                    <hazard headline="Hazardous Weather Outlook">
+                        <hazardTextURL>http://forecast.weather.gov/showsigwx.php?warnzone=NCZ024&amp;warncounty=NCC135&amp;firewxzone=NCZ024&amp;local_place1=Carrboro+NC&amp;product1=Hazardous+Weather+Outlook</hazardTextURL>
+                    </hazard>
+                </hazard-conditions>
+            </hazards>
+            <wordedForecast time-layout="k-p12h-n14-1" dataSource="rahNetcdf" wordGenerator="markMitchell">
+                <name>Text Forecast</name>
+                <text>Partly cloudy, with a low around 66. South wind around 6 mph. </text>
+                <text>Mostly sunny, with a high near 88. South wind between 5 and 9 mph. </text>
+                <text>Mostly cloudy, with a low around 69. South wind around 6 mph. </text>
+                <text>A chance of showers and thunderstorms between 10am and 3pm, then showers likely and possibly a thunderstorm after 3pm.  Cloudy, with a high near 82. South wind between 8 and 10 mph.  Chance of precipitation is 60%. New rainfall amounts between a quarter and half of an inch possible. </text>
+                <text>Showers and thunderstorms likely.  Cloudy, with a low around 69. South wind between 6 and 10 mph.  Chance of precipitation is 70%. New rainfall amounts between a quarter and half of an inch possible. </text>
+                <text>Showers and thunderstorms likely.  Cloudy, with a high near 80.   Chance of precipitation is 70%. New rainfall amounts between a quarter and half of an inch possible. </text>
+                <text>A chance of showers and thunderstorms.  Mostly cloudy, with a low around 62.   Chance of precipitation is 50%.</text>
+                <text>A chance of showers and thunderstorms.  Mostly cloudy, with a high near 79.   Chance of precipitation is 50%.</text>
+                <text>A chance of showers and thunderstorms.  Mostly cloudy, with a low around 63.   Chance of precipitation is 40%.</text>
+                <text>A chance of showers and thunderstorms.  Partly sunny, with a high near 79.   Chance of precipitation is 30%.</text>
+                <text>Partly cloudy, with a low around 63.  </text>
+                <text>Mostly sunny, with a high near 82.  </text>
+                <text>Partly cloudy, with a low around 65.  </text>
+                <text>Mostly sunny, with a high near 83.  </text>
+            </wordedForecast>
+        </parameters>
+    </data>
+</dwml>

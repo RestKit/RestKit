@@ -69,7 +69,7 @@ typedef enum RKRequestBackgroundPolicy {
 } RKRequestBackgroundPolicy;
 #endif
 
-@class RKResponse;
+@class RKResponse, RKRequestQueue;
 @protocol RKRequestDelegate;
 
 @interface RKRequest : NSObject {
@@ -98,6 +98,7 @@ typedef enum RKRequestBackgroundPolicy {
     BOOL _forceBasicAuthentication;
     RKRequestCache* _cache;
     NSTimeInterval _cacheTimeoutInterval;
+    RKRequestQueue *_queue;
     
     #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
@@ -178,10 +179,44 @@ typedef enum RKRequestBackgroundPolicy {
  */
 @property(nonatomic, readonly) NSString* HTTPMethod;
 
+/**
+ The request queue that this request belongs to
+ */
+@property (nonatomic, assign) RKRequestQueue* queue;
+
+/////////////////////////////////////////////////////////////////////////
+/// @name Cacheing
+/////////////////////////////////////////////////////////////////////////
+
+/**
+ Returns the cache key for getting/setting the cache entry for this request
+ in the cache.
+ 
+ The cacheKey is an MD5 value computed by hashing a combination of the destination
+ URL, the HTTP verb, and the request body (if possible)
+ */
 @property (nonatomic, readonly) NSString* cacheKey;
 
+/**
+ The cache policy used when storing this request into the request cache
+ */
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
+
+/**
+ The request cache to store and load responses for this request
+ 
+ Generally configured by the RKClient instance that minted this request
+ */
 @property (nonatomic, retain) RKRequestCache* cache;
+
+/**
+ Returns YES if the request is cacheable
+ 
+ All requets are considered cacheable unless:
+    1) The method is DELETE
+    2) The request body is a stream (i.e. using RKParams)
+ */
+- (BOOL)isCacheable;
 
 /**
  * The HTTP body as a NSData used for this request

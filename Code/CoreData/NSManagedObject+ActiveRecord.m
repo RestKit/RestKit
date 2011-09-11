@@ -12,6 +12,9 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectManager.h"
 #import "RKLog.h"
+#import "../Support/RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 
 // Set Logging Component
 #undef RKLogComponent

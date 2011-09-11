@@ -16,6 +16,7 @@
  * for dispatching and managing RKRequest objects
  */
 @interface RKRequestQueue : NSObject {
+    NSString *_name;
 	NSMutableArray* _requests;
     NSObject<RKRequestQueueDelegate>* _delegate;
 	NSUInteger _loadingCount;
@@ -25,6 +26,12 @@
 	BOOL _suspended;
     BOOL _showsNetworkActivityIndicatorWhenBusy;
 }
+
+/**
+ A symbolic name for the queue. Used to return existing queue references
+ via [RKRequestQueue queueWithName:]
+ */
+@property (nonatomic, retain, readonly) NSString* name;
 
 /**
  * The delegate to inform when the request queue state machine changes
@@ -71,22 +78,49 @@
  * requests
  *
  * *Default*: NO
- *
- * @bug Currently, this implementation does not work across queues at the moment. Each queue
- * will manipulate the activity indicator independently of all others.
  */
 @property (nonatomic) BOOL showsNetworkActivityIndicatorWhenBusy;
 #endif
 
 /**
- * Return the global queue
+ Return the global queue
+ 
+ Deprecated. All RKClient instances now own their own individual request queues.
+ 
+ @see [RKClient requestQueue]
  */
-+ (RKRequestQueue*)sharedQueue;
++ (RKRequestQueue*)sharedQueue DEPRECATED_ATTRIBUTE;
 
 /**
- * Set the global queue
+ Set the global queue
+ 
+ Deprecated. All RKClient instances now own their own individual request queues.
+ 
+ @see [RKClient requestQueue]
  */
-+ (void)setSharedQueue:(RKRequestQueue*)requestQueue;
++ (void)setSharedQueue:(RKRequestQueue*)requestQueue DEPRECATED_ATTRIBUTE;
+
+/**
+ Returns a new auto-released request queue
+ */
++ (id)requestQueue;
+
+/**
+ Returns a new retained request queue with the given name. If there is already
+ an existing queue with the given name, nil will be returned.
+ */
++ (id)newRequestQueueWithName:(NSString*)name;
+
+/**
+ Returns queue with the specified name. If no queue is found with
+ the name provided, a new queue will be initialized and returned.
+ */
++ (id)requestQueueWithName:(NSString*)name;
+
+/**
+ Returns YES when there is a queue with the given name
+ */
++ (BOOL)requestQueueExistsWithName:(NSString*)name;
 
 /**
  * Add an asynchronous request to the queue and send it as
@@ -174,3 +208,22 @@
 - (void)requestQueue:(RKRequestQueue*)queue didFailRequest:(RKRequest*)request withError:(NSError*)error;
 
 @end
+
+/**
+ *  A category on UIApplication to allow for jointly managing of network activity indicator.
+ *  Adopted from 'iOS Recipes' book: http://pragprog.com/book/cdirec/ios-recipes
+ */
+
+#if TARGET_OS_IPHONE
+
+@interface UIApplication (RKNetworkActivity)
+
+@property (nonatomic, assign, readonly) NSInteger rk_networkActivityCount;
+
+- (void)rk_pushNetworkActivity;
+- (void)rk_popNetworkActivity;
+- (void)rk_resetNetworkActivity;
+
+@end
+
+#endif

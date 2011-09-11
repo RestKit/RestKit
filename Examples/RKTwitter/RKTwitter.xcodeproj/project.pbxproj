@@ -211,14 +211,14 @@
 				250AC4A21358C79C006F084F /* libRestKitNetwork.a */,
 				250AC4A41358C79C006F084F /* libRestKitObjectMapping.a */,
 				250AC4A61358C79C006F084F /* libRestKitSupport.a */,
-				25FB6DBB13E4850400F48969 /* libRestKitJSONParser+NXJSON.a */,
+				25FB6DBB13E4850400F48969 /* libRestKitJSONParserNXJSON.a */,
 				250AC4A81358C79C006F084F /* libRestKitJSONParserYAJL.a */,
 				250AC4AA1358C79C006F084F /* libRestKitJSONParserSBJSON.a */,
 				250AC4AC1358C79C006F084F /* libRestKitJSONParserJSONKit.a */,
 				250AC4AE1358C79C006F084F /* libRestKitXMLParserLibxml.a */,
 				250AC4B01358C79C006F084F /* libRestKitCoreData.a */,
 				250AC4B21358C79C006F084F /* libRestKitThree20.a */,
-				250AC4B41358C79C006F084F /* UISpec.app */,
+				250AC4B41358C79C006F084F /* RestKitSpecs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -402,17 +402,16 @@
 			remoteRef = 250AC4B11358C79C006F084F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		250AC4B41358C79C006F084F /* UISpec.app */ = {
+		250AC4B41358C79C006F084F /* RestKitSpecs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = UISpec.app;
+			path = RestKitSpecs.app;
 			remoteRef = 250AC4B31358C79C006F084F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		25FB6DBB13E4850400F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+		25FB6DBB13E4850400F48969 /* libRestKitJSONParserNXJSON.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			name = "libRestKitJSONParser+NXJSON.a";
 			path = libRestKitJSONParserNXJSON.a;
 			remoteRef = 25FB6DBA13E4850400F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -462,7 +461,6 @@
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Debug;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
@@ -470,38 +468,22 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitter;
-				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUILD_STYLE = Release;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitter;
-				TARGETED_DEVICE_FAMILY = 1;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -511,13 +493,10 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				BUILD_STYLE = Debug;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				GCC_C_LANGUAGE_STANDARD = c99;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"";
 				SDKROOT = iphoneos;
-				SYMROOT = Build;
 			};
 			name = Debug;
 		};
@@ -526,14 +505,11 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				BUILD_STYLE = Release;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				GCC_C_LANGUAGE_STANDARD = c99;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				LIBRARY_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build/$(BUILD_STYLE)-$(PLATFORM_NAME)\"";
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
-				SYMROOT = Build;
 			};
 			name = Release;
 		};

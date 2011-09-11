@@ -6,8 +6,11 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import "NSString+MD5.h"
 #import <CommonCrypto/CommonDigest.h>
+#import "NSString+MD5.h"
+#import "../Support/RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSString_MD5)
 
 @implementation NSString (MD5)
 

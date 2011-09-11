@@ -62,7 +62,7 @@ task :default => 'uispec:all'
 
 desc "Build RestKit for iOS and Mac OS X"
 task :build do
-  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphonesimulator3.2 clean build")
+  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphonesimulator4.3 clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk macosx10.6 clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKitThree20 -sdk iphoneos clean build")
@@ -89,11 +89,11 @@ namespace :docs do
       puts "appledoc generation produced warnings"
     elsif exitstatus == 2
       puts "! appledoc generation encountered an error"
+      exit(exitstatus)
     else
       puts "!! appledoc generation failed with a fatal error"
-    end
-    
-    exit(exitstatus)
+      exit(exitstatus)
+    end    
   end
   
   desc "Generate & install a docset into Xcode from the current sources"
@@ -150,7 +150,30 @@ task :ensure_server_is_running do
   end
 end
 
+namespace :build do
+  desc "Build all Example projects to ensure they are building properly"
+  task :examples do
+    ios_sdks = %w{iphoneos iphonesimulator4.3}
+    osx_sdks = %w{macosx}
+    osx_projects = %w{RKMacOSX}
+    
+    examples_path = File.join(File.expand_path(File.dirname(__FILE__)), 'Examples')
+    example_projects = `find #{examples_path} -name '*.xcodeproj'`.split("\n")
+    puts "Building #{example_projects.size} Example projects..."
+    example_projects.each do |example_project|
+      project_name = File.basename(example_project).gsub('.xcodeproj', '')
+      sdks = osx_projects.include?(project_name) ? osx_sdks : ios_sdks
+      sdks.each do |sdk|
+        puts "Building '#{example_project}' with SDK #{sdk}..."
+        scheme = project_name
+        run("xcodebuild -workspace #{example_project}/project.xcworkspace -scheme #{scheme} -sdk #{sdk} clean build")
+        #run("xcodebuild -project #{example_project} -alltargets -sdk #{sdk} clean build")
+      end
+    end
+  end
+end
+
 desc "Validate a branch is ready for merging by checking for common issues"
-task :validate => [:build, 'docs:check', :ensure_server_is_running, 'uispec:all'] do
-  puts "All tests passed OK. Proceed with merge."
+task :validate => [:ensure_server_is_running, :build, 'docs:check', 'uispec:all'] do  
+  puts "Project stated validated successfully. Proceed with merge."  
 end

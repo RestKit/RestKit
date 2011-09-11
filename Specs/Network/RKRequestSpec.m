@@ -86,8 +86,6 @@
 }
 
 - (void)itShouldObserveForAppBackgroundTransitionsAndCancelTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
-    RKRequestQueue* queue = [[RKRequestQueue new] autorelease];
-    [RKRequestQueue setSharedQueue:queue];
     NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyCancel;
@@ -111,17 +109,17 @@
 
 - (void)itShouldPutTheRequestBackOntoTheQueueWhenBackgroundPolicyIsRKRequestBackgroundPolicyRequeue {
     RKRequestQueue* queue = [[RKRequestQueue new] autorelease];
-    [RKRequestQueue setSharedQueue:queue];
-    [RKRequestQueue sharedQueue].suspended = YES;
+    queue.suspended = YES;
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyRequeue;
     request.delegate = loader;
+    request.queue = queue;
     [request sendAsynchronously];
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
     [expectThat([request isLoading]) should:be(NO)];
-    [expectThat([[RKRequestQueue sharedQueue] containsRequest:request]) should:be(YES)];
+    [expectThat([queue containsRequest:request]) should:be(YES)];
 }
 
 - (void)itShouldCreateABackgroundTaskWhenBackgroundPolicyIsRKRequestBackgroundPolicyContinue {
@@ -597,6 +595,75 @@
     @finally {
         assertThat(exception, is(notNilValue()));
     }
+}
+
+- (void)itShouldOptionallySkipSSLValidation {
+    RKClient* client = RKSpecNewClient();
+    client.disableCertificateValidation = YES;
+    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    [request send];
+    [loader waitForResponse];
+    assertThatBool([loader.response isOK], is(equalToBool(YES)));
+}
+
+- (void)itShouldNotAddANonZeroContentLengthHeaderIfParamsIsSetAndThisIsAGETRequest {
+    RKClient* client = RKSpecNewClient();
+    client.disableCertificateValidation = YES;
+    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    request.params = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
+    [request send];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+- (void)itShouldNotAddANonZeroContentLengthHeaderIfParamsIsSetAndThisIsAHEADRequest {
+    RKClient* client = RKSpecNewClient();
+    client.disableCertificateValidation = YES;
+    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    request.method = RKRequestMethodHEAD;
+    request.params = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
+    [request send];
+    [loader waitForResponse];
+    assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+}
+
+// TODO: Move to RKRequestCacheSpec
+- (void)itShouldReturnNilForCachePathWhenTheRequestIsUsingRKParams {
+    RKParams *params = [RKParams params];
+    [params setValue:@"foo" forParam:@"bar"];
+    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/"];
+    RKRequest *request = [RKRequest requestWithURL:URL delegate:nil];
+    request.params = params;
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache *requestCache = [[RKRequestCache alloc] initWithCachePath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
+    NSString *requestCachePath = [requestCache pathForRequest:request];
+    assertThat(requestCachePath, is(nilValue()));
+}
+
+- (void)itShouldReturnNilForCachePathWhenTheRequestIsADELETE {
+    RKParams *params = [RKParams params];
+    [params setValue:@"foo" forParam:@"bar"];
+    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/"];
+    RKRequest *request = [RKRequest requestWithURL:URL delegate:nil];
+    request.method = RKRequestMethodDELETE;
+    NSString* baseURL = RKSpecGetBaseURL();
+    NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
+								   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+						   stringByAppendingPathComponent:cacheDirForClient];
+    RKRequestCache *requestCache = [[RKRequestCache alloc] initWithCachePath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
+    NSString *requestCachePath = [requestCache pathForRequest:request];
+    assertThat(requestCachePath, is(nilValue()));
 }
 
 @end

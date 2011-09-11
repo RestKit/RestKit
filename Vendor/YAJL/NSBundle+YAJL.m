@@ -30,6 +30,9 @@
 #import "NSBundle+YAJL.h"
 #import "GHNSBundle+Utils.h"
 #import "NSObject+YAJL.h"
+#import "RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSBundle_YAJL)
 
 @implementation NSBundle (YAJL)
 

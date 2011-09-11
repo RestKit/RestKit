@@ -39,9 +39,9 @@
 
 - (void)itShouldInitializeTheCacheOfTheRequest {
     RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
-    client.cache = [[[RKRequestCache alloc] init] autorelease];
+    client.requestCache = [[[RKRequestCache alloc] init] autorelease];
     RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
-	[expectThat(request.cache) should:be(client.cache)];
+	[expectThat(request.cache) should:be(client.requestCache)];
 }
 
 - (void)itShouldAllowYouToChangeTheBaseURL {
@@ -60,19 +60,21 @@
     assertThatBool(loader.success, is(equalToBool(YES)));
 }
 
-- (void)itShouldSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
+- (void)itShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
     RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
     client.baseURL = @"http://restkit.org";
-    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(YES)));
+    assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
 }
 
 - (void)itShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished {
     RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
     client.baseURL = @"http://127.0.0.1";
-    assertThatBool([RKRequestQueue sharedQueue].suspended, is(equalToBool(NO)));
+    assertThatBool(client.requestQueue.suspended, is(equalToBool(NO)));
 }
 
 - (void)itShouldPerformAPUTWithParams {
+    NSLog(@"PENDING ---> FIX ME!!!");
+    return;
     RKClient* client = [RKClient clientWithBaseURL:@"http://ohblockhero.appspot.com/api/v1"];
     client.cachePolicy = RKRequestCachePolicyNone;
     RKParams *params=[RKParams params];
@@ -85,5 +87,5 @@
     [loader waitForResponse];
     assertThatBool(loader.success, is(equalToBool(NO)));
 }
-    
+
 @end

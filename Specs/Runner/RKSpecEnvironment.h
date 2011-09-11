@@ -34,7 +34,6 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable);
 
 // Helpers for returning new instances that clear global state
 RKClient* RKSpecNewClient(void);
-RKRequestQueue* RKSpecNewRequestQueue(void);
 RKObjectManager* RKSpecNewObjectManager(void);
 RKClientOAuth* RKSpecNewClientOAuth(RKSpecResponseLoader* loader);
 RKManagedObjectStore* RKSpecNewManagedObjectStore(void);

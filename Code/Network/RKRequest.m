@@ -7,7 +7,6 @@
 //
 
 #import "RKRequest.h"
-#import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
@@ -30,8 +29,8 @@
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
             params = _params, userData = _userData, username = _username, password = _password, method = _method,
-            forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache,
-cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consumerSecret = _consumerSecret, accessToken = _accessToken, accessTokenSecret = _accessTokenSecret, forceOAuthUse = _forceOAuthUse, oAuth2AccessToken = _oAuth2AccessToken, oAuth2RefreshToken = _oAuth2RefreshToken, forceOAuth2Use = _forceOAuth2Use;
+            forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache, cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consumerSecret = _consumerSecret, accessToken = _accessToken, accessTokenSecret = _accessTokenSecret, forceOAuthUse = _forceOAuthUse, oAuth2AccessToken = _oAuth2AccessToken, oAuth2RefreshToken = _oAuth2RefreshToken, forceOAuth2Use = _forceOAuth2Use;
+@synthesize queue = _queue;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -137,8 +136,11 @@ cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consum
     [super dealloc];
 }
 
+- (BOOL)shouldSendParams {
+    return (_params && (_method != RKRequestMethodGET && _method != RKRequestMethodHEAD));
+}
 - (void)setRequestBody {
-	if (_params && (_method != RKRequestMethodGET && _method != RKRequestMethodHEAD)) {
+	if ([self shouldSendParams]) {
 		// Prefer the use of a stream over a raw body
 		if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
             // NOTE: This causes the stream to be retained. For RKParams, this will
@@ -172,7 +174,7 @@ cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consum
 		[_URLRequest setValue:[_additionalHTTPHeaders valueForKey:header] forHTTPHeaderField:header];
 	}
 
-	if (_params != nil) {
+	if ([self shouldSendParams]) {
 		// Temporarily support older RKRequestSerializable implementations
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentType)]) {
 			[_URLRequest setValue:[_params HTTPHeaderValueForContentType] forHTTPHeaderField:@"Content-Type"];
@@ -281,9 +283,15 @@ cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consum
 	}
 }
 
+// TODO: We may want to eliminate the coupling between the request queue and individual queue instances.
+// We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
 - (void)send {
     NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
-	[[RKRequestQueue sharedQueue] addRequest:self];
+    if (self.queue) {
+        [self.queue addRequest:self];
+    } else {
+        [self sendAsynchronously];
+    }
 }
 
 - (void)fireAsynchronousRequest {
@@ -587,20 +595,36 @@ cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consum
 #endif
 }
 
-- (NSString*)cacheKey {
+- (BOOL)isCacheable {
+    // DELETE is not cacheable
     if (_method == RKRequestMethodDELETE) {
+        return NO;
+    }
+    
+    // Multi-part file uploads are not cacheable
+    if (_params && ![_params respondsToSelector:@selector(HTTPBody)]) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (NSString*)cacheKey {
+    if (! [self isCacheable]) {
+        RKLogDebug(@"Asked to return cacheKey for uncacheable request: %@", self);
         return nil;
     }
+    
     // Use [_params HTTPBody] because the URLRequest body may not have been set up yet.
-    NSString* compositCacheKey = nil;
-    if (_params) {
-        if ([_params respondsToSelector:@selector(HTTPBody)]) {
-            compositCacheKey = [NSString stringWithFormat:@"%@-%d-%@", self.URL, _method, [_params HTTPBody]];
-        }
+    NSString* compositeCacheKey = nil;
+    if (_params && [_params respondsToSelector:@selector(HTTPBody)]) {
+        compositeCacheKey = [NSString stringWithFormat:@"%@-%d-%@", self.URL, _method, [_params HTTPBody]];
     } else {
-        compositCacheKey = [NSString stringWithFormat:@"%@-%d", self.URL, _method];
+        compositeCacheKey = [NSString stringWithFormat:@"%@-%d", self.URL, _method];
     }
-    return [compositCacheKey MD5];
+    
+    NSAssert(compositeCacheKey, @"Expected a cacheKey to be generated for request %@, but got nil", compositeCacheKey);
+    return [compositeCacheKey MD5];
 }
 
 @end

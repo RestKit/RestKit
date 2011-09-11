@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Root>
+    <Orders>
+        <iRepOrderNo>1005</iRepOrderNo>
+        <iRepId>400</iRepId>
+        <CreatedDate>2011-07-18T14:34:06</CreatedDate>
+        <OrdersDetail>
+            <OrderDetailsId>104</OrderDetailsId>
+            <iRepOrderNo>1005</iRepOrderNo>
+            <iRepId>400</iRepId>
+        </OrdersDetail>
+    </Orders>
+    <Orders>
+        <iRepOrderNo>1006</iRepOrderNo>
+        <iRepId>400</iRepId>
+        <CreatedDate>2011-07-22T14:31:31</CreatedDate>
+        <OrdersDetail>
+            <OrderDetailsId>105</OrderDetailsId>
+            <iRepOrderNo>1006</iRepOrderNo>
+            <iRepId>400</iRepId>
+        </OrdersDetail>
+        <OrdersDetail>
+            <OrderDetailsId>106</OrderDetailsId>
+            <iRepOrderNo>1006</iRepOrderNo>
+            <iRepId>400</iRepId>
+        </OrdersDetail>
+    </Orders>
+</Root>

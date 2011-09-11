@@ -23,7 +23,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
 - (void)createPersistentStoreCoordinator;
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase;
-- (NSString *)applicationDocumentsDirectory;
+- (NSString *)applicationDataDirectory;
 - (NSManagedObjectContext*)newManagedObjectContext;
 @end
 
@@ -58,7 +58,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 		_storeFilename = [storeFilename retain];
 		
 		if (nilOrDirectoryPath == nil) {
-			nilOrDirectoryPath = [self applicationDocumentsDirectory];
+			nilOrDirectoryPath = [self applicationDataDirectory];
 		} else {
 			BOOL isDir;
 			NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:nilOrDirectoryPath isDirectory:&isDir] && isDir == YES, @"Specified storage directory exists", nilOrDirectoryPath);
@@ -283,10 +283,46 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 /**
  Returns the path to the application's documents directory.
  */
-- (NSString *)applicationDocumentsDirectory {	
+
+- (NSString *)applicationDataDirectory {	
+    
+#if TARGET_OS_IPHONE
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     return basePath;
+
+#else
+
+    NSFileManager* sharedFM = [NSFileManager defaultManager];
+    
+    NSArray* possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
+                                             inDomains:NSUserDomainMask];
+    NSURL* appSupportDir = nil;
+    NSURL* appDirectory = nil;
+    
+    if ([possibleURLs count] >= 1) {
+        appSupportDir = [possibleURLs objectAtIndex:0];
+    }
+    
+    if (appSupportDir) {
+        NSString *executableName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
+        appDirectory = [appSupportDir URLByAppendingPathComponent:executableName];
+        
+        
+        if(![sharedFM fileExistsAtPath:[appDirectory path]]) {
+            NSError* error = nil;
+            
+            if(![sharedFM createDirectoryAtURL:appDirectory withIntermediateDirectories:NO attributes:nil error:&error]) {
+                NSLog(@"%@", error);
+            }
+        }
+        
+    }
+
+    return appDirectory;
+#endif
+    
 }
 
 - (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {

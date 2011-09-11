@@ -7,6 +7,9 @@
 //
 
 #import "NSDictionary+RKRequestSerialization.h"
+#import "../Support/RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSDictionary_RKRequestSerialization)
 
 /**
  * private helper function to convert any object to its string representation
@@ -30,46 +33,38 @@ static NSString *urlEncode(id object) {
 	return [encodedString autorelease];
 }
 
-
 @implementation NSDictionary (RKRequestSerialization)
 
-// TODO: Need a more robust, recursive implementation of URLEncoding...
-- (NSString*)URLEncodedString {
-	NSMutableArray *parts = [NSMutableArray array];
-	for (id key in self) {
-		id value = [self objectForKey:key];
-		if ([value isKindOfClass:[NSArray class]]) {
-			for (id item in value) {
-                if ([item isKindOfClass:[NSDictionary class]] || [item isKindOfClass:[NSMutableDictionary class]]) {
-                    // Handle nested object one level deep
-                    for( NSString *nKey in [item allKeys] ) {
-                        id nValue = [item objectForKey:nKey];
-                        NSString *part = [NSString stringWithFormat: @"%@[][%@]=%@",
-                                          urlEncode(key), urlEncode(nKey), urlEncode(nValue)];
-                        [parts addObject:part];
-                    }
-                } else {
-                    // Stringify
-                    NSString *part = [NSString stringWithFormat: @"%@[]=%@",
-                                      urlEncode(key), urlEncode(item)];
-                    [parts addObject:part];
-                }
-			}
-		} else if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]]) {
-            for ( NSString *nKey in [value allKeys] ) {
-                id nValue = [value objectForKey:nKey];
-                NSString *part = [NSString stringWithFormat: @"%@[%@]=%@",
-                                  urlEncode(key), urlEncode(nKey), urlEncode(nValue)];
-                [parts addObject:part];
-            }
-        } else {
-			NSString *part = [NSString stringWithFormat: @"%@=%@",
-							  urlEncode(key), urlEncode(value)];
-			[parts addObject:part];
-		}
-	}
+- (void)URLEncodePart:(NSMutableArray*)parts path:(NSString*)path value:(id)value {
+    [parts addObject:[NSString stringWithFormat: @"%@=%@", path, urlEncode(value)]];
+}
 
-	return [parts componentsJoinedByString: @"&"];
+- (void)URLEncodeParts:(NSMutableArray*)parts path:(NSString*)inPath {
+    [self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
+    {
+        NSString* path = inPath ? [inPath stringByAppendingFormat:@"[%@]", urlEncode(key)] : urlEncode(key);
+        if( [value isKindOfClass:[NSArray class]] )
+        {
+			for( id item in value )
+            {
+                [self URLEncodePart:parts path:[path stringByAppendingString:@"[]"] value:item];
+            }
+        }
+        else if([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]])
+        {
+            [value URLEncodeParts:parts path:path];
+        }
+        else
+        {
+            [self URLEncodePart:parts path:path value:value];
+        }
+    }];
+}
+
+- (NSString*)URLEncodedString {
+    NSMutableArray* parts = [NSMutableArray array];
+    [self URLEncodeParts:parts path:nil];
+    return [parts componentsJoinedByString:@"&"];
 }
 
 - (NSString*)HTTPHeaderValueForContentType {
