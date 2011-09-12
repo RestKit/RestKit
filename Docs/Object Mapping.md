@@ -535,7 +535,7 @@ We might have a User class like the following:
 @end
 ```
 
-You will note that this JSON is problematic compared to our earlier examples because the `email` attribute's data
+You will note that this JSON is problematic compared to our earlier examples because the `username` attribute's data
 exists as the key in a dictionary, rather than a value. We handle this by creating an object mapping and using a new
 type of mapping definition:
 
@@ -547,7 +547,7 @@ RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[User class]];
 ```
 
 What happens with this type of object mapping is that when applied against a dictionary of data,
-the keys are interpreted to contain the value for the nesting attribute (so "blake" becomes username). When
+the keys are interpreted to contain the value for the nesting attribute (so "blake" becomes `username`). When
 the remaining attribute and relationship key paths are evaluated against the parsed data, the value of the nesting attribute
 is substituted into the key path before it is applied. So your @"(username).email" key path becomes @"blake.email" and the
 mapping continues.
