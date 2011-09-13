@@ -143,7 +143,7 @@
 	blake.name = @"blake";
 	blake.railsID = [NSNumber numberWithInt:31337];
 	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-	[router routeClass:[RKHuman class] toResourcePath:@":polymorphicResourcePath" forMethod:RKRequestMethodGET];
+	[router routeClass:[RKHuman class] toResourcePath:@":polymorphicResourcePath" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
 	
 	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
 	[expectThat(resourcePath) should:be(@"/this/is/the/path")];
@@ -154,7 +154,7 @@
 	blake.name = @"blake";
 	blake.railsID = [NSNumber numberWithInt:31337];
 	RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-	[router routeClass:[RKHuman class] toResourcePath:@"(polymorphicResourcePath)" forMethod:RKRequestMethodGET];
+	[router routeClass:[RKHuman class] toResourcePath:@"(polymorphicResourcePath)" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
 	
 	NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
 	[expectThat(resourcePath) should:be(@"/this/is/the/path")];

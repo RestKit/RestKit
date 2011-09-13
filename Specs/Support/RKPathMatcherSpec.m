@@ -90,4 +90,25 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
+- (void)itShouldCreatePathsFromInterpolatedObjectsWithAddedEscapes {
+    NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:group/:name?password=:password"];
+    NSString *interpolatedPath = [matcher pathFromObject:person];
+    assertThat(interpolatedPath, isNot(equalTo(nil)));
+    NSString *expectedPath = @"/people/15/Joe%20Bob%20Briggs?password=JUICE%7CBOX%26121";
+    assertThat(interpolatedPath, is(equalTo(expectedPath)));
+
+}
+
+- (void)itShouldCreatePathsFromInterpolatedObjectsWithoutAddedEscapes {
+    NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:group/:name?password=:password"];
+    NSString *interpolatedPath = [matcher pathFromObject:person addingEscapes:NO];
+    assertThat(interpolatedPath, isNot(equalTo(nil)));
+    NSString *expectedPath = @"/people/15/Joe Bob Briggs?password=JUICE|BOX&121";
+    assertThat(interpolatedPath, is(equalTo(expectedPath)));
+    
+}
 @end

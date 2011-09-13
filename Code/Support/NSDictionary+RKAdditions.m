@@ -32,10 +32,10 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
     NSMutableDictionary *results = [NSMutableDictionary dictionaryWithCapacity:[self count]];
     [self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
      {
-         NSString *escapedKey = [key stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+         NSString *escapedKey = [key stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
          id escapedValue = value;
          if ([value respondsToSelector:@selector(stringByReplacingPercentEscapesUsingEncoding:)])
-             escapedValue = [value stringByReplacingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
+             escapedValue = [value stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
          [results setObject:escapedValue forKey:escapedKey];
      }];
     return results;

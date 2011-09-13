@@ -33,6 +33,16 @@
  */
 - (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
 
+/**
+ * Register a mapping from an object class to a resource path for a specific HTTP method, 
+ * optionally adding url escapes to the path.  This urlEscape flag comes in handy when you want to provide
+ * your own fully escaped dynamic resource path via a method/attribute on the object model.
+ * For example, if your Person model has a string attribute titled "polymorphicResourcePath" that returns 
+ * @"/this/is/the/path", you should configure the route with url escapes 'off', otherwise the router will return
+ * @"%2Fthis%2Fis%2Fthe%2Fpath".
+ */
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes;
+
 - (NSString*)resourcePathForObject:(NSObject*)object method:(RKRequestMethod)method;
 
 @end

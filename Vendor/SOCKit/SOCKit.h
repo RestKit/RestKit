@@ -133,8 +133,35 @@
  *
  * Collection Operators:
  * http://developer.apple.com/library/ios/#documentation/cocoa/conceptual/KeyValueCoding/Articles/CollectionOperators.html#//apple_ref/doc/uid/20002176-BAJEAIEE
+ *  @see stringFromObject:withBlock:
  */
 - (NSString *)stringFromObject:(id)object;
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ * Returns a string with the parameters of this pattern replaced using Key-Value Coding (KVC)
+ * on the receiving object, and the result is (optionally) modified or encoded by the block. 
+ * 
+ * For example, consider we have individual object values that need percent escapes added to them,
+ * while preserving the the slashes, question marks, and ampersands of a typical resource path. 
+ * Using blocks, this is very succinct:
+ * 
+ * NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:@"SECRET|KEY",@"password", 
+ *     @"Joe Bob Briggs", @"name", nil];
+ * SOCPattern *soc = [SOCPattern patternWithString:@"/people/:name/:password"];
+ * NSString *actualPath = [soc stringFromObject:person withBlock:^(NSString *)interpolatedString) {
+ *     return [interpolatedString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+ * }
+ * NSString *expectedPath = @"/people/Joe%20Bob%20Briggs/SECRET%7CKEY";
+ *
+ *      @param object  The object whose properties you want to interpolate
+ *      @param block   An optional block (may be nil) that modifies or encodes the interpolated 
+ *                     property value string.  If block is not nil, it must at least the incoming string.
+ *      @returns A string with the interpolated values from the object, using the pre-configured pattern.
+ *      @see stringFromObject:
+ */
+- (NSString *)stringFromObject:(id)object withBlock:(NSString*(^)(NSString*))block;
+#endif
 
 @end
 

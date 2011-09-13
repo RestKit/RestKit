@@ -100,4 +100,24 @@
  */
 - (NSString *)pathFromObject:(id)object;
 
+/**
+ This generates a resource path by interpolating the properties of the 'object' argument, assuming the existence
+ of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
+ function to RKMakePathWithObject (in fact it is a shortcut for this method).
+ 
+ For example, given an 'article' object with an 'articleID' property value of 12345 and a code of "This/That"...
+ 
+ RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID/:code"];
+ NSString *resourcePath = [matcher pathFromObject:article addingEscapes:YES];
+ 
+ ... will produce a 'resourcePath' containing the string "/articles/12345/This%2FThat"
+ 
+ @param object The object containing the properties to interpolate.
+ @param addEscapes Conditionally add percent escapes to the interpolated property values
+ @return A string with the object's interpolated property values inserted into the receiver's established pattern.
+ @see RKMakePathWithObjectAddingEscapes
+ @see RKRouter
+ */
+- (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes;
+
 @end

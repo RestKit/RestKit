@@ -33,12 +33,16 @@ NSString * RKMakeURLPath(NSString *resourcePath) {
 	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
 }
 
-NSString* RKMakePathWithObject(NSString* pattern, id object) {
+NSString* RKMakePathWithObjectAddingEscapes(NSString* pattern, id object, BOOL addEscapes) {
     NSCAssert(pattern != NULL, @"Pattern string must not be empty in order to create a path from an interpolated object.");
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pattern];
-    NSString *interpolatedPath = [matcher pathFromObject:object];
+    NSString *interpolatedPath = [matcher pathFromObject:object addingEscapes:addEscapes];
     return interpolatedPath;
+}
+
+NSString* RKMakePathWithObject(NSString* pattern, id object) {
+    return RKMakePathWithObjectAddingEscapes(pattern, object, YES);
 }
 
 NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) {

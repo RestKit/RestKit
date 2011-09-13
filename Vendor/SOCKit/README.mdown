@@ -55,8 +55,7 @@ blaze a trail with your iOS apps. Nimbus will soon be using SOCKit in a re-envis
 navigator.
 
 Users of RESTKit will notice that SOCKit provides similar functionality to RESTKit's
-[RKMakePathWithObject][]. It's easy to imagine a point in the near future where
-`RKMakePathWithObject` uses SOCKit behind the scenes.
+[RKMakePathWithObject][]. In fact, both `RKMakePathWithObject` and the underlying `RKPathMatcher` class rely on SOCKit behind the scenes.
 
 ## Add SOCKit to your project
 

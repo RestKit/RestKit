@@ -20,6 +20,7 @@
 #import "SOCKit.h"
 
 typedef void (^SimpleBlock)(void);
+NSString *sockitBetterURLEncodeString(NSString *unencodedString);
 
 @interface SOCTestObject : NSObject
 
@@ -126,6 +127,30 @@ typedef void (^SimpleBlock)(void);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)testBlockTransformations {
+    NSDictionary *obj = [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
+    SOCPattern *pattern = [SOCPattern patternWithString:@"/people/:group/:name?password=:password"];
+    NSString *expectedString = @"/people/15/Joe Bob Briggs?password=JUICE|BOX&121";
+    NSString *actualString = [pattern stringFromObject:obj withBlock:nil];
+    STAssertTrue([actualString isEqualToString:expectedString], @"Should be the same string (testing nil block parameter).");
+    STAssertTrue([actualString isEqualToString:[pattern stringFromObject:obj]], @"Should be the same string (testing nil block parameter).");
+    actualString = [pattern stringFromObject:obj withBlock:^NSString *(NSString* interpolatedValue) {
+        return @"Test Message";
+    }];
+    expectedString = @"/people/Test Message/Test Message?password=Test Message";
+    STAssertTrue([actualString isEqualToString:expectedString], @"Should be the same string (testing nil block parameter).");
+    STAssertFalse([actualString isEqualToString:[pattern stringFromObject:obj]], @"Should not be the same string, one was transformed with a block.");
+    actualString = [pattern stringFromObject:obj withBlock:^NSString *(NSString* interpolatedValue) {
+        return sockitBetterURLEncodeString(interpolatedValue);
+    }];
+    expectedString = @"/people/15/Joe%20Bob%20Briggs?password=JUICE%7CBOX%26121";
+    STAssertTrue([actualString isEqualToString:expectedString], @"Should be the same string (testing nil block parameter).");
+    STAssertFalse([actualString isEqualToString:[pattern stringFromObject:obj]], @"Should not be the same string, one was transformed with a block.");
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)testOutboundParameters {
   SOCPattern* pattern = [SOCPattern patternWithString:@"soc://:ident"];
   STAssertTrue([pattern stringMatches:@"soc://3"], @"String should conform.");
@@ -193,3 +218,11 @@ typedef void (^SimpleBlock)(void);
 }
 
 @end
+
+// NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
+NSString *sockitBetterURLEncodeString(NSString *unencodedString) {
+    NSString * encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes( NULL, (CFStringRef)unencodedString, NULL,
+                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]", NSASCIIStringEncoding );
+    return [encodedString autorelease];
+}
+
