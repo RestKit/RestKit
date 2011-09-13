@@ -72,6 +72,9 @@ typedef enum RKRequestBackgroundPolicy {
 @class RKResponse, RKRequestQueue;
 @protocol RKRequestDelegate;
 
+/**
+ Models the request portion of an HTTP request/response cycle.
+ */
 @interface RKRequest : NSObject {
 	NSURL* _URL;
 	NSMutableURLRequest* _URLRequest;

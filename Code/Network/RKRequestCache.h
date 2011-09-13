@@ -9,7 +9,6 @@
 #import "RKRequest.h"
 #import "RKResponse.h"
 
-
 /**
  * Storage policy. Determines if we clear the cache out when the app is shut down.
  * Cache instance needs to register for
@@ -20,7 +19,9 @@ typedef enum {
     RKRequestCacheStoragePolicyPermanently				// Cache data permanently, until explicitly expired or flushed
 } RKRequestCacheStoragePolicy;
 
-
+/**
+ Stores and retrieves cache entries for RestKit request objects.
+ */
 @interface RKRequestCache : NSObject {
     NSString* _cachePath;
     RKRequestCacheStoragePolicy _storagePolicy;
@@ -39,8 +40,6 @@ typedef enum {
 - (BOOL)hasResponseForRequest:(RKRequest*)request;
 
 - (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request;
-
-//- (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request expires:(NSTimeInterval)expirationAge;
 
 - (RKResponse*)responseForRequest:(RKRequest*)request;
 

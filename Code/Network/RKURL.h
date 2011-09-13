@@ -6,6 +6,11 @@
 //  Copyright 2010 Two Toasters. All rights reserved.
 //
 
+/**
+ Extends the Cocoa NSURL base class to provide support for the concepts
+ of base URL and resource path that are used extensively throughout the RestKit
+ system.
+ */
 @interface RKURL : NSURL {
 	NSString* _baseURLString;
 	NSString* _resourcePath;

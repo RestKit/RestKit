@@ -50,7 +50,7 @@
  This method originally appeared as queryContentsUsingEncoding: in the Three20 project:
  https://github.com/facebook/three20/blob/master/src/Three20Core/Sources/NSStringAdditions.m
  
- @param receiver A string in the form of @"/object/?sortBy=name", or @"/object/?sortBy=name&color=red"
+ @param receiver A string in the form of @"/object/?sortBy=name", or @"/object/?sortBy=name&amp;color=red"
  @param encoding The encoding for to use while parsing the query string.
  @return A new dictionary of query parameters, with keys like 'sortBy' and values like 'name'.
  */
@@ -64,7 +64,7 @@
  This method originally appeared as queryContentsUsingEncoding: in the Three20 project:
  https://github.com/facebook/three20/blob/master/src/Three20Core/Sources/NSStringAdditions.m
  
- @param receiver A string in the form of @"/object?sortBy=name", or @"/object?sortBy=name&color=red"
+ @param receiver A string in the form of @"/object?sortBy=name", or @"/object?sortBy=name&amp;color=red"
  @param shouldUseArrays If NO, it yields the same results as queryParametersUsingEncoding:, otherwise it creates value arrays instead of value strings.
  @param encoding The encoding for to use while parsing the query string.
  @return A new dictionary of query parameters, with keys like 'sortBy' and value arrays (if requested) like ['name'].

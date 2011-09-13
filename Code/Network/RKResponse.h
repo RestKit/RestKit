@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "RKRequest.h"
 
+/**
+ Models the response portion of an HTTP request/response cycle.
+ */
 @interface RKResponse : NSObject {
 	RKRequest* _request;
 	NSHTTPURLResponse* _httpURLResponse;
