@@ -26,11 +26,11 @@ static RKClient* sharedClient = nil;
 // URL Conveniences functions
 
 NSURL * RKMakeURL(NSString *resourcePath) {
-	return [[RKClient sharedClient] URLForResourcePath:resourcePath];
+    return [[RKClient sharedClient] URLForResourcePath:resourcePath];
 }
 
 NSString * RKMakeURLPath(NSString *resourcePath) {
-	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
+    return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
 }
 
 NSString* RKMakePathWithObjectAddingEscapes(NSString* pattern, id object, BOOL addEscapes) {
@@ -46,8 +46,8 @@ NSString* RKMakePathWithObject(NSString* pattern, id object) {
 }
 
 NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) {
-	if ([queryParams count] > 0)
-		return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+    if ([queryParams count] > 0)
+        return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
     return resourcePath;
 }
 

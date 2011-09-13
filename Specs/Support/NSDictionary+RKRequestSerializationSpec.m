@@ -11,7 +11,6 @@
 #import "NSDictionary+RKAdditions.h"
 
 @interface NSDictionary_RKRequestSerializationSpec : RKSpec {
-	
 }
 
 @end
@@ -19,9 +18,9 @@
 @implementation NSDictionary_RKRequestSerializationSpec
 
 - (void)itShouldHaveKeysAndValuesDictionaryInitializer {
-	NSDictionary* dictionary1 = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", @"value2", @"key2", nil];
-	NSDictionary* dictionary2 = [NSDictionary dictionaryWithKeysAndObjects:@"key", @"value", @"key2", @"value2", nil];
-	[expectThat(dictionary2) should:be(dictionary1)];
+    NSDictionary* dictionary1 = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", @"value2", @"key2", nil];
+    NSDictionary* dictionary2 = [NSDictionary dictionaryWithKeysAndObjects:@"key", @"value", @"key2", @"value2", nil];
+    [expectThat(dictionary2) should:be(dictionary1)];
 }
 
 - (void)itShouldEncodeUnicodeStrings {

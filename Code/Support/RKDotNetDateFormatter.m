@@ -26,7 +26,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 + (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone {
     RKDotNetDateFormatter *formatter = [[[RKDotNetDateFormatter alloc] init] autorelease];
     if (newTimeZone)
-		formatter.timeZone = newTimeZone;
+        formatter.timeZone = newTimeZone;
     return formatter;
 }
 
