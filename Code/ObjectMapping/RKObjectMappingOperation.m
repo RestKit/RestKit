@@ -355,6 +355,22 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             continue;
         }
         
+        // Handle case where incoming content is collection represented by a dictionary 
+        if (relationshipMapping.mapping.forceCollectionMapping) {
+            // If we have forced mapping of a dictionary, map each subdictionary
+            if ([value isKindOfClass:[NSDictionary class]]) {
+                RKLogDebug(@"Collection mapping forced for NSDictionary, mapping each key/value independently...");
+                NSArray* objectsToMap = [NSMutableArray arrayWithCapacity:[value count]];
+                for (id key in value) {
+                    NSDictionary* dictionaryToMap = [NSDictionary dictionaryWithObject:[value valueForKey:key] forKey:key];
+                    [(NSMutableArray*)objectsToMap addObject:dictionaryToMap];
+                }
+                value = objectsToMap;
+            } else {
+                RKLogWarning(@"Collection mapping forced but mappable objects is of type '%@' rather than NSDictionary", NSStringFromClass([value class]));
+            }
+        }
+        
         // Handle case where incoming content is a single object, but we want a collection
         Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
         BOOL mappingToCollection = (relationshipType && 
