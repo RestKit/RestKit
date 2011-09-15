@@ -1509,6 +1509,32 @@
     assertThat([mappingProvider objectMappingsForClass:[RKExampleUser class]], is(equalTo([NSArray arrayWithObjects:firstMapping, secondMapping, thirdMapping, nil])));
 }
 
+- (void)itShouldReturnAllMappingsForAClassAndNotExplodeWithRegisteredDynamicMappings {
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping mapAttributes:@"name", nil];
+    RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+    [girlMapping mapAttributes:@"name", nil];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
+    [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
+    [provider setMapping:dynamicMapping forKeyPath:@"dynamic"];
+    RKObjectMapping* firstMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectMapping* secondMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    [provider addObjectMapping:firstMapping];
+    [provider setMapping:secondMapping forKeyPath:@"second"];
+    NSException* exception = nil;
+    NSArray *actualMappings = nil;
+    @try {
+        actualMappings = [provider objectMappingsForClass:[RKExampleUser class]];
+    }
+    @catch (NSException * e) {
+        exception = e;
+    }
+    [expectThat(exception) should:be(nil)];
+    assertThat(actualMappings, is(equalTo([NSArray arrayWithObjects:firstMapping, secondMapping, nil])));
+}
+
 #pragma mark - RKObjectDynamicMapping
 
 - (void)itShouldMapASingleObjectDynamically {
