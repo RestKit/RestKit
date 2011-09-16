@@ -499,6 +499,7 @@ articleMapping.primaryKeyAttribute = @"articleID";
 ```
 
 The astute reader will notice a couple of things:
+
 1. We changed our inheritance to NSManagedObject from NSObject
 1. Our properties are now implemented via @dynamic instead of @synthesize
 1. We have added a new property -- articleID. Typically when you load a remote object it is going to include a unique
@@ -543,7 +544,7 @@ type of mapping definition:
 RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[User class]];
 [mapping mapKeyOfNestedDictionaryToAttribute:@"username"];
 [mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
-[mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
+[mapping mapFromKeyPath:@"(username).favorite_animal" toAttribute:"favoriteAnimal"];
 ```
 
 What happens with this type of object mapping is that when applied against a dictionary of data,
@@ -578,7 +579,7 @@ RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[User class]];
 mapping.forceCollectionMapping = YES;
 [mapping mapKeyOfNestedDictionaryToAttribute:@"username"];
 [mapping mapFromKeyPath:@"(username).email" toAttribute:"email"];
-[mapping mapFromKeyPath:@"(username).favoriteAnimal" toAttribute:"favoriteAnimal"];
+[mapping mapFromKeyPath:@"(username).favorite_animal" toAttribute:"favoriteAnimal"];
 ```
 ### Dynamic Object Mapping
 
@@ -597,6 +598,7 @@ mapped. The dynamic mapping is responsible for introspecting the contents of the
 instance that can be used to map the data into a concrete object.
 
 There are three ways in which the determination of the appropriate object mapping can be made:
+
 1. Via a declarative matcher on an attribute within the mappable data. If your dynamic data contains an attribute that can
 be used to infer the appropriate object type, then you are in luck -- RestKit can handle the dynamic mapping via simple 
 configuration.
