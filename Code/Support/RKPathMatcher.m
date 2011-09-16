@@ -115,7 +115,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
         RKLogWarning(@"The parsed arguments dictionary reference is nil.");
         return YES;
     }
-    NSDictionary *extracted = [self.socPattern extractParameterKeyValuesFromSourceString:self.rootPath];
+    NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
     if (extracted)
         [argumentsCollection addEntriesFromDictionary:[extracted removePercentEscapesFromKeysAndObjects]];
     *arguments = argumentsCollection;

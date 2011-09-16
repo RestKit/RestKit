@@ -30,6 +30,7 @@ typedef enum {
 } SOCArgumentType;
 
 SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
+NSString* kTemporaryBackslashToken = @"/backslash/";
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,9 +116,17 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
 
   NSCharacterSet* nonParameterCharacterSet = [self nonParameterCharacterSet];
 
+  // Turn escaped backslashes into a special backslash token to avoid \\. being interpreted as
+  // `\` and `\.` rather than `\\` and `.`.
+  NSString* escapedPatternString = _patternString;
+  if ([escapedPatternString rangeOfString:@"\\\\"].length > 0) {
+    escapedPatternString = [escapedPatternString stringByReplacingOccurrencesOfString: @"\\\\"
+                                                                           withString: kTemporaryBackslashToken];
+  }
+  
   // Scan through the string, creating tokens that are either strings or parameters.
   // Parameters are prefixed with ":".
-  NSScanner* scanner = [NSScanner scannerWithString:_patternString];
+  NSScanner* scanner = [NSScanner scannerWithString:escapedPatternString];
 
   // NSScanner skips whitespace and newlines by default (not ideal!).
   [scanner setCharactersToBeSkipped:nil];
@@ -127,8 +136,18 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
     [scanner scanUpToString:@":" intoString:&token];
 
     if ([token length] > 0) {
-      // Add this static text to the token list.
-      [tokens addObject:token];
+      if (![token hasSuffix:@"\\"]) {
+        // Add this static text to the token list.
+        [tokens addObject:token];
+
+      } else {
+        // This token is escaping the next colon, so we skip the parameter creation.
+        [tokens addObject:[token stringByAppendingString:@":"]];
+
+        // Skip the colon.
+        [scanner setScanLocation:[scanner scanLocation] + 1];
+        continue;
+      }
     }
 
     if (![scanner isAtEnd]) {
@@ -179,6 +198,26 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+- (NSString *)_stringFromEscapedToken:(NSString *)token {
+  if ([token rangeOfString:@"\\"].length == 0
+      && [token rangeOfString:kTemporaryBackslashToken].length == 0) {
+    // The common case (faster and creates fewer autoreleased strings).
+    return token;
+    
+  } else {
+    // Escaped characters may exist.
+    // Create a mutable copy so that we don't excessively create new autoreleased strings.
+    NSMutableString* mutableToken = [token mutableCopy];
+    [mutableToken replaceOccurrencesOfString:@"\\." withString:@"." options:0 range:NSMakeRange(0, [mutableToken length])];
+    [mutableToken replaceOccurrencesOfString:@"\\@" withString:@"@" options:0 range:NSMakeRange(0, [mutableToken length])];
+    [mutableToken replaceOccurrencesOfString:@"\\:" withString:@":" options:0 range:NSMakeRange(0, [mutableToken length])];
+    [mutableToken replaceOccurrencesOfString:kTemporaryBackslashToken withString:@"\\" options:0 range:NSMakeRange(0, [mutableToken length])];
+    return [mutableToken autorelease];
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - Public Methods
 
@@ -198,6 +237,9 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
   for (id token in _tokens) {
 
     if ([token isKindOfClass:[NSString class]]) {
+      // Replace the escaped characters in the token before we start comparing the string.
+      token = [self _stringFromEscapedToken:token];
+
       NSInteger tokenLength = [token length];
       if (validUpUntil + tokenLength > stringLength) {
         // There aren't enough characters in the string to satisfy this token.
@@ -218,7 +260,7 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
 
       // Look ahead for the next string token match.
       if (tokenIndex + 1 < [_tokens count]) {
-        NSString* nextToken = [_tokens objectAtIndex:tokenIndex + 1];
+        NSString* nextToken = [self _stringFromEscapedToken:[_tokens objectAtIndex:tokenIndex + 1]];
         NSAssert([nextToken isKindOfClass:[NSString class]], @"The token following a parameter must be a string.");
 
         NSRange nextTokenRange = [string rangeOfString:nextToken options:0 range:NSMakeRange(validUpUntil, stringLength - validUpUntil)];
@@ -355,7 +397,7 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-- (NSDictionary *)extractParameterKeyValuesFromSourceString:(NSString *)sourceString {
+- (NSDictionary *)parameterDictionaryFromSourceString:(NSString *)sourceString {
   NSMutableDictionary* kvs = [[NSMutableDictionary alloc] initWithCapacity:[_parameters count]];
 
   NSArray* values = nil;
@@ -374,24 +416,25 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-- (NSString *)accumulatedStringWithParameterValues:(NSDictionary *)parameterValues {
-    NSMutableString* accumulator = [[NSMutableString alloc] initWithCapacity:[_patternString length]];
-    
-    for (id token in _tokens) {
-        if ([token isKindOfClass:[NSString class]]) {
-            [accumulator appendString:token];
-            
-        } else {
-            SOCParameter* parameter = token;
-            [accumulator appendString:[parameterValues objectForKey:parameter.string]];
-        }
+- (NSString *)_stringWithParameterValues:(NSDictionary *)parameterValues {
+  NSMutableString* accumulator = [[NSMutableString alloc] initWithCapacity:[_patternString length]];
+
+  for (id token in _tokens) {
+    if ([token isKindOfClass:[NSString class]]) {
+      [accumulator appendString:[self _stringFromEscapedToken:token]];
+
+    } else {
+      SOCParameter* parameter = token;
+      [accumulator appendString:[parameterValues objectForKey:parameter.string]];
     }
-    
-    NSString* result = nil;
-    result = [[accumulator copy] autorelease];
-    [accumulator release]; accumulator = nil;
-    return result;
+  }
+
+  NSString* result = nil;
+  result = [[accumulator copy] autorelease];
+  [accumulator release]; accumulator = nil;
+  return result;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (NSString *)stringFromObject:(id)object {
@@ -404,8 +447,9 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
     NSString* stringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:parameter.string]];
     [parameterValues setObject:stringValue forKey:parameter.string];
   }
-  return [self accumulatedStringWithParameterValues:parameterValues];
+  return [self _stringWithParameterValues:parameterValues];
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 #if NS_BLOCKS_AVAILABLE
@@ -416,11 +460,14 @@ SOCArgumentType SOCArgumentTypeForTypeAsChar(char argType);
   NSMutableDictionary* parameterValues = [NSMutableDictionary dictionaryWithCapacity:[_parameters count]];
   for (SOCParameter* parameter in _parameters) {
     NSString* stringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:parameter.string]];
-    if (block)
+    if (nil != block) {
       stringValue = block(stringValue);
-    [parameterValues setObject:stringValue forKey:parameter.string];
+    }
+    if (nil != stringValue) {
+      [parameterValues setObject:stringValue forKey:parameter.string];
+    }
   }
-  return [self accumulatedStringWithParameterValues:parameterValues];
+  return [self _stringWithParameterValues:parameterValues];
 }
 #endif
 

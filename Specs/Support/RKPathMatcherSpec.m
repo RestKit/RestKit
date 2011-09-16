@@ -110,7 +110,6 @@
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/15/Joe%20Bob%20Briggs?password=JUICE%7CBOX%26121";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
-
 }
 
 - (void)itShouldCreatePathsFromInterpolatedObjectsWithoutAddedEscapes {
@@ -121,6 +120,16 @@
     assertThat(interpolatedPath, isNot(equalTo(nil)));
     NSString *expectedPath = @"/people/15/Joe Bob Briggs?password=JUICE|BOX&121";
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
-    
 }
+
+- (void)itShouldCreatePathsThatIncludePatternArgumentsFollowedByEscapedNonPatternDots {
+    NSDictionary *arguments = [NSDictionary dictionaryWithObjectsAndKeys:@"Resources", @"filename", nil];
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/directory/:filename\\.json"];
+    NSString *interpolatedPath = [matcher pathFromObject:arguments];
+    assertThat(interpolatedPath, isNot(equalTo(nil)));
+    NSString *expectedPath = @"/directory/Resources.json";
+    assertThat(interpolatedPath, is(equalTo(expectedPath)));
+}
+
+
 @end

@@ -26,7 +26,7 @@ Damn straight it is.
 ### And isn't this kind of like Three20's navigator?
 
 Except hella better. It's also entirely incompatible with Three20 routes. This kinda blows if
-you've already invested a ton of energy into Three20's routing tech, but here's a few reasons
+you've already invested a ton of energy into Three20's routing tech, but here are a few reasons
 why SOCKit is better:
 
 1. *Selectors are not defined in the pattern*. The fact that Three20 requires that you define
@@ -48,16 +48,17 @@ Three20: [map from:[Tweet class] name:@"thread" toURL:@"twitter://tweet/(id)/thr
 SOCKit:  [map from:[Tweet class] name:@"thread" toURL:@"twitter://tweet/:id/thread"];
 ```
 
-## Heads up
+## Where it's being used
 
-SOCKit is a sibling project to [Nimbus][], a lightweight modular framework that makes it easy to
-blaze a trail with your iOS apps. Nimbus will soon be using SOCKit in a re-envisioning of Three20's
-navigator.
+SOCKit is a sibling project to [Nimbus][], a light-weight and modular framework that makes it
+easy to blaze a trail with your iOS apps. Nimbus will soon be using SOCKit in a re-envisioning
+of Three20's navigator.
 
 Users of RESTKit will notice that SOCKit provides similar functionality to RESTKit's
-[RKMakePathWithObject][]. In fact, both `RKMakePathWithObject` and the underlying `RKPathMatcher` class rely on SOCKit behind the scenes.
+[RKMakePathWithObject][]. In fact, both `RKMakePathWithObject` and the underlying `RKPathMatcher`
+class rely on SOCKit behind the scenes.
 
-## Add SOCKit to your project
+## Adding SOCKit to your project
 
 This lightweight library is built to be a dead-simple airdrop directly into your project. Contained
 in SOCKit.h and SOCKit.m is all of the functionality you will need in order to start mapping
@@ -76,6 +77,16 @@ the `user` property, and that TwitterUser object has a `username` property. Chec
 `:user.username`. If this was one of my tweets and I encoded the Tweet object using a SOCKit
 pattern the resulting string would be `@"featherless"`. KVC rocks.
 
+## Learning more
+
+In-depth documentation can be found in the [SOCKit.h][SOCPattern] header file.
+
+## Contributing
+
+If you find a bug in SOCKit please file an issue on the Github [SOCKit issue tracker][]. Even
+better: if you have a solution for the bug then fork the project and make a pull request.
+
+[SOCKit issue tracker]: https://github.com/jverkoey/sockit/issues
 [SOCPattern]: https://github.com/jverkoey/sockit/blob/master/SOCKit.h
 [KVC collection operators]: http://developer.apple.com/library/ios/#documentation/cocoa/conceptual/KeyValueCoding/Articles/CollectionOperators.html#//apple_ref/doc/uid/20002176-BAJEAIEE
 [Nimbus]: http://jverkoey.github.com/nimbus
