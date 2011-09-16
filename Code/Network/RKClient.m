@@ -83,6 +83,14 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 @synthesize requestCache = _requestCache;
 @synthesize cachePolicy = _cachePolicy;
 @synthesize requestQueue = _requestQueue;
+@synthesize consumerKey =_consumerKey;
+@synthesize consumerSecret = _consumerSecret;
+@synthesize accessToken = _accessToken;
+@synthesize accessTokenSecret = _accessTokenSecret;
+@synthesize forceOAuthUse = _forceOAuthUse;
+@synthesize oAuth2AccessToken = _oAuth2AccessToken;
+@synthesize oAuth2RefreshToken = _oAuth2RefreshToken;
+@synthesize forceOAuth2Use = _forceOAuth2Use;
 
 + (RKClient *)sharedClient {
 	return sharedClient;
@@ -102,7 +110,6 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 	RKClient *client = [RKClient clientWithBaseURL:baseURL];
 	client.username = username;
 	client.password = password;
-
 	return client;
 }
 
@@ -206,11 +213,21 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
     request.forceBasicAuthentication = self.forceBasicAuthentication;
 	request.cachePolicy = self.cachePolicy;
     request.cache = self.requestCache;
-    request.queue = self.requestQueue;
-    
+    request.queue = self.requestQueue; 
     if (! [self.requestQueue isKindOfClass:[RKRequestQueue class]]) {
         NSLog(@"BREAK)@($&@()$");
     }
+    //OAuth Parameters
+    request.accessToken = self.accessToken;
+    request.accessTokenSecret = self.accessTokenSecret;
+    request.consumerKey = self.consumerKey;
+    request.consumerSecret = self.consumerSecret;
+    request.forceOAuthUse = self.forceOAuthUse;
+
+    //OAuth2 Parameters
+    request.oAuth2AccessToken = self.oAuth2AccessToken;
+    request.oAuth2RefreshToken = self.oAuth2RefreshToken;
+    request.forceOAuth2Use = self.forceOAuth2Use;
 }
 
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header {

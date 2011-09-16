@@ -164,6 +164,14 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 	BOOL _serviceUnavailableAlertEnabled;
     RKRequestQueue *_requestQueue;
 	RKRequestCache *_requestCache;
+    NSString* _consumerKey;
+    NSString* _consumerSecret;
+    NSString* _accessToken;
+    NSString* _accessTokenSecret;
+    BOOL _forceOAuthUse;
+    NSString* _oAuth2AccessToken;
+    NSString* _oAuth2RefreshToken;
+    BOOL _forceOAuth2Use;
 	RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
@@ -465,6 +473,56 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see RKRequestDelegate
  */
 - (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
+
+
+/////////////////////////////////////////////////////////////////////////
+/// @name OAuth 1 Support
+/////////////////////////////////////////////////////////////////////////
+
+/**
+ * The consumer key obtained from the OAuth authority 
+ */
+
+@property(nonatomic,retain) NSString* consumerKey;
+
+/**
+ * The consumer secret obtained from the OAuth authority 
+ */
+@property(nonatomic,retain) NSString* consumerSecret;
+
+/**
+ * The access token obtained from the OAuth authority 
+ */
+@property(nonatomic,retain) NSString* accessToken;
+
+/**
+ * The secret token obtained from the OAuth authority 
+ */
+@property(nonatomic,retain) NSString* accessTokenSecret;
+
+/**
+ * Force the RKClient to use OAuth
+ */
+@property(nonatomic,assign) BOOL forceOAuthUse;
+
+
+
+/////////////////////////////////////////////////////////////////////////
+/// @name OAuth 2 Support
+/////////////////////////////////////////////////////////////////////////
+
+/**
+ * Access token to sign a request
+ */
+@property(nonatomic,retain) NSString* oAuth2AccessToken;
+
+/**
+ * This token is for get a new accessToken before the experitation date
+ */
+
+@property(nonatomic,retain) NSString* oAuth2RefreshToken;
+@property(nonatomic,assign) BOOL forceOAuth2Use;
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -13,12 +13,14 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
 require 'restkit/network/authentication'
 require 'restkit/network/etags'
 require 'restkit/network/timeout'
+require 'restkit/network/oauth2'
 
 class RestKit::SpecServer < Sinatra::Base
   self.app_file = __FILE__
   use RestKit::Network::Authentication
   use RestKit::Network::ETags
   use RestKit::Network::Timeout
+  use RestKit::Network::OAuth2
   
   configure do
     register Sinatra::Reloader
@@ -146,7 +148,6 @@ class RestKit::SpecServer < Sinatra::Base
     status 200
     "Uploaded successfully to '#{upload_path}'"
   end
-  
   # Return 200 after a delay
   get '/ok-with-delay/:delay' do
     sleep params[:delay].to_f

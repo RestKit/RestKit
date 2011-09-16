@@ -49,6 +49,14 @@ RKClient* RKSpecNewClient(void) {
     return client;
 }
 
+RKClientOAuth* RKSpecNewClientOAuth(RKSpecResponseLoader* loader){
+    [loader setTimeout:10];
+    RKClientOAuth* client = [RKClientOAuth clientWithClientID:@"appID" secret:@"appSecret" delegate:loader];
+    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize",RKSpecGetBaseURL()];
+    return client;
+}
+
+
 RKObjectManager* RKSpecNewObjectManager(void) {
     [RKObjectMapping setDefaultDateFormatters:nil];
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];

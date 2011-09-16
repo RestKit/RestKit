@@ -29,17 +29,19 @@
 #import "NSString+MD5.h"
 #import "RKLog.h"
 #import "RKRequestCache.h"
+#import "TDOAuth.h"
+
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
 @implementation RKRequest
+@class TDOAuth;
 
 @synthesize URL = _URL, URLRequest = _URLRequest, delegate = _delegate, additionalHTTPHeaders = _additionalHTTPHeaders,
             params = _params, userData = _userData, username = _username, password = _password, method = _method,
-            forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache,
-            cacheTimeoutInterval = _cacheTimeoutInterval;
+            forceBasicAuthentication = _forceBasicAuthentication, cachePolicy = _cachePolicy, cache = _cache, cacheTimeoutInterval = _cacheTimeoutInterval, consumerKey = _consumerKey, consumerSecret = _consumerSecret, accessToken = _accessToken, accessTokenSecret = _accessTokenSecret, forceOAuthUse = _forceOAuthUse, oAuth2AccessToken = _oAuth2AccessToken, oAuth2RefreshToken = _oAuth2RefreshToken, forceOAuth2Use = _forceOAuth2Use;
 @synthesize queue = _queue;
 
 #if TARGET_OS_IPHONE
@@ -56,6 +58,7 @@
 		_URL = [URL retain];
         [self reset];
         _forceBasicAuthentication = NO;
+        _forceOAuthUse = NO;
 		_cachePolicy = RKRequestCachePolicyDefault;
         _cacheTimeoutInterval = 0;
 	}
@@ -208,6 +211,35 @@
         CFRelease(authorizationString);
     }
     
+    // Add OAuth headers if is need it
+    // OAuth 1
+    if(_forceOAuthUse){
+        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+        for(NSString *parameter in [[_URL query] componentsSeparatedByString:@"&"]) {
+            NSArray *keyValuePair = [parameter componentsSeparatedByString:@"="];
+            [parameters setValue:[[keyValuePair objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
+                          forKey:[keyValuePair objectAtIndex:0]];
+        }
+        
+        NSURLRequest *echo = [TDOAuth URLRequestForPath:[self resourcePath]
+                                          GETParameters:parameters
+                                                 scheme:[_URL scheme]
+                                                   host:[_URL host]
+                                            consumerKey:_consumerKey
+                                         consumerSecret:_consumerSecret
+                                            accessToken:_accessToken
+                                            tokenSecret:_accessTokenSecret];
+        [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Authorization"] forHTTPHeaderField:@"Authorization"];
+        [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Accept-Encoding"] forHTTPHeaderField:@"Accept-Encoding"];
+        [_URLRequest setValue:[echo valueForHTTPHeaderField:@"User-Agent"] forHTTPHeaderField:@"User-Agent"];
+    }
+    
+    // OAuth 2 valid request
+    if(_forceOAuth2Use){
+        NSString *authorizationString = [NSString stringWithFormat:@"OAuth2 %@",_oAuth2AccessToken];
+        [_URLRequest setValue:authorizationString forHTTPHeaderField:@"Authorization"];
+    }
+    
     if (self.cachePolicy & RKRequestCachePolicyEtag) {
         NSString* etag = [self.cache etagForRequest:self];
         if (etag) {
@@ -288,6 +320,7 @@
     }
     
     RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
+    
     _connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
