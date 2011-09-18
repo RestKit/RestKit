@@ -329,10 +329,10 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
                 NSLog(@"%@", error);
             }
         }
-        
+        return [appDirectory path];
     }
 
-    return appDirectory;
+    return nil;
 #endif
     
 }
