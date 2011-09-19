@@ -278,6 +278,7 @@
 		3703ABAC14190D5700DB697A /* RKDotNetDateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3703ABAA14190D5700DB697A /* RKDotNetDateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3703ABAD14190D5700DB697A /* RKDotNetDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3703ABAB14190D5700DB697A /* RKDotNetDateFormatter.m */; };
 		3703ABB0141941FB00DB697A /* RKDotNetDateFormatterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3703ABAF141941FB00DB697A /* RKDotNetDateFormatterSpec.m */; };
+		37959B201426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 37959B1F1426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m */; };
 		37CA4C501410A4D1009A3DCE /* RKFixCategoryBug.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F846E1410574B007AABCD /* RKFixCategoryBug.h */; };
 		37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C6F1410A7CF009A3DCE /* SOCKit.h */; };
 		37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 37CA4C701410A7CF009A3DCE /* SOCKit.m */; };
@@ -710,6 +711,7 @@
 		3703ABAA14190D5700DB697A /* RKDotNetDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDotNetDateFormatter.h; sourceTree = "<group>"; };
 		3703ABAB14190D5700DB697A /* RKDotNetDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDotNetDateFormatter.m; sourceTree = "<group>"; };
 		3703ABAF141941FB00DB697A /* RKDotNetDateFormatterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDotNetDateFormatterSpec.m; sourceTree = "<group>"; };
+		37959B1F1426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingProviderSpec.m; sourceTree = "<group>"; };
 		37CA4C6F1410A7CF009A3DCE /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = "<group>"; };
 		37CA4C701410A7CF009A3DCE /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = "<group>"; };
 		37CA4C851410ABD2009A3DCE /* RKPathMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPathMatcher.h; sourceTree = "<group>"; };
@@ -1464,6 +1466,7 @@
 				259D51151328547000897272 /* RKObjectRouterSpec.m */,
 				259D51161328547000897272 /* RKObjectMapperSpec.m */,
 				259D51171328547000897272 /* RKObjectManagerSpec.m */,
+				37959B1F1426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m */,
 				25D1983F1368A9CE0090B617 /* RKObjectLoaderSpec.m */,
 				25D1994D136BE7E00090B617 /* RKObjectMappingNextGenSpec.m */,
 				25952DEF136C8F9C00D04F93 /* RKObjectMappingOperationSpec.m */,
@@ -2314,6 +2317,7 @@
 				37DEBA62141123BB00FDF847 /* RKPathMatcherSpec.m in Sources */,
 				37DEBA651411298300FDF847 /* NSStringRestKitSpec.m in Sources */,
 				3703ABB0141941FB00DB697A /* RKDotNetDateFormatterSpec.m in Sources */,
+				37959B201426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

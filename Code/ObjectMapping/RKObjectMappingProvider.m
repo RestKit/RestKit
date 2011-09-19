@@ -79,10 +79,10 @@
     NSMutableArray* mappings = [NSMutableArray array];
     NSArray* mappingsToSearch = [[NSArray arrayWithArray:_objectMappings] arrayByAddingObjectsFromArray:[_mappingsByKeyPath allValues]];
     for (NSObject <RKObjectMappingDefinition> *candidateMapping in mappingsToSearch) {
-        if (![candidateMapping respondsToSelector:@selector(objectClass)] || [mappings containsObject:candidateMapping])
+        if ( ![candidateMapping respondsToSelector:@selector(objectClass)] || [mappings containsObject:candidateMapping])
             continue;
         Class mappedClass = [candidateMapping performSelector:@selector(objectClass)];
-        if (mappedClass == theClass) {
+        if (mappedClass && [NSStringFromClass(mappedClass) isEqualToString:NSStringFromClass(theClass)]) {
             [mappings addObject:candidateMapping];
         }
     }
