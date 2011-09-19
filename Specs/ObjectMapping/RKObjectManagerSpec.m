@@ -311,4 +311,25 @@
     assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));    
 }
 
+- (void)itShouldLetYouOverloadTheParamsOnAnObjectLoaderRequest {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperSpecModel class]];
+    mapping.rootKeyPath = @"human";
+    [mapping mapAttributes:@"name", @"age", nil];
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
+    human.name = @"Blake Watters";
+    human.age = [NSNumber numberWithInt:28];
+    NSDictionary *myParams = [NSDictionary dictionaryWithObject:@"bar" forKey:@"foo"];
+    RKObjectLoader* loader = [objectManager sendObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+        loader.method = RKRequestMethodPOST;
+        loader.resourcePath = @"/humans/1";
+        loader.objectMapping = mapping;
+        loader.params = myParams;
+    }];
+    [responseLoader waitForResponse];
+    assertThat(loader.params, is(equalTo(myParams)));
+}
+
 @end
