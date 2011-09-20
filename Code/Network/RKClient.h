@@ -154,9 +154,15 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 @interface RKClient : NSObject {
 	NSString *_baseURL;
+    RKRequestAuthenticationType _authenticationType;
 	NSString *_username;
 	NSString *_password;
-    BOOL _forceBasicAuthentication;
+    NSString *_OAuth1ConsumerKey;
+    NSString *_OAuth1ConsumerSecret;
+    NSString *_OAuth1AccessToken;
+    NSString *_OAuth1AccessTokenSecret;
+    NSString *_OAuth2AccessToken;
+    NSString *_OAuth2RefreshToken;
 	NSMutableDictionary *_HTTPHeaders;
 	RKReachabilityObserver *_baseURLReachabilityObserver;
 	NSString *_serviceUnavailableAlertTitle;
@@ -249,8 +255,21 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
 #endif
 
 /////////////////////////////////////////////////////////////////////////
-/// @name HTTP Authentication
+/// @name Authentication
 /////////////////////////////////////////////////////////////////////////
+
+/**
+ The type of authentication to use for this request.
+ 
+ When configured to RKRequestAuthenticationTypeHTTPBasic, RestKit will add
+ an Authorization header establishing login via HTTP Basic. This is an optimization
+ that skips the challenge portion of the request.
+ 
+ **Default**: RKRequestAuthenticationTypeNone
+ 
+ @see RKRequestAuthenticationType
+ */
+@property (nonatomic, assign) RKRequestAuthenticationType authenticationType;
 
 /**
  * The username to use for authentication via HTTP AUTH
@@ -262,14 +281,43 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 @property(nonatomic, retain) NSString *password;
 
+/*** @name OAuth Secrets */
+
 /**
- When YES, RKRequest objects dispatched through the client will have an HTTP Basic
- Authorization header added before being sent.
- 
- This avoids an HTTP AUTH challenge before authentication and can be used to force
- authentication is situations where an AUTH challenge is not issued
+ The OAuth 1.0 consumer key
  */
-@property(nonatomic, assign) BOOL forceBasicAuthentication;
+@property(nonatomic,retain) NSString *OAuth1ConsumerKey;
+
+/**
+ The OAuth 1.0 consumer secret
+ */
+@property(nonatomic,retain) NSString *OAuth1ConsumerSecret;
+
+/**
+ The OAuth 1.0 access token
+ */
+@property(nonatomic,retain) NSString *OAuth1AccessToken;
+
+/**
+ The OAuth 1.0 access token secret
+ */
+@property(nonatomic,retain) NSString *OAuth1AccessTokenSecret;
+
+/*** @name OAuth2 Secrets */
+
+/**
+ The OAuth 2.0 access token
+ */
+@property(nonatomic,retain) NSString *OAuth2AccessToken;
+
+/**
+ The OAuth 2.0 refresh token. Used to retrieve a new access token before expiration
+ */
+@property(nonatomic,retain) NSString *OAuth2RefreshToken;
+
+/////////////////////////////////////////////////////////////////////////
+/// @name Reachability &amp; Service Availability Alerting
+/////////////////////////////////////////////////////////////////////////
 
 /**
  * The RKReachabilityObserver used to monitor whether or not the client has a connection
@@ -282,10 +330,6 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @see RKReachabilityObserver
  */
 @property(nonatomic, readonly) RKReachabilityObserver *baseURLReachabilityObserver;
-
-/////////////////////////////////////////////////////////////////////////
-/// @name Service Availability Alerting
-/////////////////////////////////////////////////////////////////////////
 
 /**
  * The title to use in the alert shown when a request encounters a

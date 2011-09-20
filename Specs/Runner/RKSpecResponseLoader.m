@@ -39,7 +39,7 @@
 - (id)init {
     self = [super init];
 	if (self) {
-		_timeout = 3;
+		_timeout = 4;
 		_awaitingResponse = NO;
 	}
 	
@@ -116,6 +116,19 @@
     _success = NO;
     _awaitingResponse = NO;
     _unknownResponse = YES;
+}
+
+#pragma mark - OAuth delegates
+
+- (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token {
+    _awaitingResponse = NO;
+    _success = YES;
+}
+
+
+- (void)OAuthClient:(RKOAuthClient *)client didFailWithInvalidGrantError:(NSError *)error {
+    _awaitingResponse = NO;
+    _success = NO;
 }
 
 @end

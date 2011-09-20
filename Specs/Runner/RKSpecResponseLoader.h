@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 #import "RKObjectLoader.h"
 
-@interface RKSpecResponseLoader : NSObject <RKObjectLoaderDelegate> {
+@interface RKSpecResponseLoader : NSObject <RKObjectLoaderDelegate, RKOAuthClientDelegate> {
 	BOOL _awaitingResponse;
 	BOOL _success;
     BOOL _wasCancelled;

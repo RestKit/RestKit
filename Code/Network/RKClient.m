@@ -68,9 +68,15 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 @implementation RKClient
 
 @synthesize baseURL = _baseURL;
+@synthesize authenticationType = _authenticationType;
 @synthesize username = _username;
 @synthesize password = _password;
-@synthesize forceBasicAuthentication = _forceBasicAuthentication;
+@synthesize OAuth1ConsumerKey = _OAuth1ConsumerKey;
+@synthesize OAuth1ConsumerSecret = _OAuth1ConsumerSecret;
+@synthesize OAuth1AccessToken = _OAuth1AccessToken;
+@synthesize OAuth1AccessTokenSecret = _OAuth1AccessTokenSecret;
+@synthesize OAuth2AccessToken = _OAuth2AccessToken;
+@synthesize OAuth2RefreshToken = _OAuth2RefreshToken;
 @synthesize HTTPHeaders = _HTTPHeaders;
 #ifdef RESTKIT_SSL_VALIDATION
 @synthesize additionalRootCertificates = _additionalRootCertificates;
@@ -102,7 +108,6 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 	RKClient *client = [RKClient clientWithBaseURL:baseURL];
 	client.username = username;
 	client.password = password;
-
 	return client;
 }
 
@@ -201,16 +206,22 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 
 - (void)setupRequest:(RKRequest *)request {
 	request.additionalHTTPHeaders = _HTTPHeaders;
+    request.authenticationType = self.authenticationType;
 	request.username = self.username;
 	request.password = self.password;
-    request.forceBasicAuthentication = self.forceBasicAuthentication;
 	request.cachePolicy = self.cachePolicy;
     request.cache = self.requestCache;
-    request.queue = self.requestQueue;
+    request.queue = self.requestQueue; 
     
-    if (! [self.requestQueue isKindOfClass:[RKRequestQueue class]]) {
-        NSLog(@"BREAK)@($&@()$");
-    }
+    // OAuth 1 Parameters
+    request.OAuth1AccessToken = self.OAuth1AccessToken;
+    request.OAuth1AccessTokenSecret = self.OAuth1AccessTokenSecret;
+    request.OAuth1ConsumerKey = self.OAuth1ConsumerKey;
+    request.OAuth1ConsumerSecret = self.OAuth1ConsumerSecret;
+
+    // OAuth2 Parameters
+    request.OAuth2AccessToken = self.OAuth2AccessToken;
+    request.OAuth2RefreshToken = self.OAuth2RefreshToken;
 }
 
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header {
