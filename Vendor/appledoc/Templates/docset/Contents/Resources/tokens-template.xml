@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="{{filePath}}">
+		{{#object}}
+		<Token>
+			{{>TokenIdentifier}}
+			{{>Abstract}}
+			{{>DeclaredIn}}
+			{{>RelatedTokens}}
+			{{#refid}}<NodeRef refid="{{refid}}"/>{{/refid}}
+		</Token>
+		{{/object}}
+		{{#members}}
+		<Token>
+			{{>TokenIdentifier}}
+			{{>Abstract}}
+			{{>DeclaredIn}}			
+			{{>RelatedTokens}}
+			<Declaration>{{>MethodDeclaration}}</Declaration>
+			{{#hasParameters}}<Parameters>
+				{{#parameters}}<Parameter>
+					<Name>{{name}}</Name>
+					{{>Abstract}}
+				</Parameter>{{/parameters}}
+			</Parameters>{{/hasParameters}}
+			{{#returnValue}}<ReturnValue>{{>Abstract}}</ReturnValue>{{/returnValue}}
+			{{#anchor}}<Anchor>{{anchor}}</Anchor>{{/anchor}}
+		</Token>
+		{{/members}}
+	</File>
+</Tokens>
+
+Section TokenIdentifier
+	<TokenIdentifier>{{identifier}}</TokenIdentifier>
+EndSection
+
+Section DeclaredIn
+	<DeclaredIn>{{declaredin}}</DeclaredIn>
+EndSection
+
+Section RelatedTokens
+	{{#hasRelatedTokens}}
+	<RelatedTokens>
+		{{#relatedTokens}}<TokenIdentifier>{{.}}</TokenIdentifier>
+		{{/relatedTokens}}
+	</RelatedTokens>
+	{{/hasRelatedTokens}}
+EndSection
+
+Section Abstract
+<Abstract>{{#abstract}}{{>GBCommentComponentsList}}{{/abstract}}</Abstract>
+EndSection
+
+Section MethodDeclaration
+{{#formattedComponents}}{{value}}{{/formattedComponents}}
+EndSection
+
+Section GBCommentComponentsList
+{{#components}}{{&textValue}}{{/components}}
+EndSection
+

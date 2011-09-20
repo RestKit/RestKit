@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/3/09.
-//  Copyright 2009 Two Toasters. All rights reserved.
+//  Copyright 2009 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <Foundation/Foundation.h>
@@ -31,17 +43,17 @@ extern NSString* const kRKStringBoundary;
 /**
  * Returns an empty params object ready for population
  */
-+ (id)params;
++ (RKParams*)params;
 
 /**
  * Initialize a params object from a dictionary of key/value pairs
  */
-+ (id)paramsWithDictionary:(NSDictionary*)dictionary;
++ (RKParams*)paramsWithDictionary:(NSDictionary*)dictionary;
 
 /**
  * Initalize a params object from a dictionary of key/value pairs
  */
-- (id)initWithDictionary:(NSDictionary*)dictionary;
+- (RKParams*)initWithDictionary:(NSDictionary*)dictionary;
 
 /**
  * Sets the value for a named parameter
@@ -77,5 +89,10 @@ extern NSString* const kRKStringBoundary;
  *  @deprecated Set the MIMEType and fileName on the returned RKParamsAttachment instead
  */
 - (RKParamsAttachment*)setFile:(NSString*)filePath MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param DEPRECATED_ATTRIBUTE;
+
+/**
+ * Resets the state of the RKParams stream
+ */
+- (void)reset;
 
 @end

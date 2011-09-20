@@ -3,13 +3,35 @@
 //  RKFramework
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 Two Toasters. All rights reserved.
+//  Copyright 2009 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKResponse.h"
 #import "RKNotifications.h"
-#import "RKJSONParser.h"
 #import "RKNetwork.h"
+#import "RKLog.h"
+#import "RKParserRegistry.h"
+#import "RKClient.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitNetwork
+
+extern NSString* cacheResponseCodeKey;
+extern NSString* cacheMIMETypeKey;
+extern NSString* cacheURLKey;
 
 @implementation RKResponse
 
@@ -21,6 +43,7 @@
 		_body = [[NSMutableData alloc] init];
 		_failureError = nil;
 		_loading = NO;
+		_responseHeaders = nil;
 	}
 
 	return self;
@@ -37,15 +60,24 @@
 	return self;
 }
 
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSMutableData*)body error:(NSError*)error {
+- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers {
+	self = [self initWithRequest:request];
+	if (self) {
+		[_body release];
+        _body = [[NSMutableData dataWithData:body] retain];
+		_responseHeaders = [headers retain];
+	}
+
+	return self;
+}
+
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
     self = [super init];
 	if (self) {
-		// TODO: Does the lack of retain here cause problems with synchronous requests, since they
-		// are not being retained by the RKRequestQueue??
 		_request = request;
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
-		_body = [body retain];
+        _body = [[NSMutableData dataWithData:body] retain];
 		_loading = NO;
 	}
 
@@ -54,40 +86,114 @@
 
 - (void)dealloc {
 	[_httpURLResponse release];
+	_httpURLResponse = nil;
 	[_body release];
+	_body = nil;
 	[_failureError release];
+	_failureError = nil;
+	[_responseHeaders release];
+	_responseHeaders = nil;
 	[super dealloc];
 }
 
-// Handle basic auth
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
-    if ([challenge previousFailureCount] == 0) {
-        NSURLCredential *newCredential;
-        newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                   password:[NSString stringWithFormat:@"%@", _request.password]
-                                                persistence:RKNetworkGetGlobalCredentialPersistence()];
-        [[challenge sender] useCredential:newCredential
-               forAuthenticationChallenge:challenge];
-    } else {
-        [[challenge sender] cancelAuthenticationChallenge:challenge];
-    }
+- (BOOL)hasCredentials {
+    return _request.username && _request.password;
 }
 
-- (void)dispatchRequestDidStartLoadIfNecessary {
-	if (NO == _loading) {
-		_loading = YES;
-		if ([[_request delegate] respondsToSelector:@selector(requestDidStartLoad:)]) {
-			[[_request delegate] requestDidStartLoad:_request];
+- (BOOL)isServerTrusted:(SecTrustRef)trust {
+    RKClient* client = [RKClient sharedClient];
+    BOOL proceed = NO;
+    
+    if( client.disableCertificateValidation ) {
+        proceed = YES;
+    }
+#ifdef RESTKIT_SSL_VALIDATION
+    else if( [client.additionalRootCertificates count] > 0 ) {
+        CFArrayRef rootCerts = (CFArrayRef)[client.additionalRootCertificates allObjects];
+        SecTrustResultType result;
+        OSStatus returnCode;
+        
+        if( rootCerts && CFArrayGetCount(rootCerts) ) {
+            // this could fail, but the trust evaluation will proceed (it's likely to fail, of course)
+            SecTrustSetAnchorCertificates(trust, rootCerts);
+        }
+        
+        returnCode = SecTrustEvaluate(trust, &result);
+        
+        if( returnCode == errSecSuccess ) {
+            proceed = (result == kSecTrustResultProceed || result == kSecTrustResultConfirm || result == kSecTrustResultUnspecified);
+            if( result == kSecTrustResultRecoverableTrustFailure ) {
+                // TODO: should try to recover here
+                // call SecTrustGetCssmResult() for more information about the failure
+            }
+        }
+    }
+#endif
+    
+    return proceed;
+}
+
+// Handle basic auth & SSL certificate validation
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    RKLogDebug(@"Received authentication challenge");
+    
+	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		SecTrustRef trust = [[challenge protectionSpace] serverTrust];
+		if ([self isServerTrusted:trust]) {
+			[challenge.sender useCredential:[NSURLCredential credentialForTrust:trust] forAuthenticationChallenge:challenge];
+		} else {
+			[[challenge sender] cancelAuthenticationChallenge:challenge];
 		}
+		return;
 	}
+	
+	if ([challenge previousFailureCount] == 0) {
+		NSURLCredential *newCredential;
+		newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+		                                         password:[NSString stringWithFormat:@"%@", _request.password]
+		                                      persistence:RKNetworkGetGlobalCredentialPersistence()];
+		[[challenge sender] useCredential:newCredential
+		       forAuthenticationChallenge:challenge];
+	} else {
+	    RKLogWarning(@"Failed authentication challenge after %d failures", [challenge previousFailureCount]);
+		[[challenge sender] cancelAuthenticationChallenge:challenge];
+	}
+}
+
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)space {
+    RKLogDebug(@"Asked if canAuthenticateAgainstProtectionSpace: with authenticationMethod = %@", [space authenticationMethod]);
+	if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+		// server is using an SSL certificate that the OS can't validate
+		// see whether the client settings allow validation here
+		RKClient* client = [RKClient sharedClient];
+		if (client.disableCertificateValidation
+#ifdef RESTKIT_SSL_VALIDATION
+            || [client.additionalRootCertificates count] > 0
+#endif
+            ) {
+			return YES;
+		} else { 
+			return NO;
+		} 
+	}
+	
+    // Handle non-SSL challenges
+    BOOL hasCredentials = [self hasCredentials];
+    if (! hasCredentials) {
+        RKLogWarning(@"Received an authentication challenge without any credentials to satisfy the request.");
+    }
+    
+    return hasCredentials;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	[_body appendData:data];
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
-	[self dispatchRequestDidStartLoadIfNecessary];
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {	
+    RKLogDebug(@"NSHTTPURLResponse Status Code: %d", [response statusCode]);
+    RKLogDebug(@"Headers: %@", [response allHeaderFields]);
+    RKLogTrace(@"Read response body: %@", [self bodyAsString]);
 	_httpURLResponse = [response retain];
 }
 
@@ -100,6 +206,11 @@
 	[_request didFailLoadWithError:_failureError];
 }
 
+- (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
+    RKLogWarning(@"RestKit was asked to retransmit a new body stream for a request. Possible connection error or authentication challenge?");
+    return nil;
+}
+
 // In the event that the url request is a post, this delegate method will be called before
 // either connection:didReceiveData: or connection:didReceiveResponse:
 // However this method is only called if there is payload data to be sent.
@@ -107,7 +218,6 @@
 // in connection:didReceiveResponse: to ensure that the RKRequestDelegate
 // callbacks get called in the correct order.
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	[self dispatchRequestDidStartLoadIfNecessary];
 	
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
@@ -118,12 +228,27 @@
 	return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];
 }
 
+- (NSData*)body {
+	return _body;
+}
+
 - (NSString*)bodyAsString {
 	return [[[NSString alloc] initWithData:self.body encoding:NSUTF8StringEncoding] autorelease];
 }
 
 - (id)bodyAsJSON {
-	return [[[[RKJSONParser alloc] init] autorelease] objectFromString:[self bodyAsString]];
+    [NSException raise:nil format:@"Reimplemented as parsedBody"];
+    return nil;
+}
+
+- (id)parsedBody:(NSError**)error {
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:[self MIMEType]];
+    id object = [parser objectFromString:[self bodyAsString] error:error];
+    if (object == nil) {
+        RKLogError(@"Unable to parse response body: %@", [*error localizedDescription]);
+        return nil;
+    }
+    return object;
 }
 
 - (NSString*)failureErrorDescription {
@@ -134,19 +259,35 @@
 	}
 }
 
+- (BOOL)wasLoadedFromCache {
+	return (_responseHeaders != nil);
+}
+
 - (NSURL*)URL {
+    if ([self wasLoadedFromCache]) {
+        return [NSURL URLWithString:[_responseHeaders valueForKey:cacheURLKey]];
+    }
 	return [_httpURLResponse URL];
 }
 
 - (NSString*)MIMEType {
+    if ([self wasLoadedFromCache]) {
+        return [_responseHeaders valueForKey:cacheMIMETypeKey];
+    }
 	return [_httpURLResponse MIMEType];
 }
 
 - (NSInteger)statusCode {
+    if ([self wasLoadedFromCache]) {
+        return [[_responseHeaders valueForKey:cacheResponseCodeKey] intValue];
+    }
 	return [_httpURLResponse statusCode];
 }
 
 - (NSDictionary*)allHeaderFields {
+	if ([self wasLoadedFromCache]) {
+		return _responseHeaders;
+	}
 	return [_httpURLResponse allHeaderFields];
 }
 
@@ -167,7 +308,7 @@
 }
 
 - (BOOL)isSuccessful {
-	return ([self statusCode] >= 200 && [self statusCode] < 300);
+	return (([self statusCode] >= 200 && [self statusCode] < 300) || ([self wasLoadedFromCache]));
 }
 
 - (BOOL)isRedirection {
@@ -194,6 +335,10 @@
 	return ([self statusCode] == 201);
 }
 
+- (BOOL)isNotModified {
+	return ([self statusCode] == 304);
+}
+
 - (BOOL)isUnauthorized {
 	return ([self statusCode] == 401);
 }
@@ -204,6 +349,14 @@
 
 - (BOOL)isNotFound {
 	return ([self statusCode] == 404);
+}
+
+- (BOOL)isConflict {
+    return ([self statusCode] == 409);
+}
+
+- (BOOL)isGone {
+    return ([self statusCode] == 410);
 }
 
 - (BOOL)isUnprocessableEntity {
@@ -236,23 +389,30 @@
 
 - (BOOL)isHTML {
 	NSString* contentType = [self contentType];
-	return contentType && ([contentType rangeOfString:@"text/html" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 ||
-						   [self isXHTML]);
+	return (contentType && ([contentType rangeOfString:@"text/html"
+											   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 ||
+						   [self isXHTML]));
 }
 
 - (BOOL)isXHTML {
 	NSString* contentType = [self contentType];
-	return contentType && [contentType rangeOfString:@"application/xhtml+xml" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+	return (contentType &&
+			[contentType rangeOfString:@"application/xhtml+xml"
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
 - (BOOL)isXML {
 	NSString* contentType = [self contentType];
-	return contentType && [contentType rangeOfString:@"application/xml" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+	return (contentType &&
+			[contentType rangeOfString:@"application/xml"
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
 - (BOOL)isJSON {
 	NSString* contentType = [self contentType];
-	return contentType && [contentType rangeOfString:@"application/json" options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0;
+	return (contentType &&
+			[contentType rangeOfString:@"application/json"
+							   options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
 @end

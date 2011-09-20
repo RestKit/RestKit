@@ -7,6 +7,9 @@
 //
 
 #import "NSString+InflectionSupport.h"
+#import "RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSString_InflectionSupport)
 
 @implementation NSString (InflectionSupport)
 

@@ -1,22 +1,47 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    daemons (1.0.10)
+    archive-tar-minitar (0.5.2)
+    backports (2.3.0)
+    columnize (0.3.4)
+    daemons (1.1.4)
     eventmachine (0.12.10)
+    linecache19 (0.5.12)
+      ruby_core_source (>= 0.1.4)
+    monkey-lib (0.5.4)
+      backports
     open4 (1.0.1)
     rack (1.2.1)
     rake (0.8.7)
-    shotgun (0.9)
-      rack (>= 1.0)
-    sinatra (1.2.0)
+    ruby-debug-base19 (0.11.25)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby_core_source (>= 0.1.4)
+    ruby-debug19 (0.11.6)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby-debug-base19 (>= 0.11.19)
+    ruby_core_source (0.1.5)
+      archive-tar-minitar (>= 0.5.2)
+    sinatra (1.2.6)
       rack (~> 1.1)
-      tilt (>= 1.2.2, < 2.0)
-    thin (1.2.8)
+      tilt (< 2.0, >= 1.2.2)
+    sinatra-advanced-routes (0.5.1)
+      monkey-lib (~> 0.5.0)
+      sinatra (~> 1.0)
+      sinatra-sugar (~> 0.5.0)
+    sinatra-reloader (0.5.0)
+      sinatra (~> 1.0)
+      sinatra-advanced-routes (~> 0.5.0)
+    sinatra-sugar (0.5.1)
+      monkey-lib (~> 0.5.0)
+      sinatra (~> 1.0)
+    thin (1.2.11)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
       rack (>= 1.0.0)
-    tilt (1.2.2)
-    uispecrunner (0.4.2)
+    tilt (1.3.2)
+    uispecrunner (0.4.5)
       open4 (= 1.0.1)
 
 PLATFORMS
@@ -25,10 +50,8 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 1.0.0)
   rake
-  shotgun (>= 0.9)
-  sinatra (>= 1.2.0)
-  thin (>= 1.2.8)
-  uispecrunner (>= 0.4.2)
-
-METADATA
-  version: 1.0.6
+  ruby-debug19
+  sinatra (>= 1.2.6)
+  sinatra-reloader
+  thin (>= 1.2.11)
+  uispecrunner (>= 0.4.5)

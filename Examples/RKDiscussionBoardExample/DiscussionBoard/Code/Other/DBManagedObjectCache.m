@@ -7,15 +7,15 @@
 //
 
 #import "DBManagedObjectCache.h"
-#import "DBTopic.h"
-#import "DBPost.h"
+#import "../Models/DBTopic.h"
+#import "../Models/DBPost.h"
 
 @implementation DBManagedObjectCache
 
 - (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath {
 	if ([resourcePath isEqualToString:@"/topics"]) {
 		NSFetchRequest* request = [DBTopic fetchRequest];
-		NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:YES];
+		NSSortDescriptor* sortDescriptor = [[[NSSortDescriptor alloc] initWithKey:@"createdAt" ascending:YES] autorelease];
 		[request setSortDescriptors:[NSArray arrayWithObject:sortDescriptor]];
 		return [NSArray arrayWithObject:request];
 	}

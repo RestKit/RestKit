@@ -28,16 +28,6 @@
  */
 @property (nonatomic, retain) NSString* body;
 
-/**
- * A timestamp of when the Post was created
- */
-@property (nonatomic, retain) NSDate* createdAt;
-
-/**
- * A timestamp of when the Post was last updated
- */
-@property (nonatomic, retain) NSDate* updatedAt;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Relationship properties
 

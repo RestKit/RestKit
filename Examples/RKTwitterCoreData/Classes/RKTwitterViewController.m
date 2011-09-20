@@ -51,8 +51,13 @@
 }
 
 - (void)loadData {
-	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-	[[objectManager loadObjectsAtResourcePath:@"/status/user_timeline/restkit.json" objectClass:[RKTStatus class] delegate:self] retain];
+    // Load the object model via RestKit	
+    RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" delegate:self block:^(RKObjectLoader* loader) {
+        // Twitter returns statuses as a naked array in JSON, so we instruct the loader
+        // to user the appropriate object mapping
+        loader.objectMapping = [objectManager.mappingProvider objectMappingForClass:[RKTStatus class]];
+    }];
 }
 
 - (void)reloadButtonWasPressed:(id)sender {
@@ -71,7 +76,10 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
+	UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error" 
+                                                     message:[error localizedDescription] 
+                                                    delegate:nil 
+                                           cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
 	[alert show];
 	NSLog(@"Hit error: %@", error);
 }
@@ -108,7 +116,8 @@
 		cell.textLabel.backgroundColor = [UIColor clearColor];
 		cell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"listbg.png"]];
 	}
-	cell.textLabel.text = [[_statuses objectAtIndex:indexPath.row] text];
+    RKTStatus* status = [_statuses objectAtIndex:indexPath.row];
+	cell.textLabel.text = status.text;
 	return cell;
 }
 

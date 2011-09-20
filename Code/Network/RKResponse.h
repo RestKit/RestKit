@@ -3,18 +3,34 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 Two Toasters. All rights reserved.
+//  Copyright 2009 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <Foundation/Foundation.h>
 #import "RKRequest.h"
 
+/**
+ Models the response portion of an HTTP request/response cycle.
+ */
 @interface RKResponse : NSObject {
 	RKRequest* _request;
 	NSHTTPURLResponse* _httpURLResponse;
 	NSMutableData* _body;
 	NSError* _failureError;
 	BOOL _loading;
+	NSDictionary* _responseHeaders;
 }
 
 /**
@@ -63,9 +79,14 @@
 - (id)initWithRequest:(RKRequest*)request;
 
 /**
+ * Initialize a new response object from a cached request
+ */
+- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers;
+
+/**
  * Initializes a response object from the results of a synchronous request
  */
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSMutableData*)body error:(NSError*)error;
+- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error;
 
 /**
  * Return the localized human readable representation of the HTTP Status Code returned
@@ -77,15 +98,26 @@
  */
 - (NSString*)bodyAsString;
 
+/*!
+ * Return the response body parsed as JSON into an object
+ * @deprecated in version 2.0
+ */
+- (id)bodyAsJSON;
+
 /**
  * Return the response body parsed as JSON into an object
  */
-- (id)bodyAsJSON;
+- (id)parsedBody:(NSError**)error;
 
 /**
  * Will determine if there is an error object and use it's localized message
  */
 - (NSString*)failureErrorDescription;
+
+/**
+ * Indicates whether the response was loaded from RKCache
+ */
+- (BOOL)wasLoadedFromCache;
 
 /**
  * Indicates that the connection failed to reach the remote server. The details of the failure
@@ -139,6 +171,11 @@
 - (BOOL)isCreated;
 
 /**
+ * Indicates an HTTP response code of 304
+ */
+- (BOOL)isNotModified;
+
+/**
  * Indicates an HTTP response code of 401
  */
 - (BOOL)isUnauthorized;
@@ -152,6 +189,16 @@
  * Indicates an HTTP response code of 404
  */
 - (BOOL)isNotFound;
+
+/**
+ * Indicates an HTTP response code of 409
+ */
+- (BOOL)isConflict;
+
+/**
+ * Indicates an HTTP response code of 410
+ */
+- (BOOL)isGone;
 
 /**
  * Indicates an HTTP response code of 422
@@ -204,7 +251,7 @@
 - (BOOL)isXML;
 
 /**
- * True when the server turned an XML response (MIME type is application/json)
+ * True when the server turned an JSON response (MIME type is application/json)
  */
 - (BOOL)isJSON;
 

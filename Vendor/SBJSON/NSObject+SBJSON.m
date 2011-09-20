@@ -29,6 +29,9 @@
 
 #import "NSObject+SBJSON.h"
 #import "SBJsonWriter.h"
+#import "RKFixCategoryBug.h"
+
+RK_FIX_CATEGORY_BUG(NSObject_SBJSON)
 
 @implementation NSObject (NSObject_SBJSON)
 

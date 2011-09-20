@@ -16,16 +16,17 @@
 @implementation RKTwitterViewController
 
 - (void)loadTimeline {
-  // Load the object model via RestKit	
-	RKObjectManager* objectManager = [RKObjectManager sharedManager];
-    if (objectManager.format == RKMappingFormatJSON) {
-        [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/twotoasters" objectClass:[RKTStatus class] delegate:self];
-    } else {
-        RKObjectLoader* loader = [objectManager objectLoaderWithResourcePath:@"/status/user_timeline/twotoasters" delegate:self];
-        loader.objectClass = [RKTStatus class];
-        loader.keyPath = @"statuses.status";
-        [loader send];
-    }
+    // Load the object model via RestKit	
+    RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    objectManager.client.baseURL = @"http://www.twitter.com";
+
+    [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" delegate:self block:^(RKObjectLoader* loader) {
+        // Twitter returns statuses as a naked array in JSON, so we instruct the loader
+        // to user the appropriate object mapping
+        if ([objectManager.acceptMIMEType isEqualToString:RKMIMETypeJSON]) {
+            loader.objectMapping = [objectManager.mappingProvider objectMappingForClass:[RKTStatus class]];
+        }
+    }];
 }
 
 - (void)loadView {

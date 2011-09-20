@@ -10,23 +10,25 @@
 
 // RestKit
 #import <RestKit/RestKit.h>
-#import <RestKit/ObjectMapping/RKDynamicRouter.h>
-#import <RestKit/ObjectMapping/RKRailsRouter.h>
+#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/Support/JSON/JSONKit/RKJSONParserJSONKit.h>
+#import <RestKit/Support/JSON/SBJSON/RKJSONParserSBJSON.h>
+#import <RestKit/Support/JSON/YAJL/RKJSONParserYAJL.h>
 
 // Three20
 #import <Three20/Three20.h>
 #import <Three20/Three20+Additions.h>
 
 // Discussion Board
-#import "DBTopicsTableViewController.h"
-#import "DBTopic.h"
-#import "DBPostsTableViewController.h"
-#import "DBPost.h"
 #import "DBManagedObjectCache.h"
-#import "DBTopicViewController.h"
-#import "DBLoginOrSignUpViewController.h"
-#import "DBUser.h"
-#import "DBPostTableViewController.h"
+#import "../Controllers/DBTopicViewController.h"
+#import "../Controllers/DBTopicsTableViewController.h"
+#import "../Controllers/DBPostsTableViewController.h"
+#import "../Controllers/DBPostTableViewController.h"
+#import "../Controllers/DBLoginOrSignUpViewController.h"
+#import "../Models/DBTopic.h"
+#import "../Models/DBPost.h"
+#import "../Models/DBUser.h"
 
 /**
  * The HTTP Header Field we transmit the authentication token obtained
@@ -40,15 +42,13 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 @synthesize window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
 	// Initialize the RestKit Object Manager
 	RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:DBRestKitBaseURL];
 
 	// Set the default refresh rate to 1. This means we should always hit the web if we can.
 	// If the server is unavailable, we will load from the Core Data cache.
-	[RKRequestTTModel setDefaultRefreshRate:1];
-
-	// Set nil for any attributes we expect to appear in the payload, but do not
-	objectManager.mapper.missingElementMappingPolicy = RKSetNilForMissingElementMappingPolicy;
+	[RKObjectLoaderTTModel setDefaultRefreshRate:1];
 
 	// Initialize object store
 	// We are using the Core Data support, so we have initialized a managed object store backed
@@ -61,10 +61,71 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// The object mapper is responsible for mapping JSON encoded representations of objects
 	// back to local object representations. Here we instruct RestKit how to connect
 	// sub-dictionaries of attributes to local classes.
-	RKObjectMapper* mapper =  objectManager.mapper;
-	[mapper registerClass:[DBUser class] forElementNamed:@"user"];
-	[mapper registerClass:[DBTopic class] forElementNamed:@"topic"];
-	[mapper registerClass:[DBPost class] forElementNamed:@"post"];
+    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[DBUser class]];
+    userMapping.primaryKeyAttribute = @"userID";
+    userMapping.setDefaultValueForMissingAttributes = YES; // clear out any missing attributes (token on logout)
+    [userMapping mapKeyPathsToAttributes:
+     @"id", @"userID",
+     @"email", @"email",
+     @"username", @"username",
+     @"single_access_token", @"singleAccessToken",
+     @"password", @"password",
+     @"password_confirmation", @"passwordConfirmation",
+     nil];
+    
+    RKManagedObjectMapping* topicMapping = [RKManagedObjectMapping mappingForClass:[DBTopic class]];
+    /**
+     * Informs RestKit which property contains the primary key for identifying
+     * this object. This is used to ensure that objects are updated
+     */
+    topicMapping.primaryKeyAttribute = @"topicID";
+    
+    /**
+     * Map keyPaths in the JSON to attributes of the DBTopic entity
+     */
+    [topicMapping mapKeyPathsToAttributes:
+     @"id", @"topicID",
+     @"name", @"name",
+     @"user_id", @"userID",
+     @"created_at", @"createdAt",
+     @"updated_at", @"updatedAt",
+     nil];
+    
+    /**
+     * Informs RestKit which properties contain the primary key values that
+     * can be used to hydrate relationships to other objects. This hint enables
+     * RestKit to automatically maintain true Core Data relationships between objects
+     * in your local store.
+     *
+     * Here we have asked RestKit to connect the 'user' relationship by performing a
+     * primary key lookup with the value in 'userID' property. This is the declarative
+     * equivalent of doing self.user = [DBUser objectWithPrimaryKeyValue:self.userID];
+     */
+    [topicMapping mapRelationship:@"user" withMapping:userMapping];
+    
+    RKManagedObjectMapping* postMapping = [RKManagedObjectMapping mappingForClass:[DBPost class]];
+    postMapping.primaryKeyAttribute = @"postID";
+    [postMapping mapKeyPathsToAttributes:
+     @"id",@"postID",
+     @"topic_id",@"topicID",
+     @"user_id",@"userID",
+     @"created_at",@"createdAt",
+     @"updated_at",@"updatedAt",
+     @"attachment_content_type", @"attachmentContentType",
+     @"attachment_file_name", @"attachmentFileName",
+     @"attachment_file_size", @"attachmentFileSize",
+     @"attachment_path", @"attachmentPath",
+     @"attachment_updated_at", @"attachmentUpdatedAt",
+     @"body", @"body",
+    nil];
+    [postMapping mapRelationship:@"user" withMapping:userMapping];
+    
+    // Register the mappings with the mapping provider. Use of registerMapping:withRootKeyPath:
+    // configures the mapping provider with both object and serialization mappings for the specified
+    // keyPath.
+    [objectManager.mappingProvider registerMapping:userMapping withRootKeyPath:@"user"];
+    [objectManager.mappingProvider registerMapping:topicMapping withRootKeyPath:@"topic"];
+    [objectManager.mappingProvider registerMapping:postMapping withRootKeyPath:@"post"];
 
 	// Set Up Router
 	// The router is responsible for generating the appropriate resource path to
@@ -74,29 +135,50 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// can be loaded from any number of resource paths. You can also PUT/POST
 	// an object to arbitrary paths by configuring the object loader yourself. The
 	// router is just for configuring the default 'home address' for an object.
-	//
-	// Since we are communicating with a Ruby on Rails backend server, we are using
-	// the Rails router. The Rails router is aware of the Rails pattern of nesting
-	// attributes under the underscored version of the model name. The Rails router
-	// will also not send any attributes in a DELETE request, preventing problems with
-	// forgery protection.
-	RKRailsRouter* router = [[[RKRailsRouter alloc] init] autorelease];
-	[router setModelName:@"user" forClass:[DBUser class]];
-	[router routeClass:[DBUser class] toResourcePath:@"/signup" forMethod:RKRequestMethodPOST];
-	[router routeClass:[DBUser class] toResourcePath:@"/login" forMethod:RKRequestMethodPUT];
+	[objectManager.router routeClass:[DBUser class] toResourcePath:@"/signup" forMethod:RKRequestMethodPOST];
+	[objectManager.router routeClass:[DBUser class] toResourcePath:@"/login" forMethod:RKRequestMethodPUT];
 
-	[router setModelName:@"topic" forClass:[DBTopic class]];
-	[router routeClass:[DBTopic class] toResourcePath:@"/topics" forMethod:RKRequestMethodPOST];
-	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodPUT];
-	[router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodDELETE];
+	[objectManager.router routeClass:[DBTopic class] toResourcePath:@"/topics" forMethod:RKRequestMethodPOST];
+	[objectManager.router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodPUT];
+	[objectManager.router routeClass:[DBTopic class] toResourcePath:@"/topics/(topicID)" forMethod:RKRequestMethodDELETE];
 
-	[router setModelName:@"post" forClass:[DBPost class]];
-	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts" forMethod:RKRequestMethodPOST];
-	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
-	[router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
-
-	objectManager.router = router;
-
+	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts" forMethod:RKRequestMethodPOST];
+	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodPUT];
+	[objectManager.router routeClass:[DBPost class] toResourcePath:@"/topics/(topicID)/posts/(postID)" forMethod:RKRequestMethodDELETE];
+    
+    /**
+     Configure RestKit Logging
+     
+     RestKit ships with a robust logging framework that can be used to instrument
+     the libraries activities in great detail. Logging is configured by specifying a
+     logging component and a log level to use for that component.
+     
+     By default, RestKit is configured to log at the Info or Warning levels for all components
+     depending on the presence of the DEBUG pre-processor macro. This can be configured at run-time
+     via calls to RKLogConfigureByName as detailed below.
+     
+     See RKLog.h and lcl_log_components.h for details on the logging macros available
+     */    
+    RKLogConfigureByName("RestKit", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
+    RKLogConfigureByName("RestKit/Network/Queue", RKLogLevelDebug);
+    
+    // Enable boatloads of trace info from the mapper
+    // RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
+    
+    /**
+     Enable verbose logging for the App component. 
+     
+     This component is exported by RestKit to allow you to leverage the same logging
+     facilities and macros in your app that are used internally by the library. When
+     you #import <RestKit/RestKit.h>, the default logging component is set to 'App'
+     for you. Calls to RKLog() within your application will log at the level specified below.
+     */
+    RKLogSetAppLoggingLevel(RKLogLevelTrace);
+    
+    RKLogDebug(@"Discussion Board is starting up...");
+    
 	// Initialize Three20
 	TTURLMap* map = [[TTNavigator navigator] URLMap];
 	[map from:@"db://topics" toViewController:[DBTopicsTableViewController class]];
@@ -118,7 +200,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// Initialize authenticated access if we have a logged in current User reference
 	DBUser* user = [DBUser currentUser];
 	if ([user isLoggedIn]) {
-		NSLog(@"Found logged in User record for username '%@' [Access Token: %@]", user.username, user.singleAccessToken);
+		RKLogInfo(@"Found logged in User record for username '%@' [Access Token: %@]", user.username, user.singleAccessToken);
 		[objectManager.client setValue:user.singleAccessToken forHTTPHeaderField:kDBAccessTokenHTTPHeaderField];
 	}
 	

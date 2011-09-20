@@ -3,14 +3,40 @@
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//  Copyright 2010 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <objc/message.h>
-
 #import "RKObjectPropertyInspector.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitObjectMapping
+
+static RKObjectPropertyInspector* sharedInspector = nil;
 
 @implementation RKObjectPropertyInspector
+
++ (RKObjectPropertyInspector*)sharedInspector {
+    if (sharedInspector == nil) {
+        sharedInspector = [RKObjectPropertyInspector new];
+    }
+    
+    return sharedInspector;
+}
 
 - (id)init {
 	if ((self = [super init])) {
@@ -40,15 +66,15 @@
 	return type;
 }
 
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)cls {
-	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:cls];
+- (NSDictionary *)propertyNamesAndTypesForClass:(Class)aClass {
+	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:aClass];
 	if (propertyNames) {
 		return propertyNames;
 	}
 	propertyNames = [NSMutableDictionary dictionary];
 	
 	//include superclass properties
-	Class currentClass = cls;
+	Class currentClass = aClass;
 	while (currentClass != nil) {
 		// Get the raw list of properties
 		unsigned int outCount;
@@ -66,9 +92,9 @@
 			
 			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
 				const char* className = [[self propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
-				Class cls = objc_getClass(className);
-				if (cls) {
-					[propertyNames setObject:cls forKey:propName];
+				Class aClass = objc_getClass(className);
+				if (aClass) {
+					[propertyNames setObject:aClass forKey:propName];
 				}
 			}
 		}
@@ -77,8 +103,14 @@
 		currentClass = [currentClass superclass];
 	}
 	
-	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:cls];	
+	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:aClass];
+    RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(aClass), propertyNames);
 	return propertyNames;
+}
+
+- (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass {
+    NSDictionary* dictionary = [self propertyNamesAndTypesForClass:objectClass];
+    return [dictionary objectForKey:propertyName];
 }
 
 @end

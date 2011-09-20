@@ -1,0 +1,43 @@
+{
+    "meta": {
+        "status": "ok",
+        "feedback": [
+
+        ],
+        "request": {
+            "http_host": "api2safer.localhost",
+            "http_user_agent": "ST\/2.0 CFNetwork\/485.13.9 Darwin\/10.7.0",
+            "server_addr": "127.0.0.1",
+            "remote_addr": "127.0.0.1",
+            "server_protocol": "HTTP\/1.1",
+            "request_method": "GET",
+            "request_uri": "\/users\/login.json",
+            "request_time": 1303919369
+        },
+        "credentials": {
+            "class": "iphone",
+            "apikey": "123456",
+            "username": "admin"
+        },
+        "time_epoch": "1303919369",
+        "time_local": "Wed, 27 Apr 2011 15:49:29 +0000",
+        "version": "0.3"
+    },
+    "data": {
+        "STUser": {
+            "id": "3",
+            "username": "admin",
+            "is_admin": "1",
+            "firstname": "Diego",
+            "lastname": "Massanti",
+            "email": "diego@massanti.com",
+            "phone": "123456",
+            "country_id": "1",
+            "is_data_entry": "1",
+            "created": "2011-02-02 07:53:08",
+            "modified": "2011-02-04 07:26:12",
+            "country_code": "AR",
+            "fullname": "Massanti, Diego"
+        }
+    }
+}

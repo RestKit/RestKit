@@ -1,0 +1,36 @@
+// TODO: Map this to a different class for each translation key
+
+{
+   "products": [
+       {   "prodId": 5,
+           "translations": [
+               {  "lang": "en", "name": "Product number 1" },
+               {  "lang": "it", "name": "Prodotto numero 1"}
+           ]
+       },
+       {
+           "prodId": 5,
+           "translations": [
+               { "lang": "en", "name": "Product number 2" },
+               { "lang": "it", "name": "Prodotto numero 2" }
+           ]
+       }
+   ],
+
+   "categories": [
+       {
+           "catId": 5,
+           "translations": [
+               { "lang": "en", "name": "Category A" },
+               { "lang": "it", "name": "Categoria A" }
+           ]
+       },
+       {
+           "catId": 5,
+           "translations": [
+               { "lang": "en", "name": "Category B" },
+               { "lang": "it", "name": "Categoria B" }
+           ]
+       }
+   ]
+}

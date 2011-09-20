@@ -1,7 +1,8 @@
 # the build
 Build
 build
-DerivedData
+# DerivedData
+Docs/API
 
 # temp nibs and swap files
 *~.nib
@@ -18,3 +19,6 @@ DerivedData
 *.xcuserdatad
 
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*
+
+# UISpecRunner cached build path
+.uispec.app

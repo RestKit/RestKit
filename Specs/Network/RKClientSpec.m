@@ -3,12 +3,25 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/31/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright 2011 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKSpecEnvironment.h"
+#import "RKURL.h"
 
-@interface RKClientSpec : NSObject <UISpec> {
+@interface RKClientSpec : RKSpec {
 }
 
 @end
@@ -28,6 +41,63 @@
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
 	RKReachabilityNetworkStatus status = [client.baseURLReachabilityObserver networkStatus];
 	[expectThat(status) shouldNot:be(RKReachabilityIndeterminate)];	
+}
+- (void)itShouldSetTheCachePolicyOfTheRequest {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    client.cachePolicy = RKRequestCachePolicyLoadIfOffline;
+    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+	[expectThat(request.cachePolicy) should:be(RKRequestCachePolicyLoadIfOffline)];
+}
+
+- (void)itShouldInitializeTheCacheOfTheRequest {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    client.requestCache = [[[RKRequestCache alloc] init] autorelease];
+    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+	[expectThat(request.cache) should:be(client.requestCache)];
+}
+
+- (void)itShouldAllowYouToChangeTheBaseURL {
+    NSLog(@"PENDING -> Unable to get this test to pass reliably...");
+    return;
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:15]]; // Let the runloop cycle
+    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    client.baseURL = @"http://www.google.com";
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:3.5]]; // Let the runloop cycle
+    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest* request = [client requestWithResourcePath:@"/" delegate:loader];
+    [request send];
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(YES)));
+}
+
+- (void)itShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    client.baseURL = @"http://restkit.org";
+    assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
+}
+
+- (void)itShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    client.baseURL = @"http://127.0.0.1";
+    assertThatBool(client.requestQueue.suspended, is(equalToBool(NO)));
+}
+
+- (void)itShouldPerformAPUTWithParams {
+    NSLog(@"PENDING ---> FIX ME!!!");
+    return;
+    RKClient* client = [RKClient clientWithBaseURL:@"http://ohblockhero.appspot.com/api/v1"];
+    client.cachePolicy = RKRequestCachePolicyNone;
+    RKParams *params=[RKParams params];
+    [params setValue:@"username" forParam:@"username"];
+    [params setValue:@"Dear Daniel" forParam:@"fullName"];
+    [params setValue:@"aa@aa.com" forParam:@"email"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+//    loader.timeout = 15;
+    [client put:@"/userprofile" params:params delegate:loader];    
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(NO)));
 }
 
 @end

@@ -17,7 +17,7 @@ extern NSString* const DBContentObjectDidChangeNotification;
  * Abstract superclass for content models in the Discussion Board. Provides
  * common property & method definitions for the system
  */
-@interface DBContentObject : RKManagedObject {
+@interface DBContentObject : NSManagedObject {
 
 }
 

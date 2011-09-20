@@ -3,12 +3,25 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/22/09.
-//  Copyright 2009 Two Toasters. All rights reserved.
+//  Copyright 2009 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <CoreData/CoreData.h>
-#import "RKManagedObject.h"
 #import "RKManagedObjectCache.h"
+
+@class RKManagedObjectStore;
 
 /**
  * Notifications
@@ -17,12 +30,32 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 
 ///////////////////////////////////////////////////////////////////
 
+@protocol RKManagedObjectStoreDelegate
+@optional
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCreatePersistentStoreCoordinatorWithError:(NSError *)error;
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToDeletePersistentStore:(NSString *)pathToStoreFile error:(NSError *)error;
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCopySeedDatabase:(NSString *)seedDatabase error:(NSError *)error;
+
+- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToSaveContext:(NSManagedObjectContext *)context error:(NSError *)error exception:(NSException *)exception;
+
+@end
+
+///////////////////////////////////////////////////////////////////
+
 @interface RKManagedObjectStore : NSObject {
-	NSString* _storeFilename;	
+	NSObject<RKManagedObjectStoreDelegate>* _delegate;
+	NSString* _storeFilename;
+	NSString* _pathToStoreFile;
     NSManagedObjectModel* _managedObjectModel;
 	NSPersistentStoreCoordinator* _persistentStoreCoordinator;
 	NSObject<RKManagedObjectCache>* _managedObjectCache;
 }
+
+// The delegate for this object store
+@property (nonatomic, assign) NSObject<RKManagedObjectStoreDelegate>* delegate;
 
 // The filename of the database backing this object store
 @property (nonatomic, readonly) NSString* storeFilename;
@@ -53,11 +86,21 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename;
 
 /**
- * Initialize a new managed object store backed by a SQLite database with the specified filename. If a seed database name is provided
- * and no existing database is found, initialize the store by copying the seed database from the main bundle. If the managed object model
+ * Initialize a new managed object store backed by a SQLite database with the specified filename.
+ * If a seed database name is provided and no existing database is found, initialize the store by
+ * copying the seed database from the main bundle. If the managed object model provided is nil,
+ * all models will be merged from the main bundle for you.
+ */
++ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
+
+/**
+ * Initialize a new managed object store backed by a SQLite database with the specified filename,
+ * in the specified directory. If no directory is specified, will use the app's Documents
+ * directory. If a seed database name is provided and no existing database is found, initialize
+ * the store by copying the seed database from the main bundle. If the managed object model
  * provided is nil, all models will be merged from the main bundle for you.
  */
-+ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel;
++ (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified
@@ -74,6 +117,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * This deletes and recreates the managed object context and 
  * persistant store, effectively clearing all data
  */
+- (void)deletePersistantStoreUsingSeedDatabaseName:(NSString *)seedFile;
 - (void)deletePersistantStore;
 
 /**
@@ -88,12 +132,11 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 - (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
 
 /**
- * Retrieves a model object from the object store given the model object's class and
- * the primaryKeyValue for the model object. This method leverages techniques specific to 
- * Core Data for optimal performance. If an existing object is not found, a new object is created
- * and returned.
+ * Retrieves a model object from the object store given a Core Data entity and
+ * the primary key attribute and value for the desired object. Internally, this method
+ * constructs a thread-local cache of managed object instances to avoid repeated fetches from the store
  */
-- (RKManagedObject*)findOrCreateInstanceOfManagedObject:(Class)cls withPrimaryKeyValue:(id)primaryKeyValue;
+- (NSManagedObject*)findOrCreateInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue;
 
 /**
  * Returns an array of objects that the 'live' at the specified resource path. Usage of this

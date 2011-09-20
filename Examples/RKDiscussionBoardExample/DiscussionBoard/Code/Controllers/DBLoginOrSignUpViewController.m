@@ -57,7 +57,7 @@
 	_usernameField.returnKeyType = UIReturnKeyNext;
 
 	_passwordField = [[UITextField alloc] initWithFrame:CGRectZero];
-	[_passwordField setSecureTextEntry:YES];
+    _passwordField.secureTextEntry = YES;
 	_passwordField.delegate = self;
 
 	_passwordConfirmationField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -116,8 +116,7 @@
 		[user signUpWithDelegate:self];
 	} else {
 		// Login
-		DBUser* user = [DBUser object];		
-		user.delegate = self;
+		DBUser* user = [DBUser object];
 		[user loginWithUsername:_usernameField.text andPassword:_passwordField.text delegate:self];
 	}
 }
@@ -147,7 +146,7 @@
 #pragma mark DBUserAuthenticationDelegate methods
 
 - (void)userDidLogin:(DBUser*)user {
-	[self dismissModalViewControllerAnimated:YES];
+	[self.parentViewController dismissModalViewControllerAnimated:YES];
 }
 
 - (void)user:(DBUser*)user didFailSignUpWithError:(NSError*)error {	

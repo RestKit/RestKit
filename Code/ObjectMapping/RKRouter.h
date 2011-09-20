@@ -3,11 +3,22 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/20/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//  Copyright 2010 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "../Network/Network.h"
-#import "RKObjectMappable.h"
 
 /**
  * Defines a protocol for mapping Cocoa objects to remote resource locations and
@@ -18,11 +29,6 @@
 /**
  * Returns the resource path to send requests for a given object and HTTP method
  */
-- (NSString*)resourcePathForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method;
-
-/**
- * Returns a serialization of an object suitable for exchanging with a remote system
- */
-- (NSObject<RKRequestSerializable>*)serializationForObject:(NSObject<RKObjectMappable>*)object method:(RKRequestMethod)method;
+- (NSString*)resourcePathForObject:(NSObject*)object method:(RKRequestMethod)method;
 
 @end

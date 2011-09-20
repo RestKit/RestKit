@@ -14,16 +14,6 @@
 @synthesize name = _name;
 @synthesize screenName = _screenName;
 
-#pragma mark RKObjectMappable methods
-
-+ (NSDictionary*)elementToPropertyMappings {
-	return [NSDictionary dictionaryWithKeysAndObjects:
-			@"id", @"userID",
-			@"screen_name", @"screenName",
-			@"name", @"name",
-			nil];
-}
-
 - (void)dealloc {
     [_userID release];
 	[_name release];

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -20,8 +20,13 @@
 		25359ED112E51070008BF33D /* DBManagedObjectCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ECD12E51070008BF33D /* DBManagedObjectCache.m */; };
 		25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ECF12E51070008BF33D /* DiscussionBoardAppDelegate.m */; };
 		25359ED712E512BB008BF33D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25359ED612E512BB008BF33D /* main.m */; };
-		25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */; };
+		25359F4112E53966008BF33D /* RKObjectLoaderTTModel+Loading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F49C15A12DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.m */; };
 		253E163412E8BA6500F3E4B0 /* DBContentObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 253E163312E8BA6500F3E4B0 /* DBContentObject.m */; };
+		258F853614106746007AABCD /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25825AF41337CEAC00C0E3D2 /* libRestKitJSONParserJSONKit.a */; };
+		258F853714106746007AABCD /* libRestKitJSONParserNXJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25FB6D6E13E483DE00F48969 /* libRestKitJSONParserNXJSON.a */; };
+		258F853814106746007AABCD /* libRestKitJSONParserSBJSON.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B312D7822D00683D6F /* libRestKitJSONParserSBJSON.a */; };
+		258F853914106746007AABCD /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */; };
+		258F853A14106746007AABCD /* libRestKitXMLParserLibxml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A7B1DB13421D28004816AA /* libRestKitXMLParserLibxml.a */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		3F22448812DDFCB30002559D /* UIViewController+RKLoading.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F22448712DDFCB30002559D /* UIViewController+RKLoading.m */; };
 		3F255C9812DB70E200AFD2D1 /* DBPostsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F255C9312DB70E200AFD2D1 /* DBPostsTableViewController.m */; };
@@ -35,13 +40,13 @@
 		3F3239E112DBB9C600AB2F6E /* DBPostTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */; };
 		3F3239ED12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */; };
 		3F45615B12D7E31100BE25AD /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */; };
-		3F45615D12D7E31600BE25AD /* libRestKitJSONParserYAJL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */; };
 		3F45615E12D7E31700BE25AD /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */; };
 		3F45615F12D7E31700BE25AD /* libRestKitObjectMapping.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */; };
 		3F45616012D7E31800BE25AD /* libRestKitSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */; };
 		3F45616112D7E31900BE25AD /* libRestKitThree20.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */; };
 		3F76BBD612D7DA9D001562DC /* DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */; };
 		3F8CF774131D78D70023C5EA /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F8CF773131D78D70023C5EA /* libxml2.dylib */; };
+		572C061713A37EAD003DB47C /* Three20.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 572C061613A37EAD003DB47C /* Three20.bundle */; };
 		A755038212E4CBD4009FC5EC /* icon-114.png in Resources */ = {isa = PBXBuildFile; fileRef = A755037712E4CBD4009FC5EC /* icon-114.png */; };
 		A755038312E4CBD4009FC5EC /* icon-57.png in Resources */ = {isa = PBXBuildFile; fileRef = A755037812E4CBD4009FC5EC /* icon-57.png */; };
 		A755038412E4CBD4009FC5EC /* icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = A755037912E4CBD4009FC5EC /* icon-72.png */; };
@@ -63,6 +68,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		250647E7138EE4A30002F2FE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 73057FD01331AD2E001908EE;
+			remoteInfo = "RestKitJSONParser+JSONKit";
+		};
 		25825AF31337CEAC00C0E3D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
@@ -77,6 +89,13 @@
 			remoteGlobalIDString = 25BD43BD1340315800DBACDD;
 			remoteInfo = "RestKitXMLParser+Libxml";
 		};
+		25FB6D6D13E483DE00F48969 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 20808DBD13DE8CDC000A156A;
+			remoteInfo = "RestKitJSONParser+NXJSON";
+		};
 		3F2562F812DBA4C800AFD2D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
@@ -90,13 +109,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
 			remoteInfo = RestKit;
-		};
-		3F45615112D7E2D900BE25AD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 253A08021255162C00976E89;
-			remoteInfo = RestKitObjectMapping;
 		};
 		A7A2D3AA12D7822D00683D6F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -474,10 +486,11 @@
 		3F3239E012DBB9C600AB2F6E /* DBPostTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBPostTableViewController.m; sourceTree = "<group>"; };
 		3F3239EB12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBAuthenticatedTableViewController.h; sourceTree = "<group>"; };
 		3F3239EC12DBBA8D00AB2F6E /* DBAuthenticatedTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBAuthenticatedTableViewController.m; sourceTree = "<group>"; };
-		3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RKRequestTTModel+Loading.h"; path = "Other/RKRequestTTModel+Loading.h"; sourceTree = "<group>"; };
-		3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RKRequestTTModel+Loading.m"; path = "Other/RKRequestTTModel+Loading.m"; sourceTree = "<group>"; };
+		3F49C15912DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RKObjectLoaderTTModel+Loading.h"; path = "Other/RKObjectLoaderTTModel+Loading.h"; sourceTree = "<group>"; };
+		3F49C15A12DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "RKObjectLoaderTTModel+Loading.m"; path = "Other/RKObjectLoaderTTModel+Loading.m"; sourceTree = "<group>"; };
 		3F76BBD512D7DA9D001562DC /* DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; name = DataModel.xcdatamodel; path = Resources/DataModel.xcdatamodel; sourceTree = "<group>"; };
 		3F8CF773131D78D70023C5EA /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		572C061613A37EAD003DB47C /* Three20.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Three20.bundle; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* DiscussionBoard-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "DiscussionBoard-Info.plist"; path = "Resources/DiscussionBoard-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A755037712E4CBD4009FC5EC /* icon-114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-114.png"; path = "Resources/PNGs/app_icon/icon-114.png"; sourceTree = SOURCE_ROOT; };
 		A755037812E4CBD4009FC5EC /* icon-57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-57.png"; path = "Resources/PNGs/app_icon/icon-57.png"; sourceTree = SOURCE_ROOT; };
@@ -505,6 +518,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				258F853614106746007AABCD /* libRestKitJSONParserJSONKit.a in Frameworks */,
+				258F853714106746007AABCD /* libRestKitJSONParserNXJSON.a in Frameworks */,
+				258F853814106746007AABCD /* libRestKitJSONParserSBJSON.a in Frameworks */,
+				258F853914106746007AABCD /* libRestKitJSONParserYAJL.a in Frameworks */,
+				258F853A14106746007AABCD /* libRestKitXMLParserLibxml.a in Frameworks */,
 				3F8CF774131D78D70023C5EA /* libxml2.dylib in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
@@ -515,7 +533,6 @@
 				A7A2D3C812D7829E00683D6F /* MobileCoreServices.framework in Frameworks */,
 				A7A2D3CA12D7829E00683D6F /* SystemConfiguration.framework in Frameworks */,
 				3F45615B12D7E31100BE25AD /* libRestKitCoreData.a in Frameworks */,
-				3F45615D12D7E31600BE25AD /* libRestKitJSONParserYAJL.a in Frameworks */,
 				3F45615E12D7E31700BE25AD /* libRestKitNetwork.a in Frameworks */,
 				3F45615F12D7E31700BE25AD /* libRestKitObjectMapping.a in Frameworks */,
 				3F45616012D7E31800BE25AD /* libRestKitSupport.a in Frameworks */,
@@ -554,6 +571,7 @@
 		25359D4112E3E0A4008BF33D /* three20 */ = {
 			isa = PBXGroup;
 			children = (
+				572C061613A37EAD003DB47C /* Three20.bundle */,
 				25359D4212E3E0A4008BF33D /* libThree20.a */,
 				25359D4312E3E0A4008BF33D /* libThree20Core.a */,
 				25359D4412E3E0A4008BF33D /* libThree20Network.a */,
@@ -937,8 +955,8 @@
 		25359EC912E51057008BF33D /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				3F49C15912DE1D9900FDE614 /* RKRequestTTModel+Loading.h */,
-				3F49C15A12DE1D9900FDE614 /* RKRequestTTModel+Loading.m */,
+				3F49C15912DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.h */,
+				3F49C15A12DE1D9900FDE614 /* RKObjectLoaderTTModel+Loading.m */,
 				25359ED512E512BB008BF33D /* DiscussionBoard_Prefix.pch */,
 				25359ED612E512BB008BF33D /* main.m */,
 				25359ECA12E51070008BF33D /* DBEnvironment.h */,
@@ -954,7 +972,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				3F8CF773131D78D70023C5EA /* libxml2.dylib */,
 				080E96DDFE201D6D7F000001 /* Code */,
 				A7A2D21612D77FEF00683D6F /* Libraries */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -1075,6 +1092,7 @@
 			children = (
 				25359D4112E3E0A4008BF33D /* three20 */,
 				A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */,
+				3F8CF773131D78D70023C5EA /* libxml2.dylib */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1085,13 +1103,14 @@
 				A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */,
 				A7A2D3AD12D7822D00683D6F /* libRestKitObjectMapping.a */,
 				A7A2D3AF12D7822D00683D6F /* libRestKitSupport.a */,
+				25FB6D6E13E483DE00F48969 /* libRestKitJSONParserNXJSON.a */,
 				A7A2D3B112D7822D00683D6F /* libRestKitJSONParserYAJL.a */,
 				A7A2D3B312D7822D00683D6F /* libRestKitJSONParserSBJSON.a */,
 				25825AF41337CEAC00C0E3D2 /* libRestKitJSONParserJSONKit.a */,
 				25A7B1DB13421D28004816AA /* libRestKitXMLParserLibxml.a */,
 				A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */,
 				A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */,
-				A7A2D3B912D7822D00683D6F /* UISpec.app */,
+				A7A2D3B912D7822D00683D6F /* RestKitSpecs.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1110,8 +1129,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				250647E8138EE4A30002F2FE /* PBXTargetDependency */,
 				3F45614C12D7E2C500BE25AD /* PBXTargetDependency */,
-				3F45615212D7E2D900BE25AD /* PBXTargetDependency */,
 				3F2562F912DBA4C800AFD2D1 /* PBXTargetDependency */,
 			);
 			name = "Discussion Board";
@@ -1125,10 +1144,11 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Two Toasters";
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "DiscussionBoard" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -1165,6 +1185,13 @@
 			fileType = archive.ar;
 			path = libRestKitXMLParserLibxml.a;
 			remoteRef = 25A7B1DA13421D28004816AA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		25FB6D6E13E483DE00F48969 /* libRestKitJSONParserNXJSON.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKitJSONParserNXJSON.a;
+			remoteRef = 25FB6D6D13E483DE00F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */ = {
@@ -1216,10 +1243,10 @@
 			remoteRef = A7A2D3B612D7822D00683D6F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7A2D3B912D7822D00683D6F /* UISpec.app */ = {
+		A7A2D3B912D7822D00683D6F /* RestKitSpecs.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = UISpec.app;
+			path = RestKitSpecs.app;
 			remoteRef = A7A2D3B812D7822D00683D6F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1243,6 +1270,7 @@
 				A75504AC12E4E975009FC5EC /* navigationBarBackground.png in Resources */,
 				A75504AD12E4E975009FC5EC /* navigationBarBackground@2x.png in Resources */,
 				A75504B012E4E975009FC5EC /* tableHeaderBackground@2x.png in Resources */,
+				572C061713A37EAD003DB47C /* Three20.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1269,7 +1297,7 @@
 				25359ED112E51070008BF33D /* DBManagedObjectCache.m in Sources */,
 				25359ED212E51070008BF33D /* DiscussionBoardAppDelegate.m in Sources */,
 				25359ED712E512BB008BF33D /* main.m in Sources */,
-				25359F4112E53966008BF33D /* RKRequestTTModel+Loading.m in Sources */,
+				25359F4112E53966008BF33D /* RKObjectLoaderTTModel+Loading.m in Sources */,
 				253E163412E8BA6500F3E4B0 /* DBContentObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1277,6 +1305,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		250647E8138EE4A30002F2FE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "RestKitJSONParser+JSONKit";
+			targetProxy = 250647E7138EE4A30002F2FE /* PBXContainerItemProxy */;
+		};
 		3F2562F912DBA4C800AFD2D1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RestKitThree20;
@@ -1287,15 +1320,10 @@
 			name = RestKit;
 			targetProxy = 3F45614B12D7E2C500BE25AD /* PBXContainerItemProxy */;
 		};
-		3F45615212D7E2D900BE25AD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RestKitObjectMapping;
-			targetProxy = 3F45615112D7E2D900BE25AD /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		1D6058940D05DD3E006BFB54 /* Development */ = {
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1309,22 +1337,18 @@
 					"DB_ENVIRONMENT=0",
 					"DEBUG=1",
 				);
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20,
-				);
+				HEADER_SEARCH_PATHS = Libraries/three20;
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
+					"\"$(SRCROOT)\"",
 				);
 				PRODUCT_NAME = "Discussion Board";
 			};
-			name = Development;
+			name = Debug;
 		};
-		1D6058950D05DD3E006BFB54 /* Production */ = {
+		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1336,117 +1360,50 @@
 					"DB_ENVIRONMENT=2",
 					"DEBUG=1",
 				);
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20,
-				);
+				HEADER_SEARCH_PATHS = Libraries/three20;
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/Libraries/three20\"",
+					"\"$(SRCROOT)\"",
 				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Discussion Board";
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Production;
+			name = Release;
 		};
-		25FED7DA12E7D78E00D94325 /* Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				BUILD_STYLE = Staging;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20/Build/Products/three20,
-				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
-				PREBINDING = NO;
-				SDKROOT = iphoneos;
-			};
-			name = Staging;
-		};
-		25FED7DB12E7D78E00D94325 /* Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				BUILD_STYLE = Staging;
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = Code/Other/DiscussionBoard_Prefix.pch;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DB_ENVIRONMENT=1",
-					"DEBUG=1",
-				);
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20,
-				);
-				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)\"",
-					"\"$(SRCROOT)/Libraries/three20\"",
-				);
-				PRODUCT_NAME = "Discussion Board";
-			};
-			name = Staging;
-		};
-		C01FCF4F08A954540054247B /* Development */ = {
+		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				BUILD_STYLE = Development;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20/Build/Products/three20,
-				);
-				OTHER_LDFLAGS = (
-					"-all_load",
-					"-ObjC",
-				);
-				PREBINDING = NO;
+				HEADER_SEARCH_PATHS = Libraries/three20/Build/Products/three20;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 			};
-			name = Development;
+			name = Debug;
 		};
-		C01FCF5008A954540054247B /* Production */ = {
+		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				BUILD_STYLE = Production;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					../../../Build,
-					Libraries/three20/Build/Products/three20,
-				);
+				HEADER_SEARCH_PATHS = Libraries/three20/Build/Products/three20;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PREBINDING = NO;
 				SDKROOT = iphoneos;
 			};
-			name = Production;
+			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
@@ -1454,22 +1411,20 @@
 		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Discussion Board" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1D6058940D05DD3E006BFB54 /* Development */,
-				25FED7DB12E7D78E00D94325 /* Staging */,
-				1D6058950D05DD3E006BFB54 /* Production */,
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Production;
+			defaultConfigurationName = Release;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "DiscussionBoard" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Development */,
-				25FED7DA12E7D78E00D94325 /* Staging */,
-				C01FCF5008A954540054247B /* Production */,
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Production;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

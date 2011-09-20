@@ -7,8 +7,8 @@
 //
 
 #import "DBTopicViewController.h"
-#import "DBTopic.h"
-#import "DBUser.h"
+#import "../Models/DBTopic.h"
+#import "../Models/DBUser.h"
 
 @implementation DBTopicViewController
 
@@ -25,7 +25,7 @@
 
 - (id)initWithTopicID:(NSString*)topicID {
 	if (self = [super initWithStyle:UITableViewStyleGrouped]) {
-		_topic = [[DBTopic objectWithPrimaryKeyValue:topicID] retain];
+		_topic = [[DBTopic findFirstByAttribute:@"topicID" withValue:topicID] retain];
 	}
 	
 	return self;

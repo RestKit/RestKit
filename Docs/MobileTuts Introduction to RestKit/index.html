@@ -202,7 +202,7 @@ NSLog(@"I am your RKClient singleton : %@", [RKClient sharedClient]);
 
 <pre name="code" class="c++">@implementation Contact
 
-- (NSDictionary*)elementToPropertyMappings {
++ (NSDictionary*)elementToPropertyMappings {
   return [NSDictionary dictionaryWithKeysAndObjects:
           @"id", @"identifier",
           @"name", @"name",

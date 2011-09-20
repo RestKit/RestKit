@@ -3,13 +3,25 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/15/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//  Copyright 2010 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKSpecEnvironment.h"
 #import "RKResponse.h"
 
-@interface RKResponseSpec : NSObject <UISpec> {
+@interface RKResponseSpec : RKSpec {
 	RKResponse* _response;
 }
 
@@ -119,6 +131,22 @@
 	[expectThat([mock isNotFound]) should:be(YES)];
 }
 
+- (void)itShouldConsiderAFourOhNineResponseConflict {
+	RKResponse* response = [[[RKResponse alloc] init] autorelease];
+	id mock = [OCMockObject partialMockForObject:response];
+	NSInteger statusCode = 409;
+	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
+	[expectThat([mock isConflict]) should:be(YES)];
+}
+
+- (void)itShouldConsiderAFourHundredAndTenResponseConflict {
+	RKResponse* response = [[[RKResponse alloc] init] autorelease];
+	id mock = [OCMockObject partialMockForObject:response];
+	NSInteger statusCode = 410;
+	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
+	[expectThat([mock isGone]) should:be(YES)];
+}
+
 - (void)itShouldConsiderVariousThreeHundredResponsesRedirect {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
@@ -189,6 +217,18 @@
 	NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
 	[[[mock stub] andReturn:headers] allHeaderFields];
 	[expectThat([mock isJSON]) should:be(YES)];
+}
+
+- (void)itShouldReturnParseErrorsWhenParsedBodyFails {
+    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+	id mock = [OCMockObject partialMockForObject:response];
+	[[[mock stub] andReturn:@"sad;sdvjnk;"] bodyAsString];
+    [[[mock stub] andReturn:@"application/json"] MIMEType];
+    NSError* error = nil;
+    id object = [mock parsedBody:&error];
+    assertThat(object, is(nilValue()));
+    assertThat(error, isNot(nilValue()));
+    assertThat([error localizedDescription], is(equalTo(@"Unexpected token, wanted '{', '}', '[', ']', ',', ':', 'true', 'false', 'null', '\"STRING\"', 'NUMBER'.")));
 }
 
 @end
