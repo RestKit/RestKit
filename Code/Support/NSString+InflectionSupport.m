@@ -19,7 +19,7 @@ RK_FIX_CATEGORY_BUG(NSString_InflectionSupport)
 
 - (NSString *)deCamelizeWith:(NSString *)delimiter {
 	
-	unichar *buffer = calloc([self length], sizeof(unichar));
+	unichar *buffer = (unichar*)calloc([self length], sizeof(unichar));
 	[self getCharacters:buffer ];
 	NSMutableString *underscored = [NSMutableString string];
 	
@@ -56,7 +56,7 @@ RK_FIX_CATEGORY_BUG(NSString_InflectionSupport)
 
 - (NSString *)camelize {
 	
-	unichar *buffer = calloc([self length], sizeof(unichar));
+	unichar *buffer = (unichar*)calloc([self length], sizeof(unichar));
 	[self getCharacters:buffer ];
 	NSMutableString *underscored = [NSMutableString string];
 	

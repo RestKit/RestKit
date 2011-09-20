@@ -37,14 +37,14 @@
     [super dealloc];
 }
 
-- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethodName:(NSString*)methodName escapeRoutedPath:(BOOL)addEscapes {
-    NSString* className = NSStringFromClass(class);
-    if (nil == [_routes objectForKey:class]) {
+- (void)routeClass:(Class)aClass toResourcePath:(NSString*)resourcePath forMethodName:(NSString*)methodName escapeRoutedPath:(BOOL)addEscapes {
+    NSString* className = NSStringFromClass(aClass);
+    if (nil == [_routes objectForKey:aClass]) {
         NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-        [_routes setObject:dictionary forKey:class];
+        [_routes setObject:dictionary forKey:aClass];
     }
 
-    NSMutableDictionary* classRoutes = [_routes objectForKey:class];
+    NSMutableDictionary* classRoutes = [_routes objectForKey:aClass];
     if ([classRoutes objectForKey:methodName]) {
     [NSException raise:nil format:@"A route has already been registered for class '%@' and HTTP method '%@'", className, methodName];
     }
@@ -76,17 +76,17 @@
 
 // Public
 
-- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath {
-    [self routeClass:class toResourcePath:resourcePath forMethodName:@"ANY" escapeRoutedPath:YES];
+- (void)routeClass:(Class)aClass toResourcePath:(NSString*)resourcePath {
+    [self routeClass:aClass toResourcePath:resourcePath forMethodName:@"ANY" escapeRoutedPath:YES];
 }
 
-- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method {
-    [self routeClass:class toResourcePath:resourcePath forMethod:method escapeRoutedPath:YES];
+- (void)routeClass:(Class)aClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method {
+    [self routeClass:aClass toResourcePath:resourcePath forMethod:method escapeRoutedPath:YES];
 }
 
-- (void)routeClass:(Class)class toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes {
+- (void)routeClass:(Class)aClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes {
     NSString* methodName = [self HTTPVerbForMethod:method];
-    [self routeClass:class toResourcePath:resourcePath forMethodName:methodName escapeRoutedPath:addEscapes];
+    [self routeClass:aClass toResourcePath:resourcePath forMethodName:methodName escapeRoutedPath:addEscapes];
 }
 
 #pragma mark RKRouter

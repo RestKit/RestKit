@@ -28,7 +28,7 @@
 	SBJsonParser* parser = [[SBJsonParser alloc] init];
 	id result = [parser objectWithString:string];
 	if (nil == result) {
-        if (error) *error = [[parser errorTrace] lastObject];
+//        if (error) *error = [[parser errorTrace] lastObject];
 	}
 	[parser release];
 	
@@ -39,7 +39,7 @@
     SBJsonWriter *jsonWriter = [SBJsonWriter new];    
     NSString *json = [jsonWriter stringWithObject:object];
     if (!json) {
-        if (error) *error = [[jsonWriter errorTrace] lastObject];
+//        if (error) *error = [[jsonWriter errorTrace] lastObject];
     }
     [jsonWriter release];
     return json;

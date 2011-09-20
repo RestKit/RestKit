@@ -22,6 +22,8 @@
 #import "RKRequestSerializable.h"
 #import "RKParamsAttachment.h"
 
+extern NSString* const kRKStringBoundary;
+
 /**
  * Provides support for creating multi-part request body for RKRequest
  * objects.

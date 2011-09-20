@@ -23,6 +23,8 @@
 #import "RKObjectAttributeMapping.h"
 #import "RKObjectRelationshipMapping.h"
 
+extern NSString* const RKObjectMappingNestingAttributeKeyName;
+
 /**
  An object mapping defines the rules for transforming a key-value coding
  compliant object into another representation. The mapping is defined in terms

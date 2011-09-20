@@ -123,7 +123,7 @@
         } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
             objectMapping = (RKObjectMapping*)mapping;
         } else {
-            NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
+            NSAssert1(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
         }        
         if (NO == [[self.targetObject class] isSubclassOfClass:objectMapping.objectClass]) {
             NSString* errorMessage = [NSString stringWithFormat:
@@ -237,7 +237,7 @@
     } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
         objectMapping = (RKObjectMapping*)mapping;
     } else {
-        NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
+        NSAssert1(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
     }
     
     if (objectMapping) {

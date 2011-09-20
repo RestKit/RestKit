@@ -24,6 +24,10 @@
 #import "NSDictionary+RKAdditions.h"
 #import "RKLog.h"
 
+BOOL RKPathUsesParentheticalParameters(NSString *path);
+NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern);
+NSString *RKEncodeURLString(NSString *unencodedString);
+
 BOOL RKPathUsesParentheticalParameters(NSString *path) {
     NSCharacterSet *parens = [NSCharacterSet characterSetWithCharactersInString:@"()"];
     NSArray *parenComponents = [path componentsSeparatedByCharactersInSet:parens];
