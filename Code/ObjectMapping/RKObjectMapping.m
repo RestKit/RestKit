@@ -134,7 +134,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     return nil;
 }
 
-- (void)mapAttributesSet:(NSSet*)attributes {
+- (void)mapAttributesCollection:(id<NSFastEnumeration>)attributes {
     for (NSString* attributeKeyPath in attributes) {
         [self addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:attributeKeyPath toKeyPath:attributeKeyPath]];
     }
@@ -151,7 +151,15 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     
     va_end(args);
     
-    [self mapAttributesSet:attributeKeyPaths];
+    [self mapAttributesCollection:attributeKeyPaths];
+}
+
+- (void)mapAttributesFromSet:(NSSet *)set {
+    [self mapAttributesCollection:set];
+}
+
+- (void)mapAttributesFromArray:(NSArray *)array {
+    [self mapAttributesCollection:[NSSet setWithArray:array]];
 }
 
 - (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping serialize:(BOOL)serialize {

@@ -264,7 +264,39 @@ relationship. Relationships are processed using an object mapping as well.
  @param attributeKey A key-value coding key corresponding to a value in the mappable source object and an attribute 
  on the destination class that have the same name.
  */
-- (void)mapAttributes:(NSString*)attributeKey, ... NS_REQUIRES_NIL_TERMINATION;
+- (void)mapAttributes:(NSString *)attributeKey, ... NS_REQUIRES_NIL_TERMINATION;
+
+/**
+ Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
+ destination attribute property have the same name.
+ 
+ For example, given the transformation from a JSON dictionary:
+ 
+    {"name": "My Name", "age": 28}
+ 
+ To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
+ 
+    [mapping mapAttributesFromSet:[NSSet setWithObjects:@"name", @"age", nil]];
+ 
+ @param set A set of string attribute keyPaths to deifne mappings for
+ */
+- (void)mapAttributesFromSet:(NSSet *)set;
+
+/**
+ Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
+ destination attribute property have the same name.
+ 
+ For example, given the transformation from a JSON dictionary:
+ 
+    {"name": "My Name", "age": 28}
+ 
+ To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
+ 
+    [mapping mapAttributesFromSet:[NSArray arrayWithObjects:@"name", @"age", nil]];
+ 
+ @param array An array of string attribute keyPaths to deifne mappings for
+ */
+- (void)mapAttributesFromArray:(NSArray *)set;
 
 /**
  Defines a relationship mapping for a key where the source keyPath and the destination relationship property
