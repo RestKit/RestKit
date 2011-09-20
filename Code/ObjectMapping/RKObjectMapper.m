@@ -44,6 +44,7 @@
         _sourceObject = [object retain];
         _mappingProvider = mappingProvider;
         _errors = [NSMutableArray new];
+        _operationQueue = [RKMappingOperationQueue new];
     }
     
     return self;
@@ -52,6 +53,7 @@
 - (void)dealloc {
     [_sourceObject release];
     [_errors release];
+    [_operationQueue release];
     [super dealloc];
 }
 
@@ -207,7 +209,8 @@
     
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:mappableObject 
                                                                                       toObject:destinationObject 
-                                                                                   withMapping:mapping];
+                                                                                   withMapping:mapping];    
+    operation.queue = _operationQueue;
     BOOL success = [operation performMapping:&error];    
     if (success) {
         if ([self.delegate respondsToSelector:@selector(objectMapper:didMapFromObject:toObject:atKeyPath:usingMapping:)]) {
@@ -300,6 +303,10 @@
             [results setObject:mappingResult forKey:keyPath];
         }
     }
+    
+    // Allow any queued operations to complete
+    NSLog(@"The following operations are in the queue: %@", _operationQueue.operations);
+    [_operationQueue waitUntilAllOperationsAreFinished];
     
     if ([self.delegate respondsToSelector:@selector(objectMapperDidFinishMapping:)]) {
         [self.delegate objectMapperDidFinishMapping:self];

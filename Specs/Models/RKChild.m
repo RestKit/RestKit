@@ -24,5 +24,9 @@
 @implementation RKChild
 
 @dynamic parents;
+@dynamic motherID;
+@dynamic fatherID;
+@dynamic father;
+@dynamic mother;
 
 @end

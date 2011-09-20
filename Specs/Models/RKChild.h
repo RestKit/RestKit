@@ -27,6 +27,10 @@
 @interface RKChild : RKHuman {
 }
 
-@property (nonatomic, retain) NSSet* parents;
+@property (nonatomic, retain) NSSet *parents;
+@property (nonatomic, retain) NSNumber *motherID;
+@property (nonatomic, retain) NSNumber *fatherID;
+@property (nonatomic, retain) RKParent *father;
+@property (nonatomic, retain) RKParent *mother;
 
 @end

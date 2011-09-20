@@ -146,4 +146,32 @@
     assertThatInt([[[parent.children anyObject] parents] count], is(equalToInt(1)));
 }
 
+- (void)itShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder {
+    RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class]];
+    [parentMapping mapAttributes:@"parentID", nil];
+    parentMapping.primaryKeyAttribute = @"parentID";
+    
+    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class]];
+    [childMapping mapAttributes:@"fatherID", nil];
+    [childMapping mapRelationship:@"father" withMapping:parentMapping];
+    [childMapping connectRelationship:@"father" withObjectForPrimaryKeyAttribute:@"fatherID"];    
+        
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
+    // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
+    // keys are not guaranteed to return in any particular order
+    [mappingProvider setMapping:parentMapping forKeyPath:@"parents"];
+    [mappingProvider setMapping:childMapping forKeyPath:@"children"];    
+    
+    NSDictionary *JSON = RKSpecParseFixture(@"ConnectingParents.json");
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/CoreData", RKLogLevelTrace);
+    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
+    RKObjectMappingResult *result = [mapper performMapping];
+    NSArray *children = [[result asDictionary] valueForKey:@"children"];
+    assertThat(children, hasCountOf(1));
+    RKChild *child = [children lastObject];
+    assertThat(child.father, is(notNilValue()));
+}
+
 @end

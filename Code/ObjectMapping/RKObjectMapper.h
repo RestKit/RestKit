@@ -23,6 +23,7 @@
 #import "RKObjectMappingOperation.h"
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
+#import "RKMappingOperationQueue.h"
 #import "../Support/Support.h"
 
 /**
@@ -52,6 +53,7 @@
     RKObjectMappingProvider* _mappingProvider;
     id<RKObjectMapperDelegate> _delegate;
     NSMutableArray* _errors;
+    RKMappingOperationQueue *_operationQueue;
 }
 
 @property (nonatomic, readonly) id sourceObject;

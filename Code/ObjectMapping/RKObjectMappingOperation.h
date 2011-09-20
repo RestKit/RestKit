@@ -22,6 +22,7 @@
 #import "RKObjectAttributeMapping.h"
 
 @class RKObjectMappingOperation;
+@class RKMappingOperationQueue;
 
 @protocol RKObjectMappingOperationDelegate  <NSObject>
 
@@ -44,6 +45,7 @@
     id<RKObjectMappingOperationDelegate> _delegate;
     NSDictionary* _nestedAttributeSubstitution;
     NSError* _validationError;
+    RKMappingOperationQueue *_queue;
 }
 
 /**
@@ -66,6 +68,16 @@
  The delegate to inform of interesting events during the mapping operation
  */
 @property (nonatomic, assign) id<RKObjectMappingOperationDelegate> delegate;
+
+/**
+ An operation queue for deferring portions of the mapping process until later
+ 
+ Defaults to nil. If this mapping operation was configured by an instance of RKObjectMapper, then
+ an instance of the operation queue will be configured and assigned for use. If the queue is nil,
+ the mapping operation will perform all its operations within the body of performMapping. If a queue
+ is present, it may elect to defer portions of the mapping operation using the queue.
+ */
+@property (nonatomic, retain) RKMappingOperationQueue *queue;
 
 /**
  Create a new mapping operation configured to transform the object representation
