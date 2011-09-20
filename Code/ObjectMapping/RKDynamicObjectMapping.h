@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
-//  Copyright 2011 Two Toasters
+//  Copyright 2011 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 /**
  Return the appropriate object mapping given a mappable data
  */
-@protocol RKObjectDynamicMappingDelegate <NSObject>
+@protocol RKDynamicObjectMappingDelegate <NSObject>
 
 @required
 - (RKObjectMapping*)objectMappingForData:(id)data;
@@ -32,7 +32,7 @@
 @end
 
 #ifdef NS_BLOCKS_AVAILABLE
-typedef RKObjectMapping*(^RKObjectDynamicMappingDelegateBlock)(id);
+typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
 #endif
 
 /**
@@ -40,11 +40,11 @@ typedef RKObjectMapping*(^RKObjectDynamicMappingDelegateBlock)(id);
  object mapping to apply at mapping time. This allows you to map very similar payloads
  differently depending on the type of data contained therein.
  */
-@interface RKObjectDynamicMapping : NSObject <RKObjectMappingDefinition> {
-    NSMutableArray* _matchers;
-    id<RKObjectDynamicMappingDelegate> _delegate;
+@interface RKDynamicObjectMapping : NSObject <RKObjectMappingDefinition> {
+    NSMutableArray *_matchers;
+    id<RKDynamicObjectMappingDelegate> _delegate;
     #ifdef NS_BLOCKS_AVAILABLE
-    RKObjectDynamicMappingDelegateBlock _objectMappingForDataBlock;
+    RKDynamicObjectMappingDelegateBlock _objectMappingForDataBlock;
     #endif
     BOOL _forceCollectionMapping;
 }
@@ -55,14 +55,14 @@ typedef RKObjectMapping*(^RKObjectDynamicMappingDelegateBlock)(id);
  
  @see RKDynamicObjectMappingDelegate
  */
-@property (nonatomic, assign) id<RKObjectDynamicMappingDelegate> delegate;
+@property (nonatomic, assign) id<RKDynamicObjectMappingDelegate> delegate;
 
 #ifdef NS_BLOCKS_AVAILABLE
 /**
  A block to invoke to determine the appropriate concrete object mapping
  to apply to the mappable data.
  */
-@property (nonatomic, copy) RKObjectDynamicMappingDelegateBlock objectMappingForDataBlock;
+@property (nonatomic, copy) RKDynamicObjectMappingDelegateBlock objectMappingForDataBlock;
 #endif
 
 /**
@@ -75,14 +75,14 @@ typedef RKObjectMapping*(^RKObjectDynamicMappingDelegateBlock)(id);
 /**
  Return a new auto-released dynamic object mapping
  */
-+ (RKObjectDynamicMapping*)dynamicMapping;
++ (RKDynamicObjectMapping *)dynamicMapping;
 
 #if NS_BLOCKS_AVAILABLE
     
 /**
  Return a new auto-released dynamic object mapping after yielding it to the block for configuration
  */
-+ (RKObjectDynamicMapping*)dynamicMappingWithBlock:(void(^)(RKObjectDynamicMapping*))block;
++ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *))block;
 
 #endif
 
@@ -94,16 +94,21 @@ typedef RKObjectMapping*(^RKObjectDynamicMappingDelegateBlock)(id);
  the gender of the person. When the gender is 'male', we want to use the Boy class and when then the gender
  is 'female' we want to use the Girl class. We might define our dynamic mapping like so:
  
-    RKObjectdynamicMapping* mapping = [RKObjectdynamicMapping dynamicMapping];
+    RKDynamicObjectMapping* mapping = [RKDynamicObjectMapping dynamicMapping];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"male"];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
  */
-- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value;
+- (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
 
 /**
  Invoked by the RKObjectMapper and RKObjectMappingOperation to determine the appropriate RKObjectMapping to use
  when mapping the specified dictionary of mappable data.
  */
-- (RKObjectMapping*)objectMappingForDictionary:(NSDictionary*)dictionary;
+- (RKObjectMapping *)objectMappingForDictionary:(NSDictionary *)dictionary;
 
 @end
+
+/**
+ Define an alias for the old class name for compatibility
+ */
+@compatibility_alias RKObjectDynamicMapping RKDynamicObjectMapping;

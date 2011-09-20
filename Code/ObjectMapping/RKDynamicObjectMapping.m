@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKObjectDynamicMapping.h"
+#import "RKDynamicObjectMapping.h"
 #import "../Support/RKLog.h"
 
 // Set Logging Component
@@ -28,7 +28,7 @@
 // Implemented in RKObjectMappingOperation
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
-@interface RKObjectDynamicMappingMatcher : NSObject {
+@interface RKDynamicObjectMappingMatcher : NSObject {
     NSString* _keyPath;
     id _value;
     RKObjectMapping* _objectMapping;
@@ -41,7 +41,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 - (NSString*)matchDescription;
 @end
 
-@implementation RKObjectDynamicMappingMatcher
+@implementation RKDynamicObjectMappingMatcher
 
 @synthesize objectMapping = _objectMapping;
 
@@ -75,20 +75,20 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation RKObjectDynamicMapping
+@implementation RKDynamicObjectMapping
 
 @synthesize delegate = _delegate;
 @synthesize objectMappingForDataBlock = _objectMappingForDataBlock;
 @synthesize forceCollectionMapping = _forceCollectionMapping;
 
-+ (RKObjectDynamicMapping*)dynamicMapping {
++ (RKDynamicObjectMapping*)dynamicMapping {
     return [[self new] autorelease];
 }
 
 #if NS_BLOCKS_AVAILABLE
 
-+ (RKObjectDynamicMapping*)dynamicMappingWithBlock:(void(^)(RKObjectDynamicMapping*))block {
-    RKObjectDynamicMapping* mapping = [self dynamicMapping];
++ (RKDynamicObjectMapping*)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping*))block {
+    RKDynamicObjectMapping* mapping = [self dynamicMapping];
     block(mapping);
     return mapping;
 }
@@ -111,7 +111,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value {
     RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, value, NSStringFromClass(objectMapping.objectClass));
-    RKObjectDynamicMappingMatcher* matcher = [[RKObjectDynamicMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
+    RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
     [_matchers addObject:matcher];
     [matcher release];
 }
@@ -123,7 +123,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     RKLogTrace(@"Performing dynamic object mapping for mappable data: %@", data);
     
     // Consult the declarative matchers first
-    for (RKObjectDynamicMappingMatcher* matcher in _matchers) {
+    for (RKDynamicObjectMappingMatcher* matcher in _matchers) {
         if ([matcher isMatchForData:data]) {
             RKLogTrace(@"Found declarative match for data: %@.", [matcher matchDescription]);
             return matcher.objectMapping;

@@ -118,8 +118,8 @@
     if (self.targetObject) {
         destinationObject = self.targetObject;
         RKObjectMapping* objectMapping = nil;
-        if ([mapping isKindOfClass:[RKObjectDynamicMapping class]]) {
-            objectMapping = [(RKObjectDynamicMapping*)mapping objectMappingForDictionary:mappableObject];
+        if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
+            objectMapping = [(RKDynamicObjectMapping*)mapping objectMappingForDictionary:mappableObject];
         } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
             objectMapping = (RKObjectMapping*)mapping;
         } else {
@@ -229,8 +229,8 @@
 - (id)objectWithMapping:(id<RKObjectMappingDefinition>)mapping andData:(id)mappableData {
     NSAssert([mapping conformsToProtocol:@protocol(RKObjectMappingDefinition)], @"Expected an object implementing RKObjectMappingDefinition");
     RKObjectMapping* objectMapping = nil;
-    if ([mapping isKindOfClass:[RKObjectDynamicMapping class]]) {
-        objectMapping = [(RKObjectDynamicMapping*)mapping objectMappingForDictionary:mappableData];
+    if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
+        objectMapping = [(RKDynamicObjectMapping*)mapping objectMappingForDictionary:mappableData];
         if (! objectMapping) {
             RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", mapping, mappableData);
         }

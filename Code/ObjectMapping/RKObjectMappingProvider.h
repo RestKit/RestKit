@@ -19,7 +19,7 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKObjectDynamicMapping.h"
+#import "RKDynamicObjectMapping.h"
 
 /**
  Responsible for providing object mappings to an instance of the object mapper

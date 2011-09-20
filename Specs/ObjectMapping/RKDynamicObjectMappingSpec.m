@@ -1,5 +1,5 @@
 //
-//  RKObjectDynamicMappingSpec.m
+//  RKDynamicObjectMappingSpec.m
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
@@ -19,17 +19,17 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKObjectDynamicMapping.h"
+#import "RKDynamicObjectMapping.h"
 #import "RKDynamicMappingModels.h"
 
-@interface RKObjectDynamicMappingSpec : RKSpec <RKObjectDynamicMappingDelegate>
+@interface RKDynamicObjectMappingSpec : RKSpec <RKDynamicObjectMappingDelegate>
 
 @end
 
-@implementation RKObjectDynamicMappingSpec
+@implementation RKDynamicObjectMappingSpec
 
 - (void)itShouldPickTheAppropriateMappingBasedOnAnAttributeValue {
-    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
@@ -47,7 +47,7 @@
 }
 
 - (void)itShouldMatchOnAnNSNumberAttributeValue {
-    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
@@ -65,7 +65,7 @@
 }
 
 - (void)itShouldPickTheAppropriateMappingBasedOnDelegateCallback {
-    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     dynamicMapping.delegate = self;
     RKObjectMapping* mapping = [dynamicMapping objectMappingForDictionary:RKSpecParseFixture(@"girl.json")];
     assertThat(mapping, is(notNilValue()));
@@ -76,7 +76,7 @@
 }
 
 - (void)itShouldPickTheAppropriateMappingBasedOnBlockDelegateCallback {
-    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id data) {
         if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
             return [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
@@ -100,7 +100,7 @@
 
 - (void)itShouldFailAnAssertionWhenInvokedWithSomethingOtherThanADictionary {
     NSException* exception = nil;
-    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     @try {
         [dynamicMapping objectMappingForDictionary:(NSDictionary*)[NSArray array]];
     }
