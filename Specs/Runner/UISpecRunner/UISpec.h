@@ -20,7 +20,7 @@
 +(void)runSpec:(NSTimer *)timer;
 +(void)runSpecExample:(NSTimer *)timer;
 +(void)runSpecClasses:(NSArray *)specClasses;
-+(void)runExamples:(NSArray *)examples onSpec:(Class)class;
++(void)runExamples:(NSArray *)examples onSpec:(Class)theClass;
 +(void)setLog:(UILog *)log;
 +(NSDictionary *)specsAndExamples;
 
@@ -32,7 +32,7 @@
 /**
  * Run all UISpec classes inheriting from a given base class
  */
-+(void)runSpecsInheritingFromClass:(Class)class afterDelay:(NSTimeInterval)delay;
++(void)runSpecsInheritingFromClass:(Class)theClass afterDelay:(NSTimeInterval)delay;
 
 /**
  * Infers which set of UISpec classes to run from the following environment variables:

@@ -277,11 +277,11 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	
 	for (NSManagedObject* object in insertedObjects) {
 		if ([object respondsToSelector:@selector(primaryKeyProperty)]) {
-			Class class = [object class];
-			NSString* primaryKey = [class performSelector:@selector(primaryKeyProperty)];
+			Class theClass = [object class];
+			NSString* primaryKey = [theClass performSelector:@selector(primaryKeyProperty)];
 			id primaryKeyValue = [object valueForKey:primaryKey];
 			
-			NSMutableDictionary* classCache = [threadDictionary objectForKey:class];
+			NSMutableDictionary* classCache = [threadDictionary objectForKey:theClass];
 			if (classCache && primaryKeyValue && [classCache objectForKey:primaryKeyValue] == nil) {
 				[classCache setObject:object forKey:primaryKeyValue];
 			}

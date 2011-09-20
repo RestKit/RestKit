@@ -66,15 +66,15 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 	return type;
 }
 
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)class {
-	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:class];
+- (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass {
+	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:theClass];
 	if (propertyNames) {
 		return propertyNames;
 	}
 	propertyNames = [NSMutableDictionary dictionary];
 	
 	//include superclass properties
-	Class currentClass = class;
+	Class currentClass = theClass;
 	while (currentClass != nil) {
 		// Get the raw list of properties
 		unsigned int outCount;
@@ -92,9 +92,9 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 			
 			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
 				const char* className = [[self propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
-				Class class = objc_getClass(className);
-				if (class) {
-					[propertyNames setObject:class forKey:propName];
+				Class aClass = objc_getClass(className);
+				if (aClass) {
+					[propertyNames setObject:aClass forKey:propName];
 				}
 			}
 		}
@@ -103,8 +103,8 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 		currentClass = [currentClass superclass];
 	}
 	
-	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:class];
-    RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(class), propertyNames);
+	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:theClass];
+    RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(theClass), propertyNames);
 	return propertyNames;
 }
 
