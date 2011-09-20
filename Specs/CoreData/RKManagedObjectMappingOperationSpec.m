@@ -80,6 +80,35 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
+- (void)itShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths {
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    catMapping.primaryKeyAttribute = @"railsID";
+    [catMapping mapAttributes:@"name", nil];
+    
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    humanMapping.primaryKeyAttribute = @"railsID";
+    [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
+    [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
+    [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
+    
+    // Create a cat to connect
+    RKCat* cat = [RKCat object];
+    cat.name = @"Asia";
+    cat.railsID = [NSNumber numberWithInt:31337];
+    [objectStore save];
+    
+    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman* human = [RKHuman object];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(human.favoriteCat, isNot(nilValue()));
+    assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
+}
+
 - (void)itShouldLoadNestedHasManyRelationship {  
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     catMapping.primaryKeyAttribute = @"railsID";
