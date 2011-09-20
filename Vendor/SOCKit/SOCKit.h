@@ -28,17 +28,17 @@
  * Patterns, once created, can be used to efficiently turn objects into strings and
  * vice versa. Respectively, these techniques are referred to as inbound and outbound.
  *
- * Inbound example (turn an object into a string):
+ * Inbound examples (creating strings from objects):
  *
  *   pattern: api.github.com/users/:username/gists
- *   > [pattern stringFromObject:githubUser];
+ *   > [pattern stringFromObject:[GithubUser userWithUsername:@"jverkoey"]];
  *   returns: api.github.com/users/jverkoey/gists
  *
  *   pattern: api.github.com/repos/:username/:repo/issues
- *   > [pattern stringFromObject:githubRepo];
+ *   > [pattern stringFromObject:[GithubRepo repoWithUsername:@"jverkoey" repo:@"sockit"]];
  *   returns: api.github.com/repos/jverkoey/sockit/issues
  *
- * Outbound example (turn a string into an object):
+ * Outbound examples (performing selectors on objects with values from given strings):
  *
  *   pattern: github.com/:username
  *   > [pattern performSelector:@selector(initWithUsername:) onObject:[GithubUser class] sourceString:@"github.com/jverkoey"];
@@ -55,19 +55,45 @@
  *   returns: nil because setUsername: does not have a return value. githubUser's username property
  *            is now @"jverkoey".
  *
- * Note:
+ * Note 1: Parameters must be separated by string literals
  *
  *      Pattern parameters must be separated by some sort of non-parameter character.
  *      This means that you can't define a pattern like :user:repo. This is because when we
  *      get around to wanting to decode the string back into an object we need some sort of
  *      delimiter between the parameters.
  *
- * Note 2:
+ * Note 2: When colons aren't seen as parameters
  *
  *      If you have colons in your text that aren't followed by a valid parameter name then the
  *      colon will be treated as static text. This is handy if you're defining a URL pattern.
  *      For example: @"http://github.com/:user" only has one parameter, :user. The ":" in http://
- *      is ignored.
+ *      is treated as a string literal and not a parameter.
+ *
+ * Note 3: Escaping KVC characters
+ *
+ *      If you need to use KVC characters in SOCKit patterns as literal string tokens and not
+ *      treated with KVC then you must escape the characters using double backslashes. For example,
+ *      @"/:userid.json" would create a pattern that uses KVC to access the json property of the
+ *      username value. In this case, however, we wish to interpret the ".json" portion as a
+ *      static string.
+ *
+ *      In order to do so we must escape the "." using a double backslash: "\\.". For example:
+ *      @"/:userid\\.json". This makes it possible to create strings of the form @"/3.json".
+ *      This also works with outbound parameters, so that the string @"/3.json" can
+ *      be used with the pattern to invoke a selector with "3" as the first argument rather
+ *      than "3.json".
+ *
+ *      You can escape the following characters:
+ *      ":" => @"\\:"
+ *      "@" => @"\\@"
+ *      "." => @"\\."
+ *      "\\" => @"\\\\"
+ *
+ * Note 4: Allocating new objects with outbound patterns
+ *
+ *      SOCKit will allocate a new object of a given class if
+ *      performSelector:onObject:sourceString: is provided a selector with "init" as a prefix
+ *      and object is a Class. E.g. [GithubUser class].
  */
 @interface SOCPattern : NSObject {
 @private
@@ -78,6 +104,8 @@
 
 /**
  * Initializes a newly allocated pattern object with the given pattern string.
+ *
+ * Designated initializer.
  */
 - (id)initWithString:(NSString *)string;
 + (id)patternWithString:(NSString *)string;
@@ -117,9 +145,9 @@
  *                           this string are extracted into the NSDictionary.
  *      @returns A dictionary of key value pairs. All values will be NSStrings. The keys will
  *               correspond to the pattern's parameter names. Duplicate key values will be
- *               written over by later values.
+ *               overwritten by later values.
  */
-- (NSDictionary *)extractParameterKeyValuesFromSourceString:(NSString *)sourceString;
+- (NSDictionary *)parameterDictionaryFromSourceString:(NSString *)sourceString;
 
 /**
  * Returns a string with the parameters of this pattern replaced using Key-Value Coding (KVC)
@@ -133,8 +161,45 @@
  *
  * Collection Operators:
  * http://developer.apple.com/library/ios/#documentation/cocoa/conceptual/KeyValueCoding/Articles/CollectionOperators.html#//apple_ref/doc/uid/20002176-BAJEAIEE
+ *
+ *      @param object  The object whose properties will be used to replace the parameters in
+ *                     the pattern.
+ *      @returns A string with the pattern parameters replaced by the object property values.
+ *      @see stringFromObject:withBlock:
  */
 - (NSString *)stringFromObject:(id)object;
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ * Returns a string with the parameters of this pattern replaced using Key-Value Coding (KVC)
+ * on the receiving object, and the result is (optionally) modified or encoded by the block. 
+ * 
+ * For example, consider we have individual object values that need percent escapes added to them,
+ * while preserving the slashes, question marks, and ampersands of a typical resource path. 
+ * Using blocks, this is very succinct:
+ *
+ * @code
+ * NSDictionary* person = [NSDictionary dictionaryWithObjectsAndKeys:
+ *                         @"SECRET|KEY",@"password", 
+ *                         @"Joe Bob Briggs", @"name", nil];
+ * SOCPattern* soc = [SOCPattern patternWithString:@"/people/:name/:password"];
+ * NSString* actualPath = [soc stringFromObject:person withBlock:^(NSString *)propertyValue) {
+ *   return [propertyValue stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+ * }
+ * NSString* expectedPath = @"/people/Joe%20Bob%20Briggs/SECRET%7CKEY";
+ * @endcode
+ *
+ *      @param object  The object whose properties will be used to replace the parameters in
+ *                     the pattern.
+ *      @param block   An optional block (may be nil) that modifies or encodes each
+ *                     property value string. The block accepts one parameter - the property
+ *                     value as a string - and should return the modified property string.
+ *      @returns A string with the pattern parameters replaced by the block-processed object
+ *               property values.
+ *      @see stringFromObject:
+ */
+- (NSString *)stringFromObject:(id)object withBlock:(NSString*(^)(NSString*))block;
+#endif
 
 @end
 

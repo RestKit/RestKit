@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 5/6/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright 2011 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKObjectMappingProvider.h"
@@ -66,12 +78,14 @@
 - (NSArray*)objectMappingsForClass:(Class)theClass {
     NSMutableArray* mappings = [NSMutableArray array];
     NSArray* mappingsToSearch = [[NSArray arrayWithArray:_objectMappings] arrayByAddingObjectsFromArray:[_mappingsByKeyPath allValues]];
-    for (RKObjectMapping* objectMapping in mappingsToSearch) {
-        if (objectMapping.objectClass == theClass && ![mappings containsObject:objectMapping]) {
-            [mappings addObject:objectMapping];
+    for (NSObject <RKObjectMappingDefinition> *candidateMapping in mappingsToSearch) {
+        if ( ![candidateMapping respondsToSelector:@selector(objectClass)] || [mappings containsObject:candidateMapping])
+            continue;
+        Class mappedClass = [candidateMapping performSelector:@selector(objectClass)];
+        if (mappedClass && [NSStringFromClass(mappedClass) isEqualToString:NSStringFromClass(theClass)]) {
+            [mappings addObject:candidateMapping];
         }
     }
-    
     return [NSArray arrayWithArray:mappings];
 }
 

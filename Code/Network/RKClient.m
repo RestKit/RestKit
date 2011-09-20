@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 Two Toasters. All rights reserved.
+//  Copyright 2009 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKClient.h"
@@ -26,24 +38,28 @@ static RKClient* sharedClient = nil;
 // URL Conveniences functions
 
 NSURL * RKMakeURL(NSString *resourcePath) {
-	return [[RKClient sharedClient] URLForResourcePath:resourcePath];
+    return [[RKClient sharedClient] URLForResourcePath:resourcePath];
 }
 
 NSString * RKMakeURLPath(NSString *resourcePath) {
-	return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
+    return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
 }
 
-NSString* RKMakePathWithObject(NSString* pattern, id object) {
+NSString* RKMakePathWithObjectAddingEscapes(NSString* pattern, id object, BOOL addEscapes) {
     NSCAssert(pattern != NULL, @"Pattern string must not be empty in order to create a path from an interpolated object.");
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pattern];
-    NSString *interpolatedPath = [matcher pathFromObject:object];
+    NSString *interpolatedPath = [matcher pathFromObject:object addingEscapes:addEscapes];
     return interpolatedPath;
 }
 
+NSString* RKMakePathWithObject(NSString* pattern, id object) {
+    return RKMakePathWithObjectAddingEscapes(pattern, object, YES);
+}
+
 NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) {
-	if ([queryParams count] > 0)
-		return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
+    if ([queryParams count] > 0)
+        return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams URLEncodedString]];
     return resourcePath;
 }
 

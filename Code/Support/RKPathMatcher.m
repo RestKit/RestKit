@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Greg Combs on 9/2/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright 2011 RestKit
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKPathMatcher.h"
@@ -25,6 +37,17 @@ NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
         pattern = [noTrailingParen stringByReplacingOccurrencesOfString:@"(" withString:@":"];
     }
     return pattern;
+}
+
+// NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
+NSString *RKEncodeURLString(NSString *unencodedString) {
+    NSString * encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(
+                                                                                   NULL,
+                                                                                   (CFStringRef)unencodedString,
+                                                                                   NULL,
+                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                   kCFStringEncodingUTF8 );
+    return [encodedString autorelease];
 }
 
 @interface RKPathMatcher()
@@ -72,7 +95,7 @@ NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
     NSArray *components = [self.sourcePath componentsSeparatedByString:@"?"];
     if ([components count] > 1) {
         self.rootPath = [components objectAtIndex:0];
-        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSASCIIStringEncoding]; 
+        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSUTF8StringEncoding]; 
         return YES;
     }
     return NO;
@@ -92,7 +115,7 @@ NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
         RKLogWarning(@"The parsed arguments dictionary reference is nil.");
         return YES;
     }
-    NSDictionary *extracted = [self.socPattern extractParameterKeyValuesFromSourceString:self.rootPath];
+    NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
     if (extracted)
         [argumentsCollection addEntriesFromDictionary:[extracted removePercentEscapesFromKeysAndObjects]];
     *arguments = argumentsCollection;
@@ -113,9 +136,20 @@ NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
 }
 
 - (NSString *)pathFromObject:(id)object {
+    return [self pathFromObject:object addingEscapes:YES];
+}
+
+
+- (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes {
     NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using matcherWithPattern: before calling pathFromObject:");
     NSAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
-    return [self.socPattern stringFromObject:object];
+    NSString *(^encoderBlock)(NSString* interpolatedString) = nil;
+    if (addEscapes)
+        encoderBlock = ^NSString *(NSString* interpolatedString) {
+            return RKEncodeURLString(interpolatedString);
+        };
+    NSString *path = [self.socPattern stringFromObject:object withBlock:encoderBlock];
+    return path;
 }
 
 @end

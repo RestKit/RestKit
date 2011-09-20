@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Greg Combs on 9/2/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright 2011 RestKit
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <Foundation/Foundation.h>
@@ -45,9 +57,15 @@
  Pattern strings should include encoded parameter keys, delimited by a single colon at the 
  beginning of the key name.  
  
- *NOTE* - Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be 
- separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, wheras
+ *NOTE 1* - Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be 
+ separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, whereas
  /:key1/:key2/:key3/ is acceptable.
+ 
+ *NOTE 2* - The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
+ situation, ... otherKey is a sub-key on a the object represented by key1.  This presents problems in circumstances where
+ you might want to build a pattern like /:filename.json, where the dot isn't intended as a sub-key on the filename, but rather
+ part of the json static string.  In these instances, you need to escape the dot with two backslashes, like so: 
+ /:filename\\.json
  
  @param patternString The pattern to use for evaluating, such as /:entityName/:stateID/:chamber/
  @param shouldTokenize If YES, any query parameters will be tokenized and inserted into the parsed argument dictionary.
@@ -61,9 +79,15 @@
  matchesPath:tokenizeQueryStrings:parsedArguments:  Patterns should include encoded parameter keys,
  delimited by a single colon at the beginning of the key name.  
  
- *NOTE* - Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be 
- separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, wheras
+ *NOTE 1* - Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be 
+ separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, whereas
  /:key1/:key2/:key3/ is acceptable.
+ 
+ *NOTE 2* - The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
+ situation, ... otherKey is a sub-key on a the object represented by key1.  This presents problems in circumstances where
+ you might want to build a pattern like /:filename.json, where the dot isn't intended as a sub-key on the filename, but rather
+ part of the json static string.  In these instances, you need to escape the dot with two backslashes, like so: 
+ /:filename\\.json
  
  @param patternString The pattern to use for evaluating, such as /:entityName/:stateID/:chamber/
  @return An instantiated RKPathMatcher with an established pattern. 
@@ -99,5 +123,25 @@
  @see RKRouter
  */
 - (NSString *)pathFromObject:(id)object;
+
+/**
+ This generates a resource path by interpolating the properties of the 'object' argument, assuming the existence
+ of a previously specified pattern established via matcherWithPattern:.  Otherwise, this method is identical in
+ function to RKMakePathWithObject (in fact it is a shortcut for this method).
+ 
+ For example, given an 'article' object with an 'articleID' property value of 12345 and a code of "This/That"...
+ 
+ RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/articles/:articleID/:code"];
+ NSString *resourcePath = [matcher pathFromObject:article addingEscapes:YES];
+ 
+ ... will produce a 'resourcePath' containing the string "/articles/12345/This%2FThat"
+ 
+ @param object The object containing the properties to interpolate.
+ @param addEscapes Conditionally add percent escapes to the interpolated property values
+ @return A string with the object's interpolated property values inserted into the receiver's established pattern.
+ @see RKMakePathWithObjectAddingEscapes
+ @see RKRouter
+ */
+- (NSString *)pathFromObject:(id)object addingEscapes:(BOOL)addEscapes;
 
 @end

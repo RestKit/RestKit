@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 Two Toasters. All rights reserved.
+//  Copyright 2009 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKRequest.h"
@@ -42,7 +54,8 @@ NSString* RKMakeURLPath(NSString* resourcePath);
 /**
  * Convenience method for generating a path against the properties of an object. Takes
  * a string with property names encoded with colons and interpolates the values of
- * the properties specified and returns the generated path.
+ * the properties specified and returns the generated path.  Defaults to adding escapes.  If desired,
+ * turn them off with RKMakePathWithObjectAddingEscapes
  *
  * For example, given an 'article' object with an 'articleID' property of 12345 and a 'name' of Blake,
  * RKMakePathWithObject(@"articles/:articleID/:name", article) would generate @"articles/12345/Blake"
@@ -51,8 +64,25 @@ NSString* RKMakeURLPath(NSString* resourcePath);
  * @param path The colon encoded path pattern string to use for interpolation.
  * @param object The object containing the properties needed for interpolation.
  * @return A new path string, replacing the pattern's parameters with the object's actual property values.
+ * @see RKMakePathWithObjectAddingEscapes
  */
 NSString* RKMakePathWithObject(NSString* path, id object);
+
+/**
+ * Convenience method for generating a path against the properties of an object. Takes
+ * a string with property names encoded with colons and interpolates the values of
+ * the properties specified and returns the generated path.
+ *
+ * For example, given an 'article' object with an 'articleID' property of 12345 and a 'code' of "This/That",
+ * RKMakePathWithObjectAddingEscapes(@"articles/:articleID/:code", article, YES) would generate @"articles/12345/This%2FThat"
+ *
+ * This functionality is the basis for resource path generation in the Router.
+ * @param path The colon encoded path pattern string to use for interpolation.
+ * @param object The object containing the properties needed for interpolation.
+ * @param addEscapes Conditionally add percent escapes to the interpolated property values.
+ * @return A new path string, replacing the pattern's parameters with the object's actual property values.
+ */
+NSString* RKMakePathWithObjectAddingEscapes(NSString* pattern, id object, BOOL addEscapes);
 
 /**
  * Returns a resource path with a dictionary of query parameters URL encoded and appended

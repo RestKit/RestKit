@@ -10,8 +10,8 @@
 
 #import <objc/runtime.h>
 #import "NSManagedObject+ActiveRecord.h"
-#import "RKObjectManager.h"
-#import "RKLog.h"
+#import "../ObjectMapping/RKObjectManager.h"
+#import "../Support/RKLog.h"
 #import "../Support/RKFixCategoryBug.h"
 
 RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
@@ -27,8 +27,9 @@ static NSNumber *defaultBatchSize = nil;
 
 #pragma mark - RKManagedObject methods
 
-// TODO: Not sure that we even need the objectStore...
 + (NSManagedObjectContext*)managedObjectContext {
+    NSAssert([RKObjectManager sharedManager], @"[RKObjectManager sharedManager] cannot be nil");
+    NSAssert([RKObjectManager sharedManager].objectStore, @"[RKObjectManager sharedManager].objectStore cannot be nil");
 	return [[[RKObjectManager sharedManager] objectStore] managedObjectContext];
 }
 
@@ -112,7 +113,7 @@ static NSNumber *defaultBatchSize = nil;
 #pragma mark - MagicalRecord Ported Methods
 
 + (NSManagedObjectContext*)currentContext; {
-    return [[RKObjectManager sharedManager].objectStore managedObjectContext];
+    return [self managedObjectContext];
 }
 
 + (void)setDefaultBatchSize:(NSUInteger)newBatchSize

@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright 2011 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <OCMock/OCMock.h>
@@ -132,6 +144,68 @@
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key {
     RKLogError(@"Asked to set value '%@' for undefined key '%@'", value, key);
     [super setValue:value forUndefinedKey:key];
+}
+
+@end
+
+@interface RKExampleGroupWithUserArray : NSObject {
+    NSString * _name;
+    NSArray* _users;
+}
+
+@property (nonatomic, retain) NSString* name;
+@property (nonatomic, retain) NSArray* users;
+
+@end
+
+@implementation RKExampleGroupWithUserArray
+
+@synthesize name = _name;
+@synthesize users = _users;
+
++ (RKExampleGroupWithUserArray*)group {
+    return [[self new] autorelease];
+}
+
+// isEqual: is consulted by the mapping operation
+// to determine if assocation values should be set
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[RKExampleGroupWithUserArray class]]) {
+        return [[(RKExampleGroupWithUserArray*)object name] isEqualToString:self.name];
+    } else {
+        return NO;
+    }
+}
+
+@end
+
+@interface RKExampleGroupWithUserSet : NSObject {
+    NSString * _name;
+    NSSet* _users;
+}
+
+@property (nonatomic, retain) NSString* name;
+@property (nonatomic, retain) NSSet* users;
+
+@end
+
+@implementation RKExampleGroupWithUserSet
+
+@synthesize name = _name;
+@synthesize users = _users;
+
++ (RKExampleGroupWithUserSet*)group {
+    return [[self new] autorelease];
+}
+
+// isEqual: is consulted by the mapping operation
+// to determine if assocation values should be set
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[RKExampleGroupWithUserSet class]]) {
+        return [[(RKExampleGroupWithUserSet*)object name] isEqualToString:self.name];
+    } else {
+        return NO;
+    }
 }
 
 @end
@@ -453,6 +527,123 @@
     [expectThat(user.address) shouldNot:be(nil)];
     [expectThat(user.address.city) should:be(@"New York")];
 }
+
+- (void)itShouldMapANestedArrayOfObjectsWithDynamicKeysAndArrayRelationships {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleGroupWithUserArray class]];
+    [mapping mapAttributes:@"name", nil];
+
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    userMapping.forceCollectionMapping = YES;
+    [userMapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [mapping mapKeyPath:@"users" toRelationship:@"users" withMapping:userMapping];
+    
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    [addressMapping mapAttributes:
+        @"city", @"city",
+        @"state", @"state",
+        @"country", @"country",
+        nil
+     ];
+    [userMapping mapKeyPath:@"(name).address" toRelationship:@"address" withMapping:addressMapping];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@"groups"];
+    
+    id userInfo = RKSpecParseFixture(@"DynamicKeysWithNestedRelationship.json");
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    RKObjectMappingResult* result = [mapper performMapping];
+    
+    NSArray* groups = [result asCollection];
+    [expectThat([groups isKindOfClass:[NSArray class]]) should:be(YES)];
+    [expectThat([groups count]) should:be(2)];
+    
+    RKExampleGroupWithUserArray* group = [groups objectAtIndex:0];
+    [expectThat([group isKindOfClass:[RKExampleGroupWithUserArray class]]) should:be(YES)];
+    [expectThat(group.name) should:be(@"restkit")];
+    NSArray * users = group.users;
+    [expectThat([users count]) should:be(2)];
+    RKExampleUser* user = [users objectAtIndex:0];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"blake")];
+    user = [users objectAtIndex:1];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"rachit")];
+    [expectThat(user.address) shouldNot:be(nil)];
+    [expectThat(user.address.city) should:be(@"New York")];
+    
+    group = [groups objectAtIndex:1];
+    [expectThat([group isKindOfClass:[RKExampleGroupWithUserArray class]]) should:be(YES)];
+    [expectThat(group.name) should:be(@"others")];
+    users = group.users;
+    [expectThat([users count]) should:be(1)];
+    user = [users objectAtIndex:0];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"bjorn")];
+    [expectThat(user.address) shouldNot:be(nil)];
+    [expectThat(user.address.city) should:be(@"Gothenburg")];
+    [expectThat(user.address.country) should:be(@"Sweden")];
+}
+
+- (void)itShouldMapANestedArrayOfObjectsWithDynamicKeysAndSetRelationships {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleGroupWithUserSet class]];
+    [mapping mapAttributes:@"name", nil];
+    
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    userMapping.forceCollectionMapping = YES;
+    [userMapping mapKeyOfNestedDictionaryToAttribute:@"name"];
+    [mapping mapKeyPath:@"users" toRelationship:@"users" withMapping:userMapping];
+    
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    [addressMapping mapAttributes:
+        @"city", @"city",
+        @"state", @"state",
+        @"country", @"country",
+        nil
+    ];
+    [userMapping mapKeyPath:@"(name).address" toRelationship:@"address" withMapping:addressMapping];
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@"groups"];
+    
+    id userInfo = RKSpecParseFixture(@"DynamicKeysWithNestedRelationship.json");
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    RKObjectMappingResult* result = [mapper performMapping];
+    
+    NSArray* groups = [result asCollection];
+    [expectThat([groups isKindOfClass:[NSArray class]]) should:be(YES)];
+    [expectThat([groups count]) should:be(2)];
+    
+    RKExampleGroupWithUserSet* group = [groups objectAtIndex:0];
+    [expectThat([group isKindOfClass:[RKExampleGroupWithUserSet class]]) should:be(YES)];
+    [expectThat(group.name) should:be(@"restkit")];
+    
+    
+    NSSortDescriptor * sortByName =[[[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES] autorelease];
+    NSArray * descriptors = [NSArray arrayWithObject:sortByName];;
+    NSArray * users = [group.users sortedArrayUsingDescriptors:descriptors];
+    [expectThat([users count]) should:be(2)];
+    RKExampleUser* user = [users objectAtIndex:0];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"blake")];
+    user = [users objectAtIndex:1];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"rachit")];
+    [expectThat(user.address) shouldNot:be(nil)];
+    [expectThat(user.address.city) should:be(@"New York")];
+    
+    group = [groups objectAtIndex:1];
+    [expectThat([group isKindOfClass:[RKExampleGroupWithUserSet class]]) should:be(YES)];
+    [expectThat(group.name) should:be(@"others")];
+    users = [group.users sortedArrayUsingDescriptors:descriptors];
+    [expectThat([users count]) should:be(1)];
+    user = [users objectAtIndex:0];
+    [expectThat([user isKindOfClass:[RKExampleUser class]]) should:be(YES)];
+    [expectThat(user.name) should:be(@"bjorn")];
+    [expectThat(user.address) shouldNot:be(nil)];
+    [expectThat(user.address.city) should:be(@"Gothenburg")];
+    [expectThat(user.address.country) should:be(@"Sweden")];
+}
+
 
 - (void)itShouldBeAbleToMapFromAUserObjectToADictionary {    
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
@@ -1328,6 +1519,32 @@
     [mappingProvider addObjectMapping:secondMapping];
     [mappingProvider setMapping:thirdMapping forKeyPath:@"third"];
     assertThat([mappingProvider objectMappingsForClass:[RKExampleUser class]], is(equalTo([NSArray arrayWithObjects:firstMapping, secondMapping, thirdMapping, nil])));
+}
+
+- (void)itShouldReturnAllMappingsForAClassAndNotExplodeWithRegisteredDynamicMappings {
+    RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
+    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
+    [boyMapping mapAttributes:@"name", nil];
+    RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
+    [girlMapping mapAttributes:@"name", nil];
+    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    [dynamicMapping setObjectMapping:boyMapping whenValueOfKeyPath:@"type" isEqualTo:@"Boy"];
+    [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
+    [provider setMapping:dynamicMapping forKeyPath:@"dynamic"];
+    RKObjectMapping* firstMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    RKObjectMapping* secondMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    [provider addObjectMapping:firstMapping];
+    [provider setMapping:secondMapping forKeyPath:@"second"];
+    NSException* exception = nil;
+    NSArray *actualMappings = nil;
+    @try {
+        actualMappings = [provider objectMappingsForClass:[RKExampleUser class]];
+    }
+    @catch (NSException * e) {
+        exception = e;
+    }
+    [expectThat(exception) should:be(nil)];
+    assertThat(actualMappings, is(equalTo([NSArray arrayWithObjects:firstMapping, secondMapping, nil])));
 }
 
 #pragma mark - RKObjectDynamicMapping

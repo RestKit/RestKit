@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright 2011 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <Foundation/Foundation.h>
@@ -252,7 +264,39 @@ relationship. Relationships are processed using an object mapping as well.
  @param attributeKey A key-value coding key corresponding to a value in the mappable source object and an attribute 
  on the destination class that have the same name.
  */
-- (void)mapAttributes:(NSString*)attributeKey, ... NS_REQUIRES_NIL_TERMINATION;
+- (void)mapAttributes:(NSString *)attributeKey, ... NS_REQUIRES_NIL_TERMINATION;
+
+/**
+ Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
+ destination attribute property have the same name.
+ 
+ For example, given the transformation from a JSON dictionary:
+ 
+    {"name": "My Name", "age": 28}
+ 
+ To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
+ 
+    [mapping mapAttributesFromSet:[NSSet setWithObjects:@"name", @"age", nil]];
+ 
+ @param set A set of string attribute keyPaths to deifne mappings for
+ */
+- (void)mapAttributesFromSet:(NSSet *)set;
+
+/**
+ Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
+ destination attribute property have the same name.
+ 
+ For example, given the transformation from a JSON dictionary:
+ 
+    {"name": "My Name", "age": 28}
+ 
+ To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
+ 
+    [mapping mapAttributesFromSet:[NSArray arrayWithObjects:@"name", @"age", nil]];
+ 
+ @param array An array of string attribute keyPaths to deifne mappings for
+ */
+- (void)mapAttributesFromArray:(NSArray *)set;
 
 /**
  Defines a relationship mapping for a key where the source keyPath and the destination relationship property

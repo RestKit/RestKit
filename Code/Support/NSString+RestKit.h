@@ -3,7 +3,19 @@
 //  RestKit
 //
 //  Created by Blake Watters on 6/15/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright 2011 Two Toasters
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <Foundation/Foundation.h>
@@ -50,7 +62,7 @@
  This method originally appeared as queryContentsUsingEncoding: in the Three20 project:
  https://github.com/facebook/three20/blob/master/src/Three20Core/Sources/NSStringAdditions.m
  
- @param receiver A string in the form of @"/object/?sortBy=name", or @"/object/?sortBy=name&color=red"
+ @param receiver A string in the form of @"/object/?sortBy=name", or @"/object/?sortBy=name&amp;color=red"
  @param encoding The encoding for to use while parsing the query string.
  @return A new dictionary of query parameters, with keys like 'sortBy' and values like 'name'.
  */
@@ -64,7 +76,7 @@
  This method originally appeared as queryContentsUsingEncoding: in the Three20 project:
  https://github.com/facebook/three20/blob/master/src/Three20Core/Sources/NSStringAdditions.m
  
- @param receiver A string in the form of @"/object?sortBy=name", or @"/object?sortBy=name&color=red"
+ @param receiver A string in the form of @"/object?sortBy=name", or @"/object?sortBy=name&amp;color=red"
  @param shouldUseArrays If NO, it yields the same results as queryParametersUsingEncoding:, otherwise it creates value arrays instead of value strings.
  @param encoding The encoding for to use while parsing the query string.
  @return A new dictionary of query parameters, with keys like 'sortBy' and value arrays (if requested) like ['name'].

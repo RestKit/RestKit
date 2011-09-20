@@ -20,6 +20,7 @@
 #import "SOCKit.h"
 
 typedef void (^SimpleBlock)(void);
+NSString *sockitBetterURLEncodeString(NSString *unencodedString);
 
 @interface SOCTestObject : NSObject
 
@@ -116,12 +117,66 @@ typedef void (^SimpleBlock)(void);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)testCharacterEscapes {
+  NSDictionary* obj = [NSDictionary dictionaryWithObjectsAndKeys:
+                       [NSNumber numberWithInt:1337], @"leet",
+                       [NSNumber numberWithInt:5000], @"five",
+                       nil];
+
+  STAssertTrue([SOCStringFromStringWithObject(@".", obj) isEqualToString:@"."], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@"\\.", obj) isEqualToString:@"."], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@":", obj) isEqualToString:@":"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@"\\:", obj) isEqualToString:@":"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@"@", obj) isEqualToString:@"@"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@"\\@", obj) isEqualToString:@"@"], @"Should be the same string.");
+
+  STAssertTrue([SOCStringFromStringWithObject(@":leet\\.value", obj) isEqualToString:@"1337.value"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@":leet\\:value", obj) isEqualToString:@"1337:value"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@":leet\\@value", obj) isEqualToString:@"1337@value"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@":leet\\:\\:value", obj) isEqualToString:@"1337::value"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@":leet\\:\\:\\.\\@value", obj) isEqualToString:@"1337::.@value"], @"Should be the same string.");
+  STAssertTrue([SOCStringFromStringWithObject(@"\\\\:leet", obj) isEqualToString:@"\\1337"], @"Should be the same string.");
+
+  SOCPattern* pattern = [SOCPattern patternWithString:@"soc://\\:ident"];
+  STAssertTrue([pattern stringMatches:@"soc://:ident"], @"String should conform.");
+  pattern = [SOCPattern patternWithString:@"soc://\\\\:ident"];
+  STAssertTrue([pattern stringMatches:@"soc://\\3"], @"String should conform.");
+  pattern = [SOCPattern patternWithString:@"soc://:ident\\.json"];
+  STAssertTrue([pattern stringMatches:@"soc://3.json"], @"String should conform.");
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)testCollectionOperators {
   NSDictionary* obj = [NSDictionary dictionaryWithObjectsAndKeys:
                        [NSNumber numberWithInt:1337], @"leet",
                        [NSNumber numberWithInt:5000], @"five",
                        nil];
   STAssertTrue([SOCStringFromStringWithObject(@":@count", obj) isEqualToString:@"2"], @"Should be the same string.");
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+- (void)testBlockTransformations {
+    NSDictionary *obj = [NSDictionary dictionaryWithObjectsAndKeys:
+                            @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
+    SOCPattern *pattern = [SOCPattern patternWithString:@"/people/:group/:name?password=:password"];
+    NSString *expectedString = @"/people/15/Joe Bob Briggs?password=JUICE|BOX&121";
+    NSString *actualString = [pattern stringFromObject:obj withBlock:nil];
+    STAssertTrue([actualString isEqualToString:expectedString], @"Should be the same string (testing nil block parameter).");
+    STAssertTrue([actualString isEqualToString:[pattern stringFromObject:obj]], @"Should be the same string (testing nil block parameter).");
+    actualString = [pattern stringFromObject:obj withBlock:^NSString *(NSString* interpolatedValue) {
+        return @"Test Message";
+    }];
+    expectedString = @"/people/Test Message/Test Message?password=Test Message";
+    STAssertTrue([actualString isEqualToString:expectedString], @"Should be the same string (testing nil block parameter).");
+    STAssertFalse([actualString isEqualToString:[pattern stringFromObject:obj]], @"Should not be the same string, one was transformed with a block.");
+    actualString = [pattern stringFromObject:obj withBlock:^NSString *(NSString* interpolatedValue) {
+        return sockitBetterURLEncodeString(interpolatedValue);
+    }];
+    expectedString = @"/people/15/Joe%20Bob%20Briggs?password=JUICE%7CBOX%26121";
+    STAssertTrue([actualString isEqualToString:expectedString], @"Should be the same string (testing nil block parameter).");
+    STAssertFalse([actualString isEqualToString:[pattern stringFromObject:obj]], @"Should not be the same string, one was transformed with a block.");
 }
 
 
@@ -184,7 +239,7 @@ typedef void (^SimpleBlock)(void);
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)testExtractParameterKeyValuesFromSourceString {
   SOCPattern* pattern = [SOCPattern patternWithString:@"soc://:ident/:flv/:dv/:llv/:string"];
-  NSDictionary* kvs = [pattern extractParameterKeyValuesFromSourceString:@"soc://3/3.5/6.14/13413143124321/dilly"];
+  NSDictionary* kvs = [pattern parameterDictionaryFromSourceString:@"soc://3/3.5/6.14/13413143124321/dilly"];
   STAssertEquals([[kvs objectForKey:@"ident"] intValue], 3, @"Values should be equal.");
   STAssertEquals([[kvs objectForKey:@"flv"] floatValue], 3.5f, @"Values should be equal.");
   STAssertEquals([[kvs objectForKey:@"dv"] doubleValue], 6.14, @"Values should be equal.");
@@ -193,3 +248,11 @@ typedef void (^SimpleBlock)(void);
 }
 
 @end
+
+// NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
+NSString *sockitBetterURLEncodeString(NSString *unencodedString) {
+    NSString * encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes( NULL, (CFStringRef)unencodedString, NULL,
+                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]", NSASCIIStringEncoding );
+    return [encodedString autorelease];
+}
+

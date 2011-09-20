@@ -37,6 +37,9 @@
 		660B68A014088B4A00EAAFDC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		660B68A314088B4A00EAAFDC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
 		661278FA140BD69B00164779 /* README.mdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.mdown; sourceTree = "<group>"; };
+		6612F706141FEAD500B76B8B /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		6612F707141FEAD500B76B8B /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		6612F708141FEAD500B76B8B /* NOTICE */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
 		667E34CE140BD732002FD733 /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = SOURCE_ROOT; };
 		667E34CF140BD732002FD733 /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = SOURCE_ROOT; };
 		667E34D8140BD75B002FD733 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = tests/en.lproj/InfoPlist.strings; sourceTree = SOURCE_ROOT; };
@@ -72,6 +75,9 @@
 			isa = PBXGroup;
 			children = (
 				661278FA140BD69B00164779 /* README.mdown */,
+				6612F706141FEAD500B76B8B /* AUTHORS */,
+				6612F707141FEAD500B76B8B /* LICENSE */,
+				6612F708141FEAD500B76B8B /* NOTICE */,
 				667E34CE140BD732002FD733 /* SOCKit.h */,
 				667E34CF140BD732002FD733 /* SOCKit.m */,
 				667E34DA140BD776002FD733 /* SOCKitTests.m */,
