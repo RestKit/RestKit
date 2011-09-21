@@ -36,8 +36,9 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
-@implementation RKRequest
 @class TDOAuth;
+
+@implementation RKRequest
 
 @synthesize URL = _URL;
 @synthesize URLRequest = _URLRequest;
@@ -663,7 +664,7 @@
         compositeCacheKey = [NSString stringWithFormat:@"%@-%d", self.URL, _method];
     }
     
-    NSAssert(compositeCacheKey, @"Expected a cacheKey to be generated for request %@, but got nil", compositeCacheKey);
+    NSAssert1(compositeCacheKey, @"Expected a cacheKey to be generated for request %@, but got nil", compositeCacheKey);
     return [compositeCacheKey MD5];
 }
 

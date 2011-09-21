@@ -430,7 +430,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
  * the completed request from the queue and continue processing
  */
 - (void)requestFinishedWithNotification:(NSNotification*)notification {
-    NSAssert([notification.object isKindOfClass:[RKRequest class]], @"Notification expected to contain an RKRequest, got a %@", NSStringFromClass([notification.object class]));
+    NSAssert1([notification.object isKindOfClass:[RKRequest class]], @"Notification expected to contain an RKRequest, got a %@", NSStringFromClass([notification.object class]));
     
     RKRequest* request = (RKRequest*)notification.object;
     NSDictionary* userInfo = [notification userInfo];

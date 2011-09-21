@@ -1624,7 +1624,7 @@ static int jk_parse_string(JKParseState *parseState) {
           break;
 
         case JSONStringStateEscapedNeedEscapeForSurrogate:
-          if((currentChar == '\\')) { stringState = JSONStringStateEscapedNeedEscapedUForSurrogate; }
+          if(currentChar == '\\') { stringState = JSONStringStateEscapedNeedEscapedUForSurrogate; }
           else { 
             if((parseState->parseOptionFlags & JKParseOptionLooseUnicode) == 0) { jk_error(parseState, @"Required a second \\u Unicode escape sequence following a surrogate \\u Unicode escape sequence."); stringState = JSONStringStateError; goto finishedParsing; }
             else { stringState = JSONStringStateParsing; atStringCharacter--;    if(jk_string_add_unicodeCodePoint(parseState, UNI_REPLACEMENT_CHAR, &tokenBufferIdx, &stringHash)) { jk_error(parseState, @"Internal error: Unable to add UTF8 sequence to internal string buffer. %@ line #%ld", [NSString stringWithUTF8String:__FILE__], (long)__LINE__); stringState = JSONStringStateError; goto finishedParsing; } }
@@ -1945,7 +1945,7 @@ static void *jk_parse_dictionary(JKParseState *parseState) {
           else {
             parseState->objectStack.keys[objectStackIndex] = key;
             if(JK_EXPECT_T(parseState->token.value.cacheItem != NULL)) {
-              if((parseState->token.value.cacheItem->cfHash == 0UL)) { parseState->token.value.cacheItem->cfHash = CFHash(key); }
+              if(parseState->token.value.cacheItem->cfHash == 0UL) { parseState->token.value.cacheItem->cfHash = CFHash(key); }
               parseState->objectStack.cfHashes[objectStackIndex] = parseState->token.value.cacheItem->cfHash;
             } else {
               parseState->objectStack.cfHashes[objectStackIndex] = CFHash(key);
