@@ -116,7 +116,7 @@
 		[user signUpWithDelegate:self];
 	} else {
 		// Login
-		DBUser* user = [DBUser object];
+		DBUser* user = [DBUser currentUser];
 		[user loginWithUsername:_usernameField.text andPassword:_passwordField.text delegate:self];
 	}
 }
