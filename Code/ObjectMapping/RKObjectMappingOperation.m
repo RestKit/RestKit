@@ -121,7 +121,10 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
             return [NSDate dateWithTimeIntervalSince1970:[(NSNumber*)value intValue]];
         } else if ([sourceType isSubclassOfClass:NSClassFromString(@"__NSCFBoolean")] && [destinationType isSubclassOfClass:[NSString class]]) {
             return ([value boolValue] ? @"true" : @"false");
-        }
+        } else if ([destinationType isSubclassOfClass:[NSString class]]) {
+			// Number -> String
+			return [value stringValue];
+		}
     } else if ([destinationType isSubclassOfClass:[NSString class]] && [value respondsToSelector:@selector(stringValue)]) {
         return [value stringValue];
     }
