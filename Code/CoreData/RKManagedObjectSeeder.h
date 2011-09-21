@@ -71,6 +71,11 @@ extern NSString* const RKDefaultSeedDatabaseFileName;
 - (void)seedObjectsFromFile:(NSString*)fileName withObjectMapping:(RKObjectMapping*)nilOrObjectMapping;
 
 /**
+ * Seed the database with objects from the specified file, from the specified bundle, using the supplied object mapping.
+ */
+- (void)seedObjectsFromFile:(NSString *)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping bundle:(NSBundle *)nilOrBundle;
+
+/**
  * Completes a seeding session by persisting the store, outputing an informational message
  * and exiting the process
  */
