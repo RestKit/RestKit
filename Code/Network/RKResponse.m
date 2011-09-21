@@ -193,11 +193,11 @@ extern NSString* cacheURLKey;
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {	
     RKLogDebug(@"NSHTTPURLResponse Status Code: %d", [response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
-    RKLogTrace(@"Read response body: %@", [self bodyAsString]);
 	_httpURLResponse = [response retain];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+	RKLogTrace(@"Read response body: %@", [self bodyAsString]);
 	[_request didFinishLoad:self];
 }
 
