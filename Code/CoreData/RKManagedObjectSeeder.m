@@ -107,8 +107,18 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 }
 
 - (void)seedObjectsFromFile:(NSString*)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping {
-    NSError* error = nil;
-	NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
+    [self seedObjectsFromFile:fileName withObjectMapping:nilOrObjectMapping bundle:nil];
+}
+
+- (void)seedObjectsFromFile:(NSString *)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping bundle:(NSBundle *)nilOrBundle
+{
+	NSError* error = nil;
+    
+	if (nilOrBundle == nil) {
+	    nilOrBundle = [NSBundle mainBundle];
+	}
+
+	NSString* filePath = [nilOrBundle pathForResource:fileName ofType:nil];
 	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
     
 	if (payload) {
