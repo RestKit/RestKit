@@ -128,6 +128,25 @@
     assertThatBool(success, is(equalToBool(YES)));
 }
 
+- (void)itShouldMapNullToAHasManyRelationship {
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
+    RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    [catMapping mapAttributes:@"name", nil];
+    
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
+    [humanMapping hasMany:@"cats" withMapping:catMapping];
+    
+    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"cats", [NSNull null], nil];
+    RKHuman* human = [RKHuman object];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(human.cats, is(empty()));
+}
+
 - (void)itShouldLoadNestedHasManyRelationshipWithoutABackingClass {
     RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* cloudMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCloud"];
