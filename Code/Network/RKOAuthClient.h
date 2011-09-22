@@ -38,7 +38,26 @@ typedef enum RKOAuthClientErrors {
 @protocol RKOAuthClientDelegate;
 
 /**
- An OAuth client implementation used for OAuth 2 authorization code flow.
+ * An OAuth client implementation used for OAuth 2 abstract flow. Obtains an access_token 
+ * from a valid authorization_code issued from the authorization server. 
+ * RKOAuthClientDelegate defines the client's delegate methods needed to handle the lifecycle of this flow.
+ * 
+ * Basic Definitions
+ * ------------------------
+ * 
+ *  In the context of OAuth2 there are two basic concepts:
+ * 
+ *  - Client
+ *  - Resource
+ *  
+ *  A Client  basically is your iOS application which will consume _resources_ from the Resource Server, using an access_token issued by the _Authorization Server_. 
+ * 
+ *  The Client needs to be registered in the Authorization Server, which will create a _unique_ clientId and clientSecret per application. Normally the client's developer do this process using an administrative interface provided by the API.
+ * 
+ *  In the abstract flow, the user of your iOS application obtains an authorization_code from the Authorization Server in order to give access to his information to this application. Them using the RKOAuthClient you request an access_token identifying your iOS application (defined by the clientId and clientSecret) and the user (defined by the authorization_code). The callbackURL is a parameter which you set in the application register process and can be a generic value (ie http://restkit.org).
+ *  
+ *
+ * @warning This client is based in the draft v21 of the OAuth2 protocol.
  */
 @interface RKOAuthClient : NSObject <RKRequestDelegate> {
 	NSString *_clientID;
@@ -50,15 +69,17 @@ typedef enum RKOAuthClientErrors {
     id<RKOAuthClientDelegate> _delegate;
 }
 
-// General properties of the client
+// An authorization code issued by the authorization server
 @property(nonatomic,retain) NSString *authorizationCode;
 
-// OAuth Client ID and Secret
+// OAuth2 Client ID and Secret
 @property(nonatomic,retain) NSString *clientID;
 @property(nonatomic,retain) NSString *clientSecret;
 
-// OAuth EndPoints
+// OAuth2 Authorization EndPoint
 @property(nonatomic,retain) NSString *authorizationURL;
+
+// OAuth2 Client CallbackURL
 @property(nonatomic,retain) NSString *callbackURL;
 
 /**
@@ -74,6 +95,11 @@ typedef enum RKOAuthClientErrors {
               delegate:(id<RKOAuthClientDelegate>)delegate;
 
 - (void)validateAuthorizationCode;
+
+/**
+ * Returns a RKOAuthClient configured with the cliendId and clientSecret.
+ *
+ */
 
 + (RKOAuthClient *)clientWithClientID:(NSString *)clientId 
                                secret:(NSString *)secret 
@@ -100,11 +126,7 @@ typedef enum RKOAuthClientErrors {
 @optional
 
 /**
- * Other OAuth2 protocol exceptions for the authorization code flow
- */
-
-/**
- Sent to the delegate when the OAuth client encounters any error
+ * Other OAuth2 protocol exceptions for the authorization code flow, which are sent to the delegate when RKOAuthClient encounters any error in the abstract flow lifecycle.
  */
 - (void)OAuthClient:(RKOAuthClient *)client didFailWithError:(NSError *)error;
 
