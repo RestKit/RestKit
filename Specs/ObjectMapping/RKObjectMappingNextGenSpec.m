@@ -1855,4 +1855,28 @@
     assertThat(dateFormatter.timeZone, is(equalTo(UTCTimeZone)));
 }
 
+#pragma mark - Object Serialization
+// TODO: Move to RKObjectSerializerSpec
+
+- (void)itShouldSerializeRelatioshipsToJSON {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    [userMapping mapAttributes:@"name", nil];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    [addressMapping mapAttributes:@"city", @"state", nil];
+    [userMapping hasOne:@"address" withMapping:addressMapping];
+    
+    RKExampleUser *user = [RKExampleUser new];
+    user.name = @"Blake Watters";
+    RKSpecAddress *address = [RKSpecAddress new];
+    address.state = @"North Carolina";
+    user.address = address;
+    
+    RKObjectMapping *serializationMapping = [userMapping inverseMapping];
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:user mapping:serializationMapping];
+    NSError* error = nil;
+    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    assertThat(error, is(nilValue()));
+    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"state\":\"North Carolina\"}}")));
+}
+
 @end
