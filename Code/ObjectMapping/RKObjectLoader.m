@@ -38,15 +38,6 @@
 - (void)updateInternalCacheDate;
 @end
 
-#if NS_BLOCKS_AVAILABLE
-@interface RKObjectLoader()
-/**
- * We define another property since method signature is different from RKRequest's completion
- */
-@property (copy, nonatomic) RKObjectLoaderCompletion objectLoaderCompletion;
-@end
-#endif
-
 @implementation RKObjectLoader
 
 @synthesize objectManager = _objectManager, response = _response;

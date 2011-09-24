@@ -188,6 +188,10 @@ typedef void (^RKObjectLoaderCompletion)(RKObjectLoader* loader, id result, NSEr
  */
 @property (nonatomic, retain) NSObject* targetObject;
 
+#if NS_BLOCKS_AVAILABLE
+@property (copy, nonatomic) RKObjectLoaderCompletion objectLoaderCompletion;
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
