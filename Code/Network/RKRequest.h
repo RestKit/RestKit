@@ -197,6 +197,11 @@ typedef void (^RKRequestCompletionBlock)(RKResponse *response, NSError *error);
 @property(nonatomic, readonly) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 #endif
 
+#if NS_BLOCKS_AVAILABLE
+@property (nonatomic, copy) RKRequestCompletionBlock completion;
+#endif
+
+
 /////////////////////////////////////////////////////////////////////////
 /// @name Authentication
 /////////////////////////////////////////////////////////////////////////

@@ -36,12 +36,6 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
-#if NS_BLOCKS_AVAILABLE
-@interface RKRequest()
-@property (nonatomic, copy) RKRequestCompletionBlock completion;
-@end
-#endif
-
 @implementation RKRequest
 @class TDOAuth;
 
