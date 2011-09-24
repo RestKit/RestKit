@@ -36,6 +36,12 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
+#if NS_BLOCKS_AVAILABLE
+@interface RKRequest()
+@property (nonatomic, copy) RKRequestCompletionBlock completion;
+@end
+#endif
+
 @implementation RKRequest
 @class TDOAuth;
 
@@ -64,9 +70,19 @@
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
 #endif
 
+#if NS_BLOCKS_AVAILABLE
+@synthesize completion=_completion;
+# endif
+
 + (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
 	return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
 }
+
+#if NS_BLOCKS_AVAILABLE
++ (RKRequest*)requestWithURL:(NSURL*)URL completion:(RKRequestCompletionBlock)completion {
+	return [[[RKRequest alloc] initWithURL:URL completion:completion] autorelease];
+}
+#endif
 
 - (id)initWithURL:(NSURL*)URL {
     self = [self init];
@@ -87,6 +103,16 @@
 	}
 	return self;
 }
+
+#if NS_BLOCKS_AVAILABLE
+- (id)initWithURL:(NSURL*)URL completion:(RKRequestCompletionBlock)completion {
+    self = [self initWithURL:URL];
+	if (self) {
+		self.completion = completion;
+	}
+	return self;
+}
+#endif
 
 - (id)init {
     self = [super init];
@@ -116,6 +142,9 @@
     _connection = nil;
     _isLoading = NO;
     _isLoaded = NO;
+#if NS_BLOCKS_AVAILABLE
+    self.completion = nil;
+#endif
 }
 
 - (void)cleanupBackgroundTask {
@@ -169,6 +198,10 @@
     [_OAuth2RefreshToken release];
     _OAuth2RefreshToken = nil;
     
+#if NS_BLOCKS_AVAILABLE
+    self.completion = nil;
+#endif
+
     // Cleanup a background task if there is any
     [self cleanupBackgroundTask];
      
@@ -294,6 +327,10 @@
 	[_connection release];
 	_connection = nil;
 	_isLoading = NO;
+#if NS_BLOCKS_AVAILABLE
+    self.completion = nil;
+#endif
+    
     
     if (informDelegate && [_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
         [_delegate requestDidCancelLoad:self];
@@ -514,6 +551,12 @@
 			[_delegate request:self didFailLoadWithError:error];
 		}
         
+#if NS_BLOCKS_AVAILABLE
+        if (self.completion) {
+            self.completion(nil, error);
+        }
+#endif
+
         NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification 
                                                             object:self 
@@ -548,6 +591,12 @@
 	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
 		[_delegate request:self didLoadResponse:finalResponse];
 	}
+
+#if NS_BLOCKS_AVAILABLE
+    if (self.completion) {
+        self.completion(finalResponse, nil);
+    }
+#endif
     
     if ([response isServiceUnavailable]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
