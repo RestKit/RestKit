@@ -491,4 +491,66 @@
     assertThatBool([responseLoader.objects isKindOfClass:[NSArray class]], is(equalToBool(YES)));
     assertThat(responseLoader.objects, is(empty()));
 }
+
+#pragma mark - Completion block
+
+
+#if NS_BLOCKS_AVAILABLE
+- (void)itShouldCallCompletionWithTheTargetObjectWhenTheStatusCodeIs200AndTheResponseBodyIsEmpty {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    
+    __block id responseResult = nil;
+    RKObjectLoader* objectLoader = [RKObjectLoader loaderWithResourcePath:@"/humans/1234" objectManager:objectManager completion:^(RKObjectLoader * loader, id result, NSError * error) {
+        responseResult = [result copy];
+        assertThat(error, is(nilValue()));
+    }];
+    objectLoader.method = RKRequestMethodDELETE;
+    objectLoader.objectMapping = userMapping;
+    objectLoader.targetObject = user;
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    objectLoader.delegate = responseLoader;
+    
+    [objectLoader send];
+    [responseLoader waitForResponse];
+    assertThat(responseResult, hasItem(user));
+}
+
+- (void)itShouldCallCompletionWhenErrorOccurs {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    
+    __block NSError * responseError = nil;
+    RKObjectLoader* objectLoader = [RKObjectLoader loaderWithResourcePath:@"/errors.json" objectManager:objectManager completion:^(RKObjectLoader * loader, id result, NSError * error) {
+        responseError = [error retain];
+        assertThat(result, is(nilValue()));
+    }];
+    objectLoader.method = RKRequestMethodGET;
+    objectLoader.delegate = responseLoader;
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+
+    [expectThat(responseError) shouldNot:be(nil)];
+    [expectThat([responseError localizedDescription]) should:be(@"error1, error2")];
+    
+    NSArray* objects = [[responseError userInfo] objectForKey:RKObjectMapperErrorObjectsKey];
+    RKErrorMessage* error1 = [objects objectAtIndex:0];
+    RKErrorMessage* error2 = [objects lastObject];
+    
+    [expectThat(error1.errorMessage) should:be(@"error1")];
+    [expectThat(error2.errorMessage) should:be(@"error2")];
+    [responseError release];
+}
+#endif
+
 @end
