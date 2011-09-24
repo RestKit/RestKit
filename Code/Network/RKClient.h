@@ -580,4 +580,15 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 - (RKRequest *)delete:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
+#if NS_BLOCKS_AVAILABLE
+/**
+ Block helpers for the asynchronous requests tasks above
+ */
+- (RKRequest *)get:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)get:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable> *)params completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)delete:(NSString*)resourcePath completion:(RKRequestCompletionBlock)completion;
+#endif
+
 @end
