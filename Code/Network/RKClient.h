@@ -510,6 +510,13 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 - (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
+#if NS_BLOCKS_AVAILABLE
+/**
+ Block helper for -[RKClient requestWithResourcePath:delegate]
+ */
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion;
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

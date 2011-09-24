@@ -298,6 +298,17 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 	return request;
 }
 
+#if NS_BLOCKS_AVAILABLE
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion {
+	RKRequest *request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] 
+                                             completion:completion];
+	[self setupRequest:request];
+	[request autorelease];
+    
+	return request;
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Asynchronous Requests
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
