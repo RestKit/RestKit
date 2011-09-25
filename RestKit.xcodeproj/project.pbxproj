@@ -118,6 +118,8 @@
 		25432041125618F000A315CF /* RKParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 25432040125618F000A315CF /* RKParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25432064125632A300A315CF /* RKJSONParserYAJL.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08B71255212300976E89 /* RKJSONParserYAJL.m */; };
 		25432065125632AA00A315CF /* RKJSONParserSBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08B61255212300976E89 /* RKJSONParserSBJSON.m */; };
+		25552DDF14341324007E10F1 /* FileMD5Hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 25552DDA14341324007E10F1 /* FileMD5Hash.c */; };
+		25552DE014341324007E10F1 /* FileMD5Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 25552DDB14341324007E10F1 /* FileMD5Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2559209713BD1B8700E9C29C /* RKParamsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2559208213BD1A4000E9C29C /* RKParamsSpec.m */; };
 		255DE05E10FFA05800A85891 /* RKHuman.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05D10FFA05800A85891 /* RKHuman.m */; };
 		255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0E110FFABA500A85891 /* CoreData.framework */; };
@@ -539,6 +541,12 @@
 		253E04C413798D72005D2E15 /* RKErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKErrorMessage.m; sourceTree = "<group>"; };
 		25431EBA1255640800A315CF /* CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreData.h; sourceTree = "<group>"; };
 		25432040125618F000A315CF /* RKParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKParser.h; sourceTree = "<group>"; };
+		25552DDA14341324007E10F1 /* FileMD5Hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FileMD5Hash.c; sourceTree = "<group>"; };
+		25552DDB14341324007E10F1 /* FileMD5Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMD5Hash.h; sourceTree = "<group>"; };
+		25552DDC14341324007E10F1 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		25552DDD14341324007E10F1 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
+		25552DDE14341324007E10F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		25552DE114341751007E10F1 /* FileMD5Hash_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMD5Hash_Prefix.pch; sourceTree = "<group>"; };
 		2559208213BD1A4000E9C29C /* RKParamsSpec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKParamsSpec.m; sourceTree = "<group>"; };
 		255DE05C10FFA05800A85891 /* RKHuman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHuman.h; sourceTree = "<group>"; };
 		255DE05D10FFA05800A85891 /* RKHuman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHuman.m; sourceTree = "<group>"; };
@@ -1219,6 +1227,20 @@
 			path = Scripts;
 			sourceTree = "<group>";
 		};
+		25552DD914341324007E10F1 /* FileMD5Hash */ = {
+			isa = PBXGroup;
+			children = (
+				25552DE114341751007E10F1 /* FileMD5Hash_Prefix.pch */,
+				25552DDA14341324007E10F1 /* FileMD5Hash.c */,
+				25552DDB14341324007E10F1 /* FileMD5Hash.h */,
+				25552DDC14341324007E10F1 /* LICENSE */,
+				25552DDD14341324007E10F1 /* NOTICE */,
+				25552DDE14341324007E10F1 /* README.md */,
+			);
+			name = FileMD5Hash;
+			path = Vendor/FileMD5Hash;
+			sourceTree = "<group>";
+		};
 		255DE05B10FFA04200A85891 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -1252,6 +1274,7 @@
 		2590E6711252357200531FA8 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				25552DD914341324007E10F1 /* FileMD5Hash */,
 				25ACA5AF1429054D0037FE98 /* TDOAuth */,
 				258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */,
 				250D5BD913A0698100471F0E /* LibComponentLogging */,
@@ -1707,6 +1730,7 @@
 				37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */,
 				37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */,
 				3703ABAC14190D5700DB697A /* RKDotNetDateFormatter.h in Headers */,
+				25552DE014341324007E10F1 /* FileMD5Hash.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2230,6 +2254,7 @@
 				37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */,
 				37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */,
 				3703ABAD14190D5700DB697A /* RKDotNetDateFormatter.m in Sources */,
+				25552DDF14341324007E10F1 /* FileMD5Hash.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
