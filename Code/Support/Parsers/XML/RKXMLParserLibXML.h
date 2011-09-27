@@ -24,11 +24,14 @@
  This is a dead simple XML parser that uses libxml2 to parse an XML document
  into a dictionary. It is designed specifically for use with RestKit. It
  does not support any fanciness like Namespaces, DTDs, or other nonsense.
- It does not save attributes on tags, it only cares about nested content and text.
+ It handles text nodes, attributes, and nesting structures and builds key-value
+ coding compliant representations of the XML structure.
+ 
+ It currently does not support XML generation -- only parsing.
  */
 @interface RKXMLParserLibXML : NSObject <RKParser> {
 }
 
-- (NSDictionary*)parseXML:(NSString*)XML;
+- (NSDictionary *)parseXML:(NSString *)XML;
 
 @end
