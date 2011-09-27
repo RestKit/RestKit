@@ -305,7 +305,7 @@
     }
     
     // Allow any queued operations to complete
-    NSLog(@"The following operations are in the queue: %@", _operationQueue.operations);
+    RKLogDebug(@"The following operations are in the queue: %@", _operationQueue.operations);
     [_operationQueue waitUntilAllOperationsAreFinished];
     
     if ([self.delegate respondsToSelector:@selector(objectMapperDidFinishMapping:)]) {
