@@ -208,17 +208,14 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     NSAssert(depth < MAX_INVERSE_MAPPING_RECURSION_DEPTH, @"Exceeded max recursion level in inverseMapping. This is likely due to a loop in the serialization graph. To break this loop, specify one-way relationships by setting serialize to NO in mapKeyPath:toRelationship:withObjectMapping:serialize:");
     RKObjectMapping* inverseMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     for (RKObjectAttributeMapping* attributeMapping in self.attributeMappings) {
-        [inverseMapping mapKeyPath:attributeMapping.destinationKeyPath toAttribute:attributeMapping.sourceKeyPath];
+        [inverseMapping addAttributeMapping:[RKObjectAttributeMapping inverseMappingForMapping:attributeMapping]];
     }
     
     for (RKObjectRelationshipMapping* relationshipMapping in self.relationshipMappings) {
-        if (relationshipMapping.reversible) {
-            id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
-            if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
-                RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
-                continue;
-            }
-            [inverseMapping mapKeyPath:relationshipMapping.destinationKeyPath toRelationship:relationshipMapping.sourceKeyPath withMapping:[(RKObjectMapping*)mapping inverseMappingAtDepth:depth+1]];
+        RKObjectRelationshipMapping *inverseRelationshipMapping = [RKObjectRelationshipMapping inverseMappingForMapping:relationshipMapping depth:depth+1];
+        if (inverseRelationshipMapping)
+        {
+            [inverseMapping addRelationshipMapping:inverseRelationshipMapping];
         }
     }
     

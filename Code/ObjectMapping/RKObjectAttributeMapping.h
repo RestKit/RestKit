@@ -20,18 +20,25 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol RKObjectTransformer;
+
 // Defines the rules for mapping a particular element
 @interface RKObjectAttributeMapping : NSObject <NSCopying> {
     NSString* _sourceKeyPath;
     NSString* _destinationKeyPath;
+    id<RKObjectTransformer> _transformer;
 }
 
 @property (nonatomic, retain) NSString* sourceKeyPath;
 @property (nonatomic, retain) NSString* destinationKeyPath;
+@property (nonatomic, retain) id<RKObjectTransformer> transformer;
 
 /**
  Defines a mapping from one keyPath to another within an object mapping
  */
 + (RKObjectAttributeMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath;
++ (RKObjectAttributeMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath transformer:(id<RKObjectTransformer>)transformer;
+
++ (RKObjectAttributeMapping*)inverseMappingForMapping:(RKObjectAttributeMapping*)forwardMapping;
 
 @end

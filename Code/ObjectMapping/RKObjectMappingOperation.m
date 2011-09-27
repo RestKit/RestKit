@@ -122,9 +122,19 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return date;
 }
 
-- (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType {
+- (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType withTransformer:(id<RKObjectTransformer>)transformer {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];
+    
+    if (transformer)
+    {
+        if ([transformer canTransformToClass:destinationType])
+        {
+            return [transformer transformedValue:value ofClass:destinationType];
+        }
+        // Fall through
+        RKLogWarning(@"Transformer %@ refused to transform to class %@", transformer, NSStringFromClass(destinationType));
+    }
     
     if ([sourceType isSubclassOfClass:[NSString class]]) {
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
@@ -265,8 +275,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     
     // Inspect the property type to handle any value transformations
     Class type = [self.objectMapping classForProperty:attributeMapping.destinationKeyPath];
-    if (type && NO == [[value class] isSubclassOfClass:type]) {
-        value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
+    if (type && (attributeMapping.transformer || NO == [[value class] isSubclassOfClass:type])) {
+        value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type withTransformer:attributeMapping.transformer];
     }
     
     // Ensure that the value is different
@@ -427,8 +437,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             
             // Transform from NSSet <-> NSArray if necessary
             Class type = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
-            if (type && NO == [[destinationObject class] isSubclassOfClass:type]) {
-                destinationObject = [self transformValue:destinationObject atKeyPath:relationshipMapping.sourceKeyPath toType:type];
+            if (type && (relationshipMapping.transformer || NO == [[destinationObject class] isSubclassOfClass:type])) {
+                destinationObject = [self transformValue:destinationObject atKeyPath:relationshipMapping.sourceKeyPath toType:type withTransformer:relationshipMapping.transformer];
             }
 
             // If the relationship has changed, set it

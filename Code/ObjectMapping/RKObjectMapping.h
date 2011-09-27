@@ -20,6 +20,7 @@
 
 #import <Foundation/Foundation.h>
 #import "RKObjectMappingDefinition.h"
+#import "RKObjectTransformer.h"
 #import "RKObjectAttributeMapping.h"
 #import "RKObjectRelationshipMapping.h"
 
@@ -451,6 +452,13 @@ relationship. Relationships are processed using an object mapping as well.
  mapping will have the source and destination keyPaths swapped for all attribute and relationship mappings.
  */
 - (RKObjectMapping*)inverseMapping;
+
+/**
+ * Generates an inverse mapping, with recursion depth tracking, assuming recursion depth tracking
+ * has already reached this level.
+ */
+
+- (RKObjectMapping*)inverseMappingAtDepth:(NSInteger)depth;
 
 /**
  Returns the default value to be assigned to the specified attribute when it is missing from a

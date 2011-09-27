@@ -325,6 +325,8 @@
 		AF26F36A13EB40A9007F4868 /* RKOAuthClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = AF26F36913EB40A9007F4868 /* RKOAuthClientSpec.m */; };
 		AFD8CC8D13D8E61200E63E62 /* RKOAuthClient.h in Headers */ = {isa = PBXBuildFile; fileRef = AFD8CC8B13D8E61200E63E62 /* RKOAuthClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AFD8CC8E13D8E61200E63E62 /* RKOAuthClient.m in Sources */ = {isa = PBXBuildFile; fileRef = AFD8CC8C13D8E61200E63E62 /* RKOAuthClient.m */; };
+		DBC0442614321FDD0094D055 /* RKObjectTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = DBC0442414321FDD0094D055 /* RKObjectTransformer.m */; };
+		DBC0442714321FDD0094D055 /* RKObjectTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = DBC0442514321FDD0094D055 /* RKObjectTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -772,6 +774,8 @@
 		AF26F36913EB40A9007F4868 /* RKOAuthClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKOAuthClientSpec.m; sourceTree = "<group>"; };
 		AFD8CC8B13D8E61200E63E62 /* RKOAuthClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKOAuthClient.h; sourceTree = "<group>"; };
 		AFD8CC8C13D8E61200E63E62 /* RKOAuthClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKOAuthClient.m; sourceTree = "<group>"; };
+		DBC0442414321FDD0094D055 /* RKObjectTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectTransformer.m; sourceTree = "<group>"; };
+		DBC0442514321FDD0094D055 /* RKObjectTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectTransformer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1102,6 +1106,8 @@
 		253A087C12551D8D00976E89 /* ObjectMapping */ = {
 			isa = PBXGroup;
 			children = (
+				DBC0442414321FDD0094D055 /* RKObjectTransformer.m */,
+				DBC0442514321FDD0094D055 /* RKObjectTransformer.h */,
 				253A09E512552B5300976E89 /* ObjectMapping.h */,
 				253A087F12551D8D00976E89 /* RKObjectLoader.h */,
 				253A088012551D8D00976E89 /* RKObjectLoader.m */,
@@ -1688,6 +1694,7 @@
 				25FB6D5613E4836C00F48969 /* RKDynamicObjectMapping.h in Headers */,
 				257FB6FF1395D36D003A628E /* RKObjectMapperError.h in Headers */,
 				25E9682E13E6156100ABAE92 /* RKObjectMappingDefinition.h in Headers */,
+				DBC0442714321FDD0094D055 /* RKObjectTransformer.h in Headers */,
 				2521ACBB1428DF44008A9BA4 /* RKMappingOperationQueue.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2219,6 +2226,7 @@
 				253E04C613798D72005D2E15 /* RKErrorMessage.m in Sources */,
 				25A1CB4413840C5400A7D5C9 /* RKParserRegistry.m in Sources */,
 				2521ACBC1428DF44008A9BA4 /* RKMappingOperationQueue.m in Sources */,
+				DBC0442614321FDD0094D055 /* RKObjectTransformer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

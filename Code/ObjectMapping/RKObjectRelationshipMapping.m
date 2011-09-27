@@ -19,21 +19,28 @@
 //
 
 #import "RKObjectRelationshipMapping.h"
+#import "RKObjectMapping.h"
+#import "../Support/RKLog.h"
 
 @implementation RKObjectRelationshipMapping
 
 @synthesize mapping = _mapping;
 @synthesize reversible = _reversible;
 
-+ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping reversible:(BOOL)reversible {
-    RKObjectRelationshipMapping* relationshipMapping = (RKObjectRelationshipMapping*) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];    
++ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping reversible:(BOOL)reversible transformer:(id<RKObjectTransformer>)transformer {
+    RKObjectRelationshipMapping* relationshipMapping = (RKObjectRelationshipMapping*) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath transformer:transformer];    
     relationshipMapping.reversible = reversible;
     relationshipMapping.mapping = objectOrDynamicMapping;
     return relationshipMapping;
 }
 
++ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping reversible:(BOOL)reversible {
+    return [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping reversible:reversible transformer:nil];
+}
+
+
 + (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping {
-    return [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping reversible:YES];
+    return [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping reversible:YES transformer:nil];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -46,6 +53,25 @@
 - (void)dealloc {
     [_mapping release];
     [super dealloc];
+}
+
+
++ (RKObjectRelationshipMapping*)inverseMappingForMapping:(RKObjectRelationshipMapping*)forwardMapping depth:(int)depth
+{
+    if (!forwardMapping.reversible)
+    {
+        return nil;
+    }
+    RKObjectMapping* mapping = (RKObjectMapping*)[forwardMapping mapping];
+    if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
+        RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", forwardMapping.sourceKeyPath, NSStringFromClass([mapping class]));
+        return nil;
+    }
+    
+    RKObjectMapping *inverseMapping = [mapping inverseMappingAtDepth:depth];
+    id<RKObjectTransformer> inverseTransformer = [forwardMapping.transformer inverseTransformer];
+    
+    return [self mappingFromKeyPath:forwardMapping.destinationKeyPath toKeyPath:forwardMapping.sourceKeyPath withMapping:inverseMapping reversible:YES transformer:inverseTransformer];
 }
 
 @end
