@@ -18,7 +18,6 @@
 //  limitations under the License.
 //
 
-#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "RKClient.h"
 #import "RKRequest.h"
