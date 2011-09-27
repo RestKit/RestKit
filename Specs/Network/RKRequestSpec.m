@@ -678,4 +678,37 @@
     assertThat(requestCachePath, is(nilValue()));
 }
 
+#pragma mark - Completion block
+
+#if NS_BLOCKS_AVAILABLE
+
+- (void)itShouldCallCompletionBlockOnSuccess {
+    NSURL *baseURL = [NSURL URLWithString:RKSpecGetBaseURL()];
+
+    __block BOOL completionBlockHasChangedMyValue = NO;
+    RKRequest *request = [RKRequest requestWithURL:baseURL completion:^(RKResponse * response,
+                                                                    NSError *error) {
+        assertThat(error, is(nilValue()));
+        completionBlockHasChangedMyValue = YES;
+    }];
+    [request sendSynchronously];
+    assertThatBool(completionBlockHasChangedMyValue, is(equalToBool(YES)));
+}
+
+- (void)itShouldCallCompletionBlockOnFailure {
+    NSURL *baseURL = [NSURL URLWithString:@"http://no-such-url-exists.no-such-domain.com"];
+
+    __block BOOL completionBlockHasChangedMyValue = NO;
+    RKRequest *request = [RKRequest requestWithURL:baseURL completion:^(RKResponse * response,
+                                                                        NSError *error) {
+        assertThat(response, is(nilValue()));
+        completionBlockHasChangedMyValue = YES;
+    }];
+    [request sendSynchronously];
+    assertThatBool(completionBlockHasChangedMyValue, is(equalToBool(YES)));
+}
+
+
+#endif
+
 @end

@@ -47,6 +47,10 @@
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize sourceObject = _sourceObject;
 
+#if NS_BLOCKS_AVAILABLE
+@synthesize objectLoaderCompletion=_objectLoaderCompletion;
+#endif
+
 + (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate {
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
 }
@@ -59,6 +63,22 @@
 
 	return self;
 }
+
+#if NS_BLOCKS_AVAILABLE
++ (id)loaderWithResourcePath:(NSString *)resourcePath objectManager:(RKObjectManager *)objectManager completion:(RKObjectLoaderCompletion)completion
+{
+    return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager completion:completion] autorelease];
+}
+
+-(id)initWithResourcePath:(NSString *)resourcePath objectManager:(RKObjectManager *)objectManager completion:(RKObjectLoaderCompletion)completion
+{
+    self = [self initWithResourcePath:resourcePath objectManager:objectManager delegate:nil];
+    if (self) {
+        self.objectLoaderCompletion = completion;
+    }
+    return self;
+}
+#endif
 
 - (void)dealloc {
     // Weak reference
@@ -77,6 +97,10 @@
     [_serializationMIMEType release];
     [_serializationMapping release];
     
+    #if NS_BLOCKS_AVAILABLE
+    self.objectLoaderCompletion = nil;
+    #endif
+
 	[super dealloc];
 }
 
@@ -86,6 +110,10 @@
     _response = nil;
     [_result release];
     _result = nil;
+
+    #if NS_BLOCKS_AVAILABLE
+    self.objectLoaderCompletion = nil;
+    #endif
 }
 
 #pragma mark - Response Processing
@@ -113,6 +141,11 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
 															object:self
 														  userInfo:userInfo];
+        #if NS_BLOCKS_AVAILABLE
+        if (self.objectLoaderCompletion) {
+            self.objectLoaderCompletion(self, nil, error);
+        }
+        #endif
 	}
 }
 
@@ -134,6 +167,12 @@
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self didLoadObject:[result asObject]];
     }
     
+    #if NS_BLOCKS_AVAILABLE
+    if (self.objectLoaderCompletion) {
+        self.objectLoaderCompletion(self, [result asCollection], nil);
+    }
+    #endif
+
 	[self finalizeLoad:YES error:nil];
 }
 

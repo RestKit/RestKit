@@ -298,6 +298,16 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 	return request;
 }
 
+#if NS_BLOCKS_AVAILABLE
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion {
+	RKRequest *request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:nil];
+	request.completion = completion;
+	[request autorelease];
+    
+	return request;
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Asynchronous Requests
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -341,6 +351,48 @@ NSString * RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPa
 - (RKRequest *)delete:(NSString *)resourcePath delegate:(id)delegate {
 	return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate];
 }
+
+#if NS_BLOCKS_AVAILABLE
+- (RKRequest *)load:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable> *)params completion:(RKRequestCompletionBlock)completion {
+	NSURL* resourcePathURL = nil;
+	if (method == RKRequestMethodGET) {
+		resourcePathURL = [self URLForResourcePath:resourcePath queryParams:(NSDictionary*)params];
+	} else {
+		resourcePathURL = [self URLForResourcePath:resourcePath];
+	}
+	RKRequest *request = [[RKRequest alloc] initWithURL:resourcePathURL completion:completion];
+	[self setupRequest:request];
+	[request autorelease];
+	request.method = method;
+	if (method != RKRequestMethodGET) {
+		request.params = params;
+	}
+    
+    [request send];
+    
+	return request;
+}
+
+- (RKRequest *)get:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion {
+	return [self load:resourcePath method:RKRequestMethodGET params:nil completion:completion];
+}
+
+- (RKRequest *)get:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams completion:(RKRequestCompletionBlock)completion {
+	return [self load:resourcePath method:RKRequestMethodGET params:queryParams completion:completion];
+}
+
+- (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params completion:(RKRequestCompletionBlock)completion {
+	return [self load:resourcePath method:RKRequestMethodPOST params:params completion:completion];
+}
+
+- (RKRequest *)put:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params completion:(RKRequestCompletionBlock)completion {
+	return [self load:resourcePath method:RKRequestMethodPUT params:params completion:completion];
+}
+
+- (RKRequest *)delete:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion {
+	return [self load:resourcePath method:RKRequestMethodDELETE params:nil completion:completion];
+}
+#endif // NS_BLOCKS_AVAILABLE
 
 - (void)serviceDidBecomeUnavailableNotification:(NSNotification *)notification {
     if (self.serviceUnavailableAlertEnabled) {

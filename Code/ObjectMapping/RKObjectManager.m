@@ -168,6 +168,30 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
+#if NS_BLOCKS_AVAILABLE
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath completion:(RKObjectLoaderCompletion)completion {
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:nil];
+    loader.objectLoaderCompletion = completion;
+	loader.method = RKRequestMethodGET;
+    
+	[loader send];
+    
+	return loader;
+}
+
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping completion:(RKObjectLoaderCompletion)completion {
+	RKObjectLoader* loader = [self objectLoaderWithResourcePath:resourcePath delegate:nil];
+    loader.objectLoaderCompletion = completion;
+	loader.method = RKRequestMethodGET;
+    loader.objectMapping = objectMapping;
+    
+	[loader send];
+    
+	return loader;
+}
+#endif
+
+
 /////////////////////////////////////////////////////////////
 #pragma mark - Object Instance Loaders
 
@@ -212,6 +236,37 @@ static RKObjectManager* sharedManager = nil;
 	[loader send];
 	return loader;
 }
+
+#if NS_BLOCKS_AVAILABLE
+- (RKObjectLoader *)getObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion {
+    RKObjectLoader *loader = [self objectLoaderForObject:object method:RKRequestMethodGET delegate:nil];
+    loader.objectLoaderCompletion = completion;
+    [loader send];
+    return loader;
+}
+
+- (RKObjectLoader *)putObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion {
+    RKObjectLoader *loader = [self objectLoaderForObject:object method:RKRequestMethodPUT delegate:nil];
+    loader.objectLoaderCompletion = completion;
+    [loader send];
+    return loader;
+}
+
+- (RKObjectLoader *)postObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion {
+    RKObjectLoader *loader = [self objectLoaderForObject:object method:RKRequestMethodPOST delegate:nil];
+    loader.objectLoaderCompletion = completion;
+    [loader send];
+    return loader;
+}
+
+- (RKObjectLoader *)deleteObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion {
+    RKObjectLoader *loader = [self objectLoaderForObject:object method:RKRequestMethodDELETE delegate:nil];
+    loader.objectLoaderCompletion = completion;
+    [loader send];
+    return loader;
+}
+#endif
+
 
 #if NS_BLOCKS_AVAILABLE
 

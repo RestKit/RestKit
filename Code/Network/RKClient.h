@@ -510,6 +510,13 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  */
 - (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
+#if NS_BLOCKS_AVAILABLE
+/**
+ Block helper for -[RKClient requestWithResourcePath:delegate]
+ */
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion;
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -572,5 +579,16 @@ NSString* RKPathAppendQueryParams(NSString* resourcePath, NSDictionary* queryPar
  * @return The RKRequest object built and sent to the remote system
  */
 - (RKRequest *)delete:(NSString*)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ Block helpers for the asynchronous requests tasks above
+ */
+- (RKRequest *)get:(NSString *)resourcePath completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)get:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)put:(NSString*)resourcePath params:(NSObject<RKRequestSerializable> *)params completion:(RKRequestCompletionBlock)completion;
+- (RKRequest *)delete:(NSString*)resourcePath completion:(RKRequestCompletionBlock)completion;
+#endif
 
 @end

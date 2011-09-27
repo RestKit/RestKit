@@ -92,6 +92,11 @@ typedef enum {
 @class RKResponse, RKRequestQueue;
 @protocol RKRequestDelegate;
 
+#if NS_BLOCKS_AVAILABLE
+@class RKRequest;
+typedef void (^RKRequestCompletionBlock)(RKResponse *response, NSError *error);
+#endif
+
 /**
  Models the request portion of an HTTP request/response cycle.
  */
@@ -191,6 +196,11 @@ typedef enum {
 @property(nonatomic, assign) RKRequestBackgroundPolicy backgroundPolicy;
 @property(nonatomic, readonly) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 #endif
+
+#if NS_BLOCKS_AVAILABLE
+@property (nonatomic, copy) RKRequestCompletionBlock completion;
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Authentication
@@ -312,6 +322,13 @@ typedef enum {
  */
 + (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id)delegate;
 
+#if NS_BLOCKS_AVAILABLE
+/**
+ * Return a REST request that is ready for dispatching and sets a completion handler
+ */
++ (RKRequest *)requestWithURL:(NSURL *)URL completion:(RKRequestCompletionBlock)completion;
+#endif
+
 /**
  * Initialize a synchronous request
  */
@@ -321,6 +338,13 @@ typedef enum {
  * Initialize a REST request and prepare it for dispatching
  */
 - (id)initWithURL:(NSURL *)URL delegate:(id)delegate;
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ * Initialize a REST request and prepare it for dispatching with completion handler
+ */
+- (id)initWithURL:(NSURL *)URL completion:(RKRequestCompletionBlock)completion;
+#endif
 
 /**
  * Setup the NSURLRequest. The request must be prepared right before dispatching

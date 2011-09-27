@@ -101,6 +101,10 @@
 
 @end
 
+#if NS_BLOCKS_AVAILABLE
+typedef void (^RKObjectLoaderCompletion)(RKObjectLoader* loader, id result, NSError *error);
+#endif
+
 /**
  * Wraps a request/response cycle and loads a remote object representation into local domain objects
  *
@@ -184,6 +188,10 @@
  */
 @property (nonatomic, retain) NSObject* targetObject;
 
+#if NS_BLOCKS_AVAILABLE
+@property (copy, nonatomic) RKObjectLoaderCompletion objectLoaderCompletion;
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -197,6 +205,19 @@
  * Initialize a new object loader with an object manager, a request, and a delegate
  */
 - (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate;				
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ * Same as +[RKObjectLoader loaderWithResourcePath:objectManager:delegate] above but use completion block
+ * instead of the delegate.
+ */
++ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager completion:(RKObjectLoaderCompletion)completion;
+
+/**
+ * Initialize a new object loader with an object manager, a request, and a completion block
+ */
+- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager completion:(RKObjectLoaderCompletion)completion;
+#endif
 
 /**
  * Handle an error in the response preventing it from being mapped, called from -isResponseMappable

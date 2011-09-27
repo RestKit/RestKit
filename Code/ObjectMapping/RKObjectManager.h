@@ -228,6 +228,19 @@ typedef enum {
  */
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
+#if NS_BLOCKS_AVAILABLE
+/**
+ Block version of -[RKObjectManager loadObjectsAtResourcePath:delegate]
+ */
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString *)resourcePath completion:(RKObjectLoaderCompletion)completion;
+
+/**
+ Block version of -[RKObjectManager loadObjectsAtResourcePath:objectMapping:delegate]
+ */
+- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping completion:(RKObjectLoaderCompletion)completion;
+#endif
+
+
 ////////////////////////////////////////////////////////
 /// @name Mappable Object Loaders
 
@@ -250,6 +263,29 @@ typedef enum {
  Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
  */
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+#if NS_BLOCKS_AVAILABLE
+/**
+ Block version of -[RKObjectLoader getObject:delegate]
+ */
+- (RKObjectLoader*)getObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion;
+
+/**
+ Block version of -[RKObjectLoader putObject:delegate]
+ */
+- (RKObjectLoader*)putObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion;
+
+/**
+ Block version of -[RKObjectLoader postObject:delegate]
+ */
+- (RKObjectLoader*)postObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion;
+
+/**
+ Block version of -[RKObjectLoader deleteObject:delegate]
+ */
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object completion:(RKObjectLoaderCompletion)completion;
+
+#endif
 
 ////////////////////////////////////////////////////////
 /// @name Block Configured Object Loaders
