@@ -202,7 +202,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 		if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToCreatePersistentStoreCoordinatorWithError:)]) {
 			[self.delegate managedObjectStore:self didFailToCreatePersistentStoreCoordinatorWithError:error];
 		} else {
-			NSAssert(NO, @"Managed object store failed to create persistent store coordinator: %@", error);
+			NSAssert1(NO, @"Managed object store failed to create persistent store coordinator: %@", error);
 		}
     }
 }
@@ -216,7 +216,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 			[self.delegate managedObjectStore:self didFailToDeletePersistentStore:self.pathToStoreFile error:error];
 		}
 		else {
-			NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
+			NSAssert1(NO, @"Managed object store failed to delete persistent store : %@", error);
 		}
 	}
 	

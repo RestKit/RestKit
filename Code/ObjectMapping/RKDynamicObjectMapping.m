@@ -117,7 +117,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 - (RKObjectMapping*)objectMappingForDictionary:(NSDictionary*)data {
-    NSAssert([data isKindOfClass:[NSDictionary class]], @"Dynamic object mapping can only be performed on NSDictionary mappables, got %@", NSStringFromClass([data class]));
+    NSAssert1([data isKindOfClass:[NSDictionary class]], @"Dynamic object mapping can only be performed on NSDictionary mappables, got %@", NSStringFromClass([data class]));
     RKObjectMapping* mapping = nil;
     
     RKLogTrace(@"Performing dynamic object mapping for mappable data: %@", data);
@@ -142,7 +142,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     if (self.objectMappingForDataBlock) {        
         mapping = self.objectMappingForDataBlock(data);
         if (mapping) {
-            RKLogTrace(@"Found dynamic delegateBlock match. objectMappingForDataBlock = %@", self.objectMappingForDataBlock);
+            RKLogTrace(@"Found dynamic delegateBlock match. objectMappingForDataBlock = %@", (id)self.objectMappingForDataBlock);
         }
     }
     

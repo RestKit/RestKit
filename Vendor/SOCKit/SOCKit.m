@@ -381,7 +381,7 @@ NSString* kTemporaryBackslashToken = @"/backslash/";
   id returnValue = nil;
 
   NSMethodSignature* sig = [object methodSignatureForSelector:selector];
-  NSAssert(nil != sig, @"%@ does not respond to selector: '%@'", object, NSStringFromSelector(selector));
+  NSAssert2(nil != sig, @"%@ does not respond to selector: '%@'", object, NSStringFromSelector(selector));
   NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:sig];
   [invocation setTarget:object];
   [invocation setSelector:selector];
@@ -460,7 +460,7 @@ NSString* kTemporaryBackslashToken = @"/backslash/";
   NSMutableDictionary* parameterValues = [NSMutableDictionary dictionaryWithCapacity:[_parameters count]];
   for (SOCParameter* parameter in _parameters) {
     NSString* stringValue = [NSString stringWithFormat:@"%@", [object valueForKeyPath:parameter.string]];
-    if (nil != block) {
+    if (0 != block) {
       stringValue = block(stringValue);
     }
     if (nil != stringValue) {

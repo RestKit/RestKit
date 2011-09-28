@@ -64,7 +64,7 @@
         if ([value isKindOfClass:[NSManagedObjectID class]]) {
             NSAssert(self.objectStore, @"Object store cannot be nil");
             NSManagedObject* managedObject = [self.objectStore objectWithID:(NSManagedObjectID*)value];
-            NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
+            NSAssert1(managedObject, @"Expected managed object for ID %@, got nil", value);
             [argument setValue:managedObject forKeyPath:keyPath];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
