@@ -445,6 +445,11 @@ typedef enum {
 - (void)request:(RKRequest *)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite;
 
 /**
+ * Sent when request has received data from remote site
+ */
+- (void)request:(RKRequest*)request didReceivedData:(NSInteger)bytesReceived totalBytesReceived:(NSInteger)totalBytesReceived totalBytesExectedToReceive:(NSInteger)totalBytesExpectedToReceive;
+
+/**
  * Sent to the delegate when a request was cancelled
  */
 - (void)requestDidCancelLoad:(RKRequest *)request;
