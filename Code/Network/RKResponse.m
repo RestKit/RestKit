@@ -20,7 +20,6 @@
 
 #import "RKResponse.h"
 #import "RKNotifications.h"
-#import "RKNetwork.h"
 #import "RKLog.h"
 #import "RKParserRegistry.h"
 #import "RKClient.h"
@@ -151,7 +150,7 @@ extern NSString* cacheURLKey;
 		NSURLCredential *newCredential;
 		newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
 		                                         password:[NSString stringWithFormat:@"%@", _request.password]
-		                                      persistence:RKNetworkGetGlobalCredentialPersistence()];
+                                              persistence:NSURLCredentialPersistenceNone];
 		[[challenge sender] useCredential:newCredential
 		       forAuthenticationChallenge:challenge];
 	} else {

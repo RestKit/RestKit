@@ -15,6 +15,7 @@
     [super viewDidLoad];
     
     _exampleTableItems = [[NSArray alloc] initWithObjects:
+                          @"RKAuthenticationExample",
                           @"RKParamsExample",
                           @"RKRequestQueueExample",
                           @"RKReachabilityExample",

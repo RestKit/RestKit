@@ -41,6 +41,8 @@
 		258BAAF51360C15900ED0614 /* RKBackgroundRequestExample.m in Sources */ = {isa = PBXBuildFile; fileRef = 258BAAF31360C15900ED0614 /* RKBackgroundRequestExample.m */; };
 		258BAAF61360C15900ED0614 /* RKBackgroundRequestExample.xib in Resources */ = {isa = PBXBuildFile; fileRef = 258BAAF41360C15900ED0614 /* RKBackgroundRequestExample.xib */; };
 		258E219C1361BC42000D4DCF /* RKCoreDataExample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 258E219A1361BC42000D4DCF /* RKCoreDataExample.xcdatamodeld */; };
+		258F33F41432CB11001EEEFC /* RKAuthenticationExample.m in Sources */ = {isa = PBXBuildFile; fileRef = 258F33F21432CB11001EEEFC /* RKAuthenticationExample.m */; };
+		258F33F51432CB11001EEEFC /* RKAuthenticationExample.xib in Resources */ = {isa = PBXBuildFile; fileRef = 258F33F31432CB11001EEEFC /* RKAuthenticationExample.xib */; };
 		258F86D914113396007AABCD /* libRestKitCoreData.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2501DEAF13607B74003DE9E4 /* libRestKitCoreData.a */; };
 		258F86DA14113396007AABCD /* libRestKitJSONParserJSONKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2501DEAB13607B74003DE9E4 /* libRestKitJSONParserJSONKit.a */; };
 		258F86DB14113396007AABCD /* libRestKitNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2501DEA113607B74003DE9E4 /* libRestKitNetwork.a */; };
@@ -209,6 +211,9 @@
 		258BAAF31360C15900ED0614 /* RKBackgroundRequestExample.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKBackgroundRequestExample.m; sourceTree = "<group>"; };
 		258BAAF41360C15900ED0614 /* RKBackgroundRequestExample.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RKBackgroundRequestExample.xib; sourceTree = "<group>"; };
 		258E219B1361BC42000D4DCF /* RKCoreDataExample.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKCoreDataExample.xcdatamodel; sourceTree = "<group>"; };
+		258F33F11432CB11001EEEFC /* RKAuthenticationExample.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKAuthenticationExample.h; path = RKAuthenticationExample/RKAuthenticationExample.h; sourceTree = "<group>"; };
+		258F33F21432CB11001EEEFC /* RKAuthenticationExample.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKAuthenticationExample.m; path = RKAuthenticationExample/RKAuthenticationExample.m; sourceTree = "<group>"; };
+		258F33F31432CB11001EEEFC /* RKAuthenticationExample.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = RKAuthenticationExample.xib; path = RKAuthenticationExample/RKAuthenticationExample.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,6 +353,7 @@
 			isa = PBXGroup;
 			children = (
 				258BAA4313608BDB00ED0614 /* RKParamsExample */,
+				258F33F01432CAC8001EEEFC /* RKAuthenticationExample */,
 				258BAA661360AF7000ED0614 /* RKRequestQueueExample */,
 				258BAAEB1360BB0300ED0614 /* RKReachabilityExample */,
 				258BAAF11360C0FE00ED0614 /* RKBackgroundRequestExample */,
@@ -397,6 +403,16 @@
 				258BAAF41360C15900ED0614 /* RKBackgroundRequestExample.xib */,
 			);
 			path = RKBackgroundRequestExample;
+			sourceTree = "<group>";
+		};
+		258F33F01432CAC8001EEEFC /* RKAuthenticationExample */ = {
+			isa = PBXGroup;
+			children = (
+				258F33F11432CB11001EEEFC /* RKAuthenticationExample.h */,
+				258F33F21432CB11001EEEFC /* RKAuthenticationExample.m */,
+				258F33F31432CB11001EEEFC /* RKAuthenticationExample.xib */,
+			);
+			name = RKAuthenticationExample;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -551,6 +567,7 @@
 				256F388D1361053900CE0C58 /* RKKeyValueMappingExample.xib in Resources */,
 				256F38981361188700CE0C58 /* RKRelationshipMappingExample.xib in Resources */,
 				256F38AF13612E9400CE0C58 /* RKCoreDataExample.xib in Resources */,
+				258F33F51432CB11001EEEFC /* RKAuthenticationExample.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -576,6 +593,7 @@
 				256F38AE13612E9400CE0C58 /* RKCoreDataExample.m in Sources */,
 				258E219C1361BC42000D4DCF /* RKCoreDataExample.xcdatamodeld in Sources */,
 				25825DF31361BCA6001A2902 /* RKRelationshipMappingExample.xcdatamodeld in Sources */,
+				258F33F41432CB11001EEEFC /* RKAuthenticationExample.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

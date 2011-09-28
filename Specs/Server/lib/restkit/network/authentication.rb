@@ -12,9 +12,11 @@ module RestKit
       
       get '/authentication/basic' do
         @auth ||= Rack::Auth::Basic::Request.new(request.env)
+        puts "Auth was provided: #{@auth.provided?}"
+        puts "Credentials: #{@auth.credentials}" if @auth.provided?
         unless @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [AUTH_USERNAME, AUTH_PASSWORD]
           response['WWW-Authenticate'] = %(Basic realm="#{AUTH_REALM}")
-          throw(:halt, [401, "Not authorized\n"])
+          throw(:halt, [401, "Access Denied.\n"])
         end
       end
       

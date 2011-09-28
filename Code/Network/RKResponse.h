@@ -98,11 +98,11 @@
  */
 - (NSString*)bodyAsString;
 
-/*!
+/**
  * Return the response body parsed as JSON into an object
  * @deprecated in version 2.0
  */
-- (id)bodyAsJSON;
+- (id)bodyAsJSON DEPRECATED_ATTRIBUTE;
 
 /**
  * Return the response body parsed as JSON into an object

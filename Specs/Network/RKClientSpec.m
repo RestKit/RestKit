@@ -57,19 +57,36 @@
 }
 
 - (void)itShouldAllowYouToChangeTheBaseURL {
-    NSLog(@"PENDING -> Unable to get this test to pass reliably...");
-    return;
     RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:15]]; // Let the runloop cycle
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; // Let the runloop cycle
     [expectThat([client isNetworkAvailable]) should:be(YES)];
-    client.baseURL = @"http://www.google.com";
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:3.5]]; // Let the runloop cycle
+    client.baseURL = @"http://www.restkit.org";
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     [expectThat([client isNetworkAvailable]) should:be(YES)];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKRequest* request = [client requestWithResourcePath:@"/" delegate:loader];
     [request send];
     [loader waitForResponse];
     assertThatBool(loader.success, is(equalToBool(YES)));
+}
+
+- (void)itShouldLetYouChangeTheHTTPAuthCredentials {
+    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+    RKClient *client = RKSpecNewClient();
+    client.authenticationType = RKRequestAuthenticationTypeHTTP;
+    client.username = @"invalid";
+    client.password = @"password";
+    RKSpecResponseLoader *responseLoader = [RKSpecResponseLoader responseLoader];
+    [client get:@"/authentication/basic" delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.success, is(equalToBool(NO)));
+    assertThat(responseLoader.failureError, is(notNilValue()));
+    client.username = @"restkit";
+    client.password = @"authentication";
+    [client get:@"/authentication/basic" delegate:responseLoader];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.success, is(equalToBool(YES)));
+    RKLogConfigureByName("RestKit/Network", RKLogLevelInfo);
 }
 
 - (void)itShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {

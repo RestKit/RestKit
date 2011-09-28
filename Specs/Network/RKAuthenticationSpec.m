@@ -20,7 +20,6 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKClient.h"
-#import "RKNetwork.h"
 
 static NSString* const RKAuthenticationSpecUsername = @"restkit";
 static NSString* const RKAuthenticationSpecPassword = @"authentication";
@@ -32,10 +31,6 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 @end
 
 @implementation RKAuthenticationSpec
-
-- (void)beforeAll {
-    RKNetworkSetGlobalCredentialPersistence(NSURLCredentialPersistenceNone);
-}
                                             
 - (void)itShouldAccessUnprotectedResourcePaths {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];

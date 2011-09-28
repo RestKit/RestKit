@@ -31,6 +31,10 @@
 #import "RKObjectMapperError.h"
 #import "RKDynamicMappingModels.h"
 
+// Managed Object Serialization Specific
+#import "RKHuman.h"
+#import "RKCat.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 
 @interface RKSpecAddress : NSObject {
@@ -1858,7 +1862,7 @@
 #pragma mark - Object Serialization
 // TODO: Move to RKObjectSerializerSpec
 
-- (void)itShouldSerializeRelatioshipsToJSON {
+- (void)itShouldSerializeHasOneRelatioshipsToJSON {
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     [userMapping mapAttributes:@"name", nil];
     RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
@@ -1877,6 +1881,57 @@
     NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
     assertThat(error, is(nilValue()));
     assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"state\":\"North Carolina\"}}")));
+}
+
+- (void)itShouldSerializeHasManyRelationshipsToJSON {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
+    [userMapping mapAttributes:@"name", nil];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKSpecAddress class]];
+    [addressMapping mapAttributes:@"city", @"state", nil];
+    [userMapping hasMany:@"friends" withMapping:addressMapping];
+    
+    RKExampleUser *user = [RKExampleUser new];
+    user.name = @"Blake Watters";
+    RKSpecAddress *address1 = [RKSpecAddress new];
+    address1.city = @"Carrboro";
+    RKSpecAddress *address2 = [RKSpecAddress new];
+    address2.city = @"New York City";
+    user.friends = [NSArray arrayWithObjects:address1, address2, nil];
+    
+    
+    RKObjectMapping *serializationMapping = [userMapping inverseMapping];
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:user mapping:serializationMapping];
+    NSError* error = nil;
+    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    assertThat(error, is(nilValue()));
+    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"friends\":[{\"city\":\"Carrboro\"},{\"city\":\"New York City\"}]}")));
+}
+
+- (void)itShouldSerializeManagedHasManyRelationshipsToJSON {
+    RKSpecNewManagedObjectStore();
+    RKObjectMapping* humanMapping = [RKObjectMapping mappingForClass:[RKHuman class]];
+    [humanMapping mapAttributes:@"name", nil];
+    RKObjectMapping* catMapping = [RKObjectMapping mappingForClass:[RKCat class]];
+    [catMapping mapAttributes:@"name", nil];
+    [humanMapping hasMany:@"cats" withMapping:catMapping];
+    
+    RKHuman *blake = [RKHuman object];
+    blake.name = @"Blake Watters";
+    RKCat *asia = [RKCat object];
+    asia.name = @"Asia";
+    RKCat *roy = [RKCat object];
+    roy.name = @"Roy";
+    blake.cats = [NSSet setWithObjects:asia, roy, nil];    
+    
+    RKObjectMapping *serializationMapping = [humanMapping inverseMapping];
+    RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:blake mapping:serializationMapping];
+    NSError* error = nil;
+    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    NSDictionary *parsedJSON = [JSON performSelector:@selector(objectFromJSONString)];
+    assertThat(error, is(nilValue()));
+    assertThat([parsedJSON valueForKey:@"name"], is(equalTo(@"Blake Watters")));
+    assertThat([parsedJSON valueForKeyPath:@"cats.name"], is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", nil])));
+//    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"cats\":[{\"name\":\"Asia\"},{\"name\":\"Roy\"}]}")));
 }
 
 @end
