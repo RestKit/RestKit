@@ -1930,8 +1930,8 @@
     NSDictionary *parsedJSON = [JSON performSelector:@selector(objectFromJSONString)];
     assertThat(error, is(nilValue()));
     assertThat([parsedJSON valueForKey:@"name"], is(equalTo(@"Blake Watters")));
-    assertThat([parsedJSON valueForKeyPath:@"cats.name"], is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", nil])));
-//    assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"cats\":[{\"name\":\"Asia\"},{\"name\":\"Roy\"}]}")));
+    NSArray *catNames = [[parsedJSON valueForKeyPath:@"cats.name"] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    assertThat(catNames, is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", nil])));
 }
 
 @end

@@ -245,9 +245,15 @@ extern NSString* cacheURLKey;
 
 - (id)parsedBody:(NSError**)error {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:[self MIMEType]];
+    if (! parser) {
+        RKLogWarning(@"Unable to parse response body: no parser registered for MIME Type '%@'", [self MIMEType]);
+        return nil;
+    }
     id object = [parser objectFromString:[self bodyAsString] error:error];
     if (object == nil) {
-        RKLogError(@"Unable to parse response body: %@", [*error localizedDescription]);
+        if (*error) {
+            RKLogError(@"Unable to parse response body: %@", [*error localizedDescription]);
+        }
         return nil;
     }
     return object;

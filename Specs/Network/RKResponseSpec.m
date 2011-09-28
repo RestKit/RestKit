@@ -231,4 +231,32 @@
     assertThat([error localizedDescription], is(equalTo(@"Unexpected token, wanted '{', '}', '[', ']', ',', ':', 'true', 'false', 'null', '\"STRING\"', 'NUMBER'.")));
 }
 
+- (void)itShouldNotCrashOnFailureToParseBody {
+    RKResponse *response = [[RKResponse new] autorelease];
+    id mockResponse = [OCMockObject partialMockForObject:response];
+    [[[mockResponse stub] andReturn:@"test/fake"] MIMEType];
+    [[[mockResponse stub] andReturn:@"whatever"] bodyAsString];
+    NSError *error = nil;
+    id parsedResponse = [mockResponse parsedBody:&error];
+    assertThat(parsedResponse, is(nilValue()));
+}
+
+- (void)itShouldNotCrashWhenParserReturnsNilWithoutAnError {
+    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+	id mockResponse = [OCMockObject partialMockForObject:response];
+	[[[mockResponse stub] andReturn:@""] bodyAsString];
+    [[[mockResponse stub] andReturn:RKMIMETypeJSON] MIMEType];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
+    id mockRegistry = [OCMockObject partialMockForObject:[RKParserRegistry sharedRegistry]];
+    [[[mockRegistry expect] andReturn:mockParser] parserForMIMEType:RKMIMETypeJSON];
+    NSError* error = nil;
+    [[[mockParser expect] andReturn:nil] objectFromString:@"" error:[OCMArg setTo:error]];
+    id object = [mockResponse parsedBody:&error];
+    [mockRegistry verify];
+    [mockParser verify];
+    [RKParserRegistry setSharedRegistry:nil];
+    assertThat(object, is(nilValue()));
+    assertThat(error, is(nilValue()));
+}
+
 @end

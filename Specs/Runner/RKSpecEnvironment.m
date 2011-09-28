@@ -40,7 +40,7 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
     }
 }
 
-RKClient* RKSpecNewClient(void) {    
+RKClient* RKSpecNewClient(void) {
     RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
     [RKClient setSharedClient:client];    
     [client release];
@@ -57,7 +57,7 @@ RKOAuthClient* RKSpecNewOAuthClient(RKSpecResponseLoader* loader){
 }
 
 
-RKObjectManager* RKSpecNewObjectManager(void) {
+RKObjectManager* RKSpecNewObjectManager(void) {    
     [RKObjectMapping setDefaultDateFormatters:nil];
     RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [RKObjectManager setSharedManager:objectManager];
