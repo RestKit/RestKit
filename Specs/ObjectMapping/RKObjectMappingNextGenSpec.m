@@ -1746,7 +1746,7 @@
 - (void)itShouldBeBackwardsCompatibleWithTheOldClassName {
     RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
     [boyMapping mapAttributes:@"name", nil];
-    RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+    RKObjectDynamicMapping* dynamicMapping = (RKObjectDynamicMapping *) [RKObjectDynamicMapping dynamicMapping];
     dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id mappableData) {
         if ([[mappableData valueForKey:@"type"] isEqualToString:@"Boy"]) {
             return boyMapping;
