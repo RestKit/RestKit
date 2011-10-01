@@ -339,6 +339,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSAssert(relationshipMapping, @"Cannot map a nested object relationship without a relationship mapping");
     NSError* error = nil;
     
+    RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
     RKObjectMappingOperation* subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
     subOperation.delegate = self.delegate;
     subOperation.queue = self.queue;
@@ -405,6 +406,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             appliedMappings = YES;
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
+            id collectionSanityCheckObject = nil;
+            if ([value respondsToSelector:@selector(anyObject)]) collectionSanityCheckObject = [value anyObject];
+            if ([value respondsToSelector:@selector(objectAtIndex:)]) collectionSanityCheckObject = [value objectAtIndex:0];
+            if ([self isValueACollection:collectionSanityCheckObject]) {
+                RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
+                RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
+            }
             for (id nestedObject in value) {                
                 id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
                 RKObjectMapping* objectMapping = nil;

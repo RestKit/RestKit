@@ -67,6 +67,7 @@
 		2521ACBB1428DF44008A9BA4 /* RKMappingOperationQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2521ACB91428DF40008A9BA4 /* RKMappingOperationQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2521ACBC1428DF44008A9BA4 /* RKMappingOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2521ACBA1428DF42008A9BA4 /* RKMappingOperationQueue.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		252C212D1437660C005FF33A /* ArrayOfNestedDictionaries.json in Resources */ = {isa = PBXBuildFile; fileRef = 252C212C1437660C005FF33A /* ArrayOfNestedDictionaries.json */; };
 		252CF8B613E254C60093BBD6 /* RKDynamicObjectMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252CF8B513E254C60093BBD6 /* RKDynamicObjectMappingSpec.m */; };
 		252CF8B913E255D70093BBD6 /* boy.json in Resources */ = {isa = PBXBuildFile; fileRef = 252CF8B813E255D70093BBD6 /* boy.json */; };
 		252CF8BB13E255E20093BBD6 /* girl.json in Resources */ = {isa = PBXBuildFile; fileRef = 252CF8BA13E255E20093BBD6 /* girl.json */; };
@@ -479,6 +480,7 @@
 		2521ACB91428DF40008A9BA4 /* RKMappingOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMappingOperationQueue.h; sourceTree = "<group>"; };
 		2521ACBA1428DF42008A9BA4 /* RKMappingOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappingOperationQueue.m; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		252C212C1437660C005FF33A /* ArrayOfNestedDictionaries.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfNestedDictionaries.json; sourceTree = "<group>"; };
 		252CF8B013E250730093BBD6 /* RKDynamicObjectMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicObjectMapping.h; sourceTree = "<group>"; };
 		252CF8B113E250730093BBD6 /* RKDynamicObjectMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicObjectMapping.m; sourceTree = "<group>"; };
 		252CF8B513E254C60093BBD6 /* RKDynamicObjectMappingSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicObjectMappingSpec.m; sourceTree = "<group>"; };
@@ -1454,6 +1456,7 @@
 				25952EDF136F563E00D04F93 /* RailsUser.json */,
 				25952EE0136F563E00D04F93 /* SameKeyDifferentTargetClasses.json */,
 				2521ACB214282D6D008A9BA4 /* ConnectingParents.json */,
+				252C212C1437660C005FF33A /* ArrayOfNestedDictionaries.json */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -2105,6 +2108,7 @@
 				2537ABF31412A3B90043BE9F /* zend.xml in Resources */,
 				2537ACFC1412E0380043BE9F /* national_weather_service.xml in Resources */,
 				2521ACB314282D6D008A9BA4 /* ConnectingParents.json in Resources */,
+				252C212D1437660C005FF33A /* ArrayOfNestedDictionaries.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
