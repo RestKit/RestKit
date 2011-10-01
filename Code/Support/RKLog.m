@@ -19,6 +19,7 @@
 //
 
 #import "RKLog.h"
+#import "lcl.h"
 
 static BOOL loggingInitialized = NO;
 
@@ -29,4 +30,12 @@ void RKLogInitialize(void) {
         RKLogInfo(@"RestKit initialized...");
         loggingInitialized = YES;
     }
+}
+
+void RKLogWithComponentAtLevelWhileExecutingBlock(_lcl_component_t component, _lcl_level_t level, void (^block)(void)) {
+//    _lcl_level_narrow_t currentLevel = _lcl_component_level[(__lcl_log_symbol(_component))];
+    // Get the current log level for the component
+    // Set the log level to the new level
+    // execute the block
+    // restore the log level
 }
