@@ -408,7 +408,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
             id collectionSanityCheckObject = nil;
             if ([value respondsToSelector:@selector(anyObject)]) collectionSanityCheckObject = [value anyObject];
-            if ([value respondsToSelector:@selector(objectAtIndex:)]) collectionSanityCheckObject = [value objectAtIndex:0];
+            if ([value respondsToSelector:@selector(lastObject)]) collectionSanityCheckObject = [value lastObject];
             if ([self isValueACollection:collectionSanityCheckObject]) {
                 RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
                 RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
