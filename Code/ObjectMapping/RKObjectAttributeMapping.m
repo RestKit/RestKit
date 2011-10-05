@@ -78,4 +78,28 @@
     return [self mappingFromKeyPath:forwardMapping.destinationKeyPath toKeyPath:forwardMapping.sourceKeyPath transformer:[forwardMapping.transformer inverseTransformer]];
 }
 
+-(id)valueFromSourceObject:(id)aSourceObject destinationType:(Class)aType defaultTransformer:(id<RKObjectTransformer>)defaultTransform error:(NSError**)error
+{
+    id value = nil;
+    if ([self.sourceKeyPath isEqualToString:@""]) {
+        value = aSourceObject;
+    } else {
+        value = [aSourceObject valueForKeyPath:self.sourceKeyPath];
+    }
+
+    if (value)
+    {
+        if (self.transformer)
+        {
+            value = [_transformer transformedValue:value ofClass:aType error:error];
+        }
+        else if (aType && ![[value class] isSubclassOfClass:aType] && defaultTransform )
+        {
+            value = [defaultTransform transformedValue:value ofClass:aType error:error];
+        }
+    }
+    
+    return value;
+}
+
 @end

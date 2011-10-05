@@ -23,6 +23,7 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKObjectPropertyInspector+CoreData.h"
+#import "../Support/RKLog.h"
 
 @implementation RKManagedObjectMapping
 
@@ -122,7 +123,14 @@
         // Get the primary key value out of the mappable data (if any)
         NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
         if (keyPathForPrimaryKeyElement) {
-            primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
+            RKDefaultTransformer *transform = [RKDefaultTransformer transformerWithObjectMapping:self];
+            NSError *err = nil;
+            Class type = [self classForProperty:primaryKeyAttributeMapping.destinationKeyPath];
+            primaryKeyValue = [primaryKeyAttributeMapping valueFromSourceObject:mappableData destinationType:type defaultTransformer:transform error:&err];
+            if (err)
+            {
+                RKLogTrace(@"Error transforming primary key %@: %@", primaryKeyAttributeMapping.destinationKeyPath, err);
+            }
         }
     }
     

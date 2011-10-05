@@ -325,6 +325,8 @@
 		AF26F36A13EB40A9007F4868 /* RKOAuthClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = AF26F36913EB40A9007F4868 /* RKOAuthClientSpec.m */; };
 		AFD8CC8D13D8E61200E63E62 /* RKOAuthClient.h in Headers */ = {isa = PBXBuildFile; fileRef = AFD8CC8B13D8E61200E63E62 /* RKOAuthClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AFD8CC8E13D8E61200E63E62 /* RKOAuthClient.m in Sources */ = {isa = PBXBuildFile; fileRef = AFD8CC8C13D8E61200E63E62 /* RKOAuthClient.m */; };
+		DBBDF72D1434AE72001D22F9 /* NSObject+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DBBDF72B1434AE6B001D22F9 /* NSObject+RKAdditions.m */; };
+		DBBDF72E1434AE91001D22F9 /* NSObject+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = DBBDF72A1434AE6B001D22F9 /* NSObject+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DBC0442614321FDD0094D055 /* RKObjectTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = DBC0442414321FDD0094D055 /* RKObjectTransformer.m */; };
 		DBC0442714321FDD0094D055 /* RKObjectTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = DBC0442514321FDD0094D055 /* RKObjectTransformer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -774,6 +776,8 @@
 		AF26F36913EB40A9007F4868 /* RKOAuthClientSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKOAuthClientSpec.m; sourceTree = "<group>"; };
 		AFD8CC8B13D8E61200E63E62 /* RKOAuthClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKOAuthClient.h; sourceTree = "<group>"; };
 		AFD8CC8C13D8E61200E63E62 /* RKOAuthClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKOAuthClient.m; sourceTree = "<group>"; };
+		DBBDF72A1434AE6B001D22F9 /* NSObject+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+RKAdditions.h"; sourceTree = "<group>"; };
+		DBBDF72B1434AE6B001D22F9 /* NSObject+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+RKAdditions.m"; sourceTree = "<group>"; };
 		DBC0442414321FDD0094D055 /* RKObjectTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectTransformer.m; sourceTree = "<group>"; };
 		DBC0442514321FDD0094D055 /* RKObjectTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectTransformer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1180,6 +1184,8 @@
 				258F846E1410574B007AABCD /* RKFixCategoryBug.h */,
 				3703ABAA14190D5700DB697A /* RKDotNetDateFormatter.h */,
 				3703ABAB14190D5700DB697A /* RKDotNetDateFormatter.m */,
+				DBBDF72A1434AE6B001D22F9 /* NSObject+RKAdditions.h */,
+				DBBDF72B1434AE6B001D22F9 /* NSObject+RKAdditions.m */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1719,6 +1725,7 @@
 				251939B613A94B670073A39B /* NSString+RestKit.h in Headers */,
 				258F846F1410574B007AABCD /* RKFixCategoryBug.h in Headers */,
 				37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */,
+				DBBDF72E1434AE91001D22F9 /* NSObject+RKAdditions.h in Headers */,
 				37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */,
 				3703ABAC14190D5700DB697A /* RKDotNetDateFormatter.h in Headers */,
 			);
@@ -2246,6 +2253,7 @@
 				37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */,
 				37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */,
 				3703ABAD14190D5700DB697A /* RKDotNetDateFormatter.m in Sources */,
+				DBBDF72D1434AE72001D22F9 /* NSObject+RKAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

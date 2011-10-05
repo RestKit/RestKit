@@ -23,6 +23,10 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
 
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
@@ -300,6 +304,11 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     
 #if TARGET_OS_IPHONE
 
+    if (![UIApplication sharedApplication])
+    {
+        return NSTemporaryDirectory();
+    }
+    
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     return basePath;

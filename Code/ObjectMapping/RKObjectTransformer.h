@@ -20,6 +20,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class RKObjectMapping;
+
 /**
  * Protocol representing a transformation that can be applied during mapping,
  * e.g. to provide an arbitrary string to integer mapping before writing to the
@@ -37,7 +39,7 @@
 /**
  * Transform a value
  */
--(id)transformedValue:(id)value ofClass:(Class)destinationType;
+-(id)transformedValue:(id)value ofClass:(Class)destinationType error:(NSError**)error;
 
 /**
  * Inverse of this transformer, or nil if the transform is not invertible
@@ -64,3 +66,14 @@
 +(RKOneToOneObjectTransformer*)transformerWithDictionary:(NSDictionary*)dictionary;
 
 @end
+
+@interface RKDefaultTransformer : NSObject<RKObjectTransformer>
+{
+    RKObjectMapping *_objectMapping;
+}
+@property (nonatomic,retain) RKObjectMapping *objectMapping;
+
++(RKDefaultTransformer*)transformerWithObjectMapping:(RKObjectMapping*)mapping;
+
+@end
+

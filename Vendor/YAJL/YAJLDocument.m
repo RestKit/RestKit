@@ -94,6 +94,8 @@ NSInteger YAJLDocumentStackCapacity = 20;
         [delegate_ document:self didSetObject:value forKey:key_ inDictionary:dict_];
       [self _popKey];
       break;
+    case YAJLDecoderCurrentTypeNone:
+      break;
   } 
 }
 

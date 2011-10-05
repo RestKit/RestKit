@@ -41,4 +41,9 @@
 
 + (RKObjectAttributeMapping*)inverseMappingForMapping:(RKObjectAttributeMapping*)forwardMapping;
 
+/**
+ * Produce the transformed value extracted from the source object
+ */
+-(id)valueFromSourceObject:(id)aSourceObject destinationType:(Class)aType defaultTransformer:(id<RKObjectTransformer>)defaultTransform error:(NSError**)error;
+
 @end

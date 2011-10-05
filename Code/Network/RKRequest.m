@@ -224,9 +224,12 @@
 		if ([_params respondsToSelector:@selector(HTTPHeaderValueForContentLength)]) {
 			[_URLRequest setValue:[NSString stringWithFormat:@"%d", [_params HTTPHeaderValueForContentLength]] forHTTPHeaderField:@"Content-Length"];
 		}
-	} else {
+	}
+#if 0
+    else {
         [_URLRequest setValue:@"0" forHTTPHeaderField:@"Content-Length"];
     }
+#endif
     
     // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
     if (self.authenticationType == RKRequestAuthenticationTypeHTTPBasic) {        

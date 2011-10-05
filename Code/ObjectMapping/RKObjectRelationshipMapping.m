@@ -20,7 +20,7 @@
 
 #import "RKObjectRelationshipMapping.h"
 #import "RKObjectMapping.h"
-#import "../Support/RKLog.h"
+#import "../Support/Support.h"
 
 @implementation RKObjectRelationshipMapping
 
@@ -72,6 +72,63 @@
     id<RKObjectTransformer> inverseTransformer = [forwardMapping.transformer inverseTransformer];
     
     return [self mappingFromKeyPath:forwardMapping.destinationKeyPath toKeyPath:forwardMapping.sourceKeyPath withMapping:inverseMapping reversible:YES transformer:inverseTransformer];
+}
+
+-(id)valueFromSourceObject:(id)aSourceObject destinationType:(Class)aType defaultTransformer:(id<RKObjectTransformer>)defaultTransform error:(NSError**)error
+{
+    
+    id value = nil;
+    if ([self.sourceKeyPath isEqualToString:@""]) {
+        value = aSourceObject;
+    } else {
+        value = [aSourceObject valueForKeyPath:self.sourceKeyPath];
+    }
+    
+   
+    
+    if (value)
+    {   
+        // Handle case where incoming content is collection represented by a dictionary 
+        if (self.mapping.forceCollectionMapping) {
+            // If we have forced mapping of a dictionary, map each subdictionary
+            if ([value isKindOfClass:[NSDictionary class]]) {
+                RKLogDebug(@"Collection mapping forced for NSDictionary, mapping each key/value independently...");
+                NSArray* objectsToMap = [NSMutableArray arrayWithCapacity:[value count]];
+                for (id key in value) {
+                    NSDictionary* dictionaryToMap = [NSDictionary dictionaryWithObject:[value valueForKey:key] forKey:key];
+                    [(NSMutableArray*)objectsToMap addObject:dictionaryToMap];
+                }
+                value = objectsToMap;
+            } else {
+                RKLogWarning(@"Collection mapping forced but mappable objects is of type '%@' rather than NSDictionary", NSStringFromClass([value class]));
+            }
+        }
+        
+        // Handle case where incoming content is a single object, but we want a collection
+        BOOL mappingToCollection = (aType && 
+                                    ([aType isSubclassOfClass:[NSSet class]] || [aType isSubclassOfClass:[NSArray class]]));
+        if (mappingToCollection && ![value isCollection]) {
+            RKLogDebug(@"Asked to map a single object into a collection relationship. Transforming to an instance of: %@", NSStringFromClass(aType));
+            if ([aType isSubclassOfClass:[NSArray class]]) {
+                value = [aType arrayWithObject:value];
+            } else if ([aType isSubclassOfClass:[NSSet class]]) {
+                value = [aType setWithObject:value];
+            } else {
+                RKLogWarning(@"Failed to transform single object");
+            }
+        }
+        
+        if (self.transformer)
+        {
+            value = [_transformer transformedValue:value ofClass:aType error:error];
+        }
+        else if (aType && ![[value class] isSubclassOfClass:aType] && defaultTransform )
+        {
+            value = [defaultTransform transformedValue:value ofClass:aType error:error];
+        }
+    }
+    
+    return value;
 }
 
 @end
