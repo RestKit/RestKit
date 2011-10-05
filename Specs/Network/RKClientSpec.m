@@ -58,7 +58,7 @@
 
 - (void)itShouldAllowYouToChangeTheBaseURL {
     RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]]; // Let the runloop cycle
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     [expectThat([client isNetworkAvailable]) should:be(YES)];
     client.baseURL = @"http://www.restkit.org";
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle

@@ -127,4 +127,25 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
+- (void)itShouldMapACollectionOfObjectsWithDynamicKeys {
+    RKManagedObjectStore *objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    mapping.forceCollectionMapping = YES;
+    mapping.primaryKeyAttribute = @"name";
+    [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];    
+    RKObjectAttributeMapping *idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"(name).id" toKeyPath:@"railsID"];
+    [mapping addAttributeMapping:idMapping];
+    RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
+    [provider setMapping:mapping forKeyPath:@"users"];
+    
+    id mockObjectStore = [OCMockObject partialMockForObject:objectStore];
+    [[[mockObjectStore expect] andForwardToRealObject] findOrCreateInstanceOfEntity:mapping.entity withPrimaryKeyAttribute:@"name" andValue:@"blake"];
+    [[[mockObjectStore expect] andForwardToRealObject] findOrCreateInstanceOfEntity:mapping.entity withPrimaryKeyAttribute:@"name" andValue:@"rachit"];
+    id userInfo = RKSpecParseFixture(@"DynamicKeys.json");
+    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
+    [mapper performMapping];
+    [mockObjectStore verify];
+    [mockObjectStore release];
+}
+
 @end

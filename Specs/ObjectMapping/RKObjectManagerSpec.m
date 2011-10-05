@@ -36,7 +36,7 @@
 
 @implementation RKObjectManagerSpec
 
-- (void)beforeAll {
+- (void)before {
     _objectManager = RKSpecNewObjectManager();
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];

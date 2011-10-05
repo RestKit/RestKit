@@ -32,8 +32,6 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-extern NSString* const RKObjectMappingNestingAttributeKeyName;
-
 // Temporary home for object equivalancy tests
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSCAssert(sourceValue, @"Expected sourceValue not to be nil");
@@ -292,8 +290,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     }
     
     for (RKObjectAttributeMapping* attributeMapping in [self attributeMappings]) {
-        if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
-            RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", RKObjectMappingNestingAttributeKeyName);
+        if ([attributeMapping isMappingForKeyOfNestedDictionary]) {
+            RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", attributeMapping.sourceKeyPath);
             continue;
         }
         
@@ -492,7 +490,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 }
 
 - (void)applyNestedMappings {
-    RKObjectAttributeMapping* attributeMapping = [self.objectMapping mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
+    RKObjectAttributeMapping* attributeMapping = [self.objectMapping attributeMappingForKeyOfNestedDictionary];
     if (attributeMapping) {
         RKLogDebug(@"Found nested mapping definition to attribute '%@'", attributeMapping.destinationKeyPath);
         id attributeValue = [[self.sourceObject allKeys] lastObject];

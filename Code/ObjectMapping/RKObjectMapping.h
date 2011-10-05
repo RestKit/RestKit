@@ -240,7 +240,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  @param attributeKey The name of the attribute we want to retrieve the mapping for
  */
-- (RKObjectAttributeMapping*)mappingForAttribute:(NSString*)attributeKey;
+- (RKObjectAttributeMapping *)mappingForAttribute:(NSString *)attributeKey;
 
 /**
  Returns the relationship mapping targeting the specified relationship on the destination object
@@ -424,7 +424,16 @@ relationship. Relationships are processed using an object mapping as well.
  
     [[RKObjectManager sharedManager].mappingProvider setObjectMapping:mapping forKeyPath:@"users"];
  */
-- (void)mapKeyOfNestedDictionaryToAttribute:(NSString*)attributeName;
+- (void)mapKeyOfNestedDictionaryToAttribute:(NSString *)attributeName;
+
+/**
+ Returns the attribute mapping targeting the key of a nested dictionary in the source JSON.
+ This attribute mapping corresponds to the attributeName configured via mapKeyOfNestedDictionaryToAttribute:
+ 
+ @see mapKeyOfNestedDictionaryToAttribute:
+ @returns An attribute mapping for the key of a nested dictionary being mapped or nil
+ */
+- (RKObjectAttributeMapping *)attributeMappingForKeyOfNestedDictionary;
 
 /**
  Removes all currently configured attribute and relationship mappings from the object mapping

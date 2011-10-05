@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
-//  Copyright 2011 Two Toasters
+//  Copyright 2011 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 
 #import "RKObjectAttributeMapping.h"
 
+extern NSString* const RKObjectMappingNestingAttributeKeyName;
+
 @implementation RKObjectAttributeMapping
 
 @synthesize sourceKeyPath = _sourceKeyPath;
@@ -28,7 +30,7 @@
 /**
  @private
  */
-- (id)initWithSourceKeyPath:(NSString*)sourceKeyPath andDestinationKeyPath:(NSString*)destinationKeyPath {
+- (id)initWithSourceKeyPath:(NSString *)sourceKeyPath andDestinationKeyPath:(NSString *)destinationKeyPath {
     NSAssert(sourceKeyPath != nil, @"Cannot define an element mapping an element name to map from");
     NSAssert(destinationKeyPath != nil, @"Cannot define an element mapping without a property to apply the value to");
     self = [super init];
@@ -52,13 +54,17 @@
     [super dealloc];
 }
 
-- (NSString*)description {
+- (NSString *)description {
     return [NSString stringWithFormat:@"RKObjectKeyPathMapping: %@ => %@", self.sourceKeyPath, self.destinationKeyPath];
 }
 
-+ (RKObjectAttributeMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath {
-    RKObjectAttributeMapping* mapping = [[self alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
++ (RKObjectAttributeMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath {
+    RKObjectAttributeMapping *mapping = [[self alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
     return [mapping autorelease];
+}
+
+- (BOOL)isMappingForKeyOfNestedDictionary {
+    return ([self.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]);
 }
 
 @end
