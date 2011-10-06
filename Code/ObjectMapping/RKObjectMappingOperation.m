@@ -100,6 +100,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     [_destinationObject release];
     [_objectMapping release];
     [_nestedAttributeSubstitution release];
+    [_queue release];
     
     [super dealloc];
 }
