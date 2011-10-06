@@ -468,6 +468,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
+				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitter;
@@ -481,6 +482,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
+				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitter;

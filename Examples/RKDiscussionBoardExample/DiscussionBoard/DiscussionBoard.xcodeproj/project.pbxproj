@@ -1337,7 +1337,10 @@
 					"DB_ENVIRONMENT=0",
 					"DEBUG=1",
 				);
-				HEADER_SEARCH_PATHS = Libraries/three20;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SOURCE_ROOT)/../../../Build\"",
+					Libraries/three20,
+				);
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
@@ -1360,7 +1363,10 @@
 					"DB_ENVIRONMENT=2",
 					"DEBUG=1",
 				);
-				HEADER_SEARCH_PATHS = Libraries/three20;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SOURCE_ROOT)/../../../Build\"",
+					Libraries/three20,
+				);
 				INFOPLIST_FILE = "Resources/DiscussionBoard-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
