@@ -33,36 +33,37 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKRequestSerialization)
 }
 
 - (void)URLEncodeParts:(NSMutableArray*)parts path:(NSString*)inPath {
-    [self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop)
-    {
+    [self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
         NSString *encodedKey = [[key description] stringByAddingURLEncoding];
         NSString *path = inPath ? [inPath stringByAppendingFormat:@"[%@]", encodedKey] : encodedKey;
-        if( [value isKindOfClass:[NSArray class]] )
-        {
-			for( id item in value )
-            {
-                [self URLEncodePart:parts path:[path stringByAppendingString:@"[]"] value:item];
+        
+        if ([value isKindOfClass:[NSArray class]]) {
+			for (id item in value) {
+                if ([item isKindOfClass:[NSDictionary class]] || [item isKindOfClass:[NSMutableDictionary class]]) {
+                    [item URLEncodeParts:parts path:[path stringByAppendingString:@"[]"]];
+                } else {
+                    [self URLEncodePart:parts path:[path stringByAppendingString:@"[]"] value:item];
+                }
+
             }
-        }
-        else if([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]])
-        {
+        } else if([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]]) {
             [value URLEncodeParts:parts path:path];
         }
-        else
-        {
+        else {
             [self URLEncodePart:parts path:path value:value];
         }
     }];
 }
 
-- (NSString *)stringWithURLEncodedComponents {
+// TODO: Move to NSDictionary+RestKit
+- (NSString *)stringWithURLEncodedEntries {
     NSMutableArray* parts = [NSMutableArray array];
     [self URLEncodeParts:parts path:nil];
     return [parts componentsJoinedByString:@"&"];
 }
 
 - (NSString *)URLEncodedString {
-    return [self stringWithURLEncodedComponents];
+    return [self stringWithURLEncodedEntries];
 }
 
 - (NSString *)HTTPHeaderValueForContentType {
