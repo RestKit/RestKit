@@ -59,7 +59,15 @@ static NSString *urlEncode(id object) {
         {
 			for( id item in value )
             {
-                [self URLEncodePart:parts path:[path stringByAppendingString:@"[]"] value:item];
+                //[self URLEncodePart:parts path:[path stringByAppendingString:@"[]"] value:item];
+                if([item isKindOfClass:[NSDictionary class]] || [item isKindOfClass:[NSMutableDictionary class]]){
+                    [item URLEncodeParts:parts path:[path stringByAppendingString:@"[]"]];
+
+                }else{
+                    [self URLEncodePart:parts path:[path stringByAppendingString:@"[]"] value:item];
+
+                }
+
             }
         }
         else if([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]])
