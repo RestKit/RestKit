@@ -38,17 +38,17 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSCAssert(destinationValue, @"Expected destinationValue not to be nil");
     
     SEL comparisonSelector;
-    if ([sourceValue isKindOfClass:[NSString class]]) {
+    if ([sourceValue isKindOfClass:[NSString class]] && [destinationValue isKindOfClass:[NSString class]]) {
         comparisonSelector = @selector(isEqualToString:);
-    } else if ([sourceValue isKindOfClass:[NSNumber class]]) {
+    } else if ([sourceValue isKindOfClass:[NSNumber class]] && [destinationValue isKindOfClass:[NSNumber class]]) {
         comparisonSelector = @selector(isEqualToNumber:);
-    } else if ([sourceValue isKindOfClass:[NSDate class]]) {
+    } else if ([sourceValue isKindOfClass:[NSDate class]] && [destinationValue isKindOfClass:[NSDate class]]) {
         comparisonSelector = @selector(isEqualToDate:);
-    } else if ([sourceValue isKindOfClass:[NSArray class]]) {
+    } else if ([sourceValue isKindOfClass:[NSArray class]] && [destinationValue isKindOfClass:[NSArray class]]) {
         comparisonSelector = @selector(isEqualToArray:);
-    } else if ([sourceValue isKindOfClass:[NSDictionary class]]) {
+    } else if ([sourceValue isKindOfClass:[NSDictionary class]] && [destinationValue isKindOfClass:[NSDictionary class]]) {
         comparisonSelector = @selector(isEqualToDictionary:);
-    } else if ([sourceValue isKindOfClass:[NSSet class]]) {
+    } else if ([sourceValue isKindOfClass:[NSSet class]] && [destinationValue isKindOfClass:[NSSet class]]) {
         comparisonSelector = @selector(isEqualToSet:);
     } else {
         comparisonSelector = @selector(isEqual:);
