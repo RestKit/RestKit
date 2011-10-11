@@ -184,7 +184,6 @@ static NSDateFormatter* __rfc1123DateFormatter;
 
 			NSMutableDictionary* headers = [response.allHeaderFields mutableCopy];
 			if (headers) {
-                // TODO: exponse this?
                 NSHTTPURLResponse* urlResponse = [response valueForKey:@"_httpURLResponse"];
                 // Cache Loaded Time
 				[headers setObject:[[RKRequestCache rfc1123DateFormatter] stringFromDate:[NSDate date]]

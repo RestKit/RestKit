@@ -90,4 +90,11 @@
     assertThatInt(responseLoader.response.statusCode, is(equalToInt(200)));
 }
 
+- (void)itShouldCalculateAnMD5ForTheParams {
+    NSDictionary *values = [NSDictionary dictionaryWithObjectsAndKeys:@"foo", @"bar", @"this", @"that", nil];
+    RKParams *params = [RKParams paramsWithDictionary:values];
+    NSString *MD5 = [params MD5];
+    assertThat(MD5, is(equalTo(@"da7d80084b86aa5022b434e3bf084caf")));
+}
+
 @end

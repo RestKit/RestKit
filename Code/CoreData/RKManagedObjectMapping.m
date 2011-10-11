@@ -23,6 +23,11 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKObjectPropertyInspector+CoreData.h"
+#import "../Support/RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
 
 @implementation RKManagedObjectMapping
 
@@ -106,7 +111,7 @@
     NSString* primaryKeyAttribute;
     
     NSEntityDescription* entity = [self entity];
-    RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;        
+    RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
     
     primaryKeyAttribute = [self primaryKeyAttribute];
     if (primaryKeyAttribute) {
@@ -119,11 +124,16 @@
             }
         }
         
-        // Get the primary key value out of the mappable data (if any)
-        NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
-        if (keyPathForPrimaryKeyElement) {
-            primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
-        }
+        // Get the primary key value out of the mappable data (if any)        
+        if ([primaryKeyAttributeMapping isMappingForKeyOfNestedDictionary]) {
+            RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
+            primaryKeyValue = [[mappableData allKeys] lastObject];
+        } else {
+            NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
+            if (keyPathForPrimaryKeyElement) {
+                primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
+            }
+        }        
     }
     
     // If we have found the primary key attribute & value, try to find an existing instance to update

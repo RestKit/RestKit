@@ -54,7 +54,7 @@ static NSString* const kDBAccessTokenHTTPHeaderField = @"X-USER-ACCESS-TOKEN";
 	// We are using the Core Data support, so we have initialized a managed object store backed
 	// with a SQLite database. We are also utilizing the managed object cache support to provide
 	// offline access to locally cached content.
-	objectManager.objectStore = [[[RKManagedObjectStore alloc] initWithStoreFilename:@"DiscussionBoard.sqlite"] autorelease];
+	objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"DiscussionBoard.sqlite"];
 	objectManager.objectStore.managedObjectCache = [[DBManagedObjectCache new] autorelease];
 
 	// Set Up the Object Mapper

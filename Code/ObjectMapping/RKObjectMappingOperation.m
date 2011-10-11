@@ -32,25 +32,23 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-extern NSString* const RKObjectMappingNestingAttributeKeyName;
-
 // Temporary home for object equivalancy tests
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSCAssert(sourceValue, @"Expected sourceValue not to be nil");
     NSCAssert(destinationValue, @"Expected destinationValue not to be nil");
     
     SEL comparisonSelector;
-    if ([sourceValue isKindOfClass:[NSString class]]) {
+    if ([sourceValue isKindOfClass:[NSString class]] && [destinationValue isKindOfClass:[NSString class]]) {
         comparisonSelector = @selector(isEqualToString:);
-    } else if ([sourceValue isKindOfClass:[NSNumber class]]) {
+    } else if ([sourceValue isKindOfClass:[NSNumber class]] && [destinationValue isKindOfClass:[NSNumber class]]) {
         comparisonSelector = @selector(isEqualToNumber:);
-    } else if ([sourceValue isKindOfClass:[NSDate class]]) {
+    } else if ([sourceValue isKindOfClass:[NSDate class]] && [destinationValue isKindOfClass:[NSDate class]]) {
         comparisonSelector = @selector(isEqualToDate:);
-    } else if ([sourceValue isKindOfClass:[NSArray class]]) {
+    } else if ([sourceValue isKindOfClass:[NSArray class]] && [destinationValue isKindOfClass:[NSArray class]]) {
         comparisonSelector = @selector(isEqualToArray:);
-    } else if ([sourceValue isKindOfClass:[NSDictionary class]]) {
+    } else if ([sourceValue isKindOfClass:[NSDictionary class]] && [destinationValue isKindOfClass:[NSDictionary class]]) {
         comparisonSelector = @selector(isEqualToDictionary:);
-    } else if ([sourceValue isKindOfClass:[NSSet class]]) {
+    } else if ([sourceValue isKindOfClass:[NSSet class]] && [destinationValue isKindOfClass:[NSSet class]]) {
         comparisonSelector = @selector(isEqualToSet:);
     } else {
         comparisonSelector = @selector(isEqual:);
@@ -102,6 +100,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     [_destinationObject release];
     [_objectMapping release];
     [_nestedAttributeSubstitution release];
+    [_queue release];
     
     [super dealloc];
 }
@@ -292,8 +291,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     }
     
     for (RKObjectAttributeMapping* attributeMapping in [self attributeMappings]) {
-        if ([attributeMapping.sourceKeyPath isEqualToString:RKObjectMappingNestingAttributeKeyName]) {
-            RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", RKObjectMappingNestingAttributeKeyName);
+        if ([attributeMapping isMappingForKeyOfNestedDictionary]) {
+            RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", attributeMapping.sourceKeyPath);
             continue;
         }
         
@@ -339,6 +338,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSAssert(relationshipMapping, @"Cannot map a nested object relationship without a relationship mapping");
     NSError* error = nil;
     
+    RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
     RKObjectMappingOperation* subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
     subOperation.delegate = self.delegate;
     subOperation.queue = self.queue;
@@ -405,6 +405,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             appliedMappings = YES;
             
             destinationObject = [NSMutableArray arrayWithCapacity:[value count]];
+            id collectionSanityCheckObject = nil;
+            if ([value respondsToSelector:@selector(anyObject)]) collectionSanityCheckObject = [value anyObject];
+            if ([value respondsToSelector:@selector(lastObject)]) collectionSanityCheckObject = [value lastObject];
+            if ([self isValueACollection:collectionSanityCheckObject]) {
+                RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
+                RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
+            }
             for (id nestedObject in value) {                
                 id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
                 RKObjectMapping* objectMapping = nil;
@@ -484,7 +491,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 }
 
 - (void)applyNestedMappings {
-    RKObjectAttributeMapping* attributeMapping = [self.objectMapping mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
+    RKObjectAttributeMapping* attributeMapping = [self.objectMapping attributeMappingForKeyOfNestedDictionary];
     if (attributeMapping) {
         RKLogDebug(@"Found nested mapping definition to attribute '%@'", attributeMapping.destinationKeyPath);
         id attributeValue = [[self.sourceObject allKeys] lastObject];

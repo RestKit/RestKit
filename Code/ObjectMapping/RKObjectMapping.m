@@ -245,6 +245,10 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [self mapKeyPath:RKObjectMappingNestingAttributeKeyName toAttribute:attributeName];
 }
 
+- (RKObjectAttributeMapping *)attributeMappingForKeyOfNestedDictionary {
+    return [self mappingForKeyPath:RKObjectMappingNestingAttributeKeyName];
+}
+
 - (RKObjectAttributeMapping*)mappingForAttribute:(NSString*)attributeKey {
     for (RKObjectAttributeMapping* mapping in [self attributeMappings]) {
         if ([mapping.destinationKeyPath isEqualToString:attributeKey]) {

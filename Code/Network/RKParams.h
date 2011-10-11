@@ -27,9 +27,8 @@
  * objects.
  */
 @interface RKParams : NSInputStream <RKRequestSerializable> {
-	NSMutableArray* _attachments;
-	
-	@private
+ @private
+    NSMutableArray *_attachments;
 	NSStreamStatus _streamStatus;
 	NSData* _footer;
 	NSUInteger _bytesDelivered;
@@ -39,58 +38,68 @@
 }
 
 /**
- * Returns an empty params object ready for population
+ Array of all attachments
  */
-+ (RKParams*)params;
+@property (nonatomic, readonly) NSMutableArray *attachments;
 
 /**
- * Initialize a params object from a dictionary of key/value pairs
+ Returns an empty params object ready for population
  */
-+ (RKParams*)paramsWithDictionary:(NSDictionary*)dictionary;
++ (RKParams *)params;
 
 /**
- * Initalize a params object from a dictionary of key/value pairs
+ Initialize a params object from a dictionary of key/value pairs
  */
-- (RKParams*)initWithDictionary:(NSDictionary*)dictionary;
++ (RKParams *)paramsWithDictionary:(NSDictionary *)dictionary;
 
 /**
- * Sets the value for a named parameter
+ Initalize a params object from a dictionary of key/value pairs
  */
-- (RKParamsAttachment*)setValue:(id <NSObject>)value forParam:(NSString*)param;
+- (RKParams *)initWithDictionary:(NSDictionary *)dictionary;
 
 /**
- * Sets the value for a named parameter to the data contained in a file at the given path
+ Sets the value for a named parameter
  */
-- (RKParamsAttachment*)setFile:(NSString*)filePath forParam:(NSString*)param;
+- (RKParamsAttachment *)setValue:(id <NSObject>)value forParam:(NSString *)param;
 
 /**
- * Sets the value to the data object for a named parameter. A default MIME type of
- * application/octet-stream will be used.
+ Sets the value for a named parameter to the data contained in a file at the given path
  */
-- (RKParamsAttachment*)setData:(NSData*)data forParam:(NSString*)param;
+- (RKParamsAttachment *)setFile:(NSString *)filePath forParam:(NSString *)param;
 
 /**
- * Sets the value for a named parameter to an NSData object with a specific MIME type
+ Sets the value to the data object for a named parameter. A default MIME type of
+ application/octet-stream will be used.
  */
-- (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType forParam:(NSString*)param;
+- (RKParamsAttachment *)setData:(NSData*)data forParam:(NSString *)param;
 
 /**
- * Sets the value for a named parameter to a data object with the specified MIME Type and attachment file name
- *
- * @deprecated Set the MIMEType and fileName on the returned RKParamsAttachment instead
+ Sets the value for a named parameter to an NSData object with a specific MIME type
  */
-- (RKParamsAttachment*)setData:(NSData*)data MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param DEPRECATED_ATTRIBUTE;
+- (RKParamsAttachment *)setData:(NSData*)data MIMEType:(NSString *)MIMEType forParam:(NSString *)param;
 
 /**
- * Sets the value for a named parameter to the data contained in a file at the given path with the specified MIME Type and attachment file name
- *
- *  @deprecated Set the MIMEType and fileName on the returned RKParamsAttachment instead
+ Sets the value for a named parameter to a data object with the specified MIME Type and attachment file name
+ 
+ @deprecated Set the MIMEType and fileName on the returned RKParamsAttachment instead
  */
-- (RKParamsAttachment*)setFile:(NSString*)filePath MIMEType:(NSString*)MIMEType fileName:(NSString*)fileName forParam:(NSString*)param DEPRECATED_ATTRIBUTE;
+- (RKParamsAttachment *)setData:(NSData*)data MIMEType:(NSString *)MIMEType fileName:(NSString *)fileName forParam:(NSString *)param DEPRECATED_ATTRIBUTE;
 
 /**
- * Resets the state of the RKParams stream
+ Sets the value for a named parameter to the data contained in a file at the given path with the specified MIME Type and attachment file name
+ 
+ @deprecated Set the MIMEType and fileName on the returned RKParamsAttachment instead
+ */
+- (RKParamsAttachment *)setFile:(NSString*)filePath MIMEType:(NSString *)MIMEType fileName:(NSString *)fileName forParam:(NSString *)param DEPRECATED_ATTRIBUTE;
+
+/**
+ Resets the state of the RKParams stream
  */
 - (void)reset;
+
+/**
+ Return a composite MD5 checksum value for all attachments
+ */
+- (NSString *)MD5;
 
 @end

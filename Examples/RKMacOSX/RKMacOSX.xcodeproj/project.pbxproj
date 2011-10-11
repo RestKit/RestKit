@@ -225,7 +225,7 @@
 				25D63958135184F1000879B1 /* libRestKitNetwork.a */,
 				25D6395A135184F1000879B1 /* libRestKitObjectMapping.a */,
 				25D6395C135184F1000879B1 /* libRestKitSupport.a */,
-				25FB6DA013E4848200F48969 /* libRestKitJSONParser+NXJSON.a */,
+				25FB6DA013E4848200F48969 /* libRestKitJSONParserNXJSON.a */,
 				25D6395E135184F1000879B1 /* libRestKitJSONParserYAJL.a */,
 				25D63960135184F1000879B1 /* libRestKitJSONParserSBJSON.a */,
 				25D63962135184F1000879B1 /* libRestKitJSONParserJSONKit.a */,
@@ -374,7 +374,7 @@
 			remoteRef = 25D63969135184F1000879B1 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		25FB6DA013E4848200F48969 /* libRestKitJSONParser+NXJSON.a */ = {
+		25FB6DA013E4848200F48969 /* libRestKitJSONParserNXJSON.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libRestKitJSONParserNXJSON.a;
@@ -487,6 +487,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKMacOSX/RKMacOSX-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
 				INFOPLIST_FILE = "RKMacOSX/RKMacOSX-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -507,6 +508,7 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKMacOSX/RKMacOSX-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
 				INFOPLIST_FILE = "RKMacOSX/RKMacOSX-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

@@ -20,6 +20,8 @@
 
 #import "RKSpecEnvironment.h" 
 #import "RKObjectMapperError.h"
+#import "RKMappableObject.h"
+#import "RKMappableAssociation.h"
 
 @interface TestMappable : NSObject {
     NSURL *_url;
@@ -232,6 +234,24 @@
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(newObject.boolString, is(equalTo(@"11-27-1982")));
+}
+
+- (void)itShouldLogADebugMessageIfTheRelationshipMappingTargetsAnArrayOfArrays {
+    // Create a dictionary with a dictionary containing an array
+    // Use keyPath to traverse to the collection and target a hasMany
+    id data = RKSpecParseFixture(@"ArrayOfNestedDictionaries.json");
+    RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
+    [objectMapping mapKeyPath:@"name" toAttribute:@"stringTest"];
+    RKObjectMapping *relationshipMapping = [RKObjectMapping mappingForClass:[RKMappableAssociation class]];
+    [relationshipMapping mapKeyPath:@"title" toAttribute:@"testString"];
+    [objectMapping mapKeyPath:@"mediaGroups.contents" toRelationship:@"hasMany" withMapping:relationshipMapping];
+    RKMappableObject *targetObject = [[RKMappableObject new] autorelease];    
+    RKLogToComponentWithLevelWhileExecutingBlock(lcl_cRestKitObjectMapping, RKLogLevelDebug, ^ {
+        RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data 
+                                                                                   destinationObject:targetObject mapping:objectMapping];
+        NSError *error = nil;
+        [operation performMapping:&error];
+    });
 }
 
 @end

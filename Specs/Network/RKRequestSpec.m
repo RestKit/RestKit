@@ -646,7 +646,7 @@
 }
 
 // TODO: Move to RKRequestCacheSpec
-- (void)itShouldReturnNilForCachePathWhenTheRequestIsUsingRKParams {
+- (void)itShouldReturnACachePathWhenTheRequestIsUsingRKParams {
     RKParams *params = [RKParams params];
     [params setValue:@"foo" forParam:@"bar"];
     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/"];
@@ -659,7 +659,9 @@
 						   stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache *requestCache = [[RKRequestCache alloc] initWithCachePath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
     NSString *requestCachePath = [requestCache pathForRequest:request];
-    assertThat(requestCachePath, is(nilValue()));
+    NSArray *pathComponents = [requestCachePath pathComponents];
+    NSString *cacheFile = [NSString pathWithComponents:[pathComponents subarrayWithRange:NSMakeRange([pathComponents count] - 2, 2)]];
+    assertThat(cacheFile, is(equalTo(@"SessionStore/4ba47367884760141da2e38fda525a1f")));
 }
 
 - (void)itShouldReturnNilForCachePathWhenTheRequestIsADELETE {

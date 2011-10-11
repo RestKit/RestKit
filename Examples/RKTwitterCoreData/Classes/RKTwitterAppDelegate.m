@@ -65,7 +65,7 @@
     
     // Update date format so that we can parse Twitter dates properly
 	// Wed Sep 29 15:31:08 +0000 2010
-	[statusMapping.dateFormatStrings addObject:@"E MMM d HH:mm:ss Z y"];
+    [RKObjectMapping addDefaultDateFormatterForString:@"E MMM d HH:mm:ss Z y" inTimeZone:nil];
     
     // Register our mappings with the provider
     [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];

@@ -23,6 +23,8 @@
 #endif
 #import "RKParamsAttachment.h"
 #import "RKLog.h"
+#import "NSData+MD5.h"
+#import "FileMD5Hash.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -39,10 +41,14 @@ extern NSString* const kRKStringBoundary;
 
 @implementation RKParamsAttachment
 
-@synthesize fileName = _fileName, MIMEType = _MIMEType, name = _name;
+@synthesize filePath = _filePath;
+@synthesize fileName = _fileName;
+@synthesize MIMEType = _MIMEType;
+@synthesize name = _name;
 
-- (id)initWithName:(NSString*)name {
-	if ((self = [self init])) {
+- (id)initWithName:(NSString *)name {
+    self = [self init];
+	if (self) {
         self.name = name;
         self.fileName = name;
 	}
@@ -50,24 +56,25 @@ extern NSString* const kRKStringBoundary;
 	return self;
 }
 
-- (id)initWithName:(NSString*)name value:(id<NSObject>)value {
+- (id)initWithName:(NSString *)name value:(id<NSObject>)value {
 	if ((self = [self initWithName:name])) {
-		NSMutableData* body = [NSMutableData data];
 		if ([value respondsToSelector:@selector(dataUsingEncoding:)]) {
-			[body appendData:[(NSString*)value dataUsingEncoding:NSUTF8StringEncoding]];
+            _body = [[(NSString*)value dataUsingEncoding:NSUTF8StringEncoding] retain];
 		} else {
-			[body appendData:[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding]];
-		}
-		
-		_bodyStream    = [[NSInputStream alloc] initWithData:body];
-		_bodyLength    = [body length];
+			_body = [[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding] retain];
+		}        
+        
+		_bodyStream    = [[NSInputStream alloc] initWithData:_body];
+		_bodyLength    = [_body length];
 	}
 	
 	return self;
 }
 
 - (id)initWithName:(NSString*)name data:(NSData*)data {
-	if ((self = [self initWithName:name])) {		
+    self = [self initWithName:name];
+	if (self) {
+        _body          = [data retain];
 		_bodyStream    = [[NSInputStream alloc] initWithData:data];
 		_bodyLength    = [data length];
 	}
@@ -76,11 +83,13 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (id)initWithName:(NSString*)name file:(NSString*)filePath {
-	if ((self = [self initWithName:name])) {
+    self = [self initWithName:name];
+	if (self) {
 		NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:filePath], @"Expected file to exist at path: %@", filePath);
-		_fileName = [[filePath lastPathComponent] retain];
+        _filePath = [filePath retain];
+        _fileName = [[filePath lastPathComponent] retain];
 		_MIMEType = [[self mimeTypeForExtension:[filePath pathExtension]] retain];
-		_bodyStream    = [[NSInputStream alloc] initWithFileAtPath:filePath];
+		_bodyStream = [[NSInputStream alloc] initWithFileAtPath:filePath];
 		
 		NSError* error;
 		NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
@@ -96,7 +105,9 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (void)dealloc {
-    [_name release];
+    [_name release];    
+    [_body release];
+    [_filePath release];
     [_fileName release];
     [_MIMEType release];
 
@@ -211,6 +222,20 @@ extern NSString* const kRKStringBoundary;
     }
 	
     return sent;
+}
+
+// NOTE: Cannot handle MD5 for files. We don't want to read the contents into memory
+- (NSString *)MD5 {
+    if (_body) {
+        return [_body MD5];
+    } else if (_filePath) {
+        CFStringRef fileAttachmentMD5 = FileMD5HashCreateWithPath((CFStringRef)_filePath, 
+                                                                  FileHashDefaultChunkSizeForReadingData);
+        return [(NSString *)fileAttachmentMD5 autorelease];
+    } else {
+        RKLogWarning(@"Failed to generate MD5 for attachment: unknown data type.");
+        return nil;
+    }
 }
 
 @end

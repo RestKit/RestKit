@@ -40,4 +40,20 @@
 	[expectThat(exception) shouldNot:be(nil)];
 }
 
+- (void)itShouldReturnAnMD5ForSimpleValues {
+    RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" value:@"bar"] autorelease];
+    assertThat([attachment MD5], is(equalTo(@"37b51d194a7513e45b56f6524f2d51f2")));
+}
+
+- (void)itShouldReturnAnMD5ForNSData {
+    RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" data:[@"bar" dataUsingEncoding:NSUTF8StringEncoding]] autorelease];
+    assertThat([attachment MD5], is(equalTo(@"37b51d194a7513e45b56f6524f2d51f2")));
+}
+
+- (void)itShouldReturnAnMD5ForFiles {
+    NSString* filePath = [[NSBundle mainBundle] pathForResource:@"blake" ofType:@"png"];
+    RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" file:filePath] autorelease];
+    assertThat([attachment MD5], is(equalTo(@"db6cb9d879b58e7e15a595632af345cd")));
+}
+
 @end

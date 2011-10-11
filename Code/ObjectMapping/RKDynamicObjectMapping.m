@@ -150,3 +150,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 @end
+
+// Compatibility alias...
+@implementation RKObjectDynamicMapping
+@end

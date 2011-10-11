@@ -110,5 +110,8 @@ typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
 
 /**
  Define an alias for the old class name for compatibility
+ 
+ @deprecated
  */
-@compatibility_alias RKObjectDynamicMapping RKDynamicObjectMapping;
+@interface RKObjectDynamicMapping : RKDynamicObjectMapping
+@end

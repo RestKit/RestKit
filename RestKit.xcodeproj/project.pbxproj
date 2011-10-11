@@ -67,6 +67,7 @@
 		2521ACBB1428DF44008A9BA4 /* RKMappingOperationQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2521ACB91428DF40008A9BA4 /* RKMappingOperationQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2521ACBC1428DF44008A9BA4 /* RKMappingOperationQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2521ACBA1428DF42008A9BA4 /* RKMappingOperationQueue.m */; };
 		2523363E11E7A1F00048F9B4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6C3A9510FE7524008F47C5 /* UIKit.framework */; };
+		252C212D1437660C005FF33A /* ArrayOfNestedDictionaries.json in Resources */ = {isa = PBXBuildFile; fileRef = 252C212C1437660C005FF33A /* ArrayOfNestedDictionaries.json */; };
 		252CF8B613E254C60093BBD6 /* RKDynamicObjectMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252CF8B513E254C60093BBD6 /* RKDynamicObjectMappingSpec.m */; };
 		252CF8B913E255D70093BBD6 /* boy.json in Resources */ = {isa = PBXBuildFile; fileRef = 252CF8B813E255D70093BBD6 /* boy.json */; };
 		252CF8BB13E255E20093BBD6 /* girl.json in Resources */ = {isa = PBXBuildFile; fileRef = 252CF8BA13E255E20093BBD6 /* girl.json */; };
@@ -118,6 +119,8 @@
 		25432041125618F000A315CF /* RKParser.h in Headers */ = {isa = PBXBuildFile; fileRef = 25432040125618F000A315CF /* RKParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25432064125632A300A315CF /* RKJSONParserYAJL.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08B71255212300976E89 /* RKJSONParserYAJL.m */; };
 		25432065125632AA00A315CF /* RKJSONParserSBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A08B61255212300976E89 /* RKJSONParserSBJSON.m */; };
+		25552DDF14341324007E10F1 /* FileMD5Hash.c in Sources */ = {isa = PBXBuildFile; fileRef = 25552DDA14341324007E10F1 /* FileMD5Hash.c */; };
+		25552DE014341324007E10F1 /* FileMD5Hash.h in Headers */ = {isa = PBXBuildFile; fileRef = 25552DDB14341324007E10F1 /* FileMD5Hash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2559209713BD1B8700E9C29C /* RKParamsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 2559208213BD1A4000E9C29C /* RKParamsSpec.m */; };
 		255DE05E10FFA05800A85891 /* RKHuman.m in Sources */ = {isa = PBXBuildFile; fileRef = 255DE05D10FFA05800A85891 /* RKHuman.m */; };
 		255DE0E210FFABA500A85891 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255DE0E110FFABA500A85891 /* CoreData.framework */; };
@@ -477,6 +480,7 @@
 		2521ACB91428DF40008A9BA4 /* RKMappingOperationQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMappingOperationQueue.h; sourceTree = "<group>"; };
 		2521ACBA1428DF42008A9BA4 /* RKMappingOperationQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMappingOperationQueue.m; sourceTree = "<group>"; };
 		2523360511E79F090048F9B4 /* libRestKitThree20.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKitThree20.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		252C212C1437660C005FF33A /* ArrayOfNestedDictionaries.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfNestedDictionaries.json; sourceTree = "<group>"; };
 		252CF8B013E250730093BBD6 /* RKDynamicObjectMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicObjectMapping.h; sourceTree = "<group>"; };
 		252CF8B113E250730093BBD6 /* RKDynamicObjectMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicObjectMapping.m; sourceTree = "<group>"; };
 		252CF8B513E254C60093BBD6 /* RKDynamicObjectMappingSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicObjectMappingSpec.m; sourceTree = "<group>"; };
@@ -539,6 +543,12 @@
 		253E04C413798D72005D2E15 /* RKErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKErrorMessage.m; sourceTree = "<group>"; };
 		25431EBA1255640800A315CF /* CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreData.h; sourceTree = "<group>"; };
 		25432040125618F000A315CF /* RKParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKParser.h; sourceTree = "<group>"; };
+		25552DDA14341324007E10F1 /* FileMD5Hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = FileMD5Hash.c; sourceTree = "<group>"; };
+		25552DDB14341324007E10F1 /* FileMD5Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMD5Hash.h; sourceTree = "<group>"; };
+		25552DDC14341324007E10F1 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		25552DDD14341324007E10F1 /* NOTICE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTICE; sourceTree = "<group>"; };
+		25552DDE14341324007E10F1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		25552DE114341751007E10F1 /* FileMD5Hash_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileMD5Hash_Prefix.pch; sourceTree = "<group>"; };
 		2559208213BD1A4000E9C29C /* RKParamsSpec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKParamsSpec.m; sourceTree = "<group>"; };
 		255DE05C10FFA05800A85891 /* RKHuman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKHuman.h; sourceTree = "<group>"; };
 		255DE05D10FFA05800A85891 /* RKHuman.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKHuman.m; sourceTree = "<group>"; };
@@ -1219,6 +1229,20 @@
 			path = Scripts;
 			sourceTree = "<group>";
 		};
+		25552DD914341324007E10F1 /* FileMD5Hash */ = {
+			isa = PBXGroup;
+			children = (
+				25552DE114341751007E10F1 /* FileMD5Hash_Prefix.pch */,
+				25552DDA14341324007E10F1 /* FileMD5Hash.c */,
+				25552DDB14341324007E10F1 /* FileMD5Hash.h */,
+				25552DDC14341324007E10F1 /* LICENSE */,
+				25552DDD14341324007E10F1 /* NOTICE */,
+				25552DDE14341324007E10F1 /* README.md */,
+			);
+			name = FileMD5Hash;
+			path = Vendor/FileMD5Hash;
+			sourceTree = "<group>";
+		};
 		255DE05B10FFA04200A85891 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -1252,6 +1276,7 @@
 		2590E6711252357200531FA8 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				25552DD914341324007E10F1 /* FileMD5Hash */,
 				25ACA5AF1429054D0037FE98 /* TDOAuth */,
 				258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */,
 				250D5BD913A0698100471F0E /* LibComponentLogging */,
@@ -1431,6 +1456,7 @@
 				25952EDF136F563E00D04F93 /* RailsUser.json */,
 				25952EE0136F563E00D04F93 /* SameKeyDifferentTargetClasses.json */,
 				2521ACB214282D6D008A9BA4 /* ConnectingParents.json */,
+				252C212C1437660C005FF33A /* ArrayOfNestedDictionaries.json */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -1707,6 +1733,7 @@
 				37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */,
 				37CA4C871410ABD2009A3DCE /* RKPathMatcher.h in Headers */,
 				3703ABAC14190D5700DB697A /* RKDotNetDateFormatter.h in Headers */,
+				25552DE014341324007E10F1 /* FileMD5Hash.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2081,6 +2108,7 @@
 				2537ABF31412A3B90043BE9F /* zend.xml in Resources */,
 				2537ACFC1412E0380043BE9F /* national_weather_service.xml in Resources */,
 				2521ACB314282D6D008A9BA4 /* ConnectingParents.json in Resources */,
+				252C212D1437660C005FF33A /* ArrayOfNestedDictionaries.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2230,6 +2258,7 @@
 				37CA4C7D1410A7CF009A3DCE /* SOCKit.m in Sources */,
 				37CA4C881410ABD2009A3DCE /* RKPathMatcher.m in Sources */,
 				3703ABAD14190D5700DB697A /* RKDotNetDateFormatter.m in Sources */,
+				25552DDF14341324007E10F1 /* FileMD5Hash.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
