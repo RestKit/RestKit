@@ -63,6 +63,17 @@
     assertThat([dictionary URLEncodedString], is(equalTo(validDictionary)));
 }
 
+- (void) itShouldEncodeArrayOfDictionaries {
+    NSDictionary * dictA = [NSDictionary dictionaryWithKeysAndObjects:@"a",@"x",@"b",@"y", nil];
+    NSDictionary * dictB = [NSDictionary dictionaryWithKeysAndObjects:@"a",@"1",@"b",@"2", nil];
+
+    NSArray * array = [NSArray arrayWithObjects: dictA, dictB, nil];
+    NSDictionary * dictRoot = [NSDictionary dictionaryWithKeysAndObjects:@"root", array, nil];
+
+    NSString * validString = @"root[][a]=x&root[][b]=y&root[][a]=1&root[][b]=2";
+    assertThat([dictRoot URLEncodedString], is(equalTo(validString)));
+}
+
 - (void)itShouldEncodeRecursiveArrays {
     NSArray *recursiveArray3 = [NSArray arrayWithObjects:@"item1", @"item2", nil];
     NSArray *recursiveArray2 = [NSArray arrayWithObject:recursiveArray3];
