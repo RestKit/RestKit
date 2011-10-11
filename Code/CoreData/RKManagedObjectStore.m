@@ -137,9 +137,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 				
 				return error;
 			} else {
-				if (![moc save:&error]) {
-					return error;
-				}
+				return [self save];
 			}
 
 		}
