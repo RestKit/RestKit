@@ -680,4 +680,15 @@
     assertThat(requestCachePath, is(nilValue()));
 }
 
+- (void)itShouldBuildAProperAuthorizationHeaderForOAuth1 {
+    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:@"http://restkit.org/this?that=foo&bar=word"] delegate:nil];
+    request.authenticationType = RKRequestAuthenticationTypeOAuth1;
+    request.OAuth1AccessToken = @"12345";
+    request.OAuth1AccessTokenSecret = @"monkey";
+    request.OAuth1ConsumerKey = @"another key";
+    request.OAuth1ConsumerSecret = @"more data";
+    [request prepareURLRequest];
+    NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
+    assertThat(authorization, isNot(nilValue()));
+}
 @end

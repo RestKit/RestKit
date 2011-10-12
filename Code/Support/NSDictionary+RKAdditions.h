@@ -23,14 +23,21 @@
 @interface NSDictionary (RKAdditions)
 
 /**
- * Creates and initializes a dictionary with key value pairs, with the keys specified
- * first instead of the objects.
+ Creates and initializes a dictionary with key value pairs, with the keys specified
+ first instead of the objects.
  */
 + (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
- * Strips out any percent escapes (such as %20) from the receiving dictionary's key and objects.
+ Strips out any percent escapes (such as %20) from the receiving dictionary's key and objects.
  */
 - (NSDictionary *)removePercentEscapesFromKeysAndObjects;
+
+/**
+ Returns a dictionary by digesting a URL encoded set of key/value pairs into unencoded
+ values. Keys that appear multiple times with the string are decoded into an array of 
+ values.
+ */
++ (NSDictionary *)dictionaryWithURLEncodedString:(NSString *)URLEncodedString;
 
 @end

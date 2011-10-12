@@ -39,6 +39,7 @@
  *
  * @returns A UTF-8 encoded string representation of the keys/values in the dictionary
  */
-- (NSString*)URLEncodedString;
+- (NSString *)stringWithURLEncodedComponents;
+- (NSString *)URLEncodedString; // TODO: Deprecated..
 
 @end

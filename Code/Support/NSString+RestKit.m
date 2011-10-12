@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 6/15/11.
-//  Copyright 2011 Two Toasters
+//  Copyright 2011 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -26,18 +26,23 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
 
 @implementation NSString (RestKit)
 
-- (NSString*)appendQueryParams:(NSDictionary*)queryParams {
+- (NSString *)appendQueryParams:(NSDictionary *)queryParams {
     return RKPathAppendQueryParams(self, queryParams);
 }
 
-- (NSString*)interpolateWithObject:(id)object {
+- (NSString *)interpolateWithObject:(id)object {
     return RKMakePathWithObject(self, object);
+}
+
+- (NSDictionary *)queryParameters {
+    return [self queryParametersUsingEncoding:NSUTF8StringEncoding];
 }
 
 - (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding {
     return [self queryParametersUsingArrays:NO encoding:encoding];
 }
 
+// TODO: Eliminate...
 - (NSDictionary*)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding {
     NSString *stringToParse = self;
     NSRange chopRange = [stringToParse rangeOfString:@"?"];
@@ -85,6 +90,26 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
         }
     }
     return [NSDictionary dictionaryWithDictionary:pairs];
+}
+
+// NOTE: See http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters
+- (NSString *)stringByAddingURLEncoding {
+    CFStringRef legalURLCharactersToBeEscaped = CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`\n\r");
+    CFStringRef encodedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+                                                                        (CFStringRef)self,
+                                                                        NULL, 
+                                                                        legalURLCharactersToBeEscaped,
+                                                                        kCFStringEncodingUTF8);
+	if (encodedString) {
+        return [(NSString *)encodedString autorelease];
+    }
+    
+    // TODO: Log a warning?
+    return @"";
+}
+
+- (NSString *)stringByReplacingURLEncoding {
+    return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
 @end

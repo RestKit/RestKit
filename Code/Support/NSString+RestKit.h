@@ -37,7 +37,8 @@
  @return A new resource path with the query parameters appended
  @see RKPathAppendQueryParams
  */
-- (NSString*)appendQueryParams:(NSDictionary*)queryParams;
+// TODO: Rename to stringByAppendingQueryDictionary:
+- (NSString *)appendQueryParams:(NSDictionary*)queryParams;
 
 /**
  Convenience method for generating a path against the properties of an object. Takes
@@ -52,7 +53,17 @@
  @see RKMakePathWithObject
  @see RKPathMatcher
  */
-- (NSString*)interpolateWithObject:(id)object;
+- (NSString *)interpolateWithObject:(id)object;
+
+/**
+ Returns a dictionary of parameter keys and values using UTF-8 encoding given a URL-style query string
+ on the receiving object. For example, when given the string /contacts?foo=bar&amp;color=red, 
+ this will return a dictionary of parameters containing foo=bar and color=red, excluding the path "/contacts?"
+ 
+ @param receiver A string in the form of @"/object/?sortBy=name", or @"/object/?sortBy=name&amp;color=red"
+ @return A new dictionary of query parameters, with keys like 'sortBy' and values like 'name'.
+ */
+- (NSDictionary *)queryParameters;
 
 /**
  Returns a dictionary of parameter keys and values given a URL-style query string
@@ -66,7 +77,7 @@
  @param encoding The encoding for to use while parsing the query string.
  @return A new dictionary of query parameters, with keys like 'sortBy' and values like 'name'.
  */
-- (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding;
+- (NSDictionary *)queryParametersUsingEncoding:(NSStringEncoding)encoding;
 
 /**
  Returns a dictionary of parameter keys and values arrays (if requested) given a URL-style query string
@@ -82,6 +93,17 @@
  @return A new dictionary of query parameters, with keys like 'sortBy' and value arrays (if requested) like ['name'].
  @see queryParametersUsingEncoding:
  */
-- (NSDictionary*)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding;
+- (NSDictionary *)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding;
+
+/**
+ Returns a URL encoded representation of self. 
+ */
+- (NSString *)stringByAddingURLEncoding;
+
+/**
+ Returns a representation of self with percent URL encoded characters replaced with
+ their literal values.
+ */
+- (NSString *)stringByReplacingURLEncoding;
 
 @end

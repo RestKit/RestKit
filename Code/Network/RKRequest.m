@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 #import "RKLog.h"
 #import "RKRequestCache.h"
 #import "TDOAuth.h"
-
+#import "NSURL+RestKit.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -209,7 +209,7 @@
 }
 
 - (void)addHeadersToRequest {
-	NSString* header;
+	NSString *header = nil;
 	for (header in _additionalHTTPHeaders) {
 		[_URLRequest setValue:[_additionalHTTPHeaders valueForKey:header] forHTTPHeaderField:header];
 	}
@@ -241,16 +241,9 @@
     
     // Add OAuth headers if is need it
     // OAuth 1
-    if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){
-        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-        for(NSString *parameter in [[_URL query] componentsSeparatedByString:@"&"]) {
-            NSArray *keyValuePair = [parameter componentsSeparatedByString:@"="];
-            [parameters setValue:[[keyValuePair objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
-                          forKey:[keyValuePair objectAtIndex:0]];
-        }
-        
-        NSURLRequest *echo = [TDOAuth URLRequestForPath:[self resourcePath]
-                                          GETParameters:parameters
+    if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){        
+        NSURLRequest *echo = [TDOAuth URLRequestForPath:[_URL path]
+                                          GETParameters:[_URL queryDictionary]
                                                  scheme:[_URL scheme]
                                                    host:[_URL host]
                                             consumerKey:self.OAuth1ConsumerKey
@@ -263,7 +256,7 @@
     }
     
     // OAuth 2 valid request
-    if(self.authenticationType == RKRequestAuthenticationTypeOAuth2){
+    if(self.authenticationType == RKRequestAuthenticationTypeOAuth2) {
         NSString *authorizationString = [NSString stringWithFormat:@"OAuth2 %@",self.OAuth2AccessToken];
         [_URLRequest setValue:authorizationString forHTTPHeaderField:@"Authorization"];
     }
