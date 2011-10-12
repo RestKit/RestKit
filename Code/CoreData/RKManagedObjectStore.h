@@ -41,6 +41,8 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 
 - (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToSaveContext:(NSManagedObjectContext *)context error:(NSError *)error exception:(NSException *)exception;
 
+- (BOOL)managedObjectStore:(RKManagedObjectStore *)objectStore canHandleError:(NSError *)error inContext:(NSManagedObjectContext *)context;
+
 @end
 
 ///////////////////////////////////////////////////////////////////

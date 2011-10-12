@@ -135,14 +135,23 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	
 	@try {
 		if (![moc save:&error]) {
-			if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-				[self.delegate managedObjectStore:self didFailToSaveContext:moc error:error exception:nil];
+			BOOL errorWasHandled = NO;
+			if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:canHandleError:inContext:)]) {
+				errorWasHandled = [self.delegate managedObjectStore:self canHandleError:error inContext:moc];
 			}
-			
-			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:@"error"];
-			[[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
-			
-			return error;
+			if (!errorWasHandled) {
+				if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
+					[self.delegate managedObjectStore:self didFailToSaveContext:moc error:error exception:nil];
+				}
+				
+				NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:@"error"];
+				[[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
+				
+				return error;
+			} else {
+				return [self save];
+			}
+
 		}
 	}
 	@catch (NSException* e) {
