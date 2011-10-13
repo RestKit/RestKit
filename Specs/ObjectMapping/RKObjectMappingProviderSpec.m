@@ -63,6 +63,17 @@
     assertThat(returnedMapping, is(equalTo(catMapping)));
 }
 
-
+- (void)itShouldAllowYouToRemoveAMappingByKeyPath {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    assertThat(catMapping, isNot(equalTo(nil)));
+    [catMapping mapAttributes:@"name", nil];
+    [mappingProvider setMapping:catMapping forKeyPath:@"cat"];
+    NSObject <RKObjectMappingDefinition> *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
+    assertThat(returnedMapping, isNot(equalTo(nil)));
+    [mappingProvider removeMappingForKeyPath:@"cat"];
+    returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
+    assertThat(returnedMapping, is(nilValue()));
+}
 
 @end

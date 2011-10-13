@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 5/6/11.
-//  Copyright 2011 Two Toasters
+//  Copyright 2011 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,37 +22,58 @@
 #import "RKDynamicObjectMapping.h"
 
 /**
- Responsible for providing object mappings to an instance of the object mapper
- by evaluating the current keyPath being operated on
+ The mapping provider is a repository of registered object mappings for use by instances
+ of RKObjectManager and RKObjectMapper. It provides for the storage and retrieval of object
+ mappings by keyPath and type.
+ 
+ The mapping provider is responsible for:
+    
+ 1. Providing instances of RKObjectMapper with keyPaths and object mappings for use 
+    when attempting to map a parsed payload into objects. Each keyPath is examined using
+    valueForKeyPath: to determine if any mappable data exists within the payload. If data is
+    found, the RKObjectMapper will instantiate an RKObjectMappingOperation to perform the mapping
+    using the RKObjectMapping or RKDynamicObjectMapping associated with the keyPath.
+ 1. Providing the appropriate serialization mapping to instances of RKObjectManager when an object
+    is to be sent to the remote server using [RKObjectManager postObject:delegate:] or 
+    [RKObjectManager postObject:delegate]. This mapping is used to serialize the object into a 
+    format suitable for encoding into a URL form encoded or JSON representation.
+ 1. Providing convenient storage of RKObjectMapping references for users who are not using keyPath
+    based mapping. Mappings can be added to the provider and retrieved by the [RKObjectMapping objectClass]
+    that they target.
  */
 @interface RKObjectMappingProvider : NSObject {
-    NSMutableArray* _objectMappings;
-    NSMutableDictionary* _mappingsByKeyPath;
-    NSMutableDictionary* _serializationMappings;
+    NSMutableArray *_objectMappings;
+    NSMutableDictionary *_mappingsByKeyPath;
+    NSMutableDictionary *_serializationMappings;
 }
 
 /**
  Returns a new auto-released mapping provider
  */
-+ (RKObjectMappingProvider*)mappingProvider;
++ (RKObjectMappingProvider *)mappingProvider;
 
 /**
  Instructs the mapping provider to use the mapping provided when it encounters content at the specified
  key path
  */
-- (void)setMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString*)keyPath;
+- (void)setMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
 
 /**
  Returns the RKObjectMapping or RKObjectDynamic mapping configured for use 
  when mappable content is encountered at keyPath
  */
-- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString*)keyPath;
+- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath;
+
+/**
+ Removes a currently registered 
+ */
+- (void)removeMappingForKeyPath:(NSString *)keyPath;
 
 /**
  Returns a dictionary where the keys are mappable keyPaths and the values are the RKObjectMapping
  or RKObjectDynamic mappings to use for mappable data that appears at the keyPath.
  */
-- (NSDictionary*)mappingsByKeyPath;
+- (NSDictionary *)mappingsByKeyPath;
 
 /**
  Registers an object mapping as being rooted at a specific keyPath. The keyPath will be registered
@@ -85,7 +106,7 @@
     // NOTE: Serialization mapping default to a nil root keyPath and will serialize to a flat dictionary
     [[RKObjectManager sharedManager].mappingProvider setSerializationMapping:serializationMappingForPerson forClass:[Person class]];
  */
-- (void)registerMapping:(RKObjectMapping*)objectMapping withRootKeyPath:(NSString*)keyPath;
+- (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath;
 
 /**
  Adds an object mapping to the provider for later retrieval. The mapping is not bound to a particular keyPath and
@@ -97,19 +118,19 @@
  @see objectMappingsForClass:
  @see objectMappingForClass:
  */
-- (void)addObjectMapping:(RKObjectMapping*)objectMapping;
+- (void)addObjectMapping:(RKObjectMapping *)objectMapping;
 
 /**
  Returns all object mappings registered for a particular class on the provider. The collection of mappings is assembled
  by searching for all mappings added via addObjctMapping: and then consulting those registered via objectMappingForKeyPath:
  */
-- (NSArray*)objectMappingsForClass:(Class)theClass;
+- (NSArray *)objectMappingsForClass:(Class)theClass;
 
 /**
  Returns the first object mapping for a particular class in the provider. Mappings registered via addObjectMapping: take
  precedence over those registered via setObjectMapping:forKeyPath:
  */
-- (RKObjectMapping*)objectMappingForClass:(Class)theClass;
+- (RKObjectMapping *)objectMappingForClass:(Class)theClass;
 
 /**
  Set a mapping to serialize objects of a specific class into a representation
@@ -121,7 +142,7 @@
  returns the serialization mapping for a specific object class
  which has been previously registered.
  */
-- (RKObjectMapping*)serializationMappingForClass:(Class)objectClass;
+- (RKObjectMapping *)serializationMappingForClass:(Class)objectClass;
 
 ////////////////////////////////////////////////////////////////////////////////////
 /// @name Deprecated Object Mapping Methods
@@ -132,14 +153,14 @@
  
  @deprecated
  */
-- (void)setObjectMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath DEPRECATED_ATTRIBUTE;
+- (void)setObjectMapping:(RKObjectMapping *)mapping forKeyPath:(NSString *)keyPath DEPRECATED_ATTRIBUTE;
 
 /**
  Returns the object mapping to use for mapping the specified keyPath into an object graph
  
  @deprecated
  */
-- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath DEPRECATED_ATTRIBUTE;
+- (RKObjectMapping *)objectMappingForKeyPath:(NSString *)keyPath DEPRECATED_ATTRIBUTE;
 
 /**
  Returns a dictionary where the keys are mappable keyPaths and the values are the object
@@ -147,6 +168,6 @@
  
  @deprecated
  */
-- (NSDictionary*)objectMappingsByKeyPath DEPRECATED_ATTRIBUTE;
+- (NSDictionary *)objectMappingsByKeyPath DEPRECATED_ATTRIBUTE;
 
 @end

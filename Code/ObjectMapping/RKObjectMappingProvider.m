@@ -22,12 +22,13 @@
 
 @implementation RKObjectMappingProvider
 
-+ (RKObjectMappingProvider*)mappingProvider {
++ (RKObjectMappingProvider *)mappingProvider {
     return [[self new] autorelease];
 }
 
 - (id)init {
-    if ((self = [super init])) {
+    self = [super init];
+    if (self) {
         _objectMappings = [NSMutableArray new];
         _mappingsByKeyPath = [NSMutableDictionary new];
         _serializationMappings = [NSMutableDictionary new];
@@ -42,11 +43,15 @@
     [super dealloc];
 }
 
-- (void)setMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath {
+- (void)setMapping:(RKObjectMapping *)mapping forKeyPath:(NSString *)keyPath {
     [_mappingsByKeyPath setValue:mapping forKey:keyPath];
 }
 
-- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString*)keyPath {
+- (void)removeMappingForKeyPath:(NSString *)keyPath {
+    [_mappingsByKeyPath removeObjectForKey:keyPath];
+}
+
+- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath {
     return [_mappingsByKeyPath objectForKey:keyPath];
 }
 
@@ -55,14 +60,14 @@
 }
 
 - (RKObjectMapping*)serializationMappingForClass:(Class)objectClass {
-    return (RKObjectMapping*)[_serializationMappings objectForKey:NSStringFromClass(objectClass)];
+    return (RKObjectMapping *)[_serializationMappings objectForKey:NSStringFromClass(objectClass)];
 }
 
 - (NSDictionary*)mappingsByKeyPath {
     return _mappingsByKeyPath;
 }
 
-- (void)registerMapping:(RKObjectMapping*)objectMapping withRootKeyPath:(NSString*)keyPath {
+- (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath {
     // TODO: Should generate logs
     objectMapping.rootKeyPath = keyPath;
     [self setMapping:objectMapping forKeyPath:keyPath];
@@ -71,13 +76,13 @@
     [self setSerializationMapping:inverseMapping forClass:objectMapping.objectClass];
 }
 
-- (void)addObjectMapping:(RKObjectMapping*)objectMapping {
+- (void)addObjectMapping:(RKObjectMapping *)objectMapping {
     [_objectMappings addObject:objectMapping];
 }
 
-- (NSArray*)objectMappingsForClass:(Class)theClass {
-    NSMutableArray* mappings = [NSMutableArray array];
-    NSArray* mappingsToSearch = [[NSArray arrayWithArray:_objectMappings] arrayByAddingObjectsFromArray:[_mappingsByKeyPath allValues]];
+- (NSArray *)objectMappingsForClass:(Class)theClass {
+    NSMutableArray *mappings = [NSMutableArray array];
+    NSArray *mappingsToSearch = [[NSArray arrayWithArray:_objectMappings] arrayByAddingObjectsFromArray:[_mappingsByKeyPath allValues]];
     for (NSObject <RKObjectMappingDefinition> *candidateMapping in mappingsToSearch) {
         if ( ![candidateMapping respondsToSelector:@selector(objectClass)] || [mappings containsObject:candidateMapping])
             continue;
@@ -89,22 +94,22 @@
     return [NSArray arrayWithArray:mappings];
 }
 
-- (RKObjectMapping*)objectMappingForClass:(Class)theClass {
+- (RKObjectMapping *)objectMappingForClass:(Class)theClass {
     NSArray* objectMappings = [self objectMappingsForClass:theClass];
     return ([objectMappings count] > 0) ? [objectMappings objectAtIndex:0] : nil;
 }
 
 #pragma mark - Deprecated
 
-- (RKObjectMapping*)objectMappingForKeyPath:(NSString*)keyPath {
-    return (RKObjectMapping*) [self mappingForKeyPath:keyPath];
+- (RKObjectMapping *)objectMappingForKeyPath:(NSString *)keyPath {
+    return (RKObjectMapping *) [self mappingForKeyPath:keyPath];
 }
 
-- (void)setObjectMapping:(RKObjectMapping*)mapping forKeyPath:(NSString*)keyPath {
+- (void)setObjectMapping:(RKObjectMapping *)mapping forKeyPath:(NSString *)keyPath {
     [self setMapping:mapping forKeyPath:keyPath];
 }
 
-- (NSDictionary*)objectMappingsByKeyPath {
+- (NSDictionary *)objectMappingsByKeyPath {
     return [self mappingsByKeyPath];
 }
 
