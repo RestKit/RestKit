@@ -224,6 +224,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
         
         RKLogTrace(@"RKParams stream closed. Releasing self.");        
         
+#if TARGET_OS_IPHONE
         // NOTE: When we are assigned to the URL request, we get
         // retained. We release ourselves here to ensure the retain
         // count will hit zero after upload is complete.
@@ -233,6 +234,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
         if ([[[UIDevice currentDevice] systemVersion] compare:@"5.0" options:NSNumericSearch] == NSOrderedAscending) {
             [self release];
         }
+#endif
     }
 }
 
