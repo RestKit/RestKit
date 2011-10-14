@@ -98,6 +98,9 @@ A Google Group for development and usage of library is available at: [http://gro
 
 Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restkit)
 
+Credits
+-------------------------
+
 RestKit is brought to you by [Blake Watters](http://twitter.com/blakewatters) and the RestKit Team.
 
 Support is provided by the following organizations:
