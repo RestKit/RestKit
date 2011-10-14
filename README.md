@@ -98,6 +98,11 @@ A Google Group for development and usage of library is available at: [http://gro
 
 Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restkit)
 
-### RestKit is brought to you by [Two Toasters](http://www.twotoasters.com/). ###
+RestKit is brought to you by [Blake Watters](http://twitter.com/blakewatters) and the RestKit Team.
+
+Support is provided by the following organizations:
+
+* [GateGuru](http://www.gateguruapp.com/)
+* [Two Toasters](http://www.twotoasters.com/)
 
 [Object Mapping Design Document]: https://github.com/RestKit/RestKit/blob/master/Docs/Object%20Mapping.md
