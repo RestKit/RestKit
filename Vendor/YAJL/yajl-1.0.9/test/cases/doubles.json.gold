@@ -1,7 +1,0 @@
-array open '['
-double: 10
-double: 10
-double: 3.14157
-double: 1000
-array close ']'
-memory leaks:	0

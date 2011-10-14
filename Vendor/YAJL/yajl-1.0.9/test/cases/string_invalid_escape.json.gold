@@ -1,3 +1,0 @@
-array open '['
-lexical error: inside a string, '\' occurs before a character which it may not.
-memory leaks:	0
