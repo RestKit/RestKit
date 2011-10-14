@@ -62,7 +62,7 @@ task :default => 'uispec:all'
 
 desc "Build RestKit for iOS and Mac OS X"
 task :build do
-  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphonesimulator4.3 clean build")
+  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphonesimulator5.0 clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk macosx10.6 clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKitThree20 -sdk iphoneos clean build")
@@ -153,7 +153,7 @@ end
 namespace :build do
   desc "Build all Example projects to ensure they are building properly"
   task :examples do
-    ios_sdks = %w{iphoneos iphonesimulator4.3}
+    ios_sdks = %w{iphoneos iphonesimulator5.0}
     osx_sdks = %w{macosx}
     osx_projects = %w{RKMacOSX}
     
