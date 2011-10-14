@@ -129,6 +129,7 @@
  * @default nil
  * @see RKObjectMappingProvider
  */
+// TODO: Rename to responseMapping
 @property (nonatomic, retain) RKObjectMapping* objectMapping;
 
 /**
@@ -158,6 +159,7 @@
  *
  * @see RKObjectMappingProvider
  */
+// TODO: Rename to requestMapping?
 @property (nonatomic, retain) RKObjectMapping* serializationMapping;
 
 /**

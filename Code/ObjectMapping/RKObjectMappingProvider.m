@@ -1,9 +1,9 @@
 //
-//  RKStaticObjectMappingProvider.m
+//  RKObjectMappingProvider.m
 //  RestKit
 //
 //  Created by Jeremy Ellison on 5/6/11.
-//  Copyright 2011 Two Toasters
+//  Copyright 2011 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
 @implementation RKObjectMappingProvider
 
-+ (RKObjectMappingProvider *)mappingProvider {
++ (RKObjectMappingProvider *)objectMappingProvider {
     return [[self new] autorelease];
 }
 
@@ -43,15 +43,15 @@
     [super dealloc];
 }
 
-- (void)setMapping:(RKObjectMapping *)mapping forKeyPath:(NSString *)keyPath {
-    [_mappingsByKeyPath setValue:mapping forKey:keyPath];
+- (void)setObjectMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath {
+    [_mappingsByKeyPath setValue:objectOrDynamicMapping forKey:keyPath];
 }
 
-- (void)removeMappingForKeyPath:(NSString *)keyPath {
+- (void)removeObjectMappingForKeyPath:(NSString *)keyPath {
     [_mappingsByKeyPath removeObjectForKey:keyPath];
 }
 
-- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath {
+- (id<RKObjectMappingDefinition>)objectMappingForKeyPath:(NSString *)keyPath {
     return [_mappingsByKeyPath objectForKey:keyPath];
 }
 
@@ -63,11 +63,11 @@
     return (RKObjectMapping *)[_serializationMappings objectForKey:NSStringFromClass(objectClass)];
 }
 
-- (NSDictionary*)mappingsByKeyPath {
+- (NSDictionary*)objectMappingsByKeyPath {
     return _mappingsByKeyPath;
 }
 
-- (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath {
+- (void)registerObjectMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath {
     // TODO: Should generate logs
     objectMapping.rootKeyPath = keyPath;
     [self setMapping:objectMapping forKeyPath:keyPath];
@@ -99,18 +99,30 @@
     return ([objectMappings count] > 0) ? [objectMappings objectAtIndex:0] : nil;
 }
 
-#pragma mark - Deprecated
+#pragma mark - Aliases
 
-- (RKObjectMapping *)objectMappingForKeyPath:(NSString *)keyPath {
-    return (RKObjectMapping *) [self mappingForKeyPath:keyPath];
++ (RKObjectMappingProvider *)mappingProvider {
+    return [self objectMappingProvider];
 }
 
-- (void)setObjectMapping:(RKObjectMapping *)mapping forKeyPath:(NSString *)keyPath {
-    [self setMapping:mapping forKeyPath:keyPath];
+- (RKObjectMapping *)mappingForKeyPath:(NSString *)keyPath {
+    return (RKObjectMapping *) [self objectMappingForKeyPath:keyPath];
 }
 
-- (NSDictionary *)objectMappingsByKeyPath {
-    return [self mappingsByKeyPath];
+- (void)setMapping:(RKObjectMapping *)mapping forKeyPath:(NSString *)keyPath {
+    [self setObjectMapping:mapping forKeyPath:keyPath];
+}
+
+- (NSDictionary *)mappingsByKeyPath {
+    return [self objectMappingsByKeyPath];
+}
+
+- (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath {
+    return [self registerObjectMapping:objectMapping withRootKeyPath:keyPath];
+}
+
+- (void)removeMappingForKeyPath:(NSString *)keyPath {
+    [self removeObjectMappingForKeyPath:keyPath];
 }
 
 @end

@@ -64,7 +64,7 @@
 }
 
 - (void)itShouldAllowYouToRemoveAMappingByKeyPath {
-    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider objectMappingProvider];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];

@@ -1731,7 +1731,7 @@
         return nil;
     };
     
-    RKObjectMappingProvider* provider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMappingProvider* provider = [RKObjectMappingProvider objectMappingProvider];
     [provider setMapping:dynamicMapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixture(@"boy.json");
@@ -1755,7 +1755,7 @@
         return nil;
     };
     
-    RKObjectMappingProvider* provider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMappingProvider* provider = [RKObjectMappingProvider objectMappingProvider];
     [provider setMapping:dynamicMapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixture(@"boy.json");
@@ -1775,7 +1775,7 @@
         return nil;
     };
     
-    RKObjectMappingProvider* provider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMappingProvider* provider = [RKObjectMappingProvider objectMappingProvider];
     [provider setMapping:dynamicMapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixture(@"boy.json");
@@ -1799,7 +1799,7 @@
         return nil;
     };
     
-    RKObjectMappingProvider* provider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMappingProvider* provider = [RKObjectMappingProvider objectMappingProvider];
     [provider setMapping:dynamicMapping forKeyPath:@""];
     
     id userInfo = RKSpecParseFixture(@"girl.json");
