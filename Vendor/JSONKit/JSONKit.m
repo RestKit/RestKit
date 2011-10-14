@@ -1,7 +1,8 @@
 //
 //  JSONKit.m
 //  http://github.com/johnezang/JSONKit
-//  Licensed under the terms of the BSD License, as specified below.
+//  Dual licensed under either the terms of the BSD License, or alternatively
+//  under the terms of the Apache License, Version 2.0, as specified below.
 //
 
 /*
@@ -34,6 +35,22 @@
  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/*
+ Copyright 2011 John Engelhart
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 */
 
 
@@ -107,12 +124,20 @@
 #import <Foundation/NSNull.h>
 #import <Foundation/NSObjCRuntime.h>
 
+#ifndef __has_feature
+#define __has_feature(x) 0
+#endif
+
 #ifdef JK_ENABLE_CF_TRANSFER_OWNERSHIP_CALLBACKS
 #warning As of JSONKit v1.4, JK_ENABLE_CF_TRANSFER_OWNERSHIP_CALLBACKS is no longer required.  It is no longer a valid option.
 #endif
 
 #ifdef __OBJC_GC__
 #error JSONKit does not support Objective-C Garbage Collection
+#endif
+
+#if __has_feature(objc_arc)
+#error JSONKit does not support Objective-C Automatic Reference Counting (ARC)
 #endif
 
 // The following checks are really nothing more than sanity checks.
@@ -299,15 +324,17 @@ enum {
 typedef NSUInteger JKValueType;
 
 enum {
-  JKEncodeAsData   = 1,
-  JKEncodeAsString = 2,
+  JKEncodeOptionAsData              = 1,
+  JKEncodeOptionAsString            = 2,
+  JKEncodeOptionAsTypeMask          = 0x7,
+  JKEncodeOptionCollectionObj       = (1 << 3),
+  JKEncodeOptionStringObj           = (1 << 4),
+  JKEncodeOptionStringObjTrimQuotes = (1 << 5),
+  
 };
-typedef NSUInteger JKEncodeAsType;
+typedef NSUInteger JKEncodeOptionType;
 
 typedef NSUInteger JKHash;
-
-typedef id (*NSNumberAllocImp)(id object, SEL selector);
-typedef id (*NSNumberInitWithUnsignedLongLongImp)(id object, SEL selector, unsigned long long value);
 
 typedef struct JKTokenCacheItem  JKTokenCacheItem;
 typedef struct JKTokenCache      JKTokenCache;
@@ -325,6 +352,13 @@ typedef struct JKEncodeCache     JKEncodeCache;
 typedef struct JKEncodeState     JKEncodeState;
 typedef struct JKObjCImpCache    JKObjCImpCache;
 typedef struct JKHashTableEntry  JKHashTableEntry;
+
+typedef id (*NSNumberAllocImp)(id receiver, SEL selector);
+typedef id (*NSNumberInitWithUnsignedLongLongImp)(id receiver, SEL selector, unsigned long long value);
+typedef id (*JKClassFormatterIMP)(id receiver, SEL selector, id object);
+#ifdef __BLOCKS__
+typedef id (^JKClassFormatterBlock)(id formatObject);
+#endif
 
 
 struct JKPtrRange {
@@ -438,8 +472,33 @@ struct JKEncodeState {
   JKFastClassLookup       fastClassLookup;
   JKEncodeCache           cache[JK_ENCODE_CACHE_SLOTS];
   JKSerializeOptionFlags  serializeOptionFlags;
+  JKEncodeOptionType      encodeOption;
+  size_t                  depth;
   NSError                *error;
+  id                      classFormatterDelegate;
+  SEL                     classFormatterSelector;
+  JKClassFormatterIMP     classFormatterIMP;
+#ifdef __BLOCKS__
+  JKClassFormatterBlock   classFormatterBlock;
+#endif
 };
+
+// This is a JSONKit private class.
+@interface JKSerializer : NSObject {
+  JKEncodeState *encodeState;
+}
+
+#ifdef __BLOCKS__
+#define JKSERIALIZER_BLOCKS_PROTO id(^)(id object)
+#else
+#define JKSERIALIZER_BLOCKS_PROTO id
+#endif
+
++ (id)serializeObject:(id)object options:(JKSerializeOptionFlags)optionFlags encodeOption:(JKEncodeOptionType)encodeOption block:(JKSERIALIZER_BLOCKS_PROTO)block delegate:(id)delegate selector:(SEL)selector error:(NSError **)error;
+- (id)serializeObject:(id)object options:(JKSerializeOptionFlags)optionFlags encodeOption:(JKEncodeOptionType)encodeOption block:(JKSERIALIZER_BLOCKS_PROTO)block delegate:(id)delegate selector:(SEL)selector error:(NSError **)error;
+- (void)releaseState;
+
+@end
 
 struct JKHashTableEntry {
   NSUInteger keyHash;
@@ -489,12 +548,7 @@ static const UTF8  firstByteMark[7]   = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0x
 #define JK_END_STRING_PTR(x) (&((x)->stringBuffer.bytes.ptr[(x)->stringBuffer.bytes.length]))
 
 
-static void jk_swizzleInstanceMethod(Class fromClass, Class toClass, SEL selector);
-static void jk_swizzleClassMethod(Class fromClass, Class toClass, SEL selector);
-
 static JKArray          *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollection);
-static NSUInteger        _JKArrayCount(JKArray *array);
-static void              _JKArrayIncrementMutations(JKArray *array);
 static void              _JKArrayInsertObjectAtIndex(JKArray *array, id newObject, NSUInteger objectIndex);
 static void              _JKArrayReplaceObjectAtIndexWithObject(JKArray *array, NSUInteger objectIndex, id newObject);
 static void              _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex);
@@ -504,13 +558,10 @@ static NSUInteger        _JKDictionaryCapacityForCount(NSUInteger count);
 static JKDictionary     *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *objects, NSUInteger count, BOOL mutableCollection);
 static JKHashTableEntry *_JKDictionaryHashEntry(JKDictionary *dictionary);
 static NSUInteger        _JKDictionaryCapacity(JKDictionary *dictionary);
-static NSUInteger        _JKDictionaryCount(JKDictionary *dictionary);
-static void              _JKDictionaryIncrementMutations(JKDictionary *dictionary);
 static void              _JKDictionaryResizeIfNeccessary(JKDictionary *dictionary);
 static void              _JKDictionaryRemoveObjectWithEntry(JKDictionary *dictionary, JKHashTableEntry *entry);
 static void              _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash, id key, id object);
 static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(JKDictionary *dictionary, id aKey);
-static NSUInteger        _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUInteger arrayLength, id keys[arrayLength], id objects[arrayLength]);
 
 
 static void _JSONDecoderCleanup(JSONDecoder *decoder);
@@ -545,58 +596,75 @@ JK_STATIC_INLINE void jk_set_parsed_token(JKParseState *parseState, const unsign
 static void jk_encode_error(JKEncodeState *encodeState, NSString *format, ...);
 static int jk_encode_printf(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format, ...);
 static int jk_encode_write(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format);
-static int jk_encode_write1(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format);
+static int jk_encode_writePrettyPrintWhiteSpace(JKEncodeState *encodeState);
+static int jk_encode_write1slow(JKEncodeState *encodeState, ssize_t depthChange, const char *format);
+static int jk_encode_write1fast(JKEncodeState *encodeState, ssize_t depthChange JK_UNUSED_ARG, const char *format);
 static int jk_encode_writen(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format, size_t length);
 JK_STATIC_INLINE JKHash jk_encode_object_hash(void *objectPtr);
 JK_STATIC_INLINE void jk_encode_updateCache(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object);
 static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *objectPtr);
-static id jk_encode(void *object, JKSerializeOptionFlags optionFlags, JKEncodeAsType encodeAs, NSError **error);
+
+#define jk_encode_write1(es, dc, f)  (JK_EXPECT_F(_jk_encode_prettyPrint) ? jk_encode_write1slow(es, dc, f) : jk_encode_write1fast(es, dc, f))
 
 
 JK_STATIC_INLINE size_t jk_min(size_t a, size_t b);
 JK_STATIC_INLINE size_t jk_max(size_t a, size_t b);
 JK_STATIC_INLINE JKHash calculateHash(JKHash currentHash, unsigned char c);
 
-#pragma mark -
-#pragma mark ObjC Voodoo
+// JSONKit v1.4 used both a JKArray : NSArray and JKMutableArray : NSMutableArray, and the same for the dictionary collection type.
+// However, Louis Gerbarg (via cocoa-dev) pointed out that Cocoa / Core Foundation actually implements only a single class that inherits from the 
+// mutable version, and keeps an ivar bit for whether or not that instance is mutable.  This means that the immutable versions of the collection
+// classes receive the mutating methods, but this is handled by having those methods throw an exception when the ivar bit is set to immutable.
+// We adopt the same strategy here.  It's both cleaner and gets rid of the method swizzling hackery used in JSONKit v1.4.
 
-// These two functions are used to perform some ObjC swizzeling voodoo to implement our mutable collection classes.
-static void jk_swizzleInstanceMethod(Class fromClass, Class toClass, SEL selector) {
-  fromClass = class_isMetaClass(fromClass) ? objc_getClass(class_getName(fromClass)) : fromClass;
-  toClass   = class_isMetaClass(toClass)   ? objc_getClass(class_getName(toClass))   : toClass;
-  class_replaceMethod(fromClass, selector, method_getImplementation(class_getInstanceMethod(toClass, selector)), method_getTypeEncoding(class_getInstanceMethod(toClass, selector)));
+
+// This is a workaround for issue #23 https://github.com/johnezang/JSONKit/pull/23
+// Basically, there seem to be a problem with using +load in static libraries on iOS.  However, __attribute__ ((constructor)) does work correctly.
+// Since we do not require anything "special" that +load provides, and we can accomplish the same thing using __attribute__ ((constructor)), the +load logic was moved here.
+
+static Class                               _JKArrayClass                           = NULL;
+static size_t                              _JKArrayInstanceSize                    = 0UL;
+static Class                               _JKDictionaryClass                      = NULL;
+static size_t                              _JKDictionaryInstanceSize               = 0UL;
+
+// For JSONDecoder...
+static Class                               _jk_NSNumberClass                       = NULL;
+static NSNumberAllocImp                    _jk_NSNumberAllocImp                    = NULL;
+static NSNumberInitWithUnsignedLongLongImp _jk_NSNumberInitWithUnsignedLongLongImp = NULL;
+
+extern void jk_collectionClassLoadTimeInitialization(void) __attribute__ ((constructor));
+
+void jk_collectionClassLoadTimeInitialization(void) {
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Though technically not required, the run time environment at load time initialization may be less than ideal.
+  
+  _JKArrayClass             = objc_getClass("JKArray");
+  _JKArrayInstanceSize      = jk_max(16UL, class_getInstanceSize(_JKArrayClass));
+  
+  _JKDictionaryClass        = objc_getClass("JKDictionary");
+  _JKDictionaryInstanceSize = jk_max(16UL, class_getInstanceSize(_JKDictionaryClass));
+  
+  // For JSONDecoder...
+  _jk_NSNumberClass = [NSNumber class];
+  _jk_NSNumberAllocImp = (NSNumberAllocImp)[NSNumber methodForSelector:@selector(alloc)];
+  
+  // Hacktacular.  Need to do it this way due to the nature of class clusters.
+  id temp_NSNumber = [NSNumber alloc];
+  _jk_NSNumberInitWithUnsignedLongLongImp = (NSNumberInitWithUnsignedLongLongImp)[temp_NSNumber methodForSelector:@selector(initWithUnsignedLongLong:)];
+  [[temp_NSNumber init] release];
+  temp_NSNumber = NULL;
+  
+  [pool release]; pool = NULL;
 }
 
-static void jk_swizzleClassMethod(Class fromClass, Class toClass, SEL selector) {
-  fromClass = class_isMetaClass(fromClass) ? fromClass : objc_getMetaClass(class_getName(fromClass));
-  toClass   = class_isMetaClass(toClass)   ? toClass   : objc_getMetaClass(class_getName(toClass));
-  class_replaceMethod(fromClass, selector, method_getImplementation(class_getClassMethod(toClass, selector)), method_getTypeEncoding(class_getClassMethod(toClass, selector)));
-}
 
 #pragma mark -
-@interface JKArray : NSArray <NSCopying, NSMutableCopying, NSFastEnumeration> {
+@interface JKArray : NSMutableArray <NSCopying, NSMutableCopying, NSFastEnumeration> {
   id         *objects;
   NSUInteger  count, capacity, mutations;
 }
 @end
 
 @implementation JKArray
-
-static Class _JKArrayClass         = NULL;
-static Class _JKMutableArrayClass  = NULL;
-static size_t _JKArrayInstanceSize = 0UL;
-
-+ (void)load
-{
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Though technically not required, the run time environment at +load time may be less than ideal.
-
-  _JKArrayClass        = objc_getClass("JKArray");
-  _JKMutableArrayClass = objc_getClass("JKMutableArray");
-  _JKArrayInstanceSize = class_getInstanceSize(_JKArrayClass);
-  if(_JKArrayInstanceSize < 16UL) { _JKArrayInstanceSize = 16UL; }
-
-  [pool release]; pool = NULL;
-}
 
 + (id)allocWithZone:(NSZone *)zone
 {
@@ -609,35 +677,29 @@ static JKArray *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollec
   NSCParameterAssert((objects != NULL) && (_JKArrayClass != NULL) && (_JKArrayInstanceSize > 0UL));
   JKArray *array = NULL;
   if(JK_EXPECT_T((array = (JKArray *)calloc(1UL, _JKArrayInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
-    array->isa      = (mutableCollection == NO) ? _JKArrayClass : _JKMutableArrayClass;
+    array->isa      = _JKArrayClass;
+    if((array = [array init]) == NULL) { return(NULL); }
     array->capacity = count;
     array->count    = count;
     if(JK_EXPECT_F((array->objects = (id *)malloc(sizeof(id) * array->capacity)) == NULL)) { [array autorelease]; return(NULL); }
     memcpy(array->objects, objects, array->capacity * sizeof(id));
+    array->mutations = (mutableCollection == NO) ? 0UL : 1UL;
   }
   return(array);
-}
-
-static NSUInteger _JKArrayCount(JKArray *array) {
-  NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity));
-  return(array->count);
-}
-
-static void _JKArrayIncrementMutations(JKArray *array) {
-  NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity));
-  array->mutations++;
 }
 
 // Note: The caller is responsible for -retaining the object that is to be added.
 static void _JKArrayInsertObjectAtIndex(JKArray *array, id newObject, NSUInteger objectIndex) {
   NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity) && (objectIndex <= array->count) && (newObject != NULL));
-  if(!((array != NULL) && (array->objects != NULL) && (objectIndex <= array->count) && (newObject != NULL))) { return; }
-  array->count++;
-  if(array->count >= array->capacity) {
+  if(!((array != NULL) && (array->objects != NULL) && (objectIndex <= array->count) && (newObject != NULL))) { [newObject autorelease]; return; }
+  if((array->count + 1UL) >= array->capacity) {
+    id *newObjects = NULL;
+    if((newObjects = (id *)realloc(array->objects, sizeof(id) * (array->capacity + 16UL))) == NULL) { [NSException raise:NSMallocException format:@"Unable to resize objects array."]; }
+    array->objects = newObjects;
     array->capacity += 16UL;
-    if((array->objects = (id *)reallocf(array->objects, sizeof(id) * array->capacity)) == NULL) { [NSException raise:NSMallocException format:@"Unable to resize objects array."]; }
     memset(&array->objects[array->count], 0, sizeof(id) * (array->capacity - array->count));
   }
+  array->count++;
   if((objectIndex + 1UL) < array->count) { memmove(&array->objects[objectIndex + 1UL], &array->objects[objectIndex], sizeof(id) * ((array->count - 1UL) - objectIndex)); array->objects[objectIndex] = NULL; }
   array->objects[objectIndex] = newObject;
 }
@@ -645,18 +707,18 @@ static void _JKArrayInsertObjectAtIndex(JKArray *array, id newObject, NSUInteger
 // Note: The caller is responsible for -retaining the object that is to be added.
 static void _JKArrayReplaceObjectAtIndexWithObject(JKArray *array, NSUInteger objectIndex, id newObject) {
   NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL) && (newObject != NULL));
-  if(!((array != NULL) && (array->objects != NULL) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL) && (newObject != NULL))) { return; }
+  if(!((array != NULL) && (array->objects != NULL) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL) && (newObject != NULL))) { [newObject autorelease]; return; }
   CFRelease(array->objects[objectIndex]);
   array->objects[objectIndex] = NULL;
   array->objects[objectIndex] = newObject;
 }
 
 static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) {
-  NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count <= array->capacity) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL));
-  if(!((array != NULL) && (array->objects != NULL) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL))) { return; }
+  NSCParameterAssert((array != NULL) && (array->objects != NULL) && (array->count > 0UL) && (array->count <= array->capacity) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL));
+  if(!((array != NULL) && (array->objects != NULL) && (array->count > 0UL) && (array->count <= array->capacity) && (objectIndex < array->count) && (array->objects[objectIndex] != NULL))) { return; }
   CFRelease(array->objects[objectIndex]);
   array->objects[objectIndex] = NULL;
-  if((objectIndex + 1UL) < array->count) { memmove(&array->objects[objectIndex], &array->objects[objectIndex + 1UL], sizeof(id) * ((array->count - 1UL) - objectIndex)); array->objects[array->count] = NULL; }
+  if((objectIndex + 1UL) < array->count) { memmove(&array->objects[objectIndex], &array->objects[objectIndex + 1UL], sizeof(id) * ((array->count - 1UL) - objectIndex)); array->objects[array->count - 1UL] = NULL; }
   array->count--;
 }
 
@@ -680,7 +742,8 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
 - (void)getObjects:(id *)objectsPtr range:(NSRange)range
 {
   NSParameterAssert((objects != NULL) && (count <= capacity));
-  if((range.location > count) || (NSMaxRange(range) > count)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), NSMaxRange(range), count]; }
+  if((objectsPtr     == NULL)  && (NSMaxRange(range) > 0UL))   { [NSException raise:NSRangeException format:@"*** -[%@ %@]: pointer to objects array is NULL but range length is %lu", NSStringFromClass([self class]), NSStringFromSelector(_cmd), NSMaxRange(range)];        }
+  if((range.location >  count) || (NSMaxRange(range) > count)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)",                          NSStringFromClass([self class]), NSStringFromSelector(_cmd), NSMaxRange(range), count]; }
   memcpy(objectsPtr, objects + range.location, range.length * sizeof(id));
 }
 
@@ -693,7 +756,7 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len
 {
-  NSParameterAssert((objects != NULL) && (count <= capacity));
+  NSParameterAssert((state != NULL) && (stackbuf != NULL) && (len > 0UL) && (objects != NULL) && (count <= capacity));
   if(JK_EXPECT_F(state->state == 0UL))   { state->mutationsPtr = (unsigned long *)&mutations; state->itemsPtr = stackbuf; }
   if(JK_EXPECT_F(state->state >= count)) { return(0UL); }
   
@@ -703,101 +766,52 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
   return(enumeratedCount);
 }
 
-- (id)copyWithZone:(NSZone *)zone
-{
-#pragma unused(zone)
-  NSParameterAssert((objects != NULL) && (count <= capacity));
-  return([self retain]);
-}
-
-- (id)mutableCopyWithZone:(NSZone *)zone
-{
-  NSParameterAssert((objects != NULL) && (count <= capacity));
-  return([[NSMutableArray allocWithZone:zone] initWithObjects:objects count:count]);
-}
-
-@end
-
-#pragma mark -
-@interface JKMutableArray : NSMutableArray
-@end
-
-@implementation JKMutableArray
-
-+ (void)load
-{
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Though technically not required, the run time environment at +load time may be less than ideal.
-  
-  Class JKMutableArrayClass = objc_getClass("JKMutableArray"); Class JKArrayClass = objc_getClass("JKArray");
-  
-  // We swizzle the methods from JKArray in to this class (JKArrayDictionary).
-  
-  jk_swizzleClassMethod(JKMutableArrayClass, JKArrayClass, @selector(allocWithZone:));
-  
-  jk_swizzleInstanceMethod(JKMutableArrayClass, JKArrayClass, @selector(dealloc));
-  jk_swizzleInstanceMethod(JKMutableArrayClass, JKArrayClass, @selector(count));
-  jk_swizzleInstanceMethod(JKMutableArrayClass, JKArrayClass, @selector(objectAtIndex:));
-  jk_swizzleInstanceMethod(JKMutableArrayClass, JKArrayClass, @selector(getObjects:range:));
-  jk_swizzleInstanceMethod(JKMutableArrayClass, JKArrayClass, @selector(countByEnumeratingWithState:objects:count:));
-  
-  [pool release]; pool = NULL;
-}
-
 - (void)insertObject:(id)anObject atIndex:(NSUInteger)objectIndex
 {
-  if(anObject    == NULL)                           { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
-  if(objectIndex >  _JKArrayCount((JKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((JKArray *)self) + 1UL]; }
+  if(mutations   == 0UL)   { [NSException raise:NSInternalInconsistencyException format:@"*** -[%@ %@]: mutating method sent to immutable object", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
+  if(anObject    == NULL)  { [NSException raise:NSInvalidArgumentException       format:@"*** -[%@ %@]: attempt to insert nil",                    NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
+  if(objectIndex >  count) { [NSException raise:NSRangeException                 format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)",          NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, count + 1UL]; }
+#ifdef __clang_analyzer__
+  [anObject retain]; // Stupid clang analyzer...  Issue #19.
+#else
   anObject = [anObject retain];
-  _JKArrayInsertObjectAtIndex((JKArray *)self, anObject, objectIndex);
-  _JKArrayIncrementMutations((JKArray *)self);
+#endif
+  _JKArrayInsertObjectAtIndex(self, anObject, objectIndex);
+  mutations = (mutations == NSUIntegerMax) ? 1UL : mutations + 1UL;
 }
-
-/*
-- (void)addObject:(id)anObject
-{
-  [self insertObject:anObject atIndex:_JKArrayCount((JKArray *)self)];
-}
-*/
 
 - (void)removeObjectAtIndex:(NSUInteger)objectIndex
 {
-  if(objectIndex >= _JKArrayCount((JKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((JKArray *)self)]; }
-  _JKArrayRemoveObjectAtIndex((JKArray *)self, objectIndex);
-  _JKArrayIncrementMutations((JKArray *)self);
+  if(mutations   == 0UL)   { [NSException raise:NSInternalInconsistencyException format:@"*** -[%@ %@]: mutating method sent to immutable object", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
+  if(objectIndex >= count) { [NSException raise:NSRangeException                 format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)",          NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, count]; }
+  _JKArrayRemoveObjectAtIndex(self, objectIndex);
+  mutations = (mutations == NSUIntegerMax) ? 1UL : mutations + 1UL;
 }
-
-/*
-- (void)removeLastObject
-{
-  [self removeObjectAtIndex:_JKArrayCount((JKArray *)self) == 0UL ? 0UL : (_JKArrayCount((JKArray *)self) - 1UL)];
-}
-*/
 
 - (void)replaceObjectAtIndex:(NSUInteger)objectIndex withObject:(id)anObject
 {
-  if(anObject    == NULL)                           { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
-  if(objectIndex >= _JKArrayCount((JKArray *)self)) { [NSException raise:NSRangeException format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, _JKArrayCount((JKArray *)self)]; }
+  if(mutations   == 0UL)   { [NSException raise:NSInternalInconsistencyException format:@"*** -[%@ %@]: mutating method sent to immutable object", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
+  if(anObject    == NULL)  { [NSException raise:NSInvalidArgumentException       format:@"*** -[%@ %@]: attempt to insert nil",                    NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
+  if(objectIndex >= count) { [NSException raise:NSRangeException                 format:@"*** -[%@ %@]: index (%lu) beyond bounds (%lu)",          NSStringFromClass([self class]), NSStringFromSelector(_cmd), objectIndex, count]; }
+#ifdef __clang_analyzer__
+  [anObject retain]; // Stupid clang analyzer...  Issue #19.
+#else
   anObject = [anObject retain];
-  _JKArrayReplaceObjectAtIndexWithObject((JKArray *)self, objectIndex, anObject);
-  _JKArrayIncrementMutations((JKArray *)self);
+#endif
+  _JKArrayReplaceObjectAtIndexWithObject(self, objectIndex, anObject);
+  mutations = (mutations == NSUIntegerMax) ? 1UL : mutations + 1UL;
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-  NSUInteger arrayCount = [self count];
-  if(arrayCount == 0UL) { return([[NSArray allocWithZone:zone] init]); }
-  id stackObjects[arrayCount];
-  [self getObjects:stackObjects range:NSMakeRange(0UL, arrayCount)];
-  return([[NSArray allocWithZone:zone] initWithObjects:stackObjects count:arrayCount]);
+  NSParameterAssert((objects != NULL) && (count <= capacity));
+  return((mutations == 0UL) ? [self retain] : [(NSArray *)[NSArray allocWithZone:zone] initWithObjects:objects count:count]);
 }
 
 - (id)mutableCopyWithZone:(NSZone *)zone
 {
-  NSUInteger arrayCount = [self count];
-  if(arrayCount == 0UL) { return([[NSMutableArray allocWithZone:zone] init]); }
-  id stackObjects[arrayCount];
-  [self getObjects:stackObjects range:NSMakeRange(0UL, arrayCount)];
-  return([[NSMutableArray allocWithZone:zone] initWithObjects:stackObjects count:arrayCount]);
+  NSParameterAssert((objects != NULL) && (count <= capacity));
+  return([(NSMutableArray *)[NSMutableArray allocWithZone:zone] initWithObjects:objects count:count]);
 }
 
 @end
@@ -857,29 +871,13 @@ static void _JKArrayRemoveObjectAtIndex(JKArray *array, NSUInteger objectIndex) 
 @end
 
 #pragma mark -
-@interface JKDictionary : NSDictionary <NSCopying, NSMutableCopying, NSFastEnumeration> {
+@interface JKDictionary : NSMutableDictionary <NSCopying, NSMutableCopying, NSFastEnumeration> {
   NSUInteger count, capacity, mutations;
   JKHashTableEntry *entry;
 }
 @end
 
 @implementation JKDictionary
-
-static Class  _JKDictionaryClass        = NULL;
-static Class  _JKMutableDictionaryClass = NULL;
-static size_t _JKDictionaryInstanceSize = 0UL;
-
-+ (void)load
-{
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Though technically not required, the run time environment at +load time may be less than ideal.
-
-  _JKDictionaryClass        = objc_getClass("JKDictionary");
-  _JKMutableDictionaryClass = objc_getClass("JKMutableDictionary");
-  _JKDictionaryInstanceSize = class_getInstanceSize(_JKDictionaryClass);
-  if(_JKDictionaryInstanceSize < 16UL) { _JKDictionaryInstanceSize = 16UL; }
-
-  [pool release]; pool = NULL;
-}
 
 + (id)allocWithZone:(NSZone *)zone
 {
@@ -921,14 +919,15 @@ static void _JKDictionaryResizeIfNeccessary(JKDictionary *dictionary) {
     for(idx = 0UL; idx < oldCapacity; idx++) { if(oldEntry[idx].key != NULL) { _JKDictionaryAddObject(dictionary, oldEntry[idx].keyHash, oldEntry[idx].key, oldEntry[idx].object); oldEntry[idx].keyHash = 0UL; oldEntry[idx].key = NULL; oldEntry[idx].object = NULL; } }
     NSCParameterAssert((oldCount == dictionary->count));
     free(oldEntry); oldEntry = NULL;
-  }  
+  }
 }
 
 static JKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *objects, NSUInteger count, BOOL mutableCollection) {
   NSCParameterAssert((keys != NULL) && (keyHashes != NULL) && (objects != NULL) && (_JKDictionaryClass != NULL) && (_JKDictionaryInstanceSize > 0UL));
   JKDictionary *dictionary = NULL;
-  if(JK_EXPECT_T((dictionary = (JKDictionary *)calloc(1UL, _JKDictionaryInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
-    dictionary->isa      = (mutableCollection == NO) ? _JKDictionaryClass : _JKMutableDictionaryClass;
+  if(JK_EXPECT_T((dictionary = (JKDictionary *)calloc(1UL, _JKDictionaryInstanceSize)) != NULL)) { // Directly allocate the JKDictionary instance via calloc.
+    dictionary->isa      = _JKDictionaryClass;
+    if((dictionary = [dictionary init]) == NULL) { return(NULL); }
     dictionary->capacity = _JKDictionaryCapacityForCount(count);
     dictionary->count    = 0UL;
     
@@ -936,6 +935,8 @@ static JKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *ob
 
     NSUInteger idx = 0UL;
     for(idx = 0UL; idx < count; idx++) { _JKDictionaryAddObject(dictionary, keyHashes[idx], keys[idx], objects[idx]); }
+
+    dictionary->mutations = (mutableCollection == NO) ? 0UL : 1UL;
   }
   return(dictionary);
 }
@@ -965,22 +966,31 @@ static NSUInteger _JKDictionaryCapacity(JKDictionary *dictionary) {
   return(dictionary->capacity);
 }
 
-static NSUInteger _JKDictionaryCount(JKDictionary *dictionary) {
-  NSCParameterAssert(dictionary != NULL);
-  return(dictionary->count);
-}
-
-static void _JKDictionaryIncrementMutations(JKDictionary *dictionary) {
-  NSCParameterAssert(dictionary != NULL);
-  if(++dictionary->mutations == 0UL) { dictionary->mutations = 1UL; }
-}
-
 static void _JKDictionaryRemoveObjectWithEntry(JKDictionary *dictionary, JKHashTableEntry *entry) {
-  NSCParameterAssert((dictionary != NULL) && (entry != NULL) && (entry->key != NULL) && (entry->object != NULL) && (dictionary->count > 0UL));
+  NSCParameterAssert((dictionary != NULL) && (entry != NULL) && (entry->key != NULL) && (entry->object != NULL) && (dictionary->count > 0UL) && (dictionary->count <= dictionary->capacity));
   CFRelease(entry->key);    entry->key    = NULL;
   CFRelease(entry->object); entry->object = NULL;
   entry->keyHash = 0UL;
   dictionary->count--;
+  // In order for certain invariants that are used to speed up the search for a particular key, we need to "re-add" all the entries in the hash table following this entry until we hit a NULL entry.
+  NSUInteger removeIdx = entry - dictionary->entry, idx = 0UL;
+  NSCParameterAssert((removeIdx < dictionary->capacity));
+  for(idx = 0UL; idx < dictionary->capacity; idx++) {
+    NSUInteger entryIdx = (removeIdx + idx + 1UL) % dictionary->capacity;
+    JKHashTableEntry *atEntry = &dictionary->entry[entryIdx];
+    if(atEntry->key == NULL) { break; }
+    NSUInteger keyHash = atEntry->keyHash;
+    id key = atEntry->key, object = atEntry->object;
+    NSCParameterAssert(object != NULL);
+    atEntry->keyHash = 0UL;
+    atEntry->key     = NULL;
+    atEntry->object  = NULL;
+    NSUInteger addKeyEntry = keyHash % dictionary->capacity, addIdx = 0UL;
+    for(addIdx = 0UL; addIdx < dictionary->capacity; addIdx++) {
+      JKHashTableEntry *atAddEntry = &dictionary->entry[((addKeyEntry + addIdx) % dictionary->capacity)];
+      if(JK_EXPECT_T(atAddEntry->key == NULL)) { NSCParameterAssert((atAddEntry->keyHash == 0UL) && (atAddEntry->object == NULL)); atAddEntry->key = key; atAddEntry->object = object; atAddEntry->keyHash = keyHash; break; }
+    }
+  }
 }
 
 static void _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash, id key, id object) {
@@ -990,7 +1000,7 @@ static void _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash,
     NSUInteger entryIdx = (keyEntry + idx) % dictionary->capacity;
     JKHashTableEntry *atEntry = &dictionary->entry[entryIdx];
     if(JK_EXPECT_F(atEntry->keyHash == keyHash) && JK_EXPECT_T(atEntry->key != NULL) && (JK_EXPECT_F(key == atEntry->key) || JK_EXPECT_F(CFEqual(atEntry->key, key)))) { _JKDictionaryRemoveObjectWithEntry(dictionary, atEntry); }
-    if(JK_EXPECT_T(atEntry->key == NULL)) { atEntry->key = key; atEntry->object = object; atEntry->keyHash = keyHash; dictionary->count++; return; }
+    if(JK_EXPECT_T(atEntry->key == NULL)) { NSCParameterAssert((atEntry->keyHash == 0UL) && (atEntry->object == NULL)); atEntry->key = key; atEntry->object = object; atEntry->keyHash = keyHash; dictionary->count++; return; }
   }
 
   // We should never get here.  If we do, we -release the key / object because it's our responsibility.
@@ -1005,8 +1015,7 @@ static void _JKDictionaryAddObject(JKDictionary *dictionary, NSUInteger keyHash,
 
 static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(JKDictionary *dictionary, id aKey) {
   NSCParameterAssert((dictionary != NULL) && (dictionary->entry != NULL) && (dictionary->count <= dictionary->capacity));
-  // Guard against a divide by zero here.
-  if(aKey == NULL || 0 == dictionary->capacity) { return(NULL); }
+  if((aKey == NULL) || (dictionary->capacity == 0UL)) { return(NULL); }
   NSUInteger        keyHash = CFHash(aKey), keyEntry = (keyHash % dictionary->capacity), idx = 0UL;
   JKHashTableEntry *atEntry = NULL;
   for(idx = 0UL; idx < dictionary->capacity; idx++) {
@@ -1019,34 +1028,28 @@ static JKHashTableEntry *_JKDictionaryHashTableEntryForKey(JKDictionary *diction
 
 - (id)objectForKey:(id)aKey
 {
-  JKHashTableEntry *atEntry = _JKDictionaryHashTableEntryForKey(self, aKey);
-  return((atEntry != NULL) ? atEntry->object : NULL);
-}
-
-static NSUInteger _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUInteger arrayLength, id keys[arrayLength], id objects[arrayLength]) {
-  NSCParameterAssert((dictionary != NULL) && (dictionary->entry != NULL) && (dictionary->count <= dictionary->capacity));
-  NSUInteger atEntry = 0UL; NSUInteger arrayIdx = 0UL;
-  for(atEntry = 0UL; (atEntry < dictionary->capacity) && (arrayIdx < arrayLength); atEntry++) {
-    if(JK_EXPECT_T(dictionary->entry[atEntry].key != NULL)) {
-      NSCParameterAssert((dictionary->entry[atEntry].object != NULL) && (arrayIdx < dictionary->count));
-      if(JK_EXPECT_T(keys    != NULL)) { keys[arrayIdx]    = dictionary->entry[atEntry].key;    }
-      if(JK_EXPECT_T(objects != NULL)) { objects[arrayIdx] = dictionary->entry[atEntry].object; }
-      arrayIdx++;
-    }
-  }
-  NSCParameterAssert(arrayIdx == dictionary->count);
-  return(arrayIdx);
+  NSParameterAssert((entry != NULL) && (count <= capacity));
+  JKHashTableEntry *entryForKey = _JKDictionaryHashTableEntryForKey(self, aKey);
+  return((entryForKey != NULL) ? entryForKey->object : NULL);
 }
 
 - (void)getObjects:(id *)objects andKeys:(id *)keys
 {
   NSParameterAssert((entry != NULL) && (count <= capacity));
-  _JKDictionaryGetKeysAndObjects(self, count, keys, objects);
+  NSUInteger atEntry = 0UL; NSUInteger arrayIdx = 0UL;
+  for(atEntry = 0UL; atEntry < capacity; atEntry++) {
+    if(JK_EXPECT_T(entry[atEntry].key != NULL)) {
+      NSCParameterAssert((entry[atEntry].object != NULL) && (arrayIdx < count));
+      if(JK_EXPECT_T(keys    != NULL)) { keys[arrayIdx]    = entry[atEntry].key;    }
+      if(JK_EXPECT_T(objects != NULL)) { objects[arrayIdx] = entry[atEntry].object; }
+      arrayIdx++;
+    }
+  }
 }
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id *)stackbuf count:(NSUInteger)len
 {
-  NSParameterAssert((entry != NULL) && (count <= capacity));
+  NSParameterAssert((state != NULL) && (stackbuf != NULL) && (len > 0UL) && (entry != NULL) && (count <= capacity));
   if(JK_EXPECT_F(state->state == 0UL))      { state->mutationsPtr = (unsigned long *)&mutations; state->itemsPtr = stackbuf; }
   if(JK_EXPECT_F(state->state >= capacity)) { return(0UL); }
   
@@ -1061,88 +1064,42 @@ static NSUInteger _JKDictionaryGetKeysAndObjects(JKDictionary *dictionary, NSUIn
   return([[[JKDictionaryEnumerator alloc] initWithJKDictionary:self] autorelease]);
 }
 
-- (id)copyWithZone:(NSZone *)zone
-{
-#pragma unused(zone)
-  NSParameterAssert((entry != NULL) && (count <= capacity));
-  return([self retain]);
-}
-
-- (id)mutableCopyWithZone:(NSZone *)zone
-{
-  NSParameterAssert((entry != NULL) && (count <= capacity));
-  id stackKeys[count], stackObjects[count];
-  NSUInteger gotCount = _JKDictionaryGetKeysAndObjects(self, count, stackKeys, stackObjects);
-  NSParameterAssert(gotCount == count);
-  return([[NSMutableDictionary allocWithZone:zone] initWithObjects:stackObjects forKeys:stackKeys count:gotCount]);
-}
-
-@end
-
-
-#pragma mark -
-@interface JKMutableDictionary : NSMutableDictionary 
-@end
-
-@implementation JKMutableDictionary
-
-+ (void)load
-{
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Though technically not required, the run time environment at +load time may be less than ideal.
-  
-  Class JKMutableDictionaryClass = objc_getClass("JKMutableDictionary"), JKDictionaryClass = objc_getClass("JKDictionary");
-  
-  // We swizzle the methods from JKDictionary in to this class (JKMutableDictionary).
-  
-  jk_swizzleClassMethod(JKMutableDictionaryClass, JKDictionaryClass, @selector(allocWithZone:));
-  
-  jk_swizzleInstanceMethod(JKMutableDictionaryClass, JKDictionaryClass, @selector(dealloc));
-  jk_swizzleInstanceMethod(JKMutableDictionaryClass, JKDictionaryClass, @selector(count));
-  jk_swizzleInstanceMethod(JKMutableDictionaryClass, JKDictionaryClass, @selector(objectForKey:));
-  jk_swizzleInstanceMethod(JKMutableDictionaryClass, JKDictionaryClass, @selector(getObjects:andKeys:));
-  jk_swizzleInstanceMethod(JKMutableDictionaryClass, JKDictionaryClass, @selector(keyEnumerator));
-  jk_swizzleInstanceMethod(JKMutableDictionaryClass, JKDictionaryClass, @selector(countByEnumeratingWithState:objects:count:));
-  
-  [pool release]; pool = NULL;
-}
-
 - (void)setObject:(id)anObject forKey:(id)aKey
 {
-  if(aKey     == NULL) { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil key", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
-  if(anObject == NULL) { [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: attempt to insert nil value (key: %@)", NSStringFromClass([self class]), NSStringFromSelector(_cmd), aKey]; }
+  if(mutations == 0UL)  { [NSException raise:NSInternalInconsistencyException format:@"*** -[%@ %@]: mutating method sent to immutable object", NSStringFromClass([self class]), NSStringFromSelector(_cmd)];       }
+  if(aKey      == NULL) { [NSException raise:NSInvalidArgumentException       format:@"*** -[%@ %@]: attempt to insert nil key",                NSStringFromClass([self class]), NSStringFromSelector(_cmd)];       }
+  if(anObject  == NULL) { [NSException raise:NSInvalidArgumentException       format:@"*** -[%@ %@]: attempt to insert nil value (key: %@)",    NSStringFromClass([self class]), NSStringFromSelector(_cmd), aKey]; }
   
-  _JKDictionaryResizeIfNeccessary((JKDictionary *)self);
-  aKey     = [aKey     copy];
-  anObject = [anObject retain];
-  _JKDictionaryAddObject((JKDictionary *)self, CFHash(aKey), aKey, anObject);
-  _JKDictionaryIncrementMutations((JKDictionary *)self);
+  _JKDictionaryResizeIfNeccessary(self);
+#ifndef __clang_analyzer__
+  aKey     = [aKey     copy];   // Why on earth would clang complain that this -copy "might leak", 
+  anObject = [anObject retain]; // but this -retain doesn't!?
+#endif // __clang_analyzer__
+  _JKDictionaryAddObject(self, CFHash(aKey), aKey, anObject);
+  mutations = (mutations == NSUIntegerMax) ? 1UL : mutations + 1UL;
 }
 
 - (void)removeObjectForKey:(id)aKey
 {
-  JKHashTableEntry *entry = _JKDictionaryHashTableEntryForKey((JKDictionary *)self, aKey);
-  if(entry != NULL) {
-    _JKDictionaryRemoveObjectWithEntry((JKDictionary *)self, entry);
-    _JKDictionaryIncrementMutations((JKDictionary *)self);
+  if(mutations == 0UL)  { [NSException raise:NSInternalInconsistencyException format:@"*** -[%@ %@]: mutating method sent to immutable object", NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
+  if(aKey      == NULL) { [NSException raise:NSInvalidArgumentException       format:@"*** -[%@ %@]: attempt to remove nil key",                NSStringFromClass([self class]), NSStringFromSelector(_cmd)]; }
+  JKHashTableEntry *entryForKey = _JKDictionaryHashTableEntryForKey(self, aKey);
+  if(entryForKey != NULL) {
+    _JKDictionaryRemoveObjectWithEntry(self, entryForKey);
+    mutations = (mutations == NSUIntegerMax) ? 1UL : mutations + 1UL;
   }
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-  NSUInteger dictionaryCount = _JKDictionaryCount((JKDictionary *)self);
-  id stackKeys[dictionaryCount], stackObjects[dictionaryCount];
-  NSUInteger gotCount = _JKDictionaryGetKeysAndObjects((JKDictionary *)self, dictionaryCount, stackKeys, stackObjects);
-  NSParameterAssert(gotCount == dictionaryCount);
-  return([[NSDictionary allocWithZone:zone] initWithObjects:stackObjects forKeys:stackKeys count:gotCount]);
+  NSParameterAssert((entry != NULL) && (count <= capacity));
+  return((mutations == 0UL) ? [self retain] : [[NSDictionary allocWithZone:zone] initWithDictionary:self]);
 }
 
 - (id)mutableCopyWithZone:(NSZone *)zone
 {
-  NSUInteger dictionaryCount = _JKDictionaryCount((JKDictionary *)self);
-  id stackKeys[dictionaryCount], stackObjects[dictionaryCount];
-  NSUInteger gotCount = _JKDictionaryGetKeysAndObjects((JKDictionary *)self, dictionaryCount, stackKeys, stackObjects);
-  NSParameterAssert(gotCount == dictionaryCount);
-  return([[NSMutableDictionary allocWithZone:zone] initWithObjects:stackObjects forKeys:stackKeys count:gotCount]);
+  NSParameterAssert((entry != NULL) && (count <= capacity));
+  return([[NSMutableDictionary allocWithZone:zone] initWithDictionary:self]);
 }
 
 @end
@@ -1486,7 +1443,7 @@ static int jk_parse_string(JKParseState *parseState) {
 
       if(JK_EXPECT_F((result = ConvertSingleCodePointInUTF8(atStringCharacter - 1, endOfBuffer, (UTF8 const **)&nextValidCharacter, &u32ch)) != conversionOK)) { goto switchToSlowPath; }
       stringHash = calculateHash(stringHash, currentChar);
-      while(atStringCharacter < nextValidCharacter) { stringHash = calculateHash(stringHash, *atStringCharacter++); }
+      while(atStringCharacter < nextValidCharacter) { NSCParameterAssert(JK_AT_STRING_PTR(parseState) <= JK_END_STRING_PTR(parseState)); stringHash = calculateHash(stringHash, *atStringCharacter++); }
       continue;
     } else {
       if(JK_EXPECT_F(currentChar == (unsigned long)'"')) { stringState = JSONStringStateFinished; goto finishedParsing; }
@@ -1519,8 +1476,8 @@ static int jk_parse_string(JKParseState *parseState) {
     if(JK_EXPECT_T(stringState == JSONStringStateParsing)) {
       if(JK_EXPECT_T(currentChar >= 0x20UL)) {
         if(JK_EXPECT_T(currentChar < (unsigned long)0x80)) { // Not a UTF8 sequence
-          if(JK_EXPECT_F(currentChar == (unsigned long)'\\')) { stringState = JSONStringStateEscape; continue; }
           if(JK_EXPECT_F(currentChar == (unsigned long)'"'))  { stringState = JSONStringStateFinished; atStringCharacter++; goto finishedParsing; }
+          if(JK_EXPECT_F(currentChar == (unsigned long)'\\')) { stringState = JSONStringStateEscape; continue; }
           stringHash = calculateHash(stringHash, currentChar);
           tokenBuffer[tokenBufferIdx++] = currentChar;
           continue;
@@ -1624,7 +1581,7 @@ static int jk_parse_string(JKParseState *parseState) {
           break;
 
         case JSONStringStateEscapedNeedEscapeForSurrogate:
-          if((currentChar == '\\')) { stringState = JSONStringStateEscapedNeedEscapedUForSurrogate; }
+          if(currentChar == '\\') { stringState = JSONStringStateEscapedNeedEscapedUForSurrogate; }
           else { 
             if((parseState->parseOptionFlags & JKParseOptionLooseUnicode) == 0) { jk_error(parseState, @"Required a second \\u Unicode escape sequence following a surrogate \\u Unicode escape sequence."); stringState = JSONStringStateError; goto finishedParsing; }
             else { stringState = JSONStringStateParsing; atStringCharacter--;    if(jk_string_add_unicodeCodePoint(parseState, UNI_REPLACEMENT_CHAR, &tokenBufferIdx, &stringHash)) { jk_error(parseState, @"Internal error: Unable to add UTF8 sequence to internal string buffer. %@ line #%ld", [NSString stringWithUTF8String:__FILE__], (long)__LINE__); stringState = JSONStringStateError; goto finishedParsing; } }
@@ -1717,7 +1674,7 @@ static int jk_parse_number(JKParseState *parseState) {
     if(JK_EXPECT_F(parseState->token.tokenPtrRange.length == 2UL) && JK_EXPECT_F(numberTempBuf[1] == '0') && JK_EXPECT_F(isNegative)) { isFloatingPoint = 1; }
 
     if(isFloatingPoint) {
-      parseState->token.value.number.doubleValue = strtod((const char *)numberTempBuf, (char **)&endOfNumber);
+      parseState->token.value.number.doubleValue = strtod((const char *)numberTempBuf, (char **)&endOfNumber); // strtod is documented to return U+2261 (identical to) 0.0 on an underflow error (along with setting errno to ERANGE).
       parseState->token.value.type               = JKValueTypeDouble;
       parseState->token.value.ptrRange.ptr       = (const unsigned char *)&parseState->token.value.number.doubleValue;
       parseState->token.value.ptrRange.length    = sizeof(double);
@@ -1742,10 +1699,10 @@ static int jk_parse_number(JKParseState *parseState) {
       numberState = JSONNumberStateError;
       if(errno == ERANGE) {
         switch(parseState->token.value.type) {
-          case JKValueTypeDouble:           jk_error(parseState, @"The value '%s' could not be represented as a 'double' due to %s.",           numberTempBuf, (parseState->token.value.number.doubleValue == 0.0) ? "underflow" : "overflow"); break;
-          case JKValueTypeLongLong:         jk_error(parseState, @"The value '%s' exceeded the minimum value that could be represented: %lld.", numberTempBuf, parseState->token.value.number.longLongValue); break;
-          case JKValueTypeUnsignedLongLong: jk_error(parseState, @"The value '%s' exceeded the maximum value that could be represented: %llu.", numberTempBuf, parseState->token.value.number.unsignedLongLongValue); break;
-          default:                          jk_error(parseState, @"Internal error: Unknown token value type. %@ line #%ld", [NSString stringWithUTF8String:__FILE__], (long)__LINE__); break;
+          case JKValueTypeDouble:           jk_error(parseState, @"The value '%s' could not be represented as a 'double' due to %s.",           numberTempBuf, (parseState->token.value.number.doubleValue == 0.0) ? "underflow" : "overflow"); break; // see above for == 0.0.
+          case JKValueTypeLongLong:         jk_error(parseState, @"The value '%s' exceeded the minimum value that could be represented: %lld.", numberTempBuf, parseState->token.value.number.longLongValue);                                   break;
+          case JKValueTypeUnsignedLongLong: jk_error(parseState, @"The value '%s' exceeded the maximum value that could be represented: %llu.", numberTempBuf, parseState->token.value.number.unsignedLongLongValue);                           break;
+          default:                          jk_error(parseState, @"Internal error: Unknown token value type. %@ line #%ld",                     [NSString stringWithUTF8String:__FILE__], (long)__LINE__);                                      break;
         }
       }
     }
@@ -1837,25 +1794,19 @@ static int jk_parse_next_token(JKParseState *parseState) {
   if((JK_EXPECT_T(stopParsing == 0)) && (JK_EXPECT_T((atCharacterPtr = JK_AT_STRING_PTR(parseState)) < endOfStringPtr))) {
     currentCharacter = *atCharacterPtr;
 
-    switch(currentCharacter) {
-      case '{': jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeObjectBegin, 1UL); break;
-      case '}': jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeObjectEnd,   1UL); break;
-      case '[': jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeArrayBegin,  1UL); break;
-      case ']': jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeArrayEnd,    1UL); break;
-      case ',': jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeComma,       1UL); break;
-      case ':': jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeSeparator,   1UL); break;
-
-      case 't': if(!((JK_EXPECT_T((atCharacterPtr + 4UL) < endOfStringPtr)) && (JK_EXPECT_T(atCharacterPtr[1] == 'r')) && (JK_EXPECT_T(atCharacterPtr[2] == 'u')) && (JK_EXPECT_T(atCharacterPtr[3] == 'e'))))                                            { stopParsing = 1; /* XXX Add error message */ } else { jk_set_parsed_token(parseState, atCharacterPtr, 4UL, JKTokenTypeTrue,  4UL); } break;
-      case 'f': if(!((JK_EXPECT_T((atCharacterPtr + 5UL) < endOfStringPtr)) && (JK_EXPECT_T(atCharacterPtr[1] == 'a')) && (JK_EXPECT_T(atCharacterPtr[2] == 'l')) && (JK_EXPECT_T(atCharacterPtr[3] == 's')) && (JK_EXPECT_T(atCharacterPtr[4] == 'e')))) { stopParsing = 1; /* XXX Add error message */ } else { jk_set_parsed_token(parseState, atCharacterPtr, 5UL, JKTokenTypeFalse, 5UL); } break;
-      case 'n': if(!((JK_EXPECT_T((atCharacterPtr + 4UL) < endOfStringPtr)) && (JK_EXPECT_T(atCharacterPtr[1] == 'u')) && (JK_EXPECT_T(atCharacterPtr[2] == 'l')) && (JK_EXPECT_T(atCharacterPtr[3] == 'l'))))                                            { stopParsing = 1; /* XXX Add error message */ } else { jk_set_parsed_token(parseState, atCharacterPtr, 4UL, JKTokenTypeNull,  4UL); } break;
-
-      case '"': if(JK_EXPECT_T((stopParsing = jk_parse_string(parseState)) == 0)) { jk_set_parsed_token(parseState, parseState->token.tokenPtrRange.ptr, parseState->token.tokenPtrRange.length, JKTokenTypeString, 0UL); } break;
-
-      case '-': // fall-thru
-      case '0' ... '9': if(JK_EXPECT_T((stopParsing = jk_parse_number(parseState)) == 0)) { jk_set_parsed_token(parseState, parseState->token.tokenPtrRange.ptr, parseState->token.tokenPtrRange.length, JKTokenTypeNumber, 0UL); } break;
-
-      default: stopParsing = 1; /* XXX Add error message */ break;
-    }
+         if(JK_EXPECT_T(currentCharacter == '"')) { if(JK_EXPECT_T((stopParsing = jk_parse_string(parseState)) == 0)) { jk_set_parsed_token(parseState, parseState->token.tokenPtrRange.ptr, parseState->token.tokenPtrRange.length, JKTokenTypeString, 0UL); } }
+    else if(JK_EXPECT_T(currentCharacter == ':')) { jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeSeparator,   1UL); }
+    else if(JK_EXPECT_T(currentCharacter == ',')) { jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeComma,       1UL); }
+    else if((JK_EXPECT_T(currentCharacter >= '0') && JK_EXPECT_T(currentCharacter <= '9')) || JK_EXPECT_T(currentCharacter == '-')) { if(JK_EXPECT_T((stopParsing = jk_parse_number(parseState)) == 0)) { jk_set_parsed_token(parseState, parseState->token.tokenPtrRange.ptr, parseState->token.tokenPtrRange.length, JKTokenTypeNumber, 0UL); } }
+    else if(JK_EXPECT_T(currentCharacter == '{')) { jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeObjectBegin, 1UL); }
+    else if(JK_EXPECT_T(currentCharacter == '}')) { jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeObjectEnd,   1UL); }
+    else if(JK_EXPECT_T(currentCharacter == '[')) { jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeArrayBegin,  1UL); }
+    else if(JK_EXPECT_T(currentCharacter == ']')) { jk_set_parsed_token(parseState, atCharacterPtr, 1UL, JKTokenTypeArrayEnd,    1UL); }
+    
+    else if(JK_EXPECT_T(currentCharacter == 't')) { if(!((JK_EXPECT_T((atCharacterPtr + 4UL) < endOfStringPtr)) && (JK_EXPECT_T(atCharacterPtr[1] == 'r')) && (JK_EXPECT_T(atCharacterPtr[2] == 'u')) && (JK_EXPECT_T(atCharacterPtr[3] == 'e'))))                                            { stopParsing = 1; /* XXX Add error message */ } else { jk_set_parsed_token(parseState, atCharacterPtr, 4UL, JKTokenTypeTrue,  4UL); } }
+    else if(JK_EXPECT_T(currentCharacter == 'f')) { if(!((JK_EXPECT_T((atCharacterPtr + 5UL) < endOfStringPtr)) && (JK_EXPECT_T(atCharacterPtr[1] == 'a')) && (JK_EXPECT_T(atCharacterPtr[2] == 'l')) && (JK_EXPECT_T(atCharacterPtr[3] == 's')) && (JK_EXPECT_T(atCharacterPtr[4] == 'e')))) { stopParsing = 1; /* XXX Add error message */ } else { jk_set_parsed_token(parseState, atCharacterPtr, 5UL, JKTokenTypeFalse, 5UL); } }
+    else if(JK_EXPECT_T(currentCharacter == 'n')) { if(!((JK_EXPECT_T((atCharacterPtr + 4UL) < endOfStringPtr)) && (JK_EXPECT_T(atCharacterPtr[1] == 'u')) && (JK_EXPECT_T(atCharacterPtr[2] == 'l')) && (JK_EXPECT_T(atCharacterPtr[3] == 'l'))))                                            { stopParsing = 1; /* XXX Add error message */ } else { jk_set_parsed_token(parseState, atCharacterPtr, 4UL, JKTokenTypeNull,  4UL); } }
+    else { stopParsing = 1; /* XXX Add error message */ }    
   }
 
   if(JK_EXPECT_F(stopParsing)) { jk_error(parseState, @"Unexpected token, wanted '{', '}', '[', ']', ',', ':', 'true', 'false', 'null', '\"STRING\"', 'NUMBER'."); }
@@ -1944,12 +1895,8 @@ static void *jk_parse_dictionary(JKParseState *parseState) {
           if(JK_EXPECT_F((key = jk_object_for_token(parseState)) == NULL)) {                              jk_error(parseState, @"Internal error: Key == NULL."); stopParsing = 1; break; }
           else {
             parseState->objectStack.keys[objectStackIndex] = key;
-            if(JK_EXPECT_T(parseState->token.value.cacheItem != NULL)) {
-              if((parseState->token.value.cacheItem->cfHash == 0UL)) { parseState->token.value.cacheItem->cfHash = CFHash(key); }
-              parseState->objectStack.cfHashes[objectStackIndex] = parseState->token.value.cacheItem->cfHash;
-            } else {
-              parseState->objectStack.cfHashes[objectStackIndex] = CFHash(key);
-            }
+            if(JK_EXPECT_T(parseState->token.value.cacheItem != NULL)) { if(JK_EXPECT_F(parseState->token.value.cacheItem->cfHash == 0UL)) { parseState->token.value.cacheItem->cfHash = CFHash(key); } parseState->objectStack.cfHashes[objectStackIndex] = parseState->token.value.cacheItem->cfHash; }
+            else { parseState->objectStack.cfHashes[objectStackIndex] = CFHash(key); }
           }
           break;
 
@@ -2057,7 +2004,7 @@ static void *jk_cachedObjects(JKParseState *parseState) {
   for(x = 0UL; x < JK_CACHE_PROBES; x++) {
     if(JK_EXPECT_F(parseState->cache.items[bucket].object == NULL)) { setBucket = 1UL; useableBucket = bucket; break; }
     
-    if((JK_EXPECT_T(parseState->cache.items[bucket].hash == parseState->token.value.hash)) && (JK_EXPECT_T(parseState->cache.items[bucket].size == parseState->token.value.ptrRange.length)) && (JK_EXPECT_T(parseState->cache.items[bucket].type == parseState->token.value.type)) && (JK_EXPECT_T(parseState->cache.items[bucket].bytes != NULL)) && (JK_EXPECT_T(strncmp((const char *)parseState->cache.items[bucket].bytes, (const char *)parseState->token.value.ptrRange.ptr, parseState->token.value.ptrRange.length) == 0U))) {
+    if((JK_EXPECT_T(parseState->cache.items[bucket].hash == parseState->token.value.hash)) && (JK_EXPECT_T(parseState->cache.items[bucket].size == parseState->token.value.ptrRange.length)) && (JK_EXPECT_T(parseState->cache.items[bucket].type == parseState->token.value.type)) && (JK_EXPECT_T(parseState->cache.items[bucket].bytes != NULL)) && (JK_EXPECT_T(memcmp(parseState->cache.items[bucket].bytes, parseState->token.value.ptrRange.ptr, parseState->token.value.ptrRange.length) == 0U))) {
       parseState->cache.age[bucket]     = (parseState->cache.age[bucket] << 1) | 1U;
       parseState->token.value.cacheItem = &parseState->cache.items[bucket];
       NSCParameterAssert(parseState->cache.items[bucket].object != NULL);
@@ -2127,26 +2074,6 @@ static void *jk_object_for_token(JKParseState *parseState) {
 
 #pragma mark -
 @implementation JSONDecoder
-
-static Class            _jk_NSNumberClass;
-static NSNumberAllocImp _jk_NSNumberAllocImp;
-static NSNumberInitWithUnsignedLongLongImp _jk_NSNumberInitWithUnsignedLongLongImp;
-
-+ (void)load
-{
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init]; // Though technically not required, the run time environment at +load time may be less than ideal.
-  
-  _jk_NSNumberClass = [NSNumber class];
-  _jk_NSNumberAllocImp = (NSNumberAllocImp)[NSNumber methodForSelector:@selector(alloc)];
-  
-  // Hacktacular.  Need to do it this way due to the nature of class clusters.
-  id temp_NSNumber = [NSNumber alloc];
-  _jk_NSNumberInitWithUnsignedLongLongImp = (NSNumberInitWithUnsignedLongLongImp)[temp_NSNumber methodForSelector:@selector(initWithUnsignedLongLong:)];
-  [[temp_NSNumber init] release];
-  temp_NSNumber = NULL;
-  
-  [pool release]; pool = NULL;
-}
 
 + (id)decoder
 {
@@ -2270,37 +2197,38 @@ static id _JKParseUTF8String(JKParseState *parseState, BOOL mutableCollections, 
   return(parsedJSON);
 }
 
+////////////
+#pragma mark Deprecated as of v1.4
+////////////
+
 // Deprecated in JSONKit v1.4.  Use objectWithUTF8String:length: instead.
 - (id)parseUTF8String:(const unsigned char *)string length:(size_t)length
 {
-  return([self parseUTF8String:string length:length error:NULL]);
+  return([self objectWithUTF8String:string length:length error:NULL]);
 }
 
 // Deprecated in JSONKit v1.4.  Use objectWithUTF8String:length:error: instead.
 - (id)parseUTF8String:(const unsigned char *)string length:(size_t)length error:(NSError **)error
 {
-  if(parseState == NULL) { [NSException raise:NSInternalInconsistencyException format:@"parseState is NULL."];          }
-  if(string     == NULL) { [NSException raise:NSInvalidArgumentException       format:@"The string argument is NULL."]; }
-
-  return(_JKParseUTF8String(parseState, NO, string, length, error));
+  return([self objectWithUTF8String:string length:length error:error]);
 }
 
 // Deprecated in JSONKit v1.4.  Use objectWithData: instead.
 - (id)parseJSONData:(NSData *)jsonData
 {
-  return([self parseJSONData:jsonData error:NULL]);
+  return([self objectWithData:jsonData error:NULL]);
 }
 
 // Deprecated in JSONKit v1.4.  Use objectWithData:error: instead.
 - (id)parseJSONData:(NSData *)jsonData error:(NSError **)error
 {
-  if(jsonData == NULL) { [NSException raise:NSInvalidArgumentException format:@"The jsonData argument is NULL."]; } 
-  return([self parseUTF8String:(const unsigned char *)[jsonData bytes] length:[jsonData length] error:error]);
+  return([self objectWithData:jsonData error:error]);
 }
 
+////////////
+#pragma mark Methods that return immutable collection objects
+////////////
 
-
-// Methods that return immutable collection objects.
 - (id)objectWithUTF8String:(const unsigned char *)string length:(NSUInteger)length
 {
   return([self objectWithUTF8String:string length:length error:NULL]);
@@ -2321,11 +2249,14 @@ static id _JKParseUTF8String(JKParseState *parseState, BOOL mutableCollections, 
 
 - (id)objectWithData:(NSData *)jsonData error:(NSError **)error
 {
-  if(jsonData == NULL) { [NSException raise:NSInvalidArgumentException format:@"The jsonData argument is NULL."]; } 
+  if(jsonData == NULL) { [NSException raise:NSInvalidArgumentException format:@"The jsonData argument is NULL."]; }
   return([self objectWithUTF8String:(const unsigned char *)[jsonData bytes] length:[jsonData length] error:error]);
 }
 
-// Methods that return mutable collection objects.
+////////////
+#pragma mark Methods that return mutable collection objects
+////////////
+
 - (id)mutableObjectWithUTF8String:(const unsigned char *)string length:(NSUInteger)length
 {
   return([self mutableObjectWithUTF8String:string length:length error:NULL]);
@@ -2346,7 +2277,7 @@ static id _JKParseUTF8String(JKParseState *parseState, BOOL mutableCollections, 
 
 - (id)mutableObjectWithData:(NSData *)jsonData error:(NSError **)error
 {
-  if(jsonData == NULL) { [NSException raise:NSInvalidArgumentException format:@"The jsonData argument is NULL."]; } 
+  if(jsonData == NULL) { [NSException raise:NSInvalidArgumentException format:@"The jsonData argument is NULL."]; }
   return([self mutableObjectWithUTF8String:(const unsigned char *)[jsonData bytes] length:[jsonData length] error:error]);
 }
 
@@ -2387,7 +2318,7 @@ static id _JKParseUTF8String(JKParseState *parseState, BOOL mutableCollections, 
  autorelease limbo, but we've done our best to minimize that impact, so it all balances out.
  */
 
-@implementation NSString (JSONKit)
+@implementation NSString (JSONKitDeserializing)
 
 static id _NSStringObjectFromJSONString(NSString *jsonString, JKParseOptionFlags parseOptionFlags, NSError **error, BOOL mutableCollection) {
   id                returnObject = NULL;
@@ -2447,7 +2378,7 @@ exitNow:
 
 @end
 
-@implementation NSData (JSONKit)
+@implementation NSData (JSONKitDeserializing)
 
 - (id)objectFromJSONData
 {
@@ -2508,63 +2439,81 @@ static void jk_encode_error(JKEncodeState *encodeState, NSString *format, ...) {
   }
 }
 
-
+JK_STATIC_INLINE void jk_encode_updateCache(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object) {
+  NSCParameterAssert(encodeState != NULL);
+  if(JK_EXPECT_T(cacheSlot != NULL)) {
+    NSCParameterAssert((object != NULL) && (startingAtIndex <= encodeState->atIndex));
+    cacheSlot->object = object;
+    cacheSlot->offset = startingAtIndex;
+    cacheSlot->length = (size_t)(encodeState->atIndex - startingAtIndex);  
+  }
+}
 
 static int jk_encode_printf(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format, ...) {
-  va_list varArgsList;
+  va_list varArgsList, varArgsListCopy;
   va_start(varArgsList, format);
-  va_end(varArgsList);
+  va_copy(varArgsListCopy, varArgsList);
 
-  if( encodeState->stringBuffer.bytes.length < encodeState->atIndex) { jk_encode_error(encodeState, @"Internal inconsistency error: atIndex > buffer length. %@ line #%ld", [NSString stringWithUTF8String:__FILE__], (long)__LINE__); return(1); }
-  if((encodeState->stringBuffer.bytes.length - encodeState->atIndex) < 1024L) { if(jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + 4096UL) == NULL) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); } }
+  NSCParameterAssert((encodeState != NULL) && (encodeState->atIndex < encodeState->stringBuffer.bytes.length) && (startingAtIndex <= encodeState->atIndex) && (format != NULL));
 
-  char    *atPtr     = (char *)encodeState->stringBuffer.bytes.ptr    + encodeState->atIndex;
-  ssize_t  remaining =         encodeState->stringBuffer.bytes.length - encodeState->atIndex;
+  ssize_t  formattedStringLength = 0L;
+  int      returnValue           = 0;
 
-  int printfAdded = vsnprintf(atPtr, remaining, format, varArgsList);
-
-  while(printfAdded > remaining) {
-    if(jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->stringBuffer.bytes.length + (printfAdded * 2UL) + 1024UL) == NULL) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
-    remaining   = encodeState->stringBuffer.bytes.length - encodeState->atIndex;
-    printfAdded = vsnprintf(atPtr, remaining, format, varArgsList);
+  if(JK_EXPECT_T((formattedStringLength = vsnprintf((char *)&encodeState->stringBuffer.bytes.ptr[encodeState->atIndex], (encodeState->stringBuffer.bytes.length - encodeState->atIndex), format, varArgsList)) >= (ssize_t)(encodeState->stringBuffer.bytes.length - encodeState->atIndex))) {
+    NSCParameterAssert(((encodeState->atIndex + (formattedStringLength * 2UL) + 256UL) > encodeState->stringBuffer.bytes.length));
+    if(JK_EXPECT_F(((encodeState->atIndex + (formattedStringLength * 2UL) + 256UL) > encodeState->stringBuffer.bytes.length)) && JK_EXPECT_F((jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + (formattedStringLength * 2UL)+ 4096UL) == NULL))) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); returnValue = 1; goto exitNow; }
+    if(JK_EXPECT_F((formattedStringLength = vsnprintf((char *)&encodeState->stringBuffer.bytes.ptr[encodeState->atIndex], (encodeState->stringBuffer.bytes.length - encodeState->atIndex), format, varArgsListCopy)) >= (ssize_t)(encodeState->stringBuffer.bytes.length - encodeState->atIndex))) { jk_encode_error(encodeState, @"vsnprintf failed unexpectedly."); returnValue = 1; goto exitNow; }
   }
-
-  encodeState->atIndex += printfAdded;
-  jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, object);
-  return(0);
+  
+exitNow:
+  va_end(varArgsList);
+  va_end(varArgsListCopy);
+  if(JK_EXPECT_T(returnValue == 0)) { encodeState->atIndex += formattedStringLength; jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, object); }
+  return(returnValue);
 }
 
 static int jk_encode_write(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format) {
-#ifndef NS_BLOCK_ASSERTIONS
-  if(JK_EXPECT_F(encodeState->stringBuffer.bytes.length < encodeState->atIndex)) { jk_encode_error(encodeState, @"Internal inconsistency error: atIndex > buffer length. %@ line #%ld", [NSString stringWithUTF8String:__FILE__], (long)__LINE__); return(1); }
-#endif
-  if(JK_EXPECT_F((encodeState->stringBuffer.bytes.length - encodeState->atIndex) < 1024L)) { if(jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + 4096UL) == NULL) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); } }
+  NSCParameterAssert((encodeState != NULL) && (encodeState->atIndex < encodeState->stringBuffer.bytes.length) && (startingAtIndex <= encodeState->atIndex) && (format != NULL));
+  if(JK_EXPECT_F(((encodeState->atIndex + strlen(format) + 256UL) > encodeState->stringBuffer.bytes.length)) && JK_EXPECT_F((jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + strlen(format) + 1024UL) == NULL))) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
 
-  char    *atPtr     = (char *)encodeState->stringBuffer.bytes.ptr    + encodeState->atIndex;
-  ssize_t  remaining =         encodeState->stringBuffer.bytes.length - encodeState->atIndex;
-
-  ssize_t idx = 0L, added = 0L;
-  for(added = 0L, idx = 0L; format[added] != 0; added++) { if(JK_EXPECT_T(idx < remaining)) { atPtr[idx++] = format[added]; } }
-
-  if(JK_EXPECT_F(added > remaining)) {
-    if(JK_EXPECT_F(jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + added + 1024UL) == NULL)) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
-    for(added = 0L, idx = 0L; format[added] != 0; added++) { if(JK_EXPECT_T(idx < remaining)) { atPtr[idx++] = format[added]; } }
-  }
-
-  atPtr[idx] = 0;
-  encodeState->atIndex += added;
+  size_t formatIdx = 0UL;
+  for(formatIdx = 0UL; format[formatIdx] != 0; formatIdx++) { NSCParameterAssert(encodeState->atIndex < encodeState->stringBuffer.bytes.length); encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = format[formatIdx]; }
   jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, object);
   return(0);
 }
 
-static int jk_encode_write1(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format) {
-  if((encodeState->atIndex + 4UL) < encodeState->stringBuffer.bytes.length) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = format[0]; }
-  else { if(JK_EXPECT_F(jk_encode_write(encodeState, cacheSlot, startingAtIndex, object, format))) { return(1); } }
-  jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, object);
+static int jk_encode_writePrettyPrintWhiteSpace(JKEncodeState *encodeState) {
+  NSCParameterAssert((encodeState != NULL) && ((encodeState->serializeOptionFlags & JKSerializeOptionPretty) != 0UL));
+  if(JK_EXPECT_F((encodeState->atIndex + ((encodeState->depth + 1UL) * 2UL) + 16UL) > encodeState->stringBuffer.bytes.length) && JK_EXPECT_T(jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + ((encodeState->depth + 1UL) * 2UL) + 4096UL) == NULL)) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
+  encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\n';
+  size_t depthWhiteSpace = 0UL;
+  for(depthWhiteSpace = 0UL; depthWhiteSpace < (encodeState->depth * 2UL); depthWhiteSpace++) { NSCParameterAssert(encodeState->atIndex < encodeState->stringBuffer.bytes.length); encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = ' '; }
+  return(0);
+}  
+
+static int jk_encode_write1slow(JKEncodeState *encodeState, ssize_t depthChange, const char *format) {
+  NSCParameterAssert((encodeState != NULL) && (encodeState->atIndex < encodeState->stringBuffer.bytes.length) && (format != NULL) && ((depthChange >= -1L) && (depthChange <= 1L)) && ((encodeState->depth == 0UL) ? (depthChange >= 0L) : 1) && ((encodeState->serializeOptionFlags & JKSerializeOptionPretty) != 0UL));
+  if(JK_EXPECT_F((encodeState->atIndex + ((encodeState->depth + 1UL) * 2UL) + 16UL) > encodeState->stringBuffer.bytes.length) && JK_EXPECT_F(jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + ((encodeState->depth + 1UL) * 2UL) + 4096UL) == NULL)) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
+  encodeState->depth += depthChange;
+  if(JK_EXPECT_T(format[0] == ':')) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = format[0]; encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = ' '; }
+  else {
+    if(JK_EXPECT_F(depthChange == -1L)) { if(JK_EXPECT_F(jk_encode_writePrettyPrintWhiteSpace(encodeState))) { return(1); } }
+    encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = format[0];
+    if(JK_EXPECT_T(depthChange != -1L)) { if(JK_EXPECT_F(jk_encode_writePrettyPrintWhiteSpace(encodeState))) { return(1); } }
+  }
+  NSCParameterAssert(encodeState->atIndex < encodeState->stringBuffer.bytes.length);
+  return(0);
+}
+
+static int jk_encode_write1fast(JKEncodeState *encodeState, ssize_t depthChange JK_UNUSED_ARG, const char *format) {
+  NSCParameterAssert((encodeState != NULL) && (encodeState->atIndex < encodeState->stringBuffer.bytes.length) && ((encodeState->serializeOptionFlags & JKSerializeOptionPretty) == 0UL));
+  if(JK_EXPECT_T((encodeState->atIndex + 4UL) < encodeState->stringBuffer.bytes.length)) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = format[0]; }
+  else { return(jk_encode_write(encodeState, NULL, 0UL, NULL, format)); }
   return(0);
 }
 
 static int jk_encode_writen(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object, const char *format, size_t length) {
+  NSCParameterAssert((encodeState != NULL) && (encodeState->atIndex < encodeState->stringBuffer.bytes.length) && (startingAtIndex <= encodeState->atIndex));
   if(JK_EXPECT_F((encodeState->stringBuffer.bytes.length - encodeState->atIndex) < (length + 4UL))) { if(jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + 4096UL + length) == NULL) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); } }
   memcpy(encodeState->stringBuffer.bytes.ptr + encodeState->atIndex, format, length);
   encodeState->atIndex += length;
@@ -2576,20 +2525,10 @@ JK_STATIC_INLINE JKHash jk_encode_object_hash(void *objectPtr) {
   return( ( (((JKHash)objectPtr) >> 21) ^ (((JKHash)objectPtr) >> 9)   ) + (((JKHash)objectPtr) >> 4) );
 }
 
-JK_STATIC_INLINE void jk_encode_updateCache(JKEncodeState *encodeState, JKEncodeCache *cacheSlot, size_t startingAtIndex, id object) {
-  NSCParameterAssert((encodeState != NULL) && ((cacheSlot == NULL) ? 1 : object != NULL));
-  if(JK_EXPECT_T(cacheSlot != NULL)) {
-    cacheSlot->object = object;
-    cacheSlot->offset = startingAtIndex;
-    cacheSlot->length = (size_t)(encodeState->atIndex - startingAtIndex);  
-  }
-}
-
 static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *objectPtr) {
-  NSCParameterAssert((encodeState != NULL) && (objectPtr != NULL));
-  NSCParameterAssert(encodeState->atIndex < encodeState->stringBuffer.bytes.length);
+  NSCParameterAssert((encodeState != NULL) && (encodeState->atIndex < encodeState->stringBuffer.bytes.length) && (objectPtr != NULL));
 
-  id     object          = (id)objectPtr;
+  id     object          = (id)objectPtr, encodeCacheObject = object;
   int    isClass         = JKClassUnknown;
   size_t startingAtIndex = encodeState->atIndex;
 
@@ -2597,39 +2536,107 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
   JKEncodeCache *cacheSlot  = &encodeState->cache[objectHash % JK_ENCODE_CACHE_SLOTS];
 
   if(JK_EXPECT_T(cacheSlot->object == object)) {
+    NSCParameterAssert((cacheSlot->object != NULL) &&
+                       (cacheSlot->offset < encodeState->atIndex)                   && ((cacheSlot->offset + cacheSlot->length) < encodeState->atIndex)                                    &&
+                       (cacheSlot->offset < encodeState->stringBuffer.bytes.length) && ((cacheSlot->offset + cacheSlot->length) < encodeState->stringBuffer.bytes.length)                  &&
+                       ((encodeState->stringBuffer.bytes.ptr + encodeState->atIndex)                     < (encodeState->stringBuffer.bytes.ptr + encodeState->stringBuffer.bytes.length)) &&
+                       ((encodeState->stringBuffer.bytes.ptr + cacheSlot->offset)                        < (encodeState->stringBuffer.bytes.ptr + encodeState->stringBuffer.bytes.length)) &&
+                       ((encodeState->stringBuffer.bytes.ptr + cacheSlot->offset + cacheSlot->length)    < (encodeState->stringBuffer.bytes.ptr + encodeState->stringBuffer.bytes.length)));
     if(JK_EXPECT_F(((encodeState->atIndex + cacheSlot->length + 256UL) > encodeState->stringBuffer.bytes.length)) && JK_EXPECT_F((jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + cacheSlot->length + 1024UL) == NULL))) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
+    NSCParameterAssert(((encodeState->atIndex + cacheSlot->length) < encodeState->stringBuffer.bytes.length) &&
+                       ((encodeState->stringBuffer.bytes.ptr + encodeState->atIndex)                     < (encodeState->stringBuffer.bytes.ptr + encodeState->stringBuffer.bytes.length)) &&
+                       ((encodeState->stringBuffer.bytes.ptr + encodeState->atIndex + cacheSlot->length) < (encodeState->stringBuffer.bytes.ptr + encodeState->stringBuffer.bytes.length)) &&
+                       ((encodeState->stringBuffer.bytes.ptr + cacheSlot->offset)                        < (encodeState->stringBuffer.bytes.ptr + encodeState->stringBuffer.bytes.length)) &&
+                       ((encodeState->stringBuffer.bytes.ptr + cacheSlot->offset + cacheSlot->length)    < (encodeState->stringBuffer.bytes.ptr + encodeState->stringBuffer.bytes.length)) &&
+                       ((encodeState->stringBuffer.bytes.ptr + cacheSlot->offset + cacheSlot->length)    < (encodeState->stringBuffer.bytes.ptr + encodeState->atIndex)));
     memcpy(encodeState->stringBuffer.bytes.ptr + encodeState->atIndex, encodeState->stringBuffer.bytes.ptr + cacheSlot->offset, cacheSlot->length);
     encodeState->atIndex += cacheSlot->length;
     return(0);
   }
 
-       if(object->isa == encodeState->fastClassLookup.stringClass)     { isClass = JKClassString;     }
-  else if(object->isa == encodeState->fastClassLookup.numberClass)     { isClass = JKClassNumber;     }
-  else if(object->isa == encodeState->fastClassLookup.dictionaryClass) { isClass = JKClassDictionary; }
-  else if(object->isa == encodeState->fastClassLookup.arrayClass)      { isClass = JKClassArray;      }
-  else if(object->isa == encodeState->fastClassLookup.nullClass)       { isClass = JKClassNull;       }
+  // When we encounter a class that we do not handle, and we have either a delegate or block that the user supplied to format unsupported classes,
+  // we "re-run" the object check.  However, we re-run the object check exactly ONCE.  If the user supplies an object that isn't one of the
+  // supported classes, we fail the second time (i.e., double fault error).
+  BOOL rerunningAfterClassFormatter = NO;
+ rerunAfterClassFormatter:;
+
+  // XXX XXX XXX XXX
+  //     
+  //     We need to work around a bug in 10.7, which breaks ABI compatibility with Objective-C going back not just to 10.0, but OpenStep and even NextStep.
+  //     
+  //     It has long been documented that "the very first thing that a pointer to an Objective-C object "points to" is a pointer to that objects class".
+  //     
+  //     This is euphemistically called "tagged pointers".  There are a number of highly technical problems with this, most involving long passages from
+  //     the C standard(s).  In short, one can make a strong case, couched from the perspective of the C standard(s), that that 10.7 "tagged pointers" are
+  //     fundamentally Wrong and Broken, and should have never been implemented.  Assuming those points are glossed over, because the change is very clearly
+  //     breaking ABI compatibility, this should have resulted in a minimum of a "minimum version required" bump in various shared libraries to prevent
+  //     causes code that used to work just fine to suddenly break without warning.
+  //
+  //     In fact, the C standard says that the hack below is "undefined behavior"- there is no requirement that the 10.7 tagged pointer hack of setting the
+  //     "lower, unused bits" must be preserved when casting the result to an integer type, but this "works" because for most architectures
+  //     `sizeof(long) == sizeof(void *)` and the compiler uses the same representation for both.  (note: this is informal, not meant to be
+  //     normative or pedantically correct).
+  //     
+  //     In other words, while this "works" for now, technically the compiler is not obligated to do "what we want", and a later version of the compiler
+  //     is not required in any way to produce the same results or behavior that earlier versions of the compiler did for the statement below.
+  //
+  //     Fan-fucking-tastic.
+  //     
+  //     Why not just use `object_getClass()`?  Because `object->isa` reduces to (typically) a *single* instruction.  Calling `object_getClass()` requires
+  //     that the compiler potentially spill registers, establish a function call frame / environment, and finally execute a "jump subroutine" instruction.
+  //     Then, the called subroutine must spend half a dozen instructions in its prolog, however many instructions doing whatever it does, then half a dozen
+  //     instructions in its prolog.  One instruction compared to dozens, maybe a hundred instructions.
+  //     
+  //     Yes, that's one to two orders of magnitude difference.  Which is compelling in its own right.  When going for performance, you're often happy with
+  //     gains in the two to three percent range.
+  //     
+  // XXX XXX XXX XXX
+
+  BOOL workAroundMacOSXABIBreakingBug = NO;
+  if(JK_EXPECT_F(((NSUInteger)object) & 0x1)) { workAroundMacOSXABIBreakingBug = YES; goto slowClassLookup; }
+
+       if(JK_EXPECT_T(object->isa == encodeState->fastClassLookup.stringClass))     { isClass = JKClassString;     }
+  else if(JK_EXPECT_T(object->isa == encodeState->fastClassLookup.numberClass))     { isClass = JKClassNumber;     }
+  else if(JK_EXPECT_T(object->isa == encodeState->fastClassLookup.dictionaryClass)) { isClass = JKClassDictionary; }
+  else if(JK_EXPECT_T(object->isa == encodeState->fastClassLookup.arrayClass))      { isClass = JKClassArray;      }
+  else if(JK_EXPECT_T(object->isa == encodeState->fastClassLookup.nullClass))       { isClass = JKClassNull;       }
   else {
-         if([object isKindOfClass:[NSString     class]]) { encodeState->fastClassLookup.stringClass     = object->isa; isClass = JKClassString;     }
-    else if([object isKindOfClass:[NSNumber     class]]) { encodeState->fastClassLookup.numberClass     = object->isa; isClass = JKClassNumber;     }
-    else if([object isKindOfClass:[NSDictionary class]]) { encodeState->fastClassLookup.dictionaryClass = object->isa; isClass = JKClassDictionary; }
-    else if([object isKindOfClass:[NSArray      class]]) { encodeState->fastClassLookup.arrayClass      = object->isa; isClass = JKClassArray;      }
-    else if([object isKindOfClass:[NSNull       class]]) { encodeState->fastClassLookup.nullClass       = object->isa; isClass = JKClassNull;       }
-    else { jk_encode_error(encodeState, @"Unable to serialize object class %@.", NSStringFromClass([object class])); return(1); }
+  slowClassLookup:
+         if(JK_EXPECT_T([object isKindOfClass:[NSString     class]])) { if(workAroundMacOSXABIBreakingBug == NO) { encodeState->fastClassLookup.stringClass     = object->isa; } isClass = JKClassString;     }
+    else if(JK_EXPECT_T([object isKindOfClass:[NSNumber     class]])) { if(workAroundMacOSXABIBreakingBug == NO) { encodeState->fastClassLookup.numberClass     = object->isa; } isClass = JKClassNumber;     }
+    else if(JK_EXPECT_T([object isKindOfClass:[NSDictionary class]])) { if(workAroundMacOSXABIBreakingBug == NO) { encodeState->fastClassLookup.dictionaryClass = object->isa; } isClass = JKClassDictionary; }
+    else if(JK_EXPECT_T([object isKindOfClass:[NSArray      class]])) { if(workAroundMacOSXABIBreakingBug == NO) { encodeState->fastClassLookup.arrayClass      = object->isa; } isClass = JKClassArray;      }
+    else if(JK_EXPECT_T([object isKindOfClass:[NSNull       class]])) { if(workAroundMacOSXABIBreakingBug == NO) { encodeState->fastClassLookup.nullClass       = object->isa; } isClass = JKClassNull;       }
+    else {
+      if((rerunningAfterClassFormatter == NO) && (
+#ifdef __BLOCKS__
+           ((encodeState->classFormatterBlock) && ((object = encodeState->classFormatterBlock(object))                                                                         != NULL)) ||
+#endif
+           ((encodeState->classFormatterIMP)   && ((object = encodeState->classFormatterIMP(encodeState->classFormatterDelegate, encodeState->classFormatterSelector, object)) != NULL))    )) { rerunningAfterClassFormatter = YES; goto rerunAfterClassFormatter; }
+      
+      if(rerunningAfterClassFormatter == NO) { jk_encode_error(encodeState, @"Unable to serialize object class %@.", NSStringFromClass([encodeCacheObject class])); return(1); }
+      else { jk_encode_error(encodeState, @"Unable to serialize object class %@ that was returned by the unsupported class formatter.  Original object class was %@.", (object == NULL) ? @"NULL" : NSStringFromClass([object class]), NSStringFromClass([encodeCacheObject class])); return(1); }
+    }
   }
 
+  // This is here for the benefit of the optimizer.  It allows the optimizer to do loop invariant code motion for the JKClassArray
+  // and JKClassDictionary cases when printing simple, single characters via jk_encode_write(), which is actually a macro:
+  // #define jk_encode_write1(es, dc, f) (_jk_encode_prettyPrint ? jk_encode_write1slow(es, dc, f) : jk_encode_write1fast(es, dc, f))
+  int _jk_encode_prettyPrint = JK_EXPECT_T((encodeState->serializeOptionFlags & JKSerializeOptionPretty) == 0) ? 0 : 1;
+  
   switch(isClass) {
     case JKClassString:
       {
         {
           const unsigned char *cStringPtr = (const unsigned char *)CFStringGetCStringPtr((CFStringRef)object, kCFStringEncodingMacRoman);
           if(cStringPtr != NULL) {
-            size_t               utf8Idx = 0UL;
             const unsigned char *utf8String = cStringPtr;
+            size_t               utf8Idx    = 0UL;
 
             CFIndex stringLength = CFStringGetLength((CFStringRef)object);
             if(JK_EXPECT_F(((encodeState->atIndex + (stringLength * 2UL) + 256UL) > encodeState->stringBuffer.bytes.length)) && JK_EXPECT_F((jk_managedBuffer_resize(&encodeState->stringBuffer, encodeState->atIndex + (stringLength * 2UL) + 1024UL) == NULL))) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
 
-            encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"';
+            if(JK_EXPECT_T((encodeState->encodeOption & JKEncodeOptionStringObjTrimQuotes) == 0UL)) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"'; }
             for(utf8Idx = 0UL; utf8String[utf8Idx] != 0U; utf8Idx++) {
               NSCParameterAssert(((&encodeState->stringBuffer.bytes.ptr[encodeState->atIndex]) - encodeState->stringBuffer.bytes.ptr) < (ssize_t)encodeState->stringBuffer.bytes.length);
               NSCParameterAssert(encodeState->atIndex < encodeState->stringBuffer.bytes.length);
@@ -2641,16 +2648,16 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
                   case '\n': encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = 'n'; break;
                   case '\r': encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = 'r'; break;
                   case '\t': encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = 't'; break;
-                  default: if(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x", utf8String[utf8Idx])) { return(1); } break;
+                  default: if(JK_EXPECT_F(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x", utf8String[utf8Idx]))) { return(1); } break;
                 }
               } else {
-                if(JK_EXPECT_F(utf8String[utf8Idx] == '\"') || JK_EXPECT_F(utf8String[utf8Idx] == '\\')) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; }
+                if(JK_EXPECT_F(utf8String[utf8Idx] == '\"') || JK_EXPECT_F(utf8String[utf8Idx] == '\\') || (JK_EXPECT_F(encodeState->serializeOptionFlags & JKSerializeOptionEscapeForwardSlashes) && JK_EXPECT_F(utf8String[utf8Idx] == '/'))) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; }
                 encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = utf8String[utf8Idx];
               }
             }
             NSCParameterAssert((encodeState->atIndex + 1UL) < encodeState->stringBuffer.bytes.length);
-            encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"';
-            jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, object);
+            if(JK_EXPECT_T((encodeState->encodeOption & JKEncodeOptionStringObjTrimQuotes) == 0UL)) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"'; }
+            jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, encodeCacheObject);
             return(0);
           }
         }
@@ -2660,7 +2667,7 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
           CFIndex stringLength        = CFStringGetLength((CFStringRef)object);
           CFIndex maxStringUTF8Length = CFStringGetMaximumSizeForEncoding(stringLength, kCFStringEncodingUTF8) + 32L;
         
-          if(((size_t)maxStringUTF8Length > encodeState->utf8ConversionBuffer.bytes.length) && (jk_managedBuffer_resize(&encodeState->utf8ConversionBuffer, maxStringUTF8Length + 1024UL) == NULL)) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
+          if(JK_EXPECT_F((size_t)maxStringUTF8Length > encodeState->utf8ConversionBuffer.bytes.length) && JK_EXPECT_F(jk_managedBuffer_resize(&encodeState->utf8ConversionBuffer, maxStringUTF8Length + 1024UL) == NULL)) { jk_encode_error(encodeState, @"Unable to resize temporary buffer."); return(1); }
         
           CFIndex usedBytes = 0L, convertedCount = 0L;
           convertedCount = CFStringGetBytes((CFStringRef)object, CFRangeMake(0L, stringLength), kCFStringEncodingUTF8, '?', NO, encodeState->utf8ConversionBuffer.bytes.ptr, encodeState->utf8ConversionBuffer.bytes.length - 16L, &usedBytes);
@@ -2671,7 +2678,7 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
           const unsigned char *utf8String = encodeState->utf8ConversionBuffer.bytes.ptr;
         
           size_t utf8Idx = 0UL;
-          encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"';
+          if(JK_EXPECT_T((encodeState->encodeOption & JKEncodeOptionStringObjTrimQuotes) == 0UL)) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"'; }
           for(utf8Idx = 0UL; utf8Idx < (size_t)usedBytes; utf8Idx++) {
             NSCParameterAssert(((&encodeState->stringBuffer.bytes.ptr[encodeState->atIndex]) - encodeState->stringBuffer.bytes.ptr) < (ssize_t)encodeState->stringBuffer.bytes.length);
             NSCParameterAssert(encodeState->atIndex < encodeState->stringBuffer.bytes.length);
@@ -2683,7 +2690,7 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
                 case '\n': encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = 'n'; break;
                 case '\r': encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = 'r'; break;
                 case '\t': encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = 't'; break;
-                default: if(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x", utf8String[utf8Idx])) { return(1); } break;
+                default: if(JK_EXPECT_F(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x", utf8String[utf8Idx]))) { return(1); } break;
               }
             } else {
               if(JK_EXPECT_F(utf8String[utf8Idx] >= 0x80U) && (encodeState->serializeOptionFlags & JKSerializeOptionEscapeUnicode)) {
@@ -2694,18 +2701,18 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
                 if(JK_EXPECT_F((result = ConvertSingleCodePointInUTF8(&utf8String[utf8Idx], &utf8String[usedBytes], (UTF8 const **)&nextValidCharacter, &u32ch)) != conversionOK)) { jk_encode_error(encodeState, @"Error converting UTF8."); return(1); }
                 else {
                   utf8Idx = (nextValidCharacter - utf8String) - 1UL;
-                  if(u32ch <= 0xffffU) { if(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x", u32ch))                                                           { return(1); } }
-                  else                 { if(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x\\u%4.4x", (0xd7c0U + (u32ch >> 10)), (0xdc00U + (u32ch & 0x3ffU)))) { return(1); } }
+                  if(JK_EXPECT_T(u32ch <= 0xffffU)) { if(JK_EXPECT_F(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x", u32ch)))                                                           { return(1); } }
+                  else                              { if(JK_EXPECT_F(jk_encode_printf(encodeState, NULL, 0UL, NULL, "\\u%4.4x\\u%4.4x", (0xd7c0U + (u32ch >> 10)), (0xdc00U + (u32ch & 0x3ffU))))) { return(1); } }
                 }
               } else {
-                if((utf8String[utf8Idx] == '\"') || (utf8String[utf8Idx] == '\\')) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; }
+                if(JK_EXPECT_F(utf8String[utf8Idx] == '\"') || JK_EXPECT_F(utf8String[utf8Idx] == '\\') || (JK_EXPECT_F(encodeState->serializeOptionFlags & JKSerializeOptionEscapeForwardSlashes) && JK_EXPECT_F(utf8String[utf8Idx] == '/'))) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\\'; }
                 encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = utf8String[utf8Idx];
               }
             }
           }
           NSCParameterAssert((encodeState->atIndex + 1UL) < encodeState->stringBuffer.bytes.length);
-          encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"';
-          jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, object);
+          if(JK_EXPECT_T((encodeState->encodeOption & JKEncodeOptionStringObjTrimQuotes) == 0UL)) { encodeState->stringBuffer.bytes.ptr[encodeState->atIndex++] = '\"'; }
+          jk_encode_updateCache(encodeState, cacheSlot, startingAtIndex, encodeCacheObject);
           return(0);
         }
       }
@@ -2713,30 +2720,31 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
 
     case JKClassNumber:
       {
-             if(object == (id)kCFBooleanTrue)  { return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, object, "true",  4UL)); }
-        else if(object == (id)kCFBooleanFalse) { return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, object, "false", 5UL)); }
+             if(object == (id)kCFBooleanTrue)  { return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, encodeCacheObject, "true",  4UL)); }
+        else if(object == (id)kCFBooleanFalse) { return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, encodeCacheObject, "false", 5UL)); }
         
         const char         *objCType = [object objCType];
         char                anum[256], *aptr = &anum[255];
         int                 isNegative = 0;
         unsigned long long  ullv;
         long long           llv;
-
+        
+        if(JK_EXPECT_F(objCType == NULL) || JK_EXPECT_F(objCType[0] == 0) || JK_EXPECT_F(objCType[1] != 0)) { jk_encode_error(encodeState, @"NSNumber conversion error, unknown type.  Type: '%s'", (objCType == NULL) ? "<NULL>" : objCType); return(1); }
+        
         switch(objCType[0]) {
-          case 'c': case 'i': case 's': case 'l': case 'q': 
+          case 'c': case 'i': case 's': case 'l': case 'q':
             if(JK_EXPECT_T(CFNumberGetValue((CFNumberRef)object, kCFNumberLongLongType, &llv)))  {
-              if(llv < 0LL)  { llv = -llv; isNegative = 1; }
-              if(JK_EXPECT_F(llv < 10LL)) { *--aptr = llv + '0';        } else { while(JK_EXPECT_T(llv > 0LL)) { *--aptr = (llv % 10LL) + '0'; llv /= 10LL; NSCParameterAssert(aptr > anum); } }
-              if(isNegative) { *--aptr = '-';              }
-              NSCParameterAssert(aptr > anum);
-              return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, object, aptr, &anum[255] - aptr));
+              if(llv < 0LL)  { ullv = -llv; isNegative = 1; } else { ullv = llv; isNegative = 0; }
+              goto convertNumber;
             } else { jk_encode_error(encodeState, @"Unable to get scalar value from number object."); return(1); }
             break;
           case 'C': case 'I': case 'S': case 'L': case 'Q': case 'B':
             if(JK_EXPECT_T(CFNumberGetValue((CFNumberRef)object, kCFNumberLongLongType, &ullv))) {
+            convertNumber:
               if(JK_EXPECT_F(ullv < 10ULL)) { *--aptr = ullv + '0'; } else { while(JK_EXPECT_T(ullv > 0ULL)) { *--aptr = (ullv % 10ULL) + '0'; ullv /= 10ULL; NSCParameterAssert(aptr > anum); } }
+              if(isNegative) { *--aptr = '-'; }
               NSCParameterAssert(aptr > anum);
-              return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, object, aptr, &anum[255] - aptr));
+              return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, encodeCacheObject, aptr, &anum[255] - aptr));
             } else { jk_encode_error(encodeState, @"Unable to get scalar value from number object."); return(1); }
             break;
           case 'f': case 'd':
@@ -2744,7 +2752,7 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
               double dv;
               if(JK_EXPECT_T(CFNumberGetValue((CFNumberRef)object, kCFNumberDoubleType, &dv))) {
                 if(JK_EXPECT_F(!isfinite(dv))) { jk_encode_error(encodeState, @"Floating point values must be finite.  JSON does not support NaN or Infinity."); return(1); }
-                return(jk_encode_printf(encodeState, cacheSlot, startingAtIndex, object, "%.17g", dv));
+                return(jk_encode_printf(encodeState, cacheSlot, startingAtIndex, encodeCacheObject, "%.17g", dv));
               } else { jk_encode_error(encodeState, @"Unable to get floating point value from number object."); return(1); }
             }
             break;
@@ -2757,15 +2765,15 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
       {
         int     printComma = 0;
         CFIndex arrayCount = CFArrayGetCount((CFArrayRef)object), idx = 0L;
-        if(jk_encode_write1(encodeState, NULL, 0UL, NULL, "[")) { return(1); }
-        if(arrayCount > 1020L) {
-          for(id arrayObject in object) { if(printComma) { if(jk_encode_write1(encodeState, NULL, 0UL, NULL, ",")) { return(1); } } printComma = 1; if(jk_encode_add_atom_to_buffer(encodeState, arrayObject)) { return(1); } }
+        if(JK_EXPECT_F(jk_encode_write1(encodeState, 1L, "["))) { return(1); }
+        if(JK_EXPECT_F(arrayCount > 1020L)) {
+          for(id arrayObject in object)          { if(JK_EXPECT_T(printComma)) { if(JK_EXPECT_F(jk_encode_write1(encodeState, 0L, ","))) { return(1); } } printComma = 1; if(JK_EXPECT_F(jk_encode_add_atom_to_buffer(encodeState, arrayObject)))  { return(1); } }
         } else {
           void *objects[1024];
           CFArrayGetValues((CFArrayRef)object, CFRangeMake(0L, arrayCount), (const void **)objects);
-          for(idx = 0L; idx < arrayCount; idx++) { if(printComma) { if(jk_encode_write1(encodeState, NULL, 0UL, NULL, ",")) { return(1); } } printComma = 1; if(jk_encode_add_atom_to_buffer(encodeState, objects[idx])) { return(1); } }
+          for(idx = 0L; idx < arrayCount; idx++) { if(JK_EXPECT_T(printComma)) { if(JK_EXPECT_F(jk_encode_write1(encodeState, 0L, ","))) { return(1); } } printComma = 1; if(JK_EXPECT_F(jk_encode_add_atom_to_buffer(encodeState, objects[idx]))) { return(1); } }
         }
-        if(jk_encode_write1(encodeState, NULL, 0UL, NULL, "]")) { return(1); }
+        return(jk_encode_write1(encodeState, -1L, "]"));
       }
       break;
 
@@ -2773,34 +2781,35 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
       {
         int     printComma      = 0;
         CFIndex dictionaryCount = CFDictionaryGetCount((CFDictionaryRef)object), idx = 0L;
+        id      enumerateObject = JK_EXPECT_F(_jk_encode_prettyPrint) ? [[object allKeys] sortedArrayUsingSelector:@selector(compare:)] : object;
 
-        if(JK_EXPECT_F(jk_encode_write1(encodeState, NULL, 0UL, NULL, "{"))) { return(1); }
-        if(JK_EXPECT_F(dictionaryCount > 1020L)) {
-          for(id keyObject in object) {
-            if(printComma) { if(JK_EXPECT_F(jk_encode_write1(encodeState, NULL, 0UL, NULL, ","))) { return(1); } }
+        if(JK_EXPECT_F(jk_encode_write1(encodeState, 1L, "{"))) { return(1); }
+        if(JK_EXPECT_F(_jk_encode_prettyPrint) || JK_EXPECT_F(dictionaryCount > 1020L)) {
+          for(id keyObject in enumerateObject) {
+            if(JK_EXPECT_T(printComma)) { if(JK_EXPECT_F(jk_encode_write1(encodeState, 0L, ","))) { return(1); } }
             printComma = 1;
-            if(JK_EXPECT_F((keyObject->isa != encodeState->fastClassLookup.stringClass)) && JK_EXPECT_F(([keyObject isKindOfClass:[NSString class]] == NO))) { jk_encode_error(encodeState, @"Key must be a string object."); return(1); }
+            if(JK_EXPECT_F((keyObject->isa      != encodeState->fastClassLookup.stringClass)) && JK_EXPECT_F(([keyObject   isKindOfClass:[NSString class]] == NO))) { jk_encode_error(encodeState, @"Key must be a string object."); return(1); }
             if(JK_EXPECT_F(jk_encode_add_atom_to_buffer(encodeState, keyObject)))                                                        { return(1); }
-            if(JK_EXPECT_F(jk_encode_write1(encodeState, NULL, 0UL, NULL, ":")))                                                                          { return(1); }
+            if(JK_EXPECT_F(jk_encode_write1(encodeState, 0L, ":")))                                                                      { return(1); }
             if(JK_EXPECT_F(jk_encode_add_atom_to_buffer(encodeState, (void *)CFDictionaryGetValue((CFDictionaryRef)object, keyObject)))) { return(1); }
           }
         } else {
           void *keys[1024], *objects[1024];
           CFDictionaryGetKeysAndValues((CFDictionaryRef)object, (const void **)keys, (const void **)objects);
           for(idx = 0L; idx < dictionaryCount; idx++) {
-            if(JK_EXPECT_F(printComma)) { if(JK_EXPECT_F(jk_encode_write1(encodeState, NULL, 0UL, NULL, ","))) { return(1); } }
+            if(JK_EXPECT_T(printComma)) { if(JK_EXPECT_F(jk_encode_write1(encodeState, 0L, ","))) { return(1); } }
             printComma = 1;
             if(JK_EXPECT_F(((id)keys[idx])->isa != encodeState->fastClassLookup.stringClass) && JK_EXPECT_F([(id)keys[idx] isKindOfClass:[NSString class]] == NO)) { jk_encode_error(encodeState, @"Key must be a string object."); return(1); }
             if(JK_EXPECT_F(jk_encode_add_atom_to_buffer(encodeState, keys[idx])))    { return(1); }
-            if(JK_EXPECT_F(jk_encode_write1(encodeState, NULL, 0UL, NULL, ":")))                      { return(1); }
+            if(JK_EXPECT_F(jk_encode_write1(encodeState, 0L, ":")))                  { return(1); }
             if(JK_EXPECT_F(jk_encode_add_atom_to_buffer(encodeState, objects[idx]))) { return(1); }
           }
         }
-        if(JK_EXPECT_F(jk_encode_write1(encodeState, NULL, 0UL, NULL, "}"))) { return(1); }
+        return(jk_encode_write1(encodeState, -1L, "}"));
       }
       break;
 
-    case JKClassNull: return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, object, "null", 4UL)); break;
+    case JKClassNull: return(jk_encode_writen(encodeState, cacheSlot, startingAtIndex, encodeCacheObject, "null", 4UL)); break;
 
     default: jk_encode_error(encodeState, @"Unable to serialize object class %@.", NSStringFromClass([object class])); return(1); break;
   }
@@ -2809,121 +2818,242 @@ static int jk_encode_add_atom_to_buffer(JKEncodeState *encodeState, void *object
 }
 
 
-static id jk_encode(void *object, JKSerializeOptionFlags optionFlags, JKEncodeAsType encodeAs, NSError **error) {
-  NSCParameterAssert(object != NULL);
+@implementation JKSerializer
+
++ (id)serializeObject:(id)object options:(JKSerializeOptionFlags)optionFlags encodeOption:(JKEncodeOptionType)encodeOption block:(JKSERIALIZER_BLOCKS_PROTO)block delegate:(id)delegate selector:(SEL)selector error:(NSError **)error
+{
+  return([[[[self alloc] init] autorelease] serializeObject:object options:optionFlags encodeOption:encodeOption block:block delegate:delegate selector:selector error:error]);
+}
+
+- (id)serializeObject:(id)object options:(JKSerializeOptionFlags)optionFlags encodeOption:(JKEncodeOptionType)encodeOption block:(JKSERIALIZER_BLOCKS_PROTO)block delegate:(id)delegate selector:(SEL)selector error:(NSError **)error
+{
+#ifndef __BLOCKS__
+#pragma unused(block)
+#endif
+  NSParameterAssert((object != NULL) && (encodeState == NULL) && ((delegate != NULL) ? (block == NULL) : 1) && ((block != NULL) ? (delegate == NULL) : 1) &&
+                    (((encodeOption & JKEncodeOptionCollectionObj) != 0UL) ? (((encodeOption & JKEncodeOptionStringObj)     == 0UL) && ((encodeOption & JKEncodeOptionStringObjTrimQuotes) == 0UL)) : 1) &&
+                    (((encodeOption & JKEncodeOptionStringObj)     != 0UL) ?  ((encodeOption & JKEncodeOptionCollectionObj) == 0UL)                                                                 : 1));
+
   id returnObject = NULL;
+
+  if(encodeState != NULL) { [self releaseState]; }
+  if((encodeState = (struct JKEncodeState *)calloc(1UL, sizeof(JKEncodeState))) == NULL) { [NSException raise:NSMallocException format:@"Unable to allocate state structure."]; return(NULL); }
 
   if((error != NULL) && (*error != NULL)) { *error = NULL; }
 
-  JKEncodeState encodeState;
-  memset(&encodeState, 0, sizeof(JKEncodeState));
+  if(delegate != NULL) {
+    if(selector                               == NULL) { [NSException raise:NSInvalidArgumentException format:@"The delegate argument is not NULL, but the selector argument is NULL."]; }
+    if([delegate respondsToSelector:selector] == NO)   { [NSException raise:NSInvalidArgumentException format:@"The serializeUnsupportedClassesUsingDelegate: delegate does not respond to the selector argument."]; }
+    encodeState->classFormatterDelegate = delegate;
+    encodeState->classFormatterSelector = selector;
+    encodeState->classFormatterIMP      = (JKClassFormatterIMP)[delegate methodForSelector:selector];
+    NSCParameterAssert(encodeState->classFormatterIMP != NULL);
+  }
 
-  encodeState.serializeOptionFlags = optionFlags;
-
-  encodeState.stringBuffer.roundSizeUpToMultipleOf         = (1024UL * 32UL);
-  encodeState.utf8ConversionBuffer.roundSizeUpToMultipleOf = 4096UL;
-
+#ifdef __BLOCKS__
+  encodeState->classFormatterBlock                          = block;
+#endif
+  encodeState->serializeOptionFlags                         = optionFlags;
+  encodeState->encodeOption                                 = encodeOption;
+  encodeState->stringBuffer.roundSizeUpToMultipleOf         = (1024UL * 32UL);
+  encodeState->utf8ConversionBuffer.roundSizeUpToMultipleOf = 4096UL;
+    
   unsigned char stackJSONBuffer[JK_JSONBUFFER_SIZE] JK_ALIGNED(64);
-  jk_managedBuffer_setToStackBuffer(&encodeState.stringBuffer, stackJSONBuffer, sizeof(stackJSONBuffer));
+  jk_managedBuffer_setToStackBuffer(&encodeState->stringBuffer,         stackJSONBuffer, sizeof(stackJSONBuffer));
 
   unsigned char stackUTF8Buffer[JK_UTF8BUFFER_SIZE] JK_ALIGNED(64);
-  jk_managedBuffer_setToStackBuffer(&encodeState.utf8ConversionBuffer, stackUTF8Buffer, sizeof(stackUTF8Buffer));
+  jk_managedBuffer_setToStackBuffer(&encodeState->utf8ConversionBuffer, stackUTF8Buffer, sizeof(stackUTF8Buffer));
 
-  if(jk_encode_add_atom_to_buffer(&encodeState, object) == 0) {
-    switch(encodeAs) {
-      case JKEncodeAsData: {
-        NSData *jsonData = NULL;
-        if((encodeState.stringBuffer.flags & JKManagedBufferMustFree) == 0) {
-          if((jsonData = [(NSData *)CFDataCreate(NULL, encodeState.stringBuffer.bytes.ptr, encodeState.atIndex) autorelease]) == NULL) { jk_encode_error(&encodeState, @"Unable to create NSData object"); }
-        } else {
-          if((encodeState.stringBuffer.bytes.ptr = (unsigned char *)reallocf(encodeState.stringBuffer.bytes.ptr, encodeState.atIndex)) != NULL) {
-            if((jsonData = [(NSData *)CFDataCreateWithBytesNoCopy(NULL, encodeState.stringBuffer.bytes.ptr, encodeState.atIndex, NULL) autorelease]) == NULL) { jk_encode_error(&encodeState, @"Unable to create NSData object"); }
-          }
-          if((jsonData != NULL) || (encodeState.stringBuffer.bytes.ptr == NULL)) {
-            encodeState.stringBuffer.flags        &= ~JKManagedBufferMustFree;
-            encodeState.stringBuffer.bytes.ptr     = NULL;
-            encodeState.stringBuffer.bytes.length  = 0UL;
-          }
-        }
-        returnObject = jsonData;
-      }
+  if(((encodeOption & JKEncodeOptionCollectionObj) != 0UL) && (([object isKindOfClass:[NSArray  class]] == NO) && ([object isKindOfClass:[NSDictionary class]] == NO))) { jk_encode_error(encodeState, @"Unable to serialize object class %@, expected a NSArray or NSDictionary.", NSStringFromClass([object class])); goto errorExit; }
+  if(((encodeOption & JKEncodeOptionStringObj)     != 0UL) &&  ([object isKindOfClass:[NSString class]] == NO))                                                         { jk_encode_error(encodeState, @"Unable to serialize object class %@, expected a NSString.", NSStringFromClass([object class])); goto errorExit; }
+
+  if(jk_encode_add_atom_to_buffer(encodeState, object) == 0) {
+    BOOL stackBuffer = ((encodeState->stringBuffer.flags & JKManagedBufferMustFree) == 0UL) ? YES : NO;
+    
+    if((encodeState->atIndex < 2UL))
+    if((stackBuffer == NO) && ((encodeState->stringBuffer.bytes.ptr = (unsigned char *)reallocf(encodeState->stringBuffer.bytes.ptr, encodeState->atIndex + 16UL)) == NULL)) { jk_encode_error(encodeState, @"Unable to realloc buffer"); goto errorExit; }
+
+    switch((encodeOption & JKEncodeOptionAsTypeMask)) {
+      case JKEncodeOptionAsData:
+        if(stackBuffer == YES) { if((returnObject = [(id)CFDataCreate(                 NULL,                encodeState->stringBuffer.bytes.ptr, (CFIndex)encodeState->atIndex)                                  autorelease]) == NULL) { jk_encode_error(encodeState, @"Unable to create NSData object"); } }
+        else                   { if((returnObject = [(id)CFDataCreateWithBytesNoCopy(  NULL,                encodeState->stringBuffer.bytes.ptr, (CFIndex)encodeState->atIndex, NULL)                            autorelease]) == NULL) { jk_encode_error(encodeState, @"Unable to create NSData object"); } }
         break;
 
-      case JKEncodeAsString: {
-        NSString *jsonString = NULL;
-        if((encodeState.stringBuffer.flags & JKManagedBufferMustFree) == 0) {
-          if((jsonString = [(NSString *)CFStringCreateWithBytes(NULL, (const UInt8 *)encodeState.stringBuffer.bytes.ptr, (CFIndex)encodeState.atIndex, kCFStringEncodingUTF8, NO) autorelease]) == NULL) { jk_encode_error(&encodeState, @"Unable to create NSString object"); }
-        } else {
-          if((encodeState.stringBuffer.bytes.ptr = (unsigned char *)reallocf(encodeState.stringBuffer.bytes.ptr, encodeState.atIndex + 256UL)) != NULL) {
-            encodeState.stringBuffer.bytes.ptr[encodeState.atIndex + 1UL] = 0;
-            if((jsonString = [(NSString *)CFStringCreateWithBytesNoCopy(NULL, (const UInt8 *)encodeState.stringBuffer.bytes.ptr, (CFIndex)encodeState.atIndex, kCFStringEncodingUTF8, NO, NULL) autorelease]) == NULL) { jk_encode_error(&encodeState, @"Unable to create NSString object"); }
-          }
-          if((jsonString != NULL) || (encodeState.stringBuffer.bytes.ptr == NULL)) {
-            encodeState.stringBuffer.flags        &= ~JKManagedBufferMustFree;
-            encodeState.stringBuffer.bytes.ptr     = NULL;
-            encodeState.stringBuffer.bytes.length  = 0UL;
-          }
-        }
-        returnObject = jsonString;
-      }
+      case JKEncodeOptionAsString:
+        if(stackBuffer == YES) { if((returnObject = [(id)CFStringCreateWithBytes(      NULL, (const UInt8 *)encodeState->stringBuffer.bytes.ptr, (CFIndex)encodeState->atIndex, kCFStringEncodingUTF8, NO)       autorelease]) == NULL) { jk_encode_error(encodeState, @"Unable to create NSString object"); } }
+        else                   { if((returnObject = [(id)CFStringCreateWithBytesNoCopy(NULL, (const UInt8 *)encodeState->stringBuffer.bytes.ptr, (CFIndex)encodeState->atIndex, kCFStringEncodingUTF8, NO, NULL) autorelease]) == NULL) { jk_encode_error(encodeState, @"Unable to create NSString object"); } }
         break;
 
-      default: jk_encode_error(&encodeState, @"Unknown encode as type."); break;
+      default: jk_encode_error(encodeState, @"Unknown encode as type."); break;
     }
-  }
-  if((error != NULL) && (encodeState.error != NULL)) { *error = encodeState.error; }
 
-  jk_managedBuffer_release(&encodeState.stringBuffer);
-  jk_managedBuffer_release(&encodeState.utf8ConversionBuffer);
+    if((returnObject != NULL) && (stackBuffer == NO)) { encodeState->stringBuffer.flags &= ~JKManagedBufferMustFree; encodeState->stringBuffer.bytes.ptr = NULL; encodeState->stringBuffer.bytes.length = 0UL; }
+  }
+
+errorExit:
+  if((encodeState != NULL) && (error != NULL) && (encodeState->error != NULL)) { *error = encodeState->error; encodeState->error = NULL; }
+  [self releaseState];
 
   return(returnObject);
 }
 
-
-@implementation NSArray (JSONKit)
-
-- (NSData *)JSONData
+- (void)releaseState
 {
-  return([self JSONDataWithOptions:JKSerializeOptionNone error:NULL]);
+  if(encodeState != NULL) {
+    jk_managedBuffer_release(&encodeState->stringBuffer);
+    jk_managedBuffer_release(&encodeState->utf8ConversionBuffer);
+    free(encodeState); encodeState = NULL;
+  }  
 }
 
-- (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
+- (void)dealloc
 {
-  return(jk_encode(self, serializeOptions, JKEncodeAsData, error));
-}
-
-- (NSString *)JSONString
-{
-  return([self JSONStringWithOptions:JKSerializeOptionNone error:NULL]);
-}
-
-- (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
-{
-  return(jk_encode(self, serializeOptions, JKEncodeAsString, error));
+  [self releaseState];
+  [super dealloc];
 }
 
 @end
 
-@implementation NSDictionary (JSONKit)
+@implementation NSString (JSONKitSerializing)
+
+////////////
+#pragma mark Methods for serializing a single NSString.
+////////////
+
+// Useful for those who need to serialize just a NSString.  Otherwise you would have to do something like [NSArray arrayWithObject:stringToBeJSONSerialized], serializing the array, and then chopping of the extra ^\[.*\]$ square brackets.
+
+// NSData returning methods...
 
 - (NSData *)JSONData
 {
-  return([self JSONDataWithOptions:JKSerializeOptionNone error:NULL]);
+  return([self JSONDataWithOptions:JKSerializeOptionNone includeQuotes:YES error:NULL]);
+}
+
+- (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions includeQuotes:(BOOL)includeQuotes error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | ((includeQuotes == NO) ? JKEncodeOptionStringObjTrimQuotes : 0UL) | JKEncodeOptionStringObj) block:NULL delegate:NULL selector:NULL error:error]);
+}
+
+// NSString returning methods...
+
+- (NSString *)JSONString
+{
+  return([self JSONStringWithOptions:JKSerializeOptionNone includeQuotes:YES error:NULL]);
+}
+
+- (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions includeQuotes:(BOOL)includeQuotes error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | ((includeQuotes == NO) ? JKEncodeOptionStringObjTrimQuotes : 0UL) | JKEncodeOptionStringObj) block:NULL delegate:NULL selector:NULL error:error]);
+}
+
+@end
+
+@implementation NSArray (JSONKitSerializing)
+
+// NSData returning methods...
+
+- (NSData *)JSONData
+{
+  return([JKSerializer serializeObject:self options:JKSerializeOptionNone encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:NULL]);
 }
 
 - (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
 {
-  return(jk_encode(self, serializeOptions, JKEncodeAsData, error));
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:error]);
 }
+
+- (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingDelegate:(id)delegate selector:(SEL)selector error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:NULL delegate:delegate selector:selector error:error]);
+}
+
+// NSString returning methods...
 
 - (NSString *)JSONString
 {
-  return([self JSONStringWithOptions:JKSerializeOptionNone error:NULL]);
+  return([JKSerializer serializeObject:self options:JKSerializeOptionNone encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:NULL]);
 }
 
 - (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
 {
-  return(jk_encode(self, serializeOptions, JKEncodeAsString, error));
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:error]);
+}
+
+- (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingDelegate:(id)delegate selector:(SEL)selector error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:NULL delegate:delegate selector:selector error:error]);
 }
 
 @end
+
+@implementation NSDictionary (JSONKitSerializing)
+
+// NSData returning methods...
+
+- (NSData *)JSONData
+{
+  return([JKSerializer serializeObject:self options:JKSerializeOptionNone encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:NULL]);
+}
+
+- (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:error]);
+}
+
+- (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingDelegate:(id)delegate selector:(SEL)selector error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:NULL delegate:delegate selector:selector error:error]);
+}
+
+// NSString returning methods...
+
+- (NSString *)JSONString
+{
+  return([JKSerializer serializeObject:self options:JKSerializeOptionNone encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:NULL]);
+}
+
+- (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:NULL delegate:NULL selector:NULL error:error]);
+}
+
+- (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingDelegate:(id)delegate selector:(SEL)selector error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:NULL delegate:delegate selector:selector error:error]);
+}
+
+@end
+
+
+#ifdef __BLOCKS__
+
+@implementation NSArray (JSONKitSerializingBlockAdditions)
+
+- (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingBlock:(id(^)(id object))block error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:block delegate:NULL selector:NULL error:error]);
+}
+
+- (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingBlock:(id(^)(id object))block error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:block delegate:NULL selector:NULL error:error]);
+}
+
+@end
+
+@implementation NSDictionary (JSONKitSerializingBlockAdditions)
+
+- (NSData *)JSONDataWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingBlock:(id(^)(id object))block error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsData | JKEncodeOptionCollectionObj) block:block delegate:NULL selector:NULL error:error]);
+}
+
+- (NSString *)JSONStringWithOptions:(JKSerializeOptionFlags)serializeOptions serializeUnsupportedClassesUsingBlock:(id(^)(id object))block error:(NSError **)error
+{
+  return([JKSerializer serializeObject:self options:serializeOptions encodeOption:(JKEncodeOptionAsString | JKEncodeOptionCollectionObj) block:block delegate:NULL selector:NULL error:error]);
+}
+
+@end
+
+#endif // __BLOCKS__
+
