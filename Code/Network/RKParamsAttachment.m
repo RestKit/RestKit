@@ -18,13 +18,11 @@
 //  limitations under the License.
 //
 
-#if TARGET_OS_IPHONE
-#import <MobileCoreServices/UTType.h>
-#endif
 #import "RKParamsAttachment.h"
 #import "RKLog.h"
 #import "NSData+MD5.h"
 #import "FileMD5Hash.h"
+#import "../Support/NSString+RestKit.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -34,10 +32,6 @@
  * The multi-part boundary. See RKParams.m
  */
 extern NSString* const kRKStringBoundary;
-
-@interface RKParamsAttachment (Private)
-- (NSString *)mimeTypeForExtension:(NSString *)extension;
-@end
 
 @implementation RKParamsAttachment
 
@@ -88,7 +82,9 @@ extern NSString* const kRKStringBoundary;
 		NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:filePath], @"Expected file to exist at path: %@", filePath);
         _filePath = [filePath retain];
         _fileName = [[filePath lastPathComponent] retain];
-		_MIMEType = [[self mimeTypeForExtension:[filePath pathExtension]] retain];
+        NSString *MIMEType = [filePath MIMETypeForPathExtension];
+        if (! MIMEType) MIMEType = @"application/octet-stream";        
+		_MIMEType = [MIMEType retain];
 		_bodyStream = [[NSInputStream alloc] initWithFileAtPath:filePath];
 		
 		NSError* error;
@@ -123,23 +119,6 @@ extern NSString* const kRKStringBoundary;
 
 - (NSString*)MIMEBoundary {
 	return kRKStringBoundary;
-}
-
-- (NSString *)mimeTypeForExtension:(NSString *)extension {
-	if (NULL != UTTypeCreatePreferredIdentifierForTag) {
-		CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)extension, NULL);
-		if (uti != NULL) {
-			CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
-			CFRelease(uti);
-			if (mime != NULL) {
-				NSString *type = [NSString stringWithString:(NSString *)mime];
-				CFRelease(mime);
-				return type;
-			}
-		}
-	}
-	
-    return @"application/octet-stream";
 }
 
 #pragma mark NSStream methods

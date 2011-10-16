@@ -18,6 +18,11 @@
 //  limitations under the License.
 //
 
+#if TARGET_OS_MAC
+#import <CoreServices/CoreServices.h>
+#elif TARGET_OS_IPHONE
+#import <MobileCoreServices/UTType.h>
+#endif
 #import "NSString+RestKit.h"
 #import "../Network/RKClient.h"
 #import "RKFixCategoryBug.h"
@@ -110,6 +115,21 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
 
 - (NSString *)stringByReplacingURLEncoding {
     return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)MIMETypeForPathExtension {
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)[self pathExtension], NULL);
+    if (uti != NULL) {
+        CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
+        CFRelease(uti);
+        if (mime != NULL) {
+            NSString *type = [NSString stringWithString:(NSString *)mime];
+            CFRelease(mime);
+            return type;
+        }
+    }
+	
+    return nil;
 }
 
 @end

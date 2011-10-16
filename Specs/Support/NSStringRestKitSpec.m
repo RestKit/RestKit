@@ -70,4 +70,9 @@
     assertThat(queryParams, hasEntries(@"keyA", @"valA", @"keyB", @"valB", nil));
 }
 
+- (void)itShouldReturnTheMIMETypeForAPath {
+    NSString *MIMEType = [@"/path/to/file.xml" MIMETypeForPathExtension];
+    assertThat(MIMEType, is(equalTo(@"application/xml")));
+}
+
 @end

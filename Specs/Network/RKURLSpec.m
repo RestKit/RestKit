@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 6/29/11.
-//  Copyright 2011 Two Toasters
+//  Copyright 2011 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 #import "RKSpecEnvironment.h"
 #import "RKURL.h"
+#import "NSURL+RestKit.h"
 
 @interface RKURLSpec : RKSpec
 @end
@@ -78,6 +79,11 @@
 - (void)itShouldPreserveTrailingSlash {
     RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test/" queryParams:nil];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test/")));    
+}
+
+- (void)itShouldReturnTheMIMETypeForURL {
+    NSURL *URL = [NSURL URLWithString:@"http://restkit.org/path/to/resource.xml"];
+    assertThat([URL MIMETypeForPathExtension], is(equalTo(@"application/xml")));
 }
 
 @end

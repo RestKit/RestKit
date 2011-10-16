@@ -106,4 +106,15 @@
  */
 - (NSString *)stringByReplacingURLEncoding;
 
+/**
+ Interprets the receiver as a path and returns the MIME Type for the path extension 
+ using Core Services.
+ 
+ For example, given a string with the path /Users/blake/Documents/monkey.json we would get 
+ @"application/json" as the MIME Type.
+ 
+ @return The expected MIME Type of the resource identified by the path or nil if unknown
+ */
+- (NSString *)MIMETypeForPathExtension;
+
 @end

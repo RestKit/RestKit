@@ -27,4 +27,15 @@
  */
 - (NSDictionary *)queryDictionary;
 
+/**
+ Returns the MIME Type for the resource identified by the URL by interpretting the
+ path extension using Core Services.
+ 
+ For example, given a URL to http://restkit.org/monkey.json we would get 
+ @"application/json" as the MIME Type.
+ 
+ @return The expected MIME Type of the resource identified by the URL or nil if unknown
+ */
+- (NSString *)MIMETypeForPathExtension;
+
 @end

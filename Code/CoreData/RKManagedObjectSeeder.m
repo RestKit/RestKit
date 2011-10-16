@@ -32,7 +32,6 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 @interface RKManagedObjectSeeder (Private)
-- (NSString *)mimeTypeForExtension:(NSString *)extension;
 - (id)initWithObjectManager:(RKObjectManager*)manager;
 - (void)seedObjectsFromFileNames:(NSArray*)fileNames;
 @end
@@ -122,7 +121,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
     
 	if (payload) {
-        NSString* MIMEType = [self mimeTypeForExtension:[fileName pathExtension]];
+        NSString* MIMEType = [fileName MIMETypeForPathExtension];
         if (MIMEType == nil) {
             // Default the MIME type to the value of the Accept header if we couldn't detect it...
             MIMEType = _manager.acceptMIMEType;
@@ -178,23 +177,6 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
           destinationPath, basePath, storeFileName);
 	
 	exit(1);
-}
-
-- (NSString *)mimeTypeForExtension:(NSString *)extension {
-	if (NULL != UTTypeCreatePreferredIdentifierForTag) {
-		CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)extension, NULL);
-		if (uti != NULL) {
-			CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
-			CFRelease(uti);
-			if (mime != NULL) {
-				NSString *type = [NSString stringWithString:(NSString *)mime];
-				CFRelease(mime);
-				return type;
-			}
-		}
-	}
-	
-    return nil;
 }
 
 @end

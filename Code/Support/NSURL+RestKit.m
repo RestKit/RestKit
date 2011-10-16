@@ -21,6 +21,7 @@
 #import "NSURL+RestKit.h"
 #import "NSDictionary+RKAdditions.h"
 #import "RKFixCategoryBug.h"
+#import "NSString+RestKit.h"
 
 RK_FIX_CATEGORY_BUG(NSURL_RestKit)
 
@@ -28,6 +29,10 @@ RK_FIX_CATEGORY_BUG(NSURL_RestKit)
 
 - (NSDictionary *)queryDictionary {
     return [NSDictionary dictionaryWithURLEncodedString:self.query];
+}
+
+- (NSString *)MIMETypeForPathExtension {
+    return [[self path] MIMETypeForPathExtension];
 }
 
 @end
