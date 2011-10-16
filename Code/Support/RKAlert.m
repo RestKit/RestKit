@@ -20,11 +20,12 @@
 
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
-#else
+#elif TARGET_OS_MAC
 #import <AppKit/AppKit.h>
 #endif
 
 #import "RKAlert.h"
+#import "RKLog.h"
 
 void RKAlert(NSString* message) {
     RKAlertWithTitle(message, @"Alert");
@@ -39,12 +40,19 @@ void RKAlertWithTitle(NSString* message, NSString* title) {
                                               otherButtonTitles:nil];
     [alertView show];
     [alertView release];
-#else
-    NSAlert *alert = [[NSAlert alloc] init];
-    [alert setMessageText:message];
-     [alert setInformativeText:message];
-    [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];	
-    [alert runModal];
-    [alert release];
+#elif TARGET_OS_MAC
+    Class alertClass = NSClassFromString(@"NSAlert");
+    if (alertClass) {
+        NSAlert *alert = [[alertClass alloc] init];
+        [alert setMessageText:message];
+         [alert setInformativeText:message];
+        [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];	
+        [alert runModal];
+        [alert release];
+    } else {
+        RKLogCritical(@"%@: %@", title, message);
+    }
+#elif TARGET_OS_UNIX
+    RKLogCritical(@"%@: %@", title, message);
 #endif    
 }
