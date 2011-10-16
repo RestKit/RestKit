@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 
-#if TARGET_OS_MAC
-#import <CoreServices/CoreServices.h>
-#elif TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
 #import <MobileCoreServices/UTType.h>
+#else
+#import <CoreServices/CoreServices.h>
 #endif
 #import "NSString+RestKit.h"
 #import "../Network/RKClient.h"
