@@ -50,16 +50,31 @@
 // Integration with LibComponentLogging Core.
 //
 
+#if __has_feature(objc_arc)
+#define LCLNSLogAutoReleasePoolBegin()                                         \
+@autoreleasepool {
+#else
+#define LCLNSLogAutoReleasePoolBegin()                                         \
+NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#endif
+
+#if __has_feature(objc_arc)
+#define LCLNSLogAutoReleasePoolEnd()                                           \
+}
+#else
+#define LCLNSLogAutoReleasePoolEnd()                                           \
+[pool release];
+#endif
 
 // Definition of _lcl_logger.
 #define _lcl_logger(log_component, log_level, log_format, ...) {               \
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];                \
+    LCLNSLogAutoReleasePoolBegin();                \
     NSLog(@"%s %s:%@:%d " log_format,                                          \
           _lcl_level_header_1[log_level],                                      \
           _lcl_component_header[log_component],                                \
           [@__FILE__ lastPathComponent],                                       \
           __LINE__,                                                            \
           ## __VA_ARGS__);                                                     \
-    [pool release];                                                            \
+    LCLNSLogAutoReleasePoolEnd();                                              \
 }
 
