@@ -73,7 +73,7 @@ Quick Start (aka TL;DR)
 1. Link against required frameworks:
     1. **CFNetwork.framework**
     1. **CoreData.framework**
-    1. **MobileCoreServices.framework**
+    1. **MobileCoreServices.framework** on iOS or **CoreServices.framework** on OS X
     1. **SystemConfiguration.framework**
     1. **libxml2.dylib**
 1. Link against RestKit static library products:
