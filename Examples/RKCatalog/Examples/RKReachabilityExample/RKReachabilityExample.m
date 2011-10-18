@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright 2011 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -11,17 +11,21 @@
 
 @implementation RKReachabilityExample
 
+@synthesize observer = _observer;
 @synthesize statusLabel = _statusLabel;
+@synthesize flagsLabel = _flagsLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        _observer = [[RKReachabilityObserver alloc] initWithHostname:@"restkit.org"];
+       self.observer = [[RKReachabilityObserver alloc] initWithHost:@"restkit.org"];
+//        self.observer = [RKReachabilityObserver reachabilityObserverForLocalWifi];
+//        self.observer = [RKReachabilityObserver reachabilityObserverForInternet];
 
         // Register for notifications
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(reachabilityChanged:)
-                                                     name:RKReachabilityStateChangedNotification
+                                                     name:RKReachabilityDidChangeNotification
                                                    object:_observer];
     }
     
@@ -34,8 +38,18 @@
     [super dealloc];
 }
 
-- (void)reachabilityChanged:(NSNotification*)notification {
-    RKReachabilityObserver* observer = (RKReachabilityObserver*)[notification object];
+- (void)viewDidLoad {
+    if (! [_observer isReachabilityDetermined]) {
+        _statusLabel.text = @"Reachability is indeterminate...";
+        _statusLabel.textColor = [UIColor blueColor];
+    }
+}
+
+- (void)reachabilityChanged:(NSNotification *)notification {
+    RKReachabilityObserver* observer = (RKReachabilityObserver *) [notification object];
+    
+    RKLogCritical(@"Received reachability update: %@", observer);
+    _flagsLabel.text = [NSString stringWithFormat:@"Host: %@ -> %@", observer.host, [observer reachabilityFlagsDescription]];
     
     if ([observer isNetworkReachable]) {
         if ([observer isConnectionRequired]) {

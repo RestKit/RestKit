@@ -3,16 +3,19 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright 2011 RestKit. All rights reserved.
 //
 
 #import "RKCatalog.h"
 
 @interface RKReachabilityExample : UIViewController {
-    RKReachabilityObserver* _observer;
-    UILabel* _statusLabel;
+    RKReachabilityObserver *_observer;
+    UILabel *_statusLabel;
+    UILabel *_flagsLabel;
 }
 
-@property (nonatomic, retain) IBOutlet UILabel* statusLabel;
+@property (nonatomic, retain) RKReachabilityObserver *observer;
+@property (nonatomic, retain) IBOutlet UILabel *statusLabel;
+@property (nonatomic, retain) IBOutlet UILabel *flagsLabel;
 
 @end

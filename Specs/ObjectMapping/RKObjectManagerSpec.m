@@ -147,7 +147,7 @@
 
 // TODO: Move to Core Data specific spec file...
 - (void)itShouldLoadAHuman {
-    assertThatBool([RKClient sharedClient].isNetworkAvailable, is(equalToBool(YES)));
+    assertThatBool([RKClient sharedClient].isNetworkReachable, is(equalToBool(YES)));
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];    
 	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
 	[loader waitForResponse];
@@ -179,7 +179,7 @@
 - (void)itShouldPOSTAnObject {
     RKObjectManager* manager = RKSpecNewObjectManager();
     RKSpecStubNetworkAvailability(YES);
-    assertThatBool([RKClient sharedClient].isNetworkAvailable, is(equalToBool(YES)));
+    assertThatBool([RKClient sharedClient].isNetworkReachable, is(equalToBool(YES)));
     
     RKObjectRouter* router = [[RKObjectRouter new] autorelease];
     [router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];

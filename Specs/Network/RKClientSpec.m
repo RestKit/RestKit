@@ -32,14 +32,14 @@
 - (void)itShouldDetectNetworkStatusWithAHostname {
 	RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-	RKReachabilityNetworkStatus status = [client.baseURLReachabilityObserver networkStatus];
+	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
 	[expectThat(status) shouldNot:be(RKReachabilityIndeterminate)];	
 }
 
 - (void)itShouldDetectNetworkStatusWithAnIPAddressBaseName {
 	RKClient* client = [RKClient clientWithBaseURL:@"http://173.45.234.197"];
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-	RKReachabilityNetworkStatus status = [client.baseURLReachabilityObserver networkStatus];
+	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
 	[expectThat(status) shouldNot:be(RKReachabilityIndeterminate)];	
 }
 - (void)itShouldSetTheCachePolicyOfTheRequest {
@@ -59,10 +59,10 @@
 - (void)itShouldAllowYouToChangeTheBaseURL {
     RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    [expectThat([client isNetworkReachable]) should:be(YES)];
     client.baseURL = @"http://www.restkit.org";
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-    [expectThat([client isNetworkAvailable]) should:be(YES)];
+    [expectThat([client isNetworkReachable]) should:be(YES)];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKRequest* request = [client requestWithResourcePath:@"/" delegate:loader];
     [request send];
@@ -96,8 +96,12 @@
 }
 
 - (void)itShouldNotSuspendTheMainQueueOnBaseURLChangeWhenReachabilityHasBeenEstablished {
-    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
-    client.baseURL = @"http://127.0.0.1";
+    RKReachabilityObserver *observer = [RKReachabilityObserver reachabilityObserverForInternet];
+    [observer getFlags];
+    assertThatBool([observer isReachabilityDetermined], is(equalToBool(YES)));
+    RKClient *client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
+    client.reachabilityObserver = observer;
     assertThatBool(client.requestQueue.suspended, is(equalToBool(NO)));
 }
 

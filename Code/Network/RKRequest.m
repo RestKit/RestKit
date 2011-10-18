@@ -22,7 +22,6 @@
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
-#import "RKClient.h"
 #import "../Support/Support.h"
 #import "RKURL.h"
 #import "NSData+MD5.h"
@@ -31,6 +30,9 @@
 #import "RKRequestCache.h"
 #import "GCOAuth.h"
 #import "NSURL+RestKit.h"
+#import "RKReachabilityObserver.h"
+#import "RKRequestQueue.h"
+#import "RKParams.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -59,6 +61,7 @@
 @synthesize OAuth2AccessToken = _OAuth2AccessToken;
 @synthesize OAuth2RefreshToken = _OAuth2RefreshToken;
 @synthesize queue = _queue;
+@synthesize reachabilityObserver = _reachabilityObserver;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -367,7 +370,11 @@
 }
 
 - (BOOL)shouldDispatchRequest {
-    return [RKClient sharedClient] == nil || [[RKClient sharedClient] isNetworkAvailable];
+    if (nil == self.reachabilityObserver || NO == [self.reachabilityObserver isReachabilityDetermined]) {
+        return YES;
+    }
+    
+    return [self.reachabilityObserver isNetworkReachable];
 }
 
 - (void)sendAsynchronously {
@@ -423,7 +430,7 @@
 			[self didFinishLoad:[self loadResponseFromCache]];
 
 		} else {
-            RKLogCritical(@"SharedClient = %@ and network availability = %d", [RKClient sharedClient], [[RKClient sharedClient] isNetworkAvailable]);
+            RKLogError(@"Failed to send request to %@ due to unreachable network. Reachability observer = %@", [[self URL] absoluteString], self.reachabilityObserver);
             NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
     		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
     								  errorMessage, NSLocalizedDescriptionKey,
@@ -447,11 +454,11 @@
         _isLoading = YES;
         [self didFinishLoad:response];
     } else if ([self shouldDispatchRequest]) {
-      RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
-		  if (![self prepareURLRequest]) {
-      // TODO: Logging
-        return nil;
-      }
+        RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
+        if (![self prepareURLRequest]) {
+            // TODO: Logging
+            return nil;
+        }
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 

@@ -89,7 +89,7 @@ typedef enum {
     RKRequestAuthenticationTypeOAuth2        // Enable the use of OAuth 2.0 authentication
 } RKRequestAuthenticationType;
 
-@class RKResponse, RKRequestQueue;
+@class RKResponse, RKRequestQueue, RKReachabilityObserver;
 @protocol RKRequestDelegate;
 
 /**
@@ -120,6 +120,7 @@ typedef enum {
     RKRequestCache *_cache;
     NSTimeInterval _cacheTimeoutInterval;
     RKRequestQueue *_queue;
+    RKReachabilityObserver *_reachabilityObserver;
     
     #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
@@ -191,6 +192,14 @@ typedef enum {
 @property(nonatomic, assign) RKRequestBackgroundPolicy backgroundPolicy;
 @property(nonatomic, readonly) UIBackgroundTaskIdentifier backgroundTaskIdentifier;
 #endif
+
+/**
+ The reachability observer to consult for network status. Used for performing
+ offline cache loads.
+ 
+ Generally configured by the RKClient instance that minted this request
+ */
+@property (nonatomic, assign) RKReachabilityObserver *reachabilityObserver;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Authentication
