@@ -2479,7 +2479,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
-				ARCHS = (
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"ARCHS[sdk=iphoneos*]" = (
 					armv6,
 					armv7,
 				);
@@ -2504,7 +2505,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
-				ARCHS = (
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"ARCHS[sdk=iphoneos*]" = (
 					armv6,
 					armv7,
 				);
@@ -2651,7 +2653,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
-				ARCHS = (
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"ARCHS[sdk=iphoneos*]" = (
 					armv6,
 					armv7,
 				);
@@ -2981,7 +2984,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */;
 			buildSettings = {
-				ARCHS = (
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"ARCHS[sdk=iphoneos*]" = (
 					armv6,
 					armv7,
 				);
