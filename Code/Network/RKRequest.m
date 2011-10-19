@@ -29,7 +29,7 @@
 #import "NSString+MD5.h"
 #import "RKLog.h"
 #import "RKRequestCache.h"
-#import "TDOAuth.h"
+#import "GCOAuth.h"
 #import "NSURL+RestKit.h"
 
 // Set Logging Component
@@ -37,7 +37,7 @@
 #define RKLogComponent lcl_cRestKitNetwork
 
 @implementation RKRequest
-@class TDOAuth;
+@class GCOAuth;
 
 @synthesize URL = _URL;
 @synthesize URLRequest = _URLRequest;
@@ -242,7 +242,7 @@
     // Add OAuth headers if is need it
     // OAuth 1
     if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){        
-        NSURLRequest *echo = [TDOAuth URLRequestForPath:[_URL path]
+        NSURLRequest *echo = [GCOAuth URLRequestForPath:[_URL path]
                                           GETParameters:[_URL queryDictionary]
                                                  scheme:[_URL scheme]
                                                    host:[_URL host]
