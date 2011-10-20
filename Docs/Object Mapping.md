@@ -268,7 +268,7 @@ RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article clas
 [articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 // Define the relationship mapping
-[article mapKeyPath:@"author" toRelationship:@"author" withMapping:authorMapping];
+[articleMapping mapKeyPath:@"author" toRelationship:@"author" withMapping:authorMapping];
 
 [[RKObjectManager sharedManager].mappingProvider setMapping:articleMapping forKeyPath:@"articles"];
 ```
