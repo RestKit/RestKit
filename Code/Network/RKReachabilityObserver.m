@@ -122,6 +122,9 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
                 // Obtain the flags after giving other objects a chance to observe us
                 [self getFlags];
             });
+            
+            // Schedule the observer
+            [self scheduleObserver];
 		}
 	}
 	return self;
@@ -343,7 +346,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
     }
 }
 
-- (void)unscheduleObserver {    
+- (void)unscheduleObserver {
 	if (_reachabilityRef) {
         RKLogDebug(@"%@: Unscheduling reachability observer from main dispatch queue", self);
         if (! SCNetworkReachabilitySetDispatchQueue(_reachabilityRef, NULL)) {

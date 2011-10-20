@@ -54,7 +54,7 @@ typedef enum {
 	SCNetworkReachabilityRef _reachabilityRef;
 	BOOL _reachabilityDetermined;
     BOOL _monitoringLocalWiFi;
-    SCNetworkReachabilityFlags _reachabilityFlags;
+    SCNetworkReachabilityFlags _reachabilityFlags;    
 }
 
 /**
