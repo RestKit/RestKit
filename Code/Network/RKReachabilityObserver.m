@@ -337,8 +337,8 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
         return;
     }
     
-    if (! SCNetworkReachabilityScheduleWithRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
-        RKLogWarning("%@: SCNetworkReachabilityScheduleWithRunLoop() failed: %s", self, SCErrorString(SCError()));
+    if (! SCNetworkReachabilitySetDispatchQueue(_reachabilityRef, dispatch_get_main_queue())) {
+        RKLogWarning("%@: SCNetworkReachabilitySetDispatchQueue() failed: %s", self, SCErrorString(SCError()));
         return;
     }
 }
@@ -346,8 +346,8 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 - (void)unscheduleObserver {    
 	if (_reachabilityRef) {
         RKLogDebug(@"%@: Unscheduling reachability observer from main dispatch queue", self);
-        if (! SCNetworkReachabilityUnscheduleFromRunLoop(_reachabilityRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode)) {
-			RKLogWarning("%@: SCNetworkReachabilityUnscheduleFromRunLoop() failed: %s\n", self, SCErrorString(SCError()));
+        if (! SCNetworkReachabilitySetDispatchQueue(_reachabilityRef, NULL)) {
+			RKLogWarning("%@: SCNetworkReachabilitySetDispatchQueue() failed: %s\n", self, SCErrorString(SCError()));
 			return;
 		}
 	} else {
