@@ -69,10 +69,10 @@
 		2516F0B11447ED33004631A1 /* GHNSBundle+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 2516F0881447ED33004631A1 /* GHNSBundle+Utils.m */; };
 		2516F0B21447ED33004631A1 /* GTMBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F08A1447ED33004631A1 /* GTMBase64.h */; };
 		2516F0B31447ED33004631A1 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2516F08B1447ED33004631A1 /* GTMBase64.m */; };
-		2516F0B41447ED33004631A1 /* yajl_common.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F08E1447ED33004631A1 /* yajl_common.h */; };
-		2516F0B51447ED33004631A1 /* yajl_gen.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F08F1447ED33004631A1 /* yajl_gen.h */; };
-		2516F0B61447ED33004631A1 /* yajl_parse.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F0901447ED33004631A1 /* yajl_parse.h */; };
-		2516F0B71447ED33004631A1 /* yajl_version.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F0911447ED33004631A1 /* yajl_version.h */; };
+		2516F0B41447ED33004631A1 /* yajl_common.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F08E1447ED33004631A1 /* yajl_common.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2516F0B51447ED33004631A1 /* yajl_gen.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F08F1447ED33004631A1 /* yajl_gen.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2516F0B61447ED33004631A1 /* yajl_parse.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F0901447ED33004631A1 /* yajl_parse.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2516F0B71447ED33004631A1 /* yajl_version.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F0911447ED33004631A1 /* yajl_version.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2516F0B81447ED33004631A1 /* yajl_common.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F0931447ED33004631A1 /* yajl_common.h */; };
 		2516F0B91447ED33004631A1 /* yajl_gen.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F0941447ED33004631A1 /* yajl_gen.h */; };
 		2516F0BA1447ED33004631A1 /* yajl_parse.h in Headers */ = {isa = PBXBuildFile; fileRef = 2516F0951447ED33004631A1 /* yajl_parse.h */; };
