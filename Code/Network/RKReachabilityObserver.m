@@ -216,7 +216,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
             (_reachabilityFlags & kSCNetworkReachabilityFlagsIsWWAN)               ? 'W' : '-',
             #else
             // If we are not on iOS, always output a dash for WWAN
-            '-'
+            '-',
             #endif
             (_reachabilityFlags & kSCNetworkReachabilityFlagsReachable)            ? 'R' : '-',
             (_reachabilityFlags & kSCNetworkReachabilityFlagsTransientConnection)  ? 't' : '-',
