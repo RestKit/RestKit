@@ -101,7 +101,7 @@
     
     if ([object respondsToSelector:@selector(countForObject:)] && [object count] > 0) {        
         if ([object countForObject:[NSNull null]] == [object count]) {
-            RKLogWarning(@"Found a collection containing only NSNull values, considering the collection unmappable...");
+            RKLogDebug(@"Found a collection containing only NSNull values, considering the collection unmappable...");
             return YES;
         }
     }
