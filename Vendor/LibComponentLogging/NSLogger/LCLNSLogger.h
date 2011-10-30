@@ -25,7 +25,7 @@
 
 #define _LCLNSLOGGER_VERSION_MAJOR  1
 #define _LCLNSLOGGER_VERSION_MINOR  0
-#define _LCLNSLOGGER_VERSION_BUILD  1
+#define _LCLNSLOGGER_VERSION_BUILD  4
 #define _LCLNSLOGGER_VERSION_SUFFIX ""
 
 //
@@ -49,7 +49,7 @@
 //   #define _LCLNSLogger_ShowFunctionNames <definition>
 //
 // - Set the NSLogger option LogToConsole? (type BOOL)
-//   #define _LCLNSLogger_LogToConolse <definition>
+//   #define _LCLNSLogger_LogToConsole <definition>
 //
 // - Set the NSLogger option BufferLocallyUntilConnection? (type BOOL)
 //   #define _LCLNSLogger_BufferLocallyUntilConnection <definition>
@@ -108,10 +108,36 @@
 @end
 
 
+//
+// Integration with LibComponentLogging Core.
+//
+
+
+// ARC/non-ARC autorelease pool
+#define _lcl_logger_autoreleasepool_arc 0
+#if defined(__has_feature)
+#   if __has_feature(objc_arc)
+#   undef  _lcl_logger_autoreleasepool_arc
+#   define _lcl_logger_autoreleasepool_arc 1
+#   endif
+#endif
+#if _lcl_logger_autoreleasepool_arc
+#define _lcl_logger_autoreleasepool_begin                                      \
+    @autoreleasepool {
+#define _lcl_logger_autoreleasepool_end                                        \
+    }
+#else
+#define _lcl_logger_autoreleasepool_begin                                      \
+    NSAutoreleasePool *_lcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
+#define _lcl_logger_autoreleasepool_end                                        \
+    [_lcl_logger_autoreleasepool release];
+#endif
+
+
 // Define the _lcl_logger macro which integrates LCLNSLogger as a logging
 // back-end for LibComponentLogging.
 #define _lcl_logger(_component, _level, _format, ...) {                        \
-    NSAutoreleasePool *_lcl_logger_pool = [[NSAutoreleasePool alloc] init];    \
+    _lcl_logger_autoreleasepool_begin                                          \
     [LCLNSLogger logWithComponent:_component                                   \
                             level:_level                                       \
                              path:__FILE__                                     \
@@ -119,6 +145,6 @@
                          function:__PRETTY_FUNCTION__                          \
                            format:_format,                                     \
                                ## __VA_ARGS__];                                \
-    [_lcl_logger_pool release];                                                \
+    _lcl_logger_autoreleasepool_end                                            \
 }
 

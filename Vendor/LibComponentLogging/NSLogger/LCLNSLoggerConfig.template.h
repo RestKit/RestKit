@@ -49,7 +49,7 @@
     YES
 
 // Tell LCLNSLogger whether it should set the NSLogger LogToConsole option.
-#define _LCLNSLogger_LogToConolse /* (BOOL) */                                 \
+#define _LCLNSLogger_LogToConsole /* (BOOL) */                                 \
     NO
 
 // Tell LCLNSLogger whether it should set the NSLogger BufferLocallyUntilConnection option.

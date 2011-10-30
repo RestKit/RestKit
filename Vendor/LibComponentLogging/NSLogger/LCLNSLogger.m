@@ -49,8 +49,8 @@
 #error  '_LCLNSLogger_ShowFunctionNames' must be defined in LCLNSLoggerConfig.h
 #endif
 
-#ifndef _LCLNSLogger_LogToConolse
-#error  '_LCLNSLogger_LogToConolse' must be defined in LCLNSLoggerConfig.h
+#ifndef _LCLNSLogger_LogToConsole
+#error  '_LCLNSLogger_LogToConsole' must be defined in LCLNSLoggerConfig.h
 #endif
 
 #ifndef _LCLNSLogger_BufferLocallyUntilConnection
@@ -129,7 +129,7 @@ static BOOL _LCLNSLogger_showFunctionName = NO;
     _LCLNSLogger_logger = LoggerInit();
     
     // get configuration options for the logger
-    const BOOL logToConsole = (_LCLNSLogger_LogToConolse);
+    const BOOL logToConsole = (_LCLNSLogger_LogToConsole);
     const BOOL bufferLocallyUntilConnection = (_LCLNSLogger_BufferLocallyUntilConnection);
     const BOOL browseBonjour = (_LCLNSLogger_BrowseBonjour);
     const BOOL browseOnlyLocalDomains = (_LCLNSLogger_BrowseOnlyLocalDomains);
