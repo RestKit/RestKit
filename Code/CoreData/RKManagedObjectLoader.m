@@ -39,8 +39,10 @@
 }
     
 - (void)dealloc {
+    [_sourceObjectID release];
     [_targetObjectID release];
     _targetObjectID = nil;
+    _sourceObjectID = nil;
     _deleteObjectOnFailure = NO;
     [_managedObjectKeyPaths release];
     
@@ -51,6 +53,8 @@
     [super reset]; 
     [_targetObjectID release];
     _targetObjectID = nil;
+    [_sourceObjectID release];
+    _sourceObjectID = nil;
 }
 
 - (RKManagedObjectStore*)objectStore {
@@ -72,8 +76,14 @@
     if ([NSThread isMainThread] == NO && _targetObjectID) {
         return [self.objectStore objectWithID:_targetObjectID];        
     }
-    
     return _targetObject;
+}
+
+- (id)sourceObject {
+    if ([NSThread isMainThread] == NO && _sourceObjectID) {
+        return [self.objectStore objectWithID:_sourceObjectID];
+    }
+    return _sourceObject;
 }
 
 - (void)setTargetObject:(NSObject*)targetObject {
@@ -83,6 +93,15 @@
 
     [_targetObjectID release];
     _targetObjectID = nil;
+}
+
+- (void)setSourceObject:(NSObject *)sourceObject {
+    [_sourceObject release];
+    _sourceObject = nil;
+    _sourceObject = [sourceObject retain];
+    
+    [_sourceObjectID release];
+    _sourceObjectID = nil;
 }
 
 - (BOOL)prepareURLRequest {
@@ -98,7 +117,6 @@
         [self.objectStore save];
         _targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
     }
-    
     return [super prepareURLRequest];
 }
 
@@ -127,11 +145,18 @@
 // NOTE: We are on the background thread here, be mindful of Core Data's threading needs
 - (void)processMappingResult:(RKObjectMappingResult*)result {
     NSAssert(![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
+    if (_sourceObjectID && self.sourceObject && self.method == RKRequestMethodDELETE) {
+        NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_sourceObjectID];
+        RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
+        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadObject];        
+    }
+    /*
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
         NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
         RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
         [[self.objectStore managedObjectContext] deleteObject:backgroundThreadObject];        
     }
+    */
     
     // If the response was successful, save the store...
     if ([self.response isSuccessful]) {
