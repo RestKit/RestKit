@@ -213,6 +213,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
         currentValue = nil;
     }
+    if (value == [NSNull null] || [value isEqual:[NSNull null]]) {
+        value = nil;
+    }
     
 	if (nil == currentValue && nil == value) {
 		// Both are nil
