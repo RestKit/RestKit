@@ -39,6 +39,7 @@ extern NSString* const kRKStringBoundary;
 @synthesize fileName = _fileName;
 @synthesize MIMEType = _MIMEType;
 @synthesize name = _name;
+@synthesize value = _value;
 
 - (id)initWithName:(NSString *)name {
     self = [self init];
@@ -60,6 +61,7 @@ extern NSString* const kRKStringBoundary;
         
 		_bodyStream    = [[NSInputStream alloc] initWithData:_body];
 		_bodyLength    = [_body length];
+        _value         = [value retain];
 	}
 	
 	return self;
@@ -101,6 +103,7 @@ extern NSString* const kRKStringBoundary;
 }
 
 - (void)dealloc {
+    [_value release];
     [_name release];    
     [_body release];
     [_filePath release];
