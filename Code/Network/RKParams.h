@@ -63,6 +63,21 @@
 - (RKParamsAttachment *)setValue:(id <NSObject>)value forParam:(NSString *)param;
 
 /**
+ Get the dictionary of the params which are:
+     *  The entity-body is single-part.
+ 
+     *  The entity-body follows the encoding requirements of the
+     "application/x-www-form-urlencoded" content-type as defined by
+     [W3C.REC-html40-19980424].
+     
+     *  The HTTP request entity-header includes the "Content-Type"
+     header field set to "application/x-www-form-urlencoded".
+ 
+ Source: http://tools.ietf.org/html/rfc5849#section-3.4.1.3
+ */
+- (NSDictionary *)dictionaryOfPlainTextParams;
+
+/**
  Sets the value for a named parameter to the data contained in a file at the given path
  */
 - (RKParamsAttachment *)setFile:(NSString *)filePath forParam:(NSString *)param;
