@@ -337,6 +337,8 @@ static NSDateFormatter *preferredDateFormatter = nil;
     }
     
     [self addDefaultDateFormatter:dateFormatter];
+    [dateFormatter release];
+
 }
 
 + (NSDateFormatter *)preferredDateFormatter {
