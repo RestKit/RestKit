@@ -34,7 +34,9 @@
 @implementation RKManagedObjectThreadSafeInvocationSpec
 
 - (void)testShouldSerializeOneManagedObjectToManagedObjectID {
-    RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKObjectManager *objectManager = RKSpecNewObjectManager();
+    objectManager.objectStore = objectStore;
     RKHuman* human = [RKHuman object];
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithObject:human forKey:@"human"];
     NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
@@ -44,7 +46,9 @@
 }
 
 - (void)testShouldSerializeCollectionOfManagedObjectsToManagedObjectIDs {
-    RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKObjectManager *objectManager = RKSpecNewObjectManager();
+    objectManager.objectStore = objectStore;
     RKHuman* human1 = [RKHuman object];
     RKHuman* human2 = [RKHuman object];
     NSArray* humans = [NSArray arrayWithObjects:human1, human2, nil];
@@ -57,26 +61,30 @@
 }
 
 - (void)testShouldDeserializeOneManagedObjectIDToManagedObject {
-    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKObjectManager *objectManager = RKSpecNewObjectManager();
+    objectManager.objectStore = objectStore;
     RKHuman* human = [RKHuman object];
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithObject:[human objectID] forKey:@"human"];
     NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.objectStore = store;
+    invocation.objectStore = objectStore;
     [invocation deserializeManagedObjectIDsForArgument:dictionary withKeyPaths:[NSSet setWithObject:@"human"]];
     assertThat([dictionary valueForKeyPath:@"human"], is(instanceOf([NSManagedObject class])));
     assertThat([dictionary valueForKeyPath:@"human"], is(equalTo(human)));
 }
 
 - (void)testShouldDeserializeCollectionOfManagedObjectIDToManagedObjects {
-    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKObjectManager *objectManager = RKSpecNewObjectManager();
+    objectManager.objectStore = objectStore;
     RKHuman* human1 = [RKHuman object];
     RKHuman* human2 = [RKHuman object];
     NSArray* humanIDs = [NSArray arrayWithObjects:[human1 objectID], [human2 objectID], nil];
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithObject:humanIDs forKey:@"humans"];
     NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.objectStore = store;
+    invocation.objectStore = objectStore;
     [invocation deserializeManagedObjectIDsForArgument:dictionary withKeyPaths:[NSSet setWithObject:@"humans"]];
     assertThat([dictionary valueForKeyPath:@"humans"], is(instanceOf([NSArray class])));
     NSArray* humans = [NSArray arrayWithObjects:human1, human2, nil];
@@ -97,6 +105,8 @@
     
     // Assert this is not the main thread
     // Create a new array of objects in the background
+    RKObjectManager *objectManager = RKSpecNewObjectManager();
+    objectManager.objectStore = RKSpecNewManagedObjectStore();
     NSArray* humans = [NSArray arrayWithObject:[RKHuman object]];
     _dictionary = [[NSMutableDictionary dictionaryWithObject:humans forKey:@"humans"] retain];
     NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];

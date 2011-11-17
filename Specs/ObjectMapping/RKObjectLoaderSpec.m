@@ -51,7 +51,6 @@
 @synthesize email = _email;
 
 - (void)willSendWithObjectLoader:(RKObjectLoader *)objectLoader {
-    NSLog(@"RKSpecComplexUser willSendWithObjectLoader: INVOKED!!");
     return;
 }
 
@@ -134,7 +133,6 @@
 
 - (void)testShouldNotCrashWhenLoadingAnErrorResponseWithAnUnmappableMIMEType {
     RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     [objectManager loadObjectsAtResourcePath:@"/404" delegate:loader];
     [loader waitForResponse];
@@ -157,8 +155,6 @@
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
-    
-    NSLog(@"Response: %@", responseLoader.objects);
     
     assertThat(user.firstname, is(equalTo(@"Diego")));
 }
@@ -186,7 +182,6 @@
     objectLoader.delegate = responseLoader;
     objectLoader.method = RKRequestMethodGET;
     objectLoader.mappingProvider = [self providerForComplexUser];
-    
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
     assertThatUnsignedInteger([responseLoader.objects count], is(equalToInt(1)));
@@ -265,7 +260,6 @@
 - (void)testShouldAllowMutationOfTheParsedDataInWillMapData {
     RKSpecResponseLoaderWithWillMapData* loader = (RKSpecResponseLoaderWithWillMapData*)[RKSpecResponseLoaderWithWillMapData responseLoader];
     RKObjectManager* manager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
     [manager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
     [loader waitForResponse];
     assertThat([loader.mappableData valueForKey:@"newKey"], is(equalTo(@"monkey!")));
@@ -463,8 +457,6 @@
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
     
-    NSLog(@"Response: %@", responseLoader.objects);
-    
     assertThat(user.firstname, is(equalTo(@"Diego")));
 }
 
@@ -610,6 +602,27 @@
     assertThat(responseLoader.objects, is(empty()));
 }
 
+- (void)testShouldNotBlockNetworkOperationsWhileAwaitingObjectMapping {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    objectManager.requestCache.storagePolicy = RKRequestCacheStoragePolicyDisabled;
+    objectManager.client.requestQueue.concurrentRequestsLimit = 1;
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"human";
+    [userMapping mapAttributes:@"name", @"id", nil];
+
+    // Suspend the Queue to block object mapping
+    dispatch_suspend(objectManager.mappingQueue);
+
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    [objectManager.mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/humans/1"];
+    [objectManager loadObjectsAtResourcePath:@"/humans/1" delegate:nil];
+    [objectManager.client get:@"/empty/string" delegate:responseLoader];
+    [responseLoader waitForResponse];
+
+    // We should get a response is network is released even though object mapping didn't finish
+    assertThatBool(responseLoader.success, is(equalToBool(YES)));
+}
+
 #pragma mark - Block Tests
 
 - (void)testInvocationOfDidLoadObjectBlock {
@@ -624,7 +637,7 @@
         expectedResult = object;  
     };
     
-    [objectLoader sendAsynchronously];    
+    [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
     assertThat(expectedResult, is(notNilValue()));
 }

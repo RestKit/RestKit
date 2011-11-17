@@ -25,13 +25,14 @@
 #import "Support.h"
 #import "RKErrorMessage.h"
 
-NSString * const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
-NSString * const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
+NSString* const RKObjectManagerDidBecomeOfflineNotification = @"RKDidEnterOfflineModeNotification";
+NSString* const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnlineModeNotification";
 
 //////////////////////////////////
-// Shared Instance
+// Shared Instances
 
-static RKObjectManager *sharedManager = nil;
+static RKObjectManager  *sharedManager = nil;
+static dispatch_queue_t defaultMappingQueue = nil;
 
 ///////////////////////////////////
 
@@ -42,28 +43,51 @@ static RKObjectManager *sharedManager = nil;
 @synthesize router = _router;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
+@synthesize networkStatus = _networkStatus;
+@synthesize mappingQueue = _mappingQueue;
+
++ (dispatch_queue_t)defaultMappingQueue {
+    if (! defaultMappingQueue) {
+        defaultMappingQueue = dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL);
+    }
+
+    return defaultMappingQueue;
+}
+
++ (void)setDefaultMappingQueue:(dispatch_queue_t)newDefaultMappingQueue {
+    if (defaultMappingQueue) {
+        dispatch_release(defaultMappingQueue);
+        defaultMappingQueue = nil;
+    }
+
+    if (newDefaultMappingQueue) {
+        dispatch_retain(newDefaultMappingQueue);
+        defaultMappingQueue = newDefaultMappingQueue;
+    }
+}
 
 - (id)initWithBaseURL:(RKURL *)baseURL {
     self = [super init];
 	if (self) {
         _mappingProvider = [RKObjectMappingProvider new];
-		_router = [RKObjectRouter new];
-		_client = [[RKClient alloc] initWithBaseURL:baseURL];
-        _onlineState = RKObjectManagerOnlineStateUndetermined;
+        _router = [RKObjectRouter new];
+        _client = [[RKClient alloc] initWithBaseURL:baseURL];
+        _networkStatus = RKObjectManagerNetworkStatusUnknown;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
+        self.mappingQueue = [RKObjectManager defaultMappingQueue];
         
         // Setup default error message mappings
         RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
         errorMapping.rootKeyPath = @"errors";
         [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
         _mappingProvider.errorMapping = errorMapping;
-        		
-		[[NSNotificationCenter defaultCenter] addObserver:self
-												 selector:@selector(reachabilityChanged:)
-													 name:RKReachabilityDidChangeNotification
-												   object:_client.reachabilityObserver];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(reachabilityChanged:)
+                                                     name:RKReachabilityDidChangeNotification
+                                                   object:_client.reachabilityObserver];
         
         // Set shared manager if nil
         if (nil == sharedManager) {
@@ -90,43 +114,43 @@ static RKObjectManager *sharedManager = nil;
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL {
     RKObjectManager *manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];	
-	return manager;
+    return manager;
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-	[_router release];
-	_router = nil;
-	[_client release];
-	_client = nil;
-	[_objectStore release];
-	_objectStore = nil;
+    [_router release];
+    _router = nil;
+    [_client release];
+    _client = nil;
+    [_objectStore release];
+    _objectStore = nil;
     [_serializationMIMEType release];
     _serializationMIMEType = nil;
     [_mappingProvider release];
     _mappingProvider = nil;
     
-	[super dealloc];
+    [super dealloc];
 }
 
 - (BOOL)isOnline {
-	return (_onlineState == RKObjectManagerOnlineStateConnected);
+	return (_networkStatus == RKObjectManagerNetworkStatusOnline);
 }
 
 - (BOOL)isOffline {
-	return ![self isOnline];
+	return (_networkStatus == RKObjectManagerNetworkStatusOffline);
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification {
 	BOOL isHostReachable = [self.client.reachabilityObserver isNetworkReachable];
 
-	_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
+	_networkStatus = isHostReachable ? RKObjectManagerNetworkStatusOnline : RKObjectManagerNetworkStatusOffline;
 
 	if (isHostReachable) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOnlineModeNotification object:self];
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOnlineNotification object:self];
 	} else {
-		[[NSNotificationCenter defaultCenter] postNotificationName:RKDidEnterOfflineModeNotification object:self];
+		[[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOfflineNotification object:self];
 	}
 }
 
@@ -186,8 +210,8 @@ static RKObjectManager *sharedManager = nil;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
     
-    RKObjectMapping *objectMapping = [self.mappingProvider objectMappingForResourcePath:resourcePath];
-    if (objectMapping == nil || [object isMemberOfClass:[objectMapping objectClass]]) {
+    id<RKObjectMappingDefinition> objectMapping = [self.mappingProvider objectMappingForResourcePath:resourcePath];
+    if (objectMapping == nil || ([objectMapping isKindOfClass:[RKObjectMapping class]] && [object isMemberOfClass:[(RKObjectMapping *)objectMapping objectClass]])) {
         loader.targetObject = object;
     } else {
         loader.targetObject = nil;
@@ -248,13 +272,12 @@ static RKObjectManager *sharedManager = nil;
 - (void)sendObject:(id<NSObject>)object toResourcePath:(NSString *)resourcePath usingBlock:(void(^)(RKObjectLoader*))block {
     RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodInvalid];
     loader.URL = [self.baseURL URLByAppendingResourcePath:resourcePath];
-    
     // Yield to the block for setup
     block(loader);
     
     [loader send];
 }
-                                                                                                        
+
 - (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader*))block {
     NSString *resourcePath = [self.router resourcePathForObject:object method:method];    
     [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
@@ -317,6 +340,18 @@ static RKObjectManager *sharedManager = nil;
 
 - (RKRequestQueue *)requestQueue {
     return self.client.requestQueue;
+}
+
+- (void)setMappingQueue:(dispatch_queue_t)newMappingQueue {
+    if (_mappingQueue) {
+        dispatch_release(_mappingQueue);
+        _mappingQueue = nil;
+    }
+
+    if (newMappingQueue) {
+        dispatch_retain(newMappingQueue);
+        _mappingQueue = newMappingQueue;
+    }
 }
 
 #pragma mark - RKConfigrationDelegate

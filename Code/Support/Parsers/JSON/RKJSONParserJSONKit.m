@@ -20,12 +20,19 @@
 
 #import "RKJSONParserJSONKit.h"
 #import "JSONKit.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitSupportParsers
+
 
 // TODO: JSONKit serializer instance should be reused to enable leverage
 // the internal caching capabilities from the JSONKit serializer
 @implementation RKJSONParserJSONKit
 
 - (NSDictionary*)objectFromString:(NSString*)string error:(NSError**)error {
+	RKLogTrace(@"string='%@'", string);
     return [string objectFromJSONStringWithParseOptions:JKParseOptionStrict error:error];
 }
 

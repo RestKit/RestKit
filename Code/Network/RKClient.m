@@ -286,7 +286,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     if (! [newBaseURL isEqual:[NSNull null]]) {
         // Configure a cache for the new base URL
         [_requestCache release];
-        _requestCache = [[RKRequestCache alloc] initWithCachePath:[self cachePath]
+        _requestCache = [[RKRequestCache alloc] initWithPath:[self cachePath]
                                                     storagePolicy:RKRequestCacheStoragePolicyPermanently];
     
         // Determine reachability strategy (if user has not already done so)
@@ -411,6 +411,43 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 // deprecated
 - (void)setCache:(RKRequestCache *)requestCache {
     self.requestCache = requestCache;
+}
+
+#pragma mark - Block Request Dispatching
+
+- (RKRequest *)sendRequestToResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    RKRequest *request = [self requestWithResourcePath:resourcePath];
+    if (block) block(request);
+    [request send];
+    return request;
+}
+
+- (RKRequest *)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodGET;
+        block(request);
+    }];
+}
+
+- (RKRequest *)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodPOST;
+        block(request);
+    }];
+}
+
+- (RKRequest *)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodPUT;
+        block(request);
+    }];
+}
+
+- (RKRequest *)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodDELETE;
+        block(request);
+    }];
 }
 
 // deprecated

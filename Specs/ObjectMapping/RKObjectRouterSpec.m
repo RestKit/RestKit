@@ -21,12 +21,14 @@
 #import "RKSpecEnvironment.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectStore.h"
-#import "RKHuman.h"
-#import "RKCat.h"
+#import "RKSpecUser.h"
 
 @interface RKSpecObject : NSObject
 @end
 @implementation RKSpecObject
++ (id)object {
+    return [[self new] autorelease];
+}
 @end
 
 @interface RKSpecSubclassedObject : RKSpecObject
@@ -39,17 +41,21 @@
 
 @end
 
-@implementation RKObjectRouterSpec
+@implementation RKSpecUser (PolymorphicResourcePath)
 
-- (void)setUp {
-    RKSpecNewManagedObjectStore();
+- (NSString *)polymorphicResourcePath {
+    return @"/this/is/the/path";
 }
+
+@end
+
+@implementation RKObjectRouterSpec
 
 -(void)itShouldThrowAnExceptionWhenAskedForAPathForAnUnregisteredClassAndMethod {
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
     NSException* exception = nil;
     @try {
-        [router resourcePathForObject:[RKHuman object] method:RKRequestMethodPOST];
+        [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodPOST];
     }
     @catch (NSException * e) {
         exception = e;
@@ -59,10 +65,10 @@
 
 -(void)itShouldThrowAnExceptionWhenAskedForAPathForARegisteredClassButUnregisteredMethod {
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
+    [router routeClass:[RKSpecObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
     NSException* exception = nil;
     @try {
-        [router resourcePathForObject:[RKHuman object] method:RKRequestMethodPOST];
+        [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodPOST];
     }
     @catch (NSException * e) {
         exception = e;
@@ -72,17 +78,17 @@
 
 -(void)itShouldReturnPathsRegisteredForSpecificRequestMethods {
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
-    NSString* path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodGET];
+    [router routeClass:[RKSpecObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
+    NSString* path = [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
 -(void)itShouldReturnPathsRegisteredForTheClassAsAWhole {
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp"];
-    NSString* path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodGET];
+    [router routeClass:[RKSpecObject class] toResourcePath:@"/HumanService.asp"];
+    NSString* path = [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
-    path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodPOST];
+    path = [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodPOST];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
@@ -105,22 +111,22 @@
 
 -(void)itShouldFavorSpecificMethodsWhenClassAndSpecificMethodsAreRegistered {
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp"];
-    [router routeClass:[RKHuman class] toResourcePath:@"/HumanServiceForPUT.asp" forMethod:RKRequestMethodPUT];
-    NSString* path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodGET];
+    [router routeClass:[RKSpecObject class] toResourcePath:@"/HumanService.asp"];
+    [router routeClass:[RKSpecObject class] toResourcePath:@"/HumanServiceForPUT.asp" forMethod:RKRequestMethodPUT];
+    NSString* path = [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodGET];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
-    path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodPOST];
+    path = [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodPOST];
     assertThat(path, is(equalTo(@"/HumanService.asp")));
-    path = [router resourcePathForObject:[RKHuman object] method:RKRequestMethodPUT];
+    path = [router resourcePathForObject:[RKSpecObject object] method:RKRequestMethodPUT];
     assertThat(path, is(equalTo(@"/HumanServiceForPUT.asp")));
 }
 
 -(void)itShouldRaiseAnExceptionWhenAttemptIsMadeToRegisterOverAnExistingRoute {
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
+    [router routeClass:[RKSpecObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
     NSException* exception = nil;
     @try {
-        [router routeClass:[RKHuman class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
+        [router routeClass:[RKSpecObject class] toResourcePathPattern:@"/HumanService.asp" forMethod:RKRequestMethodGET];
     }
     @catch (NSException * e) {
         exception = e;
@@ -129,44 +135,44 @@
 }
 
 - (void)testShouldInterpolatePropertyNamesReferencedInTheMapping {
-    RKHuman* blake = [RKHuman object];
+    RKSpecUser* blake = [RKSpecUser user];
     blake.name = @"blake";
-    blake.railsID = [NSNumber numberWithInt:31337];
+    blake.userID = [NSNumber numberWithInt:31337];
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"/humans/:railsID/:name" forMethod:RKRequestMethodGET];
+    [router routeClass:[RKSpecUser class] toResourcePathPattern:@"/humans/:userID/:name" forMethod:RKRequestMethodGET];
     
     NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/humans/31337/blake")));
 }
 
 - (void)testShouldInterpolatePropertyNamesReferencedInTheMappingWithDeprecatedParentheses {
-    RKHuman* blake = [RKHuman object];
+    RKSpecUser* blake = [RKSpecUser user];
     blake.name = @"blake";
-    blake.railsID = [NSNumber numberWithInt:31337];
+    blake.userID = [NSNumber numberWithInt:31337];
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"/humans/(railsID)/(name)" forMethod:RKRequestMethodGET];
+    [router routeClass:[RKSpecUser class] toResourcePathPattern:@"/humans/(userID)/(name)" forMethod:RKRequestMethodGET];
     
     NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/humans/31337/blake")));
 }
 
 - (void)testShouldAllowForPolymorphicURLsViaMethodCalls {
-    RKHuman* blake = [RKHuman object];
+    RKSpecUser* blake = [RKSpecUser user];
     blake.name = @"blake";
-    blake.railsID = [NSNumber numberWithInt:31337];
+    blake.userID = [NSNumber numberWithInt:31337];
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@":polymorphicResourcePath" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
+    [router routeClass:[RKSpecUser class] toResourcePathPattern:@":polymorphicResourcePath" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
     
     NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/this/is/the/path")));
 }
 
 - (void)testShouldAllowForPolymorphicURLsViaMethodCallsWithDeprecatedParentheses {
-    RKHuman* blake = [RKHuman object];
+    RKSpecUser* blake = [RKSpecUser user];
     blake.name = @"blake";
-    blake.railsID = [NSNumber numberWithInt:31337];
+    blake.userID = [NSNumber numberWithInt:31337];
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
-    [router routeClass:[RKHuman class] toResourcePath:@"(polymorphicResourcePath)" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
+    [router routeClass:[RKSpecUser class] toResourcePathPattern:@"(polymorphicResourcePath)" forMethod:RKRequestMethodGET escapeRoutedPath:NO];
     
     NSString* resourcePath = [router resourcePathForObject:blake method:RKRequestMethodGET];
     assertThat(resourcePath, is(equalTo(@"/this/is/the/path")));

@@ -113,7 +113,7 @@
     if ([value isKindOfClass:[NSDate class]]) {
         // Date's are not natively serializable, must be encoded as a string
         @synchronized(self.mapping.preferredDateFormatter) {
-            transformedValue = [self.mapping.preferredDateFormatter stringFromDate:value];
+            transformedValue = [self.mapping.preferredDateFormatter stringForObjectValue:value];
         }
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits

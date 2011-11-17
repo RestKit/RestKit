@@ -27,15 +27,23 @@
 
 @protocol RKParser;
 
-// Notifications
-extern NSString* const RKDidEnterOfflineModeNotification;
-extern NSString* const RKDidEnterOnlineModeNotification;
+/** Notifications */
+
+/**
+ Posted when the object managed has transitioned to the offline state
+ */
+extern NSString* const RKObjectManagerDidBecomeOfflineNotification;
+
+/**
+ Posted when the object managed has transitioned to the online state
+ */
+extern NSString* const RKObjectManagerDidBecomeOnlineNotification;
 
 typedef enum {
-	RKObjectManagerOnlineStateUndetermined,
-	RKObjectManagerOnlineStateDisconnected,
-	RKObjectManagerOnlineStateConnected
-} RKObjectManagerOnlineState;
+	RKObjectManagerNetworkStatusUnknown,
+	RKObjectManagerNetworkStatusOffline,
+	RKObjectManagerNetworkStatusOnline
+} RKObjectManagerNetworkStatus;
 
 @class RKManagedObjectStore;
 
@@ -107,15 +115,7 @@ typedef enum {
  When an instance of RKObjectManager is configured, the RKObjectMappingProvider
  instance configured 
  */
-@interface RKObjectManager : NSObject <RKConfigurationDelegate> {
-	RKClient* _client;
-	RKObjectRouter* _router;
-	RKManagedObjectStore* _objectStore;	
-	RKObjectManagerOnlineState _onlineState;
-    RKObjectMappingProvider* _mappingProvider;
-    NSString* _serializationMIMEType;
-    BOOL _inferMappingsFromObjectTypes;
-}
+@interface RKObjectManager : NSObject <RKConfigurationDelegate>
 
 /// @name Configuring the Shared Manager Instance
 
@@ -128,6 +128,29 @@ typedef enum {
  Set the shared instance of the object manager
  */
 + (void)setSharedManager:(RKObjectManager *)manager;
+
+/** @name Object Mapping Dispatch Queue */
+
+/**
+ Returns the global default Grand Central Dispatch queue used for object mapping
+ operations executed by RKObjectLoaders.
+
+ All object loaders perform their loading within a Grand Central Dispatch
+ queue. This provides control over the number of loaders that are performing
+ expensive operations such as JSON parsing, object mapping, and accessing Core
+ Data concurrently. The defaultMappingQueue is configured as the mappingQueue
+ for all RKObjectManager's created by RestKit, but can be overridden on a per
+ manager and per object loader basis.
+
+ By default, the defaultMappingQueue is configured as serial GCD queue.
+ */
++ (dispatch_queue_t)defaultMappingQueue;
+
+/**
+ Sets a new global default Grand Central Dispatch queue for use in object mapping
+ operations executed by RKObjectLoaders.
+ */
++ (void)setDefaultMappingQueue:(dispatch_queue_t)defaultMappingQueue;
 
 /// @name Initializing an Object Manager
 
@@ -167,18 +190,29 @@ typedef enum {
  The request cache used to store and load responses for requests sent
  through this object manager's underlying client object
  */
-@property (nonatomic, readonly) RKRequestQueue *requestQueue;
+@property (nonatomic, readonly) RKRequestCache *requestCache;
 
 /**
  The request queue used to dispatch asynchronous requests sent
  through this object manager's underlying client object
  */
-@property (nonatomic, readonly) RKRequestCache *requestCache;
+@property (nonatomic, readonly) RKRequestQueue *requestQueue;
 
 /**
- True when we are in online mode
+  Returns the current network status for this object manager as determined
+  by connectivity to the remote backend system
  */
-- (BOOL)isOnline;
+@property (nonatomic, readonly) RKObjectManagerNetworkStatus networkStatus;
+
+/**
+ Returns YES when we are in online mode
+ */
+@property (nonatomic, readonly) BOOL isOnline;
+
+/**
+ Returns YES when we are in offline mode
+ */
+@property (nonatomic, readonly) BOOL isOffline;
 
 /// @name Configuring Object Mapping
 
@@ -197,6 +231,12 @@ typedef enum {
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
 @property (nonatomic, retain) RKManagedObjectStore *objectStore;
+
+/**
+ The Grand Dispatch Queue to use when performing expensive object mapping operations
+ within RKObjectLoader instances created through this object manager
+ */
+@property (nonatomic, assign) dispatch_queue_t mappingQueue;
 
 /**
  The Default MIME Type to be used in object serialization.
@@ -325,7 +365,7 @@ typedef enum {
  
  For example:
     
-    - (void)loadObjectWithBlockExample {
+    - (void)loadObjectUsingBlockExample {
         [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" delegate:self block:^(RKObjectLoader* loader) {
             loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
         }];
@@ -333,7 +373,7 @@ typedef enum {
  */
 - (void)loadObjectsAtResourcePath:(NSString *)resourcePath usingBlock:(RKObjectLoaderBlock)block;
 
-/**
+/*
  Configure and send an object loader after yielding it to a block for configuration. This allows for very succinct on-the-fly
  configuration of the request without obtaining an object reference via objectLoaderForObject: and then sending it yourself.
  
@@ -348,7 +388,7 @@ typedef enum {
                 loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
                 loader.targetObject = nil;  // Map the results back onto a new object instead of self
                 // Set up a custom serialization mapping to handle this request
-                loader.serializationMapping = [RKObjectMapping serializationMappingWithBlock:^(RKObjectMapping* mapping) {
+                loader.serializationMapping = [RKObjectMapping serializationMappingUsingBlock:^(RKObjectMapping* mapping) {
                     [mapping mapAttributes:@"password", nil];
                 }];
             }];
@@ -368,7 +408,6 @@ typedef enum {
  POST a remote object instance and yield the object loader to the block before sending
  
  @see sendObject:method:delegate:block
- - (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
  */
 - (void)postObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
 
@@ -405,6 +444,8 @@ typedef enum {
  The mapResponseWith: family of methods have been deprecated by the support for object mapping selection
  using resourcePath's
  */
+- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate;
+- (RKObjectLoader *)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate;
 - (void)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (void)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (void)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;

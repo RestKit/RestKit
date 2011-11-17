@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "Errors.h"
+#import "RKErrors.h"
 
-typedef enum RKObjectMapperErrors {
+typedef enum {
     RKObjectMapperErrorObjectMappingNotFound        = 1001,     // No mapping found
     RKObjectMapperErrorObjectMappingTypeMismatch    = 1002,     // Target class and object mapping are in disagreement
     RKObjectMapperErrorUnmappableContent            = 1003,     // No mappable attributes or relationships were found

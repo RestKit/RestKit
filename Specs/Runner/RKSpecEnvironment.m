@@ -37,14 +37,6 @@ RKURL* RKSpecGetBaseURL(void) {
     return [RKURL URLWithString:RKSpecGetBaseURLString()];
 }
 
-void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
-    RKClient* client = [RKClient sharedClient];
-    if (client) {
-        id mockClient = [OCMockObject partialMockForObject:client];
-        [[[mockClient stub] andReturnValue:OCMOCK_VALUE(isNetworkAvailable)] isNetworkAvailable];
-    }
-}
-
 RKClient* RKSpecNewClient(void) {
     RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
     [RKClient setSharedClient:client];    
@@ -62,8 +54,8 @@ RKOAuthClient* RKSpecNewOAuthClient(RKSpecResponseLoader* loader){
     return client;
 }
 
-
-RKObjectManager* RKSpecNewObjectManager(void) {    
+RKObjectManager* RKSpecNewObjectManager(void) {
+    [RKObjectManager setDefaultMappingQueue:dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL)];
     [RKObjectMapping setDefaultDateFormatters:nil];
     RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     [RKObjectManager setSharedManager:objectManager];
@@ -78,9 +70,9 @@ RKObjectManager* RKSpecNewObjectManager(void) {
 // TODO: Store initialization should not be coupled to object manager...
 RKManagedObjectStore* RKSpecNewManagedObjectStore(void) {
     RKManagedObjectStore* store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
+    [store deletePersistantStore];
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     objectManager.objectStore = store;
-    [objectManager.objectStore deletePersistantStore];
     return store;
 }
 
@@ -134,6 +126,23 @@ id RKSpecParseFixture(NSString* fileName) {
     }
     
     return object;
+}
+
+void RKSpecSpinRunLoopWithDuration(NSTimeInterval timeInterval) {
+    BOOL waiting = YES;
+	NSDate* startDate = [NSDate date];
+
+	while (waiting) {
+		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+		if ([[NSDate date] timeIntervalSinceDate:startDate] > timeInterval) {
+			waiting = NO;
+		}
+        usleep(100);
+	}
+}
+
+void RKSpecSpinRunLoop() {
+    RKSpecSpinRunLoopWithDuration(0.1);
 }
 
 @implementation RKSpec

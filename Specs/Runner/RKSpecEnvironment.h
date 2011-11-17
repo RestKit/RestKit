@@ -28,6 +28,7 @@
 #import "RestKit.h"
 #import "RKSpecResponseLoader.h"
 #import "RKManagedObjectStore.h"
+#import "RKSpecNotificationObserver.h"
 
 ////////////////////////////////////////////////////////////////////////////
 // OCMock - For some reason this macro is incorrect. Note the use of __typeof
@@ -39,15 +40,14 @@
 RKURL* RKSpecGetBaseURL(void);
 NSString* RKSpecGetBaseURLString(void);
 
-// Stub out the return value of the Shared Client instance's isNetworkAvailable method
-void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable);
-
 // Helpers for returning new instances that clear global state
 RKClient* RKSpecNewClient(void);
 RKObjectManager* RKSpecNewObjectManager(void);
 RKOAuthClient* RKSpecNewOAuthClient(RKSpecResponseLoader* loader);
 RKManagedObjectStore* RKSpecNewManagedObjectStore(void);
 void RKSpecClearCacheDirectory(void);
+void RKSpecSpinRunLoop(void);
+void RKSpecSpinRunLoopWithDuration(NSTimeInterval timeInterval);
 
 // Read the contents of a fixture file from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName);
@@ -63,4 +63,8 @@ id RKSpecParseFixture(NSString* fileName);
            withMethod:(SEL)aNewMethod
             fromClass:(Class)aNewClass
          executeBlock:(void (^)(void))aBlock;
+@end
+
+// Tag for running the RestKit UI Component Specs
+@protocol RKSpecUI <NSObject>
 @end

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -143,7 +143,7 @@ typedef enum {
     RKRequestAuthenticationTypeOAuth2
 } RKRequestAuthenticationType;
 
-@class RKResponse, RKRequestQueue, RKReachabilityObserver;
+@class RKRequest, RKResponse, RKRequestQueue, RKReachabilityObserver;
 @protocol RKRequestDelegate, RKConfigurationDelegate;
 
 ///-----------------------------------------------------------------------------
@@ -191,6 +191,9 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
     RKRequestBackgroundPolicy _backgroundPolicy;
     UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
     #endif
+
+    RKRequestDidLoadResponseBlock _onDidLoadResponse;
+    RKRequestDidFailLoadWithErrorBlock _onDidFailLoadWithError;
 }
 
 

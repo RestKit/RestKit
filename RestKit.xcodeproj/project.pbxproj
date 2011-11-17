@@ -112,8 +112,6 @@
 		25160E2C145650490060A5C5 /* RKParserRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D9F145650490060A5C5 /* RKParserRegistry.m */; };
 		25160E2D145650490060A5C5 /* RKRouter.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA0145650490060A5C5 /* RKRouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E2E145650490060A5C5 /* RestKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA1145650490060A5C5 /* RestKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160E2F145650490060A5C5 /* Errors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA3145650490060A5C5 /* Errors.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160E30145650490060A5C5 /* Errors.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DA4145650490060A5C5 /* Errors.m */; };
 		25160E31145650490060A5C5 /* lcl_config_components.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA5145650490060A5C5 /* lcl_config_components.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E32145650490060A5C5 /* lcl_config_extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA6145650490060A5C5 /* lcl_config_extensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E33145650490060A5C5 /* lcl_config_logger.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA7145650490060A5C5 /* lcl_config_logger.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -276,8 +274,6 @@
 		25160F80145657650060A5C5 /* NSData+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D5B145650490060A5C5 /* NSData+MD5.m */; };
 		25160F81145657650060A5C5 /* NSString+MD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D5E145650490060A5C5 /* NSString+MD5.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F82145657650060A5C5 /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D5F145650490060A5C5 /* NSString+MD5.m */; };
-		25160F83145657650060A5C5 /* Errors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA3145650490060A5C5 /* Errors.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160F84145657650060A5C5 /* Errors.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DA4145650490060A5C5 /* Errors.m */; };
 		25160F85145657650060A5C5 /* lcl_config_components.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA5145650490060A5C5 /* lcl_config_components.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F86145657650060A5C5 /* lcl_config_extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA6145650490060A5C5 /* lcl_config_extensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F87145657650060A5C5 /* lcl_config_logger.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DA7145650490060A5C5 /* lcl_config_logger.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -311,8 +307,6 @@
 		2516105B1456F2330060A5C5 /* RKManagedObjectMappingOperationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FC81456F2330060A5C5 /* RKManagedObjectMappingOperationSpec.m */; };
 		2516105C1456F2330060A5C5 /* RKManagedObjectMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FC91456F2330060A5C5 /* RKManagedObjectMappingSpec.m */; };
 		2516105D1456F2330060A5C5 /* RKManagedObjectMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FC91456F2330060A5C5 /* RKManagedObjectMappingSpec.m */; };
-		2516105E1456F2330060A5C5 /* RKManagedObjectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FCA1456F2330060A5C5 /* RKManagedObjectSpec.m */; };
-		2516105F1456F2330060A5C5 /* RKManagedObjectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FCA1456F2330060A5C5 /* RKManagedObjectSpec.m */; };
 		251610601456F2330060A5C5 /* RKManagedObjectStoreSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FCB1456F2330060A5C5 /* RKManagedObjectStoreSpec.m */; };
 		251610611456F2330060A5C5 /* RKManagedObjectStoreSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FCB1456F2330060A5C5 /* RKManagedObjectStoreSpec.m */; };
 		251610621456F2330060A5C5 /* RKManagedObjectThreadSafeInvocationSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160FCC1456F2330060A5C5 /* RKManagedObjectThreadSafeInvocationSpec.m */; };
@@ -477,57 +471,161 @@
 		254A62BC14AD544200939BEE /* RKObjectPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62B814AD544200939BEE /* RKObjectPaginator.m */; };
 		254A62C014AD591C00939BEE /* RKObjectPaginatorSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorSpec.m */; };
 		254A62C114AD591C00939BEE /* RKObjectPaginatorSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorSpec.m */; };
-		25A341C0147C2F370009758D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 25A34191147C2F370009758D /* InfoPlist.strings */; };
-		25A341C1147C2F370009758D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 25A34191147C2F370009758D /* InfoPlist.strings */; };
-		25A341C2147C2F370009758D /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A34194147C2F370009758D /* NSInvocation+OCMAdditions.m */; };
-		25A341C3147C2F370009758D /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A34194147C2F370009758D /* NSInvocation+OCMAdditions.m */; };
-		25A341C4147C2F370009758D /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A34196147C2F370009758D /* NSMethodSignature+OCMAdditions.m */; };
-		25A341C5147C2F370009758D /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A34196147C2F370009758D /* NSMethodSignature+OCMAdditions.m */; };
-		25A341C6147C2F370009758D /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A34198147C2F370009758D /* NSNotificationCenter+OCMAdditions.m */; };
-		25A341C7147C2F370009758D /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A34198147C2F370009758D /* NSNotificationCenter+OCMAdditions.m */; };
-		25A341C8147C2F370009758D /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A3419A147C2F370009758D /* OCClassMockObject.m */; };
-		25A341C9147C2F370009758D /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A3419A147C2F370009758D /* OCClassMockObject.m */; };
-		25A341CA147C2F370009758D /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A3419C147C2F370009758D /* OCMArg.m */; };
-		25A341CB147C2F370009758D /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A3419C147C2F370009758D /* OCMArg.m */; };
-		25A341CC147C2F370009758D /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A3419E147C2F370009758D /* OCMBlockCaller.m */; };
-		25A341CD147C2F370009758D /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A3419E147C2F370009758D /* OCMBlockCaller.m */; };
-		25A341CE147C2F370009758D /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A0147C2F370009758D /* OCMBoxedReturnValueProvider.m */; };
-		25A341CF147C2F370009758D /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A0147C2F370009758D /* OCMBoxedReturnValueProvider.m */; };
-		25A341D0147C2F370009758D /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A2147C2F370009758D /* OCMConstraint.m */; };
-		25A341D1147C2F370009758D /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A2147C2F370009758D /* OCMConstraint.m */; };
-		25A341D2147C2F370009758D /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A4147C2F370009758D /* OCMExceptionReturnValueProvider.m */; };
-		25A341D3147C2F370009758D /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A4147C2F370009758D /* OCMExceptionReturnValueProvider.m */; };
-		25A341D4147C2F370009758D /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A6147C2F370009758D /* OCMIndirectReturnValueProvider.m */; };
-		25A341D5147C2F370009758D /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A6147C2F370009758D /* OCMIndirectReturnValueProvider.m */; };
-		25A341D6147C2F370009758D /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A8147C2F370009758D /* OCMNotificationPoster.m */; };
-		25A341D7147C2F370009758D /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341A8147C2F370009758D /* OCMNotificationPoster.m */; };
-		25A341D8147C2F370009758D /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341AA147C2F370009758D /* OCMObserverRecorder.m */; };
-		25A341D9147C2F370009758D /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341AA147C2F370009758D /* OCMObserverRecorder.m */; };
-		25A341DA147C2F370009758D /* OCMock-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25A341AB147C2F370009758D /* OCMock-Info.plist */; };
-		25A341DB147C2F370009758D /* OCMock-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25A341AB147C2F370009758D /* OCMock-Info.plist */; };
-		25A341DC147C2F370009758D /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341AF147C2F370009758D /* OCMockObject.m */; };
-		25A341DD147C2F370009758D /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341AF147C2F370009758D /* OCMockObject.m */; };
-		25A341DE147C2F370009758D /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B1147C2F370009758D /* OCMockRecorder.m */; };
-		25A341DF147C2F370009758D /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B1147C2F370009758D /* OCMockRecorder.m */; };
-		25A341E0147C2F370009758D /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B3147C2F370009758D /* OCMPassByRefSetter.m */; };
-		25A341E1147C2F370009758D /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B3147C2F370009758D /* OCMPassByRefSetter.m */; };
-		25A341E2147C2F370009758D /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B5147C2F370009758D /* OCMRealObjectForwarder.m */; };
-		25A341E3147C2F370009758D /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B5147C2F370009758D /* OCMRealObjectForwarder.m */; };
-		25A341E4147C2F370009758D /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B7147C2F370009758D /* OCMReturnValueProvider.m */; };
-		25A341E5147C2F370009758D /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B7147C2F370009758D /* OCMReturnValueProvider.m */; };
-		25A341E6147C2F370009758D /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B9147C2F370009758D /* OCObserverMockObject.m */; };
-		25A341E7147C2F370009758D /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341B9147C2F370009758D /* OCObserverMockObject.m */; };
-		25A341E8147C2F370009758D /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341BB147C2F370009758D /* OCPartialMockObject.m */; };
-		25A341E9147C2F370009758D /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341BB147C2F370009758D /* OCPartialMockObject.m */; };
-		25A341EA147C2F370009758D /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341BD147C2F370009758D /* OCPartialMockRecorder.m */; };
-		25A341EB147C2F370009758D /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341BD147C2F370009758D /* OCPartialMockRecorder.m */; };
-		25A341EC147C2F370009758D /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341BF147C2F370009758D /* OCProtocolMockObject.m */; };
-		25A341ED147C2F370009758D /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A341BF147C2F370009758D /* OCProtocolMockObject.m */; };
 		25A34245147D8AAA0009758D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A34244147D8AAA0009758D /* Security.framework */; };
 		25B408261491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408271491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408281491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
 		25B408291491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
+		25B6E91E14CF778D00B1E881 /* RKAbstractTableController.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90314CF778D00B1E881 /* RKAbstractTableController.h */; };
+		25B6E91F14CF778D00B1E881 /* RKAbstractTableController.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90314CF778D00B1E881 /* RKAbstractTableController.h */; };
+		25B6E92014CF778D00B1E881 /* RKAbstractTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90414CF778D00B1E881 /* RKAbstractTableController.m */; };
+		25B6E92114CF778D00B1E881 /* RKAbstractTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90414CF778D00B1E881 /* RKAbstractTableController.m */; };
+		25B6E92314CF778D00B1E881 /* RKAbstractTableController_Internals.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90614CF778D00B1E881 /* RKAbstractTableController_Internals.h */; };
+		25B6E92414CF778D00B1E881 /* RKAbstractTableController_Internals.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90614CF778D00B1E881 /* RKAbstractTableController_Internals.h */; };
+		25B6E92514CF778D00B1E881 /* RKControlTableItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90714CF778D00B1E881 /* RKControlTableItem.h */; };
+		25B6E92614CF778D00B1E881 /* RKControlTableItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90714CF778D00B1E881 /* RKControlTableItem.h */; };
+		25B6E92714CF778D00B1E881 /* RKControlTableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90814CF778D00B1E881 /* RKControlTableItem.m */; };
+		25B6E92814CF778D00B1E881 /* RKControlTableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90814CF778D00B1E881 /* RKControlTableItem.m */; };
+		25B6E92914CF778D00B1E881 /* RKControlTableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90914CF778D00B1E881 /* RKControlTableViewCell.h */; };
+		25B6E92A14CF778D00B1E881 /* RKControlTableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90914CF778D00B1E881 /* RKControlTableViewCell.h */; };
+		25B6E92B14CF778D00B1E881 /* RKControlTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90A14CF778D00B1E881 /* RKControlTableViewCell.m */; };
+		25B6E92C14CF778D00B1E881 /* RKControlTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90A14CF778D00B1E881 /* RKControlTableViewCell.m */; };
+		25B6E92D14CF778D00B1E881 /* RKFetchedResultsTableController.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90B14CF778D00B1E881 /* RKFetchedResultsTableController.h */; };
+		25B6E92E14CF778D00B1E881 /* RKFetchedResultsTableController.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90B14CF778D00B1E881 /* RKFetchedResultsTableController.h */; };
+		25B6E92F14CF778D00B1E881 /* RKFetchedResultsTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90C14CF778D00B1E881 /* RKFetchedResultsTableController.m */; };
+		25B6E93014CF778D00B1E881 /* RKFetchedResultsTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90C14CF778D00B1E881 /* RKFetchedResultsTableController.m */; };
+		25B6E93114CF778D00B1E881 /* RKForm.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90D14CF778D00B1E881 /* RKForm.h */; };
+		25B6E93214CF778D00B1E881 /* RKForm.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90D14CF778D00B1E881 /* RKForm.h */; };
+		25B6E93314CF778D00B1E881 /* RKForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90E14CF778D00B1E881 /* RKForm.m */; };
+		25B6E93414CF778D00B1E881 /* RKForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E90E14CF778D00B1E881 /* RKForm.m */; };
+		25B6E93514CF778D00B1E881 /* RKFormSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90F14CF778D00B1E881 /* RKFormSection.h */; };
+		25B6E93614CF778D00B1E881 /* RKFormSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E90F14CF778D00B1E881 /* RKFormSection.h */; };
+		25B6E93714CF778D00B1E881 /* RKFormSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91014CF778D00B1E881 /* RKFormSection.m */; };
+		25B6E93814CF778D00B1E881 /* RKFormSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91014CF778D00B1E881 /* RKFormSection.m */; };
+		25B6E93914CF778D00B1E881 /* RKTableController.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91114CF778D00B1E881 /* RKTableController.h */; };
+		25B6E93A14CF778D00B1E881 /* RKTableController.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91114CF778D00B1E881 /* RKTableController.h */; };
+		25B6E93B14CF778D00B1E881 /* RKTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91214CF778D00B1E881 /* RKTableController.m */; };
+		25B6E93C14CF778D00B1E881 /* RKTableController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91214CF778D00B1E881 /* RKTableController.m */; };
+		25B6E93D14CF778D00B1E881 /* RKTableItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91314CF778D00B1E881 /* RKTableItem.h */; };
+		25B6E93E14CF778D00B1E881 /* RKTableItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91314CF778D00B1E881 /* RKTableItem.h */; };
+		25B6E93F14CF778D00B1E881 /* RKTableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91414CF778D00B1E881 /* RKTableItem.m */; };
+		25B6E94014CF778D00B1E881 /* RKTableItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91414CF778D00B1E881 /* RKTableItem.m */; };
+		25B6E94114CF778D00B1E881 /* RKTableSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91514CF778D00B1E881 /* RKTableSection.h */; };
+		25B6E94214CF778D00B1E881 /* RKTableSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91514CF778D00B1E881 /* RKTableSection.h */; };
+		25B6E94314CF778D00B1E881 /* RKTableSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91614CF778D00B1E881 /* RKTableSection.m */; };
+		25B6E94414CF778D00B1E881 /* RKTableSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91614CF778D00B1E881 /* RKTableSection.m */; };
+		25B6E94514CF778D00B1E881 /* RKTableViewCellMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91714CF778D00B1E881 /* RKTableViewCellMapping.h */; };
+		25B6E94614CF778D00B1E881 /* RKTableViewCellMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91714CF778D00B1E881 /* RKTableViewCellMapping.h */; };
+		25B6E94714CF778D00B1E881 /* RKTableViewCellMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91814CF778D00B1E881 /* RKTableViewCellMapping.m */; };
+		25B6E94814CF778D00B1E881 /* RKTableViewCellMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91814CF778D00B1E881 /* RKTableViewCellMapping.m */; };
+		25B6E94914CF778D00B1E881 /* RKTableViewCellMappings.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91914CF778D00B1E881 /* RKTableViewCellMappings.h */; };
+		25B6E94A14CF778D00B1E881 /* RKTableViewCellMappings.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91914CF778D00B1E881 /* RKTableViewCellMappings.h */; };
+		25B6E94B14CF778D00B1E881 /* RKTableViewCellMappings.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91A14CF778D00B1E881 /* RKTableViewCellMappings.m */; };
+		25B6E94C14CF778D00B1E881 /* RKTableViewCellMappings.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91A14CF778D00B1E881 /* RKTableViewCellMappings.m */; };
+		25B6E94D14CF778D00B1E881 /* UI.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91B14CF778D00B1E881 /* UI.h */; };
+		25B6E94E14CF778D00B1E881 /* UI.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91B14CF778D00B1E881 /* UI.h */; };
+		25B6E94F14CF778D00B1E881 /* UIView+FindFirstResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91C14CF778D00B1E881 /* UIView+FindFirstResponder.h */; };
+		25B6E95014CF778D00B1E881 /* UIView+FindFirstResponder.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E91C14CF778D00B1E881 /* UIView+FindFirstResponder.h */; };
+		25B6E95114CF778D00B1E881 /* UIView+FindFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91D14CF778D00B1E881 /* UIView+FindFirstResponder.m */; };
+		25B6E95214CF778D00B1E881 /* UIView+FindFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E91D14CF778D00B1E881 /* UIView+FindFirstResponder.m */; };
+		25B6E95514CF795D00B1E881 /* RKErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E95414CF795D00B1E881 /* RKErrors.h */; };
+		25B6E95614CF795D00B1E881 /* RKErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E95414CF795D00B1E881 /* RKErrors.h */; };
+		25B6E95814CF7A1C00B1E881 /* RKErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E95714CF7A1C00B1E881 /* RKErrors.m */; };
+		25B6E95914CF7A1C00B1E881 /* RKErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E95714CF7A1C00B1E881 /* RKErrors.m */; };
+		25B6E95C14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E95A14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h */; };
+		25B6E95D14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E95A14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h */; };
+		25B6E95E14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E95B14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m */; };
+		25B6E95F14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E95B14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m */; };
+		25B6E96E14CF815500B1E881 /* EGORefreshTableHeaderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E96314CF815500B1E881 /* EGORefreshTableHeaderView.h */; };
+		25B6E96F14CF815500B1E881 /* EGORefreshTableHeaderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E96314CF815500B1E881 /* EGORefreshTableHeaderView.h */; };
+		25B6E97014CF815500B1E881 /* EGORefreshTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E96414CF815500B1E881 /* EGORefreshTableHeaderView.m */; };
+		25B6E97114CF815500B1E881 /* EGORefreshTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E96414CF815500B1E881 /* EGORefreshTableHeaderView.m */; };
+		25B6E97214CF815500B1E881 /* blackArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96614CF815500B1E881 /* blackArrow.png */; };
+		25B6E97314CF815500B1E881 /* blackArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96714CF815500B1E881 /* blackArrow@2x.png */; };
+		25B6E97414CF815500B1E881 /* blueArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96814CF815500B1E881 /* blueArrow.png */; };
+		25B6E97514CF815500B1E881 /* blueArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96914CF815500B1E881 /* blueArrow@2x.png */; };
+		25B6E97614CF815500B1E881 /* grayArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96A14CF815500B1E881 /* grayArrow.png */; };
+		25B6E97714CF815500B1E881 /* grayArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96B14CF815500B1E881 /* grayArrow@2x.png */; };
+		25B6E97814CF815500B1E881 /* whiteArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96C14CF815500B1E881 /* whiteArrow.png */; };
+		25B6E97914CF815500B1E881 /* whiteArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E96D14CF815500B1E881 /* whiteArrow@2x.png */; };
+		25B6E9A414CF829400B1E881 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E97B14CF829400B1E881 /* InfoPlist.strings */; };
+		25B6E9A514CF829400B1E881 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E97B14CF829400B1E881 /* InfoPlist.strings */; };
+		25B6E9A614CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */; };
+		25B6E9A714CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */; };
+		25B6E9A814CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */; };
+		25B6E9A914CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */; };
+		25B6E9AA14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */; };
+		25B6E9AB14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */; };
+		25B6E9AC14CF829400B1E881 /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98314CF829400B1E881 /* OCClassMockObject.m */; };
+		25B6E9AD14CF829400B1E881 /* OCClassMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98314CF829400B1E881 /* OCClassMockObject.m */; };
+		25B6E9AE14CF829400B1E881 /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98414CF829400B1E881 /* OCMArg.m */; };
+		25B6E9AF14CF829400B1E881 /* OCMArg.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98414CF829400B1E881 /* OCMArg.m */; };
+		25B6E9B014CF829400B1E881 /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98614CF829400B1E881 /* OCMBlockCaller.m */; };
+		25B6E9B114CF829400B1E881 /* OCMBlockCaller.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98614CF829400B1E881 /* OCMBlockCaller.m */; };
+		25B6E9B214CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */; };
+		25B6E9B314CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */; };
+		25B6E9B414CF829400B1E881 /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98914CF829400B1E881 /* OCMConstraint.m */; };
+		25B6E9B514CF829400B1E881 /* OCMConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98914CF829400B1E881 /* OCMConstraint.m */; };
+		25B6E9B614CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */; };
+		25B6E9B714CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */; };
+		25B6E9B814CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */; };
+		25B6E9B914CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */; };
+		25B6E9BA14CF829400B1E881 /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */; };
+		25B6E9BB14CF829400B1E881 /* OCMNotificationPoster.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */; };
+		25B6E9BC14CF829400B1E881 /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */; };
+		25B6E9BD14CF829400B1E881 /* OCMObserverRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */; };
+		25B6E9BE14CF829400B1E881 /* OCMock-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E99214CF829400B1E881 /* OCMock-Info.plist */; };
+		25B6E9BF14CF829400B1E881 /* OCMock-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25B6E99214CF829400B1E881 /* OCMock-Info.plist */; };
+		25B6E9C014CF829400B1E881 /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99414CF829400B1E881 /* OCMockObject.m */; };
+		25B6E9C114CF829400B1E881 /* OCMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99414CF829400B1E881 /* OCMockObject.m */; };
+		25B6E9C214CF829400B1E881 /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99514CF829400B1E881 /* OCMockRecorder.m */; };
+		25B6E9C314CF829400B1E881 /* OCMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99514CF829400B1E881 /* OCMockRecorder.m */; };
+		25B6E9C414CF829400B1E881 /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */; };
+		25B6E9C514CF829400B1E881 /* OCMPassByRefSetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */; };
+		25B6E9C614CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */; };
+		25B6E9C714CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */; };
+		25B6E9C814CF829400B1E881 /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */; };
+		25B6E9C914CF829400B1E881 /* OCMReturnValueProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */; };
+		25B6E9CA14CF829400B1E881 /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */; };
+		25B6E9CB14CF829400B1E881 /* OCObserverMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */; };
+		25B6E9CC14CF829400B1E881 /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */; };
+		25B6E9CD14CF829400B1E881 /* OCPartialMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */; };
+		25B6E9CE14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */; };
+		25B6E9CF14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */; };
+		25B6E9D014CF829400B1E881 /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */; };
+		25B6E9D114CF829400B1E881 /* OCProtocolMockObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */; };
+		25B6E9DB14CF912500B1E881 /* RKSearchable.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9D614CF912500B1E881 /* RKSearchable.m */; };
+		25B6E9DC14CF912500B1E881 /* RKSearchable.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9D614CF912500B1E881 /* RKSearchable.m */; };
+		25B6E9DD14CF912500B1E881 /* RKSpecAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9D814CF912500B1E881 /* RKSpecAddress.m */; };
+		25B6E9DE14CF912500B1E881 /* RKSpecAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9D814CF912500B1E881 /* RKSpecAddress.m */; };
+		25B6E9DF14CF912500B1E881 /* RKSpecUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9DA14CF912500B1E881 /* RKSpecUser.m */; };
+		25B6E9E014CF912500B1E881 /* RKSpecUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9DA14CF912500B1E881 /* RKSpecUser.m */; };
+		25B6E9E914CF940700B1E881 /* RKManagedObjectSearchEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E114CF940600B1E881 /* RKManagedObjectSearchEngine.h */; };
+		25B6E9EA14CF940700B1E881 /* RKManagedObjectSearchEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E114CF940600B1E881 /* RKManagedObjectSearchEngine.h */; };
+		25B6E9EB14CF940700B1E881 /* RKManagedObjectSearchEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E214CF940600B1E881 /* RKManagedObjectSearchEngine.m */; };
+		25B6E9EC14CF940700B1E881 /* RKManagedObjectSearchEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E214CF940600B1E881 /* RKManagedObjectSearchEngine.m */; };
+		25B6E9ED14CF940700B1E881 /* RKSearchableManagedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E314CF940600B1E881 /* RKSearchableManagedObject.h */; };
+		25B6E9EE14CF940700B1E881 /* RKSearchableManagedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E314CF940600B1E881 /* RKSearchableManagedObject.h */; };
+		25B6E9EF14CF940700B1E881 /* RKSearchableManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E414CF940600B1E881 /* RKSearchableManagedObject.m */; };
+		25B6E9F014CF940700B1E881 /* RKSearchableManagedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E414CF940600B1E881 /* RKSearchableManagedObject.m */; };
+		25B6E9F114CF940700B1E881 /* RKSearchWord.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E514CF940600B1E881 /* RKSearchWord.h */; };
+		25B6E9F214CF940700B1E881 /* RKSearchWord.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E514CF940600B1E881 /* RKSearchWord.h */; };
+		25B6E9F314CF940700B1E881 /* RKSearchWord.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E614CF940600B1E881 /* RKSearchWord.m */; };
+		25B6E9F414CF940700B1E881 /* RKSearchWord.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E614CF940600B1E881 /* RKSearchWord.m */; };
+		25B6E9F514CF940700B1E881 /* RKSearchWordObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E714CF940700B1E881 /* RKSearchWordObserver.h */; };
+		25B6E9F614CF940700B1E881 /* RKSearchWordObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9E714CF940700B1E881 /* RKSearchWordObserver.h */; };
+		25B6E9F714CF940700B1E881 /* RKSearchWordObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E814CF940700B1E881 /* RKSearchWordObserver.m */; };
+		25B6E9F814CF940700B1E881 /* RKSearchWordObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9E814CF940700B1E881 /* RKSearchWordObserver.m */; };
+		25B6E9FD14CF943E00B1E881 /* RKCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9F914CF943D00B1E881 /* RKCache.h */; };
+		25B6E9FE14CF943E00B1E881 /* RKCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9F914CF943D00B1E881 /* RKCache.h */; };
+		25B6E9FF14CF943E00B1E881 /* RKCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9FA14CF943E00B1E881 /* RKCache.m */; };
+		25B6EA0014CF943E00B1E881 /* RKCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9FA14CF943E00B1E881 /* RKCache.m */; };
+		25B6EA0114CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9FB14CF943E00B1E881 /* RKMutableBlockDictionary.h */; };
+		25B6EA0214CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B6E9FB14CF943E00B1E881 /* RKMutableBlockDictionary.h */; };
+		25B6EA0314CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9FC14CF943E00B1E881 /* RKMutableBlockDictionary.m */; };
+		25B6EA0414CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9FC14CF943E00B1E881 /* RKMutableBlockDictionary.m */; };
+		25B6EA0614CF946400B1E881 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6EA0514CF946300B1E881 /* QuartzCore.framework */; };
+		25B6EA0814CF947E00B1E881 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */; };
 		49A66B0C14CEFB0400A6F062 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B0914CEFB0400A6F062 /* XMLReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B0914CEFB0400A6F062 /* XMLReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49A66B0E14CEFB0400A6F062 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B0A14CEFB0400A6F062 /* XMLReader.m */; };
@@ -685,8 +783,6 @@
 		25160D9F145650490060A5C5 /* RKParserRegistry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKParserRegistry.m; sourceTree = "<group>"; };
 		25160DA0145650490060A5C5 /* RKRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRouter.h; sourceTree = "<group>"; };
 		25160DA1145650490060A5C5 /* RestKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestKit.h; sourceTree = "<group>"; };
-		25160DA3145650490060A5C5 /* Errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Errors.h; sourceTree = "<group>"; };
-		25160DA4145650490060A5C5 /* Errors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Errors.m; sourceTree = "<group>"; };
 		25160DA5145650490060A5C5 /* lcl_config_components.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_components.h; sourceTree = "<group>"; };
 		25160DA6145650490060A5C5 /* lcl_config_extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_extensions.h; sourceTree = "<group>"; };
 		25160DA7145650490060A5C5 /* lcl_config_logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lcl_config_logger.h; sourceTree = "<group>"; };
@@ -759,7 +855,6 @@
 		25160FC71456F2330060A5C5 /* RKManagedObjectLoaderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoaderSpec.m; sourceTree = "<group>"; };
 		25160FC81456F2330060A5C5 /* RKManagedObjectMappingOperationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingOperationSpec.m; sourceTree = "<group>"; };
 		25160FC91456F2330060A5C5 /* RKManagedObjectMappingSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectMappingSpec.m; sourceTree = "<group>"; };
-		25160FCA1456F2330060A5C5 /* RKManagedObjectSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectSpec.m; sourceTree = "<group>"; };
 		25160FCB1456F2330060A5C5 /* RKManagedObjectStoreSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectStoreSpec.m; sourceTree = "<group>"; };
 		25160FCC1456F2330060A5C5 /* RKManagedObjectThreadSafeInvocationSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectThreadSafeInvocationSpec.m; sourceTree = "<group>"; };
 		25160FCF1456F2330060A5C5 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
@@ -860,55 +955,109 @@
 		254A62B714AD544200939BEE /* RKObjectPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectPaginator.h; sourceTree = "<group>"; };
 		254A62B814AD544200939BEE /* RKObjectPaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginator.m; sourceTree = "<group>"; };
 		254A62BF14AD591C00939BEE /* RKObjectPaginatorSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginatorSpec.m; sourceTree = "<group>"; };
-		25A34192147C2F370009758D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		25A34193147C2F370009758D /* NSInvocation+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+OCMAdditions.h"; sourceTree = "<group>"; };
-		25A34194147C2F370009758D /* NSInvocation+OCMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+OCMAdditions.m"; sourceTree = "<group>"; };
-		25A34195147C2F370009758D /* NSMethodSignature+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMethodSignature+OCMAdditions.h"; sourceTree = "<group>"; };
-		25A34196147C2F370009758D /* NSMethodSignature+OCMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMethodSignature+OCMAdditions.m"; sourceTree = "<group>"; };
-		25A34197147C2F370009758D /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
-		25A34198147C2F370009758D /* NSNotificationCenter+OCMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+OCMAdditions.m"; sourceTree = "<group>"; };
-		25A34199147C2F370009758D /* OCClassMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCClassMockObject.h; sourceTree = "<group>"; };
-		25A3419A147C2F370009758D /* OCClassMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCClassMockObject.m; sourceTree = "<group>"; };
-		25A3419B147C2F370009758D /* OCMArg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMArg.h; sourceTree = "<group>"; };
-		25A3419C147C2F370009758D /* OCMArg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMArg.m; sourceTree = "<group>"; };
-		25A3419D147C2F370009758D /* OCMBlockCaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMBlockCaller.h; sourceTree = "<group>"; };
-		25A3419E147C2F370009758D /* OCMBlockCaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMBlockCaller.m; sourceTree = "<group>"; };
-		25A3419F147C2F370009758D /* OCMBoxedReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMBoxedReturnValueProvider.h; sourceTree = "<group>"; };
-		25A341A0147C2F370009758D /* OCMBoxedReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMBoxedReturnValueProvider.m; sourceTree = "<group>"; };
-		25A341A1147C2F370009758D /* OCMConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMConstraint.h; sourceTree = "<group>"; };
-		25A341A2147C2F370009758D /* OCMConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMConstraint.m; sourceTree = "<group>"; };
-		25A341A3147C2F370009758D /* OCMExceptionReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMExceptionReturnValueProvider.h; sourceTree = "<group>"; };
-		25A341A4147C2F370009758D /* OCMExceptionReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMExceptionReturnValueProvider.m; sourceTree = "<group>"; };
-		25A341A5147C2F370009758D /* OCMIndirectReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMIndirectReturnValueProvider.h; sourceTree = "<group>"; };
-		25A341A6147C2F370009758D /* OCMIndirectReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMIndirectReturnValueProvider.m; sourceTree = "<group>"; };
-		25A341A7147C2F370009758D /* OCMNotificationPoster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMNotificationPoster.h; sourceTree = "<group>"; };
-		25A341A8147C2F370009758D /* OCMNotificationPoster.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMNotificationPoster.m; sourceTree = "<group>"; };
-		25A341A9147C2F370009758D /* OCMObserverRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMObserverRecorder.h; sourceTree = "<group>"; };
-		25A341AA147C2F370009758D /* OCMObserverRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMObserverRecorder.m; sourceTree = "<group>"; };
-		25A341AB147C2F370009758D /* OCMock-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OCMock-Info.plist"; sourceTree = "<group>"; };
-		25A341AC147C2F370009758D /* OCMock-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OCMock-Prefix.pch"; sourceTree = "<group>"; };
-		25A341AD147C2F370009758D /* OCMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMock.h; sourceTree = "<group>"; };
-		25A341AE147C2F370009758D /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
-		25A341AF147C2F370009758D /* OCMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMockObject.m; sourceTree = "<group>"; };
-		25A341B0147C2F370009758D /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
-		25A341B1147C2F370009758D /* OCMockRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMockRecorder.m; sourceTree = "<group>"; };
-		25A341B2147C2F370009758D /* OCMPassByRefSetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMPassByRefSetter.h; sourceTree = "<group>"; };
-		25A341B3147C2F370009758D /* OCMPassByRefSetter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMPassByRefSetter.m; sourceTree = "<group>"; };
-		25A341B4147C2F370009758D /* OCMRealObjectForwarder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMRealObjectForwarder.h; sourceTree = "<group>"; };
-		25A341B5147C2F370009758D /* OCMRealObjectForwarder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMRealObjectForwarder.m; sourceTree = "<group>"; };
-		25A341B6147C2F370009758D /* OCMReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMReturnValueProvider.h; sourceTree = "<group>"; };
-		25A341B7147C2F370009758D /* OCMReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMReturnValueProvider.m; sourceTree = "<group>"; };
-		25A341B8147C2F370009758D /* OCObserverMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCObserverMockObject.h; sourceTree = "<group>"; };
-		25A341B9147C2F370009758D /* OCObserverMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCObserverMockObject.m; sourceTree = "<group>"; };
-		25A341BA147C2F370009758D /* OCPartialMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCPartialMockObject.h; sourceTree = "<group>"; };
-		25A341BB147C2F370009758D /* OCPartialMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCPartialMockObject.m; sourceTree = "<group>"; };
-		25A341BC147C2F370009758D /* OCPartialMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCPartialMockRecorder.h; sourceTree = "<group>"; };
-		25A341BD147C2F370009758D /* OCPartialMockRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCPartialMockRecorder.m; sourceTree = "<group>"; };
-		25A341BE147C2F370009758D /* OCProtocolMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCProtocolMockObject.h; sourceTree = "<group>"; };
-		25A341BF147C2F370009758D /* OCProtocolMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCProtocolMockObject.m; sourceTree = "<group>"; };
 		25A34244147D8AAA0009758D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		25B408241491CDDB00F21111 /* RKDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDirectory.h; sourceTree = "<group>"; };
 		25B408251491CDDB00F21111 /* RKDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDirectory.m; sourceTree = "<group>"; };
+		25B6E90314CF778D00B1E881 /* RKAbstractTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKAbstractTableController.h; sourceTree = "<group>"; };
+		25B6E90414CF778D00B1E881 /* RKAbstractTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKAbstractTableController.m; sourceTree = "<group>"; };
+		25B6E90614CF778D00B1E881 /* RKAbstractTableController_Internals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKAbstractTableController_Internals.h; sourceTree = "<group>"; };
+		25B6E90714CF778D00B1E881 /* RKControlTableItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKControlTableItem.h; sourceTree = "<group>"; };
+		25B6E90814CF778D00B1E881 /* RKControlTableItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKControlTableItem.m; sourceTree = "<group>"; };
+		25B6E90914CF778D00B1E881 /* RKControlTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKControlTableViewCell.h; sourceTree = "<group>"; };
+		25B6E90A14CF778D00B1E881 /* RKControlTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKControlTableViewCell.m; sourceTree = "<group>"; };
+		25B6E90B14CF778D00B1E881 /* RKFetchedResultsTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKFetchedResultsTableController.h; sourceTree = "<group>"; };
+		25B6E90C14CF778D00B1E881 /* RKFetchedResultsTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchedResultsTableController.m; sourceTree = "<group>"; };
+		25B6E90D14CF778D00B1E881 /* RKForm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKForm.h; sourceTree = "<group>"; };
+		25B6E90E14CF778D00B1E881 /* RKForm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKForm.m; sourceTree = "<group>"; };
+		25B6E90F14CF778D00B1E881 /* RKFormSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKFormSection.h; sourceTree = "<group>"; };
+		25B6E91014CF778D00B1E881 /* RKFormSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFormSection.m; sourceTree = "<group>"; };
+		25B6E91114CF778D00B1E881 /* RKTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableController.h; sourceTree = "<group>"; };
+		25B6E91214CF778D00B1E881 /* RKTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableController.m; sourceTree = "<group>"; };
+		25B6E91314CF778D00B1E881 /* RKTableItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableItem.h; sourceTree = "<group>"; };
+		25B6E91414CF778D00B1E881 /* RKTableItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableItem.m; sourceTree = "<group>"; };
+		25B6E91514CF778D00B1E881 /* RKTableSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableSection.h; sourceTree = "<group>"; };
+		25B6E91614CF778D00B1E881 /* RKTableSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableSection.m; sourceTree = "<group>"; };
+		25B6E91714CF778D00B1E881 /* RKTableViewCellMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableViewCellMapping.h; sourceTree = "<group>"; };
+		25B6E91814CF778D00B1E881 /* RKTableViewCellMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableViewCellMapping.m; sourceTree = "<group>"; };
+		25B6E91914CF778D00B1E881 /* RKTableViewCellMappings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableViewCellMappings.h; sourceTree = "<group>"; };
+		25B6E91A14CF778D00B1E881 /* RKTableViewCellMappings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableViewCellMappings.m; sourceTree = "<group>"; };
+		25B6E91B14CF778D00B1E881 /* UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UI.h; sourceTree = "<group>"; };
+		25B6E91C14CF778D00B1E881 /* UIView+FindFirstResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FindFirstResponder.h"; sourceTree = "<group>"; };
+		25B6E91D14CF778D00B1E881 /* UIView+FindFirstResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FindFirstResponder.m"; sourceTree = "<group>"; };
+		25B6E95414CF795D00B1E881 /* RKErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKErrors.h; sourceTree = "<group>"; };
+		25B6E95714CF7A1C00B1E881 /* RKErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKErrors.m; sourceTree = "<group>"; };
+		25B6E95A14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicObjectMappingMatcher.h; sourceTree = "<group>"; };
+		25B6E95B14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicObjectMappingMatcher.m; sourceTree = "<group>"; };
+		25B6E96314CF815500B1E881 /* EGORefreshTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGORefreshTableHeaderView.h; sourceTree = "<group>"; };
+		25B6E96414CF815500B1E881 /* EGORefreshTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EGORefreshTableHeaderView.m; sourceTree = "<group>"; };
+		25B6E96614CF815500B1E881 /* blackArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackArrow.png; sourceTree = "<group>"; };
+		25B6E96714CF815500B1E881 /* blackArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blackArrow@2x.png"; sourceTree = "<group>"; };
+		25B6E96814CF815500B1E881 /* blueArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueArrow.png; sourceTree = "<group>"; };
+		25B6E96914CF815500B1E881 /* blueArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blueArrow@2x.png"; sourceTree = "<group>"; };
+		25B6E96A14CF815500B1E881 /* grayArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayArrow.png; sourceTree = "<group>"; };
+		25B6E96B14CF815500B1E881 /* grayArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grayArrow@2x.png"; sourceTree = "<group>"; };
+		25B6E96C14CF815500B1E881 /* whiteArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteArrow.png; sourceTree = "<group>"; };
+		25B6E96D14CF815500B1E881 /* whiteArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "whiteArrow@2x.png"; sourceTree = "<group>"; };
+		25B6E97C14CF829400B1E881 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		25B6E97D14CF829400B1E881 /* NSInvocation+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSInvocation+OCMAdditions.h"; sourceTree = "<group>"; };
+		25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSInvocation+OCMAdditions.m"; sourceTree = "<group>"; };
+		25B6E97F14CF829400B1E881 /* NSMethodSignature+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMethodSignature+OCMAdditions.h"; sourceTree = "<group>"; };
+		25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMethodSignature+OCMAdditions.m"; sourceTree = "<group>"; };
+		25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotificationCenter+OCMAdditions.m"; sourceTree = "<group>"; };
+		25B6E98214CF829400B1E881 /* OCClassMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCClassMockObject.h; sourceTree = "<group>"; };
+		25B6E98314CF829400B1E881 /* OCClassMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCClassMockObject.m; sourceTree = "<group>"; };
+		25B6E98414CF829400B1E881 /* OCMArg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMArg.m; sourceTree = "<group>"; };
+		25B6E98514CF829400B1E881 /* OCMBlockCaller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMBlockCaller.h; sourceTree = "<group>"; };
+		25B6E98614CF829400B1E881 /* OCMBlockCaller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMBlockCaller.m; sourceTree = "<group>"; };
+		25B6E98714CF829400B1E881 /* OCMBoxedReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMBoxedReturnValueProvider.h; sourceTree = "<group>"; };
+		25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMBoxedReturnValueProvider.m; sourceTree = "<group>"; };
+		25B6E98914CF829400B1E881 /* OCMConstraint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMConstraint.m; sourceTree = "<group>"; };
+		25B6E98A14CF829400B1E881 /* OCMExceptionReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMExceptionReturnValueProvider.h; sourceTree = "<group>"; };
+		25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMExceptionReturnValueProvider.m; sourceTree = "<group>"; };
+		25B6E98C14CF829400B1E881 /* OCMIndirectReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMIndirectReturnValueProvider.h; sourceTree = "<group>"; };
+		25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMIndirectReturnValueProvider.m; sourceTree = "<group>"; };
+		25B6E98E14CF829400B1E881 /* OCMNotificationPoster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMNotificationPoster.h; sourceTree = "<group>"; };
+		25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMNotificationPoster.m; sourceTree = "<group>"; };
+		25B6E99014CF829400B1E881 /* OCMObserverRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMObserverRecorder.h; sourceTree = "<group>"; };
+		25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMObserverRecorder.m; sourceTree = "<group>"; };
+		25B6E99214CF829400B1E881 /* OCMock-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OCMock-Info.plist"; sourceTree = "<group>"; };
+		25B6E99314CF829400B1E881 /* OCMock-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OCMock-Prefix.pch"; sourceTree = "<group>"; };
+		25B6E99414CF829400B1E881 /* OCMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMockObject.m; sourceTree = "<group>"; };
+		25B6E99514CF829400B1E881 /* OCMockRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMockRecorder.m; sourceTree = "<group>"; };
+		25B6E99614CF829400B1E881 /* OCMPassByRefSetter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMPassByRefSetter.h; sourceTree = "<group>"; };
+		25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMPassByRefSetter.m; sourceTree = "<group>"; };
+		25B6E99814CF829400B1E881 /* OCMRealObjectForwarder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMRealObjectForwarder.h; sourceTree = "<group>"; };
+		25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMRealObjectForwarder.m; sourceTree = "<group>"; };
+		25B6E99A14CF829400B1E881 /* OCMReturnValueProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMReturnValueProvider.h; sourceTree = "<group>"; };
+		25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMReturnValueProvider.m; sourceTree = "<group>"; };
+		25B6E99C14CF829400B1E881 /* OCObserverMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCObserverMockObject.h; sourceTree = "<group>"; };
+		25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCObserverMockObject.m; sourceTree = "<group>"; };
+		25B6E99E14CF829400B1E881 /* OCPartialMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCPartialMockObject.h; sourceTree = "<group>"; };
+		25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCPartialMockObject.m; sourceTree = "<group>"; };
+		25B6E9A014CF829400B1E881 /* OCPartialMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCPartialMockRecorder.h; sourceTree = "<group>"; };
+		25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCPartialMockRecorder.m; sourceTree = "<group>"; };
+		25B6E9A214CF829400B1E881 /* OCProtocolMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCProtocolMockObject.h; sourceTree = "<group>"; };
+		25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCProtocolMockObject.m; sourceTree = "<group>"; };
+		25B6E9D514CF912500B1E881 /* RKSearchable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchable.h; sourceTree = "<group>"; };
+		25B6E9D614CF912500B1E881 /* RKSearchable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchable.m; sourceTree = "<group>"; };
+		25B6E9D714CF912500B1E881 /* RKSpecAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSpecAddress.h; sourceTree = "<group>"; };
+		25B6E9D814CF912500B1E881 /* RKSpecAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSpecAddress.m; sourceTree = "<group>"; };
+		25B6E9D914CF912500B1E881 /* RKSpecUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSpecUser.h; sourceTree = "<group>"; };
+		25B6E9DA14CF912500B1E881 /* RKSpecUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSpecUser.m; sourceTree = "<group>"; };
+		25B6E9E114CF940600B1E881 /* RKManagedObjectSearchEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectSearchEngine.h; sourceTree = "<group>"; };
+		25B6E9E214CF940600B1E881 /* RKManagedObjectSearchEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectSearchEngine.m; sourceTree = "<group>"; };
+		25B6E9E314CF940600B1E881 /* RKSearchableManagedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchableManagedObject.h; sourceTree = "<group>"; };
+		25B6E9E414CF940600B1E881 /* RKSearchableManagedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchableManagedObject.m; sourceTree = "<group>"; };
+		25B6E9E514CF940600B1E881 /* RKSearchWord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchWord.h; sourceTree = "<group>"; };
+		25B6E9E614CF940600B1E881 /* RKSearchWord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchWord.m; sourceTree = "<group>"; };
+		25B6E9E714CF940700B1E881 /* RKSearchWordObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSearchWordObserver.h; sourceTree = "<group>"; };
+		25B6E9E814CF940700B1E881 /* RKSearchWordObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchWordObserver.m; sourceTree = "<group>"; };
+		25B6E9F914CF943D00B1E881 /* RKCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKCache.h; sourceTree = "<group>"; };
+		25B6E9FA14CF943E00B1E881 /* RKCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCache.m; sourceTree = "<group>"; };
+		25B6E9FB14CF943E00B1E881 /* RKMutableBlockDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKMutableBlockDictionary.h; sourceTree = "<group>"; };
+		25B6E9FC14CF943E00B1E881 /* RKMutableBlockDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMutableBlockDictionary.m; sourceTree = "<group>"; };
+		25B6EA0514CF946300B1E881 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		49A66B0814CEFB0400A6F062 /* LICENCE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENCE; path = XMLReader/LICENCE; sourceTree = "<group>"; };
 		49A66B0914CEFB0400A6F062 /* XMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMLReader.h; path = XMLReader/XMLReader.h; sourceTree = "<group>"; };
 		49A66B0A14CEFB0400A6F062 /* XMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMLReader.m; path = XMLReader/XMLReader.m; sourceTree = "<group>"; };
@@ -939,6 +1088,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25B6EA0814CF947E00B1E881 /* CoreGraphics.framework in Frameworks */,
+				25B6EA0614CF946400B1E881 /* QuartzCore.framework in Frameworks */,
 				251611321456F56C0060A5C5 /* MobileCoreServices.framework in Frameworks */,
 				251611301456F5590060A5C5 /* Security.framework in Frameworks */,
 				2516112E1456F5520060A5C5 /* CoreData.framework in Frameworks */,
@@ -1012,6 +1163,8 @@
 		25160D1814564E810060A5C5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */,
+				25B6EA0514CF946300B1E881 /* QuartzCore.framework */,
 				25A34244147D8AAA0009758D /* Security.framework */,
 				251611311456F56C0060A5C5 /* MobileCoreServices.framework */,
 				2516112F1456F5590060A5C5 /* Security.framework */,
@@ -1039,6 +1192,7 @@
 				25160D7A145650490060A5C5 /* ObjectMapping */,
 				25160D45145650490060A5C5 /* CoreData */,
 				25160DA2145650490060A5C5 /* Support */,
+				25B6E90214CF778D00B1E881 /* UI */,
 			);
 			path = Code;
 			sourceTree = "<group>";
@@ -1046,6 +1200,14 @@
 		25160D45145650490060A5C5 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				25B6E9E114CF940600B1E881 /* RKManagedObjectSearchEngine.h */,
+				25B6E9E214CF940600B1E881 /* RKManagedObjectSearchEngine.m */,
+				25B6E9E314CF940600B1E881 /* RKSearchableManagedObject.h */,
+				25B6E9E414CF940600B1E881 /* RKSearchableManagedObject.m */,
+				25B6E9E514CF940600B1E881 /* RKSearchWord.h */,
+				25B6E9E614CF940600B1E881 /* RKSearchWord.m */,
+				25B6E9E714CF940700B1E881 /* RKSearchWordObserver.h */,
+				25B6E9E814CF940700B1E881 /* RKSearchWordObserver.m */,
 				25160D46145650490060A5C5 /* CoreData.h */,
 				25160D47145650490060A5C5 /* NSManagedObject+ActiveRecord.h */,
 				25160D48145650490060A5C5 /* NSManagedObject+ActiveRecord.m */,
@@ -1107,6 +1269,8 @@
 		25160D7A145650490060A5C5 /* ObjectMapping */ = {
 			isa = PBXGroup;
 			children = (
+				25B6E95A14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h */,
+				25B6E95B14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m */,
 				25160D7B145650490060A5C5 /* ObjectMapping.h */,
 				25160D7C145650490060A5C5 /* RKDynamicObjectMapping.h */,
 				25160D7D145650490060A5C5 /* RKDynamicObjectMapping.m */,
@@ -1156,12 +1320,14 @@
 		25160DA2145650490060A5C5 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				25B6E9F914CF943D00B1E881 /* RKCache.h */,
+				25B6E9FA14CF943E00B1E881 /* RKCache.m */,
+				25B6E9FB14CF943E00B1E881 /* RKMutableBlockDictionary.h */,
+				25B6E9FC14CF943E00B1E881 /* RKMutableBlockDictionary.m */,
 				25160D5A145650490060A5C5 /* NSData+MD5.h */,
 				25160D5B145650490060A5C5 /* NSData+MD5.m */,
 				25160D5E145650490060A5C5 /* NSString+MD5.h */,
 				25160D5F145650490060A5C5 /* NSString+MD5.m */,
-				25160DA3145650490060A5C5 /* Errors.h */,
-				25160DA4145650490060A5C5 /* Errors.m */,
 				25160DA5145650490060A5C5 /* lcl_config_components.h */,
 				25160DA6145650490060A5C5 /* lcl_config_extensions.h */,
 				25160DA7145650490060A5C5 /* lcl_config_logger.h */,
@@ -1194,6 +1360,8 @@
 				25B408251491CDDB00F21111 /* RKDirectory.m */,
 				250DF22814C5190E0001DEFA /* RKOrderedDictionary.h */,
 				250DF22914C5190E0001DEFA /* RKOrderedDictionary.m */,
+				25B6E95414CF795D00B1E881 /* RKErrors.h */,
+				25B6E95714CF7A1C00B1E881 /* RKErrors.m */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1244,6 +1412,7 @@
 		25160E8D145652E40060A5C5 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				25B6E96014CF815500B1E881 /* EGOTableViewPullRefresh */,
 				49A66B0614CEFAD800A6F062 /* XMLReader */,
 				49D2759714C9E83E0090845D /* iso8601parser */,
 				25160E8E1456532C0060A5C5 /* cocoa-oauth */,
@@ -1353,7 +1522,6 @@
 				25160FC71456F2330060A5C5 /* RKManagedObjectLoaderSpec.m */,
 				25160FC81456F2330060A5C5 /* RKManagedObjectMappingOperationSpec.m */,
 				25160FC91456F2330060A5C5 /* RKManagedObjectMappingSpec.m */,
-				25160FCA1456F2330060A5C5 /* RKManagedObjectSpec.m */,
 				25160FCB1456F2330060A5C5 /* RKManagedObjectStoreSpec.m */,
 				25160FCC1456F2330060A5C5 /* RKManagedObjectThreadSafeInvocationSpec.m */,
 			);
@@ -1451,6 +1619,12 @@
 		25160FF31456F2330060A5C5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				25B6E9D514CF912500B1E881 /* RKSearchable.h */,
+				25B6E9D614CF912500B1E881 /* RKSearchable.m */,
+				25B6E9D714CF912500B1E881 /* RKSpecAddress.h */,
+				25B6E9D814CF912500B1E881 /* RKSpecAddress.m */,
+				25B6E9D914CF912500B1E881 /* RKSpecUser.h */,
+				25B6E9DA14CF912500B1E881 /* RKSpecUser.m */,
 				25160FF41456F2330060A5C5 /* Data Model.xcdatamodel */,
 				25160FF51456F2330060A5C5 /* RKCat.h */,
 				25160FF61456F2330060A5C5 /* RKCat.m */,
@@ -1530,7 +1704,7 @@
 		2516102B1456F2330060A5C5 /* OCMock */ = {
 			isa = PBXGroup;
 			children = (
-				25A34190147C2F370009758D /* OCMock */,
+				25B6E97A14CF829400B1E881 /* OCMock */,
 			);
 			path = OCMock;
 			sourceTree = "<group>";
@@ -1585,55 +1759,124 @@
 			path = Support;
 			sourceTree = "<group>";
 		};
-		25A34190147C2F370009758D /* OCMock */ = {
+		25B6E90214CF778D00B1E881 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				25A34191147C2F370009758D /* InfoPlist.strings */,
-				25A34193147C2F370009758D /* NSInvocation+OCMAdditions.h */,
-				25A34194147C2F370009758D /* NSInvocation+OCMAdditions.m */,
-				25A34195147C2F370009758D /* NSMethodSignature+OCMAdditions.h */,
-				25A34196147C2F370009758D /* NSMethodSignature+OCMAdditions.m */,
-				25A34197147C2F370009758D /* NSNotificationCenter+OCMAdditions.h */,
-				25A34198147C2F370009758D /* NSNotificationCenter+OCMAdditions.m */,
-				25A34199147C2F370009758D /* OCClassMockObject.h */,
-				25A3419A147C2F370009758D /* OCClassMockObject.m */,
-				25A3419B147C2F370009758D /* OCMArg.h */,
-				25A3419C147C2F370009758D /* OCMArg.m */,
-				25A3419D147C2F370009758D /* OCMBlockCaller.h */,
-				25A3419E147C2F370009758D /* OCMBlockCaller.m */,
-				25A3419F147C2F370009758D /* OCMBoxedReturnValueProvider.h */,
-				25A341A0147C2F370009758D /* OCMBoxedReturnValueProvider.m */,
-				25A341A1147C2F370009758D /* OCMConstraint.h */,
-				25A341A2147C2F370009758D /* OCMConstraint.m */,
-				25A341A3147C2F370009758D /* OCMExceptionReturnValueProvider.h */,
-				25A341A4147C2F370009758D /* OCMExceptionReturnValueProvider.m */,
-				25A341A5147C2F370009758D /* OCMIndirectReturnValueProvider.h */,
-				25A341A6147C2F370009758D /* OCMIndirectReturnValueProvider.m */,
-				25A341A7147C2F370009758D /* OCMNotificationPoster.h */,
-				25A341A8147C2F370009758D /* OCMNotificationPoster.m */,
-				25A341A9147C2F370009758D /* OCMObserverRecorder.h */,
-				25A341AA147C2F370009758D /* OCMObserverRecorder.m */,
-				25A341AB147C2F370009758D /* OCMock-Info.plist */,
-				25A341AC147C2F370009758D /* OCMock-Prefix.pch */,
-				25A341AD147C2F370009758D /* OCMock.h */,
-				25A341AE147C2F370009758D /* OCMockObject.h */,
-				25A341AF147C2F370009758D /* OCMockObject.m */,
-				25A341B0147C2F370009758D /* OCMockRecorder.h */,
-				25A341B1147C2F370009758D /* OCMockRecorder.m */,
-				25A341B2147C2F370009758D /* OCMPassByRefSetter.h */,
-				25A341B3147C2F370009758D /* OCMPassByRefSetter.m */,
-				25A341B4147C2F370009758D /* OCMRealObjectForwarder.h */,
-				25A341B5147C2F370009758D /* OCMRealObjectForwarder.m */,
-				25A341B6147C2F370009758D /* OCMReturnValueProvider.h */,
-				25A341B7147C2F370009758D /* OCMReturnValueProvider.m */,
-				25A341B8147C2F370009758D /* OCObserverMockObject.h */,
-				25A341B9147C2F370009758D /* OCObserverMockObject.m */,
-				25A341BA147C2F370009758D /* OCPartialMockObject.h */,
-				25A341BB147C2F370009758D /* OCPartialMockObject.m */,
-				25A341BC147C2F370009758D /* OCPartialMockRecorder.h */,
-				25A341BD147C2F370009758D /* OCPartialMockRecorder.m */,
-				25A341BE147C2F370009758D /* OCProtocolMockObject.h */,
-				25A341BF147C2F370009758D /* OCProtocolMockObject.m */,
+				25B6E90314CF778D00B1E881 /* RKAbstractTableController.h */,
+				25B6E90414CF778D00B1E881 /* RKAbstractTableController.m */,
+				25B6E90614CF778D00B1E881 /* RKAbstractTableController_Internals.h */,
+				25B6E90714CF778D00B1E881 /* RKControlTableItem.h */,
+				25B6E90814CF778D00B1E881 /* RKControlTableItem.m */,
+				25B6E90914CF778D00B1E881 /* RKControlTableViewCell.h */,
+				25B6E90A14CF778D00B1E881 /* RKControlTableViewCell.m */,
+				25B6E90B14CF778D00B1E881 /* RKFetchedResultsTableController.h */,
+				25B6E90C14CF778D00B1E881 /* RKFetchedResultsTableController.m */,
+				25B6E90D14CF778D00B1E881 /* RKForm.h */,
+				25B6E90E14CF778D00B1E881 /* RKForm.m */,
+				25B6E90F14CF778D00B1E881 /* RKFormSection.h */,
+				25B6E91014CF778D00B1E881 /* RKFormSection.m */,
+				25B6E91114CF778D00B1E881 /* RKTableController.h */,
+				25B6E91214CF778D00B1E881 /* RKTableController.m */,
+				25B6E91314CF778D00B1E881 /* RKTableItem.h */,
+				25B6E91414CF778D00B1E881 /* RKTableItem.m */,
+				25B6E91514CF778D00B1E881 /* RKTableSection.h */,
+				25B6E91614CF778D00B1E881 /* RKTableSection.m */,
+				25B6E91714CF778D00B1E881 /* RKTableViewCellMapping.h */,
+				25B6E91814CF778D00B1E881 /* RKTableViewCellMapping.m */,
+				25B6E91914CF778D00B1E881 /* RKTableViewCellMappings.h */,
+				25B6E91A14CF778D00B1E881 /* RKTableViewCellMappings.m */,
+				25B6E91B14CF778D00B1E881 /* UI.h */,
+				25B6E91C14CF778D00B1E881 /* UIView+FindFirstResponder.h */,
+				25B6E91D14CF778D00B1E881 /* UIView+FindFirstResponder.m */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		25B6E96014CF815500B1E881 /* EGOTableViewPullRefresh */ = {
+			isa = PBXGroup;
+			children = (
+				25B6E96114CF815500B1E881 /* Classes */,
+				25B6E96514CF815500B1E881 /* Resources */,
+			);
+			name = EGOTableViewPullRefresh;
+			path = EGOTableViewPullRefresh/EGOTableViewPullRefresh;
+			sourceTree = "<group>";
+		};
+		25B6E96114CF815500B1E881 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				25B6E96214CF815500B1E881 /* View */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		25B6E96214CF815500B1E881 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				25B6E96314CF815500B1E881 /* EGORefreshTableHeaderView.h */,
+				25B6E96414CF815500B1E881 /* EGORefreshTableHeaderView.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		25B6E96514CF815500B1E881 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				25B6E96614CF815500B1E881 /* blackArrow.png */,
+				25B6E96714CF815500B1E881 /* blackArrow@2x.png */,
+				25B6E96814CF815500B1E881 /* blueArrow.png */,
+				25B6E96914CF815500B1E881 /* blueArrow@2x.png */,
+				25B6E96A14CF815500B1E881 /* grayArrow.png */,
+				25B6E96B14CF815500B1E881 /* grayArrow@2x.png */,
+				25B6E96C14CF815500B1E881 /* whiteArrow.png */,
+				25B6E96D14CF815500B1E881 /* whiteArrow@2x.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		25B6E97A14CF829400B1E881 /* OCMock */ = {
+			isa = PBXGroup;
+			children = (
+				25B6E97B14CF829400B1E881 /* InfoPlist.strings */,
+				25B6E97D14CF829400B1E881 /* NSInvocation+OCMAdditions.h */,
+				25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */,
+				25B6E97F14CF829400B1E881 /* NSMethodSignature+OCMAdditions.h */,
+				25B6E98014CF829400B1E881 /* NSMethodSignature+OCMAdditions.m */,
+				25B6E98114CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m */,
+				25B6E98214CF829400B1E881 /* OCClassMockObject.h */,
+				25B6E98314CF829400B1E881 /* OCClassMockObject.m */,
+				25B6E98414CF829400B1E881 /* OCMArg.m */,
+				25B6E98514CF829400B1E881 /* OCMBlockCaller.h */,
+				25B6E98614CF829400B1E881 /* OCMBlockCaller.m */,
+				25B6E98714CF829400B1E881 /* OCMBoxedReturnValueProvider.h */,
+				25B6E98814CF829400B1E881 /* OCMBoxedReturnValueProvider.m */,
+				25B6E98914CF829400B1E881 /* OCMConstraint.m */,
+				25B6E98A14CF829400B1E881 /* OCMExceptionReturnValueProvider.h */,
+				25B6E98B14CF829400B1E881 /* OCMExceptionReturnValueProvider.m */,
+				25B6E98C14CF829400B1E881 /* OCMIndirectReturnValueProvider.h */,
+				25B6E98D14CF829400B1E881 /* OCMIndirectReturnValueProvider.m */,
+				25B6E98E14CF829400B1E881 /* OCMNotificationPoster.h */,
+				25B6E98F14CF829400B1E881 /* OCMNotificationPoster.m */,
+				25B6E99014CF829400B1E881 /* OCMObserverRecorder.h */,
+				25B6E99114CF829400B1E881 /* OCMObserverRecorder.m */,
+				25B6E99214CF829400B1E881 /* OCMock-Info.plist */,
+				25B6E99314CF829400B1E881 /* OCMock-Prefix.pch */,
+				25B6E99414CF829400B1E881 /* OCMockObject.m */,
+				25B6E99514CF829400B1E881 /* OCMockRecorder.m */,
+				25B6E99614CF829400B1E881 /* OCMPassByRefSetter.h */,
+				25B6E99714CF829400B1E881 /* OCMPassByRefSetter.m */,
+				25B6E99814CF829400B1E881 /* OCMRealObjectForwarder.h */,
+				25B6E99914CF829400B1E881 /* OCMRealObjectForwarder.m */,
+				25B6E99A14CF829400B1E881 /* OCMReturnValueProvider.h */,
+				25B6E99B14CF829400B1E881 /* OCMReturnValueProvider.m */,
+				25B6E99C14CF829400B1E881 /* OCObserverMockObject.h */,
+				25B6E99D14CF829400B1E881 /* OCObserverMockObject.m */,
+				25B6E99E14CF829400B1E881 /* OCPartialMockObject.h */,
+				25B6E99F14CF829400B1E881 /* OCPartialMockObject.m */,
+				25B6E9A014CF829400B1E881 /* OCPartialMockRecorder.h */,
+				25B6E9A114CF829400B1E881 /* OCPartialMockRecorder.m */,
+				25B6E9A214CF829400B1E881 /* OCProtocolMockObject.h */,
+				25B6E9A314CF829400B1E881 /* OCProtocolMockObject.m */,
 			);
 			path = OCMock;
 			sourceTree = "<group>";
@@ -1716,7 +1959,6 @@
 				25160E29145650490060A5C5 /* RKObjectSerializer.h in Headers */,
 				25160E2B145650490060A5C5 /* RKParserRegistry.h in Headers */,
 				25160E2D145650490060A5C5 /* RKRouter.h in Headers */,
-				25160E2F145650490060A5C5 /* Errors.h in Headers */,
 				25160E31145650490060A5C5 /* lcl_config_components.h in Headers */,
 				25160E32145650490060A5C5 /* lcl_config_extensions.h in Headers */,
 				25160E33145650490060A5C5 /* lcl_config_logger.h in Headers */,
@@ -1755,6 +1997,29 @@
 				49D275AA14C9EF4E0090845D /* ISO8601DateFormatter.m in Headers */,
 				250DF25F14C680F90001DEFA /* RKObjectMappingProvider+Contexts.h in Headers */,
 				49D275AD14C9F3020090845D /* RKISO8601DateFormatter.h in Headers */,
+				25B6E91E14CF778D00B1E881 /* RKAbstractTableController.h in Headers */,
+				25B6E92314CF778D00B1E881 /* RKAbstractTableController_Internals.h in Headers */,
+				25B6E92514CF778D00B1E881 /* RKControlTableItem.h in Headers */,
+				25B6E92914CF778D00B1E881 /* RKControlTableViewCell.h in Headers */,
+				25B6E92D14CF778D00B1E881 /* RKFetchedResultsTableController.h in Headers */,
+				25B6E93114CF778D00B1E881 /* RKForm.h in Headers */,
+				25B6E93514CF778D00B1E881 /* RKFormSection.h in Headers */,
+				25B6E93914CF778D00B1E881 /* RKTableController.h in Headers */,
+				25B6E93D14CF778D00B1E881 /* RKTableItem.h in Headers */,
+				25B6E94114CF778D00B1E881 /* RKTableSection.h in Headers */,
+				25B6E94514CF778D00B1E881 /* RKTableViewCellMapping.h in Headers */,
+				25B6E94914CF778D00B1E881 /* RKTableViewCellMappings.h in Headers */,
+				25B6E94D14CF778D00B1E881 /* UI.h in Headers */,
+				25B6E94F14CF778D00B1E881 /* UIView+FindFirstResponder.h in Headers */,
+				25B6E95514CF795D00B1E881 /* RKErrors.h in Headers */,
+				25B6E95C14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h in Headers */,
+				25B6E96E14CF815500B1E881 /* EGORefreshTableHeaderView.h in Headers */,
+				25B6E9E914CF940700B1E881 /* RKManagedObjectSearchEngine.h in Headers */,
+				25B6E9ED14CF940700B1E881 /* RKSearchableManagedObject.h in Headers */,
+				25B6E9F114CF940700B1E881 /* RKSearchWord.h in Headers */,
+				25B6E9F514CF940700B1E881 /* RKSearchWordObserver.h in Headers */,
+				25B6E9FD14CF943E00B1E881 /* RKCache.h in Headers */,
+				25B6EA0114CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
 				49A66B1214CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1824,7 +2089,6 @@
 				25160F79145655D10060A5C5 /* RKObjectPropertyInspector+CoreData.h in Headers */,
 				25160F7F145657650060A5C5 /* NSData+MD5.h in Headers */,
 				25160F81145657650060A5C5 /* NSString+MD5.h in Headers */,
-				25160F83145657650060A5C5 /* Errors.h in Headers */,
 				25160F85145657650060A5C5 /* lcl_config_components.h in Headers */,
 				25160F86145657650060A5C5 /* lcl_config_extensions.h in Headers */,
 				25160F87145657650060A5C5 /* lcl_config_logger.h in Headers */,
@@ -1850,6 +2114,29 @@
 				49D2759E14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */,
 				250DF26014C680F90001DEFA /* RKObjectMappingProvider+Contexts.h in Headers */,
 				49D275AE14C9F3020090845D /* RKISO8601DateFormatter.h in Headers */,
+				25B6E91F14CF778D00B1E881 /* RKAbstractTableController.h in Headers */,
+				25B6E92414CF778D00B1E881 /* RKAbstractTableController_Internals.h in Headers */,
+				25B6E92614CF778D00B1E881 /* RKControlTableItem.h in Headers */,
+				25B6E92A14CF778D00B1E881 /* RKControlTableViewCell.h in Headers */,
+				25B6E92E14CF778D00B1E881 /* RKFetchedResultsTableController.h in Headers */,
+				25B6E93214CF778D00B1E881 /* RKForm.h in Headers */,
+				25B6E93614CF778D00B1E881 /* RKFormSection.h in Headers */,
+				25B6E93A14CF778D00B1E881 /* RKTableController.h in Headers */,
+				25B6E93E14CF778D00B1E881 /* RKTableItem.h in Headers */,
+				25B6E94214CF778D00B1E881 /* RKTableSection.h in Headers */,
+				25B6E94614CF778D00B1E881 /* RKTableViewCellMapping.h in Headers */,
+				25B6E94A14CF778D00B1E881 /* RKTableViewCellMappings.h in Headers */,
+				25B6E94E14CF778D00B1E881 /* UI.h in Headers */,
+				25B6E95014CF778D00B1E881 /* UIView+FindFirstResponder.h in Headers */,
+				25B6E95614CF795D00B1E881 /* RKErrors.h in Headers */,
+				25B6E95D14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h in Headers */,
+				25B6E96F14CF815500B1E881 /* EGORefreshTableHeaderView.h in Headers */,
+				25B6E9EA14CF940700B1E881 /* RKManagedObjectSearchEngine.h in Headers */,
+				25B6E9EE14CF940700B1E881 /* RKSearchableManagedObject.h in Headers */,
+				25B6E9F214CF940700B1E881 /* RKSearchWord.h in Headers */,
+				25B6E9F614CF940700B1E881 /* RKSearchWordObserver.h in Headers */,
+				25B6E9FE14CF943E00B1E881 /* RKCache.h in Headers */,
+				25B6EA0214CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
 				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1997,11 +2284,11 @@
 				2516109C1456F2330060A5C5 /* orders.xml in Resources */,
 				2516109E1456F2330060A5C5 /* tab_data.xml in Resources */,
 				251610A01456F2330060A5C5 /* zend.xml in Resources */,
-				25A341C0147C2F370009758D /* InfoPlist.strings in Resources */,
-				25A341DA147C2F370009758D /* OCMock-Info.plist in Resources */,
 				73D3907414CA1AE00093E3D6 /* parent.json in Resources */,
 				73D3907614CA1AE60093E3D6 /* child.json in Resources */,
 				73D3907914CA1DD40093E3D6 /* channels.xml in Resources */,
+				25B6E9A414CF829400B1E881 /* InfoPlist.strings in Resources */,
+				25B6E9BE14CF829400B1E881 /* OCMock-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2012,6 +2299,14 @@
 				25160ED91456532C0060A5C5 /* LICENSE in Resources */,
 				25160EDA1456532C0060A5C5 /* NOTICE in Resources */,
 				25160EDC1456532C0060A5C5 /* CHANGELOG.md in Resources */,
+				25B6E97214CF815500B1E881 /* blackArrow.png in Resources */,
+				25B6E97314CF815500B1E881 /* blackArrow@2x.png in Resources */,
+				25B6E97414CF815500B1E881 /* blueArrow.png in Resources */,
+				25B6E97514CF815500B1E881 /* blueArrow@2x.png in Resources */,
+				25B6E97614CF815500B1E881 /* grayArrow.png in Resources */,
+				25B6E97714CF815500B1E881 /* grayArrow@2x.png in Resources */,
+				25B6E97814CF815500B1E881 /* whiteArrow.png in Resources */,
+				25B6E97914CF815500B1E881 /* whiteArrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2056,11 +2351,11 @@
 				251611091456F2340060A5C5 /* timeout.rb in Resources */,
 				2516110B1456F2340060A5C5 /* restkit.rb in Resources */,
 				2516110D1456F2340060A5C5 /* server.rb in Resources */,
-				25A341C1147C2F370009758D /* InfoPlist.strings in Resources */,
-				25A341DB147C2F370009758D /* OCMock-Info.plist in Resources */,
 				73D3907514CA1AE20093E3D6 /* parent.json in Resources */,
 				73D3907714CA1AE60093E3D6 /* child.json in Resources */,
 				73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */,
+				25B6E9A514CF829400B1E881 /* InfoPlist.strings in Resources */,
+				25B6E9BF14CF829400B1E881 /* OCMock-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2167,7 +2462,6 @@
 				25160E28145650490060A5C5 /* RKObjectRouter.m in Sources */,
 				25160E2A145650490060A5C5 /* RKObjectSerializer.m in Sources */,
 				25160E2C145650490060A5C5 /* RKParserRegistry.m in Sources */,
-				25160E30145650490060A5C5 /* Errors.m in Sources */,
 				25160E35145650490060A5C5 /* NSDictionary+RKAdditions.m in Sources */,
 				25160E37145650490060A5C5 /* NSString+RestKit.m in Sources */,
 				25160E39145650490060A5C5 /* NSURL+RestKit.m in Sources */,
@@ -2190,6 +2484,27 @@
 				250DF22C14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */,
 				49D2759F14C9EF1E0090845D /* ISO8601DateFormatter.m in Sources */,
 				49D275AF14C9F3020090845D /* RKISO8601DateFormatter.m in Sources */,
+				25B6E92014CF778D00B1E881 /* RKAbstractTableController.m in Sources */,
+				25B6E92714CF778D00B1E881 /* RKControlTableItem.m in Sources */,
+				25B6E92B14CF778D00B1E881 /* RKControlTableViewCell.m in Sources */,
+				25B6E92F14CF778D00B1E881 /* RKFetchedResultsTableController.m in Sources */,
+				25B6E93314CF778D00B1E881 /* RKForm.m in Sources */,
+				25B6E93714CF778D00B1E881 /* RKFormSection.m in Sources */,
+				25B6E93B14CF778D00B1E881 /* RKTableController.m in Sources */,
+				25B6E93F14CF778D00B1E881 /* RKTableItem.m in Sources */,
+				25B6E94314CF778D00B1E881 /* RKTableSection.m in Sources */,
+				25B6E94714CF778D00B1E881 /* RKTableViewCellMapping.m in Sources */,
+				25B6E94B14CF778D00B1E881 /* RKTableViewCellMappings.m in Sources */,
+				25B6E95114CF778D00B1E881 /* UIView+FindFirstResponder.m in Sources */,
+				25B6E95814CF7A1C00B1E881 /* RKErrors.m in Sources */,
+				25B6E95E14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m in Sources */,
+				25B6E97014CF815500B1E881 /* EGORefreshTableHeaderView.m in Sources */,
+				25B6E9EB14CF940700B1E881 /* RKManagedObjectSearchEngine.m in Sources */,
+				25B6E9EF14CF940700B1E881 /* RKSearchableManagedObject.m in Sources */,
+				25B6E9F314CF940700B1E881 /* RKSearchWord.m in Sources */,
+				25B6E9F714CF940700B1E881 /* RKSearchWordObserver.m in Sources */,
+				25B6E9FF14CF943E00B1E881 /* RKCache.m in Sources */,
+				25B6EA0314CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */,
 				49A66B0E14CEFB0400A6F062 /* XMLReader.m in Sources */,
 				49A66B1414CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */,
 			);
@@ -2202,7 +2517,6 @@
 				251610581456F2330060A5C5 /* RKManagedObjectLoaderSpec.m in Sources */,
 				2516105A1456F2330060A5C5 /* RKManagedObjectMappingOperationSpec.m in Sources */,
 				2516105C1456F2330060A5C5 /* RKManagedObjectMappingSpec.m in Sources */,
-				2516105E1456F2330060A5C5 /* RKManagedObjectSpec.m in Sources */,
 				251610601456F2330060A5C5 /* RKManagedObjectStoreSpec.m in Sources */,
 				251610621456F2330060A5C5 /* RKManagedObjectThreadSafeInvocationSpec.m in Sources */,
 				251610A21456F2330060A5C5 /* Data Model.xcdatamodel in Sources */,
@@ -2245,28 +2559,31 @@
 				251611141456F2340060A5C5 /* RKJSONParserJSONKitSpec.m in Sources */,
 				251611161456F2340060A5C5 /* RKPathMatcherSpec.m in Sources */,
 				251611181456F2340060A5C5 /* RKXMLParserSpec.m in Sources */,
-				25A341C2147C2F370009758D /* NSInvocation+OCMAdditions.m in Sources */,
-				25A341C4147C2F370009758D /* NSMethodSignature+OCMAdditions.m in Sources */,
-				25A341C6147C2F370009758D /* NSNotificationCenter+OCMAdditions.m in Sources */,
-				25A341C8147C2F370009758D /* OCClassMockObject.m in Sources */,
-				25A341CA147C2F370009758D /* OCMArg.m in Sources */,
-				25A341CC147C2F370009758D /* OCMBlockCaller.m in Sources */,
-				25A341CE147C2F370009758D /* OCMBoxedReturnValueProvider.m in Sources */,
-				25A341D0147C2F370009758D /* OCMConstraint.m in Sources */,
-				25A341D2147C2F370009758D /* OCMExceptionReturnValueProvider.m in Sources */,
-				25A341D4147C2F370009758D /* OCMIndirectReturnValueProvider.m in Sources */,
-				25A341D6147C2F370009758D /* OCMNotificationPoster.m in Sources */,
-				25A341D8147C2F370009758D /* OCMObserverRecorder.m in Sources */,
-				25A341DC147C2F370009758D /* OCMockObject.m in Sources */,
-				25A341DE147C2F370009758D /* OCMockRecorder.m in Sources */,
-				25A341E0147C2F370009758D /* OCMPassByRefSetter.m in Sources */,
-				25A341E2147C2F370009758D /* OCMRealObjectForwarder.m in Sources */,
-				25A341E4147C2F370009758D /* OCMReturnValueProvider.m in Sources */,
-				25A341E6147C2F370009758D /* OCObserverMockObject.m in Sources */,
-				25A341E8147C2F370009758D /* OCPartialMockObject.m in Sources */,
-				25A341EA147C2F370009758D /* OCPartialMockRecorder.m in Sources */,
-				25A341EC147C2F370009758D /* OCProtocolMockObject.m in Sources */,
 				254A62C014AD591C00939BEE /* RKObjectPaginatorSpec.m in Sources */,
+				25B6E9A614CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */,
+				25B6E9A814CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */,
+				25B6E9AA14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */,
+				25B6E9AC14CF829400B1E881 /* OCClassMockObject.m in Sources */,
+				25B6E9AE14CF829400B1E881 /* OCMArg.m in Sources */,
+				25B6E9B014CF829400B1E881 /* OCMBlockCaller.m in Sources */,
+				25B6E9B214CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */,
+				25B6E9B414CF829400B1E881 /* OCMConstraint.m in Sources */,
+				25B6E9B614CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */,
+				25B6E9B814CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */,
+				25B6E9BA14CF829400B1E881 /* OCMNotificationPoster.m in Sources */,
+				25B6E9BC14CF829400B1E881 /* OCMObserverRecorder.m in Sources */,
+				25B6E9C014CF829400B1E881 /* OCMockObject.m in Sources */,
+				25B6E9C214CF829400B1E881 /* OCMockRecorder.m in Sources */,
+				25B6E9C414CF829400B1E881 /* OCMPassByRefSetter.m in Sources */,
+				25B6E9C614CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */,
+				25B6E9C814CF829400B1E881 /* OCMReturnValueProvider.m in Sources */,
+				25B6E9CA14CF829400B1E881 /* OCObserverMockObject.m in Sources */,
+				25B6E9CC14CF829400B1E881 /* OCPartialMockObject.m in Sources */,
+				25B6E9CE14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */,
+				25B6E9D014CF829400B1E881 /* OCProtocolMockObject.m in Sources */,
+				25B6E9DB14CF912500B1E881 /* RKSearchable.m in Sources */,
+				25B6E9DD14CF912500B1E881 /* RKSpecAddress.m in Sources */,
+				25B6E9DF14CF912500B1E881 /* RKSpecUser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2320,7 +2637,6 @@
 				25160F7A145655D10060A5C5 /* RKObjectPropertyInspector+CoreData.m in Sources */,
 				25160F80145657650060A5C5 /* NSData+MD5.m in Sources */,
 				25160F82145657650060A5C5 /* NSString+MD5.m in Sources */,
-				25160F84145657650060A5C5 /* Errors.m in Sources */,
 				25160F89145657650060A5C5 /* NSDictionary+RKAdditions.m in Sources */,
 				25160F8B145657650060A5C5 /* NSString+RestKit.m in Sources */,
 				25160F8D145657650060A5C5 /* NSURL+RestKit.m in Sources */,
@@ -2336,6 +2652,27 @@
 				250DF22D14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */,
 				49D275A114C9EF1E0090845D /* ISO8601DateFormatter.m in Sources */,
 				49D275B014C9F3020090845D /* RKISO8601DateFormatter.m in Sources */,
+				25B6E92114CF778D00B1E881 /* RKAbstractTableController.m in Sources */,
+				25B6E92814CF778D00B1E881 /* RKControlTableItem.m in Sources */,
+				25B6E92C14CF778D00B1E881 /* RKControlTableViewCell.m in Sources */,
+				25B6E93014CF778D00B1E881 /* RKFetchedResultsTableController.m in Sources */,
+				25B6E93414CF778D00B1E881 /* RKForm.m in Sources */,
+				25B6E93814CF778D00B1E881 /* RKFormSection.m in Sources */,
+				25B6E93C14CF778D00B1E881 /* RKTableController.m in Sources */,
+				25B6E94014CF778D00B1E881 /* RKTableItem.m in Sources */,
+				25B6E94414CF778D00B1E881 /* RKTableSection.m in Sources */,
+				25B6E94814CF778D00B1E881 /* RKTableViewCellMapping.m in Sources */,
+				25B6E94C14CF778D00B1E881 /* RKTableViewCellMappings.m in Sources */,
+				25B6E95214CF778D00B1E881 /* UIView+FindFirstResponder.m in Sources */,
+				25B6E95914CF7A1C00B1E881 /* RKErrors.m in Sources */,
+				25B6E95F14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m in Sources */,
+				25B6E97114CF815500B1E881 /* EGORefreshTableHeaderView.m in Sources */,
+				25B6E9EC14CF940700B1E881 /* RKManagedObjectSearchEngine.m in Sources */,
+				25B6E9F014CF940700B1E881 /* RKSearchableManagedObject.m in Sources */,
+				25B6E9F414CF940700B1E881 /* RKSearchWord.m in Sources */,
+				25B6E9F814CF940700B1E881 /* RKSearchWordObserver.m in Sources */,
+				25B6EA0014CF943E00B1E881 /* RKCache.m in Sources */,
+				25B6EA0414CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */,
 				49A66B0F14CEFB0400A6F062 /* XMLReader.m in Sources */,
 				49A66B1514CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */,
 			);
@@ -2348,7 +2685,6 @@
 				251610591456F2330060A5C5 /* RKManagedObjectLoaderSpec.m in Sources */,
 				2516105B1456F2330060A5C5 /* RKManagedObjectMappingOperationSpec.m in Sources */,
 				2516105D1456F2330060A5C5 /* RKManagedObjectMappingSpec.m in Sources */,
-				2516105F1456F2330060A5C5 /* RKManagedObjectSpec.m in Sources */,
 				251610611456F2330060A5C5 /* RKManagedObjectStoreSpec.m in Sources */,
 				251610631456F2330060A5C5 /* RKManagedObjectThreadSafeInvocationSpec.m in Sources */,
 				251610A31456F2330060A5C5 /* Data Model.xcdatamodel in Sources */,
@@ -2391,28 +2727,31 @@
 				251611151456F2340060A5C5 /* RKJSONParserJSONKitSpec.m in Sources */,
 				251611171456F2340060A5C5 /* RKPathMatcherSpec.m in Sources */,
 				251611191456F2340060A5C5 /* RKXMLParserSpec.m in Sources */,
-				25A341C3147C2F370009758D /* NSInvocation+OCMAdditions.m in Sources */,
-				25A341C5147C2F370009758D /* NSMethodSignature+OCMAdditions.m in Sources */,
-				25A341C7147C2F370009758D /* NSNotificationCenter+OCMAdditions.m in Sources */,
-				25A341C9147C2F370009758D /* OCClassMockObject.m in Sources */,
-				25A341CB147C2F370009758D /* OCMArg.m in Sources */,
-				25A341CD147C2F370009758D /* OCMBlockCaller.m in Sources */,
-				25A341CF147C2F370009758D /* OCMBoxedReturnValueProvider.m in Sources */,
-				25A341D1147C2F370009758D /* OCMConstraint.m in Sources */,
-				25A341D3147C2F370009758D /* OCMExceptionReturnValueProvider.m in Sources */,
-				25A341D5147C2F370009758D /* OCMIndirectReturnValueProvider.m in Sources */,
-				25A341D7147C2F370009758D /* OCMNotificationPoster.m in Sources */,
-				25A341D9147C2F370009758D /* OCMObserverRecorder.m in Sources */,
-				25A341DD147C2F370009758D /* OCMockObject.m in Sources */,
-				25A341DF147C2F370009758D /* OCMockRecorder.m in Sources */,
-				25A341E1147C2F370009758D /* OCMPassByRefSetter.m in Sources */,
-				25A341E3147C2F370009758D /* OCMRealObjectForwarder.m in Sources */,
-				25A341E5147C2F370009758D /* OCMReturnValueProvider.m in Sources */,
-				25A341E7147C2F370009758D /* OCObserverMockObject.m in Sources */,
-				25A341E9147C2F370009758D /* OCPartialMockObject.m in Sources */,
-				25A341EB147C2F370009758D /* OCPartialMockRecorder.m in Sources */,
-				25A341ED147C2F370009758D /* OCProtocolMockObject.m in Sources */,
 				254A62C114AD591C00939BEE /* RKObjectPaginatorSpec.m in Sources */,
+				25B6E9A714CF829400B1E881 /* NSInvocation+OCMAdditions.m in Sources */,
+				25B6E9A914CF829400B1E881 /* NSMethodSignature+OCMAdditions.m in Sources */,
+				25B6E9AB14CF829400B1E881 /* NSNotificationCenter+OCMAdditions.m in Sources */,
+				25B6E9AD14CF829400B1E881 /* OCClassMockObject.m in Sources */,
+				25B6E9AF14CF829400B1E881 /* OCMArg.m in Sources */,
+				25B6E9B114CF829400B1E881 /* OCMBlockCaller.m in Sources */,
+				25B6E9B314CF829400B1E881 /* OCMBoxedReturnValueProvider.m in Sources */,
+				25B6E9B514CF829400B1E881 /* OCMConstraint.m in Sources */,
+				25B6E9B714CF829400B1E881 /* OCMExceptionReturnValueProvider.m in Sources */,
+				25B6E9B914CF829400B1E881 /* OCMIndirectReturnValueProvider.m in Sources */,
+				25B6E9BB14CF829400B1E881 /* OCMNotificationPoster.m in Sources */,
+				25B6E9BD14CF829400B1E881 /* OCMObserverRecorder.m in Sources */,
+				25B6E9C114CF829400B1E881 /* OCMockObject.m in Sources */,
+				25B6E9C314CF829400B1E881 /* OCMockRecorder.m in Sources */,
+				25B6E9C514CF829400B1E881 /* OCMPassByRefSetter.m in Sources */,
+				25B6E9C714CF829400B1E881 /* OCMRealObjectForwarder.m in Sources */,
+				25B6E9C914CF829400B1E881 /* OCMReturnValueProvider.m in Sources */,
+				25B6E9CB14CF829400B1E881 /* OCObserverMockObject.m in Sources */,
+				25B6E9CD14CF829400B1E881 /* OCPartialMockObject.m in Sources */,
+				25B6E9CF14CF829400B1E881 /* OCPartialMockRecorder.m in Sources */,
+				25B6E9D114CF829400B1E881 /* OCProtocolMockObject.m in Sources */,
+				25B6E9DC14CF912500B1E881 /* RKSearchable.m in Sources */,
+				25B6E9DE14CF912500B1E881 /* RKSpecAddress.m in Sources */,
+				25B6E9E014CF912500B1E881 /* RKSpecUser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2432,10 +2771,10 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		25A34191147C2F370009758D /* InfoPlist.strings */ = {
+		25B6E97B14CF829400B1E881 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				25A34192147C2F370009758D /* en */,
+				25B6E97C14CF829400B1E881 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";

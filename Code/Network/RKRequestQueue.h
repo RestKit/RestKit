@@ -30,8 +30,8 @@
 @interface RKRequestQueue : NSObject {
     NSString *_name;
     NSMutableArray *_requests;
+    NSMutableSet *_loadingRequests;
     NSObject<RKRequestQueueDelegate> *_delegate;
-    NSUInteger _loadingCount;
     NSUInteger _concurrentRequestsLimit;
     NSUInteger _requestTimeout;
     NSTimer *_queueTimer;

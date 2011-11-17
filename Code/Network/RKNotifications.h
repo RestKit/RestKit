@@ -33,4 +33,5 @@ extern NSString * const RKRequestDidLoadResponseNotification;
 extern NSString * const RKRequestDidLoadResponseNotificationUserInfoResponseKey;
 extern NSString * const RKRequestDidFailWithErrorNotification;
 extern NSString * const RKRequestDidFailWithErrorNotificationUserInfoErrorKey;
+extern NSString * const RKRequestDidFinishLoadingNotification;
 extern NSString * const RKServiceDidBecomeUnavailableNotification;

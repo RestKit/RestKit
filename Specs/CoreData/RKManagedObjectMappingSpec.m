@@ -44,9 +44,9 @@
 
 - (void)testShouldReturnTheDefaultValueForACoreDataAttribute {
     // Load Core Data
-    RKSpecNewManagedObjectStore();
+    RKManagedObjectStore *store = RKSpecNewManagedObjectStore();
     
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCat"];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCat" inManagedObjectStore:store];
     id value = [mapping defaultValueForMissingAttribute:@"name"];
     assertThat(value, is(equalTo(@"Kitty Cat!")));
 }
@@ -69,7 +69,7 @@
 
 - (void)testShouldFindExistingManagedObjectsByPrimaryKey {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
@@ -87,7 +87,7 @@
 - (void)testShouldFindExistingManagedObjectsByPrimaryKeyPath {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     [RKHuman truncateAll];
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
@@ -105,8 +105,8 @@
 }
 
 - (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData {
-    RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectStore *store = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     
     NSDictionary* data = [NSDictionary dictionary];
@@ -116,8 +116,8 @@
 }
 
 - (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute {
-    RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectStore *store = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     
     NSDictionary* data = [NSDictionary dictionary];
     id object = [mapping mappableObjectForData:data];
@@ -126,8 +126,8 @@
 }
 
 - (void)testShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull {
-    RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectStore *store = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
@@ -139,7 +139,7 @@
 
 - (void)testShouldMapACollectionOfObjectsWithDynamicKeys {
     RKManagedObjectStore *objectStore = RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";
     [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];    
@@ -158,13 +158,13 @@
 }
 
 - (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue {
-    RKSpecNewManagedObjectStore();
+    RKManagedObjectStore *objectStore = RKSpecNewManagedObjectStore();
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
-    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class]];
+    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:objectStore];
     childMapping.primaryKeyAttribute = @"railsID";
     [childMapping mapAttributes:@"name", nil];
     
-    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class]];
+    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:objectStore];
     parentMapping.primaryKeyAttribute = @"railsID";
     [parentMapping mapAttributes:@"name", @"age", nil];
     

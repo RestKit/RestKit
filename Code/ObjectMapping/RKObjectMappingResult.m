@@ -84,7 +84,7 @@
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
                               description, NSLocalizedDescriptionKey, nil];
     
-    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
+    NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
     return error;
 }
 

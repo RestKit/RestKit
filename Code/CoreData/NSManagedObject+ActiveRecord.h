@@ -19,7 +19,7 @@
 + (NSManagedObjectContext*)managedObjectContext;
 
 /**
- *	The NSEntityDescription for the Subclass 
+ *	The NSEntityDescription for the Subclass
  *	defaults to the subclass className, may be overridden
  */
 + (NSEntityDescription*)entity;
@@ -33,6 +33,12 @@
  * Fetches all objects from the persistent store identified by the fetchRequest
  */
 + (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
+
+/**
+ * Retrieves the number of objects that would be retrieved by the fetchRequest,
+ * if executed
+ */
++ (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
 
 /**
  * Fetches all objects from the persistent store via a set of fetch requests and

@@ -38,9 +38,9 @@
 @end
 
 @implementation TestObjectCache
-- (NSArray *)fetchRequestsForResourcePath:(NSString *)resourcePath
+- (NSFetchRequest *)fetchRequestForResourcePath:(NSString *)resourcePath
 {
-  return [NSArray arrayWithObject:[RKHuman fetchRequest]];
+  return [RKHuman fetchRequest];
 }
 @end
 
@@ -64,17 +64,18 @@
 
 @implementation RKManagedObjectLoaderSpec
 
-- (void)testShouldDeleteObjectFromLocalStoreOnDELETE {    
+- (void)testShouldDeleteObjectFromLocalStoreOnDELETE {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
     objectManager.objectStore = store;
     RKHuman* human = [RKHuman object];
     human.name = @"Blake Watters";
     human.railsID = [NSNumber numberWithInt:1];
     [objectManager.objectStore save];
     
-    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    assertThat(objectManager.objectStore.managedObjectContext, is(equalTo(store.managedObjectContext)));
+
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/humans/1"];
     RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
@@ -90,12 +91,11 @@
 - (void)testShouldLoadAnObjectWithAToOneRelationship {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
     objectManager.objectStore = store;
     
-    RKObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     [humanMapping mapAttributes:@"name", nil];
-    RKObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    RKObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:store];
     [catMapping mapAttributes:@"name", nil];
     [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
@@ -113,7 +113,8 @@
 
 - (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"
+                                                                       inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
@@ -129,10 +130,9 @@
     deleteMe.railsID = [NSNumber numberWithInt:9999];
     [store save];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(3)));
-        
+
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    RKSpecStubNetworkAvailability(YES);
     objectManager.objectStore = store;
     objectManager.objectStore.managedObjectCache = [[[TestObjectCache alloc] init] autorelease];
     
@@ -153,7 +153,7 @@
 - (void)testShouldNotDeleteOrphansFromManagedObjectCache
 {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
@@ -174,12 +174,10 @@
 
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    RKSpecStubNetworkAvailability(YES);
     objectManager.objectStore = store;
 
     id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
-    NSArray* fetchRequests = [NSArray arrayWithObject:[RKHuman fetchRequest]];
-    [[[mockObjectCache expect] andReturn:fetchRequests] fetchRequestsForResourcePath:OCMOCK_ANY];
+    [[[mockObjectCache expect] andReturn:[RKHuman fetchRequest]] fetchRequestForResourcePath:OCMOCK_ANY];
     const BOOL no = NO;
     [[[mockObjectCache stub] andReturnValue:OCMOCK_VALUE(no)] shouldDeleteOrphanedObject:OCMOCK_ANY];
     objectManager.objectStore.managedObjectCache = mockObjectCache;
@@ -197,13 +195,13 @@
     assertThatBool([blake isDeleted], is(equalToBool(NO)));
     assertThatBool([other isDeleted], is(equalToBool(NO))); 
     assertThatBool([deleteOdd isDeleted], is(equalToBool(NO))); 
-    assertThatBool([doNotDeleteMe isDeleted], is(equalToBool(NO))); 
+    assertThatBool([doNotDeleteMe isDeleted], is(equalToBool(NO)));
 }
 
 - (void)testShouldNotDeleteOddOrphansFromManagedObjectCache
 {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
@@ -224,7 +222,6 @@
 
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    RKSpecStubNetworkAvailability(YES);
     objectManager.objectStore = store;
     objectManager.objectStore.managedObjectCache = [[[TestCacheRemoveOddOrphans alloc] init] autorelease];
 
@@ -248,10 +245,9 @@
 - (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKObjectManager* objectManager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
     objectManager.objectStore = store;
     
-    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
     RKResponse *response = [objectLoader sendSynchronously];
@@ -259,6 +255,68 @@
     NSArray* humans = [RKHuman findAll];
     assertThatUnsignedInteger([humans count], is(equalToInt(1)));
     assertThatInteger(response.statusCode, is(equalToInt(200)));
+}
+
+- (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent {
+    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/Network/Cache", RKLogLevelTrace);
+    RKSpecClearCacheDirectory();
+
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    objectManager.objectStore = objectStore;
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:objectStore];
+    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
+    [humanMapping mapAttributes:@"name", nil];
+    humanMapping.primaryKeyAttribute = @"railsID";
+
+    [RKHuman truncateAll];
+    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
+    RKHuman* blake = [RKHuman createEntity];
+    blake.railsID = [NSNumber numberWithInt:123];
+    RKHuman* other = [RKHuman createEntity];
+    other.railsID = [NSNumber numberWithInt:456];
+    [objectStore save];
+    assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+
+    [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
+
+    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
+    [[[mockObjectCache stub] andReturn:[RKHuman fetchRequest]] fetchRequestForResourcePath:@"/coredata/etag"];
+    objectManager.objectStore.managedObjectCache = mockObjectCache;
+
+    {
+        RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+        RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/coredata/etag"];
+        objectLoader.delegate = responseLoader;
+        id mockLoader = [OCMockObject partialMockForObject:objectLoader];
+        [[[mockLoader expect] andForwardToRealObject] performMapping:[OCMArg setTo:OCMOCK_ANY]];
+
+        [mockLoader send];
+        [responseLoader waitForResponse];
+
+        [mockLoader verify];
+        assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
+        assertThatBool([responseLoader success], is(equalToBool(YES)));
+        assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(NO)));
+        assertThatInt([responseLoader.objects count], is(equalToInt(2)));
+    }
+    {
+        RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+        RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/coredata/etag"];
+        objectLoader.delegate = responseLoader;
+        id mockLoader = [OCMockObject partialMockForObject:objectLoader];
+        [[mockLoader reject] performMapping:[OCMArg setTo:OCMOCK_ANY]];
+
+        [mockLoader send];
+        [responseLoader waitForResponse];
+
+        [mockLoader verify];
+        assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+        assertThatBool([responseLoader success], is(equalToBool(YES)));
+        assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(YES)));
+        assertThatInt([responseLoader.objects count], is(equalToInt(2)));
+    }
 }
 
 

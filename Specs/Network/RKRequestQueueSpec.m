@@ -20,6 +20,12 @@
 
 #import "RKSpecEnvironment.h"
 
+// Expose the request queue's [add|remove]LoadingRequest methods testing purposes...
+@interface RKRequestQueue ()
+- (void)addLoadingRequest:(RKRequest*)request;
+- (void)removeLoadingRequest:(RKRequest*)request;
+@end
+
 @interface RKRequestQueueSpec : RKSpec {
     NSAutoreleasePool *_autoreleasePool;
 }
@@ -96,7 +102,9 @@
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidBeginLoading:queue];
     queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
-    [queue setValue:[NSNumber numberWithInt:1] forKey:@"loadingCount"];
+    NSURL* URL = RKSpecGetBaseURL();
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    [queue addLoadingRequest:request];
     [delegateMock verify];
     [queue release];
 }
@@ -106,8 +114,10 @@
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidFinishLoading:queue];
     queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
-    [queue setValue:[NSNumber numberWithInt:1] forKey:@"loadingCount"];
-    [queue setValue:[NSNumber numberWithInt:0] forKey:@"loadingCount"];
+    NSURL* URL = RKSpecGetBaseURL();
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    [queue addLoadingRequest:request];
+    [queue removeLoadingRequest:request];
     [delegateMock verify];
     [queue release];
 }
