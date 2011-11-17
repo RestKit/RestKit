@@ -192,7 +192,7 @@ extern NSString* cacheURLKey;
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {	
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
     RKLogDebug(@"NSHTTPURLResponse Status Code: %d", [response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
@@ -220,7 +220,7 @@ extern NSString* cacheURLKey;
 // in connection:didReceiveResponse: to ensure that the RKRequestDelegate
 // callbacks get called in the correct order.
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
-	
+
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 	}
@@ -341,6 +341,10 @@ extern NSString* cacheURLKey;
 
 - (BOOL)isCreated {
 	return ([self statusCode] == 201);
+}
+
+- (BOOL)isNoContent {
+	return ([self statusCode] == 204);
 }
 
 - (BOOL)isNotModified {

@@ -106,7 +106,7 @@
 			containerPortal = 25D63938135184F0000879B1 /* RestKit.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 20808DBD13DE8CDC000A156A;
-			remoteInfo = "RestKitJSONParser+NXJSON";
+			remoteInfo = "RestKitJSONParserNXJSON";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -377,6 +377,7 @@
 		25FB6DA013E4848200F48969 /* libRestKitJSONParserNXJSON.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
+			name = "libRestKitJSONParser+NXJSON.a";
 			path = libRestKitJSONParserNXJSON.a;
 			remoteRef = 25FB6D9F13E4848200F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;

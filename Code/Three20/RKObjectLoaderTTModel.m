@@ -75,7 +75,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
         _objectLoader = [objectLoader retain];
         _objectLoader.delegate = self;
     }
-    
+
     return self;
 }
 
@@ -101,7 +101,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	_objects = nil;
     [_objectLoader release];
     _objectLoader = nil;
-    
+
 	[super dealloc];
 }
 
@@ -128,7 +128,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	NSTimeInterval sinceNow = [self.loadedTime timeIntervalSinceNow];
 	if (![self isLoading] && !_emptyReloadAttempted && _objects && [_objects count] == 0) {
 		_emptyReloadAttempted = YES;
-        
+
         // TODO: Returning YES from here causes the view to enter an infinite
         // loading state if you switch data sources
         //		return YES;
@@ -183,7 +183,7 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 	_isLoading = NO;
 
     // TODO: pass error message?
-    NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKRequestUnexpectedResponseError userInfo:nil];
+    NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestUnexpectedResponseError userInfo:nil];
 	[self didFailLoadWithError:error];
 }
 
@@ -215,22 +215,22 @@ static NSString* const kDefaultLoadedTimeKey = @"RKRequestTTModelDefaultLoadedTi
 - (void)load {
     Class managedObjectClass = NSClassFromString(@"NSManagedObject");
 	RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
-	NSArray* cacheFetchRequests = nil;
+	NSFetchRequest* cacheFetchRequest = nil;
 	if (store.managedObjectCache) {
-		cacheFetchRequests = [store.managedObjectCache fetchRequestsForResourcePath:self.resourcePath];
+		cacheFetchRequest = [store.managedObjectCache fetchRequestForResourcePath:self.resourcePath];
 	}
-    
+
     // Reset in case we are reusing the object loader (model was reloaded).
     [self.objectLoader reset];
-    
-	if (!store.managedObjectCache || !cacheFetchRequests || _cacheLoaded) {
+
+	if (!store.managedObjectCache || !cacheFetchRequest || _cacheLoaded) {
 		_isLoading = YES;
 		[self didStartLoad];
 		[self.objectLoader send];
-	} else if (cacheFetchRequests && !_cacheLoaded && managedObjectClass) {
-        NSArray* objects = [managedObjectClass objectsWithFetchRequests:cacheFetchRequests];
+	} else if (cacheFetchRequest && !_cacheLoaded && managedObjectClass) {
+        NSArray* objects = [managedObjectClass objectsWithFetchRequest:cacheFetchRequest];
         if ([objects count] > 0 && NO == [self isOutdated]) {
-            _cacheLoaded = YES;
+			_cacheLoaded = YES;
             [self modelsDidLoad:objects];
         } else {
             _isLoading = YES;

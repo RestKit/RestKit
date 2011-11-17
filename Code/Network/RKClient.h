@@ -69,7 +69,6 @@ NSString *RKMakeURLPath(NSString *resourcePath);
 NSString *RKMakePathWithObject(NSString *path, id object);
 
 /**
- Convenience method for generating a path against the properties of an object. Takes
  a string with property names encoded with colons and interpolates the values of
  the properties specified and returns the generated path.
  
@@ -122,6 +121,36 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  client will be sent to a URL consisting of the base URL plus the resource path specified.
  The resource path is simply the remaining part of the URL once all common text is removed.
  
+ * For example, given a remote web service at http://restkit.org and RESTful services at 
+ * http://restkit.org/services and http://restkit.org/objects, our base URL would be http://restkit.org
+ * and we would have resource paths of /services and /objects.
+ *
+ * Base URL's simplify interaction with remote services by freeing us from having to interpolate
+ * strings and construct NSURL objects to get work done. We are also able to quickly retarget an
+ * entire application to a different server or API version by changing the base URL. This is commonly
+ * done via conditional compilation to create builds against a staging and production server, for example.
+ *
+ * Memory Management
+ * -----------------
+ *
+ * Note that memory management of requests sent via RKClient instances are automatically managed
+ * for you. When sent, the request is retained by the requestQueue
+ * and is released all request processing has completed. Generally speaking this means that you can dispatch
+ * requests and work with the response in the delegate methods without regard for memory management.
+ *
+ * Request Serialization
+ * ---------------------
+ *
+ * RKClient and RKRequest support the serialization of objects into payloads to be sent as the body of a request.
+ * This functionality is commonly used to provide a dictionary of simple values to be encoded and sent as a form
+ * encoding with POST and PUT operations. It is worth noting however that this functionality is provided via the
+ * RKRequestSerializable protocol and is not specific to NSDictionary objects.
+ *
+ * @see RKRequest
+ * @see RKResponse
+ * @see RKRequestQueue
+ * @see RKRequestSerializable
+ For example, given a remote web service at http://restkit.org and RESTful services at
  For example, given a remote web service at http://restkit.org and RESTful services at 
  http://restkit.org/services and http://restkit.org/objects, our base URL would be http://restkit.org
  and we would have resource paths of /services and /objects.
@@ -199,6 +228,14 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  */
 @property (nonatomic, readonly) NSMutableDictionary *HTTPHeaders;
 
+#ifdef RESTKIT_SSL_VALIDATION
+/**
+ A set of additional certificates to be used in evaluating server
+ SSL certificates.
+ */
+@property(nonatomic, readonly) NSSet* additionalRootCertificates;
+#endif
+
 /**
  Accept all SSL certificates. This is a potential security exposure,
  and should be used ONLY while debugging in a controlled environment.
@@ -228,11 +265,11 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 - (BOOL)isNetworkAvailable DEPRECATED_ATTRIBUTE;
 
 /**
- * Adds an HTTP header to each request dispatched through the client
- * 
- * @param value The string value to set for the HTTP header
- * @param header The HTTP header to add
- * @see HTTPHeaders
+ Adds an HTTP header to each request dispatched through the client
+ 
+ @param value The string value to set for the HTTP header
+ @param header The HTTP header to add
+ @see HTTPHeaders
  */
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header;
 
@@ -242,16 +279,16 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 #ifdef RESTKIT_SSL_VALIDATION
 /**
- * A set of additional certificates to be used in evaluating server
- * SSL certificates.
+ A set of additional certificates to be used in evaluating server
+ SSL certificates.
  */
 @property(nonatomic, readonly) NSSet *additionalRootCertificates;
 
 /**
- * Adds an additional certificate that will be used to evaluate server SSL certs
- *
- * @param cert The HTTP header to add
- * @see additionalRootCertificates
+ Adds an additional certificate that will be used to evaluate server SSL certs
+ 
+ @param cert The HTTP header to add
+ @see additionalRootCertificates
  */
 - (void)addRootCertificate:(SecCertificateRef)cert;
 #endif
@@ -343,6 +380,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 /*** @name OAuth2 Secrets */
 
+ 
 /**
  The OAuth 2.0 access token
  
@@ -357,7 +395,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 /**
  The OAuth 2.0 refresh token. Used to retrieve a new access token before expiration
  
- Used to build an Authorization header wjem authenticationType is
+ Used to build an Authorization header when authenticationType is
  RKRequestAuthenticationTypeOAuth2
  
  @see authenticationType
@@ -426,7 +464,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 /**
  The default cache policy to apply for all requests sent through this client
- 
+
  @see RKRequestCache
  */
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
@@ -566,11 +604,11 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * These methods are provided as a convenience to cover the common asynchronous request tasks. All other request
- * needs should instantiate a request via requestWithResourcePath:delegate:callback and work with the RKRequest
- * object directly.
- *
- * @name Sending Asynchronous Requests
+ These methods are provided as a convenience to cover the common asynchronous request tasks. All other request
+ needs should instantiate a request via requestWithResourcePath:delegate:callback and work with the RKRequest
+ object directly.
+ 
+ @name Sending Asynchronous Requests
  */
 
 /**
@@ -625,5 +663,50 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @return The RKRequest object built and sent to the remote system
  */
 - (RKRequest *)delete:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
+
+/////////////////////////////////////////////////////////////////////////
+/// @name Request Block Dispatching
+/////////////////////////////////////////////////////////////////////////
+
+/**
+ Constructs a new RKRequest with the specified resource path using the baseURL of the client. The request is
+ then yielded to the block for configuration and then sent asynchronously.
+ 
+ @param resourcePath The resource path portion of the URL we want to send the request to, relative to the client's baseURL
+ @param block A block to yield the configured RKRequest instance to for configuration before sending.
+ */
+- (RKRequest *)sendRequestToResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
+ Perform a GET request against the specified resource path and yield the request to the block for configuration
+ 
+ @param resourcePath The resource path portion of the URL we want to send the request to, relative to the client's baseURL
+ @param block A block to yield the configured RKRequest instance to for configuration before sending.
+ */
+- (RKRequest *)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
+ Perform a POST request against the specified resource path and yield the request to the block for configuration
+ 
+ @param resourcePath The resource path portion of the URL we want to send the request to, relative to the client's baseURL
+ @param block A block to yield the configured RKRequest instance to for configuration before sending.
+ */
+- (RKRequest *)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
+ Perform a PUT request against the specified resource path and yield the request to the block for configuration
+ 
+ @param resourcePath The resource path portion of the URL we want to send the request to, relative to the client's baseURL
+ @param block A block to yield the configured RKRequest instance to for configuration before sending.
+ */
+- (RKRequest *)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
+ Perform a DELETE request against the specified resource path and yield the request to the block for configuration
+ 
+ @param resourcePath The resource path portion of the URL we want to send the request to, relative to the client's baseURL
+ @param block A block to yield the configured RKRequest instance to for configuration before sending.
+ */
+- (RKRequest *)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
 
 @end

@@ -20,6 +20,7 @@
 
 #import "RKRequest.h"
 #import "RKResponse.h"
+#import "../Support/RKCache.h"
 
 /**
  * Storage policy. Determines if we clear the cache out when the app is shut down.
@@ -28,42 +29,41 @@
 typedef enum {
     RKRequestCacheStoragePolicyDisabled,				// The cache has been disabled. Attempts to store data will silently fail
     RKRequestCacheStoragePolicyForDurationOfSession,	// Cache data for the length of the session. Clear cache at app exit.
-    RKRequestCacheStoragePolicyPermanently				// Cache data permanently, until explicitly expired or flushed
+    RKRequestCacheStoragePolicyPermanently				// Cache data permanently, until explicitly invalidated
 } RKRequestCacheStoragePolicy;
 
 /**
  Stores and retrieves cache entries for RestKit request objects.
  */
 @interface RKRequestCache : NSObject {
-    NSString* _cachePath;
     RKRequestCacheStoragePolicy _storagePolicy;
-	NSRecursiveLock* _cacheLock;
+    RKCache *_cache;
 }
 
-@property (nonatomic, readonly) NSString* cachePath; // Full path to the cache
+@property (nonatomic, readonly) NSString *cachePath; // Full path to the cache
 @property (nonatomic, assign) RKRequestCacheStoragePolicy storagePolicy; // User can change storage policy.
 
-+ (NSDateFormatter*)rfc1123DateFormatter;
++ (NSDateFormatter *)rfc1123DateFormatter;
 
 - (id)initWithCachePath:(NSString*)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
 
-- (NSString*)pathForRequest:(RKRequest*)request;
+- (NSString *)cachePathForRequest:(RKRequest *)request;
 
-- (BOOL)hasResponseForRequest:(RKRequest*)request;
+- (BOOL)hasResponseForRequest:(RKRequest *)request;
 
-- (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request;
+- (void)storeResponse:(RKResponse *)response forRequest:(RKRequest *)request;
 
-- (RKResponse*)responseForRequest:(RKRequest*)request;
+- (RKResponse *)responseForRequest:(RKRequest *)request;
 
-- (NSDictionary*)headersForRequest:(RKRequest*)request;
+- (NSDictionary *)headersForRequest:(RKRequest *)request;
 
-- (NSString*)etagForRequest:(RKRequest*)request;
+- (NSString *)etagForRequest:(RKRequest *)request;
 
-- (NSDate*)cacheDateForRequest:(RKRequest*)request;
+- (NSDate *)cacheDateForRequest:(RKRequest *)request;
 
-- (void)setCacheDate:(NSDate*)date forRequest:(RKRequest*)request;
+- (void)setCacheDate:(NSDate*)date forRequest:(RKRequest *)request;
 
-- (void)invalidateRequest:(RKRequest*)request;
+- (void)invalidateRequest:(RKRequest *)request;
 
 - (void)invalidateWithStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
 

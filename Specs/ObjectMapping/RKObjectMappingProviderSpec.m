@@ -44,7 +44,8 @@
 }
 
 - (void)itShouldFindAnExistingObjectMappingForAClass {
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectStore *objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
@@ -54,7 +55,8 @@
 }
 
 - (void)itShouldFindAnExistingObjectMappingForAKeyPath {
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    RKManagedObjectStore *objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
@@ -64,8 +66,9 @@
 }
 
 - (void)itShouldAllowYouToRemoveAMappingByKeyPath {
+    RKManagedObjectStore *objectStore = RKSpecNewManagedObjectStore();
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider objectMappingProvider];
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];

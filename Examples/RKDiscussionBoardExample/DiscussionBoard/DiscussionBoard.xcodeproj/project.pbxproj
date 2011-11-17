@@ -110,6 +110,13 @@
 			remoteGlobalIDString = 255B7588133BABBF00ED76AD;
 			remoteInfo = RestKit;
 		};
+		731A065C13BA29370073A14E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 731B3D3413452AAD0042F79D;
+			remoteInfo = RestKitCoreDataBundle;
+		};
 		A7A2D3AA12D7822D00683D6F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7A2D39412D7822C00683D6F /* RestKit.xcodeproj */;
@@ -1109,6 +1116,7 @@
 				25825AF41337CEAC00C0E3D2 /* libRestKitJSONParserJSONKit.a */,
 				25A7B1DB13421D28004816AA /* libRestKitXMLParserLibxml.a */,
 				A7A2D3B512D7822D00683D6F /* libRestKitCoreData.a */,
+				731A065D13BA29370073A14E /* RestKitCoreDataBundle.bundle */,
 				A7A2D3B712D7822D00683D6F /* libRestKitThree20.a */,
 				A7A2D3B912D7822D00683D6F /* RestKitSpecs.app */,
 			);
@@ -1194,6 +1202,11 @@
 			remoteRef = 25FB6D6D13E483DE00F48969 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		731A065D13BA29370073A14E /* RestKitCoreDataBundle.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitCoreDataBundle.bundle;
+			remoteRef = 731A065C13BA29370073A14E /* PBXContainerItemProxy */;
 		A7A2D3AB12D7822D00683D6F /* libRestKitNetwork.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;

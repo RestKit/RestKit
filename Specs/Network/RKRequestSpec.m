@@ -48,7 +48,6 @@
 - (void)itShouldSendMultiPartRequests {
 	NSString* URLString = [NSString stringWithFormat:@"http://127.0.0.1:4567/photo"];
 	NSURL* URL = [NSURL URLWithString:URLString];
-    RKSpecStubNetworkAvailability(YES);
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
 	RKParams* params = [[RKParams params] retain];
 	NSString* filePath = [[NSBundle mainBundle] pathForResource:@"blake" ofType:@"png"];
@@ -87,7 +86,6 @@
 #pragma mark - Background Policies
 
 - (void)itShouldSendTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyNone {
-    RKSpecStubNetworkAvailability(YES);
 	NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyNone;
@@ -415,7 +413,7 @@
         request.cache = cache;
         request.delegate = loader;
         [request sendAsynchronously];
-        // Don't wait for a response as this actually returns synchronously.
+        [loader waitForResponse];
         [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached For 5 Seconds")];
         [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
     }
@@ -426,8 +424,8 @@
         request.cacheTimeoutInterval = 5;
         request.cache = cache;
         request.delegate = loader;
-        [request sendSynchronously];
-        // Don't wait for a response as this actually returns synchronously.
+        [request sendAsynchronously];
+        [loader waitForResponse];
         [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached For 5 Seconds")];
         [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
     }
@@ -482,6 +480,7 @@
         BOOL returnValue = NO;
         [[[mock expect] andReturnValue:OCMOCK_VALUE(returnValue)] shouldDispatchRequest];
         [mock sendAsynchronously];
+        [loader waitForResponse];
         [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
         [expectThat([loader.response wasLoadedFromCache]) should:be(YES)];
     }
@@ -509,7 +508,6 @@
         [loader waitForResponse];
         [expectThat([loader success]) should:be(YES)];
         [expectThat([loader.response bodyAsString]) should:be(@"This Should Get Cached")];
-        NSLog(@"Headers: %@", [cache headersForRequest:request]);
         [expectThat([cache etagForRequest:request]) should:be(@"686897696a7c876b7e")];
         [expectThat([loader.response wasLoadedFromCache]) should:be(NO)];
     }
@@ -539,7 +537,6 @@
     
     RKClient* client = RKSpecNewClient();
     client.cachePolicy = RKRequestCachePolicyNone;
-    RKSpecStubNetworkAvailability(YES);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     loader.timeout = 20;
     [client post:@"/echo_params" params:params delegate:loader];
@@ -550,7 +547,6 @@
 - (void)itShouldSetAnEmptyContentBodyWhenParamsIsNil {
     RKClient* client = RKSpecNewClient();
     client.cachePolicy = RKRequestCachePolicyNone;
-    RKSpecStubNetworkAvailability(YES);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     loader.timeout = 20;
     RKRequest* request = [client get:@"/echo_params" delegate:loader];
@@ -561,7 +557,6 @@
 - (void)itShouldSetAnEmptyContentBodyWhenQueryParamsIsAnEmptyDictionary {
     RKClient* client = RKSpecNewClient();
     client.cachePolicy = RKRequestCachePolicyNone;
-    RKSpecStubNetworkAvailability(YES);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     loader.timeout = 20;
     RKRequest* request = [client get:@"/echo_params" queryParams:[NSDictionary dictionary] delegate:loader];
@@ -582,21 +577,21 @@
 
 - (void)itShouldAllowYouToChangeTheURL {
     NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:nil];
     request.URL = [NSURL URLWithString:@"http://restkit.org/gorilla"];
     assertThat([request.URL absoluteString], is(equalTo(@"http://restkit.org/gorilla")));
 }
 
 - (void)itShouldAllowYouToChangeTheResourcePath {
     RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/monkey"];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:nil];
     request.resourcePath = @"/gorilla";
     assertThat(request.resourcePath, is(equalTo(@"/gorilla")));
 }
 
 - (void)itShouldRaiseAnExceptionWhenAttemptingToMutateResourcePathOnAnNSURL {
     NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    RKRequest* request = [RKRequest requestWithURL:URL delegate:nil];
     NSException* exception = nil;
     @try {
         request.resourcePath = @"/gorilla";
@@ -645,6 +640,34 @@
     assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
 }
 
+- (void)itShouldLetYouHandleResponsesWithABlock {
+    RKURL *URL = [RKURL URLWithBaseURLString:RKSpecGetBaseURL() resourcePath:@"/ping"];
+    RKRequest *request = [RKRequest requestWithURL:URL];
+    RKSpecResponseLoader *responseLoader = [RKSpecResponseLoader responseLoader];
+    request.delegate = responseLoader;
+    __block BOOL blockInvoked = NO;
+    request.onDidLoadResponse = ^ (RKResponse *response) {
+        blockInvoked = YES;
+    };
+    [request sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(blockInvoked, is(equalToBool(YES)));
+}
+
+- (void)itShouldLetYouHandleErrorsWithABlock {
+    RKURL *URL = [RKURL URLWithBaseURLString:RKSpecGetBaseURL() resourcePath:@"/fail"];
+    RKRequest *request = [RKRequest requestWithURL:URL];
+    RKSpecResponseLoader *responseLoader = [RKSpecResponseLoader responseLoader];
+    request.delegate = responseLoader;
+    __block BOOL blockInvoked = NO;
+    request.onDidLoadResponse = ^ (RKResponse *response) {
+        blockInvoked = YES;
+    };
+    [request sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(blockInvoked, is(equalToBool(YES)));
+}
+
 // TODO: Move to RKRequestCacheSpec
 - (void)itShouldReturnACachePathWhenTheRequestIsUsingRKParams {
     RKParams *params = [RKParams params];
@@ -658,7 +681,7 @@
     NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
 						   stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache *requestCache = [[RKRequestCache alloc] initWithCachePath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
-    NSString *requestCachePath = [requestCache pathForRequest:request];
+    NSString *requestCachePath = [requestCache cachePathForRequest:request];
     NSArray *pathComponents = [requestCachePath pathComponents];
     NSString *cacheFile = [NSString pathWithComponents:[pathComponents subarrayWithRange:NSMakeRange([pathComponents count] - 2, 2)]];
     assertThat(cacheFile, is(equalTo(@"SessionStore/4ba47367884760141da2e38fda525a1f")));
@@ -676,7 +699,7 @@
     NSString* cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
 						   stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache *requestCache = [[RKRequestCache alloc] initWithCachePath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
-    NSString *requestCachePath = [requestCache pathForRequest:request];
+    NSString *requestCachePath = [requestCache cachePathForRequest:request];
     assertThat(requestCachePath, is(nilValue()));
 }
 

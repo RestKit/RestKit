@@ -19,9 +19,9 @@
 //
 
 /**
- Extends the Cocoa NSURL base class to provide support for the concepts
- of base URL and resource path that are used extensively throughout the RestKit
- system.
+ RestKit extensions to the NSURL base class providing support for the
+ concept of the base URL, resource path, and query parameters as first class
+ citizens.
  */
 @interface RKURL : NSURL {
 	NSString* _baseURLString;

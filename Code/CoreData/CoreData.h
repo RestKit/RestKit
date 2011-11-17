@@ -26,3 +26,5 @@
 #import "RKManagedObjectCache.h"
 #import "RKManagedObjectMapping.h"
 #import "RKObjectPropertyInspector+CoreData.h"
+#import "RKSearchableManagedObject.h"
+#import "RKSearchWord.h"

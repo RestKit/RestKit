@@ -92,8 +92,8 @@ namespace :docs do
       exit(exitstatus)
     else
       puts "!! appledoc generation failed with a fatal error"
-      exit(exitstatus)
     end    
+    exit(exitstatus)
   end
   
   desc "Generate & install a docset into Xcode from the current sources"
@@ -175,5 +175,5 @@ end
 
 desc "Validate a branch is ready for merging by checking for common issues"
 task :validate => [:ensure_server_is_running, :build, 'docs:check', 'uispec:all'] do  
-  puts "Project stated validated successfully. Proceed with merge."  
+  puts "Project state validated successfully. Proceed with merge."  
 end

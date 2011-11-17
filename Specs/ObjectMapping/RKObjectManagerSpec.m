@@ -40,11 +40,11 @@
     _objectManager = RKSpecNewObjectManager();
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
-    [_objectManager.objectStore deletePersistantStore];
+//    [_objectManager.objectStore deletePersistantStore];
     
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:_objectManager.objectStore];
     humanMapping.rootKeyPath = @"human";
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
@@ -55,7 +55,7 @@
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
     [humanMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
-    RKManagedObjectMapping* catObjectMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
+    RKManagedObjectMapping* catObjectMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:_objectManager.objectStore];
     [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
     [catObjectMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];
@@ -78,8 +78,6 @@
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     _objectManager.router = router;
-    
-//    RKSpecStubNetworkAvailability(YES);
 }
 
 - (void)itShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
@@ -147,7 +145,6 @@
 
 // TODO: Move to Core Data specific spec file...
 - (void)itShouldLoadAHuman {
-    assertThatBool([RKClient sharedClient].isNetworkReachable, is(equalToBool(YES)));
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];    
 	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
 	[loader waitForResponse];
@@ -178,8 +175,6 @@
 
 - (void)itShouldPOSTAnObject {
     RKObjectManager* manager = RKSpecNewObjectManager();
-    RKSpecStubNetworkAvailability(YES);
-    assertThatBool([RKClient sharedClient].isNetworkReachable, is(equalToBool(YES)));
     
     RKObjectRouter* router = [[RKObjectRouter new] autorelease];
     [router routeClass:[RKObjectMapperSpecModel class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];

@@ -45,7 +45,7 @@
 
 - (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError {
     if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"FAIL"]) {
-        *outError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
+        *outError = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
         return NO;
     } else if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"REJECT"]) {
         return NO;
@@ -234,6 +234,78 @@
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(newObject.boolString, is(equalTo(@"11-27-1982")));
+}
+
+- (void)itShouldGenerateAnUnknownKeyPathExceptionWhenIgnoreUnknownKeyPathsIsNO {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping mapAttributes:@"invalid", @"boolString", nil];
+    mapping.ignoreUnknownKeyPaths = NO;
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    object.boolString = @"test";
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
+    NSError* error = nil;
+    BOOL success;
+    NSException* exception = nil;
+    @try {
+        success = [operation performMapping:&error];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, isNot(nilValue()));
+        [operation release];
+    }
+}
+
+- (void)itShouldOptionallyIgnoreUnknownKeyPathAttributes {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping mapAttributes:@"invalid", @"boolString", nil];
+    mapping.ignoreUnknownKeyPaths = YES;
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    object.boolString = @"test";
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
+    NSError* error = nil;
+    BOOL success;
+    NSException* exception = nil;
+    @try {
+        success = [operation performMapping:&error];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(nilValue()));
+        assertThatBool(success, is(equalToBool(YES)));
+        [operation release];
+    }
+}
+
+- (void)itShouldOptionallyIgnoreUnknownKeyPathRelationships {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    [mapping mapAttributes:@"boolString", nil];
+    [mapping mapRelationship:@"invalid" withMapping:[RKObjectMapping mappingForClass:[TestMappable class]]];
+    mapping.ignoreUnknownKeyPaths = YES;
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    object.boolString = @"test";
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
+    NSError* error = nil;
+    BOOL success;
+    NSException* exception = nil;
+    @try {
+        success = [operation performMapping:&error];
+    }
+    @catch (NSException *e) {
+        exception = e;
+    }
+    @finally {
+        assertThat(exception, is(nilValue()));
+        assertThatBool(success, is(equalToBool(YES)));
+        [operation release];
+    }
 }
 
 - (void)itShouldLogADebugMessageIfTheRelationshipMappingTargetsAnArrayOfArrays {

@@ -1,0 +1,17 @@
+{
+    "contacts": [{
+        "first_name": "Blake",
+        "last_name": "Watters",
+        "email_address": "blake@gateguruapp.com"
+    },
+    {
+        "first_name": "Dan",
+        "last_name": "Gellert",
+        "email_address": "dan@gateguruapp.com"
+    },
+    {
+        "first_name": "Jeff",
+        "last_name": "Arena",
+        "email_address": "jeff@gateguruapp.com"
+    }]
+}

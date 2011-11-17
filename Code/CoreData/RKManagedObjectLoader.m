@@ -28,6 +28,10 @@
 #import "../Network/RKRequest_Internals.h"
 #import "../Support/RKLog.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
+
 @implementation RKManagedObjectLoader
 
 - (id)init {
@@ -139,13 +143,15 @@
         NSError* error = [self.objectStore save];
         if (error) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
-            NSMethodSignature* signature = [self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
-            RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-            [invocation setTarget:self.delegate];
-            [invocation setSelector:@selector(objectLoader:didFailWithError:)];
-            [invocation setArgument:&self atIndex:2];
-            [invocation setArgument:&error atIndex:3];
-            [invocation invokeOnMainThread];
+            if ([self.delegate respondsToSelector:@selector(methodSignatureForSelector:)]) {
+                NSMethodSignature* signature = [(NSObject *)self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
+                RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+                [invocation setTarget:self.delegate];
+                [invocation setSelector:@selector(objectLoader:didFailWithError:)];
+                [invocation setArgument:&self atIndex:2];
+                [invocation setArgument:&error atIndex:3];
+                [invocation invokeOnMainThread];
+            }
             return;
         }
     }
@@ -179,6 +185,20 @@
             RKLogDebug(@"Skipping deletion of existing managed object");
         }
     }
+}
+
+- (BOOL)isResponseMappable {
+    if ([self.response wasLoadedFromCache] && self.objectStore.managedObjectCache) {
+        NSFetchRequest* cacheFetchRequest = [self.objectStore.managedObjectCache fetchRequestForResourcePath:self.resourcePath];
+        if (! cacheFetchRequest) {
+            RKLogDebug(@"Skipping managed object mapping optimization -> Managed object cache returned nil cacheFetchRequest for resourcePath: %@", self.resourcePath);
+            return [super isResponseMappable];
+        }
+        NSArray* cachedObjects = [NSManagedObject objectsWithFetchRequest:cacheFetchRequest];
+        [self informDelegateOfObjectLoadWithResultDictionary:[NSDictionary dictionaryWithObject:cachedObjects forKey:@""]];
+        return NO;
+    }
+    return [super isResponseMappable];
 }
 
 @end

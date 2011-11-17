@@ -48,11 +48,15 @@
 }
 
 /**
- Returns a new autoreleased object mapping provider
- 
- @return A new autoreleased object mapping provider instance.
+ Instantiate and return a new auto-released object mapping provider
  */
 + (RKObjectMappingProvider *)objectMappingProvider;
+
+/**
+ Instantiate and return a new auto-released object mapping provider after
+ yielding it to the specified block for configuration
+ */
++ (RKObjectMappingProvider *)objectMappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *))block;
 
 /**
  Configures the mapping provider to use the RKObjectMapping or RKDynamicObjectMapping provided when

@@ -18,10 +18,13 @@
 //  limitations under the License.
 //
 
-#import "Errors.h"
-#import "NSDictionary+RKAdditions.h"
+// Load shared support code
+#import "RKError.h"
 #import "RKMIMETypes.h"
 #import "RKLog.h"
+
+// Load our categories
+#import "NSDictionary+RKAdditions.h"
 #import "NSString+RestKit.h"
 #import "RKPathMatcher.h"
 #import "RKDotNetDateFormatter.h"

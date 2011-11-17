@@ -30,10 +30,10 @@
 
 - (void)itShouldPickTheAppropriateMappingBasedOnAnAttributeValue {
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
-    RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
+    RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
-    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class] block:^(RKObjectMapping* mapping) {
+    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"type" isEqualTo:@"Girl"];
@@ -48,10 +48,10 @@
 
 - (void)itShouldMatchOnAnNSNumberAttributeValue {
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
-    RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
+    RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
-    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class] block:^(RKObjectMapping* mapping) {
+    RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
     }];
     [dynamicMapping setObjectMapping:girlMapping whenValueOfKeyPath:@"numeric_type" isEqualTo:[NSNumber numberWithInt:0]];
@@ -79,11 +79,11 @@
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id data) {
         if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
-            return [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
+            return [RKObjectMapping mappingForClass:[Girl class] usingBlock:^(RKObjectMapping* mapping) {
                 [mapping mapAttributes:@"name", nil];
             }];
         } else if ([[data valueForKey:@"type"] isEqualToString:@"Boy"]) {
-            return [RKObjectMapping mappingForClass:[Boy class] block:^(RKObjectMapping* mapping) {
+            return [RKObjectMapping mappingForClass:[Boy class] usingBlock:^(RKObjectMapping* mapping) {
                 [mapping mapAttributes:@"name", nil];
             }];
         }
@@ -116,11 +116,11 @@
 
 - (RKObjectMapping*)objectMappingForData:(id)data {
     if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
-        return [RKObjectMapping mappingForClass:[Girl class] block:^(RKObjectMapping* mapping) {
+        return [RKObjectMapping mappingForClass:[Girl class] usingBlock:^(RKObjectMapping* mapping) {
             [mapping mapAttributes:@"name", nil];
         }];
     } else if ([[data valueForKey:@"type"] isEqualToString:@"Boy"]) {
-        return [RKObjectMapping mappingForClass:[Boy class] block:^(RKObjectMapping* mapping) {
+        return [RKObjectMapping mappingForClass:[Boy class] usingBlock:^(RKObjectMapping* mapping) {
             [mapping mapAttributes:@"name", nil];
         }];
     }

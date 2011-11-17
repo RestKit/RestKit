@@ -25,7 +25,9 @@
 @property (nonatomic, readonly) RKClient* client;
 
 - (void)handleTargetObject;
-- (void)informDelegateOfObjectLoadWithInfoDictionary:(NSDictionary*)dictionary;
+- (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary*)dictionary;
 - (void)performMappingOnBackgroundThread;
+- (BOOL)isResponseMappable;
+- (void)finalizeLoad:(BOOL)successful error:(NSError*)error;
 
 @end

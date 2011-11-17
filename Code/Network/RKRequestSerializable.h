@@ -23,7 +23,7 @@
  * for transmission over a REST request. Suitable serializations are x-www-form-urlencoded and
  * multipart/form-data.
  */
-@protocol RKRequestSerializable
+@protocol RKRequestSerializable <NSObject>
 
 /**
  * The value of the Content-Type header for the HTTP Body representation of the serialization

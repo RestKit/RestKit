@@ -14,6 +14,7 @@ require 'restkit/network/authentication'
 require 'restkit/network/etags'
 require 'restkit/network/timeout'
 require 'restkit/network/oauth2'
+require 'restkit/coredata/cache'
 
 class RestKit::SpecServer < Sinatra::Base
   self.app_file = __FILE__
@@ -21,6 +22,7 @@ class RestKit::SpecServer < Sinatra::Base
   use RestKit::Network::ETags
   use RestKit::Network::Timeout
   use RestKit::Network::OAuth2
+  use RestKit::CoreData::Cache
   
   configure do
     register Sinatra::Reloader
@@ -79,8 +81,9 @@ class RestKit::SpecServer < Sinatra::Base
   end
   
   post '/204' do
+    status 204
     content_type 'application/json'
-    ""
+    "".to_json
   end
   
   get '/403' do
@@ -133,6 +136,12 @@ class RestKit::SpecServer < Sinatra::Base
     status 200
     content_type 'application/json'
     ""
+  end
+  
+  get '/fail' do
+    status 500
+    content_type 'application/json'
+    send_file 'Specs/Server/../Fixtures/JSON/errors.json'
   end
   
   # Expects an uploaded 'file' param

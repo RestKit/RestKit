@@ -26,6 +26,17 @@
     return [[self new] autorelease];
 }
 
++ (RKObjectMappingProvider *)objectMappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *))block {
+    RKObjectMappingProvider* mappingProvider = [self mappingProvider];
+    block(mappingProvider);
+    return mappingProvider;
+}
+
+// Deprecated
++ (id)mappingProviderWithBlock:(void (^)(RKObjectMappingProvider*))block {
+    return [self objectMappingProviderUsingBlock:block];
+}
+
 - (id)init {
     self = [super init];
     if (self) {

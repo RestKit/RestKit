@@ -19,7 +19,7 @@
 //
 
 #import "RKOAuthClient.h"
-#import "../Support/Errors.h"
+#import "../Support/RKError.h"
 
 @implementation RKOAuthClient
 
@@ -116,7 +116,7 @@
             
             NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                       errorDescription, NSLocalizedDescriptionKey, nil];
-            NSError *error = [NSError errorWithDomain:RKRestKitErrorDomain code:errorCode userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
             
             
             // Inform the delegate of what happened
@@ -167,7 +167,7 @@
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                               error, NSUnderlyingErrorKey, nil];
-    NSError *clientError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKOAuthClientErrorRequestError userInfo:userInfo];
+    NSError *clientError = [NSError errorWithDomain:RKErrorDomain code:RKOAuthClientErrorRequestError userInfo:userInfo];
     if ([self.delegate respondsToSelector:@selector(OAuthClient:didFailLoadingRequest:withError:)]) {
         [self.delegate OAuthClient:self didFailLoadingRequest:request withError:clientError];
     }

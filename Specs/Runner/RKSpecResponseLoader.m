@@ -75,6 +75,8 @@
 
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     NSLog(@"Loaded response: %@", response);
+    [_response release];
+    _response = nil;
 	_response = [response retain];
     
     // If request is an Object Loader, then objectLoader:didLoadObjects:

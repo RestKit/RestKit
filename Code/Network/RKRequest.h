@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -54,10 +54,10 @@ typedef enum {
 
 	// Load from the cache if we have data stored and the server returns a 304 (not modified) response
     RKRequestCachePolicyEtag = 1 << 2,
-    
+
     // Load from the cache if we have data stored
     RKRequestCachePolicyEnabled = 1 << 3,
-    
+
     // Load from the cache if we are within the timeout window
     RKRequestCachePolicyTimeout = 1 << 4,
 
@@ -92,6 +92,10 @@ typedef enum {
 @class RKResponse, RKRequestQueue, RKReachabilityObserver;
 @protocol RKRequestDelegate;
 
+/** @name Block Handlers */
+typedef void(^RKRequestDidLoadResponseBlock)(RKResponse *response);
+typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
+
 /**
  Models the request portion of an HTTP request/response cycle.
  */
@@ -101,7 +105,7 @@ typedef enum {
 	NSURLConnection *_connection;
 	NSDictionary *_additionalHTTPHeaders;
 	NSObject<RKRequestSerializable> *_params;
-	NSObject<RKRequestDelegate> *_delegate;
+	id<RKRequestDelegate> _delegate;
 	id _userData;
     RKRequestAuthenticationType _authenticationType;
 	NSString *_username;
@@ -126,6 +130,9 @@ typedef enum {
     RKRequestBackgroundPolicy _backgroundPolicy;
     UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
     #endif
+    
+    RKRequestDidLoadResponseBlock _onDidLoadResponse;
+    RKRequestDidFailLoadWithErrorBlock _onDidFailLoadWithError;
 }
 
 /**
@@ -156,7 +163,10 @@ typedef enum {
  * If the object implements the RKRequestDelegate protocol,
  * it will receive request lifecycle event messages.
  */
-@property(nonatomic, assign) NSObject<RKRequestDelegate> *delegate;
+@property(nonatomic, assign) id<RKRequestDelegate> delegate;
+
+@property(nonatomic, retain) RKRequestDidLoadResponseBlock onDidLoadResponse;
+@property(nonatomic, retain) RKRequestDidFailLoadWithErrorBlock onDidFailLoadWithError;
 
 /**
  * A Dictionary of additional HTTP Headers to send with the request
@@ -317,9 +327,14 @@ typedef enum {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ Initialize an HTTP GET request with the specified destination URL
+ */
++ (RKRequest *)requestWithURL:(NSURL *)URL;
+
+/**
  * Return a REST request that is ready for dispatching
  */
-+ (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id)delegate;
++ (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id<RKRequestDelegate>)delegate;
 
 /**
  * Initialize a synchronous request
@@ -327,9 +342,11 @@ typedef enum {
 - (id)initWithURL:(NSURL *)URL;
 
 /**
- * Initialize a REST request and prepare it for dispatching
+ Initialize a REST request and prepare it for dispatching
+ 
+ @deprecated Set the delegate property
  */
-- (id)initWithURL:(NSURL *)URL delegate:(id)delegate;
+- (id)initWithURL:(NSURL *)URL delegate:(id<RKRequestDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 /**
  * Setup the NSURLRequest. The request must be prepared right before dispatching
@@ -424,6 +441,11 @@ typedef enum {
  * Returns YES when the request was sent to the specified resource path
  */
 - (BOOL)wasSentToResourcePath:(NSString *)resourcePath;
+
+/**
+ Returns YES if the request was sent to the specified resource path with the given method
+ */
+- (BOOL)wasSentToResourcePath:(NSString *)resourcePath method:(RKRequestMethod)method;
 
 @end
 
