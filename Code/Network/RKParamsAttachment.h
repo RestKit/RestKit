@@ -39,6 +39,7 @@
 	NSUInteger		_bodyLength;
 	NSUInteger		_length;
 	NSUInteger		_delivered;
+    id<NSObject>    _value;
 }
 
 /**
@@ -69,6 +70,9 @@
  Defaults to the name of the file attached or nil if there is not one.
  */
 @property (nonatomic, retain) NSString *fileName;
+
+// this value is set iff the object is init through initWithName:value
+@property (nonatomic, retain) id<NSObject> value;
 
 /**
  Initialize a new attachment with a given parameter name and a value

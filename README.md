@@ -89,19 +89,25 @@ Visual Install Guide
 
 An step-by-step visual install guide for Xcode 4.x is available on the RestKit Wiki: https://github.com/RestKit/RestKit/wiki/Installing-RestKit-in-Xcode-4.x
 
+Community Resources
+-------------------------
+
+A Google Group (high traffic) for development discussions and user support is available at: [http://groups.google.com/group/restkit](http://groups.google.com/group/restkit)
+
+For users interested in low traffic updates about the library, an announcements list is also available:
+[http://groups.google.com/group/restkit-announce](http://groups.google.com/group/restkit-announce)
+
+Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restkit)
+
 Contributing
 -------------------------
 
-Forks, patches and other feedback are always welcome. 
-
-A Google Group for development and usage of library is available at: [http://groups.google.com/group/restkit](http://groups.google.com/group/restkit)
-
-Follow RestKit on Twitter:[http://twitter.com/restkit](http://twitter.com/restkit)
+Forks, patches and other feedback are always welcome.
 
 Credits
 -------------------------
 
-RestKit is brought to you by [Blake Watters](http://twitter.com/blakewatters) and the RestKit Team.
+RestKit is brought to you by [Blake Watters](http://twitter.com/blakewatters) and the RestKit team.
 
 Support is provided by the following organizations:
 

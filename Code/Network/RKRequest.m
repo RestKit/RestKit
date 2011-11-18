@@ -245,14 +245,42 @@
     // Add OAuth headers if is need it
     // OAuth 1
     if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){        
-        NSURLRequest *echo = [GCOAuth URLRequestForPath:[_URL path]
-                                          GETParameters:[_URL queryDictionary]
-                                                 scheme:[_URL scheme]
-                                                   host:[_URL host]
-                                            consumerKey:self.OAuth1ConsumerKey
-                                         consumerSecret:self.OAuth1ConsumerSecret
-                                            accessToken:self.OAuth1AccessToken
-                                            tokenSecret:self.OAuth1AccessTokenSecret];
+        NSURLRequest *echo = nil;
+        
+        // use the suitable parameters dict
+        NSDictionary *parameters = nil;
+        if ([self.params isKindOfClass:[RKParams class]])
+            parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
+        else 
+            parameters = [_URL queryDictionary];
+            
+        if (self.method == RKRequestMethodPUT)
+            echo = [GCOAuth URLRequestForPath:[_URL path]
+                                PUTParameters:parameters
+                                       scheme:[_URL scheme]
+                                         host:[_URL host]
+                                  consumerKey:self.OAuth1ConsumerKey
+                               consumerSecret:self.OAuth1ConsumerSecret
+                                  accessToken:self.OAuth1AccessToken
+                                  tokenSecret:self.OAuth1AccessTokenSecret];
+        else if (self.method == RKRequestMethodPOST)
+            echo = [GCOAuth URLRequestForPath:[_URL path]
+                               POSTParameters:parameters
+                                       scheme:[_URL scheme]
+                                         host:[_URL host]
+                                  consumerKey:self.OAuth1ConsumerKey
+                               consumerSecret:self.OAuth1ConsumerSecret
+                                  accessToken:self.OAuth1AccessToken
+                                  tokenSecret:self.OAuth1AccessTokenSecret];
+        else
+            echo = [GCOAuth URLRequestForPath:[_URL path]
+                                GETParameters:[_URL queryDictionary]
+                                       scheme:[_URL scheme]
+                                         host:[_URL host]
+                                  consumerKey:self.OAuth1ConsumerKey
+                               consumerSecret:self.OAuth1ConsumerSecret
+                                  accessToken:self.OAuth1AccessToken
+                                  tokenSecret:self.OAuth1AccessTokenSecret];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Authorization"] forHTTPHeaderField:@"Authorization"];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Accept-Encoding"] forHTTPHeaderField:@"Accept-Encoding"];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"User-Agent"] forHTTPHeaderField:@"User-Agent"];
