@@ -142,6 +142,10 @@
             [self isEmptyRow:indexPath.row]);
 }
 
+- (NSIndexPath *)emptyItemIndexPath {
+    return [NSIndexPath indexPathForRow:0 inSection:0];
+}
+
 - (NSIndexPath *)fetchedResultsIndexPathForIndexPath:(NSIndexPath *)indexPath {
     if (([self isEmpty] && self.emptyItem &&
          [self isEmptySection:indexPath.section] &&
@@ -478,6 +482,7 @@
 - (void)controllerWillChangeContent:(NSFetchedResultsController*)controller {
     RKLogTrace(@"Beginning updates for fetchedResultsController (%@). Current section count = %d (resource path: %@)", controller, [[controller sections] count], _resourcePath);
     [self.tableView beginUpdates];
+    _isEmptyBeforeAnimation = [self isEmpty];
 }
 
 - (void)controller:(NSFetchedResultsController*)controller
@@ -546,6 +551,10 @@
 - (void)controllerDidChangeContent:(NSFetchedResultsController*)controller {
     RKLogTrace(@"Ending updates for fetchedResultsController (%@). New section count = %d (resource path: %@)",
                controller, [[controller sections] count], _resourcePath);
+    if (self.emptyItem && ![self isEmpty] && _isEmptyBeforeAnimation) {
+        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[self emptyItemIndexPath]]
+                                                       withRowAnimation:UITableViewRowAnimationFade];
+    }
 	[self.tableView endUpdates];    
     [self didFinishLoad];
 }
