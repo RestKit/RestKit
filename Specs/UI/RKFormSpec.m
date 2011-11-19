@@ -53,10 +53,10 @@
 - (void)itShouldCommitValuesBackToTheFormObjectWithBuiltInTypes {
     RKMappableObject *mappableObject = [[RKMappableObject new] autorelease];
     RKForm *form = [RKForm formForObject:mappableObject usingBlock:^(RKForm *form) {
-        [form addRowForAttribute:@"stringTest" withControlType:RKFormControlTypeTextField block:^(RKControlTableItem *tableItem) {
+        [form addRowForAttribute:@"stringTest" withControlType:RKFormControlTypeTextField usingBlock:^(RKControlTableItem *tableItem) {
             tableItem.textField.text = @"testing 123";
         }];
-        [form addRowForAttribute:@"numberTest" withControlType:RKFormControlTypeSwitch block:^(RKControlTableItem *tableItem) {
+        [form addRowForAttribute:@"numberTest" withControlType:RKFormControlTypeSwitch usingBlock:^(RKControlTableItem *tableItem) {
             tableItem.switchControl.on = YES;
         }];
     }];
