@@ -33,6 +33,7 @@
 #define RKLogComponent lcl_cRestKitObjectMapping
 
 // Temporary home for object equivalancy tests
+BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSCAssert(sourceValue, @"Expected sourceValue not to be nil");
     NSCAssert(destinationValue, @"Expected destinationValue not to be nil");

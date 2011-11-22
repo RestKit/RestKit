@@ -28,7 +28,7 @@
 
 @implementation RKParamsSpec
 
-- (void)itShouldNotOverReleaseTheParams {
+- (void)testShouldNotOverReleaseTheParams {
     NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
     RKParams* params = [[RKParams alloc] initWithDictionary:dictionary];
     NSURL* URL = [NSURL URLWithString:[RKSpecGetBaseURL() stringByAppendingFormat:@"/echo_params"]];
@@ -42,14 +42,16 @@
     [request release];
 }
 
-- (void)itShouldUploadFilesViaRKParams {
+- (void)testShouldUploadFilesViaRKParams {
     RKClient* client = RKSpecNewClient();
     RKParams* params = [RKParams params];
     [params setValue:@"one" forParam:@"value"];
     [params setValue:@"two" forParam:@"value"];
     [params setValue:@"three" forParam:@"value"];
     [params setValue:@"four" forParam:@"value"];
-    UIImage* image = [UIImage imageNamed:@"blake.png"];
+    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
+    NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
     [params setData:UIImagePNGRepresentation(image) MIMEType:@"image/png" forParam:@"file"];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     [client post:@"/upload" params:params delegate:responseLoader];
@@ -57,13 +59,16 @@
     assertThatInt(responseLoader.response.statusCode, is(equalToInt(200)));
 }
 
-- (void)itShouldUploadFilesViaRKParamsWithMixedTypes {
+- (void)testShouldUploadFilesViaRKParamsWithMixedTypes {
     NSNumber* idUsuari = [NSNumber numberWithInt:1234]; 
     NSArray* userList = [NSArray arrayWithObjects:@"one", @"two", @"three", nil];
     NSNumber* idTema = [NSNumber numberWithInt:1234]; 
     NSString* titulo = @"whatever";
     NSString* texto = @"more text";
-    NSData* imagen = UIImageJPEGRepresentation([UIImage imageNamed:@"blake.png"], 1.0);
+    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
+    NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];    
+    NSData* imagen = UIImageJPEGRepresentation(image, 1.0);
     NSNumber* cel = [NSNumber numberWithFloat:1.232442];
     NSNumber* lon = [NSNumber numberWithFloat:18231.232442];;
     NSNumber* lat = [NSNumber numberWithFloat:13213123.232442];;
@@ -90,7 +95,7 @@
     assertThatInt(responseLoader.response.statusCode, is(equalToInt(200)));
 }
 
-- (void)itShouldCalculateAnMD5ForTheParams {
+- (void)testShouldCalculateAnMD5ForTheParams {
     NSDictionary *values = [NSDictionary dictionaryWithObjectsAndKeys:@"foo", @"bar", @"this", @"that", nil];
     RKParams *params = [RKParams paramsWithDictionary:values];
     NSString *MD5 = [params MD5];

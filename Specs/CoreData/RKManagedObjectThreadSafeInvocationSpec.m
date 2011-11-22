@@ -33,7 +33,7 @@
 
 @implementation RKManagedObjectThreadSafeInvocationSpec
 
-- (void)itShouldSerializeOneManagedObjectToManagedObjectID {
+- (void)testShouldSerializeOneManagedObjectToManagedObjectID {
     RKSpecNewManagedObjectStore();
     RKHuman* human = [RKHuman object];
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithObject:human forKey:@"human"];
@@ -43,7 +43,7 @@
     assertThat([dictionary valueForKeyPath:@"human"], is(instanceOf([NSManagedObjectID class])));
 }
 
-- (void)itShouldSerializeCollectionOfManagedObjectsToManagedObjectIDs {
+- (void)testShouldSerializeCollectionOfManagedObjectsToManagedObjectIDs {
     RKSpecNewManagedObjectStore();
     RKHuman* human1 = [RKHuman object];
     RKHuman* human2 = [RKHuman object];
@@ -56,7 +56,7 @@
     assertThat([[dictionary valueForKeyPath:@"humans"] lastObject], is(instanceOf([NSManagedObjectID class])));
 }
 
-- (void)itShouldDeserializeOneManagedObjectIDToManagedObject {
+- (void)testShouldDeserializeOneManagedObjectIDToManagedObject {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKHuman* human = [RKHuman object];
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithObject:[human objectID] forKey:@"human"];
@@ -68,7 +68,7 @@
     assertThat([dictionary valueForKeyPath:@"human"], is(equalTo(human)));
 }
 
-- (void)itShouldDeserializeCollectionOfManagedObjectIDToManagedObjects {
+- (void)testShouldDeserializeCollectionOfManagedObjectIDToManagedObjects {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKHuman* human1 = [RKHuman object];
     RKHuman* human2 = [RKHuman object];
@@ -112,7 +112,7 @@
     [pool drain];
 }
 
-- (void)itShouldSerializeAndDeserializeManagedObjectsAcrossAThreadInvocation {
+- (void)testShouldSerializeAndDeserializeManagedObjectsAcrossAThreadInvocation {
     _objectStore = [RKSpecNewManagedObjectStore() retain];
     _waiting = YES;
     [self performSelectorInBackground:@selector(createBackgroundObjects) withObject:nil];

@@ -20,6 +20,7 @@
 
 #import "RKSpecResponseLoader.h"
 
+NSString * const RKSpecResponseLoaderTimeoutException = @"RKSpecResponseLoaderTimeoutException";
 
 @implementation RKSpecResponseLoader
 
@@ -60,7 +61,7 @@
 	while (_awaitingResponse) {		
 		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
-			[NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
+			[NSException raise:RKSpecResponseLoaderTimeoutException format:@"*** Operation timed out after %f seconds...", self.timeout];
 			_awaitingResponse = NO;
 		}
 	}

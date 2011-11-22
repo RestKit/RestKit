@@ -63,8 +63,8 @@ RKObjectManager* RKSpecNewObjectManager(void) {
     [RKObjectManager setSharedManager:objectManager];
     [RKClient setSharedClient:objectManager.client];
     
-    // This allows the manager to determine state.
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+    // Force reachability determination
+    [objectManager.client.reachabilityObserver getFlags];
     
     return objectManager;
 }
@@ -96,7 +96,8 @@ void RKSpecClearCacheDirectory(void) {
 // Read a fixture from the app bundle
 NSString* RKSpecReadFixture(NSString* fileName) {
     NSError* error = nil;
-    NSString* filePath = [[NSBundle mainBundle] pathForResource:fileName ofType:nil];
+    NSBundle *bundle = [NSBundle bundleForClass:[RKSpec class]];
+    NSString* filePath = [bundle pathForResource:fileName ofType:nil];
 	NSString* fixtureData = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
     if (fixtureData == nil && error) {
         [NSException raise:nil format:@"Failed to read contents of fixture '%@'. Did you add it to the app bundle? Error: %@", fileName, [error localizedDescription]];
@@ -131,12 +132,12 @@ id RKSpecParseFixture(NSString* fileName) {
 
 @implementation RKSpec
 
-- (void)failWithException:(NSException *) e {
-    printf("%s:%i: error: %s\n",
-           [[[e userInfo] objectForKey:SenTestFilenameKey] cString],
-           [[[e userInfo] objectForKey:SenTestLineNumberKey] intValue],
-           [[[e userInfo] objectForKey:SenTestDescriptionKey] cString]);
-    [e raise];
-}
+//- (void)failWithException:(NSException *) e {
+//    printf("%s:%i: error: %s\n",
+//           [[[e userInfo] objectForKey:SenTestFilenameKey] cString],
+//           [[[e userInfo] objectForKey:SenTestLineNumberKey] intValue],
+//           [[[e userInfo] objectForKey:SenTestDescriptionKey] cString]);
+//    [e raise];
+//}
 
 @end

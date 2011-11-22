@@ -27,7 +27,7 @@
 
 @implementation RKJSONParserJSONKitSpec
 
-- (void)itShouldParseEmptyResults {
+- (void)testShouldParseEmptyResults {
     NSError* error = nil;
     RKJSONParserJSONKit* parser = [[RKJSONParserJSONKit new] autorelease];
     id parsingResult = [parser objectFromString:nil error:&error];

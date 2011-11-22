@@ -1,9 +1,9 @@
 //
 //  RKResponse.m
-//  RKFramework
+//  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -103,31 +103,28 @@ extern NSString* cacheURLKey;
     RKClient* client = [RKClient sharedClient];
     BOOL proceed = NO;
     
-    if( client.disableCertificateValidation ) {
+    if (client.disableCertificateValidation) {
         proceed = YES;
-    }
-#ifdef RESTKIT_SSL_VALIDATION
-    else if( [client.additionalRootCertificates count] > 0 ) {
+    } else if( [client.additionalRootCertificates count] > 0 ) {
         CFArrayRef rootCerts = (CFArrayRef)[client.additionalRootCertificates allObjects];
         SecTrustResultType result;
         OSStatus returnCode;
         
-        if( rootCerts && CFArrayGetCount(rootCerts) ) {
+        if (rootCerts && CFArrayGetCount(rootCerts)) {
             // this could fail, but the trust evaluation will proceed (it's likely to fail, of course)
             SecTrustSetAnchorCertificates(trust, rootCerts);
         }
         
         returnCode = SecTrustEvaluate(trust, &result);
         
-        if( returnCode == errSecSuccess ) {
+        if (returnCode == errSecSuccess) {
             proceed = (result == kSecTrustResultProceed || result == kSecTrustResultConfirm || result == kSecTrustResultUnspecified);
-            if( result == kSecTrustResultRecoverableTrustFailure ) {
+            if (result == kSecTrustResultRecoverableTrustFailure) {
                 // TODO: should try to recover here
                 // call SecTrustGetCssmResult() for more information about the failure
             }
         }
     }
-#endif
     
     return proceed;
 }
@@ -165,11 +162,7 @@ extern NSString* cacheURLKey;
 		// server is using an SSL certificate that the OS can't validate
 		// see whether the client settings allow validation here
 		RKClient* client = [RKClient sharedClient];
-		if (client.disableCertificateValidation
-#ifdef RESTKIT_SSL_VALIDATION
-            || [client.additionalRootCertificates count] > 0
-#endif
-            ) {
+		if (client.disableCertificateValidation || [client.additionalRootCertificates count] > 0) {
 			return YES;
 		} else { 
 			return NO;

@@ -236,17 +236,21 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 }
 
 - (void)deletePersistantStoreUsingSeedDatabaseName:(NSString *)seedFile {
-	NSURL* storeUrl = [NSURL fileURLWithPath:self.pathToStoreFile];
+	NSURL* storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
 	
 	NSError* error;
-	if (![[NSFileManager defaultManager] removeItemAtPath:storeUrl.path error:&error]) {
-		if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
-			[self.delegate managedObjectStore:self didFailToDeletePersistentStore:self.pathToStoreFile error:error];
-		}
-		else {
-			NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
-		}
-	}
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
+        if (![[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
+            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
+                [self.delegate managedObjectStore:self didFailToDeletePersistentStore:self.pathToStoreFile error:error];
+            }
+            else {
+                NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
+            }
+        }
+    } else {
+        RKLogWarning(@"Asked to delete persistent store but no store file exists at path: %@", storeURL.path);
+    }
 	
 	[_persistentStoreCoordinator release];
 	_persistentStoreCoordinator = nil;

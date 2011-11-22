@@ -30,21 +30,21 @@
 
 @implementation RKParserRegistrySpec
 
-- (void)itShouldEnableRegistrationFromMIMETypeToParserClasses {
+- (void)testShouldEnableRegistrationFromMIMETypeToParserClasses {
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
     Class parserClass = [registry parserClassForMIMEType:RKMIMETypeJSON];
     assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKJSONParserJSONKit")));
 }
 
-- (void)itShouldInstantiateParserObjects {
+- (void)testShouldInstantiateParserObjects {
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
     id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
-- (void)itShouldAutoconfigureBasedOnReflection {
+- (void)testShouldAutoconfigureBasedOnReflection {
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry autoconfigure];
     id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];

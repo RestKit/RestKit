@@ -31,45 +31,45 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
 @end
 
 @implementation RKAuthenticationSpec
-                                            
-- (void)itShouldAccessUnprotectedResourcePaths {
+
+- (void)testShouldAccessUnprotectedResourcePaths {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKClient* client = RKSpecNewClient();
     [client get:@"/authentication/none" delegate:loader];
     [loader waitForResponse];
-    [expectThat([loader.response isOK]) should:be(YES)];
+    assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
 
-- (void)itShouldAuthenticateViaHTTPAuthBasic {
+- (void)testShouldAuthenticateViaHTTPAuthBasic {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKClient* client = RKSpecNewClient();
     client.username = RKAuthenticationSpecUsername;
     client.password = RKAuthenticationSpecPassword;
     [client get:@"/authentication/basic" delegate:loader];
     [loader waitForResponse];
-    [expectThat([loader.response isOK]) should:be(YES)];
+    assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
 
-- (void)itShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
+- (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKClient* client = RKSpecNewClient();
     client.username = RKAuthenticationSpecUsername;
     client.password = @"INVALID";
     [client get:@"/authentication/basic" delegate:loader];
     [loader waitForResponse];
-    [expectThat([loader.response isOK]) should:be(NO)]; 
-    [expectThat([loader.response statusCode]) should:be(0)];
-    [expectThat([loader.failureError code]) should:be(NSURLErrorUserCancelledAuthentication)];
+    assertThatBool([loader.response isOK], is(equalToBool(NO))); 
+    assertThatInt([loader.response statusCode], is(equalToInt(0)));
+    assertThatInt([loader.failureError code], is(equalToInt(NSURLErrorUserCancelledAuthentication)));
 }
 
-- (void)itShouldAuthenticateViaHTTPAuthDigest {
+- (void)testShouldAuthenticateViaHTTPAuthDigest {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKClient* client = RKSpecNewClient();
     client.username = RKAuthenticationSpecUsername;
     client.password = RKAuthenticationSpecPassword;
     [client get:@"/authentication/digest" delegate:loader];
     [loader waitForResponse];
-    [expectThat([loader.response isOK]) should:be(YES)];
+    assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
 
 @end

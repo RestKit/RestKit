@@ -32,7 +32,7 @@
 
 @implementation RKManagedObjectMappingSpec
 
-- (void)itShouldReturnTheDefaultValueForACoreDataAttribute {
+- (void)testShouldReturnTheDefaultValueForACoreDataAttribute {
     // Load Core Data
     RKSpecNewManagedObjectStore();
     
@@ -41,7 +41,7 @@
     assertThat(value, is(equalTo(@"Kitty Cat!")));
 }
 
-- (void)itShouldCreateNewInstancesOfUnmanagedObjects {
+- (void)testShouldCreateNewInstancesOfUnmanagedObjects {
     RKSpecNewManagedObjectStore();
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
@@ -49,7 +49,7 @@
     assertThat([object class], is(equalTo([RKMappableObject class])));
 }
 
-- (void)itShouldCreateNewInstancesOfManagedObjectsWhenTheMappingIsAnRKObjectMapping {
+- (void)testShouldCreateNewInstancesOfManagedObjectsWhenTheMappingIsAnRKObjectMapping {
     RKSpecNewManagedObjectStore();
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
@@ -57,7 +57,7 @@
     assertThat([object class], is(equalTo([RKMappableObject class])));
 }
 
-- (void)itShouldFindExistingManagedObjectsByPrimaryKey {
+- (void)testShouldFindExistingManagedObjectsByPrimaryKey {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     mapping.primaryKeyAttribute = @"railsID";
@@ -74,7 +74,7 @@
     assertThat(object, is(equalTo(human)));
 }
 
-- (void)itShouldFindExistingManagedObjectsByPrimaryKeyPath {
+- (void)testShouldFindExistingManagedObjectsByPrimaryKeyPath {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     [RKHuman truncateAll];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
@@ -94,7 +94,7 @@
     assertThat(object, is(equalTo(human)));
 }
 
-- (void)itShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData {
+- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData {
     RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     mapping.primaryKeyAttribute = @"railsID";
@@ -105,7 +105,7 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
-- (void)itShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute {
+- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute {
     RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     
@@ -115,7 +115,7 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
-- (void)itShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull {
+- (void)testShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull {
     RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     mapping.primaryKeyAttribute = @"railsID";
@@ -127,7 +127,7 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
-- (void)itShouldMapACollectionOfObjectsWithDynamicKeys {
+- (void)testShouldMapACollectionOfObjectsWithDynamicKeys {
     RKManagedObjectStore *objectStore = RKSpecNewManagedObjectStore();
     RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     mapping.forceCollectionMapping = YES;
@@ -145,7 +145,6 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
     [mockObjectStore verify];
-    [mockObjectStore release];
 }
 
 @end

@@ -59,6 +59,6 @@
 + (RKSpecResponseLoader*)responseLoader;
 
 // Wait for a response to load
-- (void)waitForResponse;
+- (BOOL)waitForResponse;
 
 @end

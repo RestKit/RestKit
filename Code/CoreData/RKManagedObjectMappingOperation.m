@@ -50,7 +50,7 @@
 @implementation RKManagedObjectMappingOperation
 
 // TODO: Move this to a better home to take exposure out of the mapper
-- (Class)operationClassForMapping:(RKObjectMapping*)mapping {
+- (Class)operationClassForMapping:(RKObjectMapping *)mapping {
     Class managedMappingClass = NSClassFromString(@"RKManagedObjectMapping");
     Class managedMappingOperationClass = NSClassFromString(@"RKManagedObjectMappingOperation");    
     if (managedMappingClass != nil && [mapping isMemberOfClass:managedMappingClass]) {
@@ -107,7 +107,7 @@
     }
 }
 
-- (BOOL)performMapping:(NSError**)error {
+- (BOOL)performMapping:(NSError **)error {
     BOOL success = [super performMapping:error];
     [self connectRelationships];
     return success;

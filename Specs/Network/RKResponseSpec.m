@@ -29,197 +29,197 @@
 
 @implementation RKResponseSpec
 
-- (void)before {
+- (void)setUp {
 	_response = [[RKResponse alloc] init];
 }
 
-- (void)itShouldConsiderResponsesLessThanOneHudredOrGreaterThanSixHundredInvalid {
+- (void)testShouldConsiderResponsesLessThanOneHudredOrGreaterThanSixHundredInvalid {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 99;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isInvalid]) should:be(YES)];
+	assertThatBool([mock isInvalid], is(equalToBool(YES)));
 	statusCode = 601;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isInvalid]) should:be(YES)];
+	assertThatBool([mock isInvalid], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderResponsesInTheOneHudredsInformational {
+- (void)testShouldConsiderResponsesInTheOneHudredsInformational {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 100;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isInformational]) should:be(YES)];
+	assertThatBool([mock isInformational], is(equalToBool(YES)));
 	statusCode = 199;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isInformational]) should:be(YES)];
+	assertThatBool([mock isInformational], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderResponsesInTheTwoHundredsSuccessful {
+- (void)testShouldConsiderResponsesInTheTwoHundredsSuccessful {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger twoHundred = 200;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(twoHundred)] statusCode];
-	[expectThat([mock isSuccessful]) should:be(YES)];
+	assertThatBool([mock isSuccessful], is(equalToBool(YES)));
 	twoHundred = 299;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(twoHundred)] statusCode];
-	[expectThat([mock isSuccessful]) should:be(YES)];
+	assertThatBool([mock isSuccessful], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderResponsesInTheThreeHundredsRedirects {
+- (void)testShouldConsiderResponsesInTheThreeHundredsRedirects {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 300;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isRedirection]) should:be(YES)];
+	assertThatBool([mock isRedirection], is(equalToBool(YES)));
 	statusCode = 399;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isRedirection]) should:be(YES)];
+	assertThatBool([mock isRedirection], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderResponsesInTheFourHundredsClientErrors {
+- (void)testShouldConsiderResponsesInTheFourHundredsClientErrors {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 400;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isClientError]) should:be(YES)];
+	assertThatBool([mock isClientError], is(equalToBool(YES)));
 	statusCode = 499;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isClientError]) should:be(YES)];
+	assertThatBool([mock isClientError], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderResponsesInTheFiveHundredsServerErrors {
+- (void)testShouldConsiderResponsesInTheFiveHundredsServerErrors {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 500;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isServerError]) should:be(YES)];
+	assertThatBool([mock isServerError], is(equalToBool(YES)));
 	statusCode = 599;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isServerError]) should:be(YES)];
+	assertThatBool([mock isServerError], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderATwoHundredResponseOK {
+- (void)testShouldConsiderATwoHundredResponseOK {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 200;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isOK]) should:be(YES)];
+	assertThatBool([mock isOK], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderATwoHundredAndOneResponseCreated {
+- (void)testShouldConsiderATwoHundredAndOneResponseCreated {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 201;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isCreated]) should:be(YES)];
+	assertThatBool([mock isCreated], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderAFourOhThreeResponseForbidden {
+- (void)testShouldConsiderAFourOhThreeResponseForbidden {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 403;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isForbidden]) should:be(YES)];
+	assertThatBool([mock isForbidden], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderAFourOhFourResponseNotFound {
+- (void)testShouldConsiderAFourOhFourResponseNotFound {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 404;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isNotFound]) should:be(YES)];
+	assertThatBool([mock isNotFound], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderAFourOhNineResponseConflict {
+- (void)testShouldConsiderAFourOhNineResponseConflict {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 409;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isConflict]) should:be(YES)];
+	assertThatBool([mock isConflict], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderAFourHundredAndTenResponseConflict {
+- (void)testShouldConsiderAFourHundredAndTenResponseConflict {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 410;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isGone]) should:be(YES)];
+	assertThatBool([mock isGone], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderVariousThreeHundredResponsesRedirect {
+- (void)testShouldConsiderVariousThreeHundredResponsesRedirect {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 301;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isRedirect]) should:be(YES)];
+	assertThatBool([mock isRedirect], is(equalToBool(YES)));
 	statusCode = 302;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isRedirect]) should:be(YES)];
+	assertThatBool([mock isRedirect], is(equalToBool(YES)));
 	statusCode = 303;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isRedirect]) should:be(YES)];
+	assertThatBool([mock isRedirect], is(equalToBool(YES)));
 	statusCode = 307;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isRedirect]) should:be(YES)];
+	assertThatBool([mock isRedirect], is(equalToBool(YES)));
 }
 
-- (void)itShouldConsiderVariousResponsesEmpty {
+- (void)testShouldConsiderVariousResponsesEmpty {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSInteger statusCode = 201;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isEmpty]) should:be(YES)];
+	assertThatBool([mock isEmpty], is(equalToBool(YES)));
 	statusCode = 204;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isEmpty]) should:be(YES)];
+	assertThatBool([mock isEmpty], is(equalToBool(YES)));
 	statusCode = 304;
 	[[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
-	[expectThat([mock isEmpty]) should:be(YES)];
+	assertThatBool([mock isEmpty], is(equalToBool(YES)));
 }
 
-- (void)itShouldMakeTheContentTypeHeaderAccessible {
+- (void)testShouldMakeTheContentTypeHeaderAccessible {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
 	[[[mock stub] andReturn:headers] allHeaderFields];
-	[expectThat([mock contentType]) should:be(@"application/xml")];
+	assertThat([mock contentType], is(equalTo(@"application/xml")));
 }
 
 // Should this return a string???
-- (void)itShouldMakeTheContentLengthHeaderAccessible {
+- (void)testShouldMakeTheContentLengthHeaderAccessible {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSDictionary* headers = [NSDictionary dictionaryWithObject:@"12345" forKey:@"Content-Length"];
 	[[[mock stub] andReturn:headers] allHeaderFields];
-	[expectThat([mock contentLength]) should:be(@"12345")];
+	assertThat([mock contentLength], is(equalTo(@"12345")));
 }
 
-- (void)itShouldMakeTheLocationHeaderAccessible {
+- (void)testShouldMakeTheLocationHeaderAccessible {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSDictionary* headers = [NSDictionary dictionaryWithObject:@"/foo/bar" forKey:@"Location"];
 	[[[mock stub] andReturn:headers] allHeaderFields];
-	[expectThat([mock location]) should:be(@"/foo/bar")];
+	assertThat([mock location], is(equalTo(@"/foo/bar")));
 }
 
-- (void)itShouldKnowIfItIsAnXMLResponse {
+- (void)testShouldKnowIfItIsAnXMLResponse {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
 	[[[mock stub] andReturn:headers] allHeaderFields];
-	[expectThat([mock isXML]) should:be(YES)];
+	assertThatBool([mock isXML], is(equalToBool(YES)));
 }
 
-- (void)itShouldKnowIfItIsAnJSONResponse {
+- (void)testShouldKnowIfItIsAnJSONResponse {
 	RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
 	[[[mock stub] andReturn:headers] allHeaderFields];
-	[expectThat([mock isJSON]) should:be(YES)];
+	assertThatBool([mock isJSON], is(equalToBool(YES)));
 }
 
-- (void)itShouldReturnParseErrorsWhenParsedBodyFails {
+- (void)testShouldReturnParseErrorsWhenParsedBodyFails {
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mock = [OCMockObject partialMockForObject:response];
 	[[[mock stub] andReturn:@"sad;sdvjnk;"] bodyAsString];
@@ -231,7 +231,7 @@
     assertThat([error localizedDescription], is(equalTo(@"Unexpected token, wanted '{', '}', '[', ']', ',', ':', 'true', 'false', 'null', '\"STRING\"', 'NUMBER'.")));
 }
 
-- (void)itShouldNotCrashOnFailureToParseBody {
+- (void)testShouldNotCrashOnFailureToParseBody {
     RKResponse *response = [[RKResponse new] autorelease];
     id mockResponse = [OCMockObject partialMockForObject:response];
     [[[mockResponse stub] andReturn:@"test/fake"] MIMEType];
@@ -241,7 +241,7 @@
     assertThat(parsedResponse, is(nilValue()));
 }
 
-- (void)itShouldNotCrashWhenParserReturnsNilWithoutAnError {
+- (void)testShouldNotCrashWhenParserReturnsNilWithoutAnError {
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
 	id mockResponse = [OCMockObject partialMockForObject:response];
 	[[[mockResponse stub] andReturn:@""] bodyAsString];
