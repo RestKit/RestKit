@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 3/14/11.
-//  Copyright 2011 Two Toasters
+//  Copyright 2011 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#include <objc/runtime.h>
 #import "RKSpecEnvironment.h"
 #import "RKParserRegistry.h"
 
@@ -140,4 +141,18 @@ id RKSpecParseFixture(NSString* fileName) {
 //    [e raise];
 //}
 
+@end
+
+@implementation SenTestCase (MethodSwizzling)
+- (void)swizzleMethod:(SEL)aOriginalMethod
+              inClass:(Class)aOriginalClass
+           withMethod:(SEL)aNewMethod
+            fromClass:(Class)aNewClass
+         executeBlock:(void (^)(void))aBlock {
+    Method originalMethod = class_getClassMethod(aOriginalClass, aOriginalMethod);
+    Method mockMethod = class_getInstanceMethod(aNewClass, aNewMethod);
+    method_exchangeImplementations(originalMethod, mockMethod);
+    aBlock();
+    method_exchangeImplementations(mockMethod, originalMethod);
+}
 @end

@@ -24,13 +24,21 @@
 #import "RKMappableObject.h"
 
 @interface RKManagedObjectMappingSpec : RKSpec {
-    
+    NSAutoreleasePool *_autoreleasePool;
 }
 
 @end
 
 
 @implementation RKManagedObjectMappingSpec
+
+//- (void)setUp {
+//    _autoreleasePool = [NSAutoreleasePool new];
+//}
+//
+//- (void)tearDown {
+//    [_autoreleasePool drain];
+//}
 
 - (void)testShouldReturnTheDefaultValueForACoreDataAttribute {
     // Load Core Data
@@ -139,7 +147,7 @@
     [provider setMapping:mapping forKeyPath:@"users"];
     
     id mockObjectStore = [OCMockObject partialMockForObject:objectStore];
-    [[[mockObjectStore expect] andForwardToRealObject] findOrCreateInstanceOfEntity:mapping.entity withPrimaryKeyAttribute:@"name" andValue:@"blake"];
+    [[[mockObjectStore expect] andForwardToRealObject] findOrCreateInstanceOfEntity:OCMOCK_ANY withPrimaryKeyAttribute:@"name" andValue:@"blake"];
     [[[mockObjectStore expect] andForwardToRealObject] findOrCreateInstanceOfEntity:mapping.entity withPrimaryKeyAttribute:@"name" andValue:@"rachit"];
     id userInfo = RKSpecParseFixture(@"DynamicKeys.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];

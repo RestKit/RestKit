@@ -55,3 +55,11 @@ id RKSpecParseFixture(NSString* fileName);
 // Base class for specs. Allows UISpec to run the specs and use of Hamcrest matchers...
 @interface RKSpec : SenTestCase
 @end
+
+@interface SenTestCase (MethodSwizzling)
+- (void)swizzleMethod:(SEL)aOriginalMethod
+              inClass:(Class)aOriginalClass
+           withMethod:(SEL)aNewMethod
+            fromClass:(Class)aNewClass
+         executeBlock:(void (^)(void))aBlock;
+@end

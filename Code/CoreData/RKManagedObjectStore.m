@@ -334,7 +334,20 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return basePath;
+    if (basePath) {
+        // In unit tests the Documents/ path may not exist
+        if(! [[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
+            NSError* error = nil;
+            
+            if(! [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:NO attributes:nil error:&error]) {
+                NSLog(@"%@", error);
+            }
+        }
+        
+        return basePath;
+    }
+    
+    return nil;
 
 #else
 
@@ -406,7 +419,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     if (nil == [entityCache objectForKey:entityName]) {
         NSFetchRequest* fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
         [fetchRequest setEntity:entity];
-        [fetchRequest setReturnsObjectsAsFaults:NO];			
+        [fetchRequest setReturnsObjectsAsFaults:NO];
         objects = [NSManagedObject executeFetchRequest:fetchRequest];
         RKLogInfo(@"Caching all %d %@ objects to thread local storage", [objects count], entity.name);
         NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];

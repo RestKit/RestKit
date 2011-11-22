@@ -34,7 +34,7 @@
 	RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
 	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
-	assertThatInt(status, is(equalToInt(RKReachabilityIndeterminate)));	
+	assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));	
 }
 
 - (void)testShouldDetectNetworkStatusWithAnIPAddressBaseName {
