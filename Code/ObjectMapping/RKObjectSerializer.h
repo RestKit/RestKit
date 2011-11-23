@@ -20,7 +20,7 @@
 
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
-#import "../Network/RKRequestSerializable.h"
+#import "RKRequestSerializable.h"
 
 /**
  Performs a serialization of an object and its relationships back into

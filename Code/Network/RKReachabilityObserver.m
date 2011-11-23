@@ -25,7 +25,7 @@
 #import "RKReachabilityObserver.h"
 #include <netdb.h>
 #include <arpa/inet.h>
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent

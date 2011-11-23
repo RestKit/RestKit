@@ -20,7 +20,7 @@
 
 #import "RKObjectMappingResult.h"
 #import "RKObjectMapperError.h"
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 
 @implementation RKObjectMappingResult
 

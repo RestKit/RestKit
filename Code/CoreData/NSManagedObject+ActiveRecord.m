@@ -10,9 +10,9 @@
 
 #import <objc/runtime.h>
 #import "NSManagedObject+ActiveRecord.h"
-#import "../ObjectMapping/RKObjectManager.h"
-#import "../Support/RKLog.h"
-#import "../Support/RKFixCategoryBug.h"
+#import "RKObjectManager.h"
+#import "RKLog.h"
+#import "RKFixCategoryBug.h"
 
 RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 

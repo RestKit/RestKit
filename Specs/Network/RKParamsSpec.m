@@ -51,8 +51,8 @@
     [params setValue:@"four" forParam:@"value"];
     NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
     NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
-    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];
-    [params setData:UIImagePNGRepresentation(image) MIMEType:@"image/png" forParam:@"file"];
+    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    [params setData:data MIMEType:@"image/png" forParam:@"file"];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     [client post:@"/upload" params:params delegate:responseLoader];
     [responseLoader waitForResponse];
@@ -67,8 +67,7 @@
     NSString* texto = @"more text";
     NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
     NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
-    UIImage *image = [UIImage imageWithContentsOfFile:imagePath];    
-    NSData* imagen = UIImageJPEGRepresentation(image, 1.0);
+    NSData *data = [NSData dataWithContentsOfFile:imagePath];
     NSNumber* cel = [NSNumber numberWithFloat:1.232442];
     NSNumber* lon = [NSNumber numberWithFloat:18231.232442];;
     NSNumber* lat = [NSNumber numberWithFloat:13213123.232442];;
@@ -82,7 +81,7 @@
     [params setValue:titulo forParam:@"titulo"];
     [params setValue:texto forParam:@"texto"];
     
-    [params setData:imagen MIMEType:@"image/jpeg" forParam:@"file"];
+    [params setData:data MIMEType:@"image/png" forParam:@"file"];
     
     [params setValue:cel forParam:@"cel"];
     [params setValue:lon forParam:@"lon"];

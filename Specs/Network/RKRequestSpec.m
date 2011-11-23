@@ -87,6 +87,8 @@
 
 #pragma mark - Background Policies
 
+#if TARGET_OS_IPHONE
+
 - (void)testShouldSendTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyNone {
     RKSpecStubNetworkAvailability(YES);
 	NSURL* URL = [NSURL URLWithString:RKSpecGetBaseURL()];
@@ -208,6 +210,8 @@
     [loader waitForResponse];
     assertThatBool([loader success], is(equalToBool(YES)));
 }
+
+#endif
 
 #pragma mark RKRequestCachePolicy Specs
 

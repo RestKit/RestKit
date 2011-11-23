@@ -7,7 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 #import "RKRelationshipMappingExample.h"
 #import "User.h"
 #import "Project.h"

@@ -35,6 +35,8 @@
     [queue release];
 }
 
+#if TARGET_OS_IPHONE
+
 // TODO: Crashing...
 - (void)testShouldSuspendTheQueueOnTransitionToTheBackground {
     return;
@@ -55,6 +57,8 @@
     assertThatBool(queue.suspended, is(equalToBool(NO)));
     [queue release];
 }
+
+#endif
 
 - (void)testShouldInformTheDelegateWhenSuspended {
     RKRequestQueue* queue = [RKRequestQueue new];

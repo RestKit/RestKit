@@ -22,7 +22,7 @@
 #import "RKResponse.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKNotifications.h"
-#import "../Support/Support.h"
+#import "Support.h"
 #import "RKURL.h"
 #import "NSData+MD5.h"
 #import "NSString+MD5.h"

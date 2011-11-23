@@ -21,10 +21,10 @@
 #import "RKClient.h"
 #import "RKURL.h"
 #import "RKNotifications.h"
-#import "../Support/RKAlert.h"
-#import "../Support/RKLog.h"
-#import "../Support/RKPathMatcher.h"
-#import "../Support/NSString+RestKit.h"
+#import "RKAlert.h"
+#import "RKLog.h"
+#import "RKPathMatcher.h"
+#import "NSString+RestKit.h"
 
 // Set Logging Component
 #undef RKLogComponent

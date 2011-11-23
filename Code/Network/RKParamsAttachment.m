@@ -22,7 +22,7 @@
 #import "RKLog.h"
 #import "NSData+MD5.h"
 #import "FileMD5Hash.h"
-#import "../Support/NSString+RestKit.h"
+#import "NSString+RestKit.h"
 
 // Set Logging Component
 #undef RKLogComponent

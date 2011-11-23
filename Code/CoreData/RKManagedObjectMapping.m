@@ -23,7 +23,7 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKObjectPropertyInspector+CoreData.h"
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent

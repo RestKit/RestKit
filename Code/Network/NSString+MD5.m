@@ -20,7 +20,7 @@
 
 #import <CommonCrypto/CommonDigest.h>
 #import "NSString+MD5.h"
-#import "../Support/RKFixCategoryBug.h"
+#import "RKFixCategoryBug.h"
 
 RK_FIX_CATEGORY_BUG(NSString_MD5)
 

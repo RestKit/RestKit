@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "../Network/RKRequest.h"
+#import "RKRequest.h"
 
 // TODO: Cleanup the comments in here
 

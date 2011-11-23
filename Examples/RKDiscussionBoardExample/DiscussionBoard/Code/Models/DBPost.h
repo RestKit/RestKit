@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 #import "DBUser.h"
 #import "DBTopic.h"
 #import "DBContentObject.h"

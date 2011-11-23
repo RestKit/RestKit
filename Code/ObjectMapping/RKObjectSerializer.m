@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "../Network/RKRequestSerialization.h"
-#import "../Support/RKMIMETypes.h"
-#import "../Support/RKParser.h"
+#import "RKRequestSerialization.h"
+#import "RKMIMETypes.h"
+#import "RKParser.h"
 #import "RKObjectSerializer.h"
 #import "NSDictionary+RKRequestSerialization.h"
 #import "RKParserRegistry.h"

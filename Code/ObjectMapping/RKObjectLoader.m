@@ -27,7 +27,7 @@
 #import "RKParser.h"
 #import "RKObjectLoader_Internals.h"
 #import "RKParserRegistry.h"
-#import "../Network/RKRequest_Internals.h"
+#import "RKRequest_Internals.h"
 #import "RKObjectSerializer.h"
 
 // Set Logging Component

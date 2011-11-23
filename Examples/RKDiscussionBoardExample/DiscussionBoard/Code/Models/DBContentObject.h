@@ -7,7 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 #import "DBUser.h"
 
 // Posted when a content object has changed

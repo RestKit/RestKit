@@ -7,7 +7,7 @@
 //
 
 #import <Three20/Three20+Additions.h>
-#import <RestKit/Support/NSDictionary+RKAdditions.h>
+#import <RestKit/NSDictionary+RKAdditions.h>
 #import "DBPost.h"
 
 @implementation DBPost

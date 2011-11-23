@@ -26,8 +26,8 @@
 #import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "RKNotifications.h"
-#import "../Support/RKLog.h"
-#import "../Support/RKFixCategoryBug.h"
+#import "RKLog.h"
+#import "RKFixCategoryBug.h"
 
 RK_FIX_CATEGORY_BUG(UIApplication_RKNetworkActivity)
 

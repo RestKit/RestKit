@@ -19,7 +19,7 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "../ObjectMapping/RKObjectMapping.h"
+#import "RKObjectMapping.h"
 
 @interface RKManagedObjectMapping : RKObjectMapping {
     NSEntityDescription* _entity;

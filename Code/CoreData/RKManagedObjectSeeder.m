@@ -24,7 +24,7 @@
 
 #import "RKManagedObjectSeeder.h"
 #import "RKManagedObjectStore.h"
-#import "../ObjectMapping/RKParserRegistry.h"
+#import "RKParserRegistry.h"
 #import "RKLog.h"
 
 // Set Logging Component

@@ -20,9 +20,9 @@
 
 #import "RKObjectManager.h"
 #import "RKObjectSerializer.h"
-#import "../CoreData/RKManagedObjectStore.h"
-#import "../CoreData/RKManagedObjectLoader.h"
-#import "../Support/Support.h"
+#import "RKManagedObjectStore.h"
+#import "RKManagedObjectLoader.h"
+#import "Support.h"
 #import "RKErrorMessage.h"
 
 NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";

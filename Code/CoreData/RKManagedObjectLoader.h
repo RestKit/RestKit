@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "../ObjectMapping/RKObjectLoader.h"
+#import "RKObjectLoader.h"
 #import "RKManagedObjectStore.h"
 
 /**

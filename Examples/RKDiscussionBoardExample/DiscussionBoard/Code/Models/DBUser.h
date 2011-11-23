@@ -7,7 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 
 // Declared here and defined below
 @class DBContentObject;
