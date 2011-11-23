@@ -16,7 +16,7 @@
 
 @implementation MasterViewController
 
-@synthesize tableViewModel = __tableViewModel;
+@synthesize tableController = __tableController;
 @synthesize fetchedResultsController = __fetchedResultsController;
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize segmentedControl = __segementedControl;
@@ -50,13 +50,13 @@
 //    dan.emailAddress = @"dan@gateguruapp.com";
 //
 //    NSArray* contacts = [NSArray arrayWithObjects:blake, jeff, dan, nil];
-//    [__tableViewModel loadObjects:contacts];
+//    [__tableController loadObjects:contacts];
 
     NSArray* tableItems = [RKTableItem tableItemsFromStrings:@"User", @"Connect", @"Bookmarks", @"Reviews & Tips", @"Scores", nil];
-    [__tableViewModel loadTableItems:tableItems
-                           withBlock:^(RKTableViewCellMapping* cellMapping) {
+    [__tableController loadTableItems:tableItems
+                           withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
                                cellMapping.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                               cellMapping.onSelectCellForObject = ^(UITableViewCell* cell, id object) {
+                               cellMapping.onSelectCellForObjectAtIndexPath = ^(UITableViewCell *cell, id object, NSIndexPath* indexPath) {
                                    RKTableItem* tableItem = (RKTableItem*) object;
                                    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Alert!"
                                                                                        message:tableItem.text
@@ -69,7 +69,7 @@
 }
 
 - (void)loadNetworkTable {
-    [__tableViewModel loadTableFromResourcePath:@"/contacts.json"];
+    [__tableController loadTableFromResourcePath:@"/contacts.json"];
 }
 
 - (void)loadCoreDataTable {
@@ -79,15 +79,15 @@
 - (void)segmentedControlDidChangeValue {
     switch (__segementedControl.selectedSegmentIndex) {
         case 0:
-            __tableViewModel.pullToRefreshEnabled = NO;
+            __tableController.pullToRefreshEnabled = NO;
             [self loadStaticTable];
             break;
         case 1:
-            __tableViewModel.pullToRefreshEnabled = YES;
+            __tableController.pullToRefreshEnabled = YES;
             [self loadNetworkTable];
             break;
         case 2:
-            __tableViewModel.pullToRefreshEnabled = YES;
+            __tableController.pullToRefreshEnabled = YES;
             [self loadCoreDataTable];
             break;
 
@@ -113,21 +113,22 @@
 
     // Configure the object manager
     RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://localhost:4567/"];
-    [manager.mappingProvider setMapping:[RKObjectMapping mappingForClass:[Contact class] withBlock:^(RKObjectMapping* mapping) {
+    [manager.mappingProvider setMapping:[RKObjectMapping mappingForClass:[Contact class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapKeyPath:@"first_name" toAttribute:@"firstName"];
         [mapping mapKeyPath:@"last_name" toAttribute:@"lastName"];
         [mapping mapKeyPath:@"email_address" toAttribute:@"emailAddress"];
     }] forKeyPath:@"contacts"];
 
-    __tableViewModel = [RKTableViewModel tableViewModelForTableViewController:self];
-    [__tableViewModel mapObjectsWithClass:[Contact class]
-                  toTableCellsWithMapping:[RKTableViewCellMapping cellMappingWithBlock:^(RKTableViewCellMapping* cellMapping) {
-        cellMapping.cellStyle = UITableViewCellStyleSubtitle;
+    __tableController = [RKTableController tableControllerForTableViewController:self];
+    [__tableController mapObjectsWithClass:[Contact class]
+                  toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
+        cellMapping.style = UITableViewCellStyleSubtitle;
         cellMapping.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         [cellMapping mapKeyPath:@"fullName" toAttribute:@"textLabel.text"];
         [cellMapping mapKeyPath:@"emailAddress" toAttribute:@"detailTextLabel.text"];
 
-        cellMapping.onSelectCellForObject = ^ (UITableViewCell* cell, Contact* contact) {
+        cellMapping.onSelectCellForObjectAtIndexPath = ^(UITableViewCell *cell, id object, NSIndexPath* indexPath) {
+            Contact *contact = object;
             UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Cell Selected!"
                                                                 message:[NSString stringWithFormat:@"You selected '%@'", contact.fullName]
                                                                delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -140,11 +141,11 @@
     [self.segmentedControl addTarget:self action:@selector(segmentedControlDidChangeValue) forControlEvents:UIControlEventValueChanged];
     [self loadStaticTable];
 
-//    __tableViewModel.onAddCell = ^(UITableViewCell* cell) {
+//    __tableController.onAddCell = ^(UITableViewCell* cell) {
 //
 //    };
-//    __tableViewModel.delegate = self;
-//    [__tableViewModel addSection:[RKTableViewSection sectionWithBlock:^(RKTableViewSection* section) {
+//    __tableController.delegate = self;
+//    [__tableController addSection:[RKTableViewSection sectionWithBlock:^(RKTableViewSection* section) {
 //        section.headerTitle = @"Account";
 //        UITableViewCell* cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"RKTableViewCell"];
 //        cell.textLabel.text = @"This is a cell";

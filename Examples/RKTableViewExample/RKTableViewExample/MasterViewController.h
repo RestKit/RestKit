@@ -11,10 +11,10 @@
 #import <RestKit/RestKit.h>
 #import <RestKit/UI/UI.h>
 
-@interface MasterViewController : UITableViewController <RKTableViewModelDelegate, NSFetchedResultsControllerDelegate>
+@interface MasterViewController : UITableViewController <RKTableControllerDelegate, NSFetchedResultsControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
-@property (strong, nonatomic) RKTableViewModel *tableViewModel;
+@property (strong, nonatomic) RKTableController *tableController;
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
