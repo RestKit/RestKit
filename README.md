@@ -63,11 +63,14 @@ Installation
 Quick Start (aka TL;DR)
 -----------
 
+RestKit assumes that you are using a modern Xcode project building to the DerivedData directory. Confirm your settings
+via the "File" menu > "Project Settings...". On the "Build" tab within the sheet that opens, click the "Advanced..."
+button and confirm that your "Build Location" is the "Derived Data Location".
+
 1. Add Git submodule to your project: `git submodule add git://github.com/RestKit/RestKit.git RestKit`
 1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
 1. Add **Other Linker Flags** for `-ObjC -all_load`
-1. Add **Header Search Path** for `$(SOURCE_ROOT)/RestKit/Build`
 1. Open target settings editor for the target you want to link RestKit into
 1. Add direct dependency on the **RestKit** aggregate target
 1. Link against required frameworks:
