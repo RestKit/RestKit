@@ -91,12 +91,12 @@
 /**
  * Return the localized human readable representation of the HTTP Status Code returned
  */
-- (NSString*)localizedStatusCodeString;
+- (NSString *)localizedStatusCodeString;
 
 /**
  * Return the response body as an NSString
  */
-- (NSString*)bodyAsString;
+- (NSString *)bodyAsString;
 
 /**
  * Return the response body parsed as JSON into an object
@@ -107,12 +107,12 @@
 /**
  * Return the response body parsed as JSON into an object
  */
-- (id)parsedBody:(NSError**)error;
+- (id)parsedBody:(NSError **)error;
 
 /**
  * Will determine if there is an error object and use it's localized message
  */
-- (NSString*)failureErrorDescription;
+- (NSString *)failureErrorDescription;
 
 /**
  * Indicates whether the response was loaded from RKCache
@@ -228,17 +228,17 @@
 /**
  * Returns the value of 'Content-Type' HTTP header
  */
-- (NSString*)contentType;
+- (NSString *)contentType;
 
 /**
  * Returns the value of the 'Content-Length' HTTP header
  */
-- (NSString*)contentLength;
+- (NSString *)contentLength;
 
 /**
  * Returns the value of the 'Location' HTTP Header
  */
-- (NSString*)location;
+- (NSString *)location;
 
 /**
  * True when the server turned an HTML response (MIME type is text/html)
@@ -259,5 +259,15 @@
  * True when the server turned an JSON response (MIME type is application/json)
  */
 - (BOOL)isJSON;
+
+/**
+ Returns the name of the string encoding used for the response body
+ */
+- (NSString *)bodyEncodingName;
+
+/**
+ Return the string encoding used for the response body
+ */
+- (NSStringEncoding)bodyEncoding;
 
 @end

@@ -259,4 +259,13 @@
     assertThat(error, is(nilValue()));
 }
 
+- (void)testLoadingNonUTF8Charset {
+    RKClient* client = RKSpecNewClient();
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    [client get:@"/encoding" delegate:loader];
+    [loader waitForResponse];
+    assertThat([loader.response bodyEncodingName], is(equalTo(@"us-ascii")));
+    assertThatInteger([loader.response bodyEncoding], is(equalToInteger(NSASCIIStringEncoding)));
+}
+
 @end

@@ -96,6 +96,12 @@ class RestKit::SpecServer < Sinatra::Base
     "File Not Found"
   end
   
+  get '/encoding' do
+    status 200
+    content_type 'text/plain; charset=us-ascii'
+    "ASCII Charset"
+  end
+  
   post '/notNestedUser' do
     content_type 'application/json'
     { 'email' => 'changed', 'ID' => 31337 }.to_json
