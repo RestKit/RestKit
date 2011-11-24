@@ -54,7 +54,7 @@
 @property(nonatomic, assign) NSObject<RKRequestQueueDelegate>* delegate;
 
 /**
- * The number of current requests supported by this queue
+ * The number of concurrent requests supported by this queue
  * Defaults to 5
  */
 @property (nonatomic) NSUInteger concurrentRequestsLimit;

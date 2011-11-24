@@ -24,6 +24,7 @@
 #import "../Support/RKAlert.h"
 #import "../Support/RKLog.h"
 #import "../Support/RKPathMatcher.h"
+#import "../Support/NSString+RestKit.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -128,7 +129,6 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
         
         // Configure reachability and queue
         [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-        self.reachabilityObserver = [RKReachabilityObserver reachabilityObserverForInternet];
         self.requestQueue = [RKRequestQueue requestQueue];
         
         [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
@@ -187,7 +187,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 }
 
 - (BOOL)isNetworkReachable {
-	BOOL isNetworkReachable = NO;
+	BOOL isNetworkReachable = YES;
 	if (self.reachabilityObserver) {
 		isNetworkReachable = [self.reachabilityObserver isNetworkReachable];
 	}
@@ -277,14 +277,25 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 }
 
 - (void)baseURLDidChange:(NSDictionary *)change {
-    NSString *newBaseURL = [change objectForKey:NSKeyValueChangeNewKey];
+    NSString *newBaseURLString = [change objectForKey:NSKeyValueChangeNewKey];
     
     // Don't crash if baseURL is nil'd out (i.e. dealloc)
-    if (! [newBaseURL isEqual:[NSNull null]]) {
+    if (! [newBaseURLString isEqual:[NSNull null]]) {
         // Configure a cache for the new base URL
         [_requestCache release];
         _requestCache = [[RKRequestCache alloc] initWithCachePath:[self cachePath]
                                                     storagePolicy:RKRequestCacheStoragePolicyPermanently];
+    
+        // Determine reachability strategy (if user has not already done so)
+        if (self.reachabilityObserver == nil) {
+            NSURL *newBaseURL = [NSURL URLWithString:newBaseURLString];
+            NSString *hostName = [newBaseURL host];
+            if ([newBaseURLString isEqualToString:@"localhost"] || [hostName isIPAddress]) {
+                self.reachabilityObserver = [RKReachabilityObserver reachabilityObserverForHost:hostName];
+            } else {
+                self.reachabilityObserver = [RKReachabilityObserver reachabilityObserverForInternet];
+            }
+        }
     }
 }
 

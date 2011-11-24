@@ -75,4 +75,11 @@
     assertThat(MIMEType, is(equalTo(@"application/xml")));
 }
 
+- (void)itShouldKnowIfTheReceiverContainsAnIPAddress {
+    assertThatBool([@"127.0.0.1" isIPAddress], equalToBool(YES));
+    assertThatBool([@"173.45.234.197" isIPAddress], equalToBool(YES));
+    assertThatBool([@"google.com" isIPAddress], equalToBool(NO));
+    assertThatBool([@"just some random text" isIPAddress], equalToBool(NO));
+}
+
 @end
