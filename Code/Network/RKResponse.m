@@ -235,7 +235,16 @@ extern NSString* cacheURLKey;
 }
 
 - (NSString*)bodyAsString {
-	return [[[NSString alloc] initWithData:self.body encoding:NSUTF8StringEncoding] autorelease];
+    NSString * encodingName = [_httpURLResponse textEncodingName];
+    CFStringEncoding cfEncoding =  kCFStringEncodingInvalidId;
+    NSStringEncoding encoding;
+    
+    if (encodingName) {
+        cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)encodingName);
+    }
+    encoding  = cfEncoding ==  kCFStringEncodingInvalidId ? NSUTF8StringEncoding : CFStringConvertEncodingToNSStringEncoding(cfEncoding);
+    
+	return [[[NSString alloc] initWithData:self.body encoding:encoding] autorelease];
 }
 
 - (id)bodyAsJSON {
