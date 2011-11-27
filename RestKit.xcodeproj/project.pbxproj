@@ -934,7 +934,6 @@
 		25160D0B14564E810060A5C5 = {
 			isa = PBXGroup;
 			children = (
-				25A34244147D8AAA0009758D /* Security.framework */,
 				25160D44145650490060A5C5 /* Code */,
 				25160FC51456F2330060A5C5 /* Specs */,
 				25160E8D145652E40060A5C5 /* Vendor */,
@@ -957,6 +956,7 @@
 		25160D1814564E810060A5C5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25A34244147D8AAA0009758D /* Security.framework */,
 				251611311456F56C0060A5C5 /* MobileCoreServices.framework */,
 				2516112F1456F5590060A5C5 /* Security.framework */,
 				2516112D1456F5520060A5C5 /* CoreData.framework */,
@@ -2328,9 +2328,9 @@
 		25160D3B14564E820060A5C5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					arm6,
-					arm7,
+				"ARCHS[sdk=iphoneos*]" = (
+					armv6,
+					armv7,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
@@ -2347,9 +2347,9 @@
 		25160D3C14564E820060A5C5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					arm6,
-					arm7,
+				"ARCHS[sdk=iphoneos*]" = (
+					armv6,
+					armv7,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
