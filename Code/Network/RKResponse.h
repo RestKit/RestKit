@@ -171,6 +171,11 @@
 - (BOOL)isCreated;
 
 /**
+ * Indicates an HTTP response code of 204
+ */
+- (BOOL)isNoContent;
+
+/**
  * Indicates an HTTP response code of 304
  */
 - (BOOL)isNotModified;

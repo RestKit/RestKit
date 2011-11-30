@@ -79,6 +79,7 @@ class RestKit::SpecServer < Sinatra::Base
   end
   
   post '/204' do
+    status 204
     content_type 'application/json'
     ""
   end

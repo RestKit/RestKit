@@ -336,6 +336,10 @@ extern NSString* cacheURLKey;
 	return ([self statusCode] == 201);
 }
 
+- (BOOL)isNoContent {
+	return ([self statusCode] == 204);
+}
+
 - (BOOL)isNotModified {
 	return ([self statusCode] == 304);
 }
