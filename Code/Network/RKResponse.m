@@ -289,14 +289,14 @@ extern NSString* cacheURLKey;
     if ([self wasLoadedFromCache]) {
         return [[_responseHeaders valueForKey:cacheResponseCodeKey] intValue];
     }
-	return [_httpURLResponse statusCode];
+    return ([_httpURLResponse respondsToSelector:@selector(statusCode)] ? [_httpURLResponse statusCode] : 200);
 }
 
 - (NSDictionary*)allHeaderFields {
 	if ([self wasLoadedFromCache]) {
 		return _responseHeaders;
 	}
-	return [_httpURLResponse allHeaderFields];
+    return ([_httpURLResponse respondsToSelector:@selector(allHeaderFields)] ? [_httpURLResponse allHeaderFields] : nil);
 }
 
 - (NSArray*)cookies {
