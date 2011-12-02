@@ -3,7 +3,7 @@
 // LCLLogFile.h
 //
 //
-// Copyright (c) 2008-2010 Arne Harren <ah@0xc0.de>
+// Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 #define _LCLLOGFILE_VERSION_MAJOR  1
 #define _LCLLOGFILE_VERSION_MINOR  1
-#define _LCLLOGFILE_VERSION_BUILD  3
+#define _LCLLOGFILE_VERSION_BUILD  5
 #define _LCLLOGFILE_VERSION_SUFFIX ""
 
 //
@@ -118,15 +118,17 @@
 //
 
 
-// Returns the path of the log file as defined by _LCLLogFile_LogFilePath.
+// Returns/sets the path of the log file. Setting the path implies a reset.
 + (NSString *)path;
++ (void)setPath:(NSString *)path;
 
 // Returns the path of the backup log file.
 + (NSString *)path0;
 
-// Returns whether log messages get appended to an existing log file on
+// Returns/sets whether log messages get appended to an existing log file on
 // startup.
 + (BOOL)appendsToExistingLogFile;
++ (void)setAppendsToExistingLogFile:(BOOL)value;
 
 // Returns/sets the maximum size of the log file (as defined by
 // _LCLLogFile_MaxLogFileSizeInBytes).
@@ -178,7 +180,7 @@
 // Closes the log file.
 + (void)close;
 
-// Resets the log file.
+// Resets the log file. This also deletes the existing log file.
 + (void)reset;
 
 // Rotates the log file.
@@ -252,11 +254,32 @@
 //
 
 
+// ARC/non-ARC autorelease pool
+#define _lcl_logger_autoreleasepool_arc 0
+#if defined(__has_feature)
+#   if __has_feature(objc_arc)
+#   undef  _lcl_logger_autoreleasepool_arc
+#   define _lcl_logger_autoreleasepool_arc 1
+#   endif
+#endif
+#if _lcl_logger_autoreleasepool_arc
+#define _lcl_logger_autoreleasepool_begin                                      \
+    @autoreleasepool {
+#define _lcl_logger_autoreleasepool_end                                        \
+    }
+#else
+#define _lcl_logger_autoreleasepool_begin                                      \
+    NSAutoreleasePool *_lcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
+#define _lcl_logger_autoreleasepool_end                                        \
+    [_lcl_logger_autoreleasepool release];
+#endif
+
+
 // Define the _lcl_logger macro which integrates LCLLogFile as a logging
 // back-end for LibComponentLogging and pass the header of a log component as
 // the identifier to LCLLogFile's log method.
 #define _lcl_logger(_component, _level, _format, ...) {                        \
-    NSAutoreleasePool *_lcl_logger_pool = [[NSAutoreleasePool alloc] init];    \
+    _lcl_logger_autoreleasepool_begin                                          \
     [LCLLogFile logWithIdentifier:_lcl_component_header[_component]            \
                             level:_level                                       \
                              path:__FILE__                                     \
@@ -264,6 +287,6 @@
                          function:__PRETTY_FUNCTION__                          \
                            format:_format,                                     \
                                ## __VA_ARGS__];                                \
-    [_lcl_logger_pool release];                                                \
+    _lcl_logger_autoreleasepool_end                                            \
 }
 

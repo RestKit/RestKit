@@ -3,7 +3,7 @@
 // LCLLogFile.m
 //
 //
-// Copyright (c) 2008-2010 Arne Harren <ah@0xc0.de>
+// Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -120,9 +120,9 @@ static size_t _LCLLogFile_fileSize = 0;
 
 // Paths of log files.
 static NSString *_LCLLogFile_filePath = nil;
-static const char *_LCLLogFile_filePath_c = NULL;
+static char *_LCLLogFile_filePath_c = NULL;
 static NSString *_LCLLogFile_filePath0 = nil;
-static const char *_LCLLogFile_filePath0_c = NULL;
+static char *_LCLLogFile_filePath0_c = NULL;
 
 // The process id.
 static pid_t _LCLLogFile_processId = 0;
@@ -139,7 +139,125 @@ const char * const _LCLLogFile_levelHeader[] = {
 };
 
 
+// __has_feature for non-clang compilers
+#if !defined(__has_feature)
+#define __has_feature(_feature) 0
+#endif
+
+
+// ARC defines for non-ARC builds
+#if !__has_feature(objc_arc)
+#ifndef __bridge
+#define __bridge
+#endif
+#endif
+
+
+// ARC/non-ARC autorelease pool
+#if __has_feature(objc_arc)
+#define _LCLLogFile_autoreleasepool_begin                                      \
+    @autoreleasepool {
+#define _LCLLogFile_autoreleasepool_end                                        \
+    }
+#else
+#define _LCLLogFile_autoreleasepool_begin                                      \
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#define _LCLLogFile_autoreleasepool_end                                        \
+    [pool release];
+#endif
+
+
+#if __has_feature(objc_arc)
+#define _LCLLogFile_var_release(_var)                                          \
+    if (_var != nil) {                                                         \
+        _var = nil;                                                            \
+    }
+#else
+#define _LCLLogFile_var_release(_var)                                          \
+    if (_var != nil) {                                                         \
+        [_var release];                                                        \
+        _var = nil;                                                            \
+    }
+#endif
+
+#define _LCLLogFile_var_free(_var)                                             \
+    if (_var != NULL) {                                                        \
+        free(_var);                                                            \
+        _var = NULL;                                                           \
+    }                                                                          \
+
+
 @implementation LCLLogFile
+
+
+//
+// File path.
+//
+
+
+static void _LCLLogFile_setLogFilePath(NSString *path) {
+    // release old path
+    _LCLLogFile_var_release(_LCLLogFile_filePath);
+    _LCLLogFile_var_free(_LCLLogFile_filePath_c);
+    
+    // release old backup path
+    _LCLLogFile_var_release(_LCLLogFile_filePath0);
+    _LCLLogFile_var_free(_LCLLogFile_filePath0_c);
+    
+    if (path != nil) {
+        // standardize the given path
+        path = [path stringByStandardizingPath];
+        
+        // create parent paths
+        NSString *parentpath = [path stringByDeletingLastPathComponent];
+        [[NSFileManager defaultManager] createDirectoryAtPath:parentpath
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:NULL];
+        
+        // create the path of the backup file
+        NSString *path0 = [path stringByAppendingString:@".0"];
+        
+        // create the paths' file system representations
+        CFIndex path_c_max_len = CFStringGetMaximumSizeOfFileSystemRepresentation((__bridge CFStringRef)path);
+        CFIndex path0_c_max_len = CFStringGetMaximumSizeOfFileSystemRepresentation((__bridge CFStringRef)path0);
+        
+        char *path_c = malloc(path_c_max_len);
+        char *path0_c = malloc(path0_c_max_len);
+        
+        if (path_c != NULL && path0_c != NULL) {
+            Boolean path_fsr_created = CFStringGetFileSystemRepresentation((__bridge CFStringRef)path, path_c, path_c_max_len);
+            Boolean path0_fsr_created = CFStringGetFileSystemRepresentation((__bridge CFStringRef)path0, path0_c, path0_c_max_len);
+            
+            // create local copies of the paths
+            if (path_fsr_created && path0_fsr_created) {
+                _LCLLogFile_filePath = [path copy];
+                _LCLLogFile_filePath_c = strdup(path_c);
+                _LCLLogFile_filePath0 = [path0 copy];
+                _LCLLogFile_filePath0_c = strdup(path0_c);
+            }
+        }
+        
+        _LCLLogFile_var_free(path_c);
+        _LCLLogFile_var_free(path0_c);
+    }
+    
+    // creation of paths failed? clean up and fall back to stderr
+    if (_LCLLogFile_filePath_c == NULL || _LCLLogFile_filePath0_c == NULL) {
+        NSLog(@"error: invalid log file path '%@'", path);
+        
+        // fall back to stderr
+        _LCLLogFile_mirrorToStdErr = YES;
+        
+        // release path
+        _LCLLogFile_var_release(_LCLLogFile_filePath);
+        _LCLLogFile_var_free(_LCLLogFile_filePath_c);
+        
+        // release backup path
+        _LCLLogFile_var_release(_LCLLogFile_filePath0);
+        _LCLLogFile_var_free(_LCLLogFile_filePath0_c);
+    }
+}
 
 
 //
@@ -159,7 +277,7 @@ const char * const _LCLLogFile_levelHeader[] = {
     if (self != [LCLLogFile class])
         return;
     
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    _LCLLogFile_autoreleasepool_begin
     
     // create the lock
     _LCLLogFile_lock = [[NSRecursiveLock alloc] init];
@@ -202,52 +320,12 @@ const char * const _LCLLogFile_levelHeader[] = {
     _LCLLogFile_filePath_c = NULL;
     _LCLLogFile_filePath0 = nil;
     _LCLLogFile_filePath0_c = NULL;
-    if (path != nil) {
-        // standardize the given path
-        path = [path stringByStandardizingPath];
-        
-        // create parent paths
-        NSString *parentpath = [path stringByDeletingLastPathComponent];
-        [[NSFileManager defaultManager] createDirectoryAtPath:parentpath
-                                  withIntermediateDirectories:YES
-                                                   attributes:nil
-                                                        error:NULL];
-        
-        // create the path of the backup file
-        NSString *path0 = [path stringByAppendingString:@".0"];
-        
-        // create the paths' file system representations
-        CFIndex path_c_max_len = CFStringGetMaximumSizeOfFileSystemRepresentation((CFStringRef)path);
-        CFIndex path0_c_max_len = CFStringGetMaximumSizeOfFileSystemRepresentation((CFStringRef)path);
-        
-        char *path_c = malloc(path_c_max_len);
-        char *path0_c = malloc(path0_c_max_len);
-        
-        Boolean path_fsr_created = CFStringGetFileSystemRepresentation((CFStringRef)path, path_c, path_c_max_len);
-        Boolean path0_fsr_created = CFStringGetFileSystemRepresentation((CFStringRef)path0, path0_c, path0_c_max_len);
-        
-        // create local copies of the paths
-        if (path_fsr_created && path0_fsr_created) {
-            _LCLLogFile_filePath = [path copy];
-            _LCLLogFile_filePath_c = strdup(path_c);
-            _LCLLogFile_filePath0 = [path0 copy];
-            _LCLLogFile_filePath0_c = strdup(path0_c);
-        }
-        
-        free(path_c);
-        free(path0_c);
-    }
-    
-    // creation of paths failed? fall back to stderr
-    if (_LCLLogFile_filePath_c == NULL) {
-        NSLog(@"error: invalid log file path '%@'", path);
-        _LCLLogFile_mirrorToStdErr = YES;
-    }
+    _LCLLogFile_setLogFilePath(path);
     
     // log file size is zero
     _LCLLogFile_fileSize = 0;
     
-    [pool release];
+    _LCLLogFile_autoreleasepool_end
 }
 
 
@@ -317,7 +395,7 @@ static void _LCLLogFile_log(const char *identifier_c, uint32_t level,
                             const char *path_c, uint32_t line,
                             const char *function_c,
                             NSString *message) {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    _LCLLogFile_autoreleasepool_begin
     
     // create the prefix
     NSString *prefix = _LCLLogFile_prefix(identifier_c, level, path_c, line, function_c);
@@ -332,7 +410,10 @@ static void _LCLLogFile_log(const char *identifier_c, uint32_t level,
     
     // escape '\\' and '\n' characters
     if (_LCLLogFile_escapeLineFeeds) {
-        NSMutableString *emessage = [[[NSMutableString alloc] initWithCapacity:[message length] * 2] autorelease];
+        NSMutableString *emessage = [[NSMutableString alloc] initWithCapacity:[message length] * 2];
+#       if !__has_feature(objc_arc)
+        [emessage autorelease];
+#       endif
         [emessage appendString:message];
         [emessage replaceOccurrencesOfString:@"\\" withString:@"\\\\" options:0 range:NSMakeRange(0, [emessage length])];
         [emessage replaceOccurrencesOfString:@"\n" withString:@"\\n" options:0 range:NSMakeRange(0, [emessage length])];
@@ -400,7 +481,7 @@ static void _LCLLogFile_log(const char *identifier_c, uint32_t level,
     // ... done
     [_LCLLogFile_lock unlock];
     
-    [pool release];
+    _LCLLogFile_autoreleasepool_end
 }
 
 // Writes the given log message to the log file (message).
@@ -439,7 +520,9 @@ static void _LCLLogFile_log(const char *identifier_c, uint32_t level,
         _LCLLogFile_log(identifier, level, path, line, function, message);
         
         // release local objects
+#       if !__has_feature(objc_arc)
         [message release];
+#       endif
     }
 }
 
@@ -465,7 +548,9 @@ static void _LCLLogFile_log(const char *identifier_c, uint32_t level,
         _LCLLogFile_log(identifier, level, path, line, function, message);
         
         // release local objects
+#       if !__has_feature(objc_arc)
         [message release];
+#       endif
     }
 }
 
@@ -485,9 +570,30 @@ static void _LCLLogFile_log(const char *identifier_c, uint32_t level,
     return _LCLLogFile_filePath0;
 }
 
-// Returns whether log messages get appended to an existing log file on startup.
+// Sets the path of the log file.
++ (void)setPath:(NSString *)path {
+    [_LCLLogFile_lock lock];
+    {
+        _LCLLogFile_autoreleasepool_begin
+        
+        [LCLLogFile reset];
+        _LCLLogFile_setLogFilePath(path);
+        
+        _LCLLogFile_autoreleasepool_end
+    }
+    [_LCLLogFile_lock unlock];
+}
+
+// Returns/sets whether log messages get appended to an existing log file on startup.
 + (BOOL)appendsToExistingLogFile {
     return _LCLLogFile_appendToExistingLogFile;
+}
++ (void)setAppendsToExistingLogFile:(BOOL)value {
+    [_LCLLogFile_lock lock];
+    {
+        _LCLLogFile_appendToExistingLogFile = value;
+    }
+    [_LCLLogFile_lock unlock];
 }
 
 // Returns/sets the maximum size of the log file (as defined by

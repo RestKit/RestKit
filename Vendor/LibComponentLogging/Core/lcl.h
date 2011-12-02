@@ -28,7 +28,7 @@
 
 #define _LCL_VERSION_MAJOR  1
 #define _LCL_VERSION_MINOR  1
-#define _LCL_VERSION_BUILD  4
+#define _LCL_VERSION_BUILD  6
 #define _LCL_VERSION_SUFFIX ""
 
 //
