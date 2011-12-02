@@ -18,7 +18,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "../../RKParser.h"
+#import "RKParser.h"
 
 /**
  This is a dead simple XML parser that uses libxml2 to parse an XML document
