@@ -19,7 +19,7 @@
 //
 
 #import "RKOAuthClient.h"
-#import "../Support/Errors.h"
+#import "Errors.h"
 
 @implementation RKOAuthClient
 

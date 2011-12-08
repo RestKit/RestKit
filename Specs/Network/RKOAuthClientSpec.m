@@ -26,7 +26,7 @@
 
 @implementation RKOAuthClientSpec
 
-- (void)itShouldGetAccessToken{
+- (void)testShouldGetAccessToken{
     RKSpecResponseLoader *loader = [RKSpecResponseLoader responseLoader];
     RKOAuthClient *client = RKSpecNewOAuthClient(loader);
     client.authorizationCode = @"1234";
@@ -36,7 +36,7 @@
     assertThatBool(loader.success, is(equalToBool(YES)));
 }
 
-- (void)itShouldNotGetAccessToken{
+- (void)testShouldNotGetAccessToken{
     RKSpecResponseLoader *loader = [RKSpecResponseLoader responseLoader];
     RKOAuthClient *client = RKSpecNewOAuthClient(loader);
     client.authorizationCode = @"someInvalidAuthorizationCode";
@@ -47,7 +47,7 @@
     assertThatBool(loader.success, is(equalToBool(NO)));
 
 }
-- (void)itShouldGetProtectedResource{
+- (void)testShouldGetProtectedResource{
     //TODO: Encapsulate this code in a correct manner
     RKSpecResponseLoader *loader = [RKSpecResponseLoader responseLoader];
     RKOAuthClient *client = RKSpecNewOAuthClient(loader);

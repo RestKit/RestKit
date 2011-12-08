@@ -33,7 +33,7 @@
 
 @implementation RKManagedObjectLoaderSpec
 
-- (void)itShouldDeleteObjectFromLocalStoreOnDELETE {    
+- (void)testShouldDeleteObjectFromLocalStoreOnDELETE {    
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecStubNetworkAvailability(YES);
@@ -54,7 +54,7 @@
     assertThatBool([human isDeleted], equalToBool(YES));
 }
 
-- (void)itShouldLoadAnObjectWithAToOneRelationship {
+- (void)testShouldLoadAnObjectWithAToOneRelationship {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     RKSpecStubNetworkAvailability(YES);
@@ -76,7 +76,7 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)itShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
+- (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];

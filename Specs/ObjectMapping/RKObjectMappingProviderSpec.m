@@ -36,14 +36,14 @@
 
 @implementation RKObjectMappingProviderSpec
 
-- (void)beforeAll {
+- (void)setUp {
     _objectManager = RKSpecNewObjectManager();
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKSpecs.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
     [_objectManager.objectStore deletePersistantStore];
 }
 
-- (void)itShouldFindAnExistingObjectMappingForAClass {
+- (void)testShouldFindAnExistingObjectMappingForAClass {
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
@@ -53,7 +53,7 @@
     assertThat(returnedMapping, is(equalTo(humanMapping)));
 }
 
-- (void)itShouldFindAnExistingObjectMappingForAKeyPath {
+- (void)testShouldFindAnExistingObjectMappingForAKeyPath {
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
@@ -63,7 +63,7 @@
     assertThat(returnedMapping, is(equalTo(catMapping)));
 }
 
-- (void)itShouldAllowYouToRemoveAMappingByKeyPath {
+- (void)testShouldAllowYouToRemoveAMappingByKeyPath {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider objectMappingProvider];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     assertThat(catMapping, isNot(equalTo(nil)));

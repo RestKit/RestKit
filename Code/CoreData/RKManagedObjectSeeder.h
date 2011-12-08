@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "../ObjectMapping/ObjectMapping.h"
+#import "ObjectMapping.h"
 
 // The default seed database filename. Used when the object store has not been initialized
 extern NSString* const RKDefaultSeedDatabaseFileName;

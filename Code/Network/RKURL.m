@@ -42,7 +42,7 @@
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
 	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
 	NSURL *baseURL = [NSURL URLWithString:baseURLString];
-	NSString* completePath = [[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString];
+	NSString* completePath = [[[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     // Preserve trailing slash in resourcePath
     if (resourcePath && [resourcePath characterAtIndex:[resourcePath length] - 1] == '/') {
         completePath = [completePath stringByAppendingString:@"/"];

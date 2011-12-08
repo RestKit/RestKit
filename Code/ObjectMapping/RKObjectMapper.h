@@ -24,7 +24,7 @@
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
 #import "RKMappingOperationQueue.h"
-#import "../Support/Support.h"
+#import "Support.h"
 
 /**
  Maps parsed primitive dictionary and arrays into objects. This is the primary entry point

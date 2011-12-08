@@ -236,17 +236,21 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 }
 
 - (void)deletePersistantStoreUsingSeedDatabaseName:(NSString *)seedFile {
-	NSURL* storeUrl = [NSURL fileURLWithPath:self.pathToStoreFile];
+	NSURL* storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
 	
 	NSError* error;
-	if (![[NSFileManager defaultManager] removeItemAtPath:storeUrl.path error:&error]) {
-		if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
-			[self.delegate managedObjectStore:self didFailToDeletePersistentStore:self.pathToStoreFile error:error];
-		}
-		else {
-			NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
-		}
-	}
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
+        if (![[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
+            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
+                [self.delegate managedObjectStore:self didFailToDeletePersistentStore:self.pathToStoreFile error:error];
+            }
+            else {
+                NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
+            }
+        }
+    } else {
+        RKLogWarning(@"Asked to delete persistent store but no store file exists at path: %@", storeURL.path);
+    }
 	
 	[_persistentStoreCoordinator release];
 	_persistentStoreCoordinator = nil;
@@ -330,7 +334,20 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return basePath;
+    if (basePath) {
+        // In unit tests the Documents/ path may not exist
+        if(! [[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
+            NSError* error = nil;
+            
+            if(! [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:NO attributes:nil error:&error]) {
+                NSLog(@"%@", error);
+            }
+        }
+        
+        return basePath;
+    }
+    
+    return nil;
 
 #else
 
@@ -402,7 +419,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     if (nil == [entityCache objectForKey:entityName]) {
         NSFetchRequest* fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
         [fetchRequest setEntity:entity];
-        [fetchRequest setReturnsObjectsAsFaults:NO];			
+        [fetchRequest setReturnsObjectsAsFaults:NO];
         objects = [NSManagedObject executeFetchRequest:fetchRequest];
         RKLogInfo(@"Caching all %d %@ objects to thread local storage", [objects count], entity.name);
         NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];

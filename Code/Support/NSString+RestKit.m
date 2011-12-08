@@ -24,7 +24,7 @@
 #import <CoreServices/CoreServices.h>
 #endif
 #import "NSString+RestKit.h"
-#import "../Network/RKClient.h"
+#import "RKClient.h"
 #import "RKFixCategoryBug.h"
 #include <netdb.h>
 #include <arpa/inet.h>

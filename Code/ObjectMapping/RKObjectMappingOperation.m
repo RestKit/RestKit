@@ -25,14 +25,15 @@
 #import "RKObjectPropertyInspector.h"
 #import "RKObjectRelationshipMapping.h"
 #import "RKObjectMapper.h"
-#import "../Support/Errors.h"
-#import "../Support/RKLog.h"
+#import "Errors.h"
+#import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
 // Temporary home for object equivalancy tests
+BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSCAssert(sourceValue, @"Expected sourceValue not to be nil");
     NSCAssert(destinationValue, @"Expected destinationValue not to be nil");
@@ -212,6 +213,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
         currentValue = nil;
+    }
+    
+    /**
+     WTF - This workaround should not be necessary, but I have been unable to replicate
+     the circumstances that trigger it in a unit test to fix elsewhere. The proper place
+     to handle it is in transformValue:atKeyPath:toType:
+     
+     See issue & pull request: https://github.com/RestKit/RestKit/pull/436
+     */
+    if (value == [NSNull null] || [value isEqual:[NSNull null]]) {
+        RKLogWarning(@"Coercing NSNull value to nil in shouldSetValue:atKeyPath: -- should be fixed.");
+        value = nil;
     }
     
 	if (nil == currentValue && nil == value) {

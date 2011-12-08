@@ -24,9 +24,9 @@
 #import "RKObjectMapper.h"
 #import "RKManagedObjectThreadSafeInvocation.h"
 #import "NSManagedObject+ActiveRecord.h"
-#import "../ObjectMapping/RKObjectLoader_Internals.h"
-#import "../Network/RKRequest_Internals.h"
-#import "../Support/RKLog.h"
+#import "RKObjectLoader_Internals.h"
+#import "RKRequest_Internals.h"
+#import "RKLog.h"
 
 @implementation RKManagedObjectLoader
 

@@ -7,7 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 
 @interface RKTStatus : NSManagedObject {
 }

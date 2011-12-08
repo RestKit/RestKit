@@ -21,7 +21,7 @@
 #import "RKObjectMapping.h"
 #import "RKObjectRelationshipMapping.h"
 #import "RKObjectPropertyInspector.h"
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 
 // Constants
 NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
@@ -337,6 +337,8 @@ static NSDateFormatter *preferredDateFormatter = nil;
     }
     
     [self addDefaultDateFormatter:dateFormatter];
+    [dateFormatter release];
+
 }
 
 + (NSDateFormatter *)preferredDateFormatter {

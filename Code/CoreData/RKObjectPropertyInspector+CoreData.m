@@ -20,8 +20,8 @@
 
 #import <CoreData/CoreData.h>
 #import "RKObjectPropertyInspector+CoreData.h"
-#import "../Support/RKLog.h"
-#import "../Support/RKFixCategoryBug.h"
+#import "RKLog.h"
+#import "RKFixCategoryBug.h"
 
 RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
 

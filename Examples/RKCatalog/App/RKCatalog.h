@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 
 // Import the base URL defined in the app delegate
 extern NSString* gRKCatalogBaseURL;

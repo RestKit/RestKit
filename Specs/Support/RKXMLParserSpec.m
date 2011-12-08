@@ -47,32 +47,32 @@
 
 @implementation RKXMLParserLibXMLSpec
 
-- (void)itShouldMapASingleXMLObjectPayloadToADictionary {
+- (void)testShouldMapASingleXMLObjectPayloadToADictionary {
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<hash>\n  <float type=\"float\">2.4</float>\n  <string>string</string>\n  <number type=\"integer\">1</number>\n</hash>\n";
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     id result = [parser parseXML:data];
-    [expectThat(NSStringFromClass([result class])) should:be(@"__NSCFDictionary")];
-    [expectThat([[result valueForKeyPath:@"hash.float"] floatValue]) should:be(2.4f)];
-    [expectThat([[result valueForKeyPath:@"hash.number"] intValue]) should:be(1)];
-    [expectThat([result valueForKeyPath:@"hash.string"]) should:be(@"string")];
+    assertThat(NSStringFromClass([result class]), is(equalTo(@"__NSCFDictionary")));
+    assertThatFloat([[result valueForKeyPath:@"hash.float"] floatValue], is(equalToFloat(2.4f)));
+    assertThatInt([[result valueForKeyPath:@"hash.number"] intValue], is(equalToInt(1)));
+    assertThat([result valueForKeyPath:@"hash.string"], is(equalTo(@"string")));
 }
 
-- (void)itShouldMapMultipleObjectsToAnArray {
+- (void)testShouldMapMultipleObjectsToAnArray {
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records type=\"array\">\n  <record>\n    <float type=\"float\">2.4</float>\n    <string>string</string>\n    <number type=\"integer\">1</number>\n  </record>\n  <record>\n    <another-number type=\"integer\">1</another-number>\n  </record>\n</records>\n";
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     id result = [parser parseXML:data];
     NSArray* records = (NSArray*)[result valueForKeyPath:@"records.record"];
-    [expectThat([records count]) should:be(2)];
+    assertThatInt([records count], is(equalToInt(2)));
     id result1 = [records objectAtIndex:0];
-    [expectThat(NSStringFromClass([result1 class])) should:be(@"__NSCFDictionary")];
-    [expectThat([[result1 valueForKeyPath:@"float"] floatValue]) should:be(2.4f)];
-    [expectThat([[result1 valueForKeyPath:@"number"] intValue]) should:be(1)];
-    [expectThat([result1 valueForKeyPath:@"string"]) should:be(@"string")];
+    assertThat(NSStringFromClass([result1 class]), is(equalTo(@"__NSCFDictionary")));
+    assertThatFloat([[result1 valueForKeyPath:@"float"] floatValue], is(equalToFloat(2.4f)));
+    assertThatInt([[result1 valueForKeyPath:@"number"] intValue], is(equalToInt(1)));
+    assertThat([result1 valueForKeyPath:@"string"], is(equalTo(@"string")));
     id result2 = [records objectAtIndex:1];
-    [expectThat([[result2 valueForKeyPath:@"another-number"] intValue]) should:be(1)];
+    assertThatInt([[result2 valueForKeyPath:@"another-number"] intValue], is(equalToInt(1)));
 }
 
-- (void)itShouldMapXML {
+- (void)testShouldMapXML {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKSpecTabData class]];
     [mapping mapAttributes:@"title", @"summary", nil];
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider alloc] init];
@@ -86,7 +86,7 @@
     assertThatInt([[data valueForKeyPath:@"tabdata.item"] count], is(equalToInt(2)));
 }
 
-- (void)itShouldParseXMLWithAttributes {
+- (void)testShouldParseXMLWithAttributes {
     NSString* XML = RKSpecReadFixture(@"container_attributes.xml");
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     NSDictionary* result = [parser parseXML:XML];
@@ -103,7 +103,7 @@
     assertThat([secondElement objectForKey:@"subelement"], is(equalTo(@"text2")));
 }
 
-- (void)itShouldParseXMLWithAttributesInTextNodes {
+- (void)testShouldParseXMLWithAttributesInTextNodes {
     NSString* XML = RKSpecReadFixture(@"attributes_without_text_content.xml");
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     NSDictionary* result = [parser parseXML:XML];
@@ -132,7 +132,7 @@
     assertThat([thirdCurrency objectForKey:@"rate"], is(equalTo(@"3.251")));
 }
 
-- (void)itShouldNotCrashWhileParsingOrdersXML {
+- (void)testShouldNotCrashWhileParsingOrdersXML {
     NSString *XML = RKSpecReadFixture(@"orders.xml");
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     NSException *exception = nil;
@@ -147,7 +147,7 @@
     }
 }
 
-- (void)itShouldParseXMLWithCDATA {
+- (void)testShouldParseXMLWithCDATA {
     NSString *XML = RKSpecReadFixture(@"zend.xml");
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     NSDictionary *output = [parser parseXML:XML];
@@ -159,7 +159,7 @@
     assertThat([[map objectAtIndex:2] valueForKey:@"subtitle"], is(equalTo(@"Kary lives here.")));
 }
 
-- (void)itShouldConsiderASingleCloseTagAnEmptyContainer {
+- (void)testShouldConsiderASingleCloseTagAnEmptyContainer {
     NSString *XML = @"<users />";
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     NSDictionary *output = [parser parseXML:XML];
@@ -168,7 +168,7 @@
     assertThatBool([users isKindOfClass:[NSDictionary class]], is(equalToBool(YES)));
 }
 
-- (void)itShouldParseRelativelyComplexXML {
+- (void)testShouldParseRelativelyComplexXML {
     NSString *XML = RKSpecReadFixture(@"national_weather_service.xml");
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     NSException *exception = nil;

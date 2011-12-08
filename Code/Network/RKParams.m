@@ -19,7 +19,7 @@
 //
 
 #import "RKParams.h"
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 #import "NSString+MD5.h"
 
 // Need for iOS 5 UIDevice workaround

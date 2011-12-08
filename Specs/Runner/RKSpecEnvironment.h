@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/15/10.
-//  Copyright 2010 Two Toasters
+//  Copyright 2010 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
-
-#import "UISpec.h"
-#import "UIExpectation.h"
 
 #import <OCMock/OCMock.h>
 #import <OCMock/NSNotificationCenter+OCMAdditions.h>
@@ -56,5 +53,13 @@ NSString* RKSpecReadFixture(NSString* fileName);
 id RKSpecParseFixture(NSString* fileName);
 
 // Base class for specs. Allows UISpec to run the specs and use of Hamcrest matchers...
-@interface RKSpec : NSObject <UISpec>
+@interface RKSpec : SenTestCase
+@end
+
+@interface SenTestCase (MethodSwizzling)
+- (void)swizzleMethod:(SEL)aOriginalMethod
+              inClass:(Class)aOriginalClass
+           withMethod:(SEL)aNewMethod
+            fromClass:(Class)aNewClass
+         executeBlock:(void (^)(void))aBlock;
 @end

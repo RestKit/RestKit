@@ -63,24 +63,26 @@ Installation
 Quick Start (aka TL;DR)
 -----------
 
+RestKit assumes that you are using a modern Xcode project building to the DerivedData directory. Confirm your settings
+via the "File" menu > "Project Settings...". On the "Build" tab within the sheet that opens, click the "Advanced..."
+button and confirm that your "Build Location" is the "Derived Data Location".
+
 1. Add Git submodule to your project: `git submodule add git://github.com/RestKit/RestKit.git RestKit`
 1. Add cross-project reference by dragging **RestKit.xcodeproj** to your project
 1. Open build settings editor for your project
-1. Add **Other Linker Flags** for `-ObjC`
-1. Add **Header Search Path** for `$(SOURCE_ROOT)/RestKit/Build`
+1. Add **Other Linker Flags** for `-ObjC -all_load`
 1. Open target settings editor for the target you want to link RestKit into
 1. Add direct dependency on the **RestKit** aggregate target
 1. Link against required frameworks:
     1. **CFNetwork.framework**
     1. **CoreData.framework**
+    1. **Security.framework**
     1. **MobileCoreServices.framework** on iOS or **CoreServices.framework** on OS X
     1. **SystemConfiguration.framework**
     1. **libxml2.dylib**
-1. Link against RestKit static library products:
-    1. **libRestKitSupport.a**
-    1. **libRestKitObjectMapping.a**
-    1. **libRestKitNetwork.a**
-    1. A JSON parser implementation (either **libRestKitJSONParserJSONKit.a**, **libRestKitJSONParserYAJL.a**, or **libRestKitJSONParserSBJSON.a**). We recommend JSONKit.
+1. Link against RestKit:
+    1. **libRestKit.a** on iOS
+    1. **RestKit.framework** on OS X
 1. Import the RestKit headers via `#import <RestKit/RestKit.h>`
 1. Build the project to verify installation is successful.
 

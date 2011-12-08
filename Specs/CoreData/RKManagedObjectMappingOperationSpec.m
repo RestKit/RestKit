@@ -34,7 +34,7 @@
 
 @implementation RKManagedObjectMappingOperationSpec
 
-- (void)itShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate {
+- (void)testShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate {
     RKSpecNewManagedObjectStore();    
     RKManagedObjectMapping* managedMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     NSDictionary* sourceObject = [NSDictionary dictionary];
@@ -43,7 +43,7 @@
     assertThat(operation, is(instanceOf([RKManagedObjectMappingOperation class])));
 }
 
-- (void)itShouldOverloadInitializationOfRKObjectMappingOperationButReturnUnmanagedMappingOperationWhenAppropriate {
+- (void)testShouldOverloadInitializationOfRKObjectMappingOperationButReturnUnmanagedMappingOperationWhenAppropriate {
     RKObjectMapping* vanillaMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     NSDictionary* sourceObject = [NSDictionary dictionary];
     NSMutableDictionary* destinationObject = [NSMutableDictionary dictionary];
@@ -51,7 +51,7 @@
     assertThat(operation, is(instanceOf([RKObjectMappingOperation class])));
 }
 
-- (void)itShouldConnectRelationshipsByPrimaryKey {
+- (void)testShouldConnectRelationshipsByPrimaryKey {
     RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
     
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
@@ -80,7 +80,7 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)itShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths {
+- (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths {
     RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
     
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
@@ -109,7 +109,7 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)itShouldLoadNestedHasManyRelationship {  
+- (void)testShouldLoadNestedHasManyRelationship {  
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
@@ -128,7 +128,7 @@
     assertThatBool(success, is(equalToBool(YES)));
 }
 
-- (void)itShouldMapNullToAHasManyRelationship {
+- (void)testShouldMapNullToAHasManyRelationship {
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
     RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
@@ -147,7 +147,7 @@
     assertThat(human.cats, is(empty()));
 }
 
-- (void)itShouldLoadNestedHasManyRelationshipWithoutABackingClass {
+- (void)testShouldLoadNestedHasManyRelationshipWithoutABackingClass {
     RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* cloudMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCloud"];
     [cloudMapping mapAttributes:@"name", nil];
@@ -166,7 +166,7 @@
     assertThatBool(success, is(equalToBool(YES)));
 }
 
-- (void)itShouldConnectManyToManyRelationships {
+- (void)testShouldConnectManyToManyRelationships {
     RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class]];
     childMapping.primaryKeyAttribute = @"railsID";
@@ -194,7 +194,7 @@
     assertThatInt([[[parent.children anyObject] parents] count], is(equalToInt(1)));
 }
 
-- (void)itShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder {
+- (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder {
     RKSpecNewManagedObjectStore();
     RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class]];
     [parentMapping mapAttributes:@"parentID", nil];

@@ -6,7 +6,7 @@
 //  Copyright 2011 Two Toasters. All rights reserved.
 //
 
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 #import "RKCoreDataExample.h"
 
 @interface Article : NSManagedObject {

@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import "../Support/RKMIMETypes.h"
-#import "../Support/RKParser.h"
+#import "RKMIMETypes.h"
+#import "RKParser.h"
 
 /**
  The Parser Registry provides for the registration of RKParser classes

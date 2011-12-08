@@ -26,8 +26,8 @@
 #import "RKRequestQueue.h"
 #import "RKResponse.h"
 #import "RKNotifications.h"
-#import "../Support/RKLog.h"
-#import "../Support/RKFixCategoryBug.h"
+#import "RKLog.h"
+#import "RKFixCategoryBug.h"
 
 RK_FIX_CATEGORY_BUG(UIApplication_RKNetworkActivity)
 
@@ -195,7 +195,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 #if TARGET_OS_IPHONE
         if (self.showsNetworkActivityIndicatorWhenBusy) {
-            [[UIApplication sharedApplication] rk_pushNetworkActivity];
+            [[UIApplication sharedApplication] pushNetworkActivity];
         }
 #endif
     } else if (_loadingCount > 0 && count == 0) {
@@ -208,7 +208,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         
 #if TARGET_OS_IPHONE
         if (self.showsNetworkActivityIndicatorWhenBusy) {
-            [[UIApplication sharedApplication] rk_popNetworkActivity];
+            [[UIApplication sharedApplication] popNetworkActivity];
         }
 #endif
     }
@@ -490,48 +490,48 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 @implementation UIApplication (RKNetworkActivity)
 
-static NSInteger rk_networkActivityCount;
+static NSInteger networkActivityCount;
 
-- (NSInteger)rk_networkActivityCount {
+- (NSInteger)networkActivityCount {
     @synchronized(self) {
-        return rk_networkActivityCount;
+        return networkActivityCount;
     }
 }
 
-- (void)rk_refreshActivityIndicator {
+- (void)refreshActivityIndicator {
     if(![NSThread isMainThread]) {
-        SEL sel_refresh = @selector(rk_refreshActivityIndicator);
+        SEL sel_refresh = @selector(refreshActivityIndicator);
         [self performSelectorOnMainThread:sel_refresh withObject:nil waitUntilDone:NO];
         return;
     }
-    BOOL active = (self.rk_networkActivityCount > 0);
+    BOOL active = (self.networkActivityCount > 0);
     self.networkActivityIndicatorVisible = active;
 }
 
-- (void)rk_pushNetworkActivity {
+- (void)pushNetworkActivity {
     @synchronized(self) {
-        rk_networkActivityCount++;
+        networkActivityCount++;
     }
-    [self rk_refreshActivityIndicator];
+    [self refreshActivityIndicator];
 }
 
-- (void)rk_popNetworkActivity {
+- (void)popNetworkActivity {
     @synchronized(self) {
-        if (rk_networkActivityCount > 0) {
-            rk_networkActivityCount--;
+        if (networkActivityCount > 0) {
+            networkActivityCount--;
         } else {
-            rk_networkActivityCount = 0;
+            networkActivityCount = 0;
             RKLogError(@"Unbalanced network activity: count already 0.");
         }
     }
-    [self rk_refreshActivityIndicator];
+    [self refreshActivityIndicator];
 }
 
-- (void)rk_resetNetworkActivity {
+- (void)resetNetworkActivity {
     @synchronized(self) {
-        rk_networkActivityCount = 0;
+        networkActivityCount = 0;
     }
-    [self rk_refreshActivityIndicator];
+    [self refreshActivityIndicator];
 }
 
 @end

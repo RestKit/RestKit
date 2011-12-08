@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 12/1/10.
-//  Copyright 2010 Two Toasters
+//  Copyright 2010 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -29,12 +29,12 @@
  */
 @interface RKRequestQueue : NSObject {
     NSString *_name;
-	NSMutableArray* _requests;
-    NSObject<RKRequestQueueDelegate>* _delegate;
+	NSMutableArray *_requests;
+    NSObject<RKRequestQueueDelegate> *_delegate;
 	NSUInteger _loadingCount;
     NSUInteger _concurrentRequestsLimit;
 	NSUInteger _requestTimeout;
-	NSTimer*  _queueTimer;
+	NSTimer *_queueTimer;
 	BOOL _suspended;
     BOOL _showsNetworkActivityIndicatorWhenBusy;
 }
@@ -43,7 +43,7 @@
  A symbolic name for the queue. Used to return existing queue references
  via [RKRequestQueue queueWithName:]
  */
-@property (nonatomic, retain, readonly) NSString* name;
+@property (nonatomic, retain, readonly) NSString *name;
 
 /**
  * The delegate to inform when the request queue state machine changes
@@ -51,7 +51,7 @@
  * If the object implements the RKRequestQueueDelegate protocol,
  * it will receive request lifecycle event messages.
  */
-@property(nonatomic, assign) NSObject<RKRequestQueueDelegate>* delegate;
+@property(nonatomic, assign) id<RKRequestQueueDelegate> delegate;
 
 /**
  * The number of concurrent requests supported by this queue
@@ -101,7 +101,7 @@
  
  @see [RKClient requestQueue]
  */
-+ (RKRequestQueue*)sharedQueue DEPRECATED_ATTRIBUTE;
++ (RKRequestQueue *)sharedQueue DEPRECATED_ATTRIBUTE;
 
 /**
  Set the global queue
@@ -110,7 +110,7 @@
  
  @see [RKClient requestQueue]
  */
-+ (void)setSharedQueue:(RKRequestQueue*)requestQueue DEPRECATED_ATTRIBUTE;
++ (void)setSharedQueue:(RKRequestQueue *)requestQueue DEPRECATED_ATTRIBUTE;
 
 /**
  Returns a new auto-released request queue
@@ -121,34 +121,34 @@
  Returns a new retained request queue with the given name. If there is already
  an existing queue with the given name, nil will be returned.
  */
-+ (id)newRequestQueueWithName:(NSString*)name;
++ (id)newRequestQueueWithName:(NSString *)name;
 
 /**
  Returns queue with the specified name. If no queue is found with
  the name provided, a new queue will be initialized and returned.
  */
-+ (id)requestQueueWithName:(NSString*)name;
++ (id)requestQueueWithName:(NSString *)name;
 
 /**
  Returns YES when there is a queue with the given name
  */
-+ (BOOL)requestQueueExistsWithName:(NSString*)name;
++ (BOOL)requestQueueExistsWithName:(NSString *)name;
 
 /**
  * Add an asynchronous request to the queue and send it as
  * as soon as possible
  */
-- (void)addRequest:(RKRequest*)request;
+- (void)addRequest:(RKRequest *)request;
 
 /**
  * Cancel a request that is in progress
  */
-- (void)cancelRequest:(RKRequest*)request;
+- (void)cancelRequest:(RKRequest *)request;
 
 /**
  * Cancel all requests with a given delegate
  */
-- (void)cancelRequestsWithDelegate:(NSObject<RKRequestDelegate>*)delegate;
+- (void)cancelRequestsWithDelegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
  * Cancel all active or pending requests.
@@ -163,7 +163,7 @@
 /**
  * Returns YES if the specified request is in this queue
  */
-- (BOOL)containsRequest:(RKRequest*)request;
+- (BOOL)containsRequest:(RKRequest *)request;
 
 @end
 
@@ -171,53 +171,53 @@
  * Lifecycle events for RKRequestQueue
  *
  */
-@protocol RKRequestQueueDelegate
+@protocol RKRequestQueueDelegate <NSObject>
 @optional
 
 /**
  * Sent when the queue has been suspended and request processing has been halted
  */
-- (void)requestQueueWasSuspended:(RKRequestQueue*)queue;
+- (void)requestQueueWasSuspended:(RKRequestQueue *)queue;
 
 /**
  * Sent when the queue has been unsuspended and request processing has resumed
  */
-- (void)requestQueueWasUnsuspended:(RKRequestQueue*)queue;
+- (void)requestQueueWasUnsuspended:(RKRequestQueue *)queue;
 
 /**
  * Sent when the queue transitions from an empty state to processing requests
  */
-- (void)requestQueueDidBeginLoading:(RKRequestQueue*)queue;
+- (void)requestQueueDidBeginLoading:(RKRequestQueue *)queue;
 
 /**
  * Sent when queue transitions from a processing state to an empty start
  */
-- (void)requestQueueDidFinishLoading:(RKRequestQueue*)queue;
+- (void)requestQueueDidFinishLoading:(RKRequestQueue *)queue;
 
 /**
  * Sent before queue sends a request
  */
-- (void)requestQueue:(RKRequestQueue*)queue willSendRequest:(RKRequest*)request;
+- (void)requestQueue:(RKRequestQueue *)queue willSendRequest:(RKRequest *)request;
 
 /**
  * Sent after queue has sent a request
  */
-- (void)requestQueue:(RKRequestQueue*)queue didSendRequest:(RKRequest*)request;
+- (void)requestQueue:(RKRequestQueue *)queue didSendRequest:(RKRequest *)request;
 
 /**
  * Sent when queue received a response for a request
  */
-- (void)requestQueue:(RKRequestQueue*)queue didLoadResponse:(RKResponse*)response;
+- (void)requestQueue:(RKRequestQueue *)queue didLoadResponse:(RKResponse *)response;
 
 /**
  * Sent when queue has canceled a request
  */
-- (void)requestQueue:(RKRequestQueue*)queue didCancelRequest:(RKRequest*)request;
+- (void)requestQueue:(RKRequestQueue *)queue didCancelRequest:(RKRequest *)request;
 
 /**
  * Sent when an attempted request fails
  */
-- (void)requestQueue:(RKRequestQueue*)queue didFailRequest:(RKRequest*)request withError:(NSError*)error;
+- (void)requestQueue:(RKRequestQueue *)queue didFailRequest:(RKRequest *)request withError:(NSError *)error;
 
 @end
 
@@ -230,11 +230,11 @@
 
 @interface UIApplication (RKNetworkActivity)
 
-@property (nonatomic, assign, readonly) NSInteger rk_networkActivityCount;
+@property (nonatomic, assign, readonly) NSInteger networkActivityCount;
 
-- (void)rk_pushNetworkActivity;
-- (void)rk_popNetworkActivity;
-- (void)rk_resetNetworkActivity;
+- (void)pushNetworkActivity;
+- (void)popNetworkActivity;
+- (void)resetNetworkActivity;
 
 @end
 

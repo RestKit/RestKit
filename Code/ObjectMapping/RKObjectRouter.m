@@ -124,7 +124,7 @@
         return path;
     }
 
-    [NSException raise:nil format:@"Unable to find a routable path for object of type '%@' for HTTP Method '%@'", className, methodName];
+    [NSException raise:@"Unable to find a routable path for object" format:@"Unable to find a routable path for object of type '%@' for HTTP Method '%@'", className, methodName];
     
     return nil;
 }
