@@ -1,0 +1,25 @@
+Vendor::Spec.new do |s|
+
+  s.name         "RestKit"
+  s.version      "0.9.3"
+
+  s.authors      "Blake Watters"
+  s.email        "ludovic@me.com"
+  s.description  "RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X"
+
+  s.homepage     "http://www.restkit.org/"
+  s.source       "https://github.com/RestKit/RestKit.git"
+  s.docs         "http://restkit.org/api/"
+  
+  s.build_setting  :other_linker_flags, [ "-ObjC", "-all_load" ]
+    
+  s.framework      "CFNetwork.framework"
+  s.framework      "CoreData.framework"
+  s.framework      "Security.framework"
+  s.framework      "MobileCoreServices.framework"
+  s.framework      "SystemConfiguration.framework"
+  s.framework      "libxml2.dylib"
+  
+  s.files        `git ls-files`.split("\n")
+  
+end
