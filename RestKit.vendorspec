@@ -4,7 +4,7 @@ Vendor::Spec.new do |s|
   s.version      "0.9.3"
 
   s.authors      "Blake Watters"
-  s.email        "ludovic@me.com"
+  s.email        "blakewatters@gmail.com"
   s.description  "RestKit is a framework for consuming and modeling RESTful web resources on iOS and OS X"
 
   s.homepage     "http://www.restkit.org/"
