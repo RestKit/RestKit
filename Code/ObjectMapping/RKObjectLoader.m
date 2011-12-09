@@ -260,7 +260,7 @@
         return NO;
 	} else if (NO == [self canParseMIMEType:[self.response MIMEType]]) {
         // We can't parse the response, it's unmappable regardless of the status code
-        RKLogWarning(@"Encountered unexpected response with status code: %d (MIME Type: %@)", self.response.statusCode, self.response.MIMEType);
+        RKLogWarning(@"Encountered unexpected response with status code: %ld (MIME Type: %@)", (long) self.response.statusCode, self.response.MIMEType);
         NSError* error = [NSError errorWithDomain:RKRestKitErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
         if ([_delegate respondsToSelector:@selector(objectLoaderDidLoadUnexpectedResponse:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoaderDidLoadUnexpectedResponse:self];

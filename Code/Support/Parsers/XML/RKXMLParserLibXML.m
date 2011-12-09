@@ -123,7 +123,7 @@
     }
     /* Parse the string. */
     const char* buffer = [xml cStringUsingEncoding:NSUTF8StringEncoding];
-    doc = xmlParseMemory(buffer, strlen(buffer));
+    doc = xmlParseMemory(buffer, (int) strlen(buffer));
     
     /* check if parsing suceeded */
     if (doc == NULL) {

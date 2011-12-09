@@ -359,7 +359,7 @@ NSString* kTemporaryBackslashToken = @"/backslash/";
     NSString* value = [values objectAtIndex:ix];
 
     char argType[4];
-    method_getArgumentType(method, ix + 2, argType, sizeof(argType) / sizeof(argType[0]));
+    method_getArgumentType(method, (unsigned int) ix + 2, argType, sizeof(argType) / sizeof(argType[0]));
     SOCArgumentType type = SOCArgumentTypeForTypeAsChar(argType[0]);
 
     [self setArgument:value withType:type atIndex:ix forInvocation:invocation];

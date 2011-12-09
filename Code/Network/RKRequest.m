@@ -559,7 +559,7 @@
   	_isLoading = NO;
   	_isLoaded = YES;
     
-    RKLogInfo(@"Status Code: %d", [response statusCode]);
+    RKLogInfo(@"Status Code: %ld", (long) [response statusCode]);
     RKLogInfo(@"Body: %@", [response bodyAsString]);
 
 	RKResponse* finalResponse = response;

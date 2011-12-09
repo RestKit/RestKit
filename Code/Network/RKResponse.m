@@ -151,7 +151,7 @@ extern NSString* cacheURLKey;
 		[[challenge sender] useCredential:newCredential
 		       forAuthenticationChallenge:challenge];
 	} else {
-	    RKLogWarning(@"Failed authentication challenge after %d failures", [challenge previousFailureCount]);
+	    RKLogWarning(@"Failed authentication challenge after %ld failures", (long) [challenge previousFailureCount]);
 		[[challenge sender] cancelAuthenticationChallenge:challenge];
 	}
 }
@@ -186,7 +186,7 @@ extern NSString* cacheURLKey;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {	
-    RKLogDebug(@"NSHTTPURLResponse Status Code: %d", [response statusCode]);
+    RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long) [response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
 }

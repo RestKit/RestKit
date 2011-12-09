@@ -27,26 +27,6 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
-/**
- Progressively enhance the RKObjectMappingOperation base class to inject Core Data
- specifics without leaking into the object mapper abstractions
- */
-@implementation RKObjectMappingOperation (CoreData)
-
-/*
- Trampoline the initialization through RKManagedObjectMapping so the mapper uses RKManagedObjectMappingOperation
- at the right moments
- */
-+ (RKObjectMappingOperation*)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectMapping*)objectMapping {
-    if ([objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
-        return [[[RKManagedObjectMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectMapping] autorelease];
-    }
-        
-    return [[[RKObjectMappingOperation alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectMapping] autorelease];
-}
-
-@end
-
 @implementation RKManagedObjectMappingOperation
 
 // TODO: Move this to a better home to take exposure out of the mapper

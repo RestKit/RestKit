@@ -186,7 +186,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (void)setLoadingCount:(NSUInteger)count {
     if (_loadingCount == 0 && count > 0) {
-        RKLogTrace(@"Loading count increasing from 0 to %d. Firing requestQueueDidBeginLoading", count);
+        RKLogTrace(@"Loading count increasing from 0 to %ld. Firing requestQueueDidBeginLoading", (long) count);
         
         // Transitioning from empty to processing
         if ([_delegate respondsToSelector:@selector(requestQueueDidBeginLoading:)]) {
@@ -199,7 +199,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         }
 #endif
     } else if (_loadingCount > 0 && count == 0) {
-        RKLogTrace(@"Loading count decreasing from %d to 0. Firing requestQueueDidFinishLoading", _loadingCount);
+        RKLogTrace(@"Loading count decreasing from %ld to 0. Firing requestQueueDidFinishLoading", (long) _loadingCount);
         
         // Transition from processing to empty
         if ([_delegate respondsToSelector:@selector(requestQueueDidFinishLoading:)]) {
@@ -213,7 +213,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 #endif
     }
     
-    RKLogTrace(@"Loading count set to %d for queue %@", count, self);
+    RKLogTrace(@"Loading count set to %ld for queue %@", (long) count, self);
     _loadingCount = count;
 }
 
@@ -268,8 +268,8 @@ static const NSTimeInterval kFlushDelay = 0.3;
             }
 
             self.loadingCount = self.loadingCount + 1;
-            [request sendAsynchronously];            
-            RKLogDebug(@"Sent request %@ from queue %@. Loading count = %d of %d", request, self, self.loadingCount, _concurrentRequestsLimit);
+            [request sendAsynchronously];
+            RKLogDebug(@"Sent request %@ from queue %@. Loading count = %ld of %ld", request, self, (long) self.loadingCount, (long) _concurrentRequestsLimit);
 
             if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
                 [_delegate requestQueue:self didSendRequest:request];
@@ -349,7 +349,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         if (decrementCounter) {
             NSAssert(self.loadingCount > 0, @"Attempted to decrement loading count below zero");
             self.loadingCount = self.loadingCount - 1;
-            RKLogTrace(@"Decremented the loading count to %d", self.loadingCount);
+            RKLogTrace(@"Decremented the loading count to %ld", (long) self.loadingCount);
         }
         return YES;
     }
@@ -440,7 +440,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         
         if ([notification.name isEqualToString:RKRequestDidLoadResponseNotification]) {
             // We successfully loaded a response
-            RKLogDebug(@"Received response for request %@, removing from queue. (Now loading %d of %d)", request, _loadingCount, _concurrentRequestsLimit);
+            RKLogDebug(@"Received response for request %@, removing from queue. (Now loading %lu of %lu)", request, (unsigned long) _loadingCount, (unsigned long) _concurrentRequestsLimit);
             
             RKResponse* response = [userInfo objectForKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];                        
             if ([_delegate respondsToSelector:@selector(requestQueue:didLoadResponse:)]) {
@@ -451,8 +451,8 @@ static const NSTimeInterval kFlushDelay = 0.3;
             NSError* error = nil;
             if (userInfo) {
                 error = [userInfo objectForKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
-                RKLogDebug(@"Request %@ failed loading in queue %@ with error: %@.(Now loading %d of %d)", request, self, 
-                           [error localizedDescription], _loadingCount, _concurrentRequestsLimit);
+                RKLogDebug(@"Request %@ failed loading in queue %@ with error: %@.(Now loading %ld of %ld)", request, self, 
+                           [error localizedDescription], (long) _loadingCount, (long) _concurrentRequestsLimit);
             } else {
                 RKLogWarning(@"Received RKRequestDidFailWithErrorNotification without a userInfo, something is amiss...");
             }

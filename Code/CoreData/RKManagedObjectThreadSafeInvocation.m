@@ -33,7 +33,7 @@
         _argumentKeyPaths = [[NSMutableDictionary alloc] init];
     }
     
-    NSNumber* argumentIndex = [NSNumber numberWithInt:index];
+    NSNumber* argumentIndex = [NSNumber numberWithInteger:index];
     [_argumentKeyPaths setObject:keyPaths forKey:argumentIndex];
 }
 
