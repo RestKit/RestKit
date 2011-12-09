@@ -32,7 +32,8 @@ typedef enum RKOAuthClientErrors {
     RKOAuthClientErrorInvalidRequest            = 3004,     // 
     RKOAuthClientErrorUnsupportedGrantType      = 3005,     // 
     RKOAuthClientErrorInvalidScope              = 3006,     // 
-    RKOAuthClientErrorRequestError              = 3007      // 
+    RKOAuthClientErrorRequestError              = 3007,     //
+    RKOAuthClientErrorUnknownErrorDescription   = 0         // Error was encountered and error_description unknown
 } RKOAuthClientErrorCode;
 
 @protocol RKOAuthClientDelegate;
