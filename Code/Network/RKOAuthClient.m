@@ -92,7 +92,7 @@
             // Heads-up! There is an error in the response
             // The possible errors are defined in the OAuth2 Protocol
             
-            RKOAuthClientErrorCode errorCode;
+            RKOAuthClientErrorCode errorCode = RKOAuthClientErrorUnknownErrorResponse;
             NSString *errorDescription = [oauthResponse objectForKey:@"error_description"];
             
             if ([errorResponse isEqualToString:@"invalid_grant"]) {
