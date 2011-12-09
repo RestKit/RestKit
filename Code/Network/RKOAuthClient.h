@@ -26,19 +26,30 @@
  Defines error codes for OAuth client errors
  */
 typedef enum RKOAuthClientErrors {
-    RKOAuthClientErrorInvalidGrant              = 3001,     // An invalid authorization code was encountered
-    RKOAuthClientErrorUnauthorizedClient        = 3002,     // The client is not authorized to perform the action
-    RKOAuthClientErrorInvalidClient             = 3003,     // 
-    RKOAuthClientErrorInvalidRequest            = 3004,     // 
-    RKOAuthClientErrorUnsupportedGrantType      = 3005,     // 
-    RKOAuthClientErrorInvalidScope              = 3006,     // 
-    RKOAuthClientErrorRequestError              = 3007      // 
+    RKOAuthClientErrorInvalidGrant              = 3001,     /* An invalid authorization code was encountered */
+    RKOAuthClientErrorUnauthorizedClient        = 3002,     /* The client is not authorized to perform the action */
+    RKOAuthClientErrorInvalidClient             = 3003,     /* Client authentication failed (e.g. unknown client, no
+                                                               client authentication included, or unsupported
+                                                               authentication method). */
+    RKOAuthClientErrorInvalidRequest            = 3004,     /* The request is missing a required parameter, includes an
+                                                               unsupported parameter value, repeats a parameter,
+                                                               includes multiple credentials, utilizes more than one
+                                                               mechanism for authenticating the client, or is otherwise
+                                                               malformed. */
+    RKOAuthClientErrorUnsupportedGrantType      = 3005,     /* The authorization grant type is not supported by the authorization server. */
+    RKOAuthClientErrorInvalidScope              = 3006,     /* The requested scope is invalid, unknown, malformed, or exceeds the scope 
+                                                               granted by the resource owner. */
+    RKOAuthClientErrorRequestFailure            = 3007,     /* An underlying RKRequest failed due to an error. The userInfo dictionary
+                                                               will contain an NSUnderlyingErrorKey with the details of the failure */
+    RKOAuthClientErrorUnknown                   = 0         /* Error was encountered and error_description unknown */
 } RKOAuthClientErrorCode;
 
 @protocol RKOAuthClientDelegate;
 
 /**
  An OAuth client implementation used for OAuth 2 authorization code flow.
+ 
+ See http://tools.ietf.org/html/draft-ietf-oauth-v2-22
  */
 @interface RKOAuthClient : NSObject <RKRequestDelegate> {
 	NSString *_clientID;

@@ -92,7 +92,7 @@
             // Heads-up! There is an error in the response
             // The possible errors are defined in the OAuth2 Protocol
             
-            RKOAuthClientErrorCode errorCode;
+            RKOAuthClientErrorCode errorCode = RKOAuthClientErrorUnknown;
             NSString *errorDescription = [oauthResponse objectForKey:@"error_description"];
             
             if ([errorResponse isEqualToString:@"invalid_grant"]) {
@@ -167,7 +167,7 @@
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                               error, NSUnderlyingErrorKey, nil];
-    NSError *clientError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKOAuthClientErrorRequestError userInfo:userInfo];
+    NSError *clientError = [NSError errorWithDomain:RKRestKitErrorDomain code:RKOAuthClientErrorRequestFailure userInfo:userInfo];
     if ([self.delegate respondsToSelector:@selector(OAuthClient:didFailLoadingRequest:withError:)]) {
         [self.delegate OAuthClient:self didFailLoadingRequest:request withError:clientError];
     }
