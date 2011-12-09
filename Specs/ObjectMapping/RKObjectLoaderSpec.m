@@ -182,7 +182,7 @@
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
-    assertThatInt([responseLoader.objects count], is(equalToInt(1)));
+    assertThatUnsignedInteger([responseLoader.objects count], is(equalToInt(1)));
     RKSpecComplexUser* user = [responseLoader.objects lastObject];
     
     assertThat(user.firstname, is(equalTo(@"Diego")));
@@ -198,7 +198,7 @@
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
-    assertThatInt([responseLoader.objects count], is(equalToInt(1)));
+    assertThatUnsignedInteger([responseLoader.objects count], is(equalToInt(1)));
     RKSpecComplexUser* user = [responseLoader.objects lastObject];
     
     assertThat(user.firstname, is(equalTo(@"Diego")));

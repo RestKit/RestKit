@@ -25,6 +25,7 @@
 #import "RKLog.h"
 #import "RKPathMatcher.h"
 #import "NSString+RestKit.h"
+#import "RKDirectory.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -181,7 +182,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 - (NSString *)cachePath {
     NSString *cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
                                    [[NSURL URLWithString:self.baseURL] host]];
-    NSString *cachePath = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+    NSString *cachePath = [[RKDirectory cachesDirectory]
                            stringByAppendingPathComponent:cacheDirForClient];
     return cachePath;
 }

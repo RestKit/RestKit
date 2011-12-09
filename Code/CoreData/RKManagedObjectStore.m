@@ -22,6 +22,7 @@
 #import "RKAlert.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
+#import "RKDirectory.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -35,7 +36,6 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
 - (void)createPersistentStoreCoordinator;
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase;
-- (NSString *)applicationDataDirectory;
 - (NSManagedObjectContext*)newManagedObjectContext;
 @end
 
@@ -70,7 +70,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 		_storeFilename = [storeFilename retain];
 		
 		if (nilOrDirectoryPath == nil) {
-			nilOrDirectoryPath = [self applicationDataDirectory];
+			nilOrDirectoryPath = [RKDirectory applicationDataDirectory];
 		} else {
 			BOOL isDir;
 			NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:nilOrDirectoryPath isDirectory:&isDir] && isDir == YES, @"Specified storage directory exists", nilOrDirectoryPath);
@@ -323,64 +323,6 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 
 #pragma mark -
 #pragma mark Helpers
-
-/**
- Returns the path to the application's documents directory.
- */
-
-- (NSString *)applicationDataDirectory {	
-    
-#if TARGET_OS_IPHONE
-
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    if (basePath) {
-        // In unit tests the Documents/ path may not exist
-        if(! [[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
-            NSError* error = nil;
-            
-            if(! [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:NO attributes:nil error:&error]) {
-                NSLog(@"%@", error);
-            }
-        }
-        
-        return basePath;
-    }
-    
-    return nil;
-
-#else
-
-    NSFileManager* sharedFM = [NSFileManager defaultManager];
-    
-    NSArray* possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
-                                             inDomains:NSUserDomainMask];
-    NSURL* appSupportDir = nil;
-    NSURL* appDirectory = nil;
-    
-    if ([possibleURLs count] >= 1) {
-        appSupportDir = [possibleURLs objectAtIndex:0];
-    }
-    
-    if (appSupportDir) {
-        NSString *executableName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
-        appDirectory = [appSupportDir URLByAppendingPathComponent:executableName];
-        
-        
-        if(![sharedFM fileExistsAtPath:[appDirectory path]]) {
-            NSError* error = nil;
-            
-            if(![sharedFM createDirectoryAtURL:appDirectory withIntermediateDirectories:NO attributes:nil error:&error]) {
-                NSLog(@"%@", error);
-            }
-        }
-        return [appDirectory path];
-    }
-
-    return nil;
-#endif
-    
-}
 
 - (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
 	return [self.managedObjectContext objectWithID:objectID];

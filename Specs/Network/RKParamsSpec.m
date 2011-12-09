@@ -56,7 +56,7 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     [client post:@"/upload" params:params delegate:responseLoader];
     [responseLoader waitForResponse];
-    assertThatInt(responseLoader.response.statusCode, is(equalToInt(200)));
+    assertThatInteger(responseLoader.response.statusCode, is(equalToInt(200)));
 }
 
 - (void)testShouldUploadFilesViaRKParamsWithMixedTypes {
@@ -91,7 +91,7 @@
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     [client post:@"/upload" params:params delegate:responseLoader];
     [responseLoader waitForResponse];
-    assertThatInt(responseLoader.response.statusCode, is(equalToInt(200)));
+    assertThatInteger(responseLoader.response.statusCode, is(equalToInt(200)));
 }
 
 - (void)testShouldCalculateAnMD5ForTheParams {

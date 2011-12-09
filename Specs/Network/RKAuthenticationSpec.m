@@ -58,8 +58,8 @@ static NSString* const RKAuthenticationSpecPassword = @"authentication";
     [client get:@"/authentication/basic" delegate:loader];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(NO))); 
-    assertThatInt([loader.response statusCode], is(equalToInt(0)));
-    assertThatInt([loader.failureError code], is(equalToInt(NSURLErrorUserCancelledAuthentication)));
+    assertThatInteger([loader.response statusCode], is(equalToInt(0)));
+    assertThatInteger([loader.failureError code], is(equalToInt(NSURLErrorUserCancelledAuthentication)));
 }
 
 - (void)testShouldAuthenticateViaHTTPAuthDigest {

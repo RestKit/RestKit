@@ -81,7 +81,7 @@ RKManagedObjectStore* RKSpecNewManagedObjectStore(void) {
 
 void RKSpecClearCacheDirectory(void) {
     NSError* error = nil;
-    NSString* cachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString* cachePath = [RKDirectory cachesDirectory];
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
     if (success) {
         RKLogInfo(@"Cleared cache directory...");

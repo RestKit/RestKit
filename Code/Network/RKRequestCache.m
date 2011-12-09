@@ -67,7 +67,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 			if (!fileExists) {
 				NSError* error = nil;
 				BOOL created = [fileManager createDirectoryAtPath:path
-									  withIntermediateDirectories:NO
+									  withIntermediateDirectories:YES
 													   attributes:nil
 															error:&error];
 				if (!created || error != nil) {

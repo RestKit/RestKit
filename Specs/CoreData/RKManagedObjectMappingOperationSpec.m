@@ -188,10 +188,10 @@
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(parent.children, isNot(nilValue()));
-    assertThatInt([parent.children count], is(equalToInt(2)));
+    assertThatUnsignedInteger([parent.children count], is(equalToInt(2)));
     assertThat([[parent.children anyObject] parents], isNot(nilValue()));
     assertThatBool([[[parent.children anyObject] parents] containsObject:parent], is(equalToBool(YES)));
-    assertThatInt([[[parent.children anyObject] parents] count], is(equalToInt(1)));
+    assertThatUnsignedInteger([[[parent.children anyObject] parents] count], is(equalToInt(1)));
 }
 
 - (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder {

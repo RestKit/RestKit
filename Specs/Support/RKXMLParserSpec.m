@@ -62,7 +62,7 @@
     RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
     id result = [parser parseXML:data];
     NSArray* records = (NSArray*)[result valueForKeyPath:@"records.record"];
-    assertThatInt([records count], is(equalToInt(2)));
+    assertThatUnsignedInteger([records count], is(equalToInt(2)));
     id result1 = [records objectAtIndex:0];
     assertThat(NSStringFromClass([result1 class]), is(equalTo(@"__NSCFDictionary")));
     assertThatFloat([[result1 valueForKeyPath:@"float"] floatValue], is(equalToFloat(2.4f)));
@@ -81,9 +81,9 @@
     [provider setMapping:mapping forKeyPath:@"tabdata.item"];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:data mappingProvider:provider];
     RKObjectMappingResult* result = [mapper performMapping];
-    assertThatInt([[result asCollection] count], is(equalToInt(2)));
-    assertThatInt([[data valueForKeyPath:@"tabdata.title"] count], is(equalToInt(2)));
-    assertThatInt([[data valueForKeyPath:@"tabdata.item"] count], is(equalToInt(2)));
+    assertThatUnsignedInteger([[result asCollection] count], is(equalToInt(2)));
+    assertThatUnsignedInteger([[data valueForKeyPath:@"tabdata.title"] count], is(equalToInt(2)));
+    assertThatUnsignedInteger([[data valueForKeyPath:@"tabdata.item"] count], is(equalToInt(2)));
 }
 
 - (void)testShouldParseXMLWithAttributes {

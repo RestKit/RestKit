@@ -162,7 +162,7 @@
 	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
 	[loader waitForResponse];
 	NSArray* humans = (NSArray*) loader.objects;
-	assertThatInt([humans count], is(equalToInt(2)));	
+	assertThatUnsignedInteger([humans count], is(equalToInt(2)));	
 	assertThat([humans objectAtIndex:0], is(instanceOf([RKHuman class])));
 }
 

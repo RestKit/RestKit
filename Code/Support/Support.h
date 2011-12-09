@@ -25,3 +25,4 @@
 #import "NSString+RestKit.h"
 #import "RKPathMatcher.h"
 #import "RKDotNetDateFormatter.h"
+#import "RKDirectory.h"

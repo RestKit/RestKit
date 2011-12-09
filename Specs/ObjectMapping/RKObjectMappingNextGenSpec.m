@@ -360,7 +360,7 @@
     RKObjectMapper* mapper = [RKObjectMapper new];
     id userInfo = RKSpecParseFixture(@"users.json");
     NSArray* users = [mapper mapCollection:userInfo atKeyPath:@"" usingMapping:mapping];
-    assertThatInt([users count], is(equalToInt(3)));
+    assertThatUnsignedInteger([users count], is(equalToInt(3)));
     RKExampleUser* blake = [users objectAtIndex:0];
     assertThat(blake.name, is(equalTo(@"Blake Watters")));
     [mapper release];
@@ -390,7 +390,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:mockProvider];
     mapper.targetObject = [NSDictionary new];
     [mapper performMapping];
-    assertThatInt([mapper errorCount], is(equalToInt(1)));
+    assertThatUnsignedInteger([mapper errorCount], is(equalToInt(1)));
 }
 
 - (void)testShouldMapToATargetObject {
@@ -476,7 +476,7 @@
     RKObjectMappingResult* result = [mapper performMapping];
     NSArray* users = [result asCollection];
     assertThatBool([users isKindOfClass:[NSArray class]], is(equalToBool(YES)));
-    assertThatInt([users count], is(equalToInt(3)));
+    assertThatUnsignedInteger([users count], is(equalToInt(3)));
     RKExampleUser* user = [users objectAtIndex:0];
     assertThatBool([user isKindOfClass:[RKExampleUser class]], is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
@@ -496,7 +496,7 @@
     RKObjectMappingResult* result = [mapper performMapping];
     NSArray* users = [result asCollection];
     assertThatBool([users isKindOfClass:[NSArray class]], is(equalToBool(YES)));
-    assertThatInt([users count], is(equalToInt(2)));
+    assertThatUnsignedInteger([users count], is(equalToInt(2)));
     RKExampleUser* user = [users objectAtIndex:0];
     assertThatBool([user isKindOfClass:[RKExampleUser class]], is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"blake")));
@@ -521,7 +521,7 @@
     RKObjectMappingResult* result = [mapper performMapping];
     NSArray* users = [result asCollection];
     assertThatBool([users isKindOfClass:[NSArray class]], is(equalToBool(YES)));
-    assertThatInt([users count], is(equalToInt(2)));
+    assertThatUnsignedInteger([users count], is(equalToInt(2)));
     RKExampleUser* user = [users objectAtIndex:0];
     assertThatBool([user isKindOfClass:[RKExampleUser class]], is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"blake")));
@@ -559,13 +559,13 @@
     
     NSArray* groups = [result asCollection];
     assertThatBool([groups isKindOfClass:[NSArray class]], is(equalToBool(YES)));
-    assertThatInt([groups count], is(equalToInt(2)));
+    assertThatUnsignedInteger([groups count], is(equalToInt(2)));
     
     RKExampleGroupWithUserArray* group = [groups objectAtIndex:0];
     assertThatBool([group isKindOfClass:[RKExampleGroupWithUserArray class]], is(equalToBool(YES)));
     assertThat(group.name, is(equalTo(@"restkit")));
     NSArray * users = group.users;
-    assertThatInt([users count], is(equalToInt(2)));
+    assertThatUnsignedInteger([users count], is(equalToInt(2)));
     RKExampleUser* user = [users objectAtIndex:0];
     assertThatBool([user isKindOfClass:[RKExampleUser class]], is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"blake")));
@@ -579,7 +579,7 @@
     assertThatBool([group isKindOfClass:[RKExampleGroupWithUserArray class]], is(equalToBool(YES)));
     assertThat(group.name, is(equalTo(@"others")));
     users = group.users;
-    assertThatInt([users count], is(equalToInt(1)));
+    assertThatUnsignedInteger([users count], is(equalToInt(1)));
     user = [users objectAtIndex:0];
     assertThatBool([user isKindOfClass:[RKExampleUser class]], is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"bjorn")));
@@ -615,7 +615,7 @@
     
     NSArray* groups = [result asCollection];
     assertThatBool([groups isKindOfClass:[NSArray class]], is(equalToBool(YES)));
-    assertThatInt([groups count], is(equalToInt(2)));
+    assertThatUnsignedInteger([groups count], is(equalToInt(2)));
     
     RKExampleGroupWithUserSet* group = [groups objectAtIndex:0];
     assertThatBool([group isKindOfClass:[RKExampleGroupWithUserSet class]], is(equalToBool(YES)));
@@ -625,7 +625,7 @@
     NSSortDescriptor * sortByName =[[[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES] autorelease];
     NSArray * descriptors = [NSArray arrayWithObject:sortByName];;
     NSArray * users = [group.users sortedArrayUsingDescriptors:descriptors];
-    assertThatInt([users count], is(equalToInt(2)));
+    assertThatUnsignedInteger([users count], is(equalToInt(2)));
     RKExampleUser* user = [users objectAtIndex:0];
     assertThatBool([user isKindOfClass:[RKExampleUser class]], is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"blake")));
@@ -639,7 +639,7 @@
     assertThatBool([group isKindOfClass:[RKExampleGroupWithUserSet class]], is(equalToBool(YES)));
     assertThat(group.name, is(equalTo(@"others")));
     users = [group.users sortedArrayUsingDescriptors:descriptors];
-    assertThatInt([users count], is(equalToInt(1)));
+    assertThatUnsignedInteger([users count], is(equalToInt(1)));
     user = [users objectAtIndex:0];
     assertThatBool([user isKindOfClass:[RKExampleUser class]], is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"bjorn")));
@@ -702,8 +702,8 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     mapper.targetObject = [RKExampleUser user];
     [mapper performMapping];
-    assertThatInt([mapper errorCount], is(equalToInt(1)));
-    assertThatInt([[mapper.errors objectAtIndex:0] code], is(equalToInt(RKObjectMapperErrorObjectMappingTypeMismatch)));
+    assertThatUnsignedInteger([mapper errorCount], is(equalToInt(1)));
+    assertThatInteger([[mapper.errors objectAtIndex:0] code], is(equalToInt(RKObjectMapperErrorObjectMappingTypeMismatch)));
 }
 
 - (void)testShouldAddAnErrorWhenAttemptingToMapADictionaryWithoutAnObjectMapping {
@@ -711,7 +711,7 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
-    assertThatInt([mapper errorCount], is(equalToInt(1)));
+    assertThatUnsignedInteger([mapper errorCount], is(equalToInt(1)));
     assertThat([[mapper.errors objectAtIndex:0] localizedDescription], is(equalTo(@"Could not find an object mapping for keyPath: ''")));
 }
 
@@ -720,7 +720,7 @@
     id userInfo = RKSpecParseFixture(@"users.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
-    assertThatInt([mapper errorCount], is(equalToInt(1)));
+    assertThatUnsignedInteger([mapper errorCount], is(equalToInt(1)));
     assertThat([[mapper.errors objectAtIndex:0] localizedDescription], is(equalTo(@"Could not find an object mapping for keyPath: ''")));
 }
 
@@ -1097,9 +1097,8 @@
     
     NSDecimalNumber* weight = user.weight;
     assertThatBool([weight isKindOfClass:[NSDecimalNumber class]], is(equalToBool(YES)));
-    assertThatInt([weight compare:[NSDecimalNumber decimalNumberWithString:@"131.3"]], is(equalToInt(NSOrderedSame)));
+    assertThatInteger([weight compare:[NSDecimalNumber decimalNumberWithString:@"131.3"]], is(equalToInt(NSOrderedSame)));
 }
-
 
 - (void)testShouldMapANumberToAString {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
@@ -1128,7 +1127,7 @@
     
     NSDecimalNumber* weight = user.weight;
     assertThatBool([weight isKindOfClass:[NSDecimalNumber class]], is(equalToBool(YES)));
-    assertThatInt([weight compare:[NSDecimalNumber decimalNumberWithString:@"187"]], is(equalToInt(NSOrderedSame)));
+    assertThatInteger([weight compare:[NSDecimalNumber decimalNumberWithString:@"187"]], is(equalToInt(NSOrderedSame)));
 }
 
 - (void)testShouldMapANumberToADate {
@@ -1328,7 +1327,7 @@
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
-    assertThatInt([user.friends count], is(equalToInt(1)));
+    assertThatUnsignedInteger([user.friends count], is(equalToInt(1)));
 }
 
 - (void)testShouldMapANestedObjectCollection {
@@ -1347,7 +1346,7 @@
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friends, isNot(nilValue()));
-    assertThatInt([user.friends count], is(equalToInt(2)));
+    assertThatUnsignedInteger([user.friends count], is(equalToInt(2)));
     NSArray* names = [NSArray arrayWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
     assertThat([user.friends valueForKey:@"name"], is(equalTo(names)));
 }
@@ -1369,7 +1368,7 @@
     assertThat(user.name, is(equalTo(@"Blake Watters")));
     assertThat(user.friendsSet, isNot(nilValue()));
     assertThatBool([user.friendsSet isKindOfClass:[NSSet class]], is(equalToBool(YES)));
-    assertThatInt([user.friendsSet count], is(equalToInt(2)));
+    assertThatUnsignedInteger([user.friendsSet count], is(equalToInt(2)));
     NSSet* names = [NSSet setWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
     assertThat([user.friendsSet valueForKey:@"name"], is(equalTo(names)));
 }

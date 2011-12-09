@@ -193,7 +193,7 @@
 - (void)testShouldReturnTheQueueWithoutAModifiedRetainCount {
     RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images3"];
     assertThat(queue, isNot(nilValue()));
-    assertThatInt([queue retainCount], is(equalToInt(1)));
+    assertThatUnsignedInteger([queue retainCount], is(equalToInt(1)));
 }
 
 - (void)testShouldReturnYESWhenAQueueExistsWithAGivenName {
@@ -215,7 +215,7 @@
 - (void)testShouldReturnANewOwningReferenceViaNewRequestWithName {
     RKRequestQueue* requestQueue = [RKRequestQueue newRequestQueueWithName:@"Images6"];
     assertThat(requestQueue, isNot(nilValue()));
-    assertThatInt([requestQueue retainCount], is(equalToInt(1)));
+    assertThatUnsignedInteger([requestQueue retainCount], is(equalToInt(1)));
 }
 
 - (void)testShouldReturnNilIfNewRequestQueueWithNameIsCalledForAnExistingName {
@@ -233,7 +233,7 @@
     [queue addRequest:(RKRequest *)objectLoader];
     [queue start];
     [loader waitForResponse];
-    assertThatInt(queue.loadingCount, is(equalToInt(0)));
+    assertThatUnsignedInteger(queue.loadingCount, is(equalToInt(0)));
 }
 
 @end

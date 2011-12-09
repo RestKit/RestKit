@@ -85,7 +85,7 @@
     
     // Create 3 objects, we will expect 2 after the load
     [RKHuman truncateAll];    
-    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
+    assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
     RKHuman* blake = [RKHuman createEntity];
     blake.railsID = [NSNumber numberWithInt:123];
     RKHuman* other = [RKHuman createEntity];
@@ -93,7 +93,7 @@
     RKHuman* deleteMe = [RKHuman createEntity];
     deleteMe.railsID = [NSNumber numberWithInt:9999];
     [store save];
-    assertThatInt([RKHuman count:nil], is(equalToInt(3)));
+    assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(3)));
         
     RKObjectManager* objectManager = RKSpecNewObjectManager();
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
@@ -111,7 +111,7 @@
     [objectLoader send];
     [responseLoader waitForResponse];
     
-    assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+    assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(2)));
     assertThatBool([deleteMe isDeleted], is(equalToBool(YES)));
 }
 
