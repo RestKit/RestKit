@@ -23,28 +23,32 @@ RestKit utilizes the concepts of the Base URL and resource paths throughout the 
 
 Note that you can send *RKRequest* objects to arbitrary URL's by constructing them yourself.
 
-Dependencies
+Parsers
 -------------------------
 
-RestKit provides JSON parser implementations using JSONKit, SBJSON & YAJL. The recommended parser is JSONKit (as it is known to be the fastest JSON implementation available), but you may choose whatever parser you like and they can be changed at runtime.
+RestKit provides a pluggable parser interface configurable by MIME Type. The standard RestKit distribution includes two parsers:
 
-The sources for JSONKit, SBJSON and YAJL are included in the Vendor/ subdirectory. The headers are copied into the RestKit headers path at build time and can be imported into your project via:
+1. **RKJSONParserJSONKit** - A very fast JSON parser leveraging [JSONKit](http://github.com/johnezang/JSONKit)
+1. **RKXMLParserLibXML** - A custom LibXML2 based parser. Only provides parsing, not serialization.
 
-    #import <RestKit/Support/JSON/JSONKit/JSONKit.h>
-    #import <RestKit/Support/JSON/SBJSON/JSON.h>
-    #import <RestKit/Support/JSON/YAJL/YAJL.h>
+The JSONKit headers can be imported for direct use:
 
-Currently bundled version of these dependencies are:
+```objc
+    #import <RestKit/JSONKit.h>
+```
 
-* **JSONKit** - 1.4
-* **YAJLIOS** - 0.2.21
-* **SBJSON** - 2.3.1
+Additional parsers can be added to your RestKit application by linking the parsers into your application and configuring it to handle the appropriate
+MIME Type:
 
-If you currently link against or include JSONKit, SBJSON or YAJL in your project, you can disable the RKJSONParser targets and compile the appropriate RKJSONParser sources directly into your application.
+```objc
+    [[RKParserRegistry sharedRegistry] setParserClass:[SomeOtherParser class] forMIMEType:@"application/json"]];
+```
 
-XML parsing is supported via a custom, bundled parser written against LibXML.
+The RestKit project also provides optional additional parsers that can be installed separately from the main library:
 
-Additional parsing backend support is expected in future versions.
+1. [**RKJSONParserSBJSON**](https://github.com/RestKit/RKJSONParserSBJSON) - A JSON parser built on top of SBJSON
+1. [**RKJSONParserYAJL**](https://github.com/RestKit/RKJSONParserYAJL) - A JSON parser built on top of YAJL)
+1. [**RKJSONParserNXJSON**](https://github.com/RestKit/RKJSONParserNXJSON) - A JSON parser built on top of the Nextive JSON parser
 
 Documentation & Example Code
 -------------------------
