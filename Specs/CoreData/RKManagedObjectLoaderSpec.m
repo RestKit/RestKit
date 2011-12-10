@@ -103,6 +103,8 @@
     id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
     NSArray* fetchRequests = [NSArray arrayWithObject:[RKHuman fetchRequest]];
     [[[mockObjectCache expect] andReturn:fetchRequests] fetchRequestsForResourcePath:OCMOCK_ANY];
+    BOOL yes = YES;
+    [[[mockObjectCache stub] andReturnValue:OCMOCK_VALUE(yes)] shouldDeleteOrphanedObject:OCMOCK_ANY];
     objectManager.objectStore.managedObjectCache = mockObjectCache;
     
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
@@ -114,5 +116,52 @@
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(2)));
     assertThatBool([deleteMe isDeleted], is(equalToBool(YES)));
 }
+
+- (void)testShouldNotDeleteCertainObjectsMissingFromPayloadReturnedByObjectCache
+{
+  RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+  RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
+  [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
+  [humanMapping mapAttributes:@"name", nil];
+  humanMapping.primaryKeyAttribute = @"id";
+  
+  // Create 4 objects, we will expect 4 after the load
+  [RKHuman truncateAll];    
+  assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
+  RKHuman* blake = [RKHuman createEntity];
+  blake.railsID = [NSNumber numberWithInt:123];
+  RKHuman* other = [RKHuman createEntity];
+  other.railsID = [NSNumber numberWithInt:456];
+  RKHuman* doNotDeleteMe1 = [RKHuman createEntity];
+  doNotDeleteMe1.railsID = [NSNumber numberWithInt:9999];
+  RKHuman* doNotDeleteMe2 = [RKHuman createEntity];
+  doNotDeleteMe2.railsID = [NSNumber numberWithInt:1000];
+  [store save];
+  assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
+  
+  RKObjectManager* objectManager = RKSpecNewObjectManager();
+  [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
+  RKSpecStubNetworkAvailability(YES);
+  objectManager.objectStore = store;
+  
+  id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
+  NSArray* fetchRequests = [NSArray arrayWithObject:[RKHuman fetchRequest]];
+  [[[mockObjectCache expect] andReturn:fetchRequests] fetchRequestsForResourcePath:OCMOCK_ANY];
+  const BOOL no = NO;
+  [[[mockObjectCache stub] andReturnValue:OCMOCK_VALUE(no)] shouldDeleteOrphanedObject:OCMOCK_ANY];
+  objectManager.objectStore.managedObjectCache = mockObjectCache;
+  
+  RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+  responseLoader.timeout = 25;
+  RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/JSON/humans/all.json" objectManager:objectManager delegate:responseLoader]; 
+  [objectLoader send];
+  [responseLoader waitForResponse];
+    
+  NSArray* humans = [RKHuman findAll];
+  assertThatUnsignedInteger([humans count], is(equalToInt(4)));  
+  assertThatBool([doNotDeleteMe1 isDeleted], is(equalToBool(NO))); 
+  assertThatBool([doNotDeleteMe2 isDeleted], is(equalToBool(NO))); 
+}
+
 
 @end
