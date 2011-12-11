@@ -81,7 +81,7 @@
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
-    humanMapping.primaryKeyAttribute = @"id";
+    humanMapping.primaryKeyAttribute = @"railsID";
     
     // Create 3 objects, we will expect 2 after the load
     [RKHuman truncateAll];    
@@ -123,7 +123,7 @@
   RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
   [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
   [humanMapping mapAttributes:@"name", nil];
-  humanMapping.primaryKeyAttribute = @"id";
+  humanMapping.primaryKeyAttribute = @"railsID";
   
   // Create 4 objects, we will expect 4 after the load
   [RKHuman truncateAll];    
