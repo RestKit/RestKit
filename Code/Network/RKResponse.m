@@ -244,7 +244,7 @@ extern NSString* cacheURLKey;
     }
     id object = [parser objectFromString:[self bodyAsString] error:error];
     if (object == nil) {
-        if (*error) {
+        if (error && *error) {
             RKLogError(@"Unable to parse response body: %@", [*error localizedDescription]);
         }
         return nil;
