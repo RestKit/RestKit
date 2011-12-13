@@ -20,4 +20,14 @@
  */
 - (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath;
 
+@optional
+
+/**
+ * When the managed object cache is compared to objects from a resource path 
+ * payload, objects that are in the cache and not returned by the resource 
+ * path are normally deleted.  By returning NO from this method you can prevent
+ * the deletion of a given object.
+ */
+- (BOOL)shouldDeleteOrphanedObject:(NSManagedObject*)managedObject; 
+
 @end
