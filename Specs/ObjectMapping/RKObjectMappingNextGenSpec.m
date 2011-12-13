@@ -964,6 +964,8 @@
 #pragma mark - Attribute Mapping
 
 - (void)testShouldMapAStringToADateAttribute {
+    [RKObjectMapping setDefaultDateFormatters:nil];
+
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKExampleUser class]];
     RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addAttributeMapping:birthDateMapping];
