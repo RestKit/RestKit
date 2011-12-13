@@ -57,6 +57,11 @@ RKParserRegistry* gSharedRegistry;
     return [_MIMETypeToParserClasses objectForKey:MIMEType];
 }
 
+- (id<RKParser>)parserForResponse:(RKResponse *)response {
+    return [self parserForMIMEType:response.MIMEType];
+}
+
+
 - (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString*)MIMEType {
     [_MIMETypeToParserClasses setObject:parserClass forKey:MIMEType];
 }
@@ -68,6 +73,10 @@ RKParserRegistry* gSharedRegistry;
     }
     
     return nil;
+}
+
+- (Class<RKParser>)parserClassForResponse:(RKResponse *)response {
+    return [self parserClassForMIMEType:response.MIMEType];
 }
 
 - (void)autoconfigure {

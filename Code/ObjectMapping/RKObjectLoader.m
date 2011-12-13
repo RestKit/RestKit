@@ -153,7 +153,7 @@
 #pragma mark - Response Object Mapping
 
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject error:(NSError**)error {
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForResponse:self.response];
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
     
     // Check that there is actually content in the response body for mapping. It is possible to get back a 200 response
@@ -235,7 +235,7 @@
 }
 
 - (BOOL)canParseMIMEType:(NSString*)MIMEType {
-    if ([[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType]) {
+    if ([[RKParserRegistry sharedRegistry] parserForResponse:self.response]) {
         return YES;
     }
     

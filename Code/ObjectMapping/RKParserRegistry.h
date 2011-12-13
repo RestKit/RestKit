@@ -20,6 +20,7 @@
 
 #import "../Support/RKMIMETypes.h"
 #import "../Support/RKParser.h"
+#import "../Network/RKResponse.h"
 
 /**
  The Parser Registry provides for the registration of RKParser classes
@@ -49,6 +50,18 @@
  for a given MIME Type
  */
 - (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType;
+
+/**
+ Instantiate and return a Parser for the given Response
+ */
+- (id<RKParser>)parserForResponse:(RKResponse *)response;
+
+/**
+ Return the class registered for handling parser/encoder operations
+ for a given Response
+ */
+- (Class<RKParser>)parserClassForResponse:(RKResponse *)response;
+
 
 /**
  Registers an RKParser conformant class as the handler for the specified MIME Type
