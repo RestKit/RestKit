@@ -130,7 +130,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];
     
-    if ([sourceType isSubclassOfClass:[NSString class]]) {
+    if (!destinationType) {
+        if (value == [NSNull null] || value == nil) {
+            return [NSNumber numberWithInt:0];
+        } else {
+            return value;
+        }
+    } else if ([sourceType isSubclassOfClass:[NSString class]]) {
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
             // String -> Date
             return [self parseDateFromString:(NSString*)value];
@@ -281,13 +287,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     
     // Inspect the property type to handle any value transformations
     Class type = [self.objectMapping classForProperty:attributeMapping.destinationKeyPath];
-    if (type && NO == [[value class] isSubclassOfClass:type]) {
+    if (!type || NO == [[value class] isSubclassOfClass:type]) {
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
     }
     
     // Ensure that the value is different
     if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+        
+//        // If mapping to a scalar Foundation will automatically convert but will not deal with NSNull
+//        if (!type && [NSNull null] == value) value = nil;
         
         [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
         if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
