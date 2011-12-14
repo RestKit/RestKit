@@ -51,9 +51,7 @@ extern NSString* cacheURLKey;
 - (id)initWithRequest:(RKRequest*)request {
     self = [self init];
 	if (self) {
-		// We don't retain here as we're letting RKRequestQueue manage
-		// request ownership
-		_request = request;
+		_request = [request retain];
 	}
 
 	return self;
@@ -73,7 +71,7 @@ extern NSString* cacheURLKey;
 - (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
     self = [super init];
 	if (self) {
-		_request = request;
+		_request = [request retain];
 		_httpURLResponse = [URLResponse retain];
 		_failureError = [error retain];
         _body = [[NSMutableData dataWithData:body] retain];
@@ -84,6 +82,8 @@ extern NSString* cacheURLKey;
 }
 
 - (void)dealloc {
+	[_request release];
+	_request = nil;
 	[_httpURLResponse release];
 	_httpURLResponse = nil;
 	[_body release];
@@ -153,6 +153,9 @@ extern NSString* cacheURLKey;
 	} else {
 	    RKLogWarning(@"Failed authentication challenge after %ld failures", (long) [challenge previousFailureCount]);
 		[[challenge sender] cancelAuthenticationChallenge:challenge];
+		if ([[_request delegate] respondsToSelector:@selector(requestDidFailAuthenticationChallenge:)]) {
+			[[_request delegate] requestDidFailAuthenticationChallenge:_request];
+		}
 	}
 }
 
