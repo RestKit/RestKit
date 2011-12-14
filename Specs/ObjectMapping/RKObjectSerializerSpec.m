@@ -134,7 +134,11 @@
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     assertThat(error, is(nilValue()));
+    #if TARGET_OS_IPHONE
     assertThat(data, is(equalTo(@"key1-form-name=value1&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1")));
+    #else
+    assertThat(data, is(equalTo(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1")));
+    #endif
 }
 
 - (void)testShouldSerializeToJSON {
@@ -185,7 +189,13 @@
     
     NSString* data = [[[NSString alloc] initWithData:[serialization HTTPBody] encoding:NSUTF8StringEncoding] autorelease];
     data = [data stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
+    // Encodes differently on iOS / OS X
+    #if TARGET_OS_IPHONE
     assertThat(data, is(equalTo(@"{\"stringTest\":\"The string\",\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"}}")));
+    #else
+    assertThat(data, is(equalTo(@"{\"hasOne\":{\"date\":\"1970-01-01 00:00:00 +0000\"},\"stringTest\":\"The string\"}")));
+    #endif
 }
 
 - (void)testShouldEncloseTheSerializationInAContainerIfRequested {
