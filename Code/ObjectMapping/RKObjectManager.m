@@ -330,6 +330,46 @@ static RKObjectManager* sharedManager = nil;
 	return loader;
 }
 
+#pragma mark - Object Instance Loaders for Non-nested JSON with Specified Target Response Objects
+
+- (RKObjectLoader*)postObject:(id<NSObject>)object mapResponseToObject:(id<NSObject>)tgtObject withMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPOST delegate:delegate];
+    if ([tgtObject isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = tgtObject;
+    } else {
+        loader.targetObject = nil;
+    }
+	loader.objectMapping = objectMapping;
+    [loader send];
+	return loader;
+}
+
+- (RKObjectLoader*)putObject:(id<NSObject>)object mapResponseToObject:(id<NSObject>)tgtObject withMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodPUT delegate:delegate];
+    if ([tgtObject isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = tgtObject;
+    } else {
+        loader.targetObject = nil;
+    }
+    loader.objectMapping = objectMapping;
+	[loader send];
+	return loader;
+}
+
+- (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseToObject:(id<NSObject>)tgtObject withMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader* loader = [self objectLoaderForObject:object method:RKRequestMethodDELETE delegate:delegate];
+    if ([tgtObject isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = tgtObject;
+    } else {
+        loader.targetObject = nil;
+    }
+    loader.objectMapping = objectMapping;
+	[loader send];
+	return loader;
+}
+
+#pragma mark - Reqest Cache and Queue
+
 - (RKRequestCache *)requestCache {
     return self.client.requestCache;
 }
