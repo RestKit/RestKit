@@ -562,7 +562,18 @@
     assertThat([tableController.cellMappings cellMappingForClass:[RKSpecUser class]], is(nilValue()));
     RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping cellMapping];
     [tableController mapObjectsWithClass:[RKSpecUser class] toTableCellsWithMapping:cellMapping];
-    assertThat(cellMapping.reuseIdentifier, is(equalTo(@"RKSpecUser")));
+    assertThat(cellMapping.reuseIdentifier, is(equalTo(@"UITableViewCell")));
+}
+
+- (void)itShouldDefaultTheReuseIdentifierToTheNameOfTheObjectClassWhenCreatingMappingWithBlockSyntax {
+    RKTableControllerSpecTableViewController *viewController = [RKTableControllerSpecTableViewController new];
+    RKTableController *tableViewModel = [RKTableController tableControllerForTableViewController:viewController];
+    assertThat([tableViewModel.cellMappings cellMappingForClass:[RKSpecUser class]], is(nilValue()));
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+        cellMapping.cellClass = [RKSpecUserTableViewCell class];
+    }];
+    [tableViewModel mapObjectsWithClass:[RKSpecUser class] toTableCellsWithMapping:cellMapping];
+    assertThat(cellMapping.reuseIdentifier, is(equalTo(@"RKSpecUserTableViewCell")));
 }
 
 - (void)itShouldReturnTheObjectForARowAtIndexPath {

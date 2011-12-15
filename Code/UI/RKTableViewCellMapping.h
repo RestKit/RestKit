@@ -104,6 +104,14 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 @property (nonatomic, assign) UITableViewCellSelectionStyle selectionStyle;
 
 /**
+ Whether the tableController should call deselectRowAtIndexPath:animated:
+ on the tableView when a cell is selected.
+
+ @default YES
+ */
+@property (nonatomic, assign) BOOL deselectsRowOnSelection;
+
+/**
  The row height to use for cells created with this mapping.
  Use of this property requires that RKTableController instance you are
  using the mapping to build cells for has been configured with variableHeightRows = YES
