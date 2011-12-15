@@ -295,9 +295,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
         
-//        // If mapping to a scalar Foundation will automatically convert but will not deal with NSNull
-//        if (!type && [NSNull null] == value) value = nil;
-        
         [self.destinationObject setValue:value forKey:attributeMapping.destinationKeyPath];
         if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
