@@ -43,10 +43,6 @@
     }
     
     [_cellMappings setObject:cellMapping forKey:objectClass];
-
-    if (!cellMapping.reuseIdentifier) {
-        cellMapping.reuseIdentifier = NSStringFromClass(objectClass);
-    }
 }
 
 - (RKTableViewCellMapping*)cellMappingForClass:(Class)objectClass {
