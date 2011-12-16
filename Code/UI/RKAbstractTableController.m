@@ -465,13 +465,11 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         // TODO: Logging...
         cellMapping.onSelectCell();
     }
-    if (! cellMapping.onSelectCellForObjectAtIndexPath) {
-        RKLogTrace(@"%@: No onSelectCellForObjectAtIndexPath block handler configured on cellMapping %@ for object %@", self, cell, object);
-        return;
-    }
 
-    RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
-    cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
+    if (cellMapping.onSelectCellForObjectAtIndexPath) {
+        RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
+        cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
+    }
 
     if (cellMapping.deselectsRowOnSelection) {
         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
