@@ -249,8 +249,8 @@
         
         // use the suitable parameters dict
         NSDictionary *parameters = nil;
-        if ([self.params isKindOfClass:[RKParams class]])
-            parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
+        if ([self.params respondsToSelector:@selector(dictionaryForOAuthHmacSignature)])
+            parameters = [self.params dictionaryForOAuthHmacSignature];
         else 
             parameters = [_URL queryDictionary];
             

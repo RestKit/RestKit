@@ -74,4 +74,8 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKRequestSerialization)
 	return [[self URLEncodedString] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
+- (NSDictionary *)dictionaryForOAuthHmacSignature {
+    return self;
+}
+
 @end
