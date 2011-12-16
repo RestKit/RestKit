@@ -272,6 +272,16 @@
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
                                   tokenSecret:self.OAuth1AccessTokenSecret];
+        else if (self.method == RKRequestMethodDELETE)
+            echo = [GCOAuth URLRequestForPath:[_URL path]
+                                    urlMethod:@"DELETE"
+                                   parameters:parameters
+                                       scheme:[_URL scheme]
+                                         host:[_URL host]
+                                  consumerKey:self.OAuth1ConsumerKey
+                               consumerSecret:self.OAuth1ConsumerSecret
+                                  accessToken:self.OAuth1AccessToken
+                                  tokenSecret:self.OAuth1AccessTokenSecret];
         else
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                 GETParameters:[_URL queryDictionary]
