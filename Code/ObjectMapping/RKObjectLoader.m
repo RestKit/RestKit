@@ -203,11 +203,10 @@
 - (RKObjectMappingResult*)performMapping:(NSError**)error {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping should occur on a background thread");
     
-    // TODO: Assert that we are on the background thread
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         NSString* rootKeyPath = self.objectMapping.rootKeyPath ? self.objectMapping.rootKeyPath : @"";
-        RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider %@", (rootKeyPath ? @"for keyPath '%@'" : nil));
+        RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider for keyPath %@", rootKeyPath);
         mappingProvider = [[RKObjectMappingProvider new] autorelease];        
         [mappingProvider setMapping:self.objectMapping forKeyPath:rootKeyPath];
     } else {
