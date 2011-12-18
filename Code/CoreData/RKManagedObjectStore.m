@@ -365,11 +365,10 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         objects = [NSManagedObject executeFetchRequest:fetchRequest];
         RKLogInfo(@"Caching all %lu %@ objects to thread local storage", (unsigned long) [objects count], entity.name);
         NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-        BOOL coerceToString = [[[objects lastObject] valueForKey:primaryKeyAttribute] respondsToSelector:@selector(stringValue)];
         for (id theObject in objects) {			
             id attributeValue = [theObject valueForKey:primaryKeyAttribute];
             // Coerce to a string if possible
-            attributeValue = coerceToString ? [attributeValue stringValue] : attributeValue;
+            attributeValue = [[theObject valueForKey:primaryKeyAttribute] respondsToSelector:@selector(stringValue)] ? [attributeValue stringValue] : attributeValue;
             if (attributeValue) {
                 [dictionary setObject:theObject forKey:attributeValue];
             }
