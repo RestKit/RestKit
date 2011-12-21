@@ -108,8 +108,8 @@ typedef void(^RKFormBlock)();
 // TODO: Implement me...
 //- (BOOL)validate:(NSArray**)errors;
 
-- (void)willLoadInTableViewModel:(RKTableController *)tableController;
-- (void)didLoadInTableViewModel:(RKTableController *)tableController;
+- (void)willLoadInTableController:(RKTableController *)tableController;
+- (void)didLoadInTableController:(RKTableController *)tableController;
 
 // Sent from the form section
 - (void)formSection:(RKFormSection *)formSection didAddTableItem:(RKTableItem *)tableItem forAttributeAtKeyPath:(NSString *)attributeKeyPath;
