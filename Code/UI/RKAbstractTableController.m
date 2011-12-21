@@ -513,9 +513,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         RKTableViewCellMapping* cellMapping = [self cellMappingForObjectAtIndexPath:indexPath];
 
         if (cellMapping.heightOfCellForObjectAtIndexPath) {
-            UITableViewCell* cell = [self tableView:self.tableView cellForRowAtIndexPath:indexPath];
             id object = [self objectForRowAtIndexPath:indexPath];
-            CGFloat height = cellMapping.heightOfCellForObjectAtIndexPath(cell, object, indexPath);
+            CGFloat height = cellMapping.heightOfCellForObjectAtIndexPath(object, indexPath);
             RKLogTrace(@"Variable row height configured for tableView. Height via block invocation for row at indexPath '%@' = %f", indexPath, cellMapping.rowHeight);
             return height;
         } else {

@@ -24,7 +24,7 @@
 /** @name Cell Mapping Block Callbacks **/
 
 typedef void(^RKTableViewCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath* indexPath);
-typedef CGFloat(^RKTableViewHeightOfCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
+typedef CGFloat(^RKTableViewHeightOfCellForObjectAtIndexPathBlock)(id object, NSIndexPath *indexPath);
 typedef void(^RKTableViewAccessoryButtonTappedForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef NSString*(^RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef UITableViewCellEditingStyle(^RKTableViewEditingStyleForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);

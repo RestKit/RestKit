@@ -249,10 +249,10 @@
 
 #pragma mark - Subclass Hooks
 
-- (void)willLoadInTableViewModel:(RKTableController *)tableController {
+- (void)willLoadInTableController:(RKTableController *)tableController {
 }
 
-- (void)didLoadInTableViewModel:(RKTableController *)tableController {
+- (void)didLoadInTableController:(RKTableController *)tableController {
     _tableController = tableController;
 }
 

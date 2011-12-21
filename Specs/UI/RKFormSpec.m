@@ -53,10 +53,10 @@
 - (void)itShouldCommitValuesBackToTheFormObjectWithBuiltInTypes {
     RKMappableObject *mappableObject = [[RKMappableObject new] autorelease];
     RKForm *form = [RKForm formForObject:mappableObject usingBlock:^(RKForm *form) {
-        [form addRowForAttribute:@"stringTest" withControlType:RKFormControlTypeTextField block:^(RKControlTableItem *tableItem) {
+        [form addRowForAttribute:@"stringTest" withControlType:RKFormControlTypeTextField usingBlock:^(RKControlTableItem *tableItem) {
             tableItem.textField.text = @"testing 123";
         }];
-        [form addRowForAttribute:@"numberTest" withControlType:RKFormControlTypeSwitch block:^(RKControlTableItem *tableItem) {
+        [form addRowForAttribute:@"numberTest" withControlType:RKFormControlTypeSwitch usingBlock:^(RKControlTableItem *tableItem) {
             tableItem.switchControl.on = YES;
         }];
     }];
@@ -89,9 +89,9 @@
     RKTableItem *tableItem = [form.tableItems lastObject];
     RKFormSpecTableViewCell *cell = [[RKFormSpecTableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     cell.someTextProperty = @"testing 123";
-    id mockTableViewModel = [OCMockObject niceMockForClass:[RKTableController class]];
-    [[[mockTableViewModel expect] andReturn:cell] cellForObject:tableItem];
-    [form didLoadInTableViewModel:mockTableViewModel];
+    id mockTableController = [OCMockObject niceMockForClass:[RKTableController class]];
+    [[[mockTableController expect] andReturn:cell] cellForObject:tableItem];
+    [form didLoadInTableController:mockTableController];
     
     // Create a cell
     // Create a fake table view model
