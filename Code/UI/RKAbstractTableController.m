@@ -82,7 +82,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 @synthesize canMoveRows = _canMoveRows;
 @synthesize autoResizesForKeyboard = _autoResizesForKeyboard;
 @synthesize emptyItem = _emptyItem;
-@synthesize cellSelectionType = _cellSelectionType;
 
 @synthesize cellSwipeViewsEnabled = _cellSwipeViewsEnabled;
 @synthesize cellSwipeView = _cellSwipeView;
@@ -143,7 +142,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         _footerItems = [NSMutableArray new];
         _showsHeaderRowsWhenEmpty = YES;
         _showsFooterRowsWhenEmpty = YES;
-        _cellSelectionType = RKTableViewCellSelectionMomentary;
 
         // Setup autoRefreshRate to (effectively) never
         _autoRefreshFromNetwork = NO;
@@ -449,8 +447,9 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     NSAssert(theTableView == self.tableView, @"tableView:didSelectRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     
     RKLogTrace(@"%@: Row at indexPath %@ selected for tableView %@", self, indexPath, theTableView);
-    if (_cellSelectionType == RKTableViewCellSelectionMomentary)
-        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    // TODO: You may want to enable selection as an option... CellSelectionTypeMomentary???
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     
     id object = [self objectForRowAtIndexPath:indexPath];
     UITableViewCell* cell = [self cellForObjectAtIndexPath:indexPath];
