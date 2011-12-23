@@ -28,6 +28,7 @@ typedef UIView*(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUIntege
     NSFetchedResultsController* _fetchedResultsController;
     BOOL _showsSectionIndexTitles;
     NSArray* _arraySortedFetchedObjects;
+    BOOL _isEmptyBeforeAnimation;
 }
 
 @property (nonatomic, readonly) NSFetchedResultsController* fetchedResultsController;

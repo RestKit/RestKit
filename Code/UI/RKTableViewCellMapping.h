@@ -24,7 +24,7 @@
 /** @name Cell Mapping Block Callbacks **/
 
 typedef void(^RKTableViewCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath* indexPath);
-typedef CGFloat(^RKTableViewHeightOfCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
+typedef CGFloat(^RKTableViewHeightOfCellForObjectAtIndexPathBlock)(id object, NSIndexPath *indexPath);
 typedef void(^RKTableViewAccessoryButtonTappedForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef NSString*(^RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef UITableViewCellEditingStyle(^RKTableViewEditingStyleForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
@@ -102,6 +102,14 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
  @default UITableViewCellSelectionStyleBlue
  */
 @property (nonatomic, assign) UITableViewCellSelectionStyle selectionStyle;
+
+/**
+ Whether the tableController should call deselectRowAtIndexPath:animated:
+ on the tableView when a cell is selected.
+ 
+ @default YES
+ */
+@property (nonatomic, assign) BOOL deselectsRowOnSelection;
 
 /**
  The row height to use for cells created with this mapping.

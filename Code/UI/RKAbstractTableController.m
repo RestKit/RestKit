@@ -332,8 +332,14 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
     
-    UITableViewCell* cell = [cellMapping mappableObjectForData:self.tableView];
-    NSAssert(cell, @"Cell mapping failed to dequeue or allocatate a tableViewCell for object: %@", mappableObject);
+    // Return an existing cell or initialize a new one
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    if (! cell) {
+        cell = [cellMapping mappableObjectForData:self.tableView];
+    }
+    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
+    
+    // Map the object state into the cell
     RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
     NSError* error = nil;
     BOOL success = [mappingOperation performMapping:&error];
@@ -445,26 +451,27 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 - (void)tableView:(UITableView*)theTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(theTableView == self.tableView, @"tableView:didSelectRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
-    
     RKLogTrace(@"%@: Row at indexPath %@ selected for tableView %@", self, indexPath, theTableView);
-    // TODO: You may want to enable selection as an option... CellSelectionTypeMomentary???
-    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
     
     id object = [self objectForRowAtIndexPath:indexPath];
+    
+    // TODO: Should we just use [self.tableView cellForRowAtIndexPath:cell]; ???
     UITableViewCell* cell = [self cellForObjectAtIndexPath:indexPath];
     RKTableViewCellMapping* cellMapping = [_cellMappings cellMappingForObject:object];
+    
     if (cellMapping.onSelectCell) {
         // TODO: Logging...
         cellMapping.onSelectCell();
     }
-    if (! cellMapping.onSelectCellForObjectAtIndexPath) {
-        RKLogTrace(@"%@: No onSelectCellForObjectAtIndexPath block handler configured on cellMapping %@ for object %@", self, cell, object);
-        return;
+    
+    if (cellMapping.onSelectCellForObjectAtIndexPath) {
+        RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
+        cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
     }
-        
-    RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
-    cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
+    
+    if (cellMapping.deselectsRowOnSelection) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
 }
 
 - (void)tableView:(UITableView *)theTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -506,9 +513,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         RKTableViewCellMapping* cellMapping = [self cellMappingForObjectAtIndexPath:indexPath];
 
         if (cellMapping.heightOfCellForObjectAtIndexPath) {
-            UITableViewCell* cell = [self tableView:self.tableView cellForRowAtIndexPath:indexPath];
             id object = [self objectForRowAtIndexPath:indexPath];
-            CGFloat height = cellMapping.heightOfCellForObjectAtIndexPath(cell, object, indexPath);
+            CGFloat height = cellMapping.heightOfCellForObjectAtIndexPath(object, indexPath);
             RKLogTrace(@"Variable row height configured for tableView. Height via block invocation for row at indexPath '%@' = %f", indexPath, cellMapping.rowHeight);
             return height;
         } else {

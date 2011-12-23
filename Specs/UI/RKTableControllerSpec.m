@@ -18,7 +18,7 @@
 - (void)animationDidStopAddingSwipeView:(NSString*)animationID finished:(NSNumber*)finished context:(void*)context;
 @end
 
-@interface RKSpecTableViewModelDelegate : NSObject <RKTableControllerDelegate>
+@interface RKSpecTableControllerDelegate : NSObject <RKTableControllerDelegate>
 
 @property (nonatomic, assign) NSTimeInterval timeout;
 @property (nonatomic, assign) BOOL awaitingResponse;
@@ -27,7 +27,7 @@
 - (void)waitForLoad;
 @end
 
-@implementation RKSpecTableViewModelDelegate
+@implementation RKSpecTableControllerDelegate
 
 @synthesize timeout = _timeout;
 @synthesize awaitingResponse = _awaitingResponse;
@@ -182,7 +182,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -197,7 +197,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -212,7 +212,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -228,7 +228,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -244,7 +244,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -259,7 +259,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -279,7 +279,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -295,7 +295,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* referenceSection = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:referenceSection
@@ -315,7 +315,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:section
@@ -350,7 +350,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* referenceSection = [RKTableSection section];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:referenceSection
@@ -369,7 +369,7 @@
 - (void)itShouldRemoveAllSections {
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   didInsertSection:OCMOCK_ANY
@@ -562,7 +562,18 @@
     assertThat([tableController.cellMappings cellMappingForClass:[RKSpecUser class]], is(nilValue()));
     RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping cellMapping];
     [tableController mapObjectsWithClass:[RKSpecUser class] toTableCellsWithMapping:cellMapping];
-    assertThat(cellMapping.reuseIdentifier, is(equalTo(@"RKSpecUser")));
+    assertThat(cellMapping.reuseIdentifier, is(equalTo(@"UITableViewCell")));
+}
+
+- (void)itShouldDefaultTheReuseIdentifierToTheNameOfTheObjectClassWhenCreatingMappingWithBlockSyntax {
+    RKTableControllerSpecTableViewController *viewController = [RKTableControllerSpecTableViewController new];
+    RKTableController *tableController = [RKTableController tableControllerForTableViewController:viewController];
+    assertThat([tableController.cellMappings cellMappingForClass:[RKSpecUser class]], is(nilValue()));
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
+        cellMapping.cellClass = [RKSpecUserTableViewCell class];
+    }];
+    [tableController mapObjectsWithClass:[RKSpecUser class] toTableCellsWithMapping:cellMapping];
+    assertThat(cellMapping.reuseIdentifier, is(equalTo(@"RKSpecUserTableViewCell")));
 }
 
 - (void)itShouldReturnTheObjectForARowAtIndexPath {
@@ -675,7 +686,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate tableControllerDelegate];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate tableControllerDelegate];
     delegate.timeout = 10;
     tableController.delegate = delegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -796,7 +807,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    id mockDelegate = [OCMockObject partialMockForObject:[RKSpecTableViewModelDelegate new]];
+    id mockDelegate = [OCMockObject partialMockForObject:[RKSpecTableControllerDelegate new]];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidStartLoad:tableController];
     tableController.delegate = mockDelegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -818,7 +829,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidFinishLoad:tableController];
     tableController.delegate = mockDelegate;
@@ -841,7 +852,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController didFailLoadWithError:OCMOCK_ANY];
     tableController.delegate = mockDelegate;
@@ -865,7 +876,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     delegate.timeout = 5;
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidBecomeEmpty:tableController];
@@ -889,7 +900,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController willLoadTableWithObjectLoader:OCMOCK_ANY];
     tableController.delegate = mockDelegate;
@@ -912,7 +923,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController didLoadTableWithObjectLoader:OCMOCK_ANY];
     tableController.delegate = mockDelegate;
@@ -935,7 +946,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidCancelLoad:tableController];
     tableController.delegate = mockDelegate;
@@ -953,7 +964,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                      didEndEditing:OCMOCK_ANY
@@ -968,7 +979,7 @@
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   willBeginEditing:OCMOCK_ANY
@@ -983,7 +994,7 @@
     NSArray* objects = [NSArray arrayWithObject:@"first object"];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                    didInsertObject:@"first object"
@@ -1005,7 +1016,7 @@
     NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                    didInsertObject:@"first object"
@@ -1029,7 +1040,7 @@
     NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                    didInsertObject:@"first object"
@@ -1064,7 +1075,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidStartLoadNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidStartLoadNotification object:tableController];    
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     tableController.delegate = delegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
         objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKSpecUser class] usingBlock:^(RKObjectMapping* mapping) {
@@ -1089,7 +1100,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidFinishLoadNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidFinishLoadNotification object:tableController];    
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     tableController.delegate = delegate;
     
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -1115,7 +1126,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadErrorNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidLoadErrorNotification object:tableController userInfo:OCMOCK_ANY];    
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     tableController.delegate = delegate;
     
     [tableController loadTableFromResourcePath:@"/fail" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -1142,7 +1153,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadEmptyNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidLoadEmptyNotification object:tableController];    
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     tableController.delegate = delegate;
     [tableController loadTableFromResourcePath:@"/empty/array" usingBlock:^(RKObjectLoader* objectLoader) {
         objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKSpecUser class] usingBlock:^(RKObjectMapping* mapping) {
@@ -1672,7 +1683,7 @@
     RKTableItem* tableItem = [RKTableItem tableItem];
     [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
         cellMapping.rowHeight = 200;
-        cellMapping.heightOfCellForObjectAtIndexPath = ^ CGFloat(UITableViewCell* cell, id object, NSIndexPath* indexPath) { return 150; };
+        cellMapping.heightOfCellForObjectAtIndexPath = ^ CGFloat(id object, NSIndexPath* indexPath) { return 150; };
     }];
     CGFloat height = [tableController tableView:tableController.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThatFloat(height, is(equalToFloat(150)));
@@ -2008,7 +2019,7 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   willAddSwipeView:OCMOCK_ANY
@@ -2028,7 +2039,7 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKSpecTableViewModelDelegate* delegate = [RKSpecTableViewModelDelegate new];
+    RKSpecTableControllerDelegate* delegate = [RKSpecTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   willAddSwipeView:OCMOCK_ANY

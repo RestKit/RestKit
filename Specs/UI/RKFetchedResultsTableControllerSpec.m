@@ -103,6 +103,16 @@
     objectManager.objectStore.managedObjectCache = mockObjectCache;
 }
 
+- (void)stubObjectManagerToOnline {
+    RKObjectManager *objectManager = [RKObjectManager sharedManager];
+    id mockManager = [OCMockObject partialMockForObject:objectManager];
+    [mockManager setExpectationOrderMatters:YES];
+    RKObjectManagerNetworkStatus networkStatus = RKObjectManagerNetworkStatusOnline;
+    [[[mockManager stub] andReturnValue:OCMOCK_VALUE(networkStatus)] networkStatus];
+    BOOL online = YES; // Initial online state for table
+    [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
+}
+
 - (void)itShouldLoadWithATableViewControllerAndResourcePath {
     [self bootstrapStoreAndCache];
     UITableView* tableView = [UITableView new];
@@ -456,6 +466,7 @@
 
 - (void)itShouldFireADeleteRequestWhenTheCanEditRowsPropertyIsSet {
     [self bootstrapStoreAndCache];
+    [self stubObjectManagerToOnline];
     [[RKObjectManager sharedManager].router routeClass:[RKHuman class]
                                         toResourcePath:@"/humans/(railsID)"
                                              forMethod:RKRequestMethodDELETE];
@@ -495,6 +506,8 @@
 
 - (void)itShouldLocallyCommitADeleteWhenTheCanEditRowsPropertyIsSet {
     [self bootstrapStoreAndCache];
+    [self stubObjectManagerToOnline];
+    
     UITableView* tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController* tableController =
@@ -530,6 +543,8 @@
 
 - (void)itShouldNotCommitADeletionWhenTheCanEditRowsPropertyIsNotSet {
     [self bootstrapStoreAndCache];
+    [self stubObjectManagerToOnline];
+    
     UITableView* tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController* tableController =
@@ -557,6 +572,8 @@
 
 - (void)itShouldDoNothingToCommitAnInsertionWhenTheCanEditRowsPropertyIsSet {
     [self bootstrapStoreAndCache];
+    [self stubObjectManagerToOnline];
+    
     UITableView* tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController* tableController =
@@ -1297,14 +1314,7 @@
 
 - (void)itShouldShowTheEmptyImageAfterLoadingAnEmptyCollectionIntoAnEmptyFetch {
     [self bootstrapEmptyStoreAndCache];
-    
-    RKObjectManager *objectManager = [RKObjectManager sharedManager];
-    id mockManager = [OCMockObject partialMockForObject:objectManager];
-    [mockManager setExpectationOrderMatters:YES];
-    RKObjectManagerNetworkStatus networkStatus = RKObjectManagerNetworkStatusOnline;
-    [[[mockManager stub] andReturnValue:OCMOCK_VALUE(networkStatus)] networkStatus];
-    BOOL online = YES; // Initial online state for table
-    [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
+    [self stubObjectManagerToOnline];
     
     UITableView* tableView = [UITableView new];
     

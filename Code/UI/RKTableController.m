@@ -255,7 +255,7 @@
     // The form replaces the content in the table
     [self removeAllSections:NO];
     
-    [form willLoadInTableViewModel:self];
+    [form willLoadInTableController:self];
     for (RKFormSection *section in form.sections) {
         NSUInteger sectionIndex = [form.sections indexOfObject:section];
         section.objects = [self objectsWithHeaderAndFooters:section.objects forSection:sectionIndex];
@@ -269,7 +269,7 @@
 //    }
     
     [self didFinishLoad];
-    [form didLoadInTableViewModel:self];
+    [form didLoadInTableController:self];
 }
 
 #pragma mark - UITableViewDataSource methods

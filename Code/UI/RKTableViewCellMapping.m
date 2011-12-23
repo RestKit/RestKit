@@ -92,6 +92,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 @synthesize editingStyleForObjectAtIndexPath = _editingStyleForObjectAtIndexPath;
 @synthesize targetIndexPathForMove = _targetIndexPathForMove;
 @synthesize rowHeight = _rowHeight;
+@synthesize deselectsRowOnSelection = _deselectsRowOnSelection;
 
 // TODO: Figure out nib support...
 
@@ -113,6 +114,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
         self.accessoryType = UITableViewCellAccessoryNone;
         self.selectionStyle = UITableViewCellSelectionStyleBlue;
         self.rowHeight = 44; // TODO: Should row height be an informal protocol on cells???
+        self.deselectsRowOnSelection = YES;
         _prepareCellBlocks = [NSMutableArray new];
     }
     
@@ -207,6 +209,10 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 
 - (Class)cellClass {
     return [self objectClass];
+}
+
+- (NSString *)reuseIdentifier {
+    return _reuseIdentifier ? _reuseIdentifier : NSStringFromClass(self.objectClass);
 }
 
 #pragma mark - Control Action Helpers
