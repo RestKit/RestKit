@@ -82,7 +82,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 @synthesize canMoveRows = _canMoveRows;
 @synthesize autoResizesForKeyboard = _autoResizesForKeyboard;
 @synthesize emptyItem = _emptyItem;
-@synthesize cellSelectionType = _cellSelectionType;
 
 @synthesize cellSwipeViewsEnabled = _cellSwipeViewsEnabled;
 @synthesize cellSwipeView = _cellSwipeView;
@@ -143,7 +142,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         _footerItems = [NSMutableArray new];
         _showsHeaderRowsWhenEmpty = YES;
         _showsFooterRowsWhenEmpty = YES;
-        _cellSelectionType = RKTableViewCellSelectionMomentary;
 
         // Setup autoRefreshRate to (effectively) never
         _autoRefreshFromNetwork = NO;

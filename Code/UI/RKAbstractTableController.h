@@ -57,12 +57,6 @@ extern NSString* const RKTableControllerDidBecomeOnline;
 /** Posted when the table view model has transitioned from online to offline */
 extern NSString* const RKTableControllerDidBecomeOffline;
 
-/** Used in to change the mode of the controller's table cell selection/deselection */
-typedef enum {
-    RKTableViewCellSelectionMomentary = 0,
-    RKTableViewCellSelectionFixed = 1
-} RKTableViewCellSelectionType;
-
 @protocol RKTableControllerDelegate;
 
 /**
@@ -93,7 +87,6 @@ typedef enum {
 @property (nonatomic, assign)   BOOL canEditRows;
 @property (nonatomic, assign)   BOOL canMoveRows;
 @property (nonatomic, assign)   BOOL autoResizesForKeyboard;
-@property (nonatomic, assign)   RKTableViewCellSelectionType cellSelectionType;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Instantiation
