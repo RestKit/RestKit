@@ -11,6 +11,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKManagedObjectMapping.h"
 #import "RKHuman.h"
+#import "RKEvent.h"
 #import "RKManagedObjectCache.h"
 #import "RKAbstractTableController_Internals.h"
 
@@ -82,6 +83,35 @@
     objectManager.objectStore.managedObjectCache = mockObjectCache;
 }
 
+- (void)bootstrapNakedObjectStoreAndCache {
+    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping *eventMapping = [RKManagedObjectMapping mappingForClass:[RKEvent class] inManagedObjectStore:store];
+    [eventMapping mapKeyPath:@"event_id" toAttribute:@"eventID"];
+    [eventMapping mapKeyPath:@"type" toAttribute:@"eventType"];
+    [eventMapping mapAttributes:@"location", @"summary", nil];
+    eventMapping.primaryKeyAttribute = @"eventID";
+    [RKEvent truncateAll];
+
+    assertThatInt([RKEvent count:nil], is(equalToInt(0)));
+    RKEvent *nakedEvent = [RKEvent createEntity];
+    nakedEvent.eventID = @"RK4424";
+    nakedEvent.eventType = @"Concert";
+    nakedEvent.location = @"Performance Hall";
+    nakedEvent.summary = @"Shindig";
+    NSError* error = [store save];
+    assertThat(error, is(nilValue()));
+    assertThatInt([RKEvent count:nil], is(equalToInt(1)));
+
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.mappingProvider addObjectMapping:eventMapping];
+    objectManager.objectStore = store;
+
+    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
+    [[[mockObjectCache stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
+    objectManager.objectStore.managedObjectCache = mockObjectCache;
+}
+
 - (void)bootstrapEmptyStoreAndCache {
     RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
     RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
@@ -127,6 +157,32 @@
     assertThat(tableController.tableView, is(equalTo(tableView)));
     assertThat(tableController.resourcePath, is(equalTo(@"/JSON/humans/all.json")));
 }
+
+- (void)itShouldLoadWithATableViewControllerAndResourcePathFromNakedObjects {
+    [self bootstrapNakedObjectStoreAndCache];
+    UITableView* tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController* tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.resourcePath = @"/JSON/NakedEvents.json";
+    [tableController setObjectMappingForClass:[RKEvent class]];
+    [tableController loadTable];
+
+    assertThat(tableController.viewController, is(equalTo(viewController)));
+    assertThat(tableController.tableView, is(equalTo(tableView)));
+    assertThat(tableController.resourcePath, is(equalTo(@"/JSON/NakedEvents.json")));
+
+    RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping mappingForClass:[UITableViewCell class]];
+    [cellMapping mapKeyPath:@"summary" toAttribute:@"textLabel.text"];
+    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
+    [mappings setCellMapping:cellMapping forClass:[RKEvent class]];
+    tableController.cellMappings = mappings;
+
+    UITableViewCell* cell = [tableController tableView:tableController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    assertThat(cell.textLabel.text, is(equalTo(@"Shindig")));
+}
+
 
 - (void)itShouldLoadWithATableViewControllerAndResourcePathAndPredicateAndSortDescriptors {
     [self bootstrapStoreAndCache];
