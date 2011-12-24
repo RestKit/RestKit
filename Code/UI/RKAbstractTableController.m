@@ -747,6 +747,9 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [self updateOfflineImageForOnlineState:[self isOnline]];
 
     [self resetOverlayView];
+
+    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinishFinalLoad:)])
+        [_delegate performSelector:@selector(tableControllerDidFinishFinalLoad:)];
 }
 
 #pragma mark - Table Overlay Views
