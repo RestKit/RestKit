@@ -44,6 +44,7 @@ typedef UIView*(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUIntege
 @property (nonatomic, assign) SEL sortSelector;
 @property (nonatomic, copy) NSComparator sortComparator;
 
+- (void)setObjectMappingForClass:(Class)objectClass;
 - (void)loadTable;
 - (void)loadTableFromNetwork;
 - (NSIndexPath *)indexPathForObject:(id)object;
