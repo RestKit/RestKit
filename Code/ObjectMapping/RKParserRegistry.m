@@ -43,6 +43,7 @@ RKParserRegistry* gSharedRegistry;
     self = [super init];
     if (self) {
         _MIMETypeToParserClasses = [[NSMutableDictionary alloc] init];
+        _MIMETypeToParserClassesRegularExpressions = [[NSMutableArray alloc] init];
     }
     
     return self;
@@ -50,15 +51,33 @@ RKParserRegistry* gSharedRegistry;
 
 - (void)dealloc {
     [_MIMETypeToParserClasses release];
+	[_MIMETypeToParserClassesRegularExpressions release];
     [super dealloc];
 }
 
 - (Class<RKParser>)parserClassForMIMEType:(NSString*)MIMEType {
-    return [_MIMETypeToParserClasses objectForKey:MIMEType];
+	id parserClass = [_MIMETypeToParserClasses objectForKey:MIMEType];
+	if (!parserClass)
+	{
+		for (NSArray *regexAndClass in _MIMETypeToParserClassesRegularExpressions) {
+			NSRegularExpression *regex = [regexAndClass objectAtIndex:0];
+			NSUInteger numberOfMatches = [regex numberOfMatchesInString:MIMEType options:0 range:NSMakeRange(0, [MIMEType length])];
+			if (numberOfMatches) {
+				parserClass = [regexAndClass objectAtIndex:1];
+				break;
+			}
+		}
+	}
+	return parserClass;
 }
 
 - (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString*)MIMEType {
     [_MIMETypeToParserClasses setObject:parserClass forKey:MIMEType];
+}
+
+- (void)setParserClass:(Class<RKParser>)parserClass forMIMETypeRegex:(NSRegularExpression *)MIMETypeExpression {
+	NSArray *expressionAndClass = [NSArray arrayWithObjects:MIMETypeExpression, parserClass, nil];
+    [_MIMETypeToParserClassesRegularExpressions addObject:expressionAndClass];
 }
 
 - (id<RKParser>)parserForMIMEType:(NSString*)MIMEType {
