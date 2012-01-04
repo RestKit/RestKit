@@ -63,6 +63,17 @@
 	return self;
 }
 
+- (NSString *)host{
+    NSString* hostWithPort;
+    if ( ![super port] ){
+        hostWithPort = [super host];
+    } else {
+        hostWithPort = [NSString stringWithFormat:@"%@:%@", [super host], [super port]];
+    }
+    return hostWithPort;
+    
+}
+
 - (void)dealloc {
 	[_baseURLString release];
 	_baseURLString = nil;
