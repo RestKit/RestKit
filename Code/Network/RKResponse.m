@@ -183,7 +183,6 @@ extern NSString* cacheURLKey;
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	[_body appendData:data];
-    [_request invalidateTimeoutTimer];
     if ([[_request delegate] respondsToSelector:@selector(request:didReceivedData:totalBytesReceived:totalBytesExectedToReceive:)]) {
         [[_request delegate] request:_request didReceivedData:[data length] totalBytesReceived:[_body length] totalBytesExectedToReceive:_httpURLResponse.expectedContentLength];
     }
@@ -193,6 +192,7 @@ extern NSString* cacheURLKey;
     RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long) [response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
+    [_request invalidateTimeoutTimer];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -203,6 +203,7 @@ extern NSString* cacheURLKey;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
 	[_request didFailLoadWithError:_failureError];
+    [_request invalidateTimeoutTimer];
 }
 
 - (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
