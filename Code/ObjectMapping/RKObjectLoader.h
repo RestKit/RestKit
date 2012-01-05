@@ -22,8 +22,9 @@
 #import "RKObjectMapping.h"
 #import "RKObjectMappingResult.h"
 
-@class RKObjectManager;
+@class RKObjectMappingProvider;
 @class RKObjectLoader;
+@class RKObjectManager;
 
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
@@ -109,7 +110,7 @@
  * includes Core Data specific mapping logic.
  */
 @interface RKObjectLoader : RKRequest {	
-    RKObjectManager* _objectManager;
+    RKObjectMappingProvider *_mappingProvider;
     RKResponse* _response;
     RKObjectMapping* _objectMapping;
     RKObjectMappingResult* _result;
@@ -136,7 +137,10 @@
  * The object manager that initialized this loader. The object manager is responsible
  * for supplying the mapper and object store used after HTTP transport is completed
  */
-@property (nonatomic, readonly) RKObjectManager* objectManager;
+//@property (nonatomic, readonly) RKObjectManager* objectManager;
+
+// TODO: Comment...
+@property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
 /**
  * The underlying response object for this loader
@@ -159,7 +163,6 @@
  *
  * @see RKObjectMappingProvider
  */
-// TODO: Rename to requestMapping?
 @property (nonatomic, retain) RKObjectMapping* serializationMapping;
 
 /**
@@ -193,12 +196,14 @@
  * specifies the remote location to load data from, while the object manager is responsible for supplying
  * mapping and persistence details.
  */
-+ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate;
++ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+
+- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 /**
  * Initialize a new object loader with an object manager, a request, and a delegate
  */
-- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate;				
+- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 /**
  * Handle an error in the response preventing it from being mapped, called from -isResponseMappable

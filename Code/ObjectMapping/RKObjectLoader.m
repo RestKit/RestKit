@@ -40,7 +40,7 @@
 
 @implementation RKObjectLoader
 
-@synthesize objectManager = _objectManager, response = _response;
+@synthesize mappingProvider = _mappingProvider, response = _response;
 @synthesize targetObject = _targetObject, objectMapping = _objectMapping;
 @synthesize result = _result;
 @synthesize serializationMapping = _serializationMapping;
@@ -53,17 +53,25 @@
 
 - (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate {
 	if ((self = [super initWithURL:[objectManager.client URLForResourcePath:resourcePath] delegate:delegate])) {		
-        _objectManager = objectManager;
-        [self.objectManager.client setupRequest:self];
+        _mappingProvider = [objectManager.mappingProvider retain];
+        [objectManager.client setupRequest:self];
 	}
 
 	return self;
 }
 
-- (void)dealloc {
-    // Weak reference
-    _objectManager = nil;
+- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
+    self = [super initWithURL:URL];
+    if (self) {
+        _mappingProvider = [mappingProvider retain];
+    }
     
+    return self;
+}
+
+- (void)dealloc {
+    [_mappingProvider release];
+    _mappingProvider = nil;
     [_sourceObject release];
     _sourceObject = nil;
 	[_targetObject release];
@@ -211,7 +219,7 @@
         [mappingProvider setMapping:self.objectMapping forKeyPath:rootKeyPath];
     } else {
         RKLogDebug(@"No object mapping provider, using mapping provider from parent object manager to perform KVC mapping");
-        mappingProvider = self.objectManager.mappingProvider;
+        mappingProvider = self.mappingProvider;
     }
     
     return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject error:error];
@@ -285,7 +293,7 @@
     // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
     // target object
     NSError* error = nil;
-    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.objectManager.mappingProvider toObject:nil error:&error];
+    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.mappingProvider toObject:nil error:&error];
     if (result) {
         error = [result asError];
     } else {

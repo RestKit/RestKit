@@ -143,6 +143,7 @@ static RKObjectManager* sharedManager = nil;
     if (self.objectStore && managedObjectLoaderClass) {
         objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
     } else {
+        // TODO: add newPaginator and newObjectLoader methods to RKObjectManager???
         objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
     }	
     

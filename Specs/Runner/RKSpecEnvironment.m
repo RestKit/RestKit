@@ -24,13 +24,17 @@
 
 NSString* RKSpecMIMETypeForFixture(NSString* fileName);
 
-NSString* RKSpecGetBaseURL(void) {
+NSString* RKSpecGetBaseURLString(void) {
     char* ipAddress = getenv("RESTKIT_IP_ADDRESS");
     if (NULL == ipAddress) {
         ipAddress = "127.0.0.1";
     }
     
     return [NSString stringWithFormat:@"http://%s:4567", ipAddress];
+}
+
+NSURL* RKSpecGetBaseURL(void) {
+    return [NSURL URLWithString:RKSpecGetBaseURLString()];
 }
 
 void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
@@ -42,7 +46,7 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
 }
 
 RKClient* RKSpecNewClient(void) {
-    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
+    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURLString()];
     [RKClient setSharedClient:client];    
     [client release];
     client.requestQueue.suspended = NO;
@@ -53,14 +57,14 @@ RKClient* RKSpecNewClient(void) {
 RKOAuthClient* RKSpecNewOAuthClient(RKSpecResponseLoader* loader){
     [loader setTimeout:10];
     RKOAuthClient* client = [RKOAuthClient clientWithClientID:@"appID" secret:@"appSecret" delegate:loader];
-    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize",RKSpecGetBaseURL()];
+    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize",RKSpecGetBaseURLString()];
     return client;
 }
 
 
 RKObjectManager* RKSpecNewObjectManager(void) {    
     [RKObjectMapping setDefaultDateFormatters:nil];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
     [RKObjectManager setSharedManager:objectManager];
     [RKClient setSharedClient:objectManager.client];
     

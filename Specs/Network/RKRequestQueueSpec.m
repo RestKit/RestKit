@@ -108,7 +108,7 @@
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
 
-    NSString* url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", RKSpecGetBaseURL()];
+    NSString* url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", RKSpecGetBaseURLString()];
     NSURL* URL = [NSURL URLWithString:url];
     RKRequest * request = [[RKRequest alloc] initWithURL:URL];
     request.delegate = loader;

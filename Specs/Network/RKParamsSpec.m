@@ -31,7 +31,7 @@
 - (void)testShouldNotOverReleaseTheParams {
     NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
     RKParams* params = [[RKParams alloc] initWithDictionary:dictionary];
-    NSURL* URL = [NSURL URLWithString:[RKSpecGetBaseURL() stringByAppendingFormat:@"/echo_params"]];
+    NSURL* URL = [NSURL URLWithString:[RKSpecGetBaseURLString() stringByAppendingFormat:@"/echo_params"]];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.method = RKRequestMethodPOST;

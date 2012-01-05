@@ -45,6 +45,7 @@
     NSMutableArray *_objectMappings;
     NSMutableDictionary *_mappingsByKeyPath;
     NSMutableDictionary *_serializationMappings;
+    NSMutableArray *_errorMappings;
 }
 
 /**
@@ -52,7 +53,7 @@
  
  @return A new autoreleased object mapping provider instance.
  */
-+ (RKObjectMappingProvider *)objectMappingProvider;
++ (RKObjectMappingProvider *)mappingProvider;
 
 /**
  Configures the mapping provider to use the RKObjectMapping or RKDynamicObjectMapping provided when
@@ -187,7 +188,7 @@
 
 /**
  Returns the serialization mapping for a specific object class
- which has been previously registered. The 
+ which has been previously registered. 
  
  @param objectClass The class we wish to obtain the serialization mapping for
  @return The RKObjectMapping instance used for mapping instances of objectClass for transport
@@ -195,11 +196,41 @@
  */
 - (RKObjectMapping *)serializationMappingForClass:(Class)objectClass;
 
+/**
+ Adds an object mapping to the provider to be used when mapping a payload known
+ to contain an error representation.
+ 
+ @param errorMapping The error mapping to add to the provider 
+ @see RKObjectLoader
+ */
+// TODO: Should these be key-path based?
+- (void)addErrorMapping:(RKObjectMapping *)errorMapping;
+- (void)removeErrorMapping:(RKObjectMapping *)errorMapping;
+- (NSArray *)errorMappings;
+
+/**
+ An object mapping used when mapping pagination metadata (current page, object count, etc)
+ during a paginated object loading operation. The objectClass of the paginationMapping must
+ be RKObjectPaginator.
+ 
+ For example, if using the popular will_paginate plugin with Ruby on Rails, we would configure
+ our pagination mapping like so:
+    
+    // Assumes the JSON format of http://stackoverflow.com/questions/4699182/will-paginate-json-support
+    RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
+    [paginationMapping mapKeyPath:@"current_page" toAttribute:@"currentPage"];
+    [paginationMapping mapKeyPath:@"per_page" toAttribute:@"perPage"];
+    [paginationMapping mapKeyPath:@"total_entries" toAttribute:@"objectCount"];
+ 
+ @see RKObjectPaginator
+ */
+@property (nonatomic, retain) RKObjectMapping *paginationMapping;
+
 @end
 
 // Method signatures being phased out
 @interface RKObjectMappingProvider (CompatibilityAliases)
-+ (RKObjectMappingProvider *)mappingProvider;
++ (RKObjectMappingProvider *)objectMappingProvider;
 - (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath;
 - (void)setMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
 - (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath;
