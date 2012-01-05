@@ -189,6 +189,7 @@ extern NSString* cacheURLKey;
     RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long) [response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
+    [_request invalidateTimeoutTimer];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -199,6 +200,7 @@ extern NSString* cacheURLKey;
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
 	_failureError = [error retain];
 	[_request didFailLoadWithError:_failureError];
+    [_request invalidateTimeoutTimer];
 }
 
 - (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
