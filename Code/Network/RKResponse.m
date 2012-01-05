@@ -183,6 +183,7 @@ extern NSString* cacheURLKey;
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
 	[_body appendData:data];
+    [_request invalidateTimeoutTimer];
     if ([[_request delegate] respondsToSelector:@selector(request:didReceivedData:totalBytesReceived:totalBytesExectedToReceive:)]) {
         [[_request delegate] request:_request didReceivedData:[data length] totalBytesReceived:[_body length] totalBytesExectedToReceive:_httpURLResponse.expectedContentLength];
     }
