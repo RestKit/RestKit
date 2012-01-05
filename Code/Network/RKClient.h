@@ -200,6 +200,13 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @property (nonatomic, readonly) NSMutableDictionary *HTTPHeaders;
 
 /**
+ * An optional timeout interval within which the request should be cancelled.
+ * This is passed along to RKRequest if set.  If it isn't set, it will default
+ * to RKRequest's default timeoutInterval.
+ */
+@property (nonatomic, assign) NSTimeInterval timeoutInterval;
+
+/**
  Accept all SSL certificates. This is a potential security exposure,
  and should be used ONLY while debugging in a controlled environment.
  
