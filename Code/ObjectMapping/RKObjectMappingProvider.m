@@ -22,7 +22,9 @@
 
 @implementation RKObjectMappingProvider
 
-+ (RKObjectMappingProvider *)objectMappingProvider {
+@synthesize paginationMapping;
+
++ (RKObjectMappingProvider *)mappingProvider {
     return [[self new] autorelease];
 }
 
@@ -99,10 +101,22 @@
     return ([objectMappings count] > 0) ? [objectMappings objectAtIndex:0] : nil;
 }
 
+- (void)addErrorMapping:(RKObjectMapping *)errorMapping {
+    [_errorMappings addObject:errorMapping];
+}
+
+- (void)removeErrorMapping:(RKObjectMapping *)errorMapping {
+    [_errorMappings removeObject:errorMapping];
+}
+
+- (NSArray *)errorMappings {
+    return [_errorMappings copy];
+}
+
 #pragma mark - Aliases
 
-+ (RKObjectMappingProvider *)mappingProvider {
-    return [self objectMappingProvider];
++ (RKObjectMappingProvider *)objectMappingProvider {
+    return [self mappingProvider];
 }
 
 - (RKObjectMapping *)mappingForKeyPath:(NSString *)keyPath {

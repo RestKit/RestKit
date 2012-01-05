@@ -15,6 +15,12 @@ require 'restkit/network/etags'
 require 'restkit/network/timeout'
 require 'restkit/network/oauth2'
 
+class Person < Struct.new(:name, :age)
+  def to_json(*args)
+    {:name => name, :age => age}.to_json
+  end
+end
+
 class RestKit::SpecServer < Sinatra::Base
   self.app_file = __FILE__
   use RestKit::Network::Authentication
@@ -155,12 +161,46 @@ class RestKit::SpecServer < Sinatra::Base
     status 200
     "Uploaded successfully to '#{upload_path}'"
   end
+  
   # Return 200 after a delay
   get '/ok-with-delay/:delay' do
     sleep params[:delay].to_f
     status 200
     content_type 'application/json'
     ""
+  end
+  
+  get '/paginate' do
+    status 200
+    content_type 'application/json'
+    
+    per_page = 2
+    total_entries = 6
+    current_page = params[:page].to_i
+    entries = []
+    
+    puts "Params are: #{params.inspect}. CurrentPage = #{current_page}"
+    
+    case current_page
+      when 1
+        entries << Person.new('Blake', 29)
+        entries << Person.new('Sarah', 30)
+        entries << Person.new('Colin', 27)
+      when 2
+        entries << Person.new('Asia', 8)
+        entries << Person.new('Roy', 2)
+        entries << Person.new('Lola', 9)
+      when 3
+        # Return an error payload
+        status 422
+        return {:error => "Invalid page number."}
+      else
+        status 404
+        return ""
+    end
+    
+    {:per_page => per_page, :total_entries => total_entries, 
+     :current_page => current_page, :entries => entries}.to_json
   end
 
   # start the server if ruby file executed directly

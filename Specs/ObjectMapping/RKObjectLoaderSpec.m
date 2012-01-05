@@ -154,7 +154,7 @@
 
 - (void)testShouldLoadAComplexUserObjectWithTargetObject {
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     NSString *authString = [NSString stringWithFormat:@"TRUEREST username=%@&password=%@&apikey=123456&class=iphone", @"username", @"password"];
@@ -173,7 +173,7 @@
 }
 
 - (void)testShouldLoadAComplexUserObjectWithoutTargetObject {    
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
@@ -189,7 +189,7 @@
 }
 
 - (void)testShouldLoadAComplexUserObjectUsingRegisteredKeyPath {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.method = RKRequestMethodGET;
@@ -224,7 +224,7 @@
 }
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSendAsynchronously {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
     [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
@@ -240,7 +240,7 @@
 }
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSendSynchronously {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
     [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
@@ -416,7 +416,7 @@
     [userMapping mapAttributes:@"firstname", nil];
     
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     RKObjectLoader* objectLoader = [objectManager objectLoaderWithResourcePath:@"/JSON/ComplexNestedUser.json" delegate:responseLoader];
     objectLoader.objectMapping = userMapping;
