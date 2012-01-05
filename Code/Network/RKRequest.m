@@ -171,6 +171,9 @@
     _OAuth2AccessToken = nil;
     [_OAuth2RefreshToken release];
     _OAuth2RefreshToken = nil;
+    [self invalidateTimeoutTimer];
+    [_timeoutTimer release];
+    _timeoutTimer = nil;
     
     // Cleanup a background task if there is any
     [self cleanupBackgroundTask];
@@ -377,6 +380,7 @@
     RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
     
     _connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+    _timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.timeoutInterval target:self selector:@selector(timeout) userInfo:nil repeats:NO];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
