@@ -22,6 +22,7 @@
 #import "RKObjectLoader.h"
 #import "RKObjectRouter.h"
 #import "RKObjectMappingProvider.h"
+#import "RKObjectPaginator.h"
 
 @protocol RKParser;
 
@@ -351,6 +352,13 @@ typedef enum {
  */
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
+// TODO: Document all of these...
+- (Class)objectLoaderClass;
+- (id)loaderWithResourcePath:(NSString *)resourcePath;
+- (id)loaderWithURL:(NSURL *)URL;
+- (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
+- (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method;
+
 /**
  These methods are provided for situations where the remote system you are working with has slightly different conventions
  than the default methods provide. They return fully initialized object loaders that are ready for dispatch, but
@@ -364,7 +372,7 @@ typedef enum {
  the best place to begin work if you need to create a slightly different collection loader than what is
  provided by the loadObjects family of methods.
  */
-- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
+- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 /**
  Returns an object loader configured for transmitting an object instance across the wire. A request will be constructed
@@ -375,6 +383,6 @@ typedef enum {
  
  // TODO: Cleanup this comment
  */
-- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate;
+- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 @end

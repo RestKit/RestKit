@@ -34,6 +34,14 @@
     BOOL _deleteObjectOnFailure;
 }
 
+/**
+ A reference to a RestKit managed object store for interacting with Core Data
+ 
+ @see RKManagedObjectStore
+ */
 @property (nonatomic, retain) RKManagedObjectStore* objectStore;
+
++ (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
+- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
 
 @end
