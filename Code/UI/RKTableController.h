@@ -39,20 +39,6 @@
 - (void)loadObjects:(NSArray *)objects inSection:(NSUInteger)sectionIndex;
 - (void)loadEmpty;
 
-/**
- Return the index path of the object within the table
- */
-// TODO: Move to superclass???
-- (NSIndexPath *)indexPathForObject:(id)object;
-
-/**
- */
-// TODO: Move to superclass???
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath;
-
-// TODO: Move to superclass???
-- (UITableViewCell *)cellForObject:(id)object;
-
 // Move to superclass???
 - (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 

@@ -417,6 +417,34 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     return [self.cellMappings cellMappingForObject:object];
 }
 
+- (UITableViewCell *)cellForObject:(id)object {
+    NSIndexPath *indexPath = [self indexPathForObject:object];
+    return indexPath ? [self cellForObjectAtIndexPath:indexPath] : nil;
+}
+
+// TODO: unit test...
+// TODO: This needs to be updated to take into account header & footer rows...
+- (NSIndexPath *)indexPathForObject:(id)object {
+    NSUInteger sectionIndex = 0;
+    for (RKTableSection *section in self.sections) {
+        NSUInteger rowIndex = 0;
+        for (id rowObject in section.objects) {
+            if ([rowObject isEqual:object]) {
+                return [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+            }
+            
+            rowIndex++;
+        }
+        sectionIndex++;
+    }
+    
+    return nil;
+}
+
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath {
+    return [[self.sections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+}
+
 #pragma mark - Header and Footer Rows
 
 - (void)addHeaderRowForItem:(RKTableItem*)tableItem {

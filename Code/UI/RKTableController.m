@@ -325,29 +325,6 @@
     [self loadObjects:objects inSection:0];
 }
 
-// TODO: unit test...
-// TODO: This needs to be updated to take into account header & footer rows...
-- (NSIndexPath *)indexPathForObject:(id)object {
-    NSUInteger sectionIndex = 0;
-    for (RKFormSection *section in self.sections) {
-        NSUInteger rowIndex = 0;
-        for (id rowObject in section.objects) {
-            if ([rowObject isEqual:object]) {
-                return [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
-            }
-            
-            rowIndex++;
-        }
-        sectionIndex++;
-    }
-    
-    return nil;
-}
-
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath {
-    return [[self.sections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
-}
-
 - (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation {
     // TODO: Find the indexPath of the object...
     NSIndexPath *indexPath = [self indexPathForObject:object];
@@ -355,12 +332,6 @@
         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:rowAnimation];
     }
 }
-
-- (UITableViewCell *)cellForObject:(id)object {
-    NSIndexPath *indexPath = [self indexPathForObject:object];
-    return indexPath ? [self cellForObjectAtIndexPath:indexPath] : nil;
-}
-
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
