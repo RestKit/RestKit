@@ -31,6 +31,7 @@
 
 @interface RKFetchedResultsTableController ()
 - (void)performFetch;
+- (void)updateSortedArray;
 @end
 
 @implementation RKFetchedResultsTableController
@@ -84,6 +85,22 @@
         RKLogError(@"performFetch failed with error: %@", [error localizedDescription]);
     } else {
         RKLogTrace(@"performFetch completed successfully");
+    }
+}
+
+- (void)updateSortedArray {
+    [_arraySortedFetchedObjects release];
+    _arraySortedFetchedObjects = nil;
+    
+    if (_sortSelector || _sortComparator) {
+        if (_sortSelector) {
+            _arraySortedFetchedObjects = [[_fetchedResultsController.fetchedObjects sortedArrayUsingSelector:_sortSelector] retain];
+        } else if (_sortComparator) {
+            _arraySortedFetchedObjects = [[_fetchedResultsController.fetchedObjects sortedArrayUsingComparator:_sortComparator] retain];
+        }
+        
+        NSAssert(_arraySortedFetchedObjects.count == _fetchedResultsController.fetchedObjects.count,
+                 @"sortSelector or sortComparator sort resulted in fewer objects than expected");
     }
 }
 
@@ -224,17 +241,7 @@
     _fetchedResultsController.delegate = self;
 
     [self performFetch];
-
-    [_arraySortedFetchedObjects release];
-    _arraySortedFetchedObjects = nil;
-
-    if (_sortSelector || _sortComparator) {
-        if (_sortSelector) {
-            _arraySortedFetchedObjects = [[_fetchedResultsController.fetchedObjects sortedArrayUsingSelector:_sortSelector] retain];
-        } else if (_sortComparator) {
-            _arraySortedFetchedObjects = [[_fetchedResultsController.fetchedObjects sortedArrayUsingComparator:_sortComparator] retain];
-        }
-    }
+    [self updateSortedArray];
 
     [self.tableView reloadData];
     [self didFinishLoad];
@@ -572,9 +579,10 @@
                controller, [[controller sections] count], _resourcePath);
     if (self.emptyItem && ![self isEmpty] && _isEmptyBeforeAnimation) {
         [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[self emptyItemIndexPath]]
-                                                       withRowAnimation:UITableViewRowAnimationFade];
+                              withRowAnimation:UITableViewRowAnimationFade];
     }
-	[self.tableView endUpdates];    
+    [self updateSortedArray];
+    [self.tableView endUpdates];
     [self didFinishLoad];
 }
 
