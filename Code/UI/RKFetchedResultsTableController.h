@@ -33,7 +33,7 @@ typedef UIView*(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUIntege
 
 @property (nonatomic, readonly) NSFetchedResultsController* fetchedResultsController;
 @property (nonatomic, copy) NSString* resourcePath;
-@property (nonatomic, readonly) NSFetchRequest* fetchRequest;
+@property (nonatomic, retain) NSFetchRequest* fetchRequest;
 @property (nonatomic, assign) CGFloat heightForHeaderInSection;
 @property (nonatomic, copy) RKFetchedResultsTableViewViewForHeaderInSectionBlock onViewForHeaderInSection;
 @property (nonatomic, retain) NSPredicate* predicate;

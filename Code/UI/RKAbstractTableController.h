@@ -110,6 +110,13 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (RKTableViewCellMapping*)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath;
 
+/**
+ Return the index path of the object within the table
+ */
+- (NSIndexPath *)indexPathForObject:(id)object;
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath;
+- (UITableViewCell *)cellForObject:(id)object;
+
 /////////////////////////////////////////////////////////////////////////
 /// @name Header and Footer Rows
 /////////////////////////////////////////////////////////////////////////
