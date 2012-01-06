@@ -89,6 +89,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize serviceUnavailableAlertEnabled = _serviceUnavailableAlertEnabled;
 @synthesize requestCache = _requestCache;
 @synthesize cachePolicy = _cachePolicy;
+@synthesize cacheTimeout = _cacheTimeout;
 @synthesize requestQueue = _requestQueue;
 
 + (RKClient *)sharedClient {
@@ -218,6 +219,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	request.username = self.username;
 	request.password = self.password;
 	request.cachePolicy = self.cachePolicy;
+    request.cacheTimeoutInterval = self.cacheTimeout;
     request.cache = self.requestCache;
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;

@@ -171,6 +171,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     RKRequestQueue *_requestQueue;
 	RKRequestCache *_requestCache;
 	RKRequestCachePolicy _cachePolicy;
+    NSTimeInterval _cacheTimeout;
     NSMutableSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
     
@@ -428,6 +429,12 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @see RKRequestCache
  */
 @property (nonatomic, assign) RKRequestCachePolicy cachePolicy;
+
+/**
+ The default cache timeout to apply for all requests sent through this client
+ */
+@property (nonatomic, assign) NSTimeInterval cacheTimeout;
+
 
 /**
  The path used to store response data for this client's request cache
