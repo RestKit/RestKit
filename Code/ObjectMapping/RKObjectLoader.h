@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/8/09.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 
 @class RKObjectMappingProvider;
 @class RKObjectLoader;
-@class RKObjectManager;
 
 @protocol RKObjectLoaderDelegate <RKRequestDelegate>
 
@@ -130,16 +129,14 @@
  * @default nil
  * @see RKObjectMappingProvider
  */
-// TODO: Rename to responseMapping
 @property (nonatomic, retain) RKObjectMapping* objectMapping;
 
 /**
- * The object manager that initialized this loader. The object manager is responsible
- * for supplying the mapper and object store used after HTTP transport is completed
+ A mapping provider containing object mapping configurations for mapping remote
+ object representations into local domain objects.
+ 
+ @see RKObjectMappingProvider
  */
-//@property (nonatomic, readonly) RKObjectManager* objectManager;
-
-// TODO: Comment...
 @property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
 /**
@@ -192,22 +189,30 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Initialize and return an object loader for a resource path against an object manager. The resource path
- * specifies the remote location to load data from, while the object manager is responsible for supplying
- * mapping and persistence details.
+ Initialize and return an autoreleased object loader targeting a remote URL using a mapping provider
+ 
+ @param URL A RestKit RKURL targetting a particular baseURL and resourcePath
+ @param mappingProvider A mapping provider containing object mapping configurations for processing loaded payloads
  */
-+ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-
-- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
++ (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 /**
- * Initialize a new object loader with an object manager, a request, and a delegate
+ Initialize and return an autoreleased object loader targeting a remote URL using a mapping provider
+ 
+ @param URL A RestKit RKURL targetting a particular baseURL and resourcePath
+ @param mappingProvider A mapping provider containing object mapping configurations for processing loaded payloads
  */
-- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 /**
  * Handle an error in the response preventing it from being mapped, called from -isResponseMappable
  */
 - (void)handleResponseError;
 
+@end
+
+@class RKObjectManager;
+@interface RKObjectLoader (Deprecations)
++ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 @end

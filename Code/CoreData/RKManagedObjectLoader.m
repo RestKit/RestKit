@@ -32,11 +32,25 @@
 
 @synthesize objectStore = _objectStore;
 
-- (id)init {
-    self = [super init];
++ (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
+    return [[self alloc] initWithURL:URL mappingProvider:mappingProvider objectStore:objectStore];
+}
+
+- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
+    self = [self initWithURL:URL mappingProvider:mappingProvider];
+    if (self) {
+        _objectStore = [objectStore retain];
+    }
+    
+    return self;
+}
+
+- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
+    self = [super initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
         _managedObjectKeyPaths = [[NSMutableSet alloc] init];
     }
+    
     return self;
 }
     

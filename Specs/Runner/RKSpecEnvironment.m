@@ -137,14 +137,6 @@ id RKSpecParseFixture(NSString* fileName) {
 
 @implementation RKSpec
 
-//- (void)failWithException:(NSException *) e {
-//    printf("%s:%i: error: %s\n",
-//           [[[e userInfo] objectForKey:SenTestFilenameKey] cString],
-//           [[[e userInfo] objectForKey:SenTestLineNumberKey] intValue],
-//           [[[e userInfo] objectForKey:SenTestDescriptionKey] cString]);
-//    [e raise];
-//}
-
 @end
 
 @implementation SenTestCase (MethodSwizzling)

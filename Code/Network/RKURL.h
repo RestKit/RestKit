@@ -33,6 +33,7 @@
 @property (nonatomic, readonly) NSString* resourcePath;
 @property (nonatomic, readonly) NSDictionary* queryParams;
 
++ (id)URLWithURL:(NSURL *)URL;
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath;
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams;
 + (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath;

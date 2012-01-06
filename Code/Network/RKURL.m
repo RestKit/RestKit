@@ -27,6 +27,10 @@
 @synthesize resourcePath = _resourcePath;
 @synthesize queryParams = _queryParams;
 
++ (id)URLWithURL:(NSURL *)URL {
+    return [self URLWithBaseURLString:[URL absoluteString] resourcePath:nil];
+}
+
 + (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath {
 	return [[[self alloc] initWithBaseURLString:baseURLString resourcePath:resourcePath] autorelease];
 }
