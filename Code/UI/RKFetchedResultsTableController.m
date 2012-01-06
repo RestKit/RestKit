@@ -46,6 +46,7 @@
 @synthesize showsSectionIndexTitles = _showsSectionIndexTitles;
 @synthesize sortSelector = _sortSelector;
 @synthesize sortComparator = _sortComparator;
+@synthesize fetchRequest = _fetchRequest;
 
 - (void)dealloc {
 	_fetchedResultsController.delegate = nil;
@@ -63,6 +64,8 @@
     _cacheName = nil;
     [_arraySortedFetchedObjects release];
     _arraySortedFetchedObjects = nil;
+    [_fetchRequest release];
+    _fetchRequest = nil;
     Block_release(_onViewForHeaderInSection);
     Block_release(_sortComparator);
     [super dealloc];
@@ -185,22 +188,28 @@
 
 #pragma mark - Public
 
-- (NSFetchRequest*)fetchRequest {
-	return _fetchedResultsController.fetchRequest;
+- (NSFetchRequest *)fetchRequest {
+	return _fetchRequest ? _fetchRequest : _fetchedResultsController.fetchRequest;
 }
 
 - (void)loadTable {
-    RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
-    NSAssert(store.managedObjectCache != nil, @"Attempted to load RKFetchedResultsTableController with nil RKManageObjectCache");
+    NSFetchRequest *fetchRequest = nil;
+    if (_resourcePath) {
+        RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
+        NSAssert(store.managedObjectCache != nil, @"Attempted to load RKFetchedResultsTableController with nil RKManageObjectCache");
 
-    NSFetchRequest* cacheFetchRequest = [store.managedObjectCache fetchRequestForResourcePath:_resourcePath];
-    NSAssert(cacheFetchRequest != nil, @"Attempted to load RKFetchedResultsTableController with nil fetchRequest for resourcePath %@", _resourcePath);
+        fetchRequest = [store.managedObjectCache fetchRequestForResourcePath:_resourcePath];
+    } else {
+        fetchRequest = _fetchRequest;
+    }
+    NSAssert(fetchRequest != nil, @"Attempted to load RKFetchedResultsTableController with nil fetchRequest for resourcePath %@, fetchRequest %@",
+             _resourcePath, _fetchRequest);
 
     if (_predicate) {
-        [cacheFetchRequest setPredicate:_predicate];
+        [fetchRequest setPredicate:_predicate];
     }
     if (_sortDescriptors) {
-        [cacheFetchRequest setSortDescriptors:_sortDescriptors];
+        [fetchRequest setSortDescriptors:_sortDescriptors];
     }
 
     [_fetchedResultsController setDelegate:nil];
@@ -208,7 +217,7 @@
     _fetchedResultsController = nil;
 
     _fetchedResultsController =
-    [[NSFetchedResultsController alloc] initWithFetchRequest:cacheFetchRequest
+    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                         managedObjectContext:[NSManagedObject managedObjectContext]
                                           sectionNameKeyPath:_sectionNameKeyPath
                                                    cacheName:_cacheName];
@@ -302,8 +311,14 @@
     RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
 
-    UITableViewCell* cell = [cellMapping mappableObjectForData:self.tableView];
-    NSAssert(cell, @"Cell mapping failed to dequeue or allocatate a tableViewCell for object: %@", mappableObject);
+    // Return an existing cell or initialize a new one
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    if (! cell) {
+        cell = [cellMapping mappableObjectForData:self.tableView];
+    }
+    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
+
+    // Map the object state into the cell
     RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
     NSError* error = nil;
     BOOL success = [mappingOperation performMapping:&error];
@@ -321,9 +336,13 @@
 
 - (NSIndexPath *)indexPathForObject:(id)object {
     if ([object isKindOfClass:[NSManagedObject class]]) {
-        return [_fetchedResultsController indexPathForObject:object];
+        return [self indexPathForFetchedResultsIndexPath:[_fetchedResultsController indexPathForObject:object]];
     }
     return nil;
+}
+
+- (UITableViewCell *)cellForObject:(id)object {
+    return [self cellForObjectAtIndexPath:[self indexPathForObject:object]];
 }
 
 #pragma mark - UITableViewDataSource methods
