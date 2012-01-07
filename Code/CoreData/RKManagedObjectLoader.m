@@ -33,7 +33,7 @@
 @synthesize objectStore = _objectStore;
 
 + (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
-    return [[self alloc] initWithURL:URL mappingProvider:mappingProvider objectStore:objectStore];
+    return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider objectStore:objectStore] autorelease];
 }
 
 - (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
