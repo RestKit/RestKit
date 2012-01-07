@@ -33,7 +33,9 @@
 @interface RKObjectPaginator : NSObject
 
 + (id)paginatorWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
++ (id)paginatorWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider customObjectLoaderSetup:(void(^)(RKObjectLoader* loader))customObjectLoaderSetup;
 - (id)initWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
+- (id)initWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider customObjectLoaderSetup:(void(^)(RKObjectLoader* loader))customObjectLoaderSetup;
 
 /**
  The base URL to build the complete pagination URL from
@@ -73,6 +75,14 @@
  Delegate to call back with pagination results
  */
 @property (nonatomic, assign) id<RKObjectPaginatorDelegate> delegate;
+
+/**
+ Each time a loadPage request is created, this block is called to 
+ perform custom setup on the loader before it is sent.  
+ The loader requestMethod and delegate should not be set in this block 
+ as they will be overriden by the above properties.
+ */
+@property (nonatomic, copy) void(^customObjectLoaderSetup)(RKObjectLoader* loader);
 
 /** @name Object Mapping Configuration */
 
@@ -140,9 +150,10 @@
  Sent to the delegate when the paginator has failed loading due to an error
  
  @param paginator The paginator that failed loading due to an error
+ @param loader The loader request that resulted in the failure
  @param error An NSError indicating the cause of the failure
  */
-- (void)paginator:(RKObjectPaginator *)paginator didFailWithError:(NSError *)error;
+- (void)paginator:(RKObjectPaginator *)paginator objectLoader:(RKObjectLoader*)loader didFailWithError:(NSError *)error;
 
 @optional
 
