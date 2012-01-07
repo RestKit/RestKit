@@ -70,6 +70,7 @@
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
+                    NSAssert(self.objectStore, @"Object store cannot be nil");
                     NSManagedObject* managedObject = [self.objectStore objectWithID:(NSManagedObjectID*)subObject];
                     [collection addObject:managedObject];
                 } else {
