@@ -110,7 +110,7 @@
 }
 
 - (NSArray *)errorMappings {
-    return [_errorMappings copy];
+    return [[_errorMappings copy] autorelease];
 }
 
 #pragma mark - Aliases

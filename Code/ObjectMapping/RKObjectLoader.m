@@ -48,7 +48,7 @@
 @synthesize sourceObject = _sourceObject;
 
 + (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
-    return [[self alloc] initWithURL:URL mappingProvider:mappingProvider];
+    return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider] autorelease];
 }
 
 - (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
