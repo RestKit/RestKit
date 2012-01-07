@@ -169,7 +169,10 @@ static RKObjectManager* sharedManager = nil;
 - (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern {
     return [RKObjectPaginator paginatorWithBaseURL:[self baseURL]
                                resourcePathPattern:resourcePathPattern 
-                                   mappingProvider:self.mappingProvider];
+                                   mappingProvider:self.mappingProvider
+            customObjectLoaderSetup:^(RKObjectLoader *loader) {
+              [self.client setupRequest:loader];
+            }];
 }
 
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method {

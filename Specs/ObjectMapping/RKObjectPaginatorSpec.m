@@ -106,7 +106,7 @@ NSString * const RKSpecPaginatorDelegateTimeoutException = @"RKSpecPaginatorDele
     currentPage = page;
 }
 
-- (void)paginator:(RKObjectPaginator *)paginator didFailWithError:(NSError *)error {
+- (void)paginator:(RKObjectPaginator *)paginator objectLoader:(RKObjectLoader *)loader didFailWithError:(NSError *)error {
     loading = NO;
     self.paginationError = error;
 }
@@ -245,7 +245,7 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithBaseURL:baseURL resourcePathPattern:RKObjectPaginatorSpecResourcePathPattern mappingProvider:mappingProvider];
     RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
     id mockDelegate = [OCMockObject partialMockForObject:testDelegate];
-    [[[mockDelegate expect] andForwardToRealObject] paginator:paginator didFailWithError:OCMOCK_ANY];
+    [[[mockDelegate expect] andForwardToRealObject] paginator:paginator objectLoader:OCMOCK_ANY didFailWithError:OCMOCK_ANY];
     paginator.delegate = mockDelegate;
     [paginator loadPage:999];
     [mockDelegate waitForLoad];
