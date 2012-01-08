@@ -6,6 +6,7 @@
  *  Copyright 2010 GateGuru. All rights reserved.
  *
  */
+#import <CoreData/CoreData.h>
 
 /**
  * Class used for determining the set of NSFetchRequest objects that
