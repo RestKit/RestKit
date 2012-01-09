@@ -437,10 +437,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     return nil;
 }
 
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath {
-    return [[self.sections objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
-}
-
 #pragma mark - Header and Footer Rows
 
 - (void)addHeaderRowForItem:(RKTableItem*)tableItem {

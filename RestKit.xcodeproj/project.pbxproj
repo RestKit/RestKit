@@ -401,6 +401,10 @@
 		73C0ADBA141290C900E9D4B4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73C0ADB9141290C900E9D4B4 /* CoreGraphics.framework */; };
 		73C89EF212A5BB9A000FE600 /* RKReachabilityObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73C89EF312A5BB9A000FE600 /* RKReachabilityObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */; };
+		73CE45D814BB984B00C533CF /* UDTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 73CE45D614BB984B00C533CF /* UDTableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		73CE45D914BB984B00C533CF /* UDTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 73CE45D714BB984B00C533CF /* UDTableView.m */; };
+		73CE45DC14BB989300C533CF /* RKTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 73CE45DA14BB989300C533CF /* RKTableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		73CE45DD14BB989300C533CF /* RKTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 73CE45DB14BB989300C533CF /* RKTableView.m */; };
 		73FE56C7126CB91600E0F30B /* RKURL.h in Headers */ = {isa = PBXBuildFile; fileRef = 73FE56C4126CB91600E0F30B /* RKURL.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		73FE56C8126CB91600E0F30B /* RKURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 73FE56C5126CB91600E0F30B /* RKURL.m */; };
 		AF26F36A13EB40A9007F4868 /* RKOAuthClientSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = AF26F36913EB40A9007F4868 /* RKOAuthClientSpec.m */; };
@@ -952,6 +956,11 @@
 		73C0ADB9141290C900E9D4B4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		73C89EEF12A5BB9A000FE600 /* RKReachabilityObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKReachabilityObserver.h; sourceTree = "<group>"; };
 		73C89EF012A5BB9A000FE600 /* RKReachabilityObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKReachabilityObserver.m; sourceTree = "<group>"; };
+		73CE45D514BB984B00C533CF /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = "Vendor/UDTableView-allowsMultipleSelection/README.md"; sourceTree = "<group>"; };
+		73CE45D614BB984B00C533CF /* UDTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UDTableView.h; path = "Vendor/UDTableView-allowsMultipleSelection/UDTableView.h"; sourceTree = "<group>"; };
+		73CE45D714BB984B00C533CF /* UDTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UDTableView.m; path = "Vendor/UDTableView-allowsMultipleSelection/UDTableView.m"; sourceTree = "<group>"; };
+		73CE45DA14BB989300C533CF /* RKTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableView.h; sourceTree = "<group>"; };
+		73CE45DB14BB989300C533CF /* RKTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableView.m; sourceTree = "<group>"; };
 		73FE56C4126CB91600E0F30B /* RKURL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKURL.h; sourceTree = "<group>"; };
 		73FE56C5126CB91600E0F30B /* RKURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKURL.m; sourceTree = "<group>"; };
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1620,16 +1629,18 @@
 				258F87131411724D007AABCD /* RKForm.m */,
 				258F87141411724D007AABCD /* RKFormSection.h */,
 				258F87151411724D007AABCD /* RKFormSection.m */,
+				258F871C1411724D007AABCD /* RKTableController.h */,
+				258F871D1411724D007AABCD /* RKTableController.m */,
 				258F87161411724D007AABCD /* RKTableItem.h */,
 				258F87171411724D007AABCD /* RKTableItem.m */,
+				258F871E1411724D007AABCD /* RKTableSection.h */,
+				258F871F1411724D007AABCD /* RKTableSection.m */,
+				73CE45DA14BB989300C533CF /* RKTableView.h */,
+				73CE45DB14BB989300C533CF /* RKTableView.m */,
 				258F87181411724D007AABCD /* RKTableViewCellMapping.h */,
 				258F87191411724D007AABCD /* RKTableViewCellMapping.m */,
 				258F871A1411724D007AABCD /* RKTableViewCellMappings.h */,
 				258F871B1411724D007AABCD /* RKTableViewCellMappings.m */,
-				258F871C1411724D007AABCD /* RKTableController.h */,
-				258F871D1411724D007AABCD /* RKTableController.m */,
-				258F871E1411724D007AABCD /* RKTableSection.h */,
-				258F871F1411724D007AABCD /* RKTableSection.m */,
 				258F87201411724D007AABCD /* UI.h */,
 				258F87211411724D007AABCD /* UIView+FindFirstResponder.h */,
 				258F87221411724D007AABCD /* UIView+FindFirstResponder.m */,
@@ -1762,16 +1773,17 @@
 		2590E6711252357200531FA8 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				258F875D14117738007AABCD /* EGOTableViewPullRefresh */,
 				2540EB6E144E7DFB00E4FC71 /* cocoa-oauth */,
+				258F875D14117738007AABCD /* EGOTableViewPullRefresh */,
 				25552DD914341324007E10F1 /* FileMD5Hash */,
-				258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */,
-				250D5BD913A0698100471F0E /* LibComponentLogging */,
-				37CA4C5D1410A7CE009A3DCE /* SOCKit */,
-				20808DB713DE8C7C000A156A /* NXJSON */,
 				73057FC61331AA28001908EE /* JSONKit */,
-				2590E69A1252372800531FA8 /* YAJL */,
+				250D5BD913A0698100471F0E /* LibComponentLogging */,
+				20808DB713DE8C7C000A156A /* NXJSON */,
+				258F8500141061C3007AABCD /* PortableStaticLibrary.xcconfig */,
 				2590E673125235C200531FA8 /* SBJSON */,
+				37CA4C5D1410A7CE009A3DCE /* SOCKit */,
+				73CE45D314BB97EC00C533CF /* UDTableView-allowsMultipleSelection */,
+				2590E69A1252372800531FA8 /* YAJL */,
 			);
 			name = Vendor;
 			sourceTree = "<group>";
@@ -2001,6 +2013,16 @@
 			name = JSONKit;
 			sourceTree = "<group>";
 		};
+		73CE45D314BB97EC00C533CF /* UDTableView-allowsMultipleSelection */ = {
+			isa = PBXGroup;
+			children = (
+				73CE45D514BB984B00C533CF /* README.md */,
+				73CE45D614BB984B00C533CF /* UDTableView.h */,
+				73CE45D714BB984B00C533CF /* UDTableView.m */,
+			);
+			name = "UDTableView-allowsMultipleSelection";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2155,6 +2177,8 @@
 				258F873A1411724D007AABCD /* UI.h in Headers */,
 				258F873B1411724D007AABCD /* UIView+FindFirstResponder.h in Headers */,
 				258F876B14117738007AABCD /* EGORefreshTableHeaderView.h in Headers */,
+				73CE45D814BB984B00C533CF /* UDTableView.h in Headers */,
+				73CE45DC14BB989300C533CF /* RKTableView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2763,6 +2787,8 @@
 				258F87391411724D007AABCD /* RKTableSection.m in Sources */,
 				258F873C1411724D007AABCD /* UIView+FindFirstResponder.m in Sources */,
 				258F876C14117738007AABCD /* EGORefreshTableHeaderView.m in Sources */,
+				73CE45D914BB984B00C533CF /* UDTableView.m in Sources */,
+				73CE45DD14BB989300C533CF /* RKTableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
