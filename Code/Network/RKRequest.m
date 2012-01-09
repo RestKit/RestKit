@@ -234,12 +234,15 @@
     // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
     if (self.authenticationType == RKRequestAuthenticationTypeHTTPBasic) {        
         CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
-        
-        CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password,kCFHTTPAuthenticationSchemeBasic, FALSE);
-        CFStringRef authorizationString = CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
-        [_URLRequest setValue:(NSString *)authorizationString forHTTPHeaderField:@"Authorization"];
-        CFRelease(dummyRequest);
-        CFRelease(authorizationString);
+        if (dummyRequest) {
+          CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password,kCFHTTPAuthenticationSchemeBasic, FALSE);
+          CFStringRef authorizationString = CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
+          if (authorizationString) {
+            [_URLRequest setValue:(NSString *)authorizationString forHTTPHeaderField:@"Authorization"];
+            CFRelease(authorizationString);
+          }
+          CFRelease(dummyRequest);
+        }
     }
     
     // Add OAuth headers if is need it
