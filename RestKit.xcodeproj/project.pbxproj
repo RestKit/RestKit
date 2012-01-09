@@ -360,6 +360,8 @@
 		3703ABAC14190D5700DB697A /* RKDotNetDateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3703ABAA14190D5700DB697A /* RKDotNetDateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3703ABAD14190D5700DB697A /* RKDotNetDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3703ABAB14190D5700DB697A /* RKDotNetDateFormatter.m */; };
 		3703ABB0141941FB00DB697A /* RKDotNetDateFormatterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3703ABAF141941FB00DB697A /* RKDotNetDateFormatterSpec.m */; };
+		374E6AE914A5989700C85231 /* NakedEvents.json in Resources */ = {isa = PBXBuildFile; fileRef = 374E6AE814A5989700C85231 /* NakedEvents.json */; };
+		374E6AED14A598D500C85231 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 374E6AEC14A598D500C85231 /* RKEvent.m */; };
 		37959B201426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 37959B1F1426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m */; };
 		37CA4C501410A4D1009A3DCE /* RKFixCategoryBug.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F846E1410574B007AABCD /* RKFixCategoryBug.h */; };
 		37CA4C7C1410A7CF009A3DCE /* SOCKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 37CA4C6F1410A7CF009A3DCE /* SOCKit.h */; };
@@ -910,6 +912,9 @@
 		3703ABAA14190D5700DB697A /* RKDotNetDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDotNetDateFormatter.h; sourceTree = "<group>"; };
 		3703ABAB14190D5700DB697A /* RKDotNetDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDotNetDateFormatter.m; sourceTree = "<group>"; };
 		3703ABAF141941FB00DB697A /* RKDotNetDateFormatterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDotNetDateFormatterSpec.m; sourceTree = "<group>"; };
+		374E6AE814A5989700C85231 /* NakedEvents.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = NakedEvents.json; sourceTree = "<group>"; };
+		374E6AEB14A598D500C85231 /* RKEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEvent.h; sourceTree = "<group>"; };
+		374E6AEC14A598D500C85231 /* RKEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEvent.m; sourceTree = "<group>"; };
 		37959B1F1426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingProviderSpec.m; sourceTree = "<group>"; };
 		37CA4C6F1410A7CF009A3DCE /* SOCKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SOCKit.h; sourceTree = "<group>"; };
 		37CA4C701410A7CF009A3DCE /* SOCKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SOCKit.m; sourceTree = "<group>"; };
@@ -1594,6 +1599,8 @@
 				3F032AA710FFBBCD00F35142 /* RKHouse.m */,
 				3F032AA910FFBC1F00F35142 /* RKResident.h */,
 				3F032AAA10FFBC1F00F35142 /* RKResident.m */,
+				374E6AEB14A598D500C85231 /* RKEvent.h */,
+				374E6AEC14A598D500C85231 /* RKEvent.m */,
 				256FDE53112DB0B90077F340 /* RKObjectMapperSpecModel.h */,
 				256FDE54112DB0B90077F340 /* RKObjectMapperSpecModel.m */,
 				2515E7BB13B36AC100E013A4 /* RKObjectLoaderSpecResultModel.h */,
@@ -1852,6 +1859,7 @@
 				25952F0C136F8F7700D04F93 /* users.json */,
 				25952EDA136F563E00D04F93 /* ComplexNestedUser.json */,
 				25952EDB136F563E00D04F93 /* Foursquare.json */,
+				374E6AE814A5989700C85231 /* NakedEvents.json */,
 				25952EDC136F563E00D04F93 /* humans */,
 				25952EDF136F563E00D04F93 /* RailsUser.json */,
 				25952EE0136F563E00D04F93 /* SameKeyDifferentTargetClasses.json */,
@@ -2568,6 +2576,7 @@
 				2537ACFC1412E0380043BE9F /* national_weather_service.xml in Resources */,
 				2521ACB314282D6D008A9BA4 /* ConnectingParents.json in Resources */,
 				252C212D1437660C005FF33A /* ArrayOfNestedDictionaries.json in Resources */,
+				374E6AE914A5989700C85231 /* NakedEvents.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2886,6 +2895,7 @@
 				37959B201426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m in Sources */,
 				AF26F36A13EB40A9007F4868 /* RKOAuthClientSpec.m in Sources */,
 				25ACA5A11428FC260037FE98 /* RKObjectiveCPlusPlusSpec.mm in Sources */,
+				374E6AED14A598D500C85231 /* RKEvent.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

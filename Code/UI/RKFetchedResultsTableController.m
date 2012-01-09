@@ -267,6 +267,13 @@
     self.objectLoader = [self.objectManager objectLoaderWithResourcePath:_resourcePath delegate:self];
 }
 
+- (void)setObjectMappingForClass:(Class)objectClass {
+    NSParameterAssert(objectClass != NULL);
+    NSAssert(self.objectLoader != NULL, @"Resource path (and thus object loader) must be set before setting object mapping.");
+    NSAssert(self.objectManager != NULL, @"Object manager must exist before setting object mapping.");
+	self.objectLoader.objectMapping = [self.objectManager.mappingProvider objectMappingForClass:objectClass];
+}
+
 #pragma mark - Managing Sections
 
 - (NSUInteger)sectionCount {

@@ -144,6 +144,7 @@
 /** Removes all sections from the model. */
 // NOTE: Adds a new section 0
 - (void)removeAllSections;
+- (void)removeAllSections:(BOOL)recreateFirstSection;
 
 @end
 
