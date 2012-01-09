@@ -114,7 +114,6 @@ extern NSString* const RKTableControllerDidBecomeOffline;
  Return the index path of the object within the table
  */
 - (NSIndexPath *)indexPathForObject:(id)object;
-- (id)objectAtIndexPath:(NSIndexPath *)indexPath;
 - (UITableViewCell *)cellForObject:(id)object;
 
 /////////////////////////////////////////////////////////////////////////
