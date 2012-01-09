@@ -58,6 +58,13 @@
     self = [self init];
     if (self) {
         _object = [object retain];
+
+        if ([_object isKindOfClass:[NSManagedObject class]]) {
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(reloadObjectOnContextDidSaveNotification:)
+                                                         name:NSManagedObjectContextDidSaveNotification
+                                                       object:[(NSManagedObject *)_object managedObjectContext]];
+        }
     }
 
     return self;
@@ -74,6 +81,7 @@
 }
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeObserverForAttributes];
     _tableController = nil;
     [_object release];
@@ -290,6 +298,22 @@
     // TODO: Need to let you configure the row animations...
     RKTableItem *tableItem = [self tableItemForAttribute:keyPath];
     [self.tableController reloadRowForObject:tableItem withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)reloadObjectOnContextDidSaveNotification:(NSNotification *)notification {
+    NSManagedObjectContext *context = (NSManagedObjectContext *) notification.object;
+    NSSet *deletedObjects = [notification.userInfo objectForKey:NSDeletedObjectsKey];
+    NSSet *updatedObjects = [notification.userInfo objectForKey:NSUpdatedObjectsKey];
+
+    if ([deletedObjects containsObject:self.object]) {
+        RKLogWarning(@"Object was deleted while being display in a RKForm. Interface may no longer function as expected.");
+        [self removeObserverForAttributes];
+        [_object release];
+        _object = nil;
+    } else if ([updatedObjects containsObject:self.object]) {
+        RKLogDebug(@"Object was updated while being displayed in a RKForm. Refreshing...");
+        [context refreshObject:_object mergeChanges:YES];
+    }
 }
 
 @end
