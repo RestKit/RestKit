@@ -40,6 +40,9 @@ typedef enum RKRequestMethod {
     RKRequestMethodHEAD
 } RKRequestMethod;
 
+NSString *RKRequestMethodNameFromType(RKRequestMethod);
+RKRequestMethod RKRequestMethodTypeFromName(NSString *);
+
 /**
  Cache policy for determining how to use RKCache
  */
