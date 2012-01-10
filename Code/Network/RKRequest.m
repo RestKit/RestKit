@@ -34,6 +34,51 @@
 #import "RKRequestQueue.h"
 #import "RKParams.h"
 
+NSString *RKRequestMethodNameFromType(RKRequestMethod method) {
+    switch (method) {
+        case RKRequestMethodGET:
+            return @"GET";
+            break;
+        
+        case RKRequestMethodPOST:
+            return @"POST";
+            break;
+            
+        case RKRequestMethodPUT:
+            return @"PUT";
+            break;
+            
+        case RKRequestMethodDELETE:
+            return @"DELETE";
+            break;
+            
+        case RKRequestMethodHEAD:
+            return @"HEAD";
+            break;
+            
+        default:
+            break;
+    }
+    
+    return nil;
+}
+
+RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
+    if ([methodName isEqualToString:@"GET"]) {
+        return RKRequestMethodGET;
+    } else if ([methodName isEqualToString:@"POST"]) {
+        return RKRequestMethodPOST;
+    } else if ([methodName isEqualToString:@"PUT"]) {
+        return RKRequestMethodPUT;
+    } else if ([methodName isEqualToString:@"DELETE"]) {
+        return RKRequestMethodDELETE;
+    } else if ([methodName isEqualToString:@"HEAD"]) {
+        return RKRequestMethodHEAD;
+    }
+    
+    return RKRequestMethodInvalid;
+}
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
