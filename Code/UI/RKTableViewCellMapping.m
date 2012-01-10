@@ -175,8 +175,8 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     RKLogTrace(@"About to dequeue reusable cell using self.reuseIdentifier=%@", self.reuseIdentifier);
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:self.reuseIdentifier];
     if (! cell) {
-        cell = [[self.objectClass alloc] initWithStyle:self.style 
-                                       reuseIdentifier:self.reuseIdentifier];
+        cell = [[[self.objectClass alloc] initWithStyle:self.style 
+                                       reuseIdentifier:self.reuseIdentifier] autorelease];
     }    
     cell.accessoryType = self.accessoryType;
     cell.selectionStyle = self.selectionStyle;
