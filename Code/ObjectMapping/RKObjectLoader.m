@@ -47,11 +47,11 @@
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize sourceObject = _sourceObject;
 
-+ (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
     return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider] autorelease];
 }
 
-- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
     self = [super initWithURL:URL];
     if (self) {
         _mappingProvider = [mappingProvider retain];
@@ -389,9 +389,9 @@
     return [[[self alloc] initWithResourcePath:resourcePath objectManager:objectManager delegate:delegate] autorelease];
 }
 
-- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate {
-	if ((self = [self initWithURL:[RKURL URLWithURL:[objectManager.client URLForResourcePath:resourcePath]] mappingProvider:objectManager.mappingProvider])) {
-        [objectManager.client setupRequest:self];
+- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate {    
+	if ((self = [self initWithURL:[objectManager.baseURL URLByAppendingResourcePath:resourcePath] mappingProvider:objectManager.mappingProvider])) {
+        [objectManager.client configureRequest:self];
         _delegate = delegate;
 	}
     

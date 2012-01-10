@@ -23,20 +23,34 @@
  of base URL and resource path that are used extensively throughout the RestKit
  system.
  */
-@interface RKURL : NSURL {
-	NSString* _baseURLString;
-	NSString* _resourcePath;
-	NSDictionary* _queryParams;
-}
+@interface RKURL : NSURL
 
-@property (nonatomic, readonly) NSString* baseURLString;
-@property (nonatomic, readonly) NSString* resourcePath;
-@property (nonatomic, readonly) NSDictionary* queryParams;
+@property (nonatomic, copy, readonly) NSURL *baseURL;
+@property (nonatomic, copy, readonly) NSString *resourcePath;
+@property (nonatomic, readonly) NSDictionary *queryParameters;
 
-+ (id)URLWithURL:(NSURL *)URL;
-- (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath;
-- (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams;
-+ (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath;
-+ (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams;
++ (id)URLWithBaseURL:(NSURL *)baseURL;
++ (id)URLWithBaseURL:(NSURL *)baseURL resourcePath:(NSString *)resourcePath;
++ (id)URLWithBaseURL:(NSURL *)baseURL resourcePath:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters;
+
++ (id)URLWithBaseURLString:(NSString *)baseURLString;
++ (id)URLWithBaseURLString:(NSString *)baseURLString resourcePath:(NSString *)resourcePath;
++ (id)URLWithBaseURLString:(NSString *)baseURLString resourcePath:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters;
+
+// Designated initializer
+- (id)initWithBaseURL:(NSURL *)theBaseURL resourcePath:(NSString *)theResourcePath queryParameters:(NSDictionary *)theQueryParameters;
+
+- (RKURL *)URLByAppendingResourcePath:(NSString *)theResourcePath;
+- (RKURL *)URLByAppendingResourcePath:(NSString *)theResourcePath queryParameters:(NSDictionary *)theQueryParameters;
+
+- (RKURL *)URLByAppendingQueryParameters:(NSDictionary *)newQueryParameters;
+
+/**
+ Returns a new RKURL object with the baseURL of the receiver and a new resourcePath.
+ 
+ @param newResourcePath The resource path to replace the value of resourcePath in the new instance
+ @return An RKURL object with newResourcePath appended to the receiver's baseURL.
+ */
+- (RKURL *)URLByReplacingResourcePath:(NSString *)newResourcePath;
 
 @end

@@ -194,7 +194,7 @@
  @param URL A RestKit RKURL targetting a particular baseURL and resourcePath
  @param mappingProvider A mapping provider containing object mapping configurations for processing loaded payloads
  */
-+ (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 /**
  Initialize and return an autoreleased object loader targeting a remote URL using a mapping provider
@@ -202,7 +202,7 @@
  @param URL A RestKit RKURL targetting a particular baseURL and resourcePath
  @param mappingProvider A mapping provider containing object mapping configurations for processing loaded payloads
  */
-- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 /**
  * Handle an error in the response preventing it from being mapped, called from -isResponseMappable

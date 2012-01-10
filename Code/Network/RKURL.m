@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 10/18/10.
-//  Copyright 2010 Two Toasters
+//  Copyright 2010 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,61 +20,138 @@
 
 #import "RKURL.h"
 #import "RKClient.h"
+#import "NSURL+RestKit.h"
+#import "NSString+RestKit.h"
+#import "NSDictionary+RKAdditions.h"
+#import "RKLog.h"
+
+@interface RKURL ()
+@property (nonatomic, copy, readwrite) NSURL *baseURL;
+@property (nonatomic, copy, readwrite) NSString *resourcePath;
+@end
 
 @implementation RKURL
 
-@synthesize baseURLString = _baseURLString;
-@synthesize resourcePath = _resourcePath;
-@synthesize queryParams = _queryParams;
+@synthesize baseURL;
+@synthesize resourcePath;
 
-+ (id)URLWithURL:(NSURL *)URL {
-    return [self URLWithBaseURLString:[URL absoluteString] resourcePath:nil];
++ (id)URLWithBaseURL:(NSURL *)baseURL {
+    return [self URLWithBaseURL:baseURL resourcePath:nil queryParameters:nil];
 }
 
-+ (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath {
-	return [[[self alloc] initWithBaseURLString:baseURLString resourcePath:resourcePath] autorelease];
++ (id)URLWithBaseURL:(NSURL *)baseURL resourcePath:(NSString *)resourcePath {
+    return [self URLWithBaseURL:baseURL resourcePath:resourcePath queryParameters:nil];
 }
 
-+ (RKURL*)URLWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
-	return [[[self alloc] initWithBaseURLString:baseURLString resourcePath:resourcePath queryParams:queryParams] autorelease];
++ (id)URLWithBaseURL:(NSURL *)baseURL resourcePath:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters {
+    return [[[self alloc] initWithBaseURL:baseURL resourcePath:resourcePath queryParameters:queryParameters] autorelease];
 }
 
-- (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath {
-	return [self initWithBaseURLString:baseURLString resourcePath:resourcePath queryParams:nil];
++ (id)URLWithBaseURLString:(NSString *)baseURLString {
+    return [self URLWithBaseURLString:baseURLString resourcePath:nil queryParameters:nil];
 }
 
-- (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
-	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
-	NSURL *baseURL = [NSURL URLWithString:baseURLString];
-	NSString* completePath = [[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString];
-    // Preserve trailing slash in resourcePath
-    if (resourcePath && [resourcePath characterAtIndex:[resourcePath length] - 1] == '/') {
-        completePath = [completePath stringByAppendingString:@"/"];
++ (id)URLWithBaseURLString:(NSString *)baseURLString resourcePath:(NSString *)resourcePath {
+    return [self URLWithBaseURLString:baseURLString resourcePath:resourcePath queryParameters:nil];
+}
+
++ (id)URLWithBaseURLString:(NSString *)baseURLString resourcePath:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters {    
+    return [self URLWithBaseURL:[NSURL URLWithString:baseURLString] resourcePath:resourcePath queryParameters:queryParameters];
+}
+
+// Designated initializer. Note this diverges from NSURL due to a bug in Cocoa. We can't
+// call initWithString:relativeToURL: from a subclass.
+- (id)initWithBaseURL:(NSURL *)theBaseURL resourcePath:(NSString *)theResourcePath queryParameters:(NSDictionary *)theQueryParameters {
+    // Merge any existing query parameters with the incoming dictionary
+    NSDictionary *resourcePathQueryParameters = [theResourcePath queryParameters];
+    NSMutableDictionary *mergedQueryParameters = [NSMutableDictionary dictionaryWithDictionary:[theBaseURL queryParameters]];
+    [mergedQueryParameters addEntriesFromDictionary:resourcePathQueryParameters];
+    [mergedQueryParameters addEntriesFromDictionary:theQueryParameters];
+    
+    // Build the new URL path
+    NSRange queryCharacterRange = [theResourcePath rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"?"]];
+    NSString *resourcePathWithoutQueryString = (queryCharacterRange.location == NSNotFound) ? theResourcePath : [theResourcePath substringToIndex:queryCharacterRange.location];    
+    BOOL isDirectory = [theResourcePath characterAtIndex:[theResourcePath length] - 1] == '/';
+    NSString *completePath = [[theBaseURL path] stringByAppendingPathComponent:resourcePathWithoutQueryString isDirectory:isDirectory];
+    NSString* completePathWithQuery = [completePath stringByAppendingQueryParameters:mergedQueryParameters];
+    
+    // NOTE: You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
+    // So we unfortunately convert into an NSURL before going back into an NSString -> RKURL
+    NSURL* completeURL = [NSURL URLWithString:completePathWithQuery relativeToURL:theBaseURL];
+    if (!completeURL) {
+        RKLogError(@"Failed to build RKURL by appending resourcePath and query parameters '%@' to baseURL '%@'", theResourcePath, theBaseURL);
+        [self release];
+        return nil;
     }
-	NSURL* completeURL = [NSURL URLWithString:completePath relativeToURL:baseURL];
-	if (!completeURL) {
-		[self release];
-		return nil;
-	}
-	
-	// You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
-	self = [self initWithString:[completeURL absoluteString]];
-	if (self) {
-		_baseURLString = [baseURLString copy];
-		_resourcePath = [resourcePath copy];
-		_queryParams = [queryParams retain];
-	}
-	return self;
+        
+    self = [self initWithString:[completeURL absoluteString]];
+    if (self) {
+        self.baseURL = theBaseURL;
+        self.resourcePath = theResourcePath;
+    }
+    
+    return self;
 }
 
 - (void)dealloc {
-	[_baseURLString release];
-	_baseURLString = nil;
-	[_resourcePath release];
-	_resourcePath = nil;
-	[_queryParams release];
-	_queryParams = nil;
+	[baseURL release];
+	baseURL = nil;
+	[resourcePath release];
+	resourcePath = nil;
+    
 	[super dealloc];
+}
+
+- (NSDictionary *)queryParameters {
+    if (self.query) {
+        return [NSDictionary dictionaryWithURLEncodedString:self.query];
+    }
+    return nil;
+}
+
+- (RKURL *)URLByAppendingResourcePath:(NSString *)theResourcePath {
+    return [RKURL URLWithBaseURL:self resourcePath:theResourcePath];
+}
+
+- (RKURL *)URLByAppendingResourcePath:(NSString *)theResourcePath queryParameters:(NSDictionary *)theQueryParameters {
+    return [RKURL URLWithBaseURL:self resourcePath:resourcePath queryParameters:theQueryParameters];
+}
+
+- (RKURL *)URLByAppendingQueryParameters:(NSDictionary *)newQueryParameters {
+    return [RKURL URLWithBaseURL:self resourcePath:nil queryParameters:newQueryParameters];
+}
+
+- (RKURL *)URLByReplacingResourcePath:(NSString *)newResourcePath {
+    return [RKURL URLWithBaseURL:self.baseURL resourcePath:newResourcePath];
+}
+
+- (RKURL *)URLByInterpolatingResourcePathWithObject:(id)object {
+    NSString *interpolatedResourcePath = [self.resourcePath interpolateWithObject:object];
+    return [RKURL URLWithBaseURL:self.baseURL resourcePath:interpolatedResourcePath queryParameters:self.queryParameters];
+}
+
+- (RKURL *)URLByInterpolatingWithObject:(id)object {
+    return [RKURL URLWithString:[[self absoluteString] interpolateWithObject:object]];
+}
+
+#pragma mark - NSURL Overloads
+
+/**
+ Overload implementations from NSURL. We consider a naked string to be initialized
+ with a baseURL == self. Otherwise appending/replacing resourcePath will not work.
+ */
+
++ (id)URLWithString:(NSString *)URLString {
+    return [self URLWithBaseURLString:URLString];
+}
+
+- (id)initWithString:(NSString *)URLString {
+    self = [super initWithString:URLString];
+    if (self) {
+        self.baseURL = self;
+    }
+    
+    return self;
 }
 
 @end

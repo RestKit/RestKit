@@ -90,7 +90,7 @@ typedef enum {
 } RKRequestAuthenticationType;
 
 @class RKResponse, RKRequestQueue, RKReachabilityObserver;
-@protocol RKRequestDelegate;
+@protocol RKRequestDelegate, RKConfigurationDelegate;
 
 /**
  Models the request portion of an HTTP request/response cycle.
@@ -102,6 +102,7 @@ typedef enum {
 	NSDictionary *_additionalHTTPHeaders;
 	NSObject<RKRequestSerializable> *_params;
 	NSObject<RKRequestDelegate> *_delegate;
+    NSObject<RKConfigurationDelegate> *_configurationDelegate;
 	id _userData;
     RKRequestAuthenticationType _authenticationType;
 	NSString *_username;
@@ -157,7 +158,21 @@ typedef enum {
  * If the object implements the RKRequestDelegate protocol,
  * it will receive request lifecycle event messages.
  */
-@property(nonatomic, assign) NSObject<RKRequestDelegate> *delegate;
+@property(nonatomic, assign) id<RKRequestDelegate> delegate;
+
+/**
+ A delegate responsible for configuring the request. Centralizes common configuration
+ data (such as HTTP headers, authentication information, etc) for re-use.
+ 
+ RKClient and RKObjectManager conform to the RKConfigurationDelegate protocol. Request
+ and object loader instances built through these objects will have a reference to their
+ parent client/object manager assigned as the configuration delegate.
+ 
+ **Default**: nil
+ @see RKClient
+ @see RKObjectManager
+ */
+@property(nonatomic, assign) id<RKConfigurationDelegate> configurationDelegate;
 
 /**
  * A Dictionary of additional HTTP Headers to send with the request
@@ -326,19 +341,20 @@ typedef enum {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Return a REST request that is ready for dispatching
+ Creates and return a RKRequest object initialized to load content from a provided URL
+ 
+ @param URL The remote URL to load
+ @return An auto-released RKRequest object initialized with URL.
  */
-+ (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id)delegate;
++ (RKRequest *)requestWithURL:(NSURL *)URL;
 
 /**
- * Initialize a synchronous request
+ Initializes a RKRequest object to load from a provided URL
+ 
+ @param URL 
+ @return An RKRequest object initialized with URL.
  */
 - (id)initWithURL:(NSURL *)URL;
-
-/**
- * Initialize a REST request and prepare it for dispatching
- */
-- (id)initWithURL:(NSURL *)URL delegate:(id)delegate;
 
 /**
  * Setup the NSURLRequest. The request must be prepared right before dispatching
@@ -445,6 +461,10 @@ typedef enum {
  * Returns YES when the request was sent to the specified resource path
  */
 - (BOOL)wasSentToResourcePath:(NSString *)resourcePath;
+
+// Deprecations
++ (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE;
+- (id)initWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE;
 
 @end
 

@@ -24,20 +24,16 @@
 #import "SOCKit.h"
 #import "RKLog.h"
 
-// We may want to expose these via class accessors...
 static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 
 // Private interface
 @interface RKObjectPaginator () <RKObjectLoaderDelegate>
-
 @property (nonatomic, retain) RKManagedObjectLoader *objectLoader;
-
 @end
 
 @implementation RKObjectPaginator
 
 @synthesize baseURL;
-@synthesize requestMethod;
 @synthesize resourcePathPattern;
 @synthesize currentPage;
 @synthesize perPage;
@@ -48,22 +44,13 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 @synthesize delegate;
 @synthesize objectStore;
 @synthesize objectLoader;
-@synthesize customObjectLoaderSetup;
+@synthesize configurationDelegate;
 
-+ (id)paginatorWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider customObjectLoaderSetup:(void (^)(RKObjectLoader *))customObjectLoaderSetup {
-    return [[[self alloc] initWithBaseURL:baseURL resourcePathPattern:resourcePathPattern mappingProvider:mappingProvider customObjectLoaderSetup:customObjectLoaderSetup] autorelease];
-}
-
-+ (id)paginatorWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider {
++ (id)paginatorWithBaseURL:(RKURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider {
     return [[[self alloc] initWithBaseURL:baseURL resourcePathPattern:resourcePathPattern mappingProvider:mappingProvider] autorelease];
 }
 
-- (id)initWithBaseURL:(NSURL *)aBaseURL resourcePathPattern:(NSString *)aResourcePathPattern mappingProvider:(RKObjectMappingProvider *)aMappingProvider
-{
-  return [self initWithBaseURL:aBaseURL resourcePathPattern:aResourcePathPattern mappingProvider:aMappingProvider customObjectLoaderSetup:^(RKObjectLoader* loader) {}];
-}
-
-- (id)initWithBaseURL:(NSURL *)aBaseURL resourcePathPattern:(NSString *)aResourcePathPattern mappingProvider:(RKObjectMappingProvider *)aMappingProvider customObjectLoaderSetup:(void (^)(RKObjectLoader *))aCustomObjectLoaderSetup {
+- (id)initWithBaseURL:(RKURL *)aBaseURL resourcePathPattern:(NSString *)aResourcePathPattern mappingProvider:(RKObjectMappingProvider *)aMappingProvider {
     self = [super init];
     if (self) {
         baseURL = [aBaseURL copy];
@@ -72,20 +59,23 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
         currentPage = 0;
         perPage = RKObjectPaginatorDefaultPerPage;
         loaded = NO;
-        requestMethod = RKRequestMethodGET;
-        customObjectLoaderSetup = Block_copy(aCustomObjectLoaderSetup);
     }
     
     return self;
 }
 
 - (void)dealloc {
-    objectLoader.delegate = nil;
+    delegate = nil;
+    configurationDelegate = nil;
+    objectLoader.delegate = nil;    
     [baseURL release];
+    baseURL = nil;
     [mappingProvider release];
+    mappingProvider = nil;
     [objectStore release];
+    objectStore = nil;
     [objectLoader release];
-    [customObjectLoaderSetup release];
+    objectLoader = nil;
     
     [super dealloc];
 }
@@ -99,8 +89,8 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     return [pattern stringFromObject:self];
 }
 
-- (NSURL *)paginationURL {
-    return [NSURL URLWithString:[[baseURL absoluteString] stringByAppendingString:[self paginationResourcePath]]];
+- (RKURL *)paginationURL {
+    return [baseURL URLByAppendingResourcePath:[self paginationResourcePath]];
 }
 
 #pragma mark - RKObjectLoaderDelegate methods
@@ -116,7 +106,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
   // Propogate the error to the delegate
   RKLogError(@"Paginator error %@", error);
-  [self.delegate paginator:self objectLoader:self.objectLoader didFailWithError:error];
+  [self.delegate paginator:self didFailWithError:error objectLoader:self.objectLoader];
   self.objectLoader = nil;
 }
 
@@ -170,8 +160,10 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     
     self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.paginationURL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
   
-    self.customObjectLoaderSetup(self.objectLoader);
-    self.objectLoader.method = self.requestMethod;
+    if ([self.configurationDelegate respondsToSelector:@selector(configureObjectLoader:)]) {
+        [self.configurationDelegate configureObjectLoader:objectLoader];
+    }
+    self.objectLoader.method = RKRequestMethodGET;
     self.objectLoader.delegate = self;
     [self.objectLoader send];
 }

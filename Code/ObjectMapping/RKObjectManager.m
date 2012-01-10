@@ -44,12 +44,12 @@ static RKObjectManager* sharedManager = nil;
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize inferMappingsFromObjectTypes = _inferMappingsFromObjectTypes;
 
-- (id)initWithBaseURL:(NSString*)baseURL {
+- (id)initWithBaseURL:(RKURL *)baseURL {
     self = [super init];
 	if (self) {
         _mappingProvider = [RKObjectMappingProvider new];
 		_router = [RKObjectRouter new];
-		_client = [[RKClient clientWithBaseURL:baseURL] retain];
+		_client = [[RKClient alloc] initWithBaseURL:baseURL];
         _onlineState = RKObjectManagerOnlineStateUndetermined;
         _inferMappingsFromObjectTypes = NO;
         
@@ -81,7 +81,11 @@ static RKObjectManager* sharedManager = nil;
 	sharedManager = manager;
 }
 
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL {
++ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString {
+    return [self objectManagerWithBaseURL:[RKURL URLWithString:baseURLString]];
+}
+
++ (RKObjectManager*)objectManagerWithBaseURL:(RKURL *)baseURL {
 	RKObjectManager* manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];
 	if (nil == sharedManager) {
 		[RKObjectManager setSharedManager:manager];
@@ -147,32 +151,31 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (id)loaderWithResourcePath:(NSString *)resourcePath {
-    RKURL *URL = [RKURL URLWithBaseURLString:self.client.baseURL resourcePath:resourcePath];
+    RKURL *URL = [self.baseURL URLByAppendingResourcePath:resourcePath];
     return [self loaderWithURL:URL];
 }
 
-- (id)loaderWithURL:(NSURL *)URL {
+- (id)loaderWithURL:(RKURL *)URL {
     RKObjectLoader *loader = [[self objectLoaderClass] loaderWithURL:URL mappingProvider:self.mappingProvider];
+    loader.configurationDelegate = self;
     if ([loader isKindOfClass:[RKManagedObjectLoader class]]) {
         [(RKManagedObjectLoader *)loader setObjectStore:self.objectStore];
     }
-    [self.client setupRequest:loader];
+    [self configureObjectLoader:loader];
     
     return loader;
 }
 
 - (NSURL *)baseURL {
-    // TODO: Turn RKClient baseURL into an NSURL and proxy...
-    return [NSURL URLWithString:self.client.baseURL];
+    return self.client.baseURL;
 }
 
 - (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern {
-    return [RKObjectPaginator paginatorWithBaseURL:[self baseURL]
-                               resourcePathPattern:resourcePathPattern 
-                                   mappingProvider:self.mappingProvider
-            customObjectLoaderSetup:^(RKObjectLoader *loader) {
-              [self.client setupRequest:loader];
-            }];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithBaseURL:[self baseURL]
+                                                       resourcePathPattern:resourcePathPattern 
+                                                           mappingProvider:self.mappingProvider];
+    paginator.configurationDelegate = self;
+    return paginator;
 }
 
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method {
@@ -194,16 +197,10 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate {
-    RKObjectLoader* objectLoader = nil;
-    Class managedObjectLoaderClass = NSClassFromString(@"RKManagedObjectLoader");
-    if (self.objectStore && managedObjectLoaderClass) {
-        objectLoader = [managedObjectLoaderClass loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
-    } else {
-        // TODO: add newPaginator and newObjectLoader methods to RKObjectManager???
-        objectLoader = [RKObjectLoader loaderWithResourcePath:resourcePath objectManager:self delegate:delegate];
-    }	
+    RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
+    loader.delegate = delegate;
     
-	return objectLoader;
+    return loader;
 }
 
 - (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate {
@@ -393,6 +390,16 @@ static RKObjectManager* sharedManager = nil;
 
 - (RKRequestQueue *)requestQueue {
     return self.client.requestQueue;
+}
+
+#pragma mark - RKConfigrationDelegate
+
+- (void)configureRequest:(RKRequest *)request {
+    [self.client configureRequest:request];
+}
+
+- (void)configureObjectLoader:(RKObjectLoader *)objectLoader {
+    [self configureRequest:objectLoader];
 }
 
 @end

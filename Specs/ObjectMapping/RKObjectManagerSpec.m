@@ -114,7 +114,8 @@
     
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];    
     NSString* resourcePath = @"/humans/fail";
-    RKObjectLoader* objectLoader = [_objectManager objectLoaderWithResourcePath:resourcePath delegate:loader];
+    RKObjectLoader* objectLoader = [_objectManager loaderWithResourcePath:resourcePath];
+    objectLoader.delegate = loader;
     objectLoader.method = RKRequestMethodPOST;
     objectLoader.targetObject = temporaryHuman;
     objectLoader.serializationMapping = mapping;
@@ -135,7 +136,8 @@
     
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];    
     NSString* resourcePath = @"/humans/fail";
-    RKObjectLoader* objectLoader = [_objectManager objectLoaderWithResourcePath:resourcePath delegate:loader];
+    RKObjectLoader* objectLoader = [_objectManager loaderWithResourcePath:resourcePath];
+    objectLoader.delegate = loader;
     objectLoader.method = RKRequestMethodPOST;
     objectLoader.targetObject = temporaryHuman;
     objectLoader.serializationMapping = mapping;
@@ -168,7 +170,7 @@
 
 - (void)testShouldHandleConnectionFailures {
 	NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
-	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURL:localBaseURL];
+	RKObjectManager* modelManager = [RKObjectManager objectManagerWithBaseURLString:localBaseURL];
     modelManager.client.requestQueue.suspended = NO;
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
 	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];

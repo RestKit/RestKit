@@ -32,11 +32,11 @@
 
 @synthesize objectStore = _objectStore;
 
-+ (id)loaderWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
     return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider objectStore:objectStore] autorelease];
 }
 
-- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
     self = [self initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
         _objectStore = [objectStore retain];
@@ -45,7 +45,7 @@
     return self;
 }
 
-- (id)initWithURL:(NSURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
     self = [super initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
         _managedObjectKeyPaths = [[NSMutableSet alloc] init];
@@ -161,7 +161,7 @@
         NSError* error = [self.objectStore save];
         if (error) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
-            NSMethodSignature* signature = [self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
+            NSMethodSignature* signature = [(NSObject *)self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
             RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
             [invocation setTarget:self.delegate];
             [invocation setSelector:@selector(objectLoader:didFailWithError:)];
