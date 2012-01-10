@@ -27,7 +27,7 @@ RK_FIX_CATEGORY_BUG(NSURL_RestKit)
 
 @implementation NSURL (RestKit)
 
-- (NSDictionary *)queryDictionary {
+- (NSDictionary *)queryParameters {
     return [NSDictionary dictionaryWithURLEncodedString:self.query];
 }
 

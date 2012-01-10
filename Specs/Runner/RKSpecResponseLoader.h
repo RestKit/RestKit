@@ -29,15 +29,14 @@
 	RKResponse* _response;
     NSArray* _objects;
 	NSError* _failureError;
-	NSString* _errorMessage;
 	NSTimeInterval _timeout;
 }
 
 // The response that was loaded from the web request
-@property (nonatomic, readonly) RKResponse* response;
+@property (nonatomic, retain, readonly) RKResponse* response;
 
 // The objects that were loaded (if any)
-@property (nonatomic, readonly) NSArray* objects;
+@property (nonatomic, retain, readonly) NSArray* objects;
 
 // True when the response is success
 @property (nonatomic, readonly) BOOL success;
@@ -48,7 +47,7 @@
 @property (nonatomic, readonly) BOOL unknownResponse;
 
 // The error that was returned from a failure to connect
-@property (nonatomic, readonly) NSError* failureError;
+@property (nonatomic, copy, readonly) NSError* failureError;
 
 // The error message returned by the server
 @property (nonatomic, readonly) NSString* errorMessage;

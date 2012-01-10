@@ -33,8 +33,8 @@ NSString* RKSpecGetBaseURLString(void) {
     return [NSString stringWithFormat:@"http://%s:4567", ipAddress];
 }
 
-NSURL* RKSpecGetBaseURL(void) {
-    return [NSURL URLWithString:RKSpecGetBaseURLString()];
+RKURL* RKSpecGetBaseURL(void) {
+    return [RKURL URLWithString:RKSpecGetBaseURLString()];
 }
 
 void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
@@ -46,7 +46,7 @@ void RKSpecStubNetworkAvailability(BOOL isNetworkAvailable) {
 }
 
 RKClient* RKSpecNewClient(void) {
-    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURLString()];
+    RKClient* client = [RKClient clientWithBaseURL:RKSpecGetBaseURL()];
     [RKClient setSharedClient:client];    
     [client release];
     client.requestQueue.suspended = NO;
@@ -64,7 +64,7 @@ RKOAuthClient* RKSpecNewOAuthClient(RKSpecResponseLoader* loader){
 
 RKObjectManager* RKSpecNewObjectManager(void) {    
     [RKObjectMapping setDefaultDateFormatters:nil];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURLString()];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
     [RKObjectManager setSharedManager:objectManager];
     [RKClient setSharedClient:objectManager.client];
     

@@ -62,13 +62,14 @@
 @synthesize OAuth2RefreshToken = _OAuth2RefreshToken;
 @synthesize queue = _queue;
 @synthesize reachabilityObserver = _reachabilityObserver;
+@synthesize configurationDelegate = _configurationDelegate;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
 #endif
 
-+ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
-	return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
++ (RKRequest*)requestWithURL:(NSURL*)URL {
+	return [[[RKRequest alloc] initWithURL:URL] autorelease];
 }
 
 - (id)initWithURL:(NSURL*)URL {
@@ -79,14 +80,6 @@
         _authenticationType = RKRequestAuthenticationTypeNone;
 		_cachePolicy = RKRequestCachePolicyDefault;
         _cacheTimeoutInterval = 0;
-	}
-	return self;
-}
-
-- (id)initWithURL:(NSURL*)URL delegate:(id)delegate {
-    self = [self initWithURL:URL];
-	if (self) {
-		_delegate = delegate;
 	}
 	return self;
 }
@@ -140,6 +133,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
   	self.delegate = nil;
+    _configurationDelegate = nil;
   	[_connection cancel];
   	[_connection release];
   	_connection = nil;
@@ -255,7 +249,7 @@
         if ([self.params isKindOfClass:[RKParams class]])
             parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
         else 
-            parameters = [_URL queryDictionary];
+            parameters = [_URL queryParameters];
             
         if (self.method == RKRequestMethodPUT)
             echo = [GCOAuth URLRequestForPath:[_URL path]
@@ -277,7 +271,7 @@
                                   tokenSecret:self.OAuth1AccessTokenSecret];
         else
             echo = [GCOAuth URLRequestForPath:[_URL path]
-                                GETParameters:[_URL queryDictionary]
+                                GETParameters:[_URL queryParameters]
                                        scheme:[_URL scheme]
                                          host:[_URL host]
                                   consumerKey:self.OAuth1ConsumerKey
@@ -350,7 +344,7 @@
 	}
 }
 
-// TODO: We may want to eliminate the coupling between the request queue and individual queue instances.
+// TODO: We may want to eliminate the coupling between the request queue and individual request instances.
 // We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
 - (void)send {
     NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
@@ -641,11 +635,11 @@
     _URLRequest.URL = URL;
 }
 
-- (void)setResourcePath:(NSString *)resourcePath {
+- (void)setResourcePath:(NSString *)resourcePath {    
     if ([self.URL isKindOfClass:[RKURL class]]) {
-        self.URL = [RKURL URLWithBaseURLString:[(RKURL*)self.URL baseURLString] resourcePath:resourcePath];
+        self.URL = [(RKURL *)self.URL URLByReplacingResourcePath:resourcePath];
 	} else {
-        [NSException raise:NSInvalidArgumentException format:@"Resource path can only be mutated when self.URL is an RKURL instance"];
+        self.URL = [RKURL URLWithBaseURL:self.URL resourcePath:resourcePath];
     }
 }
 
@@ -693,6 +687,19 @@
     }
     NSAssert(compositeCacheKey, @"Expected a cacheKey to be generated for request %@, but got nil", compositeCacheKey);
     return [compositeCacheKey MD5];
+}
+
+// Deprecations
++ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
+	return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
+}
+
+- (id)initWithURL:(NSURL*)URL delegate:(id)delegate {
+    self = [self initWithURL:URL];
+	if (self) {
+		_delegate = delegate;
+	}
+	return self;
 }
 
 @end

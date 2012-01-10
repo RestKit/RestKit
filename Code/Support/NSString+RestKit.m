@@ -26,6 +26,7 @@
 #import "NSString+RestKit.h"
 #import "RKClient.h"
 #import "RKFixCategoryBug.h"
+#import "RKPathMatcher.h"
 #include <netdb.h>
 #include <arpa/inet.h>
 
@@ -33,12 +34,27 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
 
 @implementation NSString (RestKit)
 
+- (NSString *)stringByAppendingQueryParameters:(NSDictionary *)queryParameters {
+    if ([queryParameters count] > 0) {
+        return [NSString stringWithFormat:@"%@?%@", self, [queryParameters stringWithURLEncodedEntries]];
+    }
+    return [NSString stringWithString:self];
+}
+
+// Deprecated
 - (NSString *)appendQueryParams:(NSDictionary *)queryParams {
-    return RKPathAppendQueryParams(self, queryParams);
+    return [self stringByAppendingQueryParameters:queryParams];
+}
+
+- (NSString *)interpolateWithObject:(id)object addingEscapes:(BOOL)addEscapes {
+    NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
+    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:self];
+    NSString *interpolatedPath = [matcher pathFromObject:object addingEscapes:addEscapes];
+    return interpolatedPath;
 }
 
 - (NSString *)interpolateWithObject:(id)object {
-    return RKMakePathWithObject(self, object);
+    return [self interpolateWithObject:object addingEscapes:YES];
 }
 
 - (NSDictionary *)queryParameters {
@@ -139,6 +155,12 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
     char *hostNameOrIPAddressCString = (char *) [self UTF8String];
     int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));    
     return (result != 0);
+}
+
+- (NSString *)stringByAppendingPathComponent:(NSString *)pathComponent isDirectory:(BOOL)isDirectory {
+    NSString *stringWithPathComponent = [self stringByAppendingPathComponent:pathComponent];
+    if (isDirectory) return [stringWithPathComponent stringByAppendingString:@"/"];
+    return stringWithPathComponent;
 }
 
 @end

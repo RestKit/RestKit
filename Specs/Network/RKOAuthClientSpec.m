@@ -56,10 +56,11 @@
     [client validateAuthorizationCode];
 
     RKSpecResponseLoader* resourceLoader = [RKSpecResponseLoader responseLoader];
-    RKClient *requestClient = [RKClient clientWithBaseURL:[client authorizationURL]];
+    RKClient *requestClient = [RKClient clientWithBaseURLString:[client authorizationURL]];
     requestClient.OAuth2AccessToken = client.accessToken;
     requestClient.authenticationType = RKRequestAuthenticationTypeOAuth2;
-    RKRequest *request = [requestClient requestWithResourcePath:@"/me" delegate:resourceLoader];
+    RKRequest *request = [requestClient requestWithResourcePath:@"/me"];
+    request.delegate = resourceLoader;
     [request send];
     [resourceLoader waitForResponse];
     assertThatBool(loader.success, is(equalToBool(YES)));

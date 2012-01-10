@@ -36,7 +36,7 @@
 #define OCMOCK_VALUE(variable) [NSValue value:&variable withObjCType:@encode(__typeof(variable))]
 
 // The Base URL for the Spec server. See Specs/Server/
-NSURL* RKSpecGetBaseURL(void);
+RKURL* RKSpecGetBaseURL(void);
 NSString* RKSpecGetBaseURLString(void);
 
 // Stub out the return value of the Shared Client instance's isNetworkAvailable method

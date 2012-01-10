@@ -76,7 +76,9 @@
     
     RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/humans/1" objectManager:objectManager delegate:responseLoader];
+    RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/humans/1"];
+    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
+    objectLoader.delegate = responseLoader;
     objectLoader.method = RKRequestMethodDELETE;
     objectLoader.objectMapping = mapping;
     objectLoader.targetObject = human;
@@ -98,7 +100,9 @@
     [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/JSON/humans/with_to_one_relationship.json" objectManager:objectManager delegate:responseLoader];
+    RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/humans/with_to_one_relationship.json"];
+    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
+    objectLoader.delegate = responseLoader;
     [objectLoader send];
     [responseLoader waitForResponse];
     RKHuman* human = [responseLoader.objects lastObject];
@@ -134,7 +138,9 @@
     
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     responseLoader.timeout = 25;
-    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/JSON/humans/all.json" objectManager:objectManager delegate:responseLoader]; 
+    RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/humans/all.json"];
+    RKManagedObjectLoader *objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
+    objectLoader.delegate = responseLoader;
     [objectLoader send];
     [responseLoader waitForResponse];
 
@@ -146,92 +152,97 @@
 
 - (void)testShouldNotDeleteOrphansFromManagedObjectCache
 {
-  RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
-  RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
-  [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
-  [humanMapping mapAttributes:@"name", nil];
-  humanMapping.primaryKeyAttribute = @"railsID";
-  
-  // Create 4 objects, we will expect 4 after the load
-  [RKHuman truncateAll];    
-  assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
-  RKHuman* blake = [RKHuman createEntity];
-  blake.railsID = [NSNumber numberWithInt:123];
-  RKHuman* other = [RKHuman createEntity];
-  other.railsID = [NSNumber numberWithInt:456];
-  RKHuman* deleteOdd = [RKHuman createEntity];
-  deleteOdd.railsID = [NSNumber numberWithInt:9999];
-  RKHuman* doNotDeleteMe = [RKHuman createEntity];
-  doNotDeleteMe.railsID = [NSNumber numberWithInt:1000];
-  [store save];
-  assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
-  
-  RKObjectManager* objectManager = RKSpecNewObjectManager();
-  [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-  RKSpecStubNetworkAvailability(YES);
-  objectManager.objectStore = store;
-  
-  id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
-  NSArray* fetchRequests = [NSArray arrayWithObject:[RKHuman fetchRequest]];
-  [[[mockObjectCache expect] andReturn:fetchRequests] fetchRequestsForResourcePath:OCMOCK_ANY];
-  const BOOL no = NO;
-  [[[mockObjectCache stub] andReturnValue:OCMOCK_VALUE(no)] shouldDeleteOrphanedObject:OCMOCK_ANY];
-  objectManager.objectStore.managedObjectCache = mockObjectCache;
-  
-  RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-  responseLoader.timeout = 25;
-  RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/JSON/humans/all.json" objectManager:objectManager delegate:responseLoader]; 
-  [objectLoader send];
-  [responseLoader waitForResponse];
-    
-  NSArray* humans = [RKHuman findAll];
-  assertThatUnsignedInteger([humans count], is(equalToInt(4)));
-  assertThatBool([blake isDeleted], is(equalToBool(NO)));
-  assertThatBool([other isDeleted], is(equalToBool(NO))); 
-  assertThatBool([deleteOdd isDeleted], is(equalToBool(NO))); 
-  assertThatBool([doNotDeleteMe isDeleted], is(equalToBool(NO))); 
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
+    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
+    [humanMapping mapAttributes:@"name", nil];
+    humanMapping.primaryKeyAttribute = @"railsID";
+
+    // Create 4 objects, we will expect 4 after the load
+    [RKHuman truncateAll];    
+    assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
+    RKHuman* blake = [RKHuman createEntity];
+    blake.railsID = [NSNumber numberWithInt:123];
+    RKHuman* other = [RKHuman createEntity];
+    other.railsID = [NSNumber numberWithInt:456];
+    RKHuman* deleteOdd = [RKHuman createEntity];
+    deleteOdd.railsID = [NSNumber numberWithInt:9999];
+    RKHuman* doNotDeleteMe = [RKHuman createEntity];
+    doNotDeleteMe.railsID = [NSNumber numberWithInt:1000];
+    [store save];
+    assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
+
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
+    RKSpecStubNetworkAvailability(YES);
+    objectManager.objectStore = store;
+
+    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
+    NSArray* fetchRequests = [NSArray arrayWithObject:[RKHuman fetchRequest]];
+    [[[mockObjectCache expect] andReturn:fetchRequests] fetchRequestsForResourcePath:OCMOCK_ANY];
+    const BOOL no = NO;
+    [[[mockObjectCache stub] andReturnValue:OCMOCK_VALUE(no)] shouldDeleteOrphanedObject:OCMOCK_ANY];
+    objectManager.objectStore.managedObjectCache = mockObjectCache;
+
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    responseLoader.timeout = 25;
+    RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/humans/all.json"];
+    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
+    objectLoader.delegate = responseLoader;
+    [objectLoader send];
+    [responseLoader waitForResponse];
+
+    NSArray* humans = [RKHuman findAll];
+    assertThatUnsignedInteger([humans count], is(equalToInt(4)));
+    assertThatBool([blake isDeleted], is(equalToBool(NO)));
+    assertThatBool([other isDeleted], is(equalToBool(NO))); 
+    assertThatBool([deleteOdd isDeleted], is(equalToBool(NO))); 
+    assertThatBool([doNotDeleteMe isDeleted], is(equalToBool(NO))); 
 }
 
 - (void)testShouldNotDeleteOddOrphansFromManagedObjectCache
 {
-  RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
-  RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
-  [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
-  [humanMapping mapAttributes:@"name", nil];
-  humanMapping.primaryKeyAttribute = @"railsID";
-  
-  // Create 4 objects, we will expect 4 after the load
-  [RKHuman truncateAll];    
-  assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
-  RKHuman* blake = [RKHuman createEntity];
-  blake.railsID = [NSNumber numberWithInt:123];
-  RKHuman* other = [RKHuman createEntity];
-  other.railsID = [NSNumber numberWithInt:456];
-  RKHuman* deleteOdd = [RKHuman createEntity];
-  deleteOdd.railsID = [NSNumber numberWithInt:9999];
-  RKHuman* doNotDeleteMe = [RKHuman createEntity];
-  doNotDeleteMe.railsID = [NSNumber numberWithInt:1000];
-  [store save];
-  assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
-  
-  RKObjectManager* objectManager = RKSpecNewObjectManager();
-  [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-  RKSpecStubNetworkAvailability(YES);
-  objectManager.objectStore = store;
-  objectManager.objectStore.managedObjectCache = [[[TestCacheRemoveOddOrphans alloc] init] autorelease];
-  
-  RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-  responseLoader.timeout = 25;
-  RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithResourcePath:@"/JSON/humans/all.json" objectManager:objectManager delegate:responseLoader]; 
-  [objectLoader send];
-  [responseLoader waitForResponse];
-  
-  NSArray* humans = [RKHuman findAll];
-  assertThatUnsignedInteger([humans count], is(equalToInt(3)));
-  assertThatBool([blake isDeleted], is(equalToBool(NO)));
-  assertThatBool([other isDeleted], is(equalToBool(NO)));                 
-  assertThatBool([deleteOdd isDeleted], is(equalToBool(YES))); 
-  assertThatBool([doNotDeleteMe isDeleted], is(equalToBool(NO))); 
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"];
+    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
+    [humanMapping mapAttributes:@"name", nil];
+    humanMapping.primaryKeyAttribute = @"railsID";
+
+    // Create 4 objects, we will expect 4 after the load
+    [RKHuman truncateAll];    
+    assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
+    RKHuman* blake = [RKHuman createEntity];
+    blake.railsID = [NSNumber numberWithInt:123];
+    RKHuman* other = [RKHuman createEntity];
+    other.railsID = [NSNumber numberWithInt:456];
+    RKHuman* deleteOdd = [RKHuman createEntity];
+    deleteOdd.railsID = [NSNumber numberWithInt:9999];
+    RKHuman* doNotDeleteMe = [RKHuman createEntity];
+    doNotDeleteMe.railsID = [NSNumber numberWithInt:1000];
+    [store save];
+    assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
+
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
+    RKSpecStubNetworkAvailability(YES);
+    objectManager.objectStore = store;
+    objectManager.objectStore.managedObjectCache = [[[TestCacheRemoveOddOrphans alloc] init] autorelease];
+
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    responseLoader.timeout = 25;    
+    RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/humans/all.json"];
+    RKManagedObjectLoader *objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
+    objectLoader.delegate = responseLoader;
+    
+    [objectLoader send];
+    [responseLoader waitForResponse];
+
+    NSArray* humans = [RKHuman findAll];
+    assertThatUnsignedInteger([humans count], is(equalToInt(3)));
+    assertThatBool([blake isDeleted], is(equalToBool(NO)));
+    assertThatBool([other isDeleted], is(equalToBool(NO)));                 
+    assertThatBool([deleteOdd isDeleted], is(equalToBool(YES))); 
+    assertThatBool([doNotDeleteMe isDeleted], is(equalToBool(NO))); 
 }
 
 

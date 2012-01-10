@@ -22,6 +22,12 @@
 
 NSString * const RKSpecResponseLoaderTimeoutException = @"RKSpecResponseLoaderTimeoutException";
 
+@interface RKSpecResponseLoader ()
+@property (nonatomic, retain, readwrite) RKResponse *response;
+@property (nonatomic, copy, readwrite) NSError *failureError;
+@property (nonatomic, retain, readwrite) NSArray *objects;
+@end
+
 @implementation RKSpecResponseLoader
 
 @synthesize response = _response;
@@ -49,8 +55,9 @@ NSString * const RKSpecResponseLoaderTimeoutException = @"RKSpecResponseLoaderTi
 
 - (void)dealloc {
 	[_response release];
+    _response = nil;
 	[_failureError release];
-	[_errorMessage release];
+    _failureError = nil;
 	[super dealloc];
 }
 
@@ -71,12 +78,20 @@ NSString * const RKSpecResponseLoaderTimeoutException = @"RKSpecResponseLoaderTi
     NSLog(@"Error: %@", error);
     _awaitingResponse = NO;
 	_success = NO;
-	_failureError = [error retain];
+    self.failureError = error;
+}
+
+- (NSString *)errorMessage {
+    if (self.failureError) {
+        return [[self.failureError userInfo] valueForKey:NSLocalizedDescriptionKey];
+    }
+    
+    return nil;
 }
 
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     NSLog(@"Loaded response: %@", response);
-	_response = [response retain];
+	self.response = response;
     
     // If request is an Object Loader, then objectLoader:didLoadObjects:
     // will be sent after didLoadResponse:
@@ -103,7 +118,7 @@ NSString * const RKSpecResponseLoaderTimeoutException = @"RKSpecResponseLoaderTi
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
 	NSLog(@"Response: %@", [objectLoader.response bodyAsString]);
 	NSLog(@"Loaded objects: %@", objects);
-	_objects = [objects retain];
+	self.objects = objects;
 	_awaitingResponse = NO;
 	_success = YES;
 }

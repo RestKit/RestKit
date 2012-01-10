@@ -10,6 +10,8 @@
 		250CA67D147D8E8B0047D347 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
 		250CA67E147D8E8F0047D347 /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */; };
 		250CA680147D8F050047D347 /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
+		2513504E14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */; };
+		2513504F14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */; };
 		25160D1A14564E810060A5C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1914564E810060A5C5 /* Foundation.framework */; };
 		25160D2814564E820060A5C5 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D2714564E820060A5C5 /* SenTestingKit.framework */; };
 		25160D2A14564E820060A5C5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D2914564E820060A5C5 /* UIKit.framework */; };
@@ -560,6 +562,7 @@
 /* Begin PBXFileReference section */
 		250CA67B147D8E800047D347 /* OCHamcrest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrest.framework; sourceTree = "<group>"; };
 		250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
+		2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConfigurationDelegate.h; sourceTree = "<group>"; };
 		25160D1614564E810060A5C5 /* libRestKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		25160D1914564E810060A5C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		25160D2614564E820060A5C5 /* RestKitTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1106,6 +1109,7 @@
 				25160DA0145650490060A5C5 /* RKRouter.h */,
 				254A62B714AD544200939BEE /* RKObjectPaginator.h */,
 				254A62B814AD544200939BEE /* RKObjectPaginator.m */,
+				2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */,
 			);
 			path = ObjectMapping;
 			sourceTree = "<group>";
@@ -1677,6 +1681,7 @@
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
 				254A62B914AD544200939BEE /* RKObjectPaginator.h in Headers */,
 				25B408261491CDDC00F21111 /* RKDirectory.h in Headers */,
+				2513504E14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1765,6 +1770,7 @@
 				25160F25145655AF0060A5C5 /* RestKit.h in Headers */,
 				25B408271491CDDC00F21111 /* RKDirectory.h in Headers */,
 				254A62BA14AD544200939BEE /* RKObjectPaginator.h in Headers */,
+				2513504F14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

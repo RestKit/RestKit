@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import "RKURL.h"
 #import "RKRequest.h"
 #import "RKParams.h"
 #import "RKResponse.h"
@@ -25,6 +26,7 @@
 #import "RKReachabilityObserver.h"
 #import "RKRequestCache.h"
 #import "RKRequestQueue.h"
+#import "RKConfigurationDelegate.h"
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -38,18 +40,22 @@
  
  Shortcut for calling `[[RKClient sharedClient] URLForResourcePath:@"/some/path"]`
  
+ **Deprecated**: Use [[RKClient sharedClient].baseURL URLByAppendingResourcePath:]
+ 
  @param resourcePath The resource path to append to the baseURL of the [RKClient sharedClient]
  @return A fully constructed NSURL consisting of baseURL of the shared client singleton and the supplied 
  */
-NSURL *RKMakeURL(NSString *resourcePath);
+NSURL *RKMakeURL(NSString *resourcePath) DEPRECATED_ATTRIBUTE;
 
 /**
  Returns an NSString with the specified resource path appended to the base URL
  that the shared RKClient instance is configured with
  
+ **Deprecated**: Use [[[RKClient sharedClient].baseURL URLByAppendingResourcePath:] absoluteString]
+ 
  Shortcut for calling [[RKClient sharedClient] URLPathForResourcePath:@"/some/path"]
  */
-NSString *RKMakeURLPath(NSString *resourcePath);
+NSString *RKMakeURLPath(NSString *resourcePath) DEPRECATED_ATTRIBUTE;
 
 /**
  Convenience method for generating a path against the properties of an object. Takes
@@ -60,13 +66,15 @@ NSString *RKMakeURLPath(NSString *resourcePath);
  For example, given an 'article' object with an 'articleID' property of 12345 and a 'name' of Blake,
  RKMakePathWithObject(@"articles/:articleID/:name", article) would generate @"articles/12345/Blake"
  
+ **Deprecated**: Use [NSString interpolateWithObject:]
+ 
  This functionality is the basis for resource path generation in the Router.
  @param path The colon encoded path pattern string to use for interpolation.
  @param object The object containing the properties needed for interpolation.
  @return A new path string, replacing the pattern's parameters with the object's actual property values.
  @see RKMakePathWithObjectAddingEscapes
  */
-NSString *RKMakePathWithObject(NSString *path, id object);
+NSString *RKMakePathWithObject(NSString *path, id object) DEPRECATED_ATTRIBUTE;
 
 /**
  Convenience method for generating a path against the properties of an object. Takes
@@ -93,11 +101,13 @@ NSString *RKMakePathWithObjectAddingEscapes(NSString *pattern, id object, BOOL a
  
  *NOTE* - Assumes that the resource path does not already contain any query parameters.
  
+ **Deprecated**: Use [NSString stringByAppendingQueryParameters:] instead
+ 
  @param resourcePath The resource path to append the query parameters onto
  @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
  @return A new resource path with the query parameters appended
  */
-NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams);
+NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) DEPRECATED_ATTRIBUTE;
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -152,8 +162,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @see RKRequestQueue
  @see RKRequestSerializable
  */
-@interface RKClient : NSObject {
-	NSString *_baseURL;
+@interface RKClient : NSObject <RKConfigurationDelegate> {
+	RKURL *_baseURL;
     RKRequestAuthenticationType _authenticationType;
 	NSString *_username;
 	NSString *_password;
@@ -192,7 +202,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  
  @see requestCache
  */
-@property (nonatomic, retain) NSString *baseURL;
+@property (nonatomic, retain) RKURL *baseURL;
 
 /**
  A dictionary of headers to be sent with each request
@@ -461,7 +471,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @see baseURL
  @return A configured RKClient instance ready to send requests
  */
-+ (RKClient *)clientWithBaseURL:(NSString *)baseURL;
++ (RKClient *)clientWithBaseURL:(RKURL *)baseURL;
++ (RKClient *)clientWithBaseURLString:(NSString *)baseURLString;
 
 /**
  Return a Rest client scoped to a particular base URL with a set of HTTP AUTH credentials. 
@@ -472,7 +483,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @param password The password to use for HTTP Authentication challenges
  @return A configured RKClient instance ready to send requests
  */
-+ (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password;
++ (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password DEPRECATED_ATTRIBUTE;
 
 /**
  Return a client scoped to a particular base URL. If the singleton client is nil, the return client is set as the singleton
@@ -481,7 +492,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @see baseURL
  @return A configured RKClient instance ready to send requests
  */
-- (id)initWithBaseURL:(NSString *)baseURL;
+- (id)initWithBaseURL:(RKURL *)baseURL;
+- (id)initWithBaseURLString:(NSString *)baseURLString;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Constructing Resource Paths and URLs
@@ -490,18 +502,22 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 /**
  Returns a NSURL by adding a resource path to the base URL
  
+ **Deprecated** - Use [RKURL URLByAppendingResourcePath:]
+ 
  @param resourcePath The resource path to build a URL against
  @return An NSURL constructed by concatenating the baseURL and the resourcePath
  */
-- (NSURL *)URLForResourcePath:(NSString *)resourcePath;
+- (NSURL *)URLForResourcePath:(NSString *)resourcePath DEPRECATED_ATTRIBUTE;
 
 /**
  Returns an NSString by adding a resource path to the base URL
  
+ **Deprecated** - Use [[RKURL URLByAppendingResourcePath:] absoluteString]
+ 
  @param resourcePath The resource path to build a URL against
  @return A string URL constructed by concatenating the baseURL and the resourcePath
  */
-- (NSString *)URLPathForResourcePath:(NSString *)resourcePath;
+- (NSString *)URLPathForResourcePath:(NSString *)resourcePath DEPRECATED_ATTRIBUTE;
 
 /**
  Returns a resource path with a dictionary of query parameters URL encoded and appended
@@ -511,6 +527,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  will return /contacts?foo=bar&amp;color=red
  
  *NOTE* - Assumes that the resource path does not already contain any query parameters.
+ 
+ **Deprecated** - Use [RKURL URLByAppendingQueryParameters:]
  
  @param resourcePath The resource path to append the query parameters onto
  @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
@@ -530,25 +548,17 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  
  *NOTE* - Assumes that the resource path does not already contain any query parameters.
  
+ **Deprecated** - Use [RKURL URLByAppendingResourcePath:queryParameters:]
+ 
  @param resourcePath The resource path to append the query parameters onto
  @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
  @return A URL constructed by concatenating the baseURL and the resourcePath with the query parameters appended
  */
-- (NSURL *)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams;
+- (NSURL *)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams DEPRECATED_ATTRIBUTE;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name Building Requests
 /////////////////////////////////////////////////////////////////////////
-
-/**
- Configures a request with the headers and authentication settings applied to this client
- 
- @param request A request to apply the configuration to
- @see HTTPHeaders
- @see username
- @see password
- */
-- (void)setupRequest:(RKRequest *)request;
 
 /**
  Return a request object targetted at a resource path relative to the base URL. By default the method is set to GET
@@ -559,7 +569,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @return A fully configured RKRequest instance ready for sending
  @see RKRequestDelegate
  */
-- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate DEPRECATED_ATTRIBUTE;
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -587,11 +598,11 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  string and then appended to the resourcePath as the query string of the request.
  
  @param resourcePath The resourcePath to target the request at
- @param queryParams A dictionary of query parameters to append to the resourcePath. Assumes that resourcePath does not contain a query string.
+ @param queryParameters A dictionary of query parameters to append to the resourcePath. Assumes that resourcePath does not contain a query string.
  @param delegate A delegate object to inform of the results
  @return The RKRequest object built and sent to the remote system
  */
-- (RKRequest *)get:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams delegate:(NSObject<RKRequestDelegate> *)delegate;
+- (RKRequest *)get:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
  Create a resource via an HTTP POST with a set of form parameters

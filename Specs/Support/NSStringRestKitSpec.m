@@ -33,7 +33,7 @@
     NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:
                                  @"ascend", @"sortOrder",
                                  @"name", @"groupBy",nil];
-    NSString *resultingPath = [resourcePath appendQueryParams:queryParams];
+    NSString *resultingPath = [resourcePath stringByAppendingQueryParameters:queryParams];
     assertThat(resultingPath, isNot(equalTo(nil)));
     NSString *expectedPath1 = @"/controller/objects/?sortOrder=ascend&groupBy=name";
     NSString *expectedPath2 = @"/controller/objects/?groupBy=name&sortOrder=ascend";

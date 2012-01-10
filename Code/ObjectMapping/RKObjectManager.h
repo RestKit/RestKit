@@ -22,6 +22,7 @@
 #import "RKObjectLoader.h"
 #import "RKObjectRouter.h"
 #import "RKObjectMappingProvider.h"
+#import "RKConfigurationDelegate.h"
 #import "RKObjectPaginator.h"
 
 @protocol RKParser;
@@ -106,7 +107,7 @@ typedef enum {
  When an instance of RKObjectManager is configured, the RKObjectMappingProvider
  instance configured 
  */
-@interface RKObjectManager : NSObject {
+@interface RKObjectManager : NSObject <RKConfigurationDelegate> {
 	RKClient* _client;
 	RKObjectRouter* _router;
 	RKManagedObjectStore* _objectStore;	
@@ -134,12 +135,17 @@ typedef enum {
  Create and initialize a new object manager. If this is the first instance created
  it will be set as the shared instance
  */
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSString*)baseURL;
+// TODO: Both of these should be `managerWith` instead of `objectManagerWith`
++ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString;
++ (RKObjectManager*)objectManagerWithBaseURL:(RKURL *)baseURL;
 
 /**
- Initialize a new model manager instance
+ Initializes a newly created object manager with a specified baseURL.
+ 
+ @param baseURL A baseURL to initialize the underlying client instance with
+ @return The newly initialized RKObjectManager object
  */
-- (id)initWithBaseURL:(NSString*)baseURL;
+- (id)initWithBaseURL:(RKURL *)baseURL;
 
 /// @name Network Integration
 
@@ -147,6 +153,16 @@ typedef enum {
  The underlying HTTP client for this manager
  */
 @property (nonatomic, retain) RKClient* client;
+
+/**
+ The base URL of the underlying RKClient instance. Object loader
+ and paginator instances built through the object manager are
+ relative to this URL.
+ 
+ @see RKClient
+ @return The baseURL of the client.
+ */
+@property (nonatomic, readonly) RKURL *baseURL;
 
 /**
  The request cache used to store and load responses for requests sent
@@ -353,6 +369,12 @@ typedef enum {
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
 // TODO: Document all of these...
+/**
+ Return the class of object loader instances built through the manager. When Core Data has
+ been configured 
+ 
+ @return RKObjectLoader OR RKManagedObjectLoader
+ */
 - (Class)objectLoaderClass;
 - (id)loaderWithResourcePath:(NSString *)resourcePath;
 - (id)loaderWithURL:(NSURL *)URL;

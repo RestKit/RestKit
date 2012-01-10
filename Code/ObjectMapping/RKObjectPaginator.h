@@ -21,26 +21,24 @@
 #import "RKObjectMappingProvider.h"
 #import "RKManagedObjectStore.h"
 #import "RKObjectLoader.h"
+#import "RKConfigurationDelegate.h"
 
 @protocol RKObjectPaginatorDelegate;
 
 /**
  A pagination component capable of paging through a RESTful collection
  of JSON/XML objects returned via a web service.
- 
- The paginator is configured to retrieve 
  */
 @interface RKObjectPaginator : NSObject
 
-+ (id)paginatorWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
-+ (id)paginatorWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider customObjectLoaderSetup:(void(^)(RKObjectLoader* loader))customObjectLoaderSetup;
-- (id)initWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
-- (id)initWithBaseURL:(NSURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider customObjectLoaderSetup:(void(^)(RKObjectLoader* loader))customObjectLoaderSetup;
+// TODO: paginatorWithDynamicURL:mappingProvider:
++ (id)paginatorWithBaseURL:(RKURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
+- (id)initWithBaseURL:(RKURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 /**
  The base URL to build the complete pagination URL from
  */
-@property (nonatomic, copy) NSURL *baseURL;
+@property (nonatomic, copy) RKURL *baseURL;
 
 /**
  A SOCKit pattern for building the resource path to load
@@ -61,15 +59,18 @@
  */
 @property (nonatomic, copy) NSString *resourcePathPattern;
 
+/**
+ Returns a complete resource path built by evaluating the resourcePathPattern
+ against the state of the paginator object. This path will be appended to the
+ baseURL when initializing an RKObjectLoader to fetch the paginated objects.
+ */
 @property (nonatomic, readonly) NSString *paginationResourcePath;
-@property (nonatomic, readonly) NSURL *paginationURL;
 
 /**
- The HTTP method to use when loading the collection.
- 
- **Default**: RKRequestMethodGET
+ Returns a complete RKURL to the paginated resource collection by concatenating
+ the baseURL and the paginationResourcePath.
  */
-@property (nonatomic, assign) RKRequestMethod requestMethod;
+@property (nonatomic, readonly) RKURL *paginationURL;
 
 /**
  Delegate to call back with pagination results
@@ -77,17 +78,33 @@
 @property (nonatomic, assign) id<RKObjectPaginatorDelegate> delegate;
 
 /**
- Each time a loadPage request is created, this block is called to 
- perform custom setup on the loader before it is sent.  
- The loader requestMethod and delegate should not be set in this block 
- as they will be overriden by the above properties.
+ A delegate responsible for configuring the request. Centralizes common configuration
+ data (such as HTTP headers, authentication information, etc) for re-use.
+ 
+ RKClient and RKObjectManager conform to the RKConfigurationDelegate protocol. Paginator
+ instances built through these objects will have a reference to their
+ parent client/object manager assigned as the configuration delegate.
+ 
+ **Default**: nil
+ @see RKClient
+ @see RKObjectManager
  */
-@property (nonatomic, copy) void(^customObjectLoaderSetup)(RKObjectLoader* loader);
+@property (nonatomic, assign) id<RKConfigurationDelegate> configurationDelegate;
 
 /** @name Object Mapping Configuration */
 
-@property (nonatomic, retain) RKManagedObjectStore *objectStore;
+/**
+ The object mapping provider to use when performing object mapping on the data
+ loaded from the remote system. The provider will be assigned to the RKObjectLoader
+ instance built to retrieve the paginated data.
+ */
 @property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
+
+/**
+ An object store for accessing Core Data. Required if the objects being paginated
+ are stored into Core Data.
+ */
+@property (nonatomic, retain) RKManagedObjectStore *objectStore;
 
 /** @name Pagination Metadata */
 
@@ -149,11 +166,11 @@
 /**
  Sent to the delegate when the paginator has failed loading due to an error
  
- @param paginator The paginator that failed loading due to an error
- @param loader The loader request that resulted in the failure
+ @param paginator The paginator that failed loading due to an error 
  @param error An NSError indicating the cause of the failure
+ @param loader The loader request that resulted in the failure
  */
-- (void)paginator:(RKObjectPaginator *)paginator objectLoader:(RKObjectLoader*)loader didFailWithError:(NSError *)error;
+- (void)paginator:(RKObjectPaginator *)paginator didFailWithError:(NSError *)error objectLoader:(RKObjectLoader *)loader;
 
 @optional
 
@@ -162,8 +179,9 @@
  
  @param paginator The paginator performing the load
  @param page The numeric page number being loaded
+ @param loader The object loader request used to load the page
  */
-- (void)paginator:(RKObjectPaginator *)paginator willLoadPage:(NSUInteger)page;
+- (void)paginator:(RKObjectPaginator *)paginator willLoadPage:(NSUInteger)page objectLoader:(RKObjectLoader *)loader;
 
 /**
  Sent to the delegate when the paginator has loaded the last page in the collection

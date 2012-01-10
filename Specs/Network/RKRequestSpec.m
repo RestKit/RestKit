@@ -588,7 +588,7 @@
     RKSpecStubNetworkAvailability(YES);
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     loader.timeout = 20;
-    RKRequest* request = [client get:@"/echo_params" queryParams:[NSDictionary dictionary] delegate:loader];
+    RKRequest* request = [client get:@"/echo_params" queryParameters:[NSDictionary dictionary] delegate:loader];
     [loader waitForResponse];
     assertThat([request.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
 }
@@ -606,21 +606,21 @@
 
 - (void)testShouldAllowYouToChangeTheURL {
     NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    RKRequest* request = [RKRequest requestWithURL:URL];
     request.URL = [NSURL URLWithString:@"http://restkit.org/gorilla"];
     assertThat([request.URL absoluteString], is(equalTo(@"http://restkit.org/gorilla")));
 }
 
 - (void)testShouldAllowYouToChangeTheResourcePath {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/monkey"];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    RKURL* URL = [[RKURL URLWithString:@"http://restkit.org"] URLByAppendingResourcePath:@"/monkey"];
+    RKRequest* request = [RKRequest requestWithURL:URL];
     request.resourcePath = @"/gorilla";
     assertThat(request.resourcePath, is(equalTo(@"/gorilla")));
 }
 
 - (void)testShouldRaiseAnExceptionWhenAttemptingToMutateResourcePathOnAnNSURL {
     NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:self];
+    RKRequest* request = [RKRequest requestWithURL:URL];
     NSException* exception = nil;
     @try {
         request.resourcePath = @"/gorilla";
@@ -638,7 +638,8 @@
     client.disableCertificateValidation = YES;
     NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    RKRequest* request = [RKRequest requestWithURL:URL];
+    request.delegate = loader;
     [request send];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
@@ -649,7 +650,8 @@
     client.disableCertificateValidation = YES;
     NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    RKRequest* request = [RKRequest requestWithURL:URL];
+    request.delegate = loader;
     request.params = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
     [request send];
     [loader waitForResponse];
@@ -661,7 +663,8 @@
     client.disableCertificateValidation = YES;
     NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKRequest* request = [RKRequest requestWithURL:URL delegate:loader];
+    RKRequest* request = [RKRequest requestWithURL:URL];
+    request.delegate = loader;
     request.method = RKRequestMethodHEAD;
     request.params = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
     [request send];
@@ -674,7 +677,7 @@
     RKParams *params = [RKParams params];
     [params setValue:@"foo" forParam:@"bar"];
     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/"];
-    RKRequest *request = [RKRequest requestWithURL:URL delegate:nil];
+    RKRequest *request = [RKRequest requestWithURL:URL];
     request.params = params;
     NSString* baseURL = RKSpecGetBaseURLString();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
@@ -692,7 +695,7 @@
     RKParams *params = [RKParams params];
     [params setValue:@"foo" forParam:@"bar"];
     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/"];
-    RKRequest *request = [RKRequest requestWithURL:URL delegate:nil];
+    RKRequest *request = [RKRequest requestWithURL:URL];
     request.method = RKRequestMethodDELETE;
     NSString* baseURL = RKSpecGetBaseURLString();
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
@@ -705,7 +708,7 @@
 }
 
 - (void)testShouldBuildAProperAuthorizationHeaderForOAuth1 {
-    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:@"http://restkit.org/this?that=foo&bar=word"] delegate:nil];
+    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:@"http://restkit.org/this?that=foo&bar=word"]];
     request.authenticationType = RKRequestAuthenticationTypeOAuth1;
     request.OAuth1AccessToken = @"12345";
     request.OAuth1AccessTokenSecret = @"monkey";

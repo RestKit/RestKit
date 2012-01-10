@@ -31,41 +31,42 @@
 @implementation RKClientSpec
 
 - (void)testShouldDetectNetworkStatusWithAHostname {
-	RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+	RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
 	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
 	assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));	
 }
 
 - (void)testShouldDetectNetworkStatusWithAnIPAddressBaseName {
-	RKClient* client = [RKClient clientWithBaseURL:@"http://173.45.234.197"];
+	RKClient* client = [RKClient clientWithBaseURLString:@"http://173.45.234.197"];
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
 	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
 	assertThatInt(status, isNot(equalToInt(RKReachabilityIndeterminate)));
 }
 - (void)testShouldSetTheCachePolicyOfTheRequest {
-    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.cachePolicy = RKRequestCachePolicyLoadIfOffline;
-    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+    RKRequest* request = [client requestWithResourcePath:@""];
     assertThatInt(request.cachePolicy, is(equalToInt(RKRequestCachePolicyLoadIfOffline)));
 }
 
 - (void)testShouldInitializeTheCacheOfTheRequest {
-    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.requestCache = [[[RKRequestCache alloc] init] autorelease];
-    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+    RKRequest* request = [client requestWithResourcePath:@""];
 	assertThat(request.cache, is(equalTo(client.requestCache)));
 }
 
 - (void)testShouldAllowYouToChangeTheBaseURL {
-    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     assertThatBool([client isNetworkReachable], is(equalToBool(YES)));
-    client.baseURL = @"http://www.restkit.org";
+    client.baseURL = [RKURL URLWithString:@"http://www.restkit.org"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     assertThatBool([client isNetworkReachable], is(equalToBool(YES)));
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKRequest* request = [client requestWithResourcePath:@"/" delegate:loader];
+    RKRequest* request = [client requestWithResourcePath:@"/"];
+    request.delegate = loader;
     [request send];
     [loader waitForResponse];
     assertThatBool(loader.success, is(equalToBool(YES)));
@@ -91,8 +92,8 @@
 }
 
 - (void)testShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished {
-    RKClient* client = [RKClient clientWithBaseURL:@"http://www.google.com"];
-    client.baseURL = @"http://restkit.org";
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
+    client.baseURL = [RKURL URLWithString:@"http://restkit.org"];
     assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
 }
 
@@ -100,7 +101,7 @@
     RKReachabilityObserver *observer = [RKReachabilityObserver reachabilityObserverForInternet];
     [observer getFlags];
     assertThatBool([observer isReachabilityDetermined], is(equalToBool(YES)));
-    RKClient *client = [RKClient clientWithBaseURL:@"http://www.google.com"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
     client.reachabilityObserver = observer;
     assertThatBool(client.requestQueue.suspended, is(equalToBool(NO)));
@@ -109,7 +110,7 @@
 - (void)testShouldPerformAPUTWithParams {
     NSLog(@"PENDING ---> FIX ME!!!");
     return;
-    RKClient* client = [RKClient clientWithBaseURL:@"http://ohblockhero.appspot.com/api/v1"];
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://ohblockhero.appspot.com/api/v1"];
     client.cachePolicy = RKRequestCachePolicyNone;
     RKParams *params=[RKParams params];
     [params setValue:@"username" forParam:@"username"];
