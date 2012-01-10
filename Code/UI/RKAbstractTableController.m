@@ -1015,8 +1015,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    BOOL newValue;
-    BOOL oldValue;
+    BOOL newValue = NO;
+    BOOL oldValue = NO;
     if ([keyPath isEqualToString:@"loading"]) {
         newValue = [[change valueForKey:NSKeyValueChangeNewKey] boolValue];
         oldValue = [[change valueForKey:NSKeyValueChangeOldKey] boolValue];
