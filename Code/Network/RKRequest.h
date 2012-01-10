@@ -32,12 +32,16 @@
  * HTTP methods for requests
  */
 typedef enum RKRequestMethod {
-    RKRequestMethodGET = 0,
+    RKRequestMethodInvalid = -1,
+    RKRequestMethodGET,
     RKRequestMethodPOST,
     RKRequestMethodPUT,
     RKRequestMethodDELETE,
     RKRequestMethodHEAD
 } RKRequestMethod;
+
+NSString *RKRequestMethodNameFromType(RKRequestMethod);
+RKRequestMethod RKRequestMethodTypeFromName(NSString *);
 
 /**
  * Cache policy for determining how to use RKCache
