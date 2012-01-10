@@ -163,8 +163,7 @@
     [objectLoader.URLRequest addValue:authString forHTTPHeaderField:@"Authorization"];
     objectLoader.method = RKRequestMethodGET;
     objectLoader.targetObject = user;
-
-    [objectManager setMappingProvider:[self providerForComplexUser]];
+    objectLoader.mappingProvider = [self providerForComplexUser];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
@@ -180,8 +179,7 @@
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
     objectLoader.method = RKRequestMethodGET;
-    
-    [objectManager setMappingProvider:[self providerForComplexUser]];
+    objectLoader.mappingProvider = [self providerForComplexUser];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
@@ -197,8 +195,7 @@
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
     objectLoader.method = RKRequestMethodGET;
-    
-    [objectManager setMappingProvider:[self providerForComplexUser]];
+    objectLoader.mappingProvider = [self providerForComplexUser];
     
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
@@ -212,15 +209,15 @@
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSend {
     RKObjectManager* objectManager = RKSpecNewObjectManager();
-    [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
 
     // Explicitly init so we don't get a managed object loader...
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    RKObjectLoader* objectLoader = [[RKObjectLoader alloc] initWithURL:objectManager.baseURL mappingProvider:objectManager.mappingProvider];
+    RKObjectLoader* objectLoader = [[RKObjectLoader alloc] initWithURL:objectManager.baseURL mappingProvider:[self providerForComplexUser]];
     objectLoader.configurationDelegate = objectManager;
     objectLoader.sourceObject = mockObject;
+    objectLoader.delegate = responseLoader;
     [[mockObject expect] willSendWithObjectLoader:objectLoader];
     [objectLoader send];
     [responseLoader waitForResponse];    

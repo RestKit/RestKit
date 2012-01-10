@@ -339,7 +339,6 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	RKRequest *request = [RKRequest requestWithURL:resourcePathURL];
     request.delegate = delegate;
 	[self configureRequest:request];
-	[request autorelease];
 	request.method = method;
 	if (method != RKRequestMethodGET) {
 		request.params = params;

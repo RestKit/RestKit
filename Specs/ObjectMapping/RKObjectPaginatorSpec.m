@@ -180,7 +180,7 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
 - (void)testThatURLReturnsReflectsStateOfPaginator {
     RKURL *baseURL = [RKURL URLWithString:@"http://restkit.org"];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithBaseURL:baseURL resourcePathPattern:RKObjectPaginatorSpecResourcePathPattern mappingProvider:nil];
-    assertThat([[paginator paginationURL] absoluteString], is(equalTo(@"http://restkit.org/paginate?per_page=25&page=0")));
+    assertThat([[paginator paginationURL] absoluteString], is(equalTo(@"http://restkit.org/paginate?page=0&per_page=25")));
 }
 
 - (void)testLoadingAPageOfObjects {

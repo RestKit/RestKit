@@ -115,6 +115,7 @@
 }
 
 - (void)testShouldObserveForAppBackgroundTransitionsAndCancelTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
+    RKSpecNewClient();
     [self stubSharedApplicationWhileExecutingBlock:^{
         NSURL* URL = RKSpecGetBaseURL();
         RKRequest* request = [[RKRequest alloc] initWithURL:URL];
@@ -129,9 +130,10 @@
 }
 
 - (void)testShouldInformTheDelegateOfCancelWhenTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
-    [self stubSharedApplicationWhileExecutingBlock:^{
+    RKSpecNewClient();
+    [self stubSharedApplicationWhileExecutingBlock:^{        
         RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-        NSURL* URL = RKSpecGetBaseURL();
+        NSURL* URL = RKSpecGetBaseURL();        
         RKRequest* request = [[RKRequest alloc] initWithURL:URL];
         request.backgroundPolicy = RKRequestBackgroundPolicyCancel;
         request.delegate = loader;
@@ -618,7 +620,7 @@
     assertThat(request.resourcePath, is(equalTo(@"/gorilla")));
 }
 
-- (void)testShouldRaiseAnExceptionWhenAttemptingToMutateResourcePathOnAnNSURL {
+- (void)testShouldNotRaiseAnExceptionWhenAttemptingToMutateResourcePathOnAnNSURL {
     NSURL* URL = [NSURL URLWithString:@"http://restkit.org/monkey"];
     RKRequest* request = [RKRequest requestWithURL:URL];
     NSException* exception = nil;
@@ -629,7 +631,7 @@
         exception = e;
     }
     @finally {
-        assertThat(exception, is(notNilValue()));
+        assertThat(exception, is(nilValue()));
     }
 }
 
