@@ -91,9 +91,9 @@
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org")));
 }
 
-- (void)testInitializationFromStringHasNilBaseURL {
+- (void)testInitializationFromStringHasSelfAsBaseURL {
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org"];
-    assertThat([URL baseURL], is(nilValue()));
+    assertThat([[URL baseURL] absoluteString], is(equalTo(@"http://restkit.org")));
 }
 
 - (void)testInitializationFromStringHasNilResourcePath {

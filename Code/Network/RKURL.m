@@ -114,7 +114,7 @@
 }
 
 - (RKURL *)URLByAppendingResourcePath:(NSString *)theResourcePath queryParameters:(NSDictionary *)theQueryParameters {
-    return [RKURL URLWithBaseURL:self resourcePath:resourcePath queryParameters:theQueryParameters];
+    return [RKURL URLWithBaseURL:self resourcePath:theResourcePath queryParameters:theQueryParameters];
 }
 
 - (RKURL *)URLByAppendingQueryParameters:(NSDictionary *)newQueryParameters {

@@ -134,7 +134,7 @@
 - (void)dealloc {    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-  	self.delegate = nil;
+  	_delegate = nil;
     _configurationDelegate = nil;
   	[_connection cancel];
   	[_connection release];
