@@ -360,8 +360,6 @@
 		251610911456F2330060A5C5 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25160FE81456F2330060A5C5 /* users.json */; };
 		251610921456F2330060A5C5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 25160FEA1456F2330060A5C5 /* .gitignore */; };
 		251610931456F2330060A5C5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 25160FEA1456F2330060A5C5 /* .gitignore */; };
-		251610941456F2330060A5C5 /* file in Resources */ = {isa = PBXBuildFile; fileRef = 25160FEB1456F2330060A5C5 /* file */; };
-		251610951456F2330060A5C5 /* file in Resources */ = {isa = PBXBuildFile; fileRef = 25160FEB1456F2330060A5C5 /* file */; };
 		251610961456F2330060A5C5 /* attributes_without_text_content.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25160FED1456F2330060A5C5 /* attributes_without_text_content.xml */; };
 		251610971456F2330060A5C5 /* attributes_without_text_content.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25160FED1456F2330060A5C5 /* attributes_without_text_content.xml */; };
 		251610981456F2330060A5C5 /* container_attributes.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25160FEE1456F2330060A5C5 /* container_attributes.xml */; };
@@ -752,7 +750,6 @@
 		25160FE71456F2330060A5C5 /* user.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = user.json; sourceTree = "<group>"; };
 		25160FE81456F2330060A5C5 /* users.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = users.json; sourceTree = "<group>"; };
 		25160FEA1456F2330060A5C5 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
-		25160FEB1456F2330060A5C5 /* file */ = {isa = PBXFileReference; lastKnownFileType = file; path = file; sourceTree = "<group>"; };
 		25160FED1456F2330060A5C5 /* attributes_without_text_content.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = attributes_without_text_content.xml; sourceTree = "<group>"; };
 		25160FEE1456F2330060A5C5 /* container_attributes.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = container_attributes.xml; sourceTree = "<group>"; };
 		25160FEF1456F2330060A5C5 /* national_weather_service.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = national_weather_service.xml; sourceTree = "<group>"; };
@@ -1368,7 +1365,6 @@
 			isa = PBXGroup;
 			children = (
 				25160FEA1456F2330060A5C5 /* .gitignore */,
-				25160FEB1456F2330060A5C5 /* file */,
 			);
 			path = Uploads;
 			sourceTree = "<group>";
@@ -1891,7 +1887,6 @@
 				2516108E1456F2330060A5C5 /* user.json in Resources */,
 				251610901456F2330060A5C5 /* users.json in Resources */,
 				251610921456F2330060A5C5 /* .gitignore in Resources */,
-				251610941456F2330060A5C5 /* file in Resources */,
 				251610961456F2330060A5C5 /* attributes_without_text_content.xml in Resources */,
 				251610981456F2330060A5C5 /* container_attributes.xml in Resources */,
 				2516109A1456F2330060A5C5 /* national_weather_service.xml in Resources */,
@@ -1941,7 +1936,6 @@
 				2516108F1456F2330060A5C5 /* user.json in Resources */,
 				251610911456F2330060A5C5 /* users.json in Resources */,
 				251610931456F2330060A5C5 /* .gitignore in Resources */,
-				251610951456F2330060A5C5 /* file in Resources */,
 				251610971456F2330060A5C5 /* attributes_without_text_content.xml in Resources */,
 				251610991456F2330060A5C5 /* container_attributes.xml in Resources */,
 				2516109B1456F2330060A5C5 /* national_weather_service.xml in Resources */,
