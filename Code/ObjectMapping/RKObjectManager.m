@@ -171,9 +171,9 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern {
-    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithBaseURL:[self baseURL]
-                                                       resourcePathPattern:resourcePathPattern 
-                                                           mappingProvider:self.mappingProvider];
+    RKURL *patternURL = [[self baseURL] URLByAppendingResourcePath:resourcePathPattern];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL 
+                                                              mappingProvider:self.mappingProvider];
     paginator.configurationDelegate = self;
     return paginator;
 }

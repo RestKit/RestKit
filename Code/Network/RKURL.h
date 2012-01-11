@@ -53,4 +53,6 @@
  */
 - (RKURL *)URLByReplacingResourcePath:(NSString *)newResourcePath;
 
+- (RKURL *)URLByInterpolatingResourcePathWithObject:(id)object;
+
 @end

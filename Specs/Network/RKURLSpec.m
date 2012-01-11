@@ -161,15 +161,12 @@
     assertThat([newURL absoluteString], is(equalTo(@"http://restkit.org/whatever/works")));
 }
 
-// TODO: Test...
-// TODO: try interpolating the host in the URL...
-
 - (void)testInterpolationOfResourcePath {
-    
-}
-
-- (void)testInterpolationWithObject {
-    
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/paginate?page=:page&perPage=:per_page"];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"1", @"page", @"25", @"per_page", nil];
+    RKURL *interpolatedURL = [URL URLByInterpolatingResourcePathWithObject:dictionary];
+    assertThat([interpolatedURL resourcePath], is(equalTo(@"/paginate?page=1&perPage=25")));
+    assertThat([interpolatedURL absoluteString], is(equalTo(@"http://restkit.org/paginate?page=1&perPage=25")));
 }
 
 @end
