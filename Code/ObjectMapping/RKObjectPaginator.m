@@ -33,8 +33,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 
 @implementation RKObjectPaginator
 
-@synthesize baseURL;
-@synthesize resourcePathPattern;
+@synthesize patternURL;
 @synthesize currentPage;
 @synthesize perPage;
 @synthesize loaded;
@@ -46,15 +45,14 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 @synthesize objectLoader;
 @synthesize configurationDelegate;
 
-+ (id)paginatorWithBaseURL:(RKURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider {
-    return [[[self alloc] initWithBaseURL:baseURL resourcePathPattern:resourcePathPattern mappingProvider:mappingProvider] autorelease];
++ (id)paginatorWithPatternURL:(RKURL *)aPatternURL mappingProvider:(RKObjectMappingProvider *)aMappingProvider {
+    return [[[self alloc] initWithPatternURL:aPatternURL mappingProvider:aMappingProvider] autorelease];
 }
 
-- (id)initWithBaseURL:(RKURL *)aBaseURL resourcePathPattern:(NSString *)aResourcePathPattern mappingProvider:(RKObjectMappingProvider *)aMappingProvider {
+- (id)initWithPatternURL:(RKURL *)aPatternURL mappingProvider:(RKObjectMappingProvider *)aMappingProvider {
     self = [super init];
     if (self) {
-        baseURL = [aBaseURL copy];
-        resourcePathPattern = [aResourcePathPattern copy];
+        patternURL = [aPatternURL copy];
         mappingProvider = [aMappingProvider retain];
         currentPage = 0;
         perPage = RKObjectPaginatorDefaultPerPage;
@@ -68,8 +66,8 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     delegate = nil;
     configurationDelegate = nil;
     objectLoader.delegate = nil;    
-    [baseURL release];
-    baseURL = nil;
+    [patternURL release];
+    patternURL = nil;
     [mappingProvider release];
     mappingProvider = nil;
     [objectStore release];
@@ -84,19 +82,13 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     return [mappingProvider paginationMapping];
 }
 
-- (NSString *)paginationResourcePath {
-    SOCPattern *pattern = [SOCPattern patternWithString:resourcePathPattern];
-    return [pattern stringFromObject:self];
-}
-
-- (RKURL *)paginationURL {
-    return [baseURL URLByAppendingResourcePath:[self paginationResourcePath]];
+- (RKURL *)URL {
+    return [patternURL URLByInterpolatingResourcePathWithObject:self];
 }
 
 #pragma mark - RKObjectLoaderDelegate methods
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects {
-    // Propogate the load to the delegate
     self.objectLoader = nil;
     loaded = YES;
     RKLogInfo(@"Loaded objects: %@", objects);
@@ -104,7 +96,6 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 }
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
-  // Propogate the error to the delegate
   RKLogError(@"Paginator error %@", error);
   [self.delegate paginator:self didFailWithError:error objectLoader:self.objectLoader];
   self.objectLoader = nil;
@@ -114,19 +105,14 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     NSError *error = nil;
     RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:*mappableData toObject:self withMapping:[self paginationMapping]];
     BOOL success = [mappingOperation performMapping:&error];
-    if (!success)
-    {
+    if (!success) {
       pageCount = currentPage = 0;
       RKLogError(@"Paginator didn't map info to compute page count.  Assuming no pages.");
-    }
-    else if (self.perPage)
-    {
+    } else if (self.perPage) {
       float objectCountFloat = self.objectCount;
       pageCount = ceilf( objectCountFloat / self.perPage);
       RKLogInfo(@"Paginator objectCount: %d pageCount: %d", self.objectCount, self.pageCount); 
-    }
-    else 
-    {
+    } else  {
       NSAssert(NO, @"Paginator perPage set is 0.");
       RKLogError(@"Paginator perPage set is 0.");
     }
@@ -158,7 +144,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     NSAssert(! objectLoader, @"Cannot perform a load while one is already in progress.");
     currentPage = pageNumber;
     
-    self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.paginationURL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
+    self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
   
     if ([self.configurationDelegate respondsToSelector:@selector(configureObjectLoader:)]) {
         [self.configurationDelegate configureObjectLoader:objectLoader];

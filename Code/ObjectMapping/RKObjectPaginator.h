@@ -26,64 +26,74 @@
 @protocol RKObjectPaginatorDelegate;
 
 /**
- A pagination component capable of paging through a RESTful collection
- of JSON/XML objects returned via a web service.
+ Instances of RKObjectPaginator retrieve paginated collections of mappable data
+ from remote systems via HTTP. Paginators perform GET requests and use a patterned
+ URL to construct a full URL reflecting the state of the paginator. Paginators rely
+ on an instance of RKObjectMappingProvider to determine how to perform object mapping
+ on the retrieved data. Paginators can load Core Data backed models provided that an 
+ instance of RKManagedObjectStore is assigned to the paginator. 
  */
 @interface RKObjectPaginator : NSObject
 
-// TODO: paginatorWithDynamicURL:mappingProvider:
-+ (id)paginatorWithBaseURL:(RKURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
-- (id)initWithBaseURL:(RKURL *)baseURL resourcePathPattern:(NSString *)resourcePathPattern mappingProvider:(RKObjectMappingProvider *)mappingProvider;
-
 /**
- The base URL to build the complete pagination URL from
- */
-@property (nonatomic, copy) RKURL *baseURL;
-
-/**
- A SOCKit pattern for building the resource path to load
- pages of data. The pattern will be evaluated against the paginator
- object itself.
+ Creates and returns a RKObjectPaginator object with the a provided patternURL and mappingProvider.
  
- For examples, imagine that we are paginating a collection of data from
- an /articles resource path. Our pattern may look like:
+ @param patternURL A RKURL containing a dynamic pattern for constructing a URL to the paginated 
+    resource collection.
+ @param mappingProvider An RKObjectMappingProvider containing object mapping configurations for mapping the 
+    paginated resource collection.
+ @see patternURL
+ @return A paginator object initialized with patterned URL and mapping provider.
+ */
++ (id)paginatorWithPatternURL:(RKURL *)patternURL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
+
+/**
+ Initializes a RKObjectPaginator object with the a provided patternURL and mappingProvider.
+ 
+ @param patternURL A RKURL containing a dynamic pattern for constructing a URL to the paginated 
+ resource collection.
+ @param mappingProvider An RKObjectMappingProvider containing object mapping configurations for mapping the 
+ paginated resource collection.
+ @see patternURL
+ @return The receiver, initialized with patterned URL and mapping provider.
+ */
+- (id)initWithPatternURL:(RKURL *)patternURL mappingProvider:(RKObjectMappingProvider *)mappingProvider;
+
+/**
+ A RKURL with a resource path pattern for building a complete URL from
+ which to load the paginated resource collection. The patterned resource
+ path will be evaluated against the state of the paginator object itself.
+ 
+ For example, given a paginated collection of data at the /articles resource path,
+ the patterned resource path may look like:
  
  /articles?per_page=:perPage&page_number=:currentPage
  
  When the pattern is evaluated against the state of the paginator, this will
  yield a complete resource path that can be used to load the specified page. Given
  a paginator configured with 100 objects per page and a current page number of 3,
- our resource path would look like:
+ the resource path of the pagination URL would become:
  
  /articles?per_page=100&page_number=3
+ 
+ @see [RKURL URLByInterpolatingResourcePathWithObject:]
  */
-@property (nonatomic, copy) NSString *resourcePathPattern;
+@property (nonatomic, copy) RKURL *patternURL;
 
 /**
- Returns a complete resource path built by evaluating the resourcePathPattern
- against the state of the paginator object. This path will be appended to the
- baseURL when initializing an RKObjectLoader to fetch the paginated objects.
+ Returns a complete RKURL to the paginated resource collection by interpolating
+ the state of the paginator object against the resource 
  */
-@property (nonatomic, readonly) NSString *paginationResourcePath;
+@property (nonatomic, readonly) RKURL *URL;
 
 /**
- Returns a complete RKURL to the paginated resource collection by concatenating
- the baseURL and the paginationResourcePath.
- */
-@property (nonatomic, readonly) RKURL *paginationURL;
-
-/**
- Delegate to call back with pagination results
+ The object that acts as the delegate of the receiving paginator.
  */
 @property (nonatomic, assign) id<RKObjectPaginatorDelegate> delegate;
 
 /**
- A delegate responsible for configuring the request. Centralizes common configuration
- data (such as HTTP headers, authentication information, etc) for re-use.
- 
- RKClient and RKObjectManager conform to the RKConfigurationDelegate protocol. Paginator
- instances built through these objects will have a reference to their
- parent client/object manager assigned as the configuration delegate.
+ The object that acts as the configuration delegate for RKObjectLoader instances built 
+ and utilized by the paginator.
  
  **Default**: nil
  @see RKClient
@@ -94,9 +104,9 @@
 /** @name Object Mapping Configuration */
 
 /**
- The object mapping provider to use when performing object mapping on the data
+ The mapping provider to use when performing object mapping on the data
  loaded from the remote system. The provider will be assigned to the RKObjectLoader
- instance built to retrieve the paginated data.
+ instance built to retrieve the paginated resource collection.
  */
 @property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
@@ -145,6 +155,8 @@
 /**
  Loads a specific page of data by mutating the current page, constructing an object
  loader to fetch the data, and object mapping the results.
+ 
+ @param pageNumber The page of objects to load from the remote backend
  */
 - (void)loadPage:(NSUInteger)pageNumber;
 
@@ -160,6 +172,10 @@
 
 /**
  Sent to the delegate when the paginator has loaded a collection of objects for a given page
+ 
+ @param paginator The paginator that loaded the objects
+ @param objects An array of objects mapped from the remote JSON/XML representation
+ @param page The page number that was loaded
  */
 - (void)paginator:(RKObjectPaginator *)paginator didLoadObjects:(NSArray *)objects forPage:(NSUInteger)page;
 

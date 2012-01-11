@@ -126,12 +126,7 @@
 }
 
 - (RKURL *)URLByInterpolatingResourcePathWithObject:(id)object {
-    NSString *interpolatedResourcePath = [self.resourcePath interpolateWithObject:object];
-    return [RKURL URLWithBaseURL:self.baseURL resourcePath:interpolatedResourcePath queryParameters:self.queryParameters];
-}
-
-- (RKURL *)URLByInterpolatingWithObject:(id)object {
-    return [RKURL URLWithString:[[self absoluteString] interpolateWithObject:object]];
+    return [self URLByReplacingResourcePath:[self.resourcePath interpolateWithObject:object]];
 }
 
 #pragma mark - NSURL Overloads
