@@ -97,7 +97,7 @@
     [[[loaderMock expect] andForwardToRealObject] request:request didFailLoadWithError:OCMOCK_ANY];
     [request sendAsynchronously];
     [loaderMock waitForResponse];
-    assertThatInt(loader.failureError.code, equalToInt(RKRequestConnectionTimeoutError));
+    assertThatInt((int)loader.failureError.code, equalToInt(RKRequestConnectionTimeoutError));
     [request release];
 }
 
