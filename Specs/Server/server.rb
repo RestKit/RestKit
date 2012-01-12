@@ -123,6 +123,15 @@ class RestKit::SpecServer < Sinatra::Base
     content_type 'application/json'
     params.to_json
   end
+
+  get '/timeout' do
+    # We need to leave this around 4 seconds so we don't hold up the
+    # process too long and cause the tests launched after to fail.
+    sleep 4
+    status 200
+    content_type 'application/json'
+    params.to_json
+  end
   
   get '/empty/array' do
     status 200
