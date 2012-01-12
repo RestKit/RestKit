@@ -86,6 +86,21 @@
     assertThat(request.HTTPBodyString, equalTo(JSON));
 }
 
+- (void)testShouldTimeoutAtInterval {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    id loaderMock = [OCMockObject partialMockForObject:loader];
+    NSString* url = [NSString stringWithFormat:@"%@/timeout", RKSpecGetBaseURL()];
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loaderMock;
+    request.timeoutInterval = 3.0;
+    [[[loaderMock expect] andForwardToRealObject] request:request didFailLoadWithError:OCMOCK_ANY];
+    [request sendAsynchronously];
+    [loaderMock waitForResponse];
+    assertThatInt(loader.failureError.code, equalToInt(RKRequestConnectionTimeoutError));
+    [request release];
+}
+
 #pragma mark - Background Policies
 
 #if TARGET_OS_IPHONE
