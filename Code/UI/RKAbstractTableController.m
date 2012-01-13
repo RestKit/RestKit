@@ -475,7 +475,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     
     id object = [self objectForRowAtIndexPath:indexPath];
     
-    UITableViewCell* cell = [self cellForObjectAtIndexPath:indexPath];
+    // NOTE: Do NOT use cellForObjectAtIndexPath here. See https://gist.github.com/eafbb641d37bb7137759
+    UITableViewCell* cell = [theTableView cellForRowAtIndexPath:indexPath];
     RKTableViewCellMapping* cellMapping = [_cellMappings cellMappingForObject:object];
     
     // NOTE: Handle deselection first as the onSelectCell processing may result in the tableView
