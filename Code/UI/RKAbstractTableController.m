@@ -475,22 +475,22 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
     id object = [self objectForRowAtIndexPath:indexPath];
 
-    // TODO: Should we just use [self.tableView cellForRowAtIndexPath:cell]; ???
     UITableViewCell* cell = [self cellForObjectAtIndexPath:indexPath];
     RKTableViewCellMapping* cellMapping = [_cellMappings cellMappingForObject:object];
 
+    // NOTE: Handle deselection first as the onSelectCell processing may result in the tableView
+    // being reloaded and our instances invalidated
+    if (cellMapping.deselectsRowOnSelection) {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+
     if (cellMapping.onSelectCell) {
-        // TODO: Logging...
         cellMapping.onSelectCell();
     }
 
     if (cellMapping.onSelectCellForObjectAtIndexPath) {
         RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
         cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
-    }
-
-    if (cellMapping.deselectsRowOnSelection) {
-        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 
