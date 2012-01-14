@@ -28,6 +28,7 @@
     NSString *_boolString;
     NSDate *_date;
     NSOrderedSet *_orderedSet;
+    NSArray *_array;
 }
 
 @property (nonatomic, retain) NSURL *url;
@@ -35,6 +36,7 @@
 @property (nonatomic, retain) NSNumber *boolNumber;
 @property (nonatomic, retain) NSDate *date;
 @property (nonatomic, retain) NSOrderedSet *orderedSet;
+@property (nonatomic, retain) NSArray *array;
 
 @end
 
@@ -45,6 +47,7 @@
 @synthesize boolNumber = _boolNumber;
 @synthesize date = _date;
 @synthesize orderedSet = _orderedSet;
+@synthesize array = _array;
 
 - (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError {
     if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"FAIL"]) {
@@ -157,6 +160,22 @@
     assertThatBool(success, is(equalToBool(YES)));
     NSOrderedSet *expectedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
     assertThat(object.orderedSet, is(equalTo(expectedSet)));
+    [operation release];
+}
+
+- (void)testShouldSuccessfullyMapOrderedSetsToArrays {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapKeyPath:@"orderedSet" toAttribute:@"array"];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    TestMappable* data = [[[TestMappable alloc] init] autorelease];
+    data.orderedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    NSArray* expectedArray = [NSArray arrayWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    assertThat(object.array, is(equalTo(expectedArray)));
     [operation release];
 }
 
