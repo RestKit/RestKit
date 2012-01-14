@@ -27,12 +27,16 @@
     NSURL *_url;
     NSString *_boolString;
     NSDate *_date;
+    NSOrderedSet *_orderedSet;
+    NSArray *_array;
 }
 
 @property (nonatomic, retain) NSURL *url;
 @property (nonatomic, retain) NSString *boolString;
 @property (nonatomic, retain) NSNumber *boolNumber;
 @property (nonatomic, retain) NSDate *date;
+@property (nonatomic, retain) NSOrderedSet *orderedSet;
+@property (nonatomic, retain) NSArray *array;
 
 @end
 
@@ -42,6 +46,8 @@
 @synthesize boolString = _boolString;
 @synthesize boolNumber = _boolNumber;
 @synthesize date = _date;
+@synthesize orderedSet = _orderedSet;
+@synthesize array = _array;
 
 - (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError {
     if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"FAIL"]) {
@@ -138,6 +144,38 @@
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"123")));
+    [operation release];
+}
+
+- (void)testShouldSuccessfullyMapArraysToOrderedSets {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapKeyPath:@"numbers" toAttribute:@"orderedSet"];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
+    id data = [parser objectFromString:@"{\"numbers\":[1, 2, 3]}" error:nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    NSOrderedSet *expectedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    assertThat(object.orderedSet, is(equalTo(expectedSet)));
+    [operation release];
+}
+
+- (void)testShouldSuccessfullyMapOrderedSetsToArrays {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapKeyPath:@"orderedSet" toAttribute:@"array"];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    
+    TestMappable* data = [[[TestMappable alloc] init] autorelease];
+    data.orderedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    BOOL success = [operation performMapping:nil];
+    assertThatBool(success, is(equalToBool(YES)));
+    NSArray* expectedArray = [NSArray arrayWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
+    assertThat(object.array, is(equalTo(expectedArray)));
     [operation release];
 }
 
