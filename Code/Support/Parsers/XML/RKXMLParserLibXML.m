@@ -37,6 +37,8 @@
                     // Assume that empty strings are irrelevant and go for an attribute-collection instead
                     if ([val length] == 0) {
                         val = [NSMutableDictionary dictionary];
+                        attrs = [NSMutableDictionary dictionary];
+                        oldVal = [attrs valueForKey:nodeName];
                         NSMutableDictionary* elem = [NSMutableDictionary dictionaryWithObject:val forKey:nodeName];
                         [nodes addObject:elem];
                     } else {
@@ -50,7 +52,7 @@
                 }
                 
                 // Only add attributes to nodes if there actually is one.
-                if (![nodes containsObject:attrs]) {
+                if (![nodes containsObject:attrs] && [attrs count] > 0) {
                     [nodes addObject:attrs];
                 }
             } else {
