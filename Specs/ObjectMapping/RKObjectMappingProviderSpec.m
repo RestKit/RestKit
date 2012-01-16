@@ -64,7 +64,7 @@
 }
 
 - (void)testShouldAllowYouToRemoveAMappingByKeyPath {
-    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider objectMappingProvider];
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class]];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
@@ -74,6 +74,96 @@
     [mappingProvider removeMappingForKeyPath:@"cat"];
     returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, is(nilValue()));
+}
+
+- (void)testSettingMappingInAContext {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    STAssertNoThrow([mappingProvider setMapping:mapping context:1000], nil);
+}
+
+- (void)testRetrievalOfMapping {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping context:1000];
+    assertThat([mappingProvider mappingForContext:1000], is(equalTo(mapping)));
+}
+
+- (void)testRetrievalOfMappingsCollectionForUndefinedContextReturnsEmptyArray {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    assertThat(collection, is(empty()));
+}
+
+- (void)testRetrievalOfMappingsCollectionWhenSingleMappingIsStoredRaisesError {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping context:1000];
+    STAssertThrows([mappingProvider mappingsForContext:1000], @"Expected collection mapping retrieval to throw due to storage of single mapping");
+}
+
+- (void)testAddingMappingToCollectionContext {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    STAssertNoThrow([mappingProvider addMapping:mapping context:1000], nil);
+}
+
+- (void)testRetrievalOfMappingCollection {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider addMapping:mapping_1 context:1000];
+    RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider addMapping:mapping_2 context:1000];
+    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    assertThat(collection, hasItems(mapping_1, mapping_2, nil));
+}
+
+- (void)testRetrievalOfMappingCollectionReturnsImmutableArray {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider addMapping:mapping_1 context:1000];
+    RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider addMapping:mapping_2 context:1000];
+    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    assertThat(collection, isNot(instanceOf([NSMutableArray class])));
+}
+
+- (void)testRemovalOfMappingFromCollection {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider addMapping:mapping_1 context:1000];
+    RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider addMapping:mapping_2 context:1000];
+    [mappingProvider removeMapping:mapping_1 context:1000];
+    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    assertThat(collection, onlyContains(mapping_2, nil));
+}
+
+- (void)testAttemptToRemoveMappingFromContextThatDoesNotIncludeItRaisesError {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    STAssertThrows([mappingProvider removeMapping:mapping context:1000], @"Removal of mapping not included in context should raise an error.");
+}
+
+- (void)testSettingMappingForKeyPathInContext {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    STAssertNoThrow([mappingProvider setMapping:mapping forKeyPath:@"testing" context:1000], nil);
+}
+
+- (void)testRetrievalOfMappingForKeyPathInContext {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping forKeyPath:@"testing" context:1000];
+    assertThat([mappingProvider mappingForKeyPath:@"testing" context:1000], is(equalTo(mapping)));
+}
+
+- (void)testRemovalOfMappingByKeyPathInContext {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping forKeyPath:@"testing" context:1000];
+    [mappingProvider removeMappingForKeyPath:@"testing" context:1000];
+    assertThat([mappingProvider mappingForKeyPath:@"testing" context:1000], is(nilValue()));
 }
 
 @end

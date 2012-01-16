@@ -121,21 +121,63 @@
 /// The number of objects to load per page
 @property (nonatomic, assign) NSUInteger perPage;
 
-/// The number of pages in the total collection
-@property (nonatomic, readonly) NSUInteger pageCount;
-
-/// The total number of objects in the collection
-@property (nonatomic, readonly) NSUInteger objectCount;
-
-/// The current page number the paginator has loaded
-@property (nonatomic, readonly) NSUInteger currentPage;
-
+/// Returns YES when the paginator has loaded a page of objects
 @property (nonatomic, readonly, getter = isLoaded) BOOL loaded;
 
-/// Returns YES when there is a next page to load
+/**
+ Returns the page number for the most recently loaded page of objects.
+ 
+ @return The page number for the current page of objects.
+ @exception NSInternalInconsistencyException Raised if isLoaded is NO.
+ */
+@property (nonatomic, readonly) NSUInteger currentPage;
+
+/**
+ Returns the number of pages in the total resource collection.
+ 
+ @return A count of the number of pages in the resource collection.
+ @exception NSInternalInconsistencyException Raised if hasPageCount is NO.
+ */
+@property (nonatomic, readonly) NSUInteger pageCount;
+
+/**
+ Returns the total number of objects in the collection
+ 
+ @return A count of the number of objects in the resource collection.
+ @exception NSInternalInconsistencyException Raised if hasObjectCount is NO.
+ */
+@property (nonatomic, readonly) NSUInteger objectCount;
+
+/**
+ Returns a Boolean value indicating if the total number of pages in the collection
+ is known by the paginator.
+ 
+ @return YES if the paginator knows the page count, otherwise NO
+ */
+- (BOOL)hasPageCount;
+
+/**
+ Returns a Boolean value indicating if the total number of objects in the collection
+ is known by the paginator.
+ 
+ @return YES if the paginator knows the number of objects in the paginated collection, otherwise NO.
+ */
+- (BOOL)hasObjectCount;
+
+/**
+ Returns a Boolean value indicating if there is a next page in the collection.
+ 
+ @return YES if there is a next page, otherwise NO.
+ @exception NSInternalInconsistencyException Raised if isLoaded or hasPageCount is NO.
+ */
 - (BOOL)hasNextPage;
 
-/// Returns YES when there is a previous page to load
+/**
+ Returns a Boolean value indicating if there is a previous page in the collection.
+ 
+ @return YES if there is a previous page, otherwise NO.
+ @exception NSInternalInconsistencyException Raised if isLoaded is NO.
+ */
 - (BOOL)hasPreviousPage;
 
 /** @name Paginator Actions */
@@ -200,17 +242,17 @@
 - (void)paginator:(RKObjectPaginator *)paginator willLoadPage:(NSUInteger)page objectLoader:(RKObjectLoader *)loader;
 
 /**
- Sent to the delegate when the paginator has loaded the last page in the collection
- 
- @param paginator The paginator instance that has loaded the last page
- */
-- (void)paginatorDidLoadLastPage:(RKObjectPaginator *)paginator;
-
-/**
  Sent to the delegate when the paginator has loaded the first page in the collection
  
  @param paginator The paginator instance that has loaded the first page
  */
 - (void)paginatorDidLoadFirstPage:(RKObjectPaginator *)paginator;
+
+/**
+ Sent to the delegate when the paginator has loaded the last page in the collection
+ 
+ @param paginator The paginator instance that has loaded the last page
+ */
+- (void)paginatorDidLoadLastPage:(RKObjectPaginator *)paginator;
 
 @end

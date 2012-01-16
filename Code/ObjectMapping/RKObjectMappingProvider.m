@@ -22,8 +22,6 @@
 
 @implementation RKObjectMappingProvider
 
-@synthesize paginationMapping;
-
 + (RKObjectMappingProvider *)mappingProvider {
     return [[self new] autorelease];
 }
@@ -31,42 +29,43 @@
 - (id)init {
     self = [super init];
     if (self) {
-        _objectMappings = [NSMutableArray new];
-        _mappingsByKeyPath = [NSMutableDictionary new];
-        _serializationMappings = [NSMutableDictionary new];
+        mappingContexts = [NSMutableDictionary new];
+        [self initializeContext:RKObjectMappingProviderContextObjectsByKeyPath withValue:[NSMutableDictionary dictionary]];
+        [self initializeContext:RKObjectMappingProviderContextObjectsByType withValue:[NSMutableArray array]];
+        [self initializeContext:RKObjectMappingProviderContextObjectsByURL withValue:[NSMutableDictionary dictionary]];
+        [self initializeContext:RKObjectMappingProviderContextSerialization withValue:[NSMutableDictionary dictionary]];
+        [self initializeContext:RKObjectMappingProviderContextErrors withValue:[NSMutableArray array]];
     }
     return self;
 }
 
 - (void)dealloc {
-    [_objectMappings release];
-    [_mappingsByKeyPath release];
-    [_serializationMappings release];
+    [mappingContexts release];
     [super dealloc];
 }
 
 - (void)setObjectMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath {
-    [_mappingsByKeyPath setValue:objectOrDynamicMapping forKey:keyPath];
+    [self setMapping:objectOrDynamicMapping forKeyPath:keyPath context:RKObjectMappingProviderContextObjectsByKeyPath];
 }
 
 - (void)removeObjectMappingForKeyPath:(NSString *)keyPath {
-    [_mappingsByKeyPath removeObjectForKey:keyPath];
+    [self removeMappingForKeyPath:keyPath context:RKObjectMappingProviderContextObjectsByKeyPath];
 }
 
 - (id<RKObjectMappingDefinition>)objectMappingForKeyPath:(NSString *)keyPath {
-    return [_mappingsByKeyPath objectForKey:keyPath];
+    return [self mappingForKeyPath:keyPath context:RKObjectMappingProviderContextObjectsByKeyPath];
 }
 
 - (void)setSerializationMapping:(RKObjectMapping *)mapping forClass:(Class)objectClass {
-    [_serializationMappings setValue:mapping forKey:NSStringFromClass(objectClass)];
+    [self setMapping:mapping forKeyPath:NSStringFromClass(objectClass) context:RKObjectMappingProviderContextSerialization];
 }
 
-- (RKObjectMapping*)serializationMappingForClass:(Class)objectClass {
-    return (RKObjectMapping *)[_serializationMappings objectForKey:NSStringFromClass(objectClass)];
+- (RKObjectMapping *)serializationMappingForClass:(Class)objectClass {
+    return [self mappingForKeyPath:NSStringFromClass(objectClass) context:RKObjectMappingProviderContextSerialization];
 }
 
 - (NSDictionary*)objectMappingsByKeyPath {
-    return _mappingsByKeyPath;
+    return [NSDictionary dictionaryWithDictionary:(NSDictionary *) [self valueForContext:RKObjectMappingProviderContextObjectsByKeyPath]];
 }
 
 - (void)registerObjectMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath {
@@ -79,12 +78,14 @@
 }
 
 - (void)addObjectMapping:(RKObjectMapping *)objectMapping {
-    [_objectMappings addObject:objectMapping];
+    [self addMapping:objectMapping context:RKObjectMappingProviderContextObjectsByType];
 }
 
 - (NSArray *)objectMappingsForClass:(Class)theClass {
     NSMutableArray *mappings = [NSMutableArray array];
-    NSArray *mappingsToSearch = [[NSArray arrayWithArray:_objectMappings] arrayByAddingObjectsFromArray:[_mappingsByKeyPath allValues]];
+    NSArray *mappingByType = [self valueForContext:RKObjectMappingProviderContextObjectsByType];
+    NSArray *mappingByKeyPath = [[self valueForContext:RKObjectMappingProviderContextObjectsByKeyPath] allValues];
+    NSArray *mappingsToSearch = [[NSArray arrayWithArray:mappingByType] arrayByAddingObjectsFromArray:mappingByKeyPath];
     for (NSObject <RKObjectMappingDefinition> *candidateMapping in mappingsToSearch) {
         if ( ![candidateMapping respondsToSelector:@selector(objectClass)] || [mappings containsObject:candidateMapping])
             continue;
@@ -101,16 +102,108 @@
     return ([objectMappings count] > 0) ? [objectMappings objectAtIndex:0] : nil;
 }
 
-- (void)addErrorMapping:(RKObjectMapping *)errorMapping {
-    [_errorMappings addObject:errorMapping];
+#pragma mark - Error Mappings
+
+- (RKObjectMapping *)errorMapping {
+    return [self mappingForContext:RKObjectMappingProviderContextErrors];
 }
 
-- (void)removeErrorMapping:(RKObjectMapping *)errorMapping {
-    [_errorMappings removeObject:errorMapping];
+- (void)setErrorMapping:(RKObjectMapping *)errorMapping {
+    [self setMapping:errorMapping context:RKObjectMappingProviderContextErrors];
 }
 
-- (NSArray *)errorMappings {
-    return [[_errorMappings copy] autorelease];
+#pragma mark - Pagination Mapping
+
+- (RKObjectMapping *)paginationMapping {
+    return [self mappingForContext:RKObjectMappingProviderContextPagination];
+}
+
+- (void)setPaginationMapping:(RKObjectMapping *)paginationMapping {
+    [self setMapping:paginationMapping context:RKObjectMappingProviderContextPagination];
+}
+
+#pragma mark - Mapping Context Primitives
+
+- (void)initializeContext:(RKObjectMappingProviderContext)context withValue:(id)value {
+    NSAssert([self valueForContext:context] == nil, @"Attempt to reinitialized an existing mapping provider context.");
+    [self setValue:value forContext:context];
+}
+
+- (id)valueForContext:(RKObjectMappingProviderContext)context {
+    NSNumber *contextNumber = [NSNumber numberWithInteger:context];
+    return [mappingContexts objectForKey:contextNumber];
+}
+
+- (void)setValue:(id)value forContext:(RKObjectMappingProviderContext)context {
+    NSNumber *contextNumber = [NSNumber numberWithInteger:context];
+    [mappingContexts setObject:value forKey:contextNumber];
+}
+
+- (void)assertStorageForContext:(RKObjectMappingProviderContext)context isKindOfClass:(Class)theClass {
+    id contextValue = [self valueForContext:context];
+    NSAssert([contextValue isKindOfClass:theClass], @"Storage type mismatch for context %d: expected a %@, got %@.", context, theClass, [contextValue class]);
+}
+
+- (void)setMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context {
+    NSNumber *contextNumber = [NSNumber numberWithInteger:context];
+    [mappingContexts setObject:mapping forKey:contextNumber];
+}
+
+- (id<RKObjectMappingDefinition>)mappingForContext:(RKObjectMappingProviderContext)context {
+    id contextValue = [self valueForContext:context];
+    if (contextValue == nil) return nil;
+    Protocol *protocol = @protocol(RKObjectMappingDefinition);
+    NSAssert([contextValue conformsToProtocol:protocol], @"Storage type mismatch for context %d: expected a %@, got %@.", context, protocol, [contextValue class]);
+    return contextValue;
+}
+
+- (NSArray *)mappingsForContext:(RKObjectMappingProviderContext)context {
+    id contextValue = [self valueForContext:context];
+    if (contextValue == nil) return [NSArray array];
+    [self assertStorageForContext:context isKindOfClass:[NSArray class]];
+    
+    return [NSArray arrayWithArray:contextValue];
+}
+
+- (void)addMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context {
+    NSMutableArray *contextValue = [self valueForContext:context];
+    if (contextValue == nil) {
+        contextValue = [NSMutableArray arrayWithCapacity:1];
+        [self setValue:contextValue forContext:context];
+    }
+    [self assertStorageForContext:context isKindOfClass:[NSArray class]];
+    [contextValue addObject:mapping];
+}
+
+- (void)removeMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context {
+    NSMutableArray *contextValue = [self valueForContext:context];
+    NSAssert(contextValue, @"Attempted to remove mapping from undefined context: %d", context);
+    [self assertStorageForContext:context isKindOfClass:[NSArray class]];
+    NSAssert([contextValue containsObject:mapping], @"Attempted to remove mapping from collection that does not include it for context: %d", context);
+    [contextValue removeObject:mapping];
+}
+
+- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context {
+    NSMutableDictionary *contextValue = [self valueForContext:context];
+    NSAssert(contextValue, @"Attempted to retrieve mapping from undefined context: %d", context);
+    [self assertStorageForContext:context isKindOfClass:[NSDictionary class]];
+    return [contextValue valueForKey:keyPath];
+}
+
+- (void)setMapping:(id<RKObjectMappingDefinition>)mapping forKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context {
+    NSMutableDictionary *contextValue = [self valueForContext:context];
+    if (contextValue == nil) {
+        contextValue = [NSMutableDictionary dictionary];
+        [self setValue:contextValue forContext:context];      
+    }
+    [self assertStorageForContext:context isKindOfClass:[NSDictionary class]];
+    [contextValue setValue:mapping forKey:keyPath];
+}
+              
+- (void)removeMappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context {
+    NSMutableDictionary *contextValue = [self valueForContext:context];
+    [self assertStorageForContext:context isKindOfClass:[NSDictionary class]];
+    [contextValue removeObjectForKey:keyPath];
 }
 
 #pragma mark - Aliases

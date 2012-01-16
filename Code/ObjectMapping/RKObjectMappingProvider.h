@@ -21,6 +21,16 @@
 #import "RKObjectMapping.h"
 #import "RKDynamicObjectMapping.h"
 
+// Internal framework contexts
+typedef enum {
+    RKObjectMappingProviderContextObjectsByKeyPath = 1000,
+    RKObjectMappingProviderContextObjectsByType,
+    RKObjectMappingProviderContextObjectsByURL,
+    RKObjectMappingProviderContextSerialization,
+    RKObjectMappingProviderContextErrors,
+    RKObjectMappingProviderContextPagination
+} RKObjectMappingProviderContext;
+
 /**
  The mapping provider is a repository of registered object mappings for use by instances
  of RKObjectManager and RKObjectMapper. It provides for the storage and retrieval of object
@@ -42,14 +52,11 @@
     that they target.
  */
 @interface RKObjectMappingProvider : NSObject {
-    NSMutableArray *_objectMappings;
-    NSMutableDictionary *_mappingsByKeyPath;
-    NSMutableDictionary *_serializationMappings;
-    NSMutableArray *_errorMappings;
+    NSMutableDictionary *mappingContexts;
 }
 
 /**
- Returns a new autoreleased object mapping provider
+ Creates and returns an autoreleased RKObjectMappingProvider instance.
  
  @return A new autoreleased object mapping provider instance.
  */
@@ -197,16 +204,13 @@
 - (RKObjectMapping *)serializationMappingForClass:(Class)objectClass;
 
 /**
- Adds an object mapping to the provider to be used when mapping a payload known
- to contain an error representation.
+ An object mapping used when the remote system returns an error status code
+ and a payload with a MIME Type that RestKit is capable of parsing.
  
- @param errorMapping The error mapping to add to the provider 
  @see RKObjectLoader
+ @see RKParserRegistry
  */
-// TODO: Should these be key-path based?
-- (void)addErrorMapping:(RKObjectMapping *)errorMapping;
-- (void)removeErrorMapping:(RKObjectMapping *)errorMapping;
-- (NSArray *)errorMappings;
+@property (nonatomic, retain) RKObjectMapping *errorMapping;
 
 /**
  An object mapping used when mapping pagination metadata (current page, object count, etc)
@@ -215,16 +219,37 @@
  
  For example, if using the popular will_paginate plugin with Ruby on Rails, we would configure
  our pagination mapping like so:
-    
-    // Assumes the JSON format of http://stackoverflow.com/questions/4699182/will-paginate-json-support
-    RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
-    [paginationMapping mapKeyPath:@"current_page" toAttribute:@"currentPage"];
-    [paginationMapping mapKeyPath:@"per_page" toAttribute:@"perPage"];
-    [paginationMapping mapKeyPath:@"total_entries" toAttribute:@"objectCount"];
+ 
+ // Assumes the JSON format of http://stackoverflow.com/questions/4699182/will-paginate-json-support
+ RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
+ [paginationMapping mapKeyPath:@"current_page" toAttribute:@"currentPage"];
+ [paginationMapping mapKeyPath:@"per_page" toAttribute:@"perPage"];
+ [paginationMapping mapKeyPath:@"total_entries" toAttribute:@"objectCount"];
  
  @see RKObjectPaginator
  */
 @property (nonatomic, retain) RKObjectMapping *paginationMapping;
+
+@end
+
+@interface RKObjectMappingProvider (Contexts)
+
+- (void)initializeContext:(RKObjectMappingProviderContext)context withValue:(id)value;
+- (id)valueForContext:(RKObjectMappingProviderContext)context;
+- (void)setValue:(id)value forContext:(RKObjectMappingProviderContext)context;
+
+- (id<RKObjectMappingDefinition>)mappingForContext:(RKObjectMappingProviderContext)context;
+/**
+ Stores a single object mapping for a given context. Useful when a component needs to enable
+ configuration via one (and only one) object mapping.
+ */
+- (void)setMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context;
+- (NSArray *)mappingsForContext:(RKObjectMappingProviderContext)context;
+- (void)addMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context;
+- (void)removeMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context;
+- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(id<RKObjectMappingDefinition>)mapping forKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
+- (void)removeMappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
 
 @end
 

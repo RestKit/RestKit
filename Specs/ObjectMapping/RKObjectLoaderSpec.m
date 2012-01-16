@@ -113,8 +113,8 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
     [errorMapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"" toKeyPath:@"errorMessage"]];
-    [provider setMapping:errorMapping forKeyPath:@"error"];
-    [provider setMapping:errorMapping forKeyPath:@"errors"];
+    errorMapping.rootKeyPath = @"errors";
+    provider.errorMapping = errorMapping;
     return provider;
 }
 

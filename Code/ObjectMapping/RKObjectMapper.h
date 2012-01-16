@@ -48,17 +48,15 @@
 @end
 
 @interface RKObjectMapper : NSObject {
-    id _sourceObject;
-    id _targetObject;
-    RKObjectMappingProvider* _mappingProvider;
-    id<RKObjectMapperDelegate> _delegate;
-    NSMutableArray* _errors;
-    RKMappingOperationQueue *_operationQueue;
+  @protected
+    RKMappingOperationQueue *operationQueue;
+    NSMutableArray* errors;
 }
 
 @property (nonatomic, readonly) id sourceObject;
 @property (nonatomic, assign) id targetObject;
 @property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
+@property (nonatomic, assign) RKObjectMappingProviderContext context;
 @property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
 @property (nonatomic, readonly) NSArray* errors;
 

@@ -183,7 +183,7 @@ class RestKit::SpecServer < Sinatra::Base
     status 200
     content_type 'application/json'
     
-    per_page = 2
+    per_page = 3
     total_entries = 6
     current_page = params[:page].to_i
     entries = []

@@ -111,6 +111,18 @@ NSString * const RKSpecPaginatorDelegateTimeoutException = @"RKSpecPaginatorDele
     self.paginationError = error;
 }
 
+- (void)paginator:(RKObjectPaginator *)paginator willLoadPage:(NSUInteger)page objectLoader:(RKObjectLoader *)loader {
+    // Necessary for OCMock expectations
+}
+
+- (void)paginatorDidLoadFirstPage:(RKObjectPaginator *)paginator {
+    // Necessary for OCMock expectations
+}
+
+- (void)paginatorDidLoadLastPage:(RKObjectPaginator *)paginator {
+    // Necessary for OCMock expectations
+}
+
 @end
 
 @interface RKObjectPaginatorSpec : RKSpec {
@@ -150,6 +162,18 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     assertThat(paginator.mappingProvider, is(equalTo(mappingProvider)));
 }
 
+- (void)testInitDoesNotHavePageCount {
+    RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
+    assertThatBool([paginator hasPageCount], is(equalToBool(NO)));
+}
+
+- (void)testInitDoesNotHaveObjectCount {
+    RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
+    assertThatBool([paginator hasObjectCount], is(equalToBool(NO)));
+}
+
 - (void)testThatLoadWithNilMappingProviderRaisesException {
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorSpecResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
@@ -168,13 +192,19 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
 - (void)testThatResourcePathPatternEvaluatesAgainstPaginator {
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorSpecResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
-    assertThat([[paginator URL] resourcePath], is(equalTo(@"/paginate?per_page=25&page=0")));
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    NSUInteger currentPage = 1;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    assertThat([[paginator URL] resourcePath], is(equalTo(@"/paginate?per_page=25&page=1")));
 }
 
 - (void)testThatURLReturnsReflectsStateOfPaginator {
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorSpecResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
-    assertThat([[paginator URL] absoluteString], is(equalTo(@"http://restkit.org/paginate?page=0&per_page=25")));
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    NSUInteger currentPage = 1;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    assertThat([[mockPaginator URL] absoluteString], is(equalTo(@"http://restkit.org/paginate?page=1&per_page=25")));
 }
 
 - (void)testLoadingAPageOfObjects {
@@ -196,7 +226,7 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     paginator.delegate = testDelegate;
     [paginator loadPage:1];
     [testDelegate waitForLoad];
-    assertThatInteger(paginator.perPage, is(equalToInteger(2)));
+    assertThatInteger(paginator.perPage, is(equalToInteger(3)));
 }
 
 - (void)testLoadingPageOfObjectMapsTotalEntries {
@@ -233,6 +263,41 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     assertThat([[testDelegate paginatedObjects] valueForKey:@"name"], is(equalTo([NSArray arrayWithObjects:@"Blake", @"Sarah", @"Colin", nil])));
 }
 
+- (void)testLoadingPageOfObjectHasPageCount {
+    RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
+    RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
+    paginator.delegate = testDelegate;
+    [paginator loadPage:1];
+    [testDelegate waitForLoad];
+    assertThatBool([paginator hasPageCount], is(equalToBool(YES)));
+}
+
+- (void)testLoadingPageOfObjectHasObjectCount {
+    RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
+    RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
+    paginator.delegate = testDelegate;
+    [paginator loadPage:1];
+    [testDelegate waitForLoad];
+    assertThatBool([paginator hasObjectCount], is(equalToBool(YES)));
+}
+
+- (void)testDelegateIsInformedOfWillLoadPage {
+    RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
+    RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
+    id mockDelegate = [OCMockObject partialMockForObject:testDelegate];
+    [[mockDelegate expect] paginator:paginator willLoadPage:1 objectLoader:OCMOCK_ANY];
+    paginator.delegate = mockDelegate;
+    [paginator loadPage:1];
+    [mockDelegate waitForLoad];
+    [mockDelegate verify];
+}
+
 - (void)testDelegateIsInformedOnError {
     RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
@@ -242,6 +307,32 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     [[[mockDelegate expect] andForwardToRealObject] paginator:paginator didFailWithError:OCMOCK_ANY objectLoader:OCMOCK_ANY];
     paginator.delegate = mockDelegate;
     [paginator loadPage:999];
+    [mockDelegate waitForLoad];
+    [mockDelegate verify];
+}
+
+- (void)testDelegateIsInformedOnLoadOfFirstPage {
+    RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
+    RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
+    id mockDelegate = [OCMockObject partialMockForObject:testDelegate];
+    [[mockDelegate expect] paginatorDidLoadFirstPage:paginator];
+    paginator.delegate = mockDelegate;
+    [paginator loadPage:1];
+    [mockDelegate waitForLoad];
+    [mockDelegate verify];
+}
+
+- (void)testDelegateIsInformedOnLoadOfLastPage {
+    RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
+    RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
+    id mockDelegate = [OCMockObject partialMockForObject:testDelegate];
+    [[mockDelegate expect] paginatorDidLoadLastPage:paginator];
+    paginator.delegate = mockDelegate;
+    [paginator loadPage:2];
     [mockDelegate waitForLoad];
     [mockDelegate verify];
 }
@@ -287,37 +378,71 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     assertThat(testDelegate.paginationError, is(notNilValue()));
 }
 
-- (void)itShouldKnowIfItHasANextPage {
+- (void)testKnowledgeOfHasANextPage {
     RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    NSUInteger perPage = 5;
-    NSUInteger currentPage = 1;
-    NSUInteger objectCount = 10;
+    BOOL isLoaded = YES;
+    NSUInteger perPage = 5;    
+    NSUInteger pageCount = 3;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(isLoaded)] isLoaded];
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(perPage)] perPage];
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(objectCount)] objectCount];    
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(pageCount)] pageCount];    
     
+    NSUInteger currentPage = 1;
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(YES)));
     currentPage = 2;
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(YES)));    
     currentPage = 3;
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(NO)));
 }
 
-- (void)itShouldKnowIfItHasAPreviousPage {
+- (void)testHasNextPageRaisesExpectionWhenNotLoaded {
     RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
-    NSUInteger perPage = 5;
-    NSUInteger currentPage = 3;
-    NSUInteger objectCount = 10;
+    BOOL loaded = NO;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(loaded)] isLoaded];
+    STAssertThrows([mockPaginator hasNextPage], @"Expected exception due to isLoaded == NO");
+}
+
+- (void)testHasNextPageRaisesExpectionWhenPageCountIsUnknown {
+    RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    BOOL loaded = YES;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(loaded)] isLoaded];
+    BOOL hasPageCount = NO;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(hasPageCount)] hasPageCount];
+    STAssertThrows([mockPaginator hasNextPage], @"Expected exception due to pageCount == NSUIntegerMax");
+}
+
+- (void)testHasPreviousPageRaisesExpectionWhenNotLoaded {
+    RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    BOOL loaded = NO;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(loaded)] isLoaded];
+    STAssertThrows([mockPaginator hasPreviousPage], @"Expected exception due to isLoaded == NO");
+}
+
+- (void)testKnowledgeOfPreviousPage {
+    RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
+    id mockPaginator = [OCMockObject partialMockForObject:paginator];
+    BOOL isLoaded = YES;
+    NSUInteger perPage = 5;    
+    NSUInteger pageCount = 3;
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(isLoaded)] isLoaded];
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(perPage)] perPage];
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(objectCount)] objectCount];    
-    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
+    [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(pageCount)] pageCount];    
     
+    NSUInteger currentPage = 3;
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
     assertThatBool([mockPaginator hasPreviousPage], is(equalToBool(YES)));
     currentPage = 2;
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
     assertThatBool([mockPaginator hasPreviousPage], is(equalToBool(YES)));    
     currentPage = 1;
+    [[[mockPaginator expect] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
     assertThatBool([mockPaginator hasPreviousPage], is(equalToBool(NO)));
 }
 

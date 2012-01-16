@@ -151,7 +151,7 @@
 
 #pragma mark - Response Object Mapping
 
-- (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject error:(NSError**)error {
+- (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject inContext:(RKObjectMappingProviderContext)context error:(NSError**)error {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
     
@@ -182,6 +182,7 @@
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.targetObject = targetObject;
     mapper.delegate = self;
+    mapper.context = context;
     RKObjectMappingResult* result = [mapper performMapping];
     
     // Log any mapping errors
@@ -205,15 +206,15 @@
     RKObjectMappingProvider* mappingProvider;
     if (self.objectMapping) {
         NSString* rootKeyPath = self.objectMapping.rootKeyPath ? self.objectMapping.rootKeyPath : @"";
-        RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider for keyPath %@", rootKeyPath);
-        mappingProvider = [[RKObjectMappingProvider new] autorelease];        
+        RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider for keyPath %@", rootKeyPath);        
+        mappingProvider = [RKObjectMappingProvider mappingProvider];
         [mappingProvider setMapping:self.objectMapping forKeyPath:rootKeyPath];
     } else {
         RKLogDebug(@"No object mapping provider, using mapping provider from parent object manager to perform KVC mapping");
         mappingProvider = self.mappingProvider;
     }
     
-    return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject error:error];
+    return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject inContext:RKObjectMappingProviderContextObjectsByKeyPath error:error];
 }
     
 
@@ -283,8 +284,8 @@
 - (void)handleResponseError {
     // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
     // target object
-    NSError* error = nil;
-    RKObjectMappingResult* result = [self mapResponseWithMappingProvider:self.mappingProvider toObject:nil error:&error];
+    NSError *error = nil;
+    RKObjectMappingResult *result = [self mapResponseWithMappingProvider:self.mappingProvider toObject:nil inContext:RKObjectMappingProviderContextErrors error:&error];
     if (result) {
         error = [result asError];
     } else {

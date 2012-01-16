@@ -58,9 +58,9 @@ static RKObjectManager* sharedManager = nil;
         
         // Setup default error message mappings
         RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+        errorMapping.rootKeyPath = @"errors";
         [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
-        [_mappingProvider setMapping:errorMapping forKeyPath:@"error"];
-        [_mappingProvider setMapping:errorMapping forKeyPath:@"errors"];
+        _mappingProvider.errorMapping = errorMapping;
         		
 		[[NSNotificationCenter defaultCenter] addObserver:self
 												 selector:@selector(reachabilityChanged:)
