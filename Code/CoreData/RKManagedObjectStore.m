@@ -244,7 +244,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	NSManagedObjectContext* managedObjectContext = [[NSManagedObjectContext alloc] init];
 	[managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[managedObjectContext setUndoManager:nil];
-	[managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
+	[managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(objectsDidChange:)
