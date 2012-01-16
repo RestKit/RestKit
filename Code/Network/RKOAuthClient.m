@@ -30,6 +30,7 @@
 @synthesize callbackURL = _callbackURL;
 @synthesize delegate = _delegate;
 @synthesize accessToken = _accessToken;
+@synthesize refreshToken = _refreshToken;
 
 + (RKOAuthClient *)clientWithClientID:(NSString *)clientId 
                                secret:(NSString *)secret 
@@ -56,6 +57,7 @@
     [_clientID release];
     [_clientSecret release];
     [_accessToken release];
+    [_refreshToken release];
     
     [super dealloc];
 }
@@ -81,8 +83,15 @@
         
         //Check the if an access token comes in the response
         _accessToken = [[oauthResponse objectForKey:@"access_token"] copy];
+        _refreshToken = [[oauthResponse objectForKey:@"refresh_token"] copy];
         errorResponse = [oauthResponse objectForKey:@"error"];
         
+        if (_accessToken && _refreshToken) {
+            // W00T W00T We got an accessToken with its refresh token 
+            [self.delegate OAuthClient:self didAcquireAccessToken:_accessToken refreshToken:_refreshToken];
+            
+            return;
+        }
         if (_accessToken) {           
             // W00T We got an accessToken            
             [self.delegate OAuthClient:self didAcquireAccessToken:_accessToken];

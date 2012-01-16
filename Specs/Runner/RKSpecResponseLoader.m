@@ -126,6 +126,10 @@ NSString * const RKSpecResponseLoaderTimeoutException = @"RKSpecResponseLoaderTi
     _success = YES;
 }
 
+- (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token refreshToken:(NSString *)refreshToken {
+    _awaitingResponse = NO;
+    _success = YES;
+}
 
 - (void)OAuthClient:(RKOAuthClient *)client didFailWithInvalidGrantError:(NSError *)error {
     _awaitingResponse = NO;
