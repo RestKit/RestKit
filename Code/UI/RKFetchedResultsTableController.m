@@ -510,6 +510,9 @@
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController*)controller {
     RKLogTrace(@"Beginning updates for fetchedResultsController (%@). Current section count = %d (resource path: %@)", controller, [[controller sections] count], _resourcePath);
+    
+    if(_sortSelector) return;
+    
     [self.tableView beginUpdates];
     _isEmptyBeforeAnimation = [self isEmpty];
 }
@@ -519,7 +522,9 @@
 		   atIndex:(NSUInteger)sectionIndex
      forChangeType:(NSFetchedResultsChangeType)type {
 
-	switch (type) {
+    if(_sortSelector) return;
+	
+    switch (type) {
 		case NSFetchedResultsChangeInsert:
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                           withRowAnimation:UITableViewRowAnimationFade];
@@ -542,6 +547,8 @@
      forChangeType:(NSFetchedResultsChangeType)type
 	  newIndexPath:(NSIndexPath *)newIndexPath {
 
+    if(_sortSelector) return;
+    
     NSIndexPath* adjIndexPath = [self indexPathForFetchedResultsIndexPath:indexPath];
     NSIndexPath* adjNewIndexPath = [self indexPathForFetchedResultsIndexPath:newIndexPath];
 
@@ -584,8 +591,15 @@
         [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[self emptyItemIndexPath]]
                               withRowAnimation:UITableViewRowAnimationFade];
     }
+    
     [self updateSortedArray];
-    [self.tableView endUpdates];
+    
+    if(_sortSelector) {
+        [self.tableView reloadData];
+    } else {
+        [self.tableView endUpdates];
+    }
+    
     [self didFinishLoad];
 }
 
