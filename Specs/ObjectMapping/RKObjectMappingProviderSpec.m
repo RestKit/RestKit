@@ -200,6 +200,15 @@
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 
+- (void)testRetrievalOfMappingForPathMatcherIncludingQueryParameters {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
+    
+    id<RKObjectMappingDefinition> matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
+    assertThat(matchedMapping, is(equalTo(mapping)));
+}
+
 - (void)testRetrievalOfMappingForPathMatcherWithMultipleEntries {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
         
@@ -243,7 +252,5 @@
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.xml" context:1], is(equalTo(mapping_3)));
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345/comments/3" context:1], is(equalTo(mapping_4)));
 }
-
-// TODO: Add URL matchers...
 
 @end

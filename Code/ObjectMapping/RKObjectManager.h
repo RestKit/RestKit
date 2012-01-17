@@ -368,7 +368,6 @@ typedef enum {
  */
 - (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
 
-// TODO: Document all of these...
 /**
  Return the class of object loader instances built through the manager. When Core Data has
  been configured 
@@ -376,35 +375,63 @@ typedef enum {
  @return RKObjectLoader OR RKManagedObjectLoader
  */
 - (Class)objectLoaderClass;
+
+/**
+ Creates and returns an RKObjectLoader or RKManagedObjectLoader instance targeting the specified resourcePath.
+ 
+ The object loader instantiated will be initialized with an RKURL built by appending the resourcePath to the baseURL of the client. The loader will then
+ be configured with object mapping configuration from the manager and request configuration from the client.
+ 
+ @param resourcePath A resource to use when building the URL to initialize the object loader instance.
+ @return The newly created object loader instance.
+ @see RKURL
+ @see RKClient
+ */
 - (id)loaderWithResourcePath:(NSString *)resourcePath;
+
+/**
+ Creates and returns an RKObjectLoader or RKManagedObjectLoader instance targeting the specified URL.
+ 
+ The object loader instantiated will be initialized with URL and will then
+ be configured with object mapping configuration from the manager and request configuration from the client.
+ 
+ @param URL The URL with which to initialize the object loader.
+ @return The newly created object loader instance.
+ @see RKURL
+ @see RKClient
+ */
 - (id)loaderWithURL:(NSURL *)URL;
-- (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
+
+/**
+ Creates and returns an RKObjectLoader or RKManagedObjectLoader instance for an object instance.
+ 
+ The object loader instantiated will be initialized with a URL built by evaluating the object with the
+ router to construct a resource path and then appending that resource path to the baseURL of the client.
+ The loader will then be configured with object mapping configuration from the manager and request 
+ configuration from the client. The specified object will be the target of the object loader and will
+ have any returned content mapped back onto the instance.
+ 
+ @param object The object with which to initialize the object loader.
+ @return The newly created object loader instance.
+ @see RKObjectLoader
+ @see RKObjectRouter
+ */
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method;
 
 /**
- These methods are provided for situations where the remote system you are working with has slightly different conventions
- than the default methods provide. They return fully initialized object loaders that are ready for dispatch, but
- have not yet been sent. This can be used to add one-off params to the request body or otherwise manipulate the request
- before it is sent off to be loaded & object mapped. This can also be used to perform a synchronous object load.
- */
-
-/**
- Return an object loader ready to be sent. The method defaults to GET and the URL is relative to the
- baseURL configured on the client. The loader is configured for an implicit objectClass load. This is
- the best place to begin work if you need to create a slightly different collection loader than what is
- provided by the loadObjects family of methods.
- */
-- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-
-/**
- Returns an object loader configured for transmitting an object instance across the wire. A request will be constructed
- for you with the resource path configured for you by the Router. This is the best place to
- begin work if you need a slightly different interaction with the server than what is provided for you by get/post/put/delete
- object family of methods. Note that this should be used for one-off changes. If you need to substantially modify all your
- object loads, you are better off subclassing or implementing your own RKRouter for dryness.
+ Creates and returns an RKObjectPaginator instance targeting the specified resource path pattern.
  
- // TODO: Cleanup this comment
+ The paginator instantiated will be initialized with an RKURL built by appending the resourcePathPattern to the 
+ baseURL of the client. 
+ 
+ @return The newly created paginator instance.
+ @see RKObjectMappingProvider
+ @see RKObjectPaginator
  */
+- (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
+
+
+- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 @end

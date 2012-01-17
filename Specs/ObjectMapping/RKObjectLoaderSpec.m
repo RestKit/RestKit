@@ -393,6 +393,42 @@
     assertThat(newObject.ID, is(equalToInt(31337)));
 }
 
+- (void)testShouldAllowYouToPOSTAnObjectOfOneTypeAndGetBackAnotherViaURLConfiguration {
+    RKObjectMapping* sourceMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    [sourceMapping mapAttributes:@"firstname", @"lastname", @"email", nil];
+    RKObjectMapping* serializationMapping = [sourceMapping inverseMapping];
+    
+    RKObjectMapping* targetMapping = [RKObjectMapping mappingForClass:[RKObjectLoaderSpecResultModel class]];
+    [targetMapping mapAttributes:@"ID", nil];
+    
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    [objectManager.router routeClass:[RKSpecComplexUser class] toResourcePath:@"/notNestedUser"];
+    [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKSpecComplexUser class]];
+    [objectManager.mappingProvider setObjectMapping:targetMapping forResourcePathPattern:@"/notNestedUser"];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+    
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectLoader* loader = [objectManager loaderForObject:user method:RKRequestMethodPOST];
+    loader.delegate = responseLoader;
+    loader.sourceObject = user;
+    loader.targetObject = nil;
+    [loader send];
+    [responseLoader waitForResponse];
+    assertThatBool([responseLoader success], is(equalToBool(YES)));
+    
+    // Our original object should not have changed
+    assertThat(user.email, is(equalTo(@"blake@restkit.org")));
+    
+    // And we should have a new one
+    RKObjectLoaderSpecResultModel* newObject = [[responseLoader objects] lastObject];
+    assertThat(newObject, is(instanceOf([RKObjectLoaderSpecResultModel class])));
+    assertThat(newObject.ID, is(equalToInt(31337)));
+}
+
 // TODO: Should live in a different file...
 - (void)testShouldAllowYouToPOSTAnObjectAndMapBackNonNestedContentViapostObject {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
