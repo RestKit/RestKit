@@ -200,15 +200,24 @@
     return result;
 }
 
+- (RKObjectMapping *)configuredObjectMapping {
+    if (self.objectMapping) {
+        return self.objectMapping;
+    }
+    
+    return [self.mappingProvider objectMappingForResourcePath:self.resourcePath];
+}
+
 - (RKObjectMappingResult*)performMapping:(NSError**)error {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping should occur on a background thread");
     
     RKObjectMappingProvider* mappingProvider;
-    if (self.objectMapping) {
-        NSString* rootKeyPath = self.objectMapping.rootKeyPath ? self.objectMapping.rootKeyPath : @"";
+    RKObjectMapping *configuredObjectMapping = [self configuredObjectMapping];
+    if (configuredObjectMapping) {
+        NSString* rootKeyPath = configuredObjectMapping.rootKeyPath ? configuredObjectMapping.rootKeyPath : @"";
         RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider for keyPath %@", rootKeyPath);        
         mappingProvider = [RKObjectMappingProvider mappingProvider];
-        [mappingProvider setMapping:self.objectMapping forKeyPath:rootKeyPath];
+        [mappingProvider setMapping:configuredObjectMapping forKeyPath:rootKeyPath];
     } else {
         RKLogDebug(@"No object mapping provider, using mapping provider from parent object manager to perform KVC mapping");
         mappingProvider = self.mappingProvider;

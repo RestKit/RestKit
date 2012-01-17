@@ -439,6 +439,56 @@
     assertThat(user.firstname, is(equalTo(@"Diego")));
 }
 
+- (void)testShouldDetermineObjectLoaderBasedOnResourcePathPatternWithExactMatch {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/ComplexNestedUser.json"];
+    
+    RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/ComplexNestedUser.json"];
+    RKObjectLoader* objectLoader = [RKObjectLoader loaderWithURL:URL mappingProvider:mappingProvider];
+    objectLoader.delegate = responseLoader;
+    objectLoader.method = RKRequestMethodGET;
+    objectLoader.targetObject = user;
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    
+    NSLog(@"Response: %@", responseLoader.objects);
+    
+    assertThat(user.firstname, is(equalTo(@"Diego")));
+}
+
+- (void)testShouldDetermineObjectLoaderBasedOnResourcePathPatternWithPartialMatch {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    
+    RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
+    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/:name\\.json"];
+    
+    RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/ComplexNestedUser.json"];
+    RKObjectLoader* objectLoader = [RKObjectLoader loaderWithURL:URL mappingProvider:mappingProvider];
+    objectLoader.delegate = responseLoader;
+    objectLoader.method = RKRequestMethodGET;
+    objectLoader.targetObject = user;
+    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    
+    NSLog(@"Response: %@", responseLoader.objects);
+    
+    assertThat(user.firstname, is(equalTo(@"Diego")));
+}
+
 - (void)testShouldReturnSuccessWhenTheStatusCodeIs200AndTheResponseBodyIsEmpty {
     RKObjectManager* objectManager = RKSpecNewObjectManager();
 
