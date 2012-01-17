@@ -29,6 +29,7 @@
 #import "RKForm.h"
 #import "RKFormSection.h"
 #import "RKTableView.h"
+#import "RKRefreshTriggerView.h"
 #import "RKObjectManager+RKTableController.h"
 
 #endif
