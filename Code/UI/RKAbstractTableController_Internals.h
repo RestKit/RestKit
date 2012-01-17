@@ -19,9 +19,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EGORefreshTableHeaderView.h"
+#import "RKRefreshGestureRecognizer.h"
 
-@interface RKAbstractTableController () <RKObjectLoaderDelegate, EGORefreshTableHeaderDelegate>
+@interface RKAbstractTableController () <RKObjectLoaderDelegate, RKRefreshTriggerProtocol>
 
 @property (nonatomic, readwrite, assign) UITableView* tableView;
 @property (nonatomic, readwrite, assign) UIViewController* viewController;
@@ -55,5 +55,11 @@
 - (BOOL)removeImageFromOverlay:(UIImage *)image;
 - (void)showImageInOverlay:(UIImage *)image;
 - (void)removeImageOverlay;
+
+#pragma mark - Pull to Refresh Private Methods
+
+- (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture;
+- (void)resetPullToRefreshRecognizer;
+
 
 @end

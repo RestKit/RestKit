@@ -221,17 +221,7 @@
 		258F875814117373007AABCD /* RKMutableBlockDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 258F874F14117323007AABCD /* RKMutableBlockDictionary.m */; };
 		258F875B141174C1007AABCD /* RKDynamicObjectMappingMatcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F8759141174C1007AABCD /* RKDynamicObjectMappingMatcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258F875C141174C1007AABCD /* RKDynamicObjectMappingMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 258F875A141174C1007AABCD /* RKDynamicObjectMappingMatcher.m */; };
-		258F876B14117738007AABCD /* EGORefreshTableHeaderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 258F876014117738007AABCD /* EGORefreshTableHeaderView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		258F876C14117738007AABCD /* EGORefreshTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 258F876114117738007AABCD /* EGORefreshTableHeaderView.m */; };
 		258F877214117837007AABCD /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F19126812DF6B3200C077AD /* CoreFoundation.framework */; };
-		258F877F14117845007AABCD /* blackArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876314117738007AABCD /* blackArrow.png */; };
-		258F878014117845007AABCD /* blackArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876414117738007AABCD /* blackArrow@2x.png */; };
-		258F878114117845007AABCD /* blueArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876514117738007AABCD /* blueArrow.png */; };
-		258F878214117845007AABCD /* blueArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876614117738007AABCD /* blueArrow@2x.png */; };
-		258F878314117845007AABCD /* grayArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876714117738007AABCD /* grayArrow.png */; };
-		258F878414117845007AABCD /* grayArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876814117738007AABCD /* grayArrow@2x.png */; };
-		258F878514117845007AABCD /* whiteArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876914117738007AABCD /* whiteArrow.png */; };
-		258F878614117845007AABCD /* whiteArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 258F876A14117738007AABCD /* whiteArrow@2x.png */; };
 		258F878E14117886007AABCD /* RestKitCoreData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 258F878B1411786C007AABCD /* RestKitCoreData.xcdatamodeld */; };
 		258F87AA141178E8007AABCD /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 258F8790141178E7007AABCD /* OCHamcrestIOS.framework */; };
 		258F87AB141178E8007AABCD /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 258F879A141178E7007AABCD /* libOCMock.a */; };
@@ -360,6 +350,18 @@
 		3703ABAC14190D5700DB697A /* RKDotNetDateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3703ABAA14190D5700DB697A /* RKDotNetDateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3703ABAD14190D5700DB697A /* RKDotNetDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3703ABAB14190D5700DB697A /* RKDotNetDateFormatter.m */; };
 		3703ABB0141941FB00DB697A /* RKDotNetDateFormatterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 3703ABAF141941FB00DB697A /* RKDotNetDateFormatterSpec.m */; };
+		37298D8814BE298000849765 /* RKRefreshGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 37298D8114BE298000849765 /* RKRefreshGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		37298D8914BE298000849765 /* RKRefreshGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 37298D8214BE298000849765 /* RKRefreshGestureRecognizer.m */; };
+		37298D8A14BE298000849765 /* RKRefreshTriggerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 37298D8314BE298000849765 /* RKRefreshTriggerView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		37298D8B14BE298000849765 /* RKRefreshTriggerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 37298D8414BE298000849765 /* RKRefreshTriggerView.m */; };
+		373B841014C0D1BC00ED7959 /* blackArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840814C0D1BC00ED7959 /* blackArrow.png */; };
+		373B841114C0D1BC00ED7959 /* blackArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840914C0D1BC00ED7959 /* blackArrow@2x.png */; };
+		373B841214C0D1BC00ED7959 /* blueArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840A14C0D1BC00ED7959 /* blueArrow.png */; };
+		373B841314C0D1BC00ED7959 /* blueArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840B14C0D1BC00ED7959 /* blueArrow@2x.png */; };
+		373B841414C0D1BC00ED7959 /* grayArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840C14C0D1BC00ED7959 /* grayArrow.png */; };
+		373B841514C0D1BC00ED7959 /* grayArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840D14C0D1BC00ED7959 /* grayArrow@2x.png */; };
+		373B841614C0D1BC00ED7959 /* whiteArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840E14C0D1BC00ED7959 /* whiteArrow.png */; };
+		373B841714C0D1BC00ED7959 /* whiteArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 373B840F14C0D1BC00ED7959 /* whiteArrow@2x.png */; };
 		374E6AE914A5989700C85231 /* NakedEvents.json in Resources */ = {isa = PBXBuildFile; fileRef = 374E6AE814A5989700C85231 /* NakedEvents.json */; };
 		374E6AED14A598D500C85231 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 374E6AEC14A598D500C85231 /* RKEvent.m */; };
 		37959B201426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 37959B1F1426D4E500F9A8C6 /* RKObjectMappingProviderSpec.m */; };
@@ -764,16 +766,6 @@
 		258F874F14117323007AABCD /* RKMutableBlockDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMutableBlockDictionary.m; sourceTree = "<group>"; };
 		258F8759141174C1007AABCD /* RKDynamicObjectMappingMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDynamicObjectMappingMatcher.h; sourceTree = "<group>"; };
 		258F875A141174C1007AABCD /* RKDynamicObjectMappingMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDynamicObjectMappingMatcher.m; sourceTree = "<group>"; };
-		258F876014117738007AABCD /* EGORefreshTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGORefreshTableHeaderView.h; sourceTree = "<group>"; };
-		258F876114117738007AABCD /* EGORefreshTableHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EGORefreshTableHeaderView.m; sourceTree = "<group>"; };
-		258F876314117738007AABCD /* blackArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackArrow.png; sourceTree = "<group>"; };
-		258F876414117738007AABCD /* blackArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blackArrow@2x.png"; sourceTree = "<group>"; };
-		258F876514117738007AABCD /* blueArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueArrow.png; sourceTree = "<group>"; };
-		258F876614117738007AABCD /* blueArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blueArrow@2x.png"; sourceTree = "<group>"; };
-		258F876714117738007AABCD /* grayArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayArrow.png; sourceTree = "<group>"; };
-		258F876814117738007AABCD /* grayArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grayArrow@2x.png"; sourceTree = "<group>"; };
-		258F876914117738007AABCD /* whiteArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteArrow.png; sourceTree = "<group>"; };
-		258F876A14117738007AABCD /* whiteArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "whiteArrow@2x.png"; sourceTree = "<group>"; };
 		258F877114117837007AABCD /* RestKitResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitResources.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		258F878C1411786C007AABCD /* RestKitCoreData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RestKitCoreData.xcdatamodel; sourceTree = "<group>"; };
 		258F8790141178E7007AABCD /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
@@ -916,6 +908,18 @@
 		3703ABAA14190D5700DB697A /* RKDotNetDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDotNetDateFormatter.h; sourceTree = "<group>"; };
 		3703ABAB14190D5700DB697A /* RKDotNetDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDotNetDateFormatter.m; sourceTree = "<group>"; };
 		3703ABAF141941FB00DB697A /* RKDotNetDateFormatterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDotNetDateFormatterSpec.m; sourceTree = "<group>"; };
+		37298D8114BE298000849765 /* RKRefreshGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRefreshGestureRecognizer.h; sourceTree = "<group>"; };
+		37298D8214BE298000849765 /* RKRefreshGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = RKRefreshGestureRecognizer.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		37298D8314BE298000849765 /* RKRefreshTriggerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKRefreshTriggerView.h; sourceTree = "<group>"; };
+		37298D8414BE298000849765 /* RKRefreshTriggerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKRefreshTriggerView.m; sourceTree = "<group>"; };
+		373B840814C0D1BC00ED7959 /* blackArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackArrow.png; sourceTree = "<group>"; };
+		373B840914C0D1BC00ED7959 /* blackArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blackArrow@2x.png"; sourceTree = "<group>"; };
+		373B840A14C0D1BC00ED7959 /* blueArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueArrow.png; sourceTree = "<group>"; };
+		373B840B14C0D1BC00ED7959 /* blueArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blueArrow@2x.png"; sourceTree = "<group>"; };
+		373B840C14C0D1BC00ED7959 /* grayArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayArrow.png; sourceTree = "<group>"; };
+		373B840D14C0D1BC00ED7959 /* grayArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grayArrow@2x.png"; sourceTree = "<group>"; };
+		373B840E14C0D1BC00ED7959 /* whiteArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteArrow.png; sourceTree = "<group>"; };
+		373B840F14C0D1BC00ED7959 /* whiteArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "whiteArrow@2x.png"; sourceTree = "<group>"; };
 		374E6AE814A5989700C85231 /* NakedEvents.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = NakedEvents.json; sourceTree = "<group>"; };
 		374E6AEB14A598D500C85231 /* RKEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEvent.h; sourceTree = "<group>"; };
 		374E6AEC14A598D500C85231 /* RKEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEvent.m; sourceTree = "<group>"; };
@@ -1651,6 +1655,10 @@
 				258F87201411724D007AABCD /* UI.h */,
 				258F87211411724D007AABCD /* UIView+FindFirstResponder.h */,
 				258F87221411724D007AABCD /* UIView+FindFirstResponder.m */,
+				37298D8114BE298000849765 /* RKRefreshGestureRecognizer.h */,
+				37298D8214BE298000849765 /* RKRefreshGestureRecognizer.m */,
+				37298D8314BE298000849765 /* RKRefreshTriggerView.h */,
+				37298D8414BE298000849765 /* RKRefreshTriggerView.m */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -1668,52 +1676,11 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
-		258F875D14117738007AABCD /* EGOTableViewPullRefresh */ = {
-			isa = PBXGroup;
-			children = (
-				258F875E14117738007AABCD /* Classes */,
-				258F876214117738007AABCD /* Resources */,
-			);
-			name = EGOTableViewPullRefresh;
-			path = Vendor/EGOTableViewPullRefresh/EGOTableViewPullRefresh;
-			sourceTree = "<group>";
-		};
-		258F875E14117738007AABCD /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				258F875F14117738007AABCD /* View */,
-			);
-			path = Classes;
-			sourceTree = "<group>";
-		};
-		258F875F14117738007AABCD /* View */ = {
-			isa = PBXGroup;
-			children = (
-				258F876014117738007AABCD /* EGORefreshTableHeaderView.h */,
-				258F876114117738007AABCD /* EGORefreshTableHeaderView.m */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		258F876214117738007AABCD /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				258F876314117738007AABCD /* blackArrow.png */,
-				258F876414117738007AABCD /* blackArrow@2x.png */,
-				258F876514117738007AABCD /* blueArrow.png */,
-				258F876614117738007AABCD /* blueArrow@2x.png */,
-				258F876714117738007AABCD /* grayArrow.png */,
-				258F876814117738007AABCD /* grayArrow@2x.png */,
-				258F876914117738007AABCD /* whiteArrow.png */,
-				258F876A14117738007AABCD /* whiteArrow@2x.png */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		258F878A1411786B007AABCD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				258F878B1411786C007AABCD /* RestKitCoreData.xcdatamodeld */,
+				373B840714C0D1BC00ED7959 /* RKRefreshTriggerViewAssets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1781,7 +1748,6 @@
 			isa = PBXGroup;
 			children = (
 				2540EB6E144E7DFB00E4FC71 /* cocoa-oauth */,
-				258F875D14117738007AABCD /* EGOTableViewPullRefresh */,
 				25552DD914341324007E10F1 /* FileMD5Hash */,
 				73057FC61331AA28001908EE /* JSONKit */,
 				250D5BD913A0698100471F0E /* LibComponentLogging */,
@@ -1987,6 +1953,21 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		373B840714C0D1BC00ED7959 /* RKRefreshTriggerViewAssets */ = {
+			isa = PBXGroup;
+			children = (
+				373B840814C0D1BC00ED7959 /* blackArrow.png */,
+				373B840914C0D1BC00ED7959 /* blackArrow@2x.png */,
+				373B840A14C0D1BC00ED7959 /* blueArrow.png */,
+				373B840B14C0D1BC00ED7959 /* blueArrow@2x.png */,
+				373B840C14C0D1BC00ED7959 /* grayArrow.png */,
+				373B840D14C0D1BC00ED7959 /* grayArrow@2x.png */,
+				373B840E14C0D1BC00ED7959 /* whiteArrow.png */,
+				373B840F14C0D1BC00ED7959 /* whiteArrow@2x.png */,
+			);
+			path = RKRefreshTriggerViewAssets;
+			sourceTree = "<group>";
+		};
 		37CA4C5D1410A7CE009A3DCE /* SOCKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -2184,9 +2165,10 @@
 				258F87381411724D007AABCD /* RKTableSection.h in Headers */,
 				258F873A1411724D007AABCD /* UI.h in Headers */,
 				258F873B1411724D007AABCD /* UIView+FindFirstResponder.h in Headers */,
-				258F876B14117738007AABCD /* EGORefreshTableHeaderView.h in Headers */,
 				73CE45D814BB984B00C533CF /* UDTableView.h in Headers */,
 				73CE45DC14BB989300C533CF /* RKTableView.h in Headers */,
+				37298D8814BE298000849765 /* RKRefreshGestureRecognizer.h in Headers */,
+				37298D8A14BE298000849765 /* RKRefreshTriggerView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2557,14 +2539,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				258F877F14117845007AABCD /* blackArrow.png in Resources */,
-				258F878014117845007AABCD /* blackArrow@2x.png in Resources */,
-				258F878114117845007AABCD /* blueArrow.png in Resources */,
-				258F878214117845007AABCD /* blueArrow@2x.png in Resources */,
-				258F878314117845007AABCD /* grayArrow.png in Resources */,
-				258F878414117845007AABCD /* grayArrow@2x.png in Resources */,
-				258F878514117845007AABCD /* whiteArrow.png in Resources */,
-				258F878614117845007AABCD /* whiteArrow@2x.png in Resources */,
+				373B841014C0D1BC00ED7959 /* blackArrow.png in Resources */,
+				373B841114C0D1BC00ED7959 /* blackArrow@2x.png in Resources */,
+				373B841214C0D1BC00ED7959 /* blueArrow.png in Resources */,
+				373B841314C0D1BC00ED7959 /* blueArrow@2x.png in Resources */,
+				373B841414C0D1BC00ED7959 /* grayArrow.png in Resources */,
+				373B841514C0D1BC00ED7959 /* grayArrow@2x.png in Resources */,
+				373B841614C0D1BC00ED7959 /* whiteArrow.png in Resources */,
+				373B841714C0D1BC00ED7959 /* whiteArrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2795,9 +2777,10 @@
 				258F87371411724D007AABCD /* RKTableController.m in Sources */,
 				258F87391411724D007AABCD /* RKTableSection.m in Sources */,
 				258F873C1411724D007AABCD /* UIView+FindFirstResponder.m in Sources */,
-				258F876C14117738007AABCD /* EGORefreshTableHeaderView.m in Sources */,
 				73CE45D914BB984B00C533CF /* UDTableView.m in Sources */,
 				73CE45DD14BB989300C533CF /* RKTableView.m in Sources */,
+				37298D8914BE298000849765 /* RKRefreshGestureRecognizer.m in Sources */,
+				37298D8B14BE298000849765 /* RKRefreshTriggerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
