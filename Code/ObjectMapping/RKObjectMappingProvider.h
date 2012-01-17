@@ -25,7 +25,7 @@
 typedef enum {
     RKObjectMappingProviderContextObjectsByKeyPath = 1000,
     RKObjectMappingProviderContextObjectsByType,
-    RKObjectMappingProviderContextObjectsByURL,
+    RKObjectMappingProviderContextObjectsByResourcePathPattern,
     RKObjectMappingProviderContextSerialization,
     RKObjectMappingProviderContextErrors,
     RKObjectMappingProviderContextPagination
@@ -204,6 +204,40 @@ typedef enum {
 - (RKObjectMapping *)serializationMappingForClass:(Class)objectClass;
 
 /**
+ Configures an object mapping to be used when during a load event where the resourcePath of
+ the RKObjectLoader instance matches resourcePathPattern.
+ 
+ The resourcePathPattern is a SOCKit pattern matching property names preceded by colons within
+ a path. For example, if a collection of reviews for a product were loaded from a remote system
+ at the resourcePath @"/products/1234/reviews", object mapping could be configured to handle 
+ this request with a resourcePathPattern of @"/products/:productID/reviews".
+ 
+ **NOTE** that care must be taken when configuring patterns within the provider. The patterns
+ will be evaluated in the order they are added to the provider, so more specific patterns must
+ precede more general patterns where either would generate a match.
+ 
+ @param objectMapping The object mapping to use when the resourcePath matches the specified
+    resourcePathPattern.
+ @param resourcePathPattern A pattern to be evaluated using an RKPathMatcher against a resourcePath
+    to determine if objectMapping is the appropriate mapping.
+ @see RKPathMatcher
+ @see RKURL
+ @see RKObjectLoader
+ */
+- (void)setObjectMapping:(id<RKObjectMappingDefinition>)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern;
+
+/**
+ Returns the first objectMapping configured in the provider with a resourcePathPattern matching
+ the specified resourcePath.
+ 
+ @param resourcePath A resource path to retrieve the first RKObjectMapping or RKDynamicObjectMapping
+    configured with a matching pattern.
+ @return An RKObjectMapping or RKDynamicObjectMapping for a resource path pattern matching resourcePath
+    or nil if no match was found.
+ */
+- (id<RKObjectMappingDefinition>)objectMappingForResourcePath:(NSString *)resourcePath;
+
+/**
  An object mapping used when the remote system returns an error status code
  and a payload with a MIME Type that RestKit is capable of parsing.
  
@@ -250,6 +284,10 @@ typedef enum {
 - (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
 - (void)setMapping:(id<RKObjectMappingDefinition>)mapping forKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
 - (void)removeMappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
+
+- (void)setMapping:(id<RKObjectMappingDefinition>)mapping forPattern:(NSString *)pattern atIndex:(NSUInteger)index context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(id<RKObjectMappingDefinition>)mapping forPattern:(NSString *)pattern context:(RKObjectMappingProviderContext)context;
+- (id<RKObjectMappingDefinition>)mappingForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context;
 
 @end
 

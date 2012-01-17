@@ -26,10 +26,6 @@
 #import "RKMappingOperationQueue.h"
 #import "Support.h"
 
-/**
- Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
- for an external object mapping operation.
- */
 @class RKObjectMapper;
 
 @protocol RKObjectMapperDelegate <NSObject>
@@ -47,6 +43,9 @@
 - (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(id<RKObjectMappingDefinition>)objectMapping;
 @end
 
+/**
+ 
+ */
 @interface RKObjectMapper : NSObject {
   @protected
     RKMappingOperationQueue *operationQueue;

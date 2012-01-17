@@ -58,7 +58,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 @property (nonatomic,retain) SOCPattern *socPattern;
 @property (nonatomic,copy) NSString *sourcePath;
 @property (nonatomic,copy) NSString *rootPath;
-@property (retain,readwrite) NSDictionary *queryParameters;
+@property (copy,readwrite) NSDictionary *queryParameters;
 @end
 
 @implementation RKPathMatcher
@@ -66,6 +66,16 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 @synthesize sourcePath=sourcePath_;
 @synthesize rootPath=rootPath_;
 @synthesize queryParameters=queryParameters_;
+
+- (id)copyWithZone:(NSZone *)zone {
+    RKPathMatcher* copy = [[[self class] allocWithZone:zone] init];
+    copy.socPattern = self.socPattern;
+    copy.sourcePath = self.sourcePath;
+    copy.rootPath = self.rootPath;
+    copy.queryParameters = self.queryParameters;
+    
+    return copy;
+}
 
 - (void)dealloc {
     self.socPattern = nil;

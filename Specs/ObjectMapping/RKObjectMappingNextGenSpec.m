@@ -436,7 +436,7 @@
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     [provider setMapping:mapping forKeyPath:@""];
     id mockProvider = [OCMockObject partialMockForObject:provider];
-    [[mockProvider expect] mappingsByKeyPath];
+    [[mockProvider expect] valueForContext:RKObjectMappingProviderContextObjectsByKeyPath];
         
     id userInfo = RKSpecParseFixture(@"user.json");
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:mockProvider];

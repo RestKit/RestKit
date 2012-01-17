@@ -27,6 +27,7 @@
 #import "RKHuman.h"
 #import "RKCat.h"
 #import "RKObjectMapperSpecModel.h"
+#import "RKOrderedDictionary.h"
 
 @interface RKObjectMappingProviderSpec : RKSpec {
 	RKObjectManager* _objectManager;
@@ -79,91 +80,170 @@
 - (void)testSettingMappingInAContext {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    STAssertNoThrow([mappingProvider setMapping:mapping context:1000], nil);
+    STAssertNoThrow([mappingProvider setMapping:mapping context:1], nil);
 }
 
 - (void)testRetrievalOfMapping {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider setMapping:mapping context:1000];
-    assertThat([mappingProvider mappingForContext:1000], is(equalTo(mapping)));
+    [mappingProvider setMapping:mapping context:1];
+    assertThat([mappingProvider mappingForContext:1], is(equalTo(mapping)));
 }
 
 - (void)testRetrievalOfMappingsCollectionForUndefinedContextReturnsEmptyArray {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    NSArray *collection = [mappingProvider mappingsForContext:1];
     assertThat(collection, is(empty()));
 }
 
 - (void)testRetrievalOfMappingsCollectionWhenSingleMappingIsStoredRaisesError {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider setMapping:mapping context:1000];
-    STAssertThrows([mappingProvider mappingsForContext:1000], @"Expected collection mapping retrieval to throw due to storage of single mapping");
+    [mappingProvider setMapping:mapping context:1];
+    STAssertThrows([mappingProvider mappingsForContext:1], @"Expected collection mapping retrieval to throw due to storage of single mapping");
 }
 
 - (void)testAddingMappingToCollectionContext {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    STAssertNoThrow([mappingProvider addMapping:mapping context:1000], nil);
+    STAssertNoThrow([mappingProvider addMapping:mapping context:1], nil);
 }
 
 - (void)testRetrievalOfMappingCollection {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider addMapping:mapping_1 context:1000];
+    [mappingProvider addMapping:mapping_1 context:1];
     RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider addMapping:mapping_2 context:1000];
-    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    [mappingProvider addMapping:mapping_2 context:1];
+    NSArray *collection = [mappingProvider mappingsForContext:1];
     assertThat(collection, hasItems(mapping_1, mapping_2, nil));
 }
 
 - (void)testRetrievalOfMappingCollectionReturnsImmutableArray {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider addMapping:mapping_1 context:1000];
+    [mappingProvider addMapping:mapping_1 context:1];
     RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider addMapping:mapping_2 context:1000];
-    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    [mappingProvider addMapping:mapping_2 context:1];
+    NSArray *collection = [mappingProvider mappingsForContext:1];
     assertThat(collection, isNot(instanceOf([NSMutableArray class])));
 }
 
 - (void)testRemovalOfMappingFromCollection {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider addMapping:mapping_1 context:1000];
+    [mappingProvider addMapping:mapping_1 context:1];
     RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider addMapping:mapping_2 context:1000];
-    [mappingProvider removeMapping:mapping_1 context:1000];
-    NSArray *collection = [mappingProvider mappingsForContext:1000];
+    [mappingProvider addMapping:mapping_2 context:1];
+    [mappingProvider removeMapping:mapping_1 context:1];
+    NSArray *collection = [mappingProvider mappingsForContext:1];
     assertThat(collection, onlyContains(mapping_2, nil));
 }
 
 - (void)testAttemptToRemoveMappingFromContextThatDoesNotIncludeItRaisesError {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    STAssertThrows([mappingProvider removeMapping:mapping context:1000], @"Removal of mapping not included in context should raise an error.");
+    STAssertThrows([mappingProvider removeMapping:mapping context:1], @"Removal of mapping not included in context should raise an error.");
 }
 
 - (void)testSettingMappingForKeyPathInContext {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    STAssertNoThrow([mappingProvider setMapping:mapping forKeyPath:@"testing" context:1000], nil);
+    STAssertNoThrow([mappingProvider setMapping:mapping forKeyPath:@"testing" context:1], nil);
 }
 
 - (void)testRetrievalOfMappingForKeyPathInContext {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider setMapping:mapping forKeyPath:@"testing" context:1000];
-    assertThat([mappingProvider mappingForKeyPath:@"testing" context:1000], is(equalTo(mapping)));
+    [mappingProvider setMapping:mapping forKeyPath:@"testing" context:1];
+    assertThat([mappingProvider mappingForKeyPath:@"testing" context:1], is(equalTo(mapping)));
 }
 
 - (void)testRemovalOfMappingByKeyPathInContext {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
-    [mappingProvider setMapping:mapping forKeyPath:@"testing" context:1000];
-    [mappingProvider removeMappingForKeyPath:@"testing" context:1000];
-    assertThat([mappingProvider mappingForKeyPath:@"testing" context:1000], is(nilValue()));
+    [mappingProvider setMapping:mapping forKeyPath:@"testing" context:1];
+    [mappingProvider removeMappingForKeyPath:@"testing" context:1];
+    assertThat([mappingProvider mappingForKeyPath:@"testing" context:1], is(nilValue()));
 }
+
+- (void)testSettingMappingForPathMatcherCreatesOrderedDictionary {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
+    id contextValue = [mappingProvider valueForContext:1];
+    assertThat(contextValue, is(instanceOf([RKOrderedDictionary class])));
+}
+
+- (void)testSettingMappingForPathMatcherCreatesDictionaryWithPathMatcherAsKey {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
+    NSDictionary *contextValue = [mappingProvider valueForContext:1];
+    assertThat([contextValue allKeys], contains(@"/articles/:id", nil));
+}
+
+- (void)testSettingMappingForPathMatcherCreatesDictionaryWithMappingAsValue {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
+    NSDictionary *contextValue = [mappingProvider valueForContext:1];
+    assertThat([contextValue allValues], contains(mapping, nil));
+}
+
+- (void)testRetrievalOfMappingForPathMatcher {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
+    
+    id<RKObjectMappingDefinition> matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
+    assertThat(matchedMapping, is(equalTo(mapping)));
+}
+
+- (void)testRetrievalOfMappingForPathMatcherWithMultipleEntries {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+        
+    RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_2 forPattern:@"/articles/:id\\.json" context:1];
+    
+    RKObjectMapping *mapping_3 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_3 forPattern:@"/articles/:id\\.xml" context:1];
+    
+    RKObjectMapping *mapping_4 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_4 forPattern:@"/articles/:id/comments/:id" context:1];
+    
+    RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_1 forPattern:@"/articles/:id" context:1];
+    
+    // Test them
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1], is(equalTo(mapping_1)));
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.json" context:1], is(equalTo(mapping_2)));
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.xml" context:1], is(equalTo(mapping_3)));
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345/comments/3" context:1], is(equalTo(mapping_4)));
+}
+
+- (void)testRetrievalOfMappingForPathMatcherWithEntriesInsertedByIndex {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    
+    RKObjectMapping *mapping_2 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_2 forPattern:@"/articles/:id\\.json" atIndex:0 context:1];
+    
+    RKObjectMapping *mapping_3 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_3 forPattern:@"/articles/:id\\.xml" atIndex:0 context:1];
+    
+    RKObjectMapping *mapping_4 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_4 forPattern:@"/articles/:id/comments/:id" atIndex:1 context:1];
+    
+    RKObjectMapping *mapping_1 = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    [mappingProvider setMapping:mapping_1 forPattern:@"/articles/:id" atIndex:3 context:1];
+    
+    // Test them
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1], is(equalTo(mapping_1)));
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.json" context:1], is(equalTo(mapping_2)));
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.xml" context:1], is(equalTo(mapping_3)));
+    assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345/comments/3" context:1], is(equalTo(mapping_4)));
+}
+
+// TODO: Add URL matchers...
 
 @end

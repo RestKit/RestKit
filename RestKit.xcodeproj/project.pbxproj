@@ -10,6 +10,10 @@
 		250CA67D147D8E8B0047D347 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
 		250CA67E147D8E8F0047D347 /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */; };
 		250CA680147D8F050047D347 /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
+		250DF22A14C5190E0001DEFA /* RKOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 250DF22814C5190E0001DEFA /* RKOrderedDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		250DF22B14C5190E0001DEFA /* RKOrderedDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 250DF22814C5190E0001DEFA /* RKOrderedDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		250DF22C14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 250DF22914C5190E0001DEFA /* RKOrderedDictionary.m */; };
+		250DF22D14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 250DF22914C5190E0001DEFA /* RKOrderedDictionary.m */; };
 		2513504E14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2513504F14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160D1A14564E810060A5C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1914564E810060A5C5 /* Foundation.framework */; };
@@ -560,6 +564,8 @@
 /* Begin PBXFileReference section */
 		250CA67B147D8E800047D347 /* OCHamcrest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrest.framework; sourceTree = "<group>"; };
 		250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
+		250DF22814C5190E0001DEFA /* RKOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKOrderedDictionary.h; sourceTree = "<group>"; };
+		250DF22914C5190E0001DEFA /* RKOrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKOrderedDictionary.m; sourceTree = "<group>"; };
 		2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConfigurationDelegate.h; sourceTree = "<group>"; };
 		25160D1614564E810060A5C5 /* libRestKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		25160D1914564E810060A5C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1148,6 +1154,8 @@
 				25160DCA145650490060A5C5 /* Support.h */,
 				25B408241491CDDB00F21111 /* RKDirectory.h */,
 				25B408251491CDDB00F21111 /* RKDirectory.m */,
+				250DF22814C5190E0001DEFA /* RKOrderedDictionary.h */,
+				250DF22914C5190E0001DEFA /* RKOrderedDictionary.m */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -1678,6 +1686,7 @@
 				254A62B914AD544200939BEE /* RKObjectPaginator.h in Headers */,
 				25B408261491CDDC00F21111 /* RKDirectory.h in Headers */,
 				2513504E14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */,
+				250DF22A14C5190E0001DEFA /* RKOrderedDictionary.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1767,6 +1776,7 @@
 				25B408271491CDDC00F21111 /* RKDirectory.h in Headers */,
 				254A62BA14AD544200939BEE /* RKObjectPaginator.h in Headers */,
 				2513504F14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */,
+				250DF22B14C5190E0001DEFA /* RKOrderedDictionary.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2098,6 +2108,7 @@
 				25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */,
 				25B408281491CDDC00F21111 /* RKDirectory.m in Sources */,
 				254A62BB14AD544200939BEE /* RKObjectPaginator.m in Sources */,
+				250DF22C14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2240,6 +2251,7 @@
 				25160F9F1456577F0060A5C5 /* RKJSONParserJSONKit.m in Sources */,
 				25B408291491CDDC00F21111 /* RKDirectory.m in Sources */,
 				254A62BC14AD544200939BEE /* RKObjectPaginator.m in Sources */,
+				250DF22D14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

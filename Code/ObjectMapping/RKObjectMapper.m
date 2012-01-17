@@ -335,9 +335,12 @@
         if ([mappingsForContext respondsToSelector:@selector(rootKeyPath)] && [mappingsForContext rootKeyPath] != nil) {
             mappableData = [self.sourceObject valueForKeyPath:[mappingsForContext rootKeyPath]];
         }
-        id mappingResult = [self performMappingForObject:mappableData atKeyPath:@"" usingMapping:mappingsForContext];
-        foundMappable = YES;        
-        results = [NSDictionary dictionaryWithObject:mappingResult forKey:@""];
+        
+        if (mappableData) {
+            id mappingResult = [self performMappingForObject:mappableData atKeyPath:@"" usingMapping:mappingsForContext];
+            foundMappable = YES;        
+            results = [NSDictionary dictionaryWithObject:mappingResult forKey:@""];
+        }
     }
             
     // Allow any queued operations to complete

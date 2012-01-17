@@ -19,6 +19,7 @@
 //
 
 #import "RKRequest.h"
+#import "RKRouter.h"
 
 // TODO: Cleanup the comments in here
 
@@ -29,7 +30,7 @@
  * or DELETE action is invoked. Dynamic routes are available by encoding key paths into
  * the resourcePath using a single colon delimiter, such as /users/:userID
  */
-@interface RKObjectRouter : NSObject {
+@interface RKObjectRouter : NSObject <RKRouter> {
 	NSMutableDictionary* _routes;
 }
 
@@ -45,13 +46,13 @@
  * dot with two backslashes, like so: /:filename\\.json
  * @see RKPathMatcher
  */
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath;
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern;
 
 /**
  * Register a mapping from an object class to a resource path for a specific HTTP method.
  * @see RKPathMatcher
  */
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method;
 
 /**
  * Register a mapping from an object class to a resource path for a specific HTTP method, 
@@ -62,11 +63,13 @@
  * @"%2Fthis%2Fis%2Fthe%2Fpath".
  * @see RKPathMatcher
  */
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes;
+
+@end
+
+// Method signatures being phased out
+@interface RKObjectRouter (CompatibilityAliases)
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath;
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method;
 - (void)routeClass:(Class)objectClass toResourcePath:(NSString*)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes;
-
-/**
- * Returns the resource path to send requests for a given object and HTTP method
- */
-- (NSString*)resourcePathForObject:(NSObject*)object method:(RKRequestMethod)method;
-
 @end
