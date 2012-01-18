@@ -30,6 +30,7 @@
 #import "RKObjectMapper_Private.h"
 #import "RKObjectMapperError.h"
 #import "RKDynamicMappingModels.h"
+#import "RKObjectMappingProvider+Contexts.h"
 
 // Managed Object Serialization Specific
 #import "RKHuman.h"

@@ -23,6 +23,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKSpecResponseLoader.h"
 #import "RKManagedObjectMapping.h"
+#import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingProvider.h"
 #import "RKHuman.h"
 #import "RKCat.h"

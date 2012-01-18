@@ -334,7 +334,9 @@
     } else if ([mappingsForContext conformsToProtocol:@protocol(RKObjectMappingDefinition)]) {
         id mappableData = self.sourceObject;
         if ([mappingsForContext respondsToSelector:@selector(rootKeyPath)] && [mappingsForContext rootKeyPath] != nil) {
-            mappableData = [self.sourceObject valueForKeyPath:[mappingsForContext rootKeyPath]];
+            NSString* rootKeyPath = [mappingsForContext rootKeyPath];
+            mappableData = [self.sourceObject valueForKeyPath:rootKeyPath];
+            RKLogDebug(@"Selected object mapping has rootKeyPath. Apply valueForKeyPath to mappable data: %@", rootKeyPath);
         }
         
         if (mappableData) {

@@ -214,10 +214,9 @@
     
     RKObjectMappingProvider* mappingProvider;
     RKObjectMapping *configuredObjectMapping = [self configuredObjectMapping];
-    if (configuredObjectMapping) {
-        NSString* rootKeyPath = configuredObjectMapping.rootKeyPath ? configuredObjectMapping.rootKeyPath : @"";
-        RKLogDebug(@"Found directly configured object mapping, creating temporary mapping provider for keyPath %@", rootKeyPath);        
+    if (configuredObjectMapping) {        
         mappingProvider = [RKObjectMappingProvider mappingProvider];
+        NSString *rootKeyPath = configuredObjectMapping.rootKeyPath ? configuredObjectMapping.rootKeyPath : @"";
         [mappingProvider setMapping:configuredObjectMapping forKeyPath:rootKeyPath];
     } else {
         RKLogDebug(@"No object mapping provider, using mapping provider from parent object manager to perform KVC mapping");
