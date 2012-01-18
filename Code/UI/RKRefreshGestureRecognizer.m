@@ -183,44 +183,41 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
 }
 
 - (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer {
-    return YES;
+    return NO;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     if (!self.isBoundToScrollView)
         return;
-    
     if (self.state < UIGestureRecognizerStateBegan) {
         self.state = UIGestureRecognizerStateBegan;
     }
-
+    
     if (self.scrollView.contentOffset.y < -kDefaultTriggerViewHeight) {
-        self.refreshState = RKRefreshTriggered;
-        self.state = UIGestureRecognizerStateChanged;
-    } 
-    else if (self.state != UIGestureRecognizerStateRecognized) {
-        self.refreshState = RKRefreshIdle;
-        self.state = UIGestureRecognizerStateChanged;
+        self.refreshState   = RKRefreshTriggered;
+        self.state          = UIGestureRecognizerStateChanged;
+    } else if (self.state != UIGestureRecognizerStateRecognized) {
+        self.refreshState   = RKRefreshIdle;
+        self.state          = UIGestureRecognizerStateChanged;
     }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    if (self.isBoundToScrollView) {
-        if (self.refreshState == RKRefreshTriggered) {
-            self.refreshState = RKRefreshLoading;
-            self.state = UIGestureRecognizerStateRecognized;
-            return;
-        }
+    if (!self.isBoundToScrollView) {
+        self.state = UIGestureRecognizerStateFailed;
+        return;
     }
-    self.state = UIGestureRecognizerStateFailed;
+    if (self.refreshState == RKRefreshTriggered) {
+        self.refreshState = RKRefreshLoading;
+        self.state = UIGestureRecognizerStateRecognized;
+        return;
+    }
+    self.state = UIGestureRecognizerStateCancelled;
+    self.refreshState = RKRefreshIdle;
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    if (self.isBoundToScrollView) {
         self.state = UIGestureRecognizerStateCancelled;
-        return;
-    }
-    self.state = UIGestureRecognizerStateFailed;
 }
 
 @end
