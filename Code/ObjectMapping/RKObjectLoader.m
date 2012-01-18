@@ -29,6 +29,7 @@
 #import "RKParserRegistry.h"
 #import "RKRequest_Internals.h"
 #import "RKObjectSerializer.h"
+#import "RKObjectMappingProvider+Contexts.h"
 
 // Set Logging Component
 #undef RKLogComponent

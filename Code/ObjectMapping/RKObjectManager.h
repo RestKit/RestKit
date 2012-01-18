@@ -135,9 +135,8 @@ typedef enum {
  Create and initialize a new object manager. If this is the first instance created
  it will be set as the shared instance
  */
-// TODO: Both of these should be `managerWith` instead of `objectManagerWith`
-+ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString;
-+ (RKObjectManager*)objectManagerWithBaseURL:(RKURL *)baseURL;
++ (RKObjectManager*)managerWithBaseURLString:(NSString *)baseURLString;
++ (RKObjectManager*)managerWithBaseURL:(NSURL *)baseURL;
 
 /**
  Initializes a newly created object manager with a specified baseURL.
@@ -431,6 +430,8 @@ typedef enum {
 - (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
 
 
++ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString;
++ (RKObjectManager*)objectManagerWithBaseURL:(NSURL *)baseURL;
 - (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 

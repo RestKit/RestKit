@@ -155,7 +155,7 @@
 
 - (void)testShouldLoadAComplexUserObjectWithTargetObject {
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -174,7 +174,7 @@
 }
 
 - (void)testShouldLoadAComplexUserObjectWithoutTargetObject {    
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -190,7 +190,7 @@
 }
 
 - (void)testShouldLoadAComplexUserObjectUsingRegisteredKeyPath {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -225,7 +225,7 @@
 }
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSendAsynchronously {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
@@ -242,7 +242,7 @@
 }
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSendSynchronously {
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     [objectManager setMappingProvider:[self providerForComplexUser]];
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
@@ -458,7 +458,7 @@
     [userMapping mapAttributes:@"firstname", nil];
     
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];    
     
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
@@ -481,7 +481,7 @@
     [userMapping mapAttributes:@"firstname", nil];
     
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/ComplexNestedUser.json"];
@@ -506,7 +506,7 @@
     [userMapping mapAttributes:@"firstname", nil];
     
     RKSpecComplexUser* user = [[RKSpecComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:RKSpecGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKSpecGetBaseURL()];
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/:name\\.json"];

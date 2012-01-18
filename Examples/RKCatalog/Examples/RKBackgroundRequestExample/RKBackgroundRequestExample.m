@@ -32,7 +32,8 @@
 }
 
 - (IBAction)sendRequest {
-    RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample" delegate:self];
+    RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample"];
+    request.delegate = self;
     request.backgroundPolicy = _segmentedControl.selectedSegmentIndex;
     [request send];
     _sendButton.enabled = NO;

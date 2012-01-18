@@ -102,7 +102,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     return [self clientWithBaseURL:[RKURL URLWithString:baseURLString]];
 }
 
-+ (RKClient *)clientWithBaseURL:(RKURL *)baseURL {
++ (RKClient *)clientWithBaseURL:(NSURL *)baseURL {
 	RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
 	return client;
 }
@@ -139,11 +139,11 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	return self;
 }
 
-- (id)initWithBaseURL:(RKURL *)baseURL {
+- (id)initWithBaseURL:(NSURL *)baseURL {
     self = [self init];
     if (self) {        
         self.cachePolicy = RKRequestCachePolicyDefault;
-        self.baseURL = baseURL;
+        self.baseURL = [RKURL URLWithBaseURL:baseURL];
         
         if (sharedClient == nil) {
             [RKClient setSharedClient:self];

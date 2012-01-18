@@ -51,7 +51,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [RKObjectManager objectManagerWithBaseURL:gRKCatalogBaseURL];
+        [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
     }
     
     return self;

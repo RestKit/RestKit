@@ -478,7 +478,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @see baseURL
  @return A configured RKClient instance ready to send requests
  */
-+ (RKClient *)clientWithBaseURL:(RKURL *)baseURL;
++ (RKClient *)clientWithBaseURL:(NSURL *)baseURL;
 + (RKClient *)clientWithBaseURLString:(NSString *)baseURLString;
 
 /**
@@ -499,7 +499,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  @see baseURL
  @return A configured RKClient instance ready to send requests
  */
-- (id)initWithBaseURL:(RKURL *)baseURL;
+- (id)initWithBaseURL:(NSURL *)baseURL;
 - (id)initWithBaseURLString:(NSString *)baseURLString;
 
 /////////////////////////////////////////////////////////////////////////

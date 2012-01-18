@@ -34,7 +34,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://restkit.org"];
+        RKObjectManager* manager = [RKObjectManager managerWithBaseURLString:@"http://restkit.org"];
         manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKCoreDataExample.sqlite"];
         [RKObjectManager setSharedManager:manager];
         

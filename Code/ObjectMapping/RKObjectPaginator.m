@@ -163,7 +163,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     } else if (self.perPage && [self hasObjectCount]) {
       float objectCountFloat = self.objectCount;
       pageCount = ceilf(objectCountFloat / self.perPage);
-      RKLogInfo(@"Paginator objectCount: %d pageCount: %d", self.objectCount, self.pageCount); 
+      RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long) self.objectCount, (long) self.pageCount); 
     } else {
       NSAssert(NO, @"Paginator perPage set is 0.");
       RKLogError(@"Paginator perPage set is 0.");

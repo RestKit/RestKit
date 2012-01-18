@@ -66,6 +66,11 @@ static RKObjectManager* sharedManager = nil;
 												 selector:@selector(reachabilityChanged:)
 													 name:RKReachabilityDidChangeNotification
 												   object:_client.reachabilityObserver];
+        
+        // Set shared manager if nil
+        if (nil == sharedManager) {
+            [RKObjectManager setSharedManager:self];
+        }
 	}
     
 	return self;
@@ -81,15 +86,12 @@ static RKObjectManager* sharedManager = nil;
 	sharedManager = manager;
 }
 
-+ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString {
-    return [self objectManagerWithBaseURL:[RKURL URLWithString:baseURLString]];
++ (RKObjectManager*)managerWithBaseURLString:(NSString *)baseURLString {
+    return [self managerWithBaseURL:[RKURL URLWithString:baseURLString]];
 }
 
-+ (RKObjectManager*)objectManagerWithBaseURL:(RKURL *)baseURL {
-	RKObjectManager* manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];
-	if (nil == sharedManager) {
-		[RKObjectManager setSharedManager:manager];
-	}
++ (RKObjectManager*)managerWithBaseURL:(NSURL *)baseURL {
+    RKObjectManager* manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];	
 	return manager;
 }
 
@@ -400,6 +402,16 @@ static RKObjectManager* sharedManager = nil;
 
 - (void)configureObjectLoader:(RKObjectLoader *)objectLoader {
     [self configureRequest:objectLoader];
+}
+
+#pragma mark - Deprecations
+
++ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString {
+    return [self managerWithBaseURLString:baseURLString];
+}
+
++ (RKObjectManager*)objectManagerWithBaseURL:(NSURL *)baseURL {
+	return [self managerWithBaseURL:baseURL];
 }
 
 @end

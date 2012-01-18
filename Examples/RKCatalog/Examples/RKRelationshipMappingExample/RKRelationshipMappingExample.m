@@ -18,7 +18,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        RKObjectManager* objectManager = [RKObjectManager objectManagerWithBaseURL:gRKCatalogBaseURL];
+        RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
         objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
         
         RKManagedObjectMapping* taskMapping = [RKManagedObjectMapping mappingForClass:[Task class]];

@@ -19,6 +19,7 @@
 //
 
 #import "RKObjectMappingProvider.h"
+#import "RKObjectMappingProvider+Contexts.h"
 #import "RKOrderedDictionary.h"
 #import "RKPathMatcher.h"
 
