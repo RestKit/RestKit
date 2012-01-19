@@ -735,4 +735,31 @@
     NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
     assertThat(authorization, isNot(nilValue()));
 }
+
+- (void)testOnDidLoadResponseBlockInvocation {
+    RKURL *URL = [RKSpecGetBaseURL() URLByAppendingResourcePath:@"/200"];
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    RKRequest *request = [RKRequest requestWithURL:URL];
+    __block RKResponse *blockResponse = nil;
+    request.onDidLoadResponse = ^ (RKResponse *response) {
+        blockResponse = response;
+    };
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    assertThat(blockResponse, is(notNilValue()));
+}
+
+- (void)testOnDidFailLoadWithErrorBlockInvocation {
+    RKURL *URL = [RKSpecGetBaseURL() URLByAppendingResourcePath:@"/503"];
+    RKRequest *request = [RKRequest requestWithURL:URL];
+    __block NSError *blockError = nil;
+    request.onDidFailLoadWithError = ^ (NSError *error) {
+        blockError = error;
+    };
+    NSError *expectedError = [NSError errorWithDomain:@"Test" code:1234 userInfo:nil];
+    [request didFailLoadWithError:expectedError];
+    assertThat(blockError, is(notNilValue()));
+}
+
 @end

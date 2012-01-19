@@ -32,7 +32,8 @@
  * HTTP methods for requests
  */
 typedef enum RKRequestMethod {
-    RKRequestMethodGET = 0,
+    RKRequestMethodInvalid = -1,
+    RKRequestMethodGET,
     RKRequestMethodPOST,
     RKRequestMethodPUT,
     RKRequestMethodDELETE,
@@ -91,6 +92,10 @@ typedef enum {
 
 @class RKResponse, RKRequestQueue, RKReachabilityObserver;
 @protocol RKRequestDelegate, RKConfigurationDelegate;
+
+/** @name Block Handlers */
+typedef void(^RKRequestDidLoadResponseBlock)(RKResponse *response);
+typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 
 /**
  Models the request portion of an HTTP request/response cycle.
@@ -159,6 +164,20 @@ typedef enum {
  * it will receive request lifecycle event messages.
  */
 @property(nonatomic, assign) id<RKRequestDelegate> delegate;
+
+/**
+ A block to invoke when the receuver has loaded a response.
+ 
+ @see [RKRequestDelegate request:didLoadResponse:]
+ */
+@property(nonatomic, copy) RKRequestDidLoadResponseBlock onDidLoadResponse;
+
+/**
+ A block to invoke when the receuver has failed loading due to an error.
+ 
+ @see [RKRequestDelegate request:didFailLoadWithError:]
+ */
+@property(nonatomic, copy) RKRequestDidFailLoadWithErrorBlock onDidFailLoadWithError;
 
 /**
  A delegate responsible for configuring the request. Centralizes common configuration

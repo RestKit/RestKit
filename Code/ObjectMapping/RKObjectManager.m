@@ -25,13 +25,13 @@
 #import "Support.h"
 #import "RKErrorMessage.h"
 
-NSString* const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
-NSString* const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
+NSString * const RKDidEnterOfflineModeNotification = @"RKDidEnterOfflineModeNotification";
+NSString * const RKDidEnterOnlineModeNotification = @"RKDidEnterOnlineModeNotification";
 
 //////////////////////////////////
 // Shared Instance
 
-static RKObjectManager* sharedManager = nil;
+static RKObjectManager *sharedManager = nil;
 
 ///////////////////////////////////
 
@@ -42,7 +42,6 @@ static RKObjectManager* sharedManager = nil;
 @synthesize router = _router;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
-@synthesize inferMappingsFromObjectTypes = _inferMappingsFromObjectTypes;
 
 - (id)initWithBaseURL:(RKURL *)baseURL {
     self = [super init];
@@ -51,13 +50,12 @@ static RKObjectManager* sharedManager = nil;
 		_router = [RKObjectRouter new];
 		_client = [[RKClient alloc] initWithBaseURL:baseURL];
         _onlineState = RKObjectManagerOnlineStateUndetermined;
-        _inferMappingsFromObjectTypes = NO;
         
         self.acceptMIMEType = RKMIMETypeJSON;
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
         
         // Setup default error message mappings
-        RKObjectMapping* errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+        RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
         errorMapping.rootKeyPath = @"errors";
         [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
         _mappingProvider.errorMapping = errorMapping;
@@ -76,22 +74,22 @@ static RKObjectManager* sharedManager = nil;
 	return self;
 }
 
-+ (RKObjectManager*)sharedManager {
++ (RKObjectManager *)sharedManager {
 	return sharedManager;
 }
 
-+ (void)setSharedManager:(RKObjectManager*)manager {
++ (void)setSharedManager:(RKObjectManager *)manager {
 	[manager retain];
 	[sharedManager release];
 	sharedManager = manager;
 }
 
-+ (RKObjectManager*)managerWithBaseURLString:(NSString *)baseURLString {
++ (RKObjectManager *)managerWithBaseURLString:(NSString *)baseURLString {
     return [self managerWithBaseURL:[RKURL URLWithString:baseURLString]];
 }
 
-+ (RKObjectManager*)managerWithBaseURL:(NSURL *)baseURL {
-    RKObjectManager* manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];	
++ (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL {
+    RKObjectManager *manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];	
 	return manager;
 }
 
@@ -120,7 +118,7 @@ static RKObjectManager* sharedManager = nil;
 	return ![self isOnline];
 }
 
-- (void)reachabilityChanged:(NSNotification*)notification {
+- (void)reachabilityChanged:(NSNotification *)notification {
 	BOOL isHostReachable = [self.client.reachabilityObserver isNetworkReachable];
 
 	_onlineState = isHostReachable ? RKObjectManagerOnlineStateConnected : RKObjectManagerOnlineStateDisconnected;
@@ -132,11 +130,11 @@ static RKObjectManager* sharedManager = nil;
 	}
 }
 
-- (void)setAcceptMIMEType:(NSString*)MIMEType {
+- (void)setAcceptMIMEType:(NSString *)MIMEType {
     [_client setValue:MIMEType forHTTPHeaderField:@"Accept"];
 }
 
-- (NSString*)acceptMIMEType {
+- (NSString *)acceptMIMEType {
     return [self.client.HTTPHeaders valueForKey:@"Accept"];
 }
 
@@ -181,209 +179,136 @@ static RKObjectManager* sharedManager = nil;
 }
 
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method {
-    NSString* resourcePath = [self.router resourcePathForObject:object method:method];
-    RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
+    NSString* resourcePath = (method == RKRequestMethodInvalid) ? nil : [self.router resourcePathForObject:object method:method];
+    RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
     loader.method = method;
     loader.sourceObject = object;
-    loader.targetObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
     
-    if (self.inferMappingsFromObjectTypes) {
-        RKObjectMapping* objectMapping = [self.mappingProvider objectMappingForClass:[object class]];
-        RKLogDebug(@"Auto-selected object mapping %@ for object of type %@", objectMapping, NSStringFromClass([object class]));
-        loader.objectMapping = objectMapping;
+    RKObjectMapping *objectMapping = [self.mappingProvider objectMappingForResourcePath:resourcePath];
+    if (objectMapping == nil || [object isMemberOfClass:[objectMapping objectClass]]) {
+        loader.targetObject = object;
+    } else {
+        loader.targetObject = nil;
     }
     
 	return loader;
 }
 
-- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate {
-    RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
-    loader.delegate = delegate;
-    
-    return loader;
-}
-
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
+- (void)loadObjectsAtResourcePath:(NSString *)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
     loader.delegate = delegate;
 	loader.method = RKRequestMethodGET;
 
 	[loader send];
-
-	return loader;
-}
-
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
-    loader.delegate = delegate;
-	loader.method = RKRequestMethodGET;
-    loader.objectMapping = objectMapping;
-
-	[loader send];
-
-	return loader;
 }
 
 /////////////////////////////////////////////////////////////
 #pragma mark - Object Instance Loaders
 
-- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate {
-    RKObjectLoader *loader = [self loaderForObject:object method:method];
-    loader.delegate = delegate;
-    return loader;
-}
-
-- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodGET];
+- (void)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodGET];
     loader.delegate = delegate;
 	[loader send];
-	return loader;
 }
 
-- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodPOST];
+- (void)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodPOST];
     loader.delegate = delegate;
 	[loader send];
-	return loader;
 }
 
-- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodPUT];
+- (void)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodPUT];
     loader.delegate = delegate;
 	[loader send];
-	return loader;
 }
 
-- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodDELETE];
+- (void)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodDELETE];
     loader.delegate = delegate;
 	[loader send];
-	return loader;
 }
 
 #if NS_BLOCKS_AVAILABLE
 
 #pragma mark - Block Configured Object Loaders
 
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
+- (void)loadObjectsAtResourcePath:(NSString*)resourcePath usingBlock:(void(^)(RKObjectLoader *))block {
 	RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
-    loader.delegate = delegate;
 	loader.method = RKRequestMethodGET;
     
     // Yield to the block for setup
     block(loader);
     
 	[loader send];
-    
-	return loader;
 }
 
-- (RKObjectLoader*)sendObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
-    RKObjectLoader* loader = [self loaderWithResourcePath:nil];
-    loader.delegate = delegate;
-    loader.sourceObject = object;
-    loader.targetObject = object;
-    loader.serializationMIMEType = self.serializationMIMEType;
-    loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
+- (void)sendObject:(id<NSObject>)object toResourcePath:(NSString *)resourcePath usingBlock:(void(^)(RKObjectLoader*))block {
+    RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodInvalid];
+    loader.URL = [self.baseURL URLByAppendingResourcePath:resourcePath];
     
     // Yield to the block for setup
     block(loader);
     
-    if (loader.resourcePath == nil) {
-        loader.resourcePath = [self.router resourcePathForObject:object method:loader.method];
-    }
-    
-    if (loader.objectMapping == nil) {
-        if (self.inferMappingsFromObjectTypes) {
-            RKObjectMapping* objectMapping = [self.mappingProvider objectMappingForClass:[object class]];
-            RKLogDebug(@"Auto-selected object mapping %@ for object of type %@", objectMapping, NSStringFromClass([object class]));
-            loader.objectMapping = objectMapping;
-        }
-    }
-    
     [loader send];
-    return loader;
 }
                                                                                                         
-- (RKObjectLoader*)sendObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
-    return [self sendObject:object delegate:delegate block:^(RKObjectLoader* loader) {
+- (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader*))block {
+    NSString *resourcePath = [self.router resourcePathForObject:object method:method];    
+    [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
         loader.method = method;
         block(loader);
     }];
 }
 
-- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
-    return [self sendObject:object method:RKRequestMethodGET delegate:delegate block:block];
+- (void)getObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block {
+    [self sendObject:object method:RKRequestMethodGET usingBlock:block];
 }
 
-- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
-    return [self sendObject:object method:RKRequestMethodPOST delegate:delegate block:block];
+- (void)postObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block {
+    [self sendObject:object method:RKRequestMethodPOST usingBlock:block];
 }
 
-- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
-    return [self sendObject:object method:RKRequestMethodPUT delegate:delegate block:block];
+- (void)putObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block {
+    [self sendObject:object method:RKRequestMethodPUT usingBlock:block];
 }
 
-- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block {
-    return [self sendObject:object method:RKRequestMethodDELETE delegate:delegate block:block];
+- (void)deleteObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block {
+    [self sendObject:object method:RKRequestMethodDELETE usingBlock:block];
 }
 
 #endif // NS_BLOCKS_AVAILABLE
 
 #pragma mark - Object Instance Loaders for Non-nested JSON
 
-- (RKObjectLoader*)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodGET];
-    loader.delegate = delegate;
-    if ([object isMemberOfClass:[objectMapping objectClass]]) {
-        loader.targetObject = object;
-    } else {
-        loader.targetObject = nil;
-    }
-    loader.objectMapping = objectMapping;
-	[loader send];
-	return loader;
+- (void)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+    [self sendObject:object method:RKRequestMethodGET usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = delegate;
+        loader.objectMapping = objectMapping;
+    }];
 }
 
-- (RKObjectLoader*)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodPOST];
-    loader.delegate = delegate;
-    if ([object isMemberOfClass:[objectMapping objectClass]]) {
-        loader.targetObject = object;
-    } else {
-        loader.targetObject = nil;
-    }
-	loader.objectMapping = objectMapping;
-    [loader send];
-	return loader;
+- (void)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+	[self sendObject:object method:RKRequestMethodPOST usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = delegate;
+        loader.objectMapping = objectMapping;
+    }];
 }
 
-- (RKObjectLoader*)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodPUT];
-    loader.delegate = delegate;
-    if ([object isMemberOfClass:[objectMapping objectClass]]) {
-        loader.targetObject = object;
-    } else {
-        loader.targetObject = nil;
-    }
-    loader.objectMapping = objectMapping;
-	[loader send];
-	return loader;
+- (void)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+	[self sendObject:object method:RKRequestMethodPUT usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = delegate;
+        loader.objectMapping = objectMapping;
+    }];
 }
 
-- (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
-	RKObjectLoader* loader = [self loaderForObject:object method:RKRequestMethodDELETE];
-    loader.delegate = delegate;
-    if ([object isMemberOfClass:[objectMapping objectClass]]) {
-        loader.targetObject = object;
-    } else {
-        loader.targetObject = nil;
-    }
-    loader.objectMapping = objectMapping;
-	[loader send];
-	return loader;
+- (void)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+	[self sendObject:object method:RKRequestMethodDELETE usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = delegate;
+        loader.objectMapping = objectMapping;
+    }];
 }
 
 - (RKRequestCache *)requestCache {
@@ -406,12 +331,34 @@ static RKObjectManager* sharedManager = nil;
 
 #pragma mark - Deprecations
 
-+ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString {
++ (RKObjectManager *)objectManagerWithBaseURLString:(NSString *)baseURLString {
     return [self managerWithBaseURLString:baseURLString];
 }
 
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSURL *)baseURL {
++ (RKObjectManager *)objectManagerWithBaseURL:(NSURL *)baseURL {
 	return [self managerWithBaseURL:baseURL];
+}
+
+- (RKObjectLoader *)objectLoaderWithResourcePath:(NSString *)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate {
+    RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
+    loader.delegate = delegate;
+    
+    return loader;
+}
+
+- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate {
+    RKObjectLoader *loader = [self loaderForObject:object method:method];
+    loader.delegate = delegate;
+    return loader;
+}
+
+- (void)loadObjectsAtResourcePath:(NSString *)resourcePath objectMapping:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate {
+	RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
+    loader.delegate = delegate;
+	loader.method = RKRequestMethodGET;
+    loader.objectMapping = objectMapping;
+    
+	[loader send];
 }
 
 @end

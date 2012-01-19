@@ -122,12 +122,12 @@ typedef enum {
 /**
  Return the shared instance of the object manager
  */
-+ (RKObjectManager*)sharedManager;
++ (RKObjectManager *)sharedManager;
 
 /**
  Set the shared instance of the object manager
  */
-+ (void)setSharedManager:(RKObjectManager*)manager;
++ (void)setSharedManager:(RKObjectManager *)manager;
 
 /// @name Initializing an Object Manager
 
@@ -135,8 +135,8 @@ typedef enum {
  Create and initialize a new object manager. If this is the first instance created
  it will be set as the shared instance
  */
-+ (RKObjectManager*)managerWithBaseURLString:(NSString *)baseURLString;
-+ (RKObjectManager*)managerWithBaseURL:(NSURL *)baseURL;
++ (id)managerWithBaseURLString:(NSString *)baseURLString;
++ (id)managerWithBaseURL:(NSURL *)baseURL;
 
 /**
  Initializes a newly created object manager with a specified baseURL.
@@ -151,7 +151,7 @@ typedef enum {
 /**
  The underlying HTTP client for this manager
  */
-@property (nonatomic, retain) RKClient* client;
+@property (nonatomic, retain) RKClient *client;
 
 /**
  The base URL of the underlying RKClient instance. Object loader
@@ -185,191 +185,36 @@ typedef enum {
 /**
  The Mapping Provider responsible for returning mappings for various keyPaths.
  */
-@property (nonatomic, retain) RKObjectMappingProvider* mappingProvider;
+@property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
 /**
  Router object responsible for generating resource paths for
  HTTP requests
  */
-@property (nonatomic, retain) RKObjectRouter* router;
+@property (nonatomic, retain) RKObjectRouter *router;
 
 /**
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
-@property (nonatomic, retain) RKManagedObjectStore* objectStore;
+@property (nonatomic, retain) RKManagedObjectStore *objectStore;
 
 /**
  The Default MIME Type to be used in object serialization.
  */
-@property (nonatomic, retain) NSString* serializationMIMEType;
+@property (nonatomic, retain) NSString *serializationMIMEType;
 
 /**
  The value for the HTTP Accept header to specify the preferred format for retrieved data
  */
-@property (nonatomic, assign) NSString* acceptMIMEType;
-
-/**
- When YES, RestKit will auto-select the appropriate object mapping for a particular object
- passed through getObject:, postObject:, putObject:, and deleteObject:.
- 
- This is useful when you are working with mappable data that is not identifiable via KVC
- and you are sending/receiving objects of the same type. When YES, RestKit will search the
- mappingProvider for an object mapping targeting the same type of object that you passed into
- getObject:, postObject:, :putObject, or deleteObject: and configure the RKObjectLoader to map
- the payload using that mapping. This is merely a convenience for users who are working entirely
- with non-KVC mappable data and saves the added step of searching the mapping provider manually.
- 
- Default: NO
- */
-@property (nonatomic, assign) BOOL inferMappingsFromObjectTypes;
+@property (nonatomic, assign) NSString *acceptMIMEType;
 
 ////////////////////////////////////////////////////////
-/// @name Registered Object Loaders
+/// @name Building Object Loaders
 
 /**
- These methods are suitable for loading remote payloads that encode type information into the payload. This enables
- the mapping of complex payloads spanning multiple types (i.e. a search operation returning Articles & Comments in
- one payload). Ruby on Rails JSON serialization is an example of such a conformant system.
- */
- 
-/**
- Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
- with the loaded objects. Remote objects will be mapped to local objects by consulting the keyPath registrations
- set on the mapping provider.
- */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Load mappable objects at the specified resourcePath using the specified object mapping.
- */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-////////////////////////////////////////////////////////
-/// @name Mappable Object Loaders
-
-/**
- Fetch the data for a mappable object by performing an HTTP GET. 
- */
-- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting objects from the payload
- */
-- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting objects from the payload
- */
-- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
- */
-- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-////////////////////////////////////////////////////////
-/// @name Block Configured Object Loaders
-
-#if NS_BLOCKS_AVAILABLE
-
-/**
- Load the objects at the specified resource path and perform object mapping on the response payload. Prior to sending the object loader, the
- block will be invoked to allow you to configure the object loader as you see fit. This can be used to change the response type, set custom
- parameters, choose an object mapping, etc.
- 
- For example:
-    
-    - (void)loadObjectWithBlockExample {
-        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" delegate:self block:^(RKObjectLoader* loader) {
-            loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
-        }];
-    }
- */
-- (RKObjectLoader*)loadObjectsAtResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
-
-/**
- Configure and send an object loader after yielding it to a block for configuration. This allows for very succinct on-the-fly
- configuration of the request without obtaining an object reference via objectLoaderForObject: and then sending it yourself.
- 
- For example:
- 
-    - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
-        if ([self validatePassword:newPassword error:error]) {
-            self.password = newPassword;
-            [[RKObjectManager sharedManager] sendObject:self delegate:self block:^(RKObjectLoader* loader) {
-                loader.method = RKRequestMethodPOST;
-                loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
-                loader.targetObject = nil;  // Map the results back onto a new object instead of self
-                // Set up a custom serialization mapping to handle this request
-                loader.serializationMapping = [RKObjectMapping serializationMappingWithBlock:^(RKObjectMapping* mapping) {
-                    [mapping mapAttributes:@"password", nil];
-                }];
-            }];
-        }
-    }
- */
-- (RKObjectLoader*)sendObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
-
-/**
- GET a remote object instance and yield the object loader to the block before sending
- 
- @see sendObject:method:delegate:block
- */
-- (RKObjectLoader*)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
-
-/**
- POST a remote object instance and yield the object loader to the block before sending
- 
- @see sendObject:method:delegate:block
- - (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
- */
-- (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
-
-/**
- PUT a remote object instance and yield the object loader to the block before sending
- 
- @see sendObject:method:delegate:block
- */
-- (RKObjectLoader*)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
-
-/**
- DELETE a remote object instance and yield the object loader to the block before sending
- 
- @see sendObject:method:delegate:block
- */
-- (RKObjectLoader*)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
-
-#endif
-
-//////
-
-/**
- Fetch the data for a mappable object by performing an HTTP GET. The data returned in the response will be mapped according
- to the object mapping provided.
- */
-- (RKObjectLoader*)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Send the data for a mappable object by performing an HTTP POST. The data returned in the response will be mapped according
- to the object mapping provided.
- */
-- (RKObjectLoader*)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Send the data for a mappable object by performing an HTTP PUT. The data returned in the response will be mapped according
- to the object mapping provided.
- */
-- (RKObjectLoader*)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Delete a remote object representation by performing an HTTP DELETE. The data returned in the response will be mapped according
- to the object mapping provided.
- */
-- (RKObjectLoader*)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate;
-
-/**
- Return the class of object loader instances built through the manager. When Core Data has
- been configured 
+ Returns the class of object loader instances built through the manager. When Core Data has
+ been configured, instances of RKManagedObjectLoader will be emitted by the manager. Otherwise
+ RKObjectLoader is used.
  
  @return RKObjectLoader OR RKManagedObjectLoader
  */
@@ -429,10 +274,140 @@ typedef enum {
  */
 - (RKObjectPaginator *)paginatorWithResourcePathPattern:(NSString *)resourcePathPattern;
 
+////////////////////////////////////////////////////////
+/// @name Registered Object Loaders
 
-+ (RKObjectManager*)objectManagerWithBaseURLString:(NSString *)baseURLString;
-+ (RKObjectManager*)objectManagerWithBaseURL:(NSURL *)baseURL;
-- (RKObjectLoader*)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+/**
+ These methods are suitable for loading remote payloads that encode type information into the payload. This enables
+ the mapping of complex payloads spanning multiple types (i.e. a search operation returning Articles & Comments in
+ one payload). Ruby on Rails JSON serialization is an example of such a conformant system.
+ */
+ 
+/**
+ Create and send an asynchronous GET request to load the objects at the resource path and call back the delegate
+ with the loaded objects. Remote objects will be mapped to local objects by consulting the keyPath registrations
+ set on the mapping provider.
+ */
+- (void)loadObjectsAtResourcePath:(NSString *)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+////////////////////////////////////////////////////////
+/// @name Mappable Object Loaders
+
+/**
+ Fetch the data for a mappable object by performing an HTTP GET. 
+ */
+- (void)getObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+/**
+ Create a remote mappable model by POSTing the attributes to the remote resource and loading the resulting objects from the payload
+ */
+- (void)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+/**
+ Update a remote mappable model by PUTing the attributes to the remote resource and loading the resulting objects from the payload
+ */
+- (void)putObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+/**
+ Delete the remote instance of a mappable model by performing an HTTP DELETE on the remote resource
+ */
+- (void)deleteObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate;
+
+////////////////////////////////////////////////////////
+/// @name Block Configured Object Loaders
+
+#if NS_BLOCKS_AVAILABLE
+
+/**
+ Load the objects at the specified resource path and perform object mapping on the response payload. Prior to sending the object loader, the
+ block will be invoked to allow you to configure the object loader as you see fit. This can be used to change the response type, set custom
+ parameters, choose an object mapping, etc.
+ 
+ For example:
+    
+    - (void)loadObjectWithBlockExample {
+        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" delegate:self block:^(RKObjectLoader* loader) {
+            loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
+        }];
+    }
+ */
+- (void)loadObjectsAtResourcePath:(NSString *)resourcePath usingBlock:(RKObjectLoaderBlock)block;
+
+/**
+ Configure and send an object loader after yielding it to a block for configuration. This allows for very succinct on-the-fly
+ configuration of the request without obtaining an object reference via objectLoaderForObject: and then sending it yourself.
+ 
+ For example:
+ 
+    - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
+        if ([self validatePassword:newPassword error:error]) {
+            self.password = newPassword;
+            [[RKObjectManager sharedManager] sendObject:self toResourcePath:@"/some/path" usingBlock:^(RKObjectLoader* loader) {
+                loader.delegate = self;
+                loader.method = RKRequestMethodPOST;
+                loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
+                loader.targetObject = nil;  // Map the results back onto a new object instead of self
+                // Set up a custom serialization mapping to handle this request
+                loader.serializationMapping = [RKObjectMapping serializationMappingWithBlock:^(RKObjectMapping* mapping) {
+                    [mapping mapAttributes:@"password", nil];
+                }];
+            }];
+        }
+    }
+ */
+- (void)sendObject:(id<NSObject>)object toResourcePath:(NSString *)resourcePath usingBlock:(RKObjectLoaderBlock)block;
+
+/**
+ GET a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ */
+- (void)getObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
+
+/**
+ POST a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ - (RKObjectLoader*)postObject:(id<NSObject>)object delegate:(id<RKObjectLoaderDelegate>)delegate block:(void(^)(RKObjectLoader*))block;
+ */
+- (void)postObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
+
+/**
+ PUT a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ */
+- (void)putObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
+
+/**
+ DELETE a remote object instance and yield the object loader to the block before sending
+ 
+ @see sendObject:method:delegate:block
+ */
+- (void)deleteObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
+
+#endif
+
+//////
+
+
+// Deprecations
+
++ (RKObjectManager *)objectManagerWithBaseURLString:(NSString *)baseURLString;
++ (RKObjectManager *)objectManagerWithBaseURL:(NSURL *)baseURL;
+- (void)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (RKObjectLoader *)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (RKObjectLoader *)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+
+/*
+ NOTE:
+ 
+ The mapResponseWith: family of methods have been deprecated by the support for object mapping selection
+ using resourcePath's
+ */
+- (void)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (void)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (void)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (void)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 @end

@@ -22,7 +22,7 @@
 #import "RKDynamicObjectMapping.h"
 
 // Internal framework contexts
-// see RKObjectMappingProvider+Contexts
+// @see RKObjectMappingProvider+Contexts.h
 typedef enum {
     RKObjectMappingProviderContextObjectsByKeyPath = 1000,
     RKObjectMappingProviderContextObjectsByType,

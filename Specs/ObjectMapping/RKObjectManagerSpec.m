@@ -218,10 +218,14 @@
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
     human.name = @"Blake Watters";
     human.age = [NSNumber numberWithInt:28];
-    RKObjectLoader* loader = [objectManager getObject:human delegate:responseLoader];
+    __block RKObjectLoader *objectLoader = nil;
+    [objectManager getObject:human usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = responseLoader;
+        objectLoader = loader;
+    }];
     [responseLoader waitForResponse];
-    RKLogCritical(@"%@", [loader.URLRequest allHTTPHeaderFields]);
-    assertThat([loader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+    RKLogCritical(@"%@", [objectLoader.URLRequest allHTTPHeaderFields]);
+    assertThat([objectLoader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
 }
 
 - (void)testShouldNotSetAContentBodyOnADELETE {
@@ -236,10 +240,14 @@
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
     human.name = @"Blake Watters";
     human.age = [NSNumber numberWithInt:28];
-    RKObjectLoader* loader = [objectManager deleteObject:human delegate:responseLoader];
+    __block RKObjectLoader *objectLoader = nil;
+    [objectManager deleteObject:human usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = responseLoader;
+        objectLoader = loader;
+    }];
     [responseLoader waitForResponse];
-    RKLogCritical(@"%@", [loader.URLRequest allHTTPHeaderFields]);
-    assertThat([loader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
+    RKLogCritical(@"%@", [objectLoader.URLRequest allHTTPHeaderFields]);
+    assertThat([objectLoader.URLRequest valueForHTTPHeaderField:@"Content-Length"], is(equalTo(@"0")));
 }
 
 #pragma mark - Block Helpers
@@ -251,7 +259,8 @@
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
     
     RKSpecResponseLoader* responseLoader = [RKSpecResponseLoader responseLoader];
-    [objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:responseLoader block:^(RKObjectLoader* loader) {
+    [objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" usingBlock:^(RKObjectLoader* loader) {
+        loader.delegate = responseLoader;
         loader.objectMapping = mapping;
     }];
     [responseLoader waitForResponse];
@@ -270,7 +279,8 @@
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
     human.name = @"Blake Watters";
     human.age = [NSNumber numberWithInt:28];
-    [objectManager deleteObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+    [objectManager deleteObject:human usingBlock:^(RKObjectLoader* loader) {
+        loader.delegate = responseLoader;
         loader.resourcePath = @"/humans/1";
     }];
     [responseLoader waitForResponse];
@@ -287,7 +297,9 @@
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
     human.name = @"Blake Watters";
     human.age = [NSNumber numberWithInt:28];
-    [objectManager deleteObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
+        loader.method = RKRequestMethodDELETE;
+        loader.delegate = responseLoader;
         loader.resourcePath = @"/humans/1";
     }];
     [responseLoader waitForResponse];
@@ -304,8 +316,9 @@
     RKObjectMapperSpecModel* human = [[RKObjectMapperSpecModel new] autorelease];
     human.name = @"Blake Watters";
     human.age = [NSNumber numberWithInt:28];
-    [objectManager deleteObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
-        loader.resourcePath = @"/humans/1";
+    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
+        loader.method = RKRequestMethodDELETE;
+        loader.delegate = responseLoader;
         loader.objectMapping = mapping;
     }];
     [responseLoader waitForResponse];
@@ -324,14 +337,16 @@
     human.name = @"Blake Watters";
     human.age = [NSNumber numberWithInt:28];
     NSDictionary *myParams = [NSDictionary dictionaryWithObject:@"bar" forKey:@"foo"];
-    RKObjectLoader* loader = [objectManager sendObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+    __block RKObjectLoader* objectLoader = nil;
+    [objectManager sendObject:human toResourcePath:@"/humans/1" usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = responseLoader;
         loader.method = RKRequestMethodPOST;
-        loader.resourcePath = @"/humans/1";
         loader.objectMapping = mapping;
         loader.params = myParams;
+        objectLoader = loader;
     }];
     [responseLoader waitForResponse];
-    assertThat(loader.params, is(equalTo(myParams)));
+    assertThat(objectLoader.params, is(equalTo(myParams)));
 }
 
 @end

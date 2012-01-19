@@ -102,6 +102,11 @@ class RestKit::SpecServer < Sinatra::Base
     "File Not Found"
   end
   
+  get '/503' do
+    status 503
+    "Internal Server Error"
+  end
+  
   get '/encoding' do
     status 200
     content_type 'text/plain; charset=us-ascii'
