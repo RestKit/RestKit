@@ -255,6 +255,9 @@
         mappingProvider = [RKObjectMappingProvider mappingProvider];
         NSString *rootKeyPath = configuredObjectMapping.rootKeyPath ? configuredObjectMapping.rootKeyPath : @"";
         [mappingProvider setMapping:configuredObjectMapping forKeyPath:rootKeyPath];
+        
+        // Copy the error mapping from our configured mappingProvider
+        mappingProvider.errorMapping = self.mappingProvider.errorMapping;
     } else {
         RKLogDebug(@"No object mapping provider, using mapping provider from parent object manager to perform KVC mapping");
         mappingProvider = self.mappingProvider;
