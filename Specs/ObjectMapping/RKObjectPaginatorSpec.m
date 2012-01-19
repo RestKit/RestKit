@@ -285,6 +285,21 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     assertThatBool([paginator hasObjectCount], is(equalToBool(YES)));
 }
 
+- (void)testOnDidLoadObjectsForPageBlockIsInvokedOnLoad {
+    RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
+    RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
+    paginator.delegate = testDelegate;
+    __block NSArray *blockObjects = nil;
+    paginator.onDidLoadObjectsForPage = ^(NSArray *objects, NSUInteger page) {
+        blockObjects = objects;
+    };
+    [paginator loadPage:1];
+    [testDelegate waitForLoad];
+    assertThat(blockObjects, is(notNilValue()));
+}
+
 - (void)testDelegateIsInformedOfWillLoadPage {
     RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
@@ -309,6 +324,21 @@ static NSString * const RKObjectPaginatorSpecResourcePathPattern = @"/paginate?p
     [paginator loadPage:999];
     [mockDelegate waitForLoad];
     [mockDelegate verify];
+}
+
+- (void)testOnDidFailWithErrorBlockIsInvokedOnError {
+    RKURL *patternURL = [RKSpecGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorSpecResourcePathPattern];
+    RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
+    RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
+    __block NSError *expectedError = nil;
+    paginator.onDidFailWithError = ^(NSError *error, RKObjectLoader *loader) {
+        expectedError = error;
+    };
+    RKSpecPaginatorDelegate *testDelegate = [RKSpecPaginatorDelegate paginatorDelegate];
+    paginator.delegate = testDelegate;
+    [paginator loadPage:999];
+    [testDelegate waitForLoad];
+    assertThat(expectedError, is(notNilValue()));
 }
 
 - (void)testDelegateIsInformedOnLoadOfFirstPage {

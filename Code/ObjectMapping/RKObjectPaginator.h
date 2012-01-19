@@ -25,6 +25,9 @@
 
 @protocol RKObjectPaginatorDelegate;
 
+typedef void(^RKObjectPaginatorDidLoadObjectsForPageBlock)(NSArray *objects, NSUInteger page);
+typedef void(^RKObjectPaginatorDidFailWithErrorBlock)(NSError *error, RKObjectLoader *loader);
+
 /**
  Instances of RKObjectPaginator retrieve paginated collections of mappable data
  from remote systems via HTTP. Paginators perform GET requests and use a patterned
@@ -90,6 +93,20 @@
  The object that acts as the delegate of the receiving paginator.
  */
 @property (nonatomic, assign) id<RKObjectPaginatorDelegate> delegate;
+
+/**
+ The block to invoke when the paginator has loaded a page of objects from the collection.
+ 
+ @see [RKObjectPaginatorDelegate paginator:didLoadObjects:forPage]
+ */
+@property (nonatomic, copy) RKObjectPaginatorDidLoadObjectsForPageBlock onDidLoadObjectsForPage;
+
+/**
+ The block to invoke when the paginator has failed loading due to an error.
+ 
+ @see [RKObjectPaginatorDelegate paginator:didFailWithError:objectLoader:]
+ */
+@property (nonatomic, copy) RKObjectPaginatorDidFailWithErrorBlock onDidFailWithError;
 
 /**
  The object that acts as the configuration delegate for RKObjectLoader instances built 
@@ -213,45 +230,45 @@
 @protocol RKObjectPaginatorDelegate <NSObject>
 
 /**
- Sent to the delegate when the paginator has loaded a collection of objects for a given page
+ Tells the delegate the paginator has loaded a page of objects from the collection.
  
- @param paginator The paginator that loaded the objects
- @param objects An array of objects mapped from the remote JSON/XML representation
- @param page The page number that was loaded
+ @param paginator The paginator that loaded the objects.
+ @param objects An array of objects mapped from the remote JSON/XML representation.
+ @param page The page number that was loaded.
  */
 - (void)paginator:(RKObjectPaginator *)paginator didLoadObjects:(NSArray *)objects forPage:(NSUInteger)page;
 
 /**
- Sent to the delegate when the paginator has failed loading due to an error
+ Tells the delegate the paginator has failed loading due to an error.
  
- @param paginator The paginator that failed loading due to an error 
- @param error An NSError indicating the cause of the failure
- @param loader The loader request that resulted in the failure
+ @param paginator The paginator that failed loading due to an error.
+ @param error An NSError indicating the cause of the failure.
+ @param loader The loader request that resulted in the failure.
  */
 - (void)paginator:(RKObjectPaginator *)paginator didFailWithError:(NSError *)error objectLoader:(RKObjectLoader *)loader;
 
 @optional
 
 /**
- Sent to the delegate before the paginator begins loading a page
+ Tells the delegate that the paginator is about to begin loading a page of objects.
  
- @param paginator The paginator performing the load
- @param page The numeric page number being loaded
- @param loader The object loader request used to load the page
+ @param paginator The paginator performing the load.
+ @param page The numeric page number being loaded.
+ @param loader The object loader request used to load the page.
  */
 - (void)paginator:(RKObjectPaginator *)paginator willLoadPage:(NSUInteger)page objectLoader:(RKObjectLoader *)loader;
 
 /**
- Sent to the delegate when the paginator has loaded the first page in the collection
+ Tells the delegate the paginator has loaded the first page of objects in the collection.
  
- @param paginator The paginator instance that has loaded the first page
+ @param paginator The paginator instance that has loaded the first page.
  */
 - (void)paginatorDidLoadFirstPage:(RKObjectPaginator *)paginator;
 
 /**
- Sent to the delegate when the paginator has loaded the last page in the collection
+ Tells the delegate the paginator has loaded the last page of objects in the collection.
  
- @param paginator The paginator instance that has loaded the last page
+ @param paginator The paginator instance that has loaded the last page.
  */
 - (void)paginatorDidLoadLastPage:(RKObjectPaginator *)paginator;
 

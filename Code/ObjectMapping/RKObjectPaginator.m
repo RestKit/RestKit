@@ -44,6 +44,8 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 @synthesize objectStore;
 @synthesize objectLoader;
 @synthesize configurationDelegate;
+@synthesize onDidLoadObjectsForPage;
+@synthesize onDidFailWithError;
 
 + (id)paginatorWithPatternURL:(RKURL *)aPatternURL mappingProvider:(RKObjectMappingProvider *)aMappingProvider {
     return [[[self alloc] initWithPatternURL:aPatternURL mappingProvider:aMappingProvider] autorelease];
@@ -78,6 +80,10 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     objectLoader.delegate = nil;
     [objectLoader release];
     objectLoader = nil;
+    [onDidLoadObjectsForPage release];
+    onDidLoadObjectsForPage = nil;
+    [onDidFailWithError release];
+    onDidFailWithError = nil;    
     
     [super dealloc];
 }
@@ -134,6 +140,10 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     RKLogInfo(@"Loaded objects: %@", objects);
     [self.delegate paginator:self didLoadObjects:objects forPage:self.currentPage];
     
+    if (self.onDidLoadObjectsForPage) {
+        self.onDidLoadObjectsForPage(objects, self.currentPage);
+    }
+    
     if ([self hasPageCount] && self.currentPage == 1) {
         if ([self.delegate respondsToSelector:@selector(paginatorDidLoadFirstPage:)]) {
             [self.delegate paginatorDidLoadFirstPage:self];
@@ -148,9 +158,12 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 }
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
-  RKLogError(@"Paginator error %@", error);
-  [self.delegate paginator:self didFailWithError:error objectLoader:self.objectLoader];
-  self.objectLoader = nil;
+    RKLogError(@"Paginator error %@", error);
+    [self.delegate paginator:self didFailWithError:error objectLoader:self.objectLoader];
+    if (self.onDidFailWithError) {
+        self.onDidFailWithError(error, self.objectLoader);
+    }
+    self.objectLoader = nil;
 }
 
 - (void)objectLoader:(RKObjectLoader *)loader willMapData:(inout id *)mappableData {
