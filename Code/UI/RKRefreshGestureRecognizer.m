@@ -61,6 +61,8 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
 
 - (void)dealloc {
     [self removeObserver:self forKeyPath:@"view"];
+    if (self.triggerView)
+        [self.triggerView removeFromSuperview];
     self.triggerView = nil;
     [super dealloc];
 }
