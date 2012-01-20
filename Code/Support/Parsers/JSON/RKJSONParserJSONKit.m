@@ -22,7 +22,7 @@
 #import "JSONKit.h"
 
 // TODO: JSONKit serializer instance should be reused to enable leverage
-// the internal cacheing capabilities from the JSONKit serializer
+// the internal caching capabilities from the JSONKit serializer
 @implementation RKJSONParserJSONKit
 
 - (NSDictionary*)objectFromString:(NSString*)string error:(NSError**)error {
