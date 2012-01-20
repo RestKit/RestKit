@@ -42,8 +42,9 @@
  Acceptable examples are:
     /Date(1112715000000-0500)/
     /Date(1112715000000)/
+    /Date(-1112715000000)/
  Where 1112715000000 is the number of milliseconds since January 1, 1970 00:00 GMT/UTC, and -0500 represents the
- timezone offset from GMT in 24-hour time.  
+ timezone offset from GMT in 24-hour time. Negatives milliseconds are treated as dates before January 1, 1970.
  
  *NOTE* NSDate objects do not have timezones, and you should never change an actual date value based on a
  timezone offset.  However, timezones are important when presenting dates to the user.  Therefore,
