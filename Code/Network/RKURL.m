@@ -21,6 +21,15 @@
 #import "RKURL.h"
 #import "RKClient.h"
 
+@interface RKURL (Private) 
+/**
+ Similar to NSString stringByAppendingPathComponent: but allows > 1024 character appends.
+ @see NSString stringByAppendingPathComponent:
+ */
++ (NSString*)appendPathComponent:(NSString*)comp toString:(NSString*)base;
+
+@end
+
 @implementation RKURL
 
 @synthesize baseURLString = _baseURLString;
@@ -39,14 +48,14 @@
 	return [self initWithBaseURLString:baseURLString resourcePath:resourcePath queryParams:nil];
 }
 
+
+
+
 - (id)initWithBaseURLString:(NSString*)baseURLString resourcePath:(NSString*)resourcePath queryParams:(NSDictionary*)queryParams {
 	NSString* resourcePathWithQueryString = RKPathAppendQueryParams(resourcePath, queryParams);
 	NSURL *baseURL = [NSURL URLWithString:baseURLString];
-	NSString* completePath = [[baseURL path] stringByAppendingPathComponent:resourcePathWithQueryString];
-    // Preserve trailing slash in resourcePath
-    if (resourcePath && [resourcePath characterAtIndex:[resourcePath length] - 1] == '/') {
-        completePath = [completePath stringByAppendingString:@"/"];
-    }
+    
+    NSString *completePath = [[self class] appendPathComponent:resourcePathWithQueryString toString:[baseURL path]];    
 	NSURL* completeURL = [NSURL URLWithString:completePath relativeToURL:baseURL];
 	if (!completeURL) {
 		[self release];
@@ -71,6 +80,41 @@
 	[_queryParams release];
 	_queryParams = nil;
 	[super dealloc];
+}
+
+
++ (NSString*)appendPathComponent:(NSString*)comp toString:(NSString*)base
+{
+    NSUInteger baseLen = [base length];
+    if (0 == baseLen) {
+        return [[comp copy] autorelease];
+    }
+    if (0 == [comp length]) {
+        return [[base copy] autorelease];
+    }
+    
+    //check to see if the base originally ended with a slash
+    BOOL baseEndsWithSlash = ('/' == [base characterAtIndex:baseLen - 1]);
+    
+    NSMutableString *sb = [NSMutableString string];
+    
+    //rebuild the base path by breaking down into path components
+    NSArray *basePathComps = [base pathComponents];
+    for (NSString *c in basePathComps) {
+        if (![c isEqualToString:@"/"]) {
+            [sb appendFormat:@"/%@",c];
+        }
+    }
+    
+    BOOL compStartsWithSlash = ('/' == [comp characterAtIndex:0]);    
+    if (baseEndsWithSlash && !compStartsWithSlash) {
+        //append a single slash to base since it was there originally
+        [sb appendString:@"/"];
+    }
+    
+    [sb appendString:comp];
+    
+    return sb;
 }
 
 @end
