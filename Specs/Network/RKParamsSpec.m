@@ -101,4 +101,23 @@
     assertThat(MD5, is(equalTo(@"da7d80084b86aa5022b434e3bf084caf")));
 }
 
+- (void)testShouldProperlyCalculateContentLengthForFileUploads {
+    RKClient* client = RKSpecNewClient();
+    RKParams* params = [RKParams params];
+    [params setValue:@"one" forParam:@"value"];
+    [params setValue:@"two" forParam:@"value"];
+    [params setValue:@"three" forParam:@"value"];
+    [params setValue:@"four" forParam:@"value"];
+    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
+    NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    [params setData:data MIMEType:@"image/png" forParam:@"file"];
+    RKRequest *request = [client requestWithResourcePath:@"/upload"];
+    [request setMethod:RKRequestMethodPOST];
+    request.params = params;
+    [request prepareURLRequest];
+    assertThatInteger([params HTTPHeaderValueForContentLength], is(equalToInt(23166)));
+    assertThat([[request.URLRequest allHTTPHeaderFields] objectForKey:@"Content-Length"], is(equalTo(@"23166")));
+}
+
 @end
