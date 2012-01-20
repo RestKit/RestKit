@@ -169,4 +169,16 @@
     assertThat([interpolatedURL absoluteString], is(equalTo(@"http://restkit.org/paginate?page=1&perPage=25")));
 }
 
+- (void)testShouldProperlyHandleLongURLParameterValues {
+    NSString *longResourcePath = @"";
+    for (NSUInteger index = 0; index < 1050; index++) {
+        longResourcePath = [longResourcePath stringByAppendingString:@"X"];
+    }
+    assertThatInteger([longResourcePath length], is(equalToInt(1050)));
+    
+    RKURL *URL = [RKURL URLWithBaseURLString:RKSpecGetBaseURLString()
+                                resourcePath:longResourcePath];
+    assertThat([URL absoluteString], is(equalTo([NSString stringWithFormat:@"%@/%@", RKSpecGetBaseURLString(), longResourcePath])));
+}
+
 @end
