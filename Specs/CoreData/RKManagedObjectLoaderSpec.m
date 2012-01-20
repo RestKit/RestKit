@@ -245,5 +245,21 @@
     assertThatBool([doNotDeleteMe isDeleted], is(equalToBool(NO))); 
 }
 
+- (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
+    RKManagedObjectStore* store = RKSpecNewManagedObjectStore();
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    RKSpecStubNetworkAvailability(YES);
+    objectManager.objectStore = store;
+    
+    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
+    objectLoader.objectMapping = mapping;
+    RKResponse *response = [objectLoader sendSynchronously];
+    
+    NSArray* humans = [RKHuman findAll];
+    assertThatUnsignedInteger([humans count], is(equalToInt(1)));
+    assertThatInteger(response.statusCode, is(equalToInt(200)));
+}
+
 
 @end

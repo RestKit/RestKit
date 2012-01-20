@@ -731,4 +731,18 @@
     assertThat(blockError, is(equalTo(expectedError)));
 }
 
+- (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
+    RKObjectManager* objectManager = RKSpecNewObjectManager();
+    
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKSpecComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
+    objectLoader.objectMapping = userMapping;
+    [objectLoader sendSynchronously];
+    RKResponse *response = [objectLoader sendSynchronously];
+    
+    assertThatInteger(response.statusCode, is(equalToInt(200)));
+}
+
 @end
