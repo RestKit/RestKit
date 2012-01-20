@@ -110,7 +110,8 @@
     NSDictionary* exchangeRate = [result objectForKey:@"exchange_rate"];
     assertThat(exchangeRate, is(notNilValue()));
     assertThat([exchangeRate objectForKey:@"type"], is(equalTo(@"XML_RATE_TYPE_EBNK_MIDDLE")));
-    assertThat([exchangeRate objectForKey:@"valid_from"], is(equalTo(@"2011-08-03 00:00:00.0")));    
+    assertThat([exchangeRate objectForKey:@"valid_from"], is(equalTo(@"2011-08-03 00:00:00.0")));
+    assertThat([exchangeRate objectForKey:@"name"], nilValue()); // This is to test for bug in parsing
     NSArray* currency = [exchangeRate objectForKey:@"currency"];
     assertThat(currency, hasCountOf(3));
     NSDictionary* firstCurrency = [currency objectAtIndex:0];
