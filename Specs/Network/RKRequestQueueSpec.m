@@ -21,13 +21,21 @@
 #import "RKSpecEnvironment.h"
 
 @interface RKRequestQueueSpec : RKSpec {
-    
+    NSAutoreleasePool *_autoreleasePool;
 }
 
 @end
 
 
 @implementation RKRequestQueueSpec
+
+- (void)setUp {
+    _autoreleasePool = [NSAutoreleasePool new];
+}
+
+- (void)tearDown {
+    [_autoreleasePool drain];
+}
 
 - (void)testShouldBeSuspendedWhenInitialized {
     RKRequestQueue* queue = [RKRequestQueue new];
@@ -120,6 +128,7 @@
     [queue start];
     [loader waitForResponse];
     [delegateMock verify];
+    [queue release];
 }
 
 // TODO: These tests cannot pass in the unit testing environment... Need to migrate to an integration

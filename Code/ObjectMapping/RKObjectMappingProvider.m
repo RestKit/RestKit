@@ -37,7 +37,7 @@
         [self initializeContext:RKObjectMappingProviderContextObjectsByType withValue:[NSMutableArray array]];
         [self initializeContext:RKObjectMappingProviderContextObjectsByResourcePathPattern withValue:[RKOrderedDictionary dictionary]];
         [self initializeContext:RKObjectMappingProviderContextSerialization withValue:[NSMutableDictionary dictionary]];
-        [self initializeContext:RKObjectMappingProviderContextErrors withValue:[NSMutableArray array]];
+        [self initializeContext:RKObjectMappingProviderContextErrors withValue:[NSNull null]];
     }
     return self;
 }
@@ -112,7 +112,9 @@
 }
 
 - (void)setErrorMapping:(RKObjectMapping *)errorMapping {
-    [self setMapping:errorMapping context:RKObjectMappingProviderContextErrors];
+    if (errorMapping) {
+        [self setMapping:errorMapping context:RKObjectMappingProviderContextErrors];
+    }
 }
 
 #pragma mark - Pagination Mapping
@@ -162,7 +164,7 @@
 
 - (id<RKObjectMappingDefinition>)mappingForContext:(RKObjectMappingProviderContext)context {
     id contextValue = [self valueForContext:context];
-    if (contextValue == nil) return nil;
+    if ([contextValue isEqual:[NSNull null]]) return nil;
     Protocol *protocol = @protocol(RKObjectMappingDefinition);
     NSAssert([contextValue conformsToProtocol:protocol], @"Storage type mismatch for context %d: expected a %@, got %@.", context, protocol, [contextValue class]);
     return contextValue;
