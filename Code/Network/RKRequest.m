@@ -33,6 +33,8 @@
 #import "RKReachabilityObserver.h"
 #import "RKRequestQueue.h"
 #import "RKParams.h"
+#import "RKParserRegistry.h"
+#import "RKRequestSerialization.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -727,6 +729,20 @@
     }
     NSAssert(compositeCacheKey, @"Expected a cacheKey to be generated for request %@, but got nil", compositeCacheKey);
     return [compositeCacheKey MD5];
+}
+
+- (void)setBody:(NSDictionary *)body forMIMEType:(NSString *)MIMEType {
+    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
+    
+    NSError *error = nil;
+    NSString* parsedValue = [parser stringFromObject:body error:&error];
+    
+    NSLog(@"parser=%@, error=%@, parsedValue=%@", parser, error, parsedValue);
+    
+    if (error == nil && parsedValue) {
+        self.params = [RKRequestSerialization serializationWithData:[parsedValue dataUsingEncoding:NSUTF8StringEncoding]
+                                                           MIMEType:MIMEType];
+    }
 }
 
 // Deprecations

@@ -762,4 +762,16 @@
     assertThat(blockError, is(notNilValue()));
 }
 
+- (void)testShouldBuildAProperRequestWhenSettingBodyByMIMEType {
+    RKClient* client = RKSpecNewClient();
+    NSDictionary *bodyParams = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:10], @"number",
+                                @"JSON String", @"string",
+                                nil];
+    RKRequest *request = [client requestWithResourcePath:@"/upload"];
+    [request setMethod:RKRequestMethodPOST];
+    [request setBody:bodyParams forMIMEType:RKMIMETypeJSON];
+    [request prepareURLRequest];
+    assertThat(request.HTTPBodyString, is(equalTo(@"{\"number\":10,\"string\":\"JSON String\"}")));
+}
+
 @end

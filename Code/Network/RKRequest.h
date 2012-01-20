@@ -481,6 +481,13 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  */
 - (BOOL)wasSentToResourcePath:(NSString *)resourcePath;
 
+/**
+ * Sets the request body using the provided NSDictionary after passing the
+ * NSDictionary through serialization using the currently configured
+ * parser for the provided MIMEType.
+ */
+- (void)setBody:(NSDictionary *)body forMIMEType:(NSString *)MIMEType;
+
 // Deprecations
 + (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE;
 - (id)initWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE;
