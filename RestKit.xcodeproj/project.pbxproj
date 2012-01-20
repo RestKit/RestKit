@@ -540,6 +540,10 @@
 		49D275AE14C9F3020090845D /* RKISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49D275AB14C9F3020090845D /* RKISO8601DateFormatter.h */; };
 		49D275AF14C9F3020090845D /* RKISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D275AC14C9F3020090845D /* RKISO8601DateFormatter.m */; };
 		49D275B014C9F3020090845D /* RKISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D275AC14C9F3020090845D /* RKISO8601DateFormatter.m */; };
+		73D3907414CA1AE00093E3D6 /* parent.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907114CA19F90093E3D6 /* parent.json */; };
+		73D3907514CA1AE20093E3D6 /* parent.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907114CA19F90093E3D6 /* parent.json */; };
+		73D3907614CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
+		73D3907714CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -906,6 +910,8 @@
 		49D2759C14C9EF1E0090845D /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.txt; path = iso8601parser/README.txt; sourceTree = "<group>"; };
 		49D275AB14C9F3020090845D /* RKISO8601DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKISO8601DateFormatter.h; sourceTree = "<group>"; };
 		49D275AC14C9F3020090845D /* RKISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKISO8601DateFormatter.m; sourceTree = "<group>"; };
+		73D3907114CA19F90093E3D6 /* parent.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parent.json; sourceTree = "<group>"; };
+		73D3907314CA1A4A0093E3D6 /* child.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = child.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1389,9 +1395,11 @@
 			isa = PBXGroup;
 			children = (
 				25160FD61456F2330060A5C5 /* boy.json */,
+				73D3907314CA1A4A0093E3D6 /* child.json */,
 				25160FD71456F2330060A5C5 /* friends.json */,
 				25160FD81456F2330060A5C5 /* girl.json */,
 				25160FD91456F2330060A5C5 /* mixed.json */,
+				73D3907114CA19F90093E3D6 /* parent.json */,
 			);
 			path = Dynamic;
 			sourceTree = "<group>";
@@ -1965,6 +1973,8 @@
 				251610A01456F2330060A5C5 /* zend.xml in Resources */,
 				25A341C0147C2F370009758D /* InfoPlist.strings in Resources */,
 				25A341DA147C2F370009758D /* OCMock-Info.plist in Resources */,
+				73D3907414CA1AE00093E3D6 /* parent.json in Resources */,
+				73D3907614CA1AE60093E3D6 /* child.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2021,6 +2031,8 @@
 				2516110D1456F2340060A5C5 /* server.rb in Resources */,
 				25A341C1147C2F370009758D /* InfoPlist.strings in Resources */,
 				25A341DB147C2F370009758D /* OCMock-Info.plist in Resources */,
+				73D3907514CA1AE20093E3D6 /* parent.json in Resources */,
+				73D3907714CA1AE60093E3D6 /* child.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
