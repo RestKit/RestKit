@@ -86,5 +86,28 @@
     assertThat([URL MIMETypeForPathExtension], is(equalTo(@"application/xml")));
 }
 
+
+/**
+ Verify that we can append long (>1024 character) query parameters
+ */
+- (void)testLongQueryParameters {
+    NSString *longParamRaw = @"RecordType.Name,Account_Location__c,LastModifiedBy.email,CreatedBy.mobilephone,jsSDO__Sync_Status_Indicator__c,id,Owner.email,Owner.phone,Owner.city,Industry,Name,ShippingCountry,CreatedBy.title,Owner.aboutme,IsPersonAccount,LastModifiedBy.mobilephone,LastModifiedBy.aboutme,NumberOfEmployees,LastModifiedBy.fullphotourl,BillingCity,Owner.currentstatus,LastModifiedBy.currentstatus,BillingStreet,LastModifiedBy.title,Parent.RecordTypeId,CreatedBy.smallphotourl,AnnualRevenue,ParentId,jsSDO__Duplicate__c,LastModifiedById,Owner.department,FN__Find_Nearby__c,LastModifiedBy.department,LastModifiedBy.name,ShippingState,FN__Which_Address__c,OwnerId,jsSDO__Jigsaw_Id__c,CreatedBy.currentstatus,LastModifiedBy.state,Website,Owner.title,Parent.Name,Parent.id,CreatedDate,CreatedBy.aboutme,Fax,BillingState,BillingPostalCode,Owner.fullphotourl,RecordTypeId,Owner.name,Closed_Won_Value__c,CreatedBy.city,CreatedBy.phone,ShippingCity,CreatedById,Owner.mobilephone,LastModifiedBy.phone,LastModifiedBy.smallphotourl,CreatedBy.state,Owner.state,ShippingStreet,CreatedBy.email,Owner.smallphotourl,CreatedBy.department,LastModifiedDate,ShippingPostalCode,RecordType.id,PersonContactId,CreatedBy.name,Type,Phone,LastModifiedBy.city,jsSDO__Additional_Information__c,jsSDO__Jigsaw_Last_Sync_Locked__c,FN__Mapping_Status__c,CreatedBy.fullphotourl,BillingCountry";
+    
+    NSString *longParam = [longParamRaw stringByAddingURLEncoding];
+        
+    NSDictionary *queryParams = [NSDictionary dictionaryWithObject:longParamRaw forKey:@"fields"];
+    NSString *baseUrlStr = @"https://na1.salesforce.com";
+    NSString *resourcePath = @"/services/data/v23.0/sobjects/Account/0013000000sps6sAAA";
+    NSString *expectedUrlStr = [NSString stringWithFormat:@"%@%@?fields=%@",baseUrlStr,resourcePath,longParam];
+    
+    RKURL* URL = [RKURL URLWithBaseURLString:baseUrlStr 
+                              resourcePath:resourcePath 
+                               queryParams:queryParams];
+
+    NSString *urlStr = [URL absoluteString];    
+    assertThat(urlStr, is(equalTo(expectedUrlStr)));    
+
+
+}
 @end
  
