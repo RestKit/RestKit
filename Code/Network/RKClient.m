@@ -88,6 +88,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize cachePolicy = _cachePolicy;
 @synthesize requestQueue = _requestQueue;
 @synthesize timeoutInterval = _timeoutInterval;
+@synthesize cacheTimeoutInterval = _cacheTimeoutInterval;
 
 + (RKClient *)sharedClient {
 	return sharedClient;
@@ -120,6 +121,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	if (self) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
         _additionalRootCertificates = [[NSMutableSet alloc] init];
+        self.cacheTimeoutInterval = 0;
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
 		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
@@ -215,6 +217,10 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     // Otherwise, we'll let the request default to its own timeout interval.
     if (self.timeoutInterval) {
         request.timeoutInterval = self.timeoutInterval;
+    }
+    
+    if (self.cacheTimeoutInterval) {
+        request.cacheTimeoutInterval = self.cacheTimeoutInterval;
     }
     
     // OAuth 1 Parameters

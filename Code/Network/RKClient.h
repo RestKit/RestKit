@@ -217,6 +217,13 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @property (nonatomic, assign) NSTimeInterval timeoutInterval;
 
 /**
+ * The timeout interval within which the requests should not be sent
+ * and the cached response should be used. Used if the cache policy
+ * includes RKRequestCachePolicyTimeout
+ */
+@property (nonatomic, assign) NSTimeInterval cacheTimeoutInterval;
+
+/**
  Accept all SSL certificates. This is a potential security exposure,
  and should be used ONLY while debugging in a controlled environment.
  

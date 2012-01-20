@@ -131,4 +131,11 @@
     assertThatBool(loader.success, is(equalToBool(NO)));
 }
 
+- (void)testShouldAllowYouToChangeTheCacheTimeoutInterval {
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+    client.cacheTimeoutInterval = 20.0;
+    RKRequest* request = [client requestWithResourcePath:@""];
+    assertThatFloat(request.cacheTimeoutInterval, is(equalToFloat(20.0)));
+}
+
 @end
