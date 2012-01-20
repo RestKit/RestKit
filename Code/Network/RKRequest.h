@@ -516,7 +516,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 /**
  * Sent when request has received data from remote site
  */
-- (void)request:(RKRequest*)request didReceivedData:(NSInteger)bytesReceived totalBytesReceived:(NSInteger)totalBytesReceived totalBytesExectedToReceive:(NSInteger)totalBytesExpectedToReceive;
+- (void)request:(RKRequest*)request didReceiveData:(NSInteger)bytesReceived totalBytesReceived:(NSInteger)totalBytesReceived totalBytesExectedToReceive:(NSInteger)totalBytesExpectedToReceive;
 
 /**
  * Sent to the delegate when a request was cancelled
