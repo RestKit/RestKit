@@ -106,6 +106,13 @@
     assertThatBool(client.requestQueue.suspended, is(equalToBool(NO)));
 }
 
+- (void)testShouldAllowYouToChangeTheTimeoutInterval {
+    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    client.timeoutInterval = 20.0;
+    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+    assertThatFloat(request.timeoutInterval, is(equalToFloat(20.0)));
+}
+
 - (void)testShouldPerformAPUTWithParams {
     NSLog(@"PENDING ---> FIX ME!!!");
     return;
