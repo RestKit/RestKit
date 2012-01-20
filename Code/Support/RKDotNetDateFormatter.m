@@ -58,7 +58,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
         self.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
         self.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
         [self setDateFormat:@"ZZ"]; // GMT offset, like "-0500"
-        NSString *pattern = @"\\/Date\\((\\d+)((?:[\\+\\-]\\d+)?)\\)\\/"; // /Date(mSecs)/ or /Date(mSecs-0400)/
+        NSString *pattern = @"\\/Date\\((-?\\d+)((?:[\\+\\-]\\d+)?)\\)\\/"; // /Date(mSecs)/ or /Date(-mSecs)/ or /Date(mSecs-0400)/
         dotNetExpression = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
     }
     return self;
