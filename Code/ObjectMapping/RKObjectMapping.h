@@ -535,7 +535,7 @@ relationship. Relationships are processed using an object mapping as well.
  @param dateFormatter An NSDateFormatter object to append to the end of the default formatters collection
  @see defaultDateFormatters
  */
-+ (void)addDefaultDateFormatter:(NSDateFormatter *)dateFormatter;
++ (void)addDefaultDateFormatter:(id)dateFormatter;
 
 /**
  Convenience method for quickly constructing a date formatter and adding it to the collection of default

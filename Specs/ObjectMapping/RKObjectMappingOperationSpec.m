@@ -250,6 +250,20 @@
     [operation release];
 }
 
+- (void)testShouldMapAISODateStringAppropriately {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"date", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"2011-08-09T00:00Z" forKey:@"date"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.date, isNot(nilValue()));
+    assertThat([object.date description], is(equalTo(@"2011-08-09 00:00:00 +0000")));
+    [operation release];
+}
+
 - (void)testShouldMapAStringIntoTheLocalTimeZone {
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
