@@ -108,9 +108,9 @@
 }
 
 - (void)testShouldAllowYouToChangeTheTimeoutInterval {
-    RKClient* client = [RKClient clientWithBaseURL:@"http://restkit.org"];
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.timeoutInterval = 20.0;
-    RKRequest* request = [client requestWithResourcePath:@"" delegate:nil];
+    RKRequest* request = [client requestWithResourcePath:@""];
     assertThatFloat(request.timeoutInterval, is(equalToFloat(20.0)));
 }
 
