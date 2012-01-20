@@ -69,8 +69,9 @@
      @"transactions.@avg.amount", @"averageTransactionAmount",
      @"transactions.@distinctUnionOfObjects.payee", @"distinctPayees",
      nil];
-     
-    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKKeyValueMappingExample" objectMapping:mapping delegate:self];
+    
+    [[RKObjectManager sharedManager].mappingProvider setObjectMapping:mapping forResourcePathPattern:@"/RKKeyValueMappingExample"];
+    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKKeyValueMappingExample" delegate:self];
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
