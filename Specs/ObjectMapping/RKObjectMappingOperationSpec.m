@@ -222,6 +222,20 @@
     [operation release];
 }
 
+- (void)testShouldMapAUnixTimestampStringAppropriately {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"date", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"457574400" forKey:@"date"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.date, isNot(nilValue()));
+    assertThat([object.date description], is(equalTo(@"1984-07-02 00:00:00 +0000")));
+    [operation release];
+}
+
 - (void)testShouldMapASimpleDateStringAppropriately {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"date", nil];

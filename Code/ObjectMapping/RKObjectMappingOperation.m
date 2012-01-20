@@ -113,14 +113,27 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 - (NSDate*)parseDateFromString:(NSString*)string {
     RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
     
-	NSDate* date = nil;
-    for (NSDateFormatter *dateFormatter in self.objectMapping.dateFormatters) {
-        @synchronized(dateFormatter) {
+    NSDate* date = nil;
+    
+    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+
+    NSNumber *numeric = [numberFormatter numberFromString:string];
+
+    [numberFormatter release];
+    
+    if (numeric) {
+        date = [NSDate dateWithTimeIntervalSince1970:[numeric doubleValue]];
+    } else {
+        for (NSDateFormatter *dateFormatter in self.objectMapping.dateFormatters) {
+          @synchronized(dateFormatter) {
             date = [dateFormatter dateFromString:string];
+          }
+            
+          if (date) {
+            break;
+          }
         }
-        if (date) {
-			break;
-		}
     }
     
     return date;
