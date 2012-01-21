@@ -181,4 +181,17 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"RKChild")));
 }
 
+- (void)testShouldIncludeTransformableAttributesInPropertyNamesAndTypes {
+    RKSpecNewManagedObjectStore();
+    NSDictionary *attributesByName = [[RKHuman entity] attributesByName];
+    NSDictionary *propertiesByName = [[RKHuman entity] propertiesByName];
+    NSDictionary *relationshipsByName = [[RKHuman entity] relationshipsByName];
+    assertThat([attributesByName objectForKey:@"favoriteColors"], is(notNilValue()));
+    assertThat([propertiesByName objectForKey:@"favoriteColors"], is(notNilValue()));
+    assertThat([relationshipsByName objectForKey:@"favoriteColors"], is(nilValue()));
+
+    NSDictionary *propertyNamesAndTypes = [[RKObjectPropertyInspector sharedInspector] propertyNamesAndTypesForEntity:[RKHuman entity]];
+    assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"], is(notNilValue()));
+}
+
 @end

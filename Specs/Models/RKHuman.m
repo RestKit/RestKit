@@ -32,6 +32,7 @@
 @dynamic age;
 @dynamic createdAt;
 @dynamic updatedAt;
+@dynamic favoriteColors;
 
 @dynamic favoriteCat;
 @dynamic cats;
