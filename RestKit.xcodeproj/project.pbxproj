@@ -544,6 +544,8 @@
 		73D3907514CA1AE20093E3D6 /* parent.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907114CA19F90093E3D6 /* parent.json */; };
 		73D3907614CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
 		73D3907714CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
+		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
+		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -912,6 +914,7 @@
 		49D275AC14C9F3020090845D /* RKISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKISO8601DateFormatter.m; sourceTree = "<group>"; };
 		73D3907114CA19F90093E3D6 /* parent.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parent.json; sourceTree = "<group>"; };
 		73D3907314CA1A4A0093E3D6 /* child.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = child.json; sourceTree = "<group>"; };
+		73D3907814CA1D710093E3D6 /* channels.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = channels.xml; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1426,6 +1429,7 @@
 			isa = PBXGroup;
 			children = (
 				25160FED1456F2330060A5C5 /* attributes_without_text_content.xml */,
+				73D3907814CA1D710093E3D6 /* channels.xml */,
 				25160FEE1456F2330060A5C5 /* container_attributes.xml */,
 				25160FEF1456F2330060A5C5 /* national_weather_service.xml */,
 				25160FF01456F2330060A5C5 /* orders.xml */,
@@ -1975,6 +1979,7 @@
 				25A341DA147C2F370009758D /* OCMock-Info.plist in Resources */,
 				73D3907414CA1AE00093E3D6 /* parent.json in Resources */,
 				73D3907614CA1AE60093E3D6 /* child.json in Resources */,
+				73D3907914CA1DD40093E3D6 /* channels.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2033,6 +2038,7 @@
 				25A341DB147C2F370009758D /* OCMock-Info.plist in Resources */,
 				73D3907514CA1AE20093E3D6 /* parent.json in Resources */,
 				73D3907714CA1AE60093E3D6 /* child.json in Resources */,
+				73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

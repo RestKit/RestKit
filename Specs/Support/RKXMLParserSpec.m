@@ -183,4 +183,39 @@
     }
 }
 
+- (void)testShouldParseXMLElementsAndAttributesProperly {
+    NSString* XML = RKSpecReadFixture(@"channels.xml");
+    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSDictionary* result = [parser parseXML:XML];
+    NSDictionary *channel = [[result objectForKey:@"Channels"] objectForKey:@"Channel"];
+    assertThat(channel, is(notNilValue()));
+    
+    // Check to see if the Channel attributes are properly parsed
+    assertThat([channel objectForKey:@"Identifier"], is(equalTo(@"1172")));
+    assertThat([channel objectForKey:@"Title"], is(equalTo(@"MySpecialTitle")));
+    assertThat([channel objectForKey:@"Position"], is(equalTo(@"2234")));
+
+    // Check to see if the Channel elements are properly parsed
+    assertThat([channel objectForKey:@"Languages"], is(equalTo(@"it")));
+    
+    assertThat([channel objectForKey:@"Stream"], is(equalTo(@"MySpecialTitle")));
+    assertThat([[channel objectForKey:@"Stream"] objectForKey:@"Identifier"], is(equalTo(@"MySpecialTitle")));
+    assertThat([[channel objectForKey:@"Stream"] objectForKey:@"Index"], is(equalTo(@"0")));
+    
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:0] objectForKey:@"Identifier"], is(equalTo(@"42883461")));
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:0] objectForKey:@"Start"], is(equalTo(@"2011-12-19 20:00:00Z")));
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:0] objectForKey:@"End"], is(equalTo(@"2011-12-19 21:00:00Z")));
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:0] objectForKey:@"Title"], is(equalTo(@"Program Title 1")));
+
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:1] objectForKey:@"Identifier"], is(equalTo(@"42883471")));
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:1] objectForKey:@"Start"], is(equalTo(@"2011-12-19 21:00:00Z")));
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:1] objectForKey:@"End"], is(equalTo(@"2011-12-19 23:00:00Z")));
+    assertThat([[[channel objectForKey:@"Program"] objectAtIndex:1] objectForKey:@"Title"], is(equalTo(@"Program Title")));
+
+    assertThat([[channel objectForKey:@"Image"] objectAtIndex:0], is(equalTo(@"http://domain.com/Images/MySpecialTitle.png")));
+    assertThat([[channel objectForKey:@"Image"] objectAtIndex:1], is(equalTo(@"http://domain.com/Images/65x35/2234.png")));
+    assertThat([[[channel objectForKey:@"Image"] objectAtIndex:1] objectForKey:@"Width"], is(equalTo(@"65")));
+    assertThat([[[channel objectForKey:@"Image"] objectAtIndex:1] objectForKey:@"Height"], is(equalTo(@"35")));
+}
+
 @end
