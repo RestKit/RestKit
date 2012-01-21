@@ -65,7 +65,7 @@
         } else {
             RKLogTrace(@"Failed to find object to connect relationship '%@' with primary key value '%@'", relationshipName, valueOfLocalPrimaryKeyAttribute);
         }
-        [self.destinationObject setValue:relatedObject forKey:relationshipName];
+        [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
     } else {
         RKLogTrace(@"Failed to find primary key value for attribute '%@'", primaryKeyAttribute);
     }
