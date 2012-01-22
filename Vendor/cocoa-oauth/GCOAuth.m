@@ -172,8 +172,11 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
     NSMutableArray *entries = [NSMutableArray arrayWithCapacity:[parameters count]];
     NSArray *keys = [[parameters allKeys] sortedArrayUsingSelector:@selector(compare:)];
     for (NSString *key in keys) {
-        NSString *obj = [parameters objectForKey:key];
-        NSString *entry = [NSString stringWithFormat:@"%@=%@", [key pcen], [obj pcen]];
+        id obj = [parameters objectForKey:key];
+        id o = obj;
+        if ([obj isKindOfClass:[NSString class]])
+            o = [obj pcen];
+        NSString *entry = [NSString stringWithFormat:@"%@=%@", [key pcen], o];
         [entries addObject:entry];
     }
     NSString *normalizedParameters = [entries componentsJoinedByString:@"&"];
@@ -233,7 +236,10 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
 + (NSString *)queryStringFromParameters:(NSDictionary *)parameters {
     NSMutableArray *entries = [NSMutableArray array];
     [parameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        NSString *entry = [NSString stringWithFormat:@"%@=%@", [key pcen], [obj pcen]];
+        id o = obj;
+        if ([obj isKindOfClass:[NSString class]])
+            o = [obj pcen];
+        NSString *entry = [NSString stringWithFormat:@"%@=%@", [key pcen], o];
         [entries addObject:entry];
     }];
     return [entries componentsJoinedByString:@"&"];
