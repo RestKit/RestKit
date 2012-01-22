@@ -31,6 +31,7 @@
 @end
 
 @interface RKRequestSpec : RKSpec {
+    int _methodInvocationCounter;
 }
 
 @end
@@ -40,6 +41,11 @@
 - (void)setUp {
     // Clear the cache directory
     RKSpecClearCacheDirectory();
+    _methodInvocationCounter = 0;
+}
+
+- (int)incrementMethodInvocationCounter {
+    return _methodInvocationCounter++;
 }
 
 /**
@@ -98,6 +104,20 @@
     [request sendAsynchronously];
     [loaderMock waitForResponse];
     assertThatInt((int)loader.failureError.code, equalToInt(RKRequestConnectionTimeoutError));
+    [request release];
+}
+
+- (void)testShouldCreateOneTimeoutTimer {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    NSString* url = RKSpecGetBaseURL();
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loader;
+    id requestMock = [OCMockObject partialMockForObject:request];
+    [[[requestMock expect] andCall:@selector(incrementMethodInvocationCounter) onObject:self] createTimeoutTimer];
+    [requestMock sendAsynchronously];
+    [loader waitForResponse];
+    assertThatInt(_methodInvocationCounter, equalToInt(1));
     [request release];
 }
 
