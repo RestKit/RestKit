@@ -425,6 +425,12 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 - (void)cancel;
 
 /**
+ * Creates a timeoutTimer to trigger the timeout method
+ * This is mainly used so we can test that the timer is only being created once.
+ */
+- (void)createTimeoutTimer;
+
+/**
  * Cancels request due to connection timeout exceeded.
  * This will return an RKRequestConnectionTimeoutError via didFailLoadWithError:
  */
