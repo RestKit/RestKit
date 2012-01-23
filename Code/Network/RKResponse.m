@@ -22,7 +22,6 @@
 #import "RKNotifications.h"
 #import "RKLog.h"
 #import "RKParserRegistry.h"
-#import "RKClient.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -100,13 +99,12 @@ extern NSString* cacheURLKey;
 }
 
 - (BOOL)isServerTrusted:(SecTrustRef)trust {
-    RKClient* client = [RKClient sharedClient];
     BOOL proceed = NO;
     
-    if (client.disableCertificateValidation) {
+    if (_request.clientDisableCertificateValidation) {
         proceed = YES;
-    } else if( [client.additionalRootCertificates count] > 0 ) {
-        CFArrayRef rootCerts = (CFArrayRef)[client.additionalRootCertificates allObjects];
+    } else if ([_request.clientAdditionalRootCertificates count] > 0 ) {
+        CFArrayRef rootCerts = (CFArrayRef)[_request.clientAdditionalRootCertificates allObjects];
         SecTrustResultType result;
         OSStatus returnCode;
         
@@ -161,8 +159,7 @@ extern NSString* cacheURLKey;
 	if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		// server is using an SSL certificate that the OS can't validate
 		// see whether the client settings allow validation here
-		RKClient* client = [RKClient sharedClient];
-		if (client.disableCertificateValidation || [client.additionalRootCertificates count] > 0) {
+		if (_request.clientDisableCertificateValidation || [_request.clientAdditionalRootCertificates count] > 0) {
 			return YES;
 		} else { 
 			return NO;

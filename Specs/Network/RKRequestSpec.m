@@ -676,6 +676,7 @@
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKRequest* request = [RKRequest requestWithURL:URL];
     request.delegate = loader;
+    [[RKClient sharedClient] configureRequest:request];
     [request send];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));

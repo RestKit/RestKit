@@ -129,6 +129,9 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
     RKReachabilityObserver *_reachabilityObserver;
     NSTimer *_timeoutTimer;
     
+    NSSet *_clientAdditionalRootCertificates;
+    BOOL _clientDisableCertificateValidation;
+    
     #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
     UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
@@ -355,6 +358,14 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  * includes RKRequestCachePolicyTimeout
  */
 @property (nonatomic, assign) NSTimeInterval cacheTimeoutInterval;
+
+
+/**
+ *
+ */
+@property(nonatomic, retain) NSSet *clientAdditionalRootCertificates;
+@property(nonatomic, assign) BOOL clientDisableCertificateValidation;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
