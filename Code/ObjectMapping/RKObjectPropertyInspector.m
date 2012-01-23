@@ -51,7 +51,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 	[super dealloc];
 }
 
-- (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
++ (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
 	NSString *type = [NSString string];
 	NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
 	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
@@ -91,7 +91,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 			propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
 			
 			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-				const char* className = [[self propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
+				const char* className = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
 				Class aClass = objc_getClass(className);
 				if (aClass) {
 					[propertyNames setObject:aClass forKey:propName];
