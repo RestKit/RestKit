@@ -36,6 +36,17 @@
     assertThatBool(loader.success, is(equalToBool(YES)));
 }
 
+- (void)testShouldGetAccessTokenWithRefreshToken{
+    RKSpecResponseLoader *loader = [RKSpecResponseLoader responseLoader];
+    RKOAuthClient *client = RKSpecNewOAuthClient(loader);
+    client.authorizationURL = [client.authorizationURL stringByAppendingString:@"/refresh"];
+    client.authorizationCode = @"1234";
+    client.callbackURL = @"http://someURL.com";
+    [client validateAuthorizationCode];
+    [loader waitForResponse];
+    assertThatBool(loader.success, is(equalToBool(YES)));
+}
+
 - (void)testShouldNotGetAccessToken{
     RKSpecResponseLoader *loader = [RKSpecResponseLoader responseLoader];
     RKOAuthClient *client = RKSpecNewOAuthClient(loader);
