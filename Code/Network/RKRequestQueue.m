@@ -97,34 +97,40 @@ static const NSTimeInterval kFlushDelay = 0.3;
     
     // Find existing reference
     NSArray *requestQueueInstances = [RKRequestQueueInstances copy];
+    RKRequestQueue *namedQueue = nil;
     for (NSValue* value in requestQueueInstances) {
         RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
         if ([queue.name isEqualToString:name]) {
-            return queue;
+            namedQueue = queue;
+            break;
         }
     }
     [requestQueueInstances release];
     
-    RKRequestQueue* queue = [self requestQueue];
-    queue.name = name;
-    [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
+    if (namedQueue == nil) {
+        namedQueue = [self requestQueue];
+        namedQueue.name = name;
+        [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:namedQueue]];
+    }
     
-    return queue;
+    return namedQueue;
 }
 
 + (BOOL)requestQueueExistsWithName:(NSString*)name {
+    BOOL queueExists = NO;
     if (RKRequestQueueInstances) {
         NSArray *requestQueueInstances = [RKRequestQueueInstances copy];
         for (NSValue* value in requestQueueInstances) {
             RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
             if ([queue.name isEqualToString:name]) {
-                return YES;
+                queueExists = YES;
+                break;
             }
         }
         [requestQueueInstances release];
     }
     
-    return NO;
+    return queueExists;
 }
             
 - (id)init {
