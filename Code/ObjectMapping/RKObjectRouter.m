@@ -19,7 +19,7 @@
 //
 
 #import "RKObjectRouter.h"
-#import "RKClient.h"
+#import "RKPathMatcher.h"
 #import "NSDictionary+RKRequestSerialization.h"
 
 @implementation RKObjectRouter
@@ -121,8 +121,10 @@
 
     if (routeEntry) {
         BOOL addEscapes = [[routeEntry objectForKey:@"addEscapes"] boolValue];
-        NSString *path = RKMakePathWithObjectAddingEscapes([routeEntry objectForKey:@"resourcePath"], object, addEscapes);
-        return path;
+        RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:[routeEntry objectForKey:@"resourcePath"]];
+        NSString *interpolatedPath = [matcher pathFromObject:object addingEscapes:addEscapes];
+
+        return interpolatedPath;        
     }
 
     [NSException raise:@"Unable to find a routable path for object" format:@"Unable to find a routable path for object of type '%@' for HTTP Method '%@'", className, methodName];

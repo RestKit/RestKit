@@ -90,7 +90,7 @@ NSString *RKMakePathWithObject(NSString *path, id object) DEPRECATED_ATTRIBUTE;
  @param addEscapes Conditionally add percent escapes to the interpolated property values.
  @return A new path string, replacing the pattern's parameters with the object's actual property values.
  */
-NSString *RKMakePathWithObjectAddingEscapes(NSString *pattern, id object, BOOL addEscapes);
+NSString *RKMakePathWithObjectAddingEscapes(NSString *pattern, id object, BOOL addEscapes) DEPRECATED_ATTRIBUTE;
 
 /**
  Returns a resource path with a dictionary of query parameters URL encoded and appended
