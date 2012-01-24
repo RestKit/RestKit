@@ -68,8 +68,8 @@
 @synthesize configurationDelegate = _configurationDelegate;
 @synthesize onDidLoadResponse;
 @synthesize onDidFailLoadWithError;
-@synthesize clientAdditionalRootCertificates = _clientAdditionalRootCertificates;
-@synthesize clientDisableCertificateValidation = _clientDisableCertificateValidation;
+@synthesize additionalRootCertificates = _additionalRootCertificates;
+@synthesize disableCertificateValidation = _disableCertificateValidation;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;

@@ -213,8 +213,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;
     
-    request.clientAdditionalRootCertificates = self.additionalRootCertificates;
-    request.clientDisableCertificateValidation = self.disableCertificateValidation;
+    request.additionalRootCertificates = self.additionalRootCertificates;
+    request.disableCertificateValidation = self.disableCertificateValidation;
     
     // If a timeoutInterval was set on the client, we'll pass it on to the request.
     // Otherwise, we'll let the request default to its own timeout interval.

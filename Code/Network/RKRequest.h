@@ -129,8 +129,8 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
     RKReachabilityObserver *_reachabilityObserver;
     NSTimer *_timeoutTimer;
     
-    NSSet *_clientAdditionalRootCertificates;
-    BOOL _clientDisableCertificateValidation;
+    NSSet *_additionalRootCertificates;
+    BOOL _disableCertificateValidation;
     
     #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
@@ -359,12 +359,20 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  */
 @property (nonatomic, assign) NSTimeInterval cacheTimeoutInterval;
 
+/////////////////////////////////////////////////////////////////////////
+/// @name SSL Validation
+/////////////////////////////////////////////////////////////////////////
 
 /**
- *
+ A set of additional certificates to be used in evaluating server
+ SSL certificates.
  */
-@property(nonatomic, retain) NSSet *clientAdditionalRootCertificates;
-@property(nonatomic, assign) BOOL clientDisableCertificateValidation;
+@property(nonatomic, retain) NSSet *additionalRootCertificates;
+
+/**
+ When YES, SSL certificates will not be validated.
+ */
+@property(nonatomic, assign) BOOL disableCertificateValidation;
 
 
 ////////////////////////////////////////////////////////////////////////////////

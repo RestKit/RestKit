@@ -101,10 +101,10 @@ extern NSString* cacheURLKey;
 - (BOOL)isServerTrusted:(SecTrustRef)trust {
     BOOL proceed = NO;
     
-    if (_request.clientDisableCertificateValidation) {
+    if (_request.disableCertificateValidation) {
         proceed = YES;
-    } else if ([_request.clientAdditionalRootCertificates count] > 0 ) {
-        CFArrayRef rootCerts = (CFArrayRef)[_request.clientAdditionalRootCertificates allObjects];
+    } else if ([_request.additionalRootCertificates count] > 0 ) {
+        CFArrayRef rootCerts = (CFArrayRef)[_request.additionalRootCertificates allObjects];
         SecTrustResultType result;
         OSStatus returnCode;
         
@@ -159,7 +159,7 @@ extern NSString* cacheURLKey;
 	if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		// server is using an SSL certificate that the OS can't validate
 		// see whether the client settings allow validation here
-		if (_request.clientDisableCertificateValidation || [_request.clientAdditionalRootCertificates count] > 0) {
+		if (_request.disableCertificateValidation || [_request.additionalRootCertificates count] > 0) {
 			return YES;
 		} else { 
 			return NO;
