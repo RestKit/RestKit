@@ -19,7 +19,7 @@
 //
 
 #import "RKSpecEnvironment.h"
-#import "RKXMLParserLibXML.h"
+#import "RKXMLParserXMLReader.h"
 
 // See Specs/Fixtures/XML/tab_data.xml
 @interface RKSpecTabData : NSObject {
@@ -39,37 +39,39 @@
 
 @end
 
-@interface RKXMLParserLibXMLSpec : RKSpec {
+@interface RKXMLParserSpec : RKSpec {
     
 }
 
 @end
 
-@implementation RKXMLParserLibXMLSpec
+@implementation RKXMLParserSpec
 
 - (void)testShouldMapASingleXMLObjectPayloadToADictionary {
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<hash>\n  <float type=\"float\">2.4</float>\n  <string>string</string>\n  <number type=\"integer\">1</number>\n</hash>\n";
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-    id result = [parser parseXML:data];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
+    id result = [parser objectFromString:data error:&error];
     assertThat(NSStringFromClass([result class]), is(equalTo(@"__NSCFDictionary")));
-    assertThatFloat([[result valueForKeyPath:@"hash.float"] floatValue], is(equalToFloat(2.4f)));
-    assertThatInt([[result valueForKeyPath:@"hash.number"] intValue], is(equalToInt(1)));
+    assertThatFloat([[[result valueForKeyPath:@"hash.float"] valueForKey:@"text"] floatValue], is(equalToFloat(2.4f)));
+    assertThatInt([[[result valueForKeyPath:@"hash.number"] valueForKey:@"text"] intValue], is(equalToInt(1)));
     assertThat([result valueForKeyPath:@"hash.string"], is(equalTo(@"string")));
 }
 
 - (void)testShouldMapMultipleObjectsToAnArray {
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records type=\"array\">\n  <record>\n    <float type=\"float\">2.4</float>\n    <string>string</string>\n    <number type=\"integer\">1</number>\n  </record>\n  <record>\n    <another-number type=\"integer\">1</another-number>\n  </record>\n</records>\n";
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-    id result = [parser parseXML:data];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
+    id result = [parser objectFromString:data error:&error];
     NSArray* records = (NSArray*)[result valueForKeyPath:@"records.record"];
     assertThatUnsignedInteger([records count], is(equalToInt(2)));
     id result1 = [records objectAtIndex:0];
     assertThat(NSStringFromClass([result1 class]), is(equalTo(@"__NSCFDictionary")));
-    assertThatFloat([[result1 valueForKeyPath:@"float"] floatValue], is(equalToFloat(2.4f)));
-    assertThatInt([[result1 valueForKeyPath:@"number"] intValue], is(equalToInt(1)));
+    assertThatFloat([[[result1 valueForKeyPath:@"float"] valueForKey:@"text"] floatValue], is(equalToFloat(2.4f)));
+    assertThatInt([[[result1 valueForKeyPath:@"number"] valueForKey:@"text"] intValue], is(equalToInt(1)));
     assertThat([result1 valueForKeyPath:@"string"], is(equalTo(@"string")));
     id result2 = [records objectAtIndex:1];
-    assertThatInt([[result2 valueForKeyPath:@"another-number"] intValue], is(equalToInt(1)));
+    assertThatInt([[[result2 valueForKeyPath:@"another-number"] valueForKey:@"text"]intValue], is(equalToInt(1)));
 }
 
 - (void)testShouldMapXML {
@@ -88,8 +90,9 @@
 
 - (void)testShouldParseXMLWithAttributes {
     NSString* XML = RKSpecReadFixture(@"container_attributes.xml");
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-    NSDictionary* result = [parser parseXML:XML];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
+    NSDictionary *result = [parser objectFromString:XML error:&error];
     assertThat(result, is(instanceOf([NSDictionary class])));
     NSArray* elements = [[result objectForKey:@"elements"] objectForKey:@"element"];
     assertThat(elements, isNot(nilValue()));
@@ -105,8 +108,9 @@
 
 - (void)testShouldParseXMLWithAttributesInTextNodes {
     NSString* XML = RKSpecReadFixture(@"attributes_without_text_content.xml");
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-    NSDictionary* result = [parser parseXML:XML];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
+    NSDictionary *result = [parser objectFromString:XML error:&error];
     NSDictionary* exchangeRate = [result objectForKey:@"exchange_rate"];
     assertThat(exchangeRate, is(notNilValue()));
     assertThat([exchangeRate objectForKey:@"type"], is(equalTo(@"XML_RATE_TYPE_EBNK_MIDDLE")));
@@ -134,10 +138,11 @@
 
 - (void)testShouldNotCrashWhileParsingOrdersXML {
     NSString *XML = RKSpecReadFixture(@"orders.xml");
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
     NSException *exception = nil;
     @try {
-        [parser parseXML:XML];
+        [parser objectFromString:XML error:&error];;
     }
     @catch (NSException *e) {
         exception = e;
@@ -149,8 +154,9 @@
 
 - (void)testShouldParseXMLWithCDATA {
     NSString *XML = RKSpecReadFixture(@"zend.xml");
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-    NSDictionary *output = [parser parseXML:XML];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
+    NSDictionary *output = [parser objectFromString:XML error:&error];
     NSArray *map = [output valueForKeyPath:@"Api.getList.map"];
     assertThat(map, isNot(nilValue()));
     assertThat(map, hasCountOf(4));
@@ -161,19 +167,22 @@
 
 - (void)testShouldConsiderASingleCloseTagAnEmptyContainer {
     NSString *XML = @"<users />";
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-    NSDictionary *output = [parser parseXML:XML];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
+    NSDictionary *output = [parser objectFromString:XML error:&error];
     NSDictionary *users = [output valueForKey:@"users"];
+    NSLog(@"%@", output);
     assertThat(users, is(notNilValue()));
     assertThatBool([users isKindOfClass:[NSDictionary class]], is(equalToBool(YES)));
 }
 
 - (void)testShouldParseRelativelyComplexXML {
     NSString *XML = RKSpecReadFixture(@"national_weather_service.xml");
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
     NSException *exception = nil;
     @try {
-        [parser parseXML:XML];
+        [parser objectFromString:XML error:&error];
     }
     @catch (NSException *e) {
         exception = e;
@@ -184,9 +193,14 @@
 }
 
 - (void)testShouldParseXMLElementsAndAttributesProperly {
+    
     NSString* XML = RKSpecReadFixture(@"channels.xml");
-    RKXMLParserLibXML* parser = [[RKXMLParserLibXML new] autorelease];
-    NSDictionary* result = [parser parseXML:XML];
+    NSError *error = [[NSError alloc] init];
+    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];    
+    NSDictionary *result = [parser objectFromString:XML error:&error];
+    
+    NSLog(@"result : %@", result);
+    
     NSDictionary *channel = [[result objectForKey:@"Channels"] objectForKey:@"Channel"];
     assertThat(channel, is(notNilValue()));
     
@@ -195,10 +209,12 @@
     assertThat([channel objectForKey:@"Title"], is(equalTo(@"MySpecialTitle")));
     assertThat([channel objectForKey:@"Position"], is(equalTo(@"2234")));
 
+    NSLog(@"channel: %@", channel);
+    
     // Check to see if the Channel elements are properly parsed
     assertThat([channel objectForKey:@"Languages"], is(equalTo(@"it")));
     
-    assertThat([channel objectForKey:@"Stream"], is(equalTo(@"MySpecialTitle")));
+    assertThat([[channel objectForKey:@"Stream"] objectForKey:@"text"], is(equalTo(@"MySpecialTitle")));
     assertThat([[channel objectForKey:@"Stream"] objectForKey:@"Identifier"], is(equalTo(@"MySpecialTitle")));
     assertThat([[channel objectForKey:@"Stream"] objectForKey:@"Index"], is(equalTo(@"0")));
     
@@ -213,7 +229,7 @@
     assertThat([[[channel objectForKey:@"Program"] objectAtIndex:1] objectForKey:@"Title"], is(equalTo(@"Program Title")));
 
     assertThat([[channel objectForKey:@"Image"] objectAtIndex:0], is(equalTo(@"http://domain.com/Images/MySpecialTitle.png")));
-    assertThat([[channel objectForKey:@"Image"] objectAtIndex:1], is(equalTo(@"http://domain.com/Images/65x35/2234.png")));
+    assertThat([[[channel objectForKey:@"Image"] objectAtIndex:1] objectForKey:@"text"], is(equalTo(@"http://domain.com/Images/65x35/2234.png")));
     assertThat([[[channel objectForKey:@"Image"] objectAtIndex:1] objectForKey:@"Width"], is(equalTo(@"65")));
     assertThat([[[channel objectForKey:@"Image"] objectAtIndex:1] objectForKey:@"Height"], is(equalTo(@"35")));
 }

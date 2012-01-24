@@ -21,7 +21,7 @@
 #import "RKSpecEnvironment.h"
 #import "RKParserRegistry.h"
 #import "RKJSONParserJSONKit.h"
-#import "RKXMLParserLibXML.h"
+#import "RKXMLParserXMLReader.h"
 
 @interface RKParserRegistrySpec : RKSpec {
 }
@@ -50,7 +50,7 @@
     id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
     parser = [registry parserForMIMEType:RKMIMETypeXML];
-    assertThat(parser, is(instanceOf([RKXMLParserLibXML class])));
+    assertThat(parser, is(instanceOf([RKXMLParserXMLReader class])));
 }
 
 @end

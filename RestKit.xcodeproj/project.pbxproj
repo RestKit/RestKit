@@ -125,8 +125,6 @@
 		25160E39145650490060A5C5 /* NSURL+RestKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DAD145650490060A5C5 /* NSURL+RestKit.m */; };
 		25160E3A145650490060A5C5 /* RKJSONParserJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DB0145650490060A5C5 /* RKJSONParserJSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E3B145650490060A5C5 /* RKJSONParserJSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DB1145650490060A5C5 /* RKJSONParserJSONKit.m */; };
-		25160E42145650490060A5C5 /* RKXMLParserLibXML.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DB9145650490060A5C5 /* RKXMLParserLibXML.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160E43145650490060A5C5 /* RKXMLParserLibXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DBA145650490060A5C5 /* RKXMLParserLibXML.m */; };
 		25160E44145650490060A5C5 /* RestKit-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 25160DBB145650490060A5C5 /* RestKit-Prefix.pch */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E45145650490060A5C5 /* RKAlert.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DBC145650490060A5C5 /* RKAlert.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160E46145650490060A5C5 /* RKAlert.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DBD145650490060A5C5 /* RKAlert.m */; };
@@ -304,7 +302,6 @@
 		25160F9A1456576C0060A5C5 /* RKSearchEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DC8145650490060A5C5 /* RKSearchEngine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F9B1456576C0060A5C5 /* RKSearchEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DC9145650490060A5C5 /* RKSearchEngine.m */; };
 		25160F9C1456576C0060A5C5 /* Support.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DCA145650490060A5C5 /* Support.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160F9D145657720060A5C5 /* RKXMLParserLibXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DBA145650490060A5C5 /* RKXMLParserLibXML.m */; };
 		25160F9E1456577F0060A5C5 /* RKJSONParserJSONKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160DB0145650490060A5C5 /* RKJSONParserJSONKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F9F1456577F0060A5C5 /* RKJSONParserJSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160DB1145650490060A5C5 /* RKJSONParserJSONKit.m */; };
 		25160FA1145658BC0060A5C5 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160FA0145658BC0060A5C5 /* libxml2.dylib */; };
@@ -531,6 +528,14 @@
 		25B408271491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408281491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
 		25B408291491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
+		49A66B0C14CEFB0400A6F062 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B0914CEFB0400A6F062 /* XMLReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B0914CEFB0400A6F062 /* XMLReader.h */; };
+		49A66B0E14CEFB0400A6F062 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B0A14CEFB0400A6F062 /* XMLReader.m */; };
+		49A66B0F14CEFB0400A6F062 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B0A14CEFB0400A6F062 /* XMLReader.m */; };
+		49A66B1214CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B1014CF03CA00A6F062 /* RKXMLParserXMLReader.h */; };
+		49A66B1314CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B1014CF03CA00A6F062 /* RKXMLParserXMLReader.h */; };
+		49A66B1414CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B1114CF03CA00A6F062 /* RKXMLParserXMLReader.m */; };
+		49A66B1514CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B1114CF03CA00A6F062 /* RKXMLParserXMLReader.m */; };
 		49D2759D14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49D2759914C9EF1E0090845D /* ISO8601DateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49D2759E14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49D2759914C9EF1E0090845D /* ISO8601DateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49D2759F14C9EF1E0090845D /* ISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D2759A14C9EF1E0090845D /* ISO8601DateFormatter.m */; };
@@ -699,8 +704,6 @@
 		25160DB5145650490060A5C5 /* RKJSONParserSBJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKJSONParserSBJSON.m; sourceTree = "<group>"; };
 		25160DB6145650490060A5C5 /* RKJSONParserYAJL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKJSONParserYAJL.h; sourceTree = "<group>"; };
 		25160DB7145650490060A5C5 /* RKJSONParserYAJL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKJSONParserYAJL.m; sourceTree = "<group>"; };
-		25160DB9145650490060A5C5 /* RKXMLParserLibXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKXMLParserLibXML.h; sourceTree = "<group>"; };
-		25160DBA145650490060A5C5 /* RKXMLParserLibXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKXMLParserLibXML.m; sourceTree = "<group>"; };
 		25160DBB145650490060A5C5 /* RestKit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RestKit-Prefix.pch"; sourceTree = "<group>"; };
 		25160DBC145650490060A5C5 /* RKAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKAlert.h; sourceTree = "<group>"; };
 		25160DBD145650490060A5C5 /* RKAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKAlert.m; sourceTree = "<group>"; };
@@ -906,6 +909,11 @@
 		25A34244147D8AAA0009758D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		25B408241491CDDB00F21111 /* RKDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDirectory.h; sourceTree = "<group>"; };
 		25B408251491CDDB00F21111 /* RKDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDirectory.m; sourceTree = "<group>"; };
+		49A66B0814CEFB0400A6F062 /* LICENCE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENCE; path = XMLReader/LICENCE; sourceTree = "<group>"; };
+		49A66B0914CEFB0400A6F062 /* XMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMLReader.h; path = XMLReader/XMLReader.h; sourceTree = "<group>"; };
+		49A66B0A14CEFB0400A6F062 /* XMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMLReader.m; path = XMLReader/XMLReader.m; sourceTree = "<group>"; };
+		49A66B1014CF03CA00A6F062 /* RKXMLParserXMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKXMLParserXMLReader.h; sourceTree = "<group>"; };
+		49A66B1114CF03CA00A6F062 /* RKXMLParserXMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKXMLParserXMLReader.m; sourceTree = "<group>"; };
 		49D2759914C9EF1E0090845D /* ISO8601DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISO8601DateFormatter.h; path = iso8601parser/ISO8601DateFormatter.h; sourceTree = "<group>"; };
 		49D2759A14C9EF1E0090845D /* ISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ISO8601DateFormatter.m; path = iso8601parser/ISO8601DateFormatter.m; sourceTree = "<group>"; };
 		49D2759B14C9EF1E0090845D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE.txt; path = iso8601parser/LICENSE.txt; sourceTree = "<group>"; };
@@ -1217,8 +1225,8 @@
 		25160DB8145650490060A5C5 /* XML */ = {
 			isa = PBXGroup;
 			children = (
-				25160DB9145650490060A5C5 /* RKXMLParserLibXML.h */,
-				25160DBA145650490060A5C5 /* RKXMLParserLibXML.m */,
+				49A66B1014CF03CA00A6F062 /* RKXMLParserXMLReader.h */,
+				49A66B1114CF03CA00A6F062 /* RKXMLParserXMLReader.m */,
 			);
 			path = XML;
 			sourceTree = "<group>";
@@ -1236,6 +1244,7 @@
 		25160E8D145652E40060A5C5 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				49A66B0614CEFAD800A6F062 /* XMLReader */,
 				49D2759714C9E83E0090845D /* iso8601parser */,
 				25160E8E1456532C0060A5C5 /* cocoa-oauth */,
 				25160E941456532C0060A5C5 /* FileMD5Hash */,
@@ -1629,6 +1638,16 @@
 			path = OCMock;
 			sourceTree = "<group>";
 		};
+		49A66B0614CEFAD800A6F062 /* XMLReader */ = {
+			isa = PBXGroup;
+			children = (
+				49A66B0814CEFB0400A6F062 /* LICENCE */,
+				49A66B0914CEFB0400A6F062 /* XMLReader.h */,
+				49A66B0A14CEFB0400A6F062 /* XMLReader.m */,
+			);
+			name = XMLReader;
+			sourceTree = "<group>";
+		};
 		49D2759714C9E83E0090845D /* iso8601parser */ = {
 			isa = PBXGroup;
 			children = (
@@ -1705,7 +1724,6 @@
 				25160E36145650490060A5C5 /* NSString+RestKit.h in Headers */,
 				25160E38145650490060A5C5 /* NSURL+RestKit.h in Headers */,
 				25160E3A145650490060A5C5 /* RKJSONParserJSONKit.h in Headers */,
-				25160E42145650490060A5C5 /* RKXMLParserLibXML.h in Headers */,
 				25160E44145650490060A5C5 /* RestKit-Prefix.pch in Headers */,
 				25160E45145650490060A5C5 /* RKAlert.h in Headers */,
 				25160E47145650490060A5C5 /* RKDotNetDateFormatter.h in Headers */,
@@ -1733,9 +1751,11 @@
 				2513504E14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */,
 				250DF22A14C5190E0001DEFA /* RKOrderedDictionary.h in Headers */,
 				49D2759D14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */,
+				49A66B0C14CEFB0400A6F062 /* XMLReader.h in Headers */,
 				49D275AA14C9EF4E0090845D /* ISO8601DateFormatter.m in Headers */,
 				250DF25F14C680F90001DEFA /* RKObjectMappingProvider+Contexts.h in Headers */,
 				49D275AD14C9F3020090845D /* RKISO8601DateFormatter.h in Headers */,
+				49A66B1214CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1829,6 +1849,8 @@
 				49D2759E14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */,
 				250DF26014C680F90001DEFA /* RKObjectMappingProvider+Contexts.h in Headers */,
 				49D275AE14C9F3020090845D /* RKISO8601DateFormatter.h in Headers */,
+				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
+				49A66B1314CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2150,7 +2172,6 @@
 				25160E37145650490060A5C5 /* NSString+RestKit.m in Sources */,
 				25160E39145650490060A5C5 /* NSURL+RestKit.m in Sources */,
 				25160E3B145650490060A5C5 /* RKJSONParserJSONKit.m in Sources */,
-				25160E43145650490060A5C5 /* RKXMLParserLibXML.m in Sources */,
 				25160E46145650490060A5C5 /* RKAlert.m in Sources */,
 				25160E48145650490060A5C5 /* RKDotNetDateFormatter.m in Sources */,
 				25160E4B145650490060A5C5 /* RKLog.m in Sources */,
@@ -2169,6 +2190,8 @@
 				250DF22C14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */,
 				49D2759F14C9EF1E0090845D /* ISO8601DateFormatter.m in Sources */,
 				49D275AF14C9F3020090845D /* RKISO8601DateFormatter.m in Sources */,
+				49A66B0E14CEFB0400A6F062 /* XMLReader.m in Sources */,
+				49A66B1414CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2307,13 +2330,14 @@
 				25160F961456576C0060A5C5 /* RKMIMETypes.m in Sources */,
 				25160F991456576C0060A5C5 /* RKPathMatcher.m in Sources */,
 				25160F9B1456576C0060A5C5 /* RKSearchEngine.m in Sources */,
-				25160F9D145657720060A5C5 /* RKXMLParserLibXML.m in Sources */,
 				25160F9F1456577F0060A5C5 /* RKJSONParserJSONKit.m in Sources */,
 				25B408291491CDDC00F21111 /* RKDirectory.m in Sources */,
 				254A62BC14AD544200939BEE /* RKObjectPaginator.m in Sources */,
 				250DF22D14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */,
 				49D275A114C9EF1E0090845D /* ISO8601DateFormatter.m in Sources */,
 				49D275B014C9F3020090845D /* RKISO8601DateFormatter.m in Sources */,
+				49A66B0F14CEFB0400A6F062 /* XMLReader.m in Sources */,
+				49A66B1514CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
