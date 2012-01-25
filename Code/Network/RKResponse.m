@@ -199,9 +199,9 @@ extern NSString* cacheURLKey;
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
-	_failureError = [error retain];
-	[_request didFailLoadWithError:_failureError];
+    _failureError = [error retain];
     [_request invalidateTimeoutTimer];
+    [_request didFailLoadWithError:_failureError];
 }
 
 - (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
