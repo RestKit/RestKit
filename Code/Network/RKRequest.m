@@ -140,25 +140,25 @@
 
 - (void)dealloc {    
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-  	self.delegate = nil;
-  	[_connection cancel];
-  	[_connection release];
-  	_connection = nil;
-  	[_userData release];
-  	_userData = nil;
-  	[_URL release];
-  	_URL = nil;
-  	[_URLRequest release];
-  	_URLRequest = nil;
-  	[_params release];
-  	_params = nil;    
-  	[_additionalHTTPHeaders release];
-  	_additionalHTTPHeaders = nil;
-  	[_username release];
-  	_username = nil;
-  	[_password release];
-  	_password = nil;
+
+    self.delegate = nil;
+    [_connection cancel];
+    [_connection release];
+    _connection = nil;
+    [_userData release];
+    _userData = nil;
+    [_URL release];
+    _URL = nil;
+    [_URLRequest release];
+    _URLRequest = nil;
+    [_params release];
+    _params = nil;
+    [_additionalHTTPHeaders release];
+    _additionalHTTPHeaders = nil;
+    [_username release];
+    _username = nil;
+    [_password release];
+    _password = nil;
     [_cache release];
     _cache = nil;    
     [_OAuth1ConsumerKey release];
