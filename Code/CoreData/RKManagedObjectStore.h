@@ -19,7 +19,8 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKManagedObjectCache.h"
+#import "RKManagedObjectMapping.h"
+#import "RKManagedObjectMappingCache.h"
 
 @class RKManagedObjectStore;
 
@@ -51,7 +52,6 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 	NSString* _pathToStoreFile;
     NSManagedObjectModel* _managedObjectModel;
 	NSPersistentStoreCoordinator* _persistentStoreCoordinator;
-	NSObject<RKManagedObjectCache>* _managedObjectCache;
 }
 
 // The delegate for this object store
@@ -67,18 +67,17 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 @property (nonatomic, readonly) NSManagedObjectModel* managedObjectModel;
 @property (nonatomic, readonly) NSPersistentStoreCoordinator* persistentStoreCoordinator;
 
-/**
- * Managed object cache provides support for automatic removal of objects pruned
- * from a server side load. Also used to provide offline object loading
- */
-@property (nonatomic, retain) NSObject<RKManagedObjectCache>* managedObjectCache;
-
 /*
  * This returns an appropriate managed object context for this object store.
  * Because of the intrecacies of how Core Data works across threads it returns
  * a different NSManagedObjectContext for each thread.
  */
 @property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
+
+/**
+ 
+ */
+@property (nonatomic, retain) NSObject<RKManagedObjectMappingCache> *cacheStrategy;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified
@@ -130,20 +129,5 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  *	an array of NSManagedObjectIDs
  */
 - (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
-
-/**
- * Retrieves a model object from the object store given a Core Data entity and
- * the primary key attribute and value for the desired object. Internally, this method
- * constructs a thread-local cache of managed object instances to avoid repeated fetches from the store
- */
-- (NSManagedObject*)findOrCreateInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue;
-
-/**
- * Returns an array of objects that the 'live' at the specified resource path. Usage of this
- * method requires that you have provided an implementation of the managed object cache
- *
- * See managedObjectCache above
- */
-- (NSArray*)objectsForResourcePath:(NSString*)resourcePath;
 
 @end

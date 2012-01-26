@@ -137,14 +137,17 @@
     }
     
     // If we have found the primary key attribute & value, try to find an existing instance to update
-    if (primaryKeyAttribute && primaryKeyValue) {                
-        object = [objectStore findOrCreateInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
-        NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
-    } else {
+    if (primaryKeyAttribute && primaryKeyValue) {
+        object = [objectStore.cacheStrategy findInstanceOfEntity:entity
+                                                     withMapping:self
+                                              andPrimaryKeyValue:primaryKeyValue
+                                          inManagedObjectContext:objectStore.managedObjectContext];
+    }
+    
+    if (object == nil) {
         object = [[[NSManagedObject alloc] initWithEntity:entity
                            insertIntoManagedObjectContext:objectStore.managedObjectContext] autorelease];
     }
-    
     return object;
 }
 
