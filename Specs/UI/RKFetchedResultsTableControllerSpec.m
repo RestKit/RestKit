@@ -1392,4 +1392,52 @@
     assertThat(tableController.stateOverlayImageView.image, is(notNilValue()));    
 }
 
+- (void)itShouldLoadFromNetworkUpdatingFromEmptyToFullWithSections {
+    [self bootstrapEmptyStoreAndCache];
+    [self stubObjectManagerToOnline];
+    UITableView* tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController* tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView viewController:viewController];
+    tableController.resourcePath = @"/JSON/humans/all.json";
+    tableController.sectionNameKeyPath = @"name";
+    tableController.autoRefreshFromNetwork = YES;
+    tableController.autoRefreshRate = 360;
+    tableController.predicate = nil;
+    tableController.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+    [tableController setEmptyItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
+        tableItem.text = @"Empty";
+        tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
+            [cellMapping addDefaultMappings];
+        }];
+    }]];
+    
+    RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping mappingForClass:[UITableViewCell class]];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
+    [mappings setCellMapping:cellMapping forClass:[RKHuman class]];
+    tableController.cellMappings = mappings;
+    
+    [tableController loadTable];
+    
+    assertThatInt([tableController rowCount], is(equalToInt(1)));
+    UITableViewCell* cell = [tableController tableView:tableController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    assertThat(cell.textLabel.text, is(equalTo(@"Empty")));
+    
+    NSException *exception = nil;
+    @try {
+        RKSpecSpinRunLoopWithDuration(1);  // Put your breakpoint here
+    }
+    @catch (NSException *e) {
+        exception = e;  // this doesn't seem to catch the exception, someone else is catching it first?
+    }
+    @finally {
+        assertThat(exception, is(nilValue()));
+    }
+        
+    assertThatInt([tableController rowCount], is(equalToInt(2)));
+    cell = [tableController tableView:tableController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    assertThat(cell.textLabel.text, is(equalTo(@"Blake Watters")));
+}
+
 @end
