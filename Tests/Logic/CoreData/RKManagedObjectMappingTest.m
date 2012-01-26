@@ -148,13 +148,19 @@
     RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
     [provider setMapping:mapping forKeyPath:@"users"];
 
-    id mockObjectStore = [OCMockObject partialMockForObject:objectStore];
-    [[[mockObjectStore expect] andForwardToRealObject] findOrCreateInstanceOfEntity:OCMOCK_ANY withPrimaryKeyAttribute:@"name" andValue:@"blake"];
-    [[[mockObjectStore expect] andForwardToRealObject] findOrCreateInstanceOfEntity:mapping.entity withPrimaryKeyAttribute:@"name" andValue:@"rachit"];
+    id mockCacheStrategy = [OCMockObject partialMockForObject:objectStore.cacheStrategy];
+    [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:OCMOCK_ANY
+                                                                  withMapping:mapping
+                                                           andPrimaryKeyValue:@"blake"
+                                                       inManagedObjectContext:objectStore.context];
+    [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:mapping.entity
+                                                                  withMapping:mapping
+                                                           andPrimaryKeyValue:@"rachit"
+                                                       inManagedObjectContext:objectStore.context];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];
-    [mockObjectStore verify];
+    [mockCacheStrategy verify];
 }
 
 - (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue {

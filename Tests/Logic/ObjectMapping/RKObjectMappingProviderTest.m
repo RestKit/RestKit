@@ -190,9 +190,10 @@
 - (void)testSettingMappingForPathMatcherCreatesDictionaryWithMappingAsValue {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    RKObjectMappingProviderContextEntry *entry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
     NSDictionary *contextValue = [mappingProvider valueForContext:1];
-    assertThat([contextValue allValues], contains(mapping, nil));
+    assertThat([contextValue allValues], contains(entry, nil));
 }
 
 - (void)testRetrievalOfMappingForPathMatcher {
@@ -255,6 +256,28 @@
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.json" context:1], is(equalTo(mapping_2)));
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.xml" context:1], is(equalTo(mapping_3)));
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345/comments/3" context:1], is(equalTo(mapping_4)));
+}
+
+- (void)testRetrievalOfEntryForPathMatcher {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    RKObjectMappingProviderContextEntry *entry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
+    [mappingProvider setEntry:entry forPattern:@"/articles/:id" context:1];
+
+    RKObjectMappingProviderContextEntry *matchingEntry = [mappingProvider entryForPatternMatchingString:@"/articles/12345"
+                                                                                                context:1];
+    assertThat(matchingEntry, is(equalTo(entry)));
+}
+
+- (void)testRetrievalOfEntryForPathMatcherIncludingQueryParameters {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    RKObjectMappingProviderContextEntry *entry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
+    [mappingProvider setEntry:entry forPattern:@"/articles/:id" context:1];
+
+    RKObjectMappingProviderContextEntry *matchingEntry = [mappingProvider entryForPatternMatchingString:@"/articles/12345?page=5&this=that"
+                                                                                                context:1];
+    assertThat(matchingEntry, is(equalTo(entry)));
 }
 
 @end

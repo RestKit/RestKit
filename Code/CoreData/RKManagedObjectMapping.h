@@ -20,7 +20,9 @@
 
 #import <CoreData/CoreData.h>
 #import "RKObjectMapping.h"
-#import "RKManagedObjectStore.h"
+//#import "RKManagedObjectStore.h"
+
+@class RKManagedObjectStore;
 
 /**
  An RKManagedObjectMapping defines an object mapping with a Core Data destination

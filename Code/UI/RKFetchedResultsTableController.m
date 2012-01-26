@@ -24,6 +24,7 @@
 #import "RKObjectMappingOperation.h"
 #import "RKManagedObjectMapping.h"
 #import "RKLog.h"
+#import "RKObjectMappingProvider+CoreData.h"
 
 // Define logging component
 #undef RKLogComponent
@@ -212,10 +213,7 @@
 - (void)loadTable {
     NSFetchRequest *fetchRequest = nil;
     if (_resourcePath) {
-        RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
-        NSAssert(store.managedObjectCache != nil, @"Attempted to load RKFetchedResultsTableController with nil RKManageObjectCache");
-
-        fetchRequest = [store.managedObjectCache fetchRequestForResourcePath:_resourcePath];
+        fetchRequest = [self.objectManager.mappingProvider fetchRequestForResourcePath:self.resourcePath];
     } else {
         fetchRequest = _fetchRequest;
     }
