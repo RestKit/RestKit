@@ -1074,6 +1074,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 - (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture {
     if (gesture.state == UIGestureRecognizerStateRecognized) {
+        if ([self pullToRefreshDataSourceIsLoading:gesture])
+            return;
         RKLogDebug(@"%@: pull to refresh triggered from gesture: %@", self, gesture);
         if (self.objectLoader) {
             [self.objectLoader reset];
