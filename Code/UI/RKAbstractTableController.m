@@ -25,6 +25,7 @@
 #import "../Support/RKError.h"
 #import "../Network/RKReachabilityObserver.h"
 #import "UIView+FindFirstResponder.h"
+#import "RKRefreshGestureRecognizer.h"
 
 // Define logging component
 #undef RKLogComponent
@@ -184,8 +185,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [_tableOverlayView removeFromSuperview];
     [_tableOverlayView release];
     _tableOverlayView = nil;
-    [_pullToRefreshHeaderView removeFromSuperview];
-    _pullToRefreshHeaderView = nil;
 
     // Remove observers
     [self removeObserver:self forKeyPath:@"loading"];
@@ -937,7 +936,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
             [self resetOverlayView];
         }
 
-        [(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.tableView];
+        [self resetPullToRefreshRecognizer];
     }
     
     // We don't want any image overlays applied until loading is finished
@@ -1048,71 +1047,62 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 #pragma mark - Pull to Refresh
 
-- (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled {
-    if (pullToRefreshEnabled) {
-        if (! _pullToRefreshHeaderView) {
-            // TODO: We need to expose a mechanism for styling this long term
-            // NOTE: Currently requires you to add blueArrow.png to your app's main bundle
-            CGRect frame = CGRectMake(0.0f, 0.0f - self.tableView.bounds.size.height, self.tableView.frame.size.width, self.tableView.bounds.size.height);
-            EGORefreshTableHeaderView* view = [[EGORefreshTableHeaderView alloc] initWithFrame:frame arrowImageName:@"blueArrow.png" textColor:[UIColor whiteColor]];
-            view.backgroundColor = [UIColor clearColor];
-            view.statusLabel.shadowColor = nil;
-            view.statusLabel.shadowOffset = CGSizeMake(0, -1);
-            view.lastUpdatedLabel.shadowColor = nil;
-            view.lastUpdatedLabel.shadowOffset = CGSizeMake(0, -1);
-            view.delegate = self;
-            [view refreshLastUpdatedDate];
-            [self.tableView addSubview:view];
-            _pullToRefreshHeaderView = (UIView *) view;
-            [view release];
-        }
-    } else {
-        if (_pullToRefreshHeaderView) {
-            [_pullToRefreshHeaderView removeFromSuperview];
-            _pullToRefreshHeaderView = nil;
+- (RKRefreshGestureRecognizer *)pullToRefreshGestureRecognizer {
+    RKRefreshGestureRecognizer *refreshRecognizer = nil;
+    for (RKRefreshGestureRecognizer *recognizer in self.tableView.gestureRecognizers) {
+        if ([recognizer isKindOfClass:[RKRefreshGestureRecognizer class]]) {
+            refreshRecognizer = recognizer;
+            break;
         }
     }
-    
+    return refreshRecognizer;
+}
+
+- (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled {
+    RKRefreshGestureRecognizer *recognizer = nil;
+    if (pullToRefreshEnabled) {
+        recognizer = [[[RKRefreshGestureRecognizer alloc] initWithTarget:self action:@selector(pullToRefreshStateChanged:)] autorelease];
+        [self.tableView addGestureRecognizer:recognizer];
+    }
+    else {
+        recognizer = [self pullToRefreshGestureRecognizer];
+        if (recognizer)
+            [self.tableView removeGestureRecognizer:recognizer];
+    }
     _pullToRefreshEnabled = pullToRefreshEnabled;
 }
 
-#pragma mark UIScrollViewDelegate Methods
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDidEndDragging:scrollView];	
-}
-
-#pragma mark EGORefreshTableHeaderDelegate Methods
-
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view {
-    RKLogDebug(@"%@: pull to refresh triggered from refresh table header view: %@", self, view);
-    if (self.objectLoader) {
-        [self.objectLoader reset];
-        [self.objectLoader send];
-    } else {
-        // TODO: What's the right thing to do if we don't have an object loader to refresh with?
-        [self.tableView reloadData];
-        [(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.tableView];
+- (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture {
+    if (gesture.state == UIGestureRecognizerStateRecognized) {
+        if ([self pullToRefreshDataSourceIsLoading:gesture])
+            return;
+        RKLogDebug(@"%@: pull to refresh triggered from gesture: %@", self, gesture);
+        if (self.objectLoader) {
+            [self.objectLoader reset];
+            [self.objectLoader send];
+        }
     }
 }
 
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view {
+- (void)resetPullToRefreshRecognizer {
+    RKRefreshGestureRecognizer* recognizer = [self pullToRefreshGestureRecognizer];
+    if (recognizer)
+        [recognizer setRefreshState:RKRefreshIdle];
+}
+
+- (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer*)gesture {
 	// If we have already been loaded and we are loading again, a refresh is taking place...
 	return [self isLoaded] && [self isLoading] && [self isOnline];
 }
 
-- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view {
+- (NSDate*)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer*)gesture {
     NSDate* dataSourceLastUpdated = [self lastUpdatedDate];
     return dataSourceLastUpdated ? dataSourceLastUpdated : [NSDate date];
 }
 
 #pragma mark - Cell Swipe Menu Methods
 
-- (void)setupGestureRecognizers {
+- (void)setupSwipeGestureRecognizers {
     // Setup a right swipe gesture recognizer
     UISwipeGestureRecognizer* rightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRight:)];
     rightSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
@@ -1126,7 +1116,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [leftSwipeGestureRecognizer release];
 }
 
-- (void)removeGestureRecognizers {
+- (void)removeSwipeGestureRecognizers {
     for (UIGestureRecognizer* recognizer in self.tableView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
             [self.tableView removeGestureRecognizer:recognizer];
@@ -1142,10 +1132,10 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 - (void)setCellSwipeViewsEnabled:(BOOL)cellSwipeViewsEnabled {
     NSAssert(!_canEditRows, @"Cell swipe menus cannot be enabled for editable tableModels");
     if (cellSwipeViewsEnabled) {
-        [self setupGestureRecognizers];
+        [self setupSwipeGestureRecognizers];
     } else {
         [self removeSwipeView:YES];
-        [self removeGestureRecognizers];
+        [self removeSwipeGestureRecognizers];
     }
     _cellSwipeViewsEnabled = cellSwipeViewsEnabled;
 }
