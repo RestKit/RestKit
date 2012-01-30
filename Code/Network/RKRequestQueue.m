@@ -75,52 +75,60 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 + (id)newRequestQueueWithName:(NSString*)name {
-    if (RKRequestQueueInstances == nil) {
-        RKRequestQueueInstances = [NSMutableArray new];        
+    @synchronized(RKRequestQueueInstances){
+        if (RKRequestQueueInstances == nil) {
+            RKRequestQueueInstances = [NSMutableArray new];        
+        }
+        
+        if ([self requestQueueExistsWithName:name]) {
+            return nil;
+        }
+        
+        RKRequestQueue* queue = [self new];
+        queue.name = name;
+        [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
+        
+        return queue;
     }
-    
-    if ([self requestQueueExistsWithName:name]) {
-        return nil;
-    }
-    
-    RKRequestQueue* queue = [self new];
-    queue.name = name;
-    [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
-    
-    return queue;
 }
 
 + (id)requestQueueWithName:(NSString *)name {
-    if (RKRequestQueueInstances == nil) {
-        RKRequestQueueInstances = [NSMutableArray new];        
-    }
-    
-    // Find existing reference
-    for (NSValue* value in RKRequestQueueInstances) {
-        RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
-        if ([queue.name isEqualToString:name]) {
-            return queue;
+    @synchronized(RKRequestQueueInstances) {
+        if (RKRequestQueueInstances == nil) {
+            RKRequestQueueInstances = [NSMutableArray new];        
         }
-    }
-    
-    RKRequestQueue* queue = [self requestQueue];
-    queue.name = name;
-    [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
-    
-    return queue;
-}
-
-+ (BOOL)requestQueueExistsWithName:(NSString*)name {
-    if (RKRequestQueueInstances) {
+        
+        // Find existing reference
         for (NSValue* value in RKRequestQueueInstances) {
             RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
             if ([queue.name isEqualToString:name]) {
-                return YES;
+                return queue;
             }
         }
+        
+        RKRequestQueue* queue = [self requestQueue];
+        queue.name = name;
+        [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
+        
+        return queue;
     }
-    
-    return NO;
+}
+
++ (BOOL)requestQueueExistsWithName:(NSString*)name {
+    @synchronized(RKRequestQueueInstances) {
+        @synchronized(RKRequestQueueInstances) {
+            if (RKRequestQueueInstances) {
+                for (NSValue* value in RKRequestQueueInstances) {
+                    RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
+                    if ([queue.name isEqualToString:name]) {
+                        return YES;
+                    }
+                }
+            }
+            
+            return NO;
+        }
+    }
 }
             
 - (id)init {
@@ -175,7 +183,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (NSUInteger)count {
-    return [_requests count];
+    @synchronized(self) {
+        return [_requests count];
+    }
 }
 
 - (NSString*)description {
@@ -229,14 +239,16 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (RKRequest*)nextRequest {
-    for (NSUInteger i = 0; i < [_requests count]; i++) {
-        RKRequest* request = [_requests objectAtIndex:i];
-        if ([request isUnsent]) {
-            return request;
+    @synchronized(self) {
+        for (NSUInteger i = 0; i < [_requests count]; i++) {
+            RKRequest* request = [_requests objectAtIndex:i];
+            if ([request isUnsent]) {
+                return request;
+            }
         }
+        
+        return nil;
     }
-    
-    return nil;
 }
 
 - (void)loadNextInQueue {
@@ -279,9 +291,11 @@ static const NSTimeInterval kFlushDelay = 0.3;
         }
     }
 
-	if (_requests.count && !_suspended) {
-		[self loadNextInQueueDelayed];
-	}
+    @synchronized(self) {
+        if (_requests.count && !_suspended) {
+            [self loadNextInQueueDelayed];
+        }
+    }
 
 	[pool drain];
 }
@@ -336,7 +350,13 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (BOOL)removeRequest:(RKRequest*)request decrementCounter:(BOOL)decrementCounter {
-    if ([self containsRequest:request]) {
+    BOOL containsRequest;
+    
+    @synchronized(self) {
+        containsRequest = [self containsRequest:request];
+    }
+    
+    if (containsRequest) {
         RKLogTrace(@"Removing request %@ from queue %@", request, self);
         @synchronized(self) {
             [_requests removeObject:request];
