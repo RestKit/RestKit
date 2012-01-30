@@ -33,3 +33,6 @@ extern NSString* const RKMIMETypeXML;
 
 /// MIME Type text/xml
 extern NSString* const RKMIMETypeTextXML;
+
+/// MIME Type application/gzip
+extern NSString* const RKMIMETypeGZIP;

@@ -517,6 +517,10 @@
 		25B408271491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408281491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
 		25B408291491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
+		F87F92D414D6C95000CE9AC0 /* NSData+GZip.h in Headers */ = {isa = PBXBuildFile; fileRef = F87F92D214D6C95000CE9AC0 /* NSData+GZip.h */; };
+		F87F92D514D6C95000CE9AC0 /* NSData+GZip.h in Headers */ = {isa = PBXBuildFile; fileRef = F87F92D214D6C95000CE9AC0 /* NSData+GZip.h */; };
+		F87F92D614D6C95000CE9AC0 /* NSData+GZip.m in Sources */ = {isa = PBXBuildFile; fileRef = F87F92D314D6C95000CE9AC0 /* NSData+GZip.m */; };
+		F87F92D714D6C95000CE9AC0 /* NSData+GZip.m in Sources */ = {isa = PBXBuildFile; fileRef = F87F92D314D6C95000CE9AC0 /* NSData+GZip.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -870,6 +874,8 @@
 		25A34244147D8AAA0009758D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		25B408241491CDDB00F21111 /* RKDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDirectory.h; sourceTree = "<group>"; };
 		25B408251491CDDB00F21111 /* RKDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDirectory.m; sourceTree = "<group>"; };
+		F87F92D214D6C95000CE9AC0 /* NSData+GZip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZip.h"; sourceTree = "<group>"; };
+		F87F92D314D6C95000CE9AC0 /* NSData+GZip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZip.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1101,6 +1107,8 @@
 			children = (
 				25160D5A145650490060A5C5 /* NSData+MD5.h */,
 				25160D5B145650490060A5C5 /* NSData+MD5.m */,
+				F87F92D214D6C95000CE9AC0 /* NSData+GZip.h */,
+				F87F92D314D6C95000CE9AC0 /* NSData+GZip.m */,
 				25160D5E145650490060A5C5 /* NSString+MD5.h */,
 				25160D5F145650490060A5C5 /* NSString+MD5.m */,
 				25160DA3145650490060A5C5 /* Errors.h */,
@@ -1660,6 +1668,7 @@
 				25160F081456532C0060A5C5 /* SOCKit.h in Headers */,
 				25160E2E145650490060A5C5 /* RestKit.h in Headers */,
 				25B408261491CDDC00F21111 /* RKDirectory.h in Headers */,
+				F87F92D414D6C95000CE9AC0 /* NSData+GZip.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1747,6 +1756,7 @@
 				25160F9E1456577F0060A5C5 /* RKJSONParserJSONKit.h in Headers */,
 				25160F25145655AF0060A5C5 /* RestKit.h in Headers */,
 				25B408271491CDDC00F21111 /* RKDirectory.h in Headers */,
+				F87F92D514D6C95000CE9AC0 /* NSData+GZip.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2077,6 +2087,7 @@
 				25160EFA1456532C0060A5C5 /* LCLNSLog.m in Sources */,
 				25160F0A1456532C0060A5C5 /* SOCKit.m in Sources */,
 				25B408281491CDDC00F21111 /* RKDirectory.m in Sources */,
+				F87F92D614D6C95000CE9AC0 /* NSData+GZip.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2217,6 +2228,7 @@
 				25160F9D145657720060A5C5 /* RKXMLParserLibXML.m in Sources */,
 				25160F9F1456577F0060A5C5 /* RKJSONParserJSONKit.m in Sources */,
 				25B408291491CDDC00F21111 /* RKDirectory.m in Sources */,
+				F87F92D714D6C95000CE9AC0 /* NSData+GZip.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
