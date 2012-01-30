@@ -139,7 +139,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return date;
 }
 
-- (id)transformValue:(id)value atKeyPath:keyPath toType:(Class)destinationType {
+- (id)transformValue:(id)value atKeyPath:(NSString *)keyPath toType:(Class)destinationType {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];
     

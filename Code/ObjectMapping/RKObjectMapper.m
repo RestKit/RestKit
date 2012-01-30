@@ -202,7 +202,7 @@
 }
 
 // The workhorse of this entire process. Emits object loading operations
-- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:keyPath usingMapping:(id<RKObjectMappingDefinition>)mapping {
+- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(id<RKObjectMappingDefinition>)mapping {
     NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");    
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
     NSAssert(mapping != nil, @"Cannot map without an mapping");
