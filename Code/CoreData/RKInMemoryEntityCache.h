@@ -30,9 +30,9 @@
 
 /**
  */
-- (NSMutableDictionary *)cacheObjectsForEntity:(NSEntityDescription *)entity
-                                   withMapping:(RKManagedObjectMapping *)mapping
-                                     inContext:(NSManagedObjectContext *)managedObjectContext;
+- (void)cacheObjectsForEntity:(NSEntityDescription *)entity
+                  withMapping:(RKManagedObjectMapping *)mapping
+                    inContext:(NSManagedObjectContext *)managedObjectContext;
 
 /**
  */

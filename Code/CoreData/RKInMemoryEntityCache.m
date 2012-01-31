@@ -60,9 +60,8 @@
 
     NSMutableDictionary *cachedObjectsForEntity = [_entityCache objectForKey:entity.name];
     if (cachedObjectsForEntity == nil) {
-        cachedObjectsForEntity = [self cacheObjectsForEntity:entity
-                                                 withMapping:mapping
-                                                   inContext:managedObjectContext];
+        [self cacheObjectsForEntity:entity withMapping:mapping inContext:managedObjectContext];
+        cachedObjectsForEntity = [_entityCache objectForKey:entity.name];
     }
     return cachedObjectsForEntity;
 }
@@ -91,9 +90,9 @@
     return object;
 }
 
-- (NSMutableDictionary *)cacheObjectsForEntity:(NSEntityDescription *)entity
-                                   withMapping:(RKManagedObjectMapping *)mapping
-                                     inContext:(NSManagedObjectContext *)managedObjectContext {
+- (void)cacheObjectsForEntity:(NSEntityDescription *)entity
+                  withMapping:(RKManagedObjectMapping *)mapping
+                    inContext:(NSManagedObjectContext *)managedObjectContext {
     NSAssert(entity, @"Cannot cache objects without an entity");
     NSAssert(mapping, @"Cannot cache objects without a mapping");
     NSAssert(managedObjectContext, @"Cannot cache objects without a managedObjectContext");
@@ -124,9 +123,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(objectsDidChange:)
 												 name:NSManagedObjectContextObjectsDidChangeNotification
-											   object:managedObjectContext];
-    
-    return dictionary;
+											   object:managedObjectContext];    
 }
 
 - (void)cacheObject:(NSManagedObject *)managedObject withMapping:(RKManagedObjectMapping *)mapping inContext:(NSManagedObjectContext *)managedObjectContext {

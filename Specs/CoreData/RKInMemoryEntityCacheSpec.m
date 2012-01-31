@@ -63,9 +63,10 @@
     mapping.primaryKeyAttribute = @"railsID";
     
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
-    NSMutableDictionary *humanCache = [entityCache cacheObjectsForEntity:human.entity
-                                                             withMapping:mapping
-                                                               inContext:objectStore.managedObjectContext];
+    [entityCache cacheObjectsForEntity:human.entity withMapping:mapping inContext:objectStore.managedObjectContext];
+    NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
+                                                              withMapping:mapping
+                                                                inContext:objectStore.managedObjectContext];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 }
 
@@ -104,9 +105,10 @@
     newHuman.railsID = [NSNumber numberWithInt:5678];
 
     [entityCache cacheObject:newHuman withMapping:mapping inContext:objectStore.managedObjectContext];    
-    humanCache = [entityCache cacheObjectsForEntity:human.entity
-                                        withMapping:mapping
-                                          inContext:objectStore.managedObjectContext];
+    [entityCache cacheObjectsForEntity:human.entity withMapping:mapping inContext:objectStore.managedObjectContext];
+    humanCache = [entityCache cachedObjectsForEntity:human.entity
+                                         withMapping:mapping
+                                           inContext:objectStore.managedObjectContext];
     assertThatInteger([humanCache count], is(equalToInt(2)));
 }
 
@@ -133,9 +135,10 @@
                  withMapping:mapping
           andPrimaryKeyValue:[NSNumber numberWithInt:5678]
                    inContext:objectStore.managedObjectContext];    
-    humanCache = [entityCache cacheObjectsForEntity:human.entity
-                                        withMapping:mapping
-                                          inContext:objectStore.managedObjectContext];
+    [entityCache cacheObjectsForEntity:human.entity withMapping:mapping inContext:objectStore.managedObjectContext];
+    humanCache = [entityCache cachedObjectsForEntity:human.entity
+                                         withMapping:mapping
+                                           inContext:objectStore.managedObjectContext];
     assertThatInteger([humanCache count], is(equalToInt(2)));
 }
 
