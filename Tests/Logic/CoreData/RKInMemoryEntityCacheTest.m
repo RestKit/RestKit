@@ -1,5 +1,5 @@
 //
-//  RKInMemoryEntityCacheSpec.m
+//  RKInMemoryEntityCacheTest.m
 //  RestKit
 //
 //  Created by Jeff Arena on 1/25/12.
@@ -18,159 +18,162 @@
 //  limitations under the License.
 //
 
-#import "RKSpecEnvironment.h"
+#import "RKTestEnvironment.h"
 #import "RKHuman.h"
 
-@interface RKInMemoryEntityCacheSpec : RKSpec
+@interface RKInMemoryEntityCacheTest : RKTestCase
 
 @end
 
-@implementation RKInMemoryEntityCacheSpec
+@implementation RKInMemoryEntityCacheTest
 
 - (void)testShouldCoercePrimaryKeysToStringsForLookup {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     assertThatBool([entityCache shouldCoerceAttributeToString:@"railsID" forEntity:human.entity], is(equalToBool(YES)));
 }
 
 - (void)testShouldCacheAllObjectsForEntityWhenAccessingEntityCache {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 }
 
 - (void)testShouldCacheAllObjectsForEntityWhenAsked {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
-    NSMutableDictionary *humanCache = [entityCache cacheObjectsForEntity:human.entity
-                                                             withMapping:mapping
-                                                               inContext:objectStore.managedObjectContext];
+    [entityCache cacheObjectsForEntity:human.entity withMapping:mapping inContext:objectStore.context];
+    NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
+                                                              withMapping:mapping
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 }
 
 - (void)testShouldRetrieveObjectsProperlyFromTheEntityCache {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSManagedObject *cachedInstance = [entityCache cachedObjectForEntity:human.entity
                                                              withMapping:mapping
-                                                      andPrimaryKeyValue:[NSNumber numberWithInt:1234]                                                                inContext:objectStore.managedObjectContext];
+                                                      andPrimaryKeyValue:[NSNumber numberWithInt:1234]                                                                inContext:objectStore.context];
     assertThat(cachedInstance, is(equalTo(human)));
 }
 
 - (void)testShouldCacheAnIndividualObjectWhenAsked {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 
     RKHuman* newHuman = [RKHuman createEntity];
     newHuman.railsID = [NSNumber numberWithInt:5678];
 
-    [entityCache cacheObject:newHuman withMapping:mapping inContext:objectStore.managedObjectContext];
-    humanCache = [entityCache cacheObjectsForEntity:human.entity
-                                        withMapping:mapping
-                                          inContext:objectStore.managedObjectContext];
+    [entityCache cacheObject:newHuman withMapping:mapping inContext:objectStore.context];
+    [entityCache cacheObjectsForEntity:human.entity withMapping:mapping inContext:objectStore.context];
+    humanCache = [entityCache cachedObjectsForEntity:human.entity
+                                         withMapping:mapping
+                                           inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(2)));
 }
 
 - (void)testShouldCacheAnIndividualObjectByPrimaryKeyValueWhenAsked {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 
     RKHuman* newHuman = [RKHuman createEntity];
     newHuman.railsID = [NSNumber numberWithInt:5678];
-    [objectStore save];
+    [objectStore save:nil];
 
     [entityCache cacheObject:newHuman.entity
                  withMapping:mapping
           andPrimaryKeyValue:[NSNumber numberWithInt:5678]
-                   inContext:objectStore.managedObjectContext];
-    humanCache = [entityCache cacheObjectsForEntity:human.entity
-                                        withMapping:mapping
-                                          inContext:objectStore.managedObjectContext];
+                   inContext:objectStore.context];
+    [entityCache cacheObjectsForEntity:human.entity withMapping:mapping inContext:objectStore.context];
+    humanCache = [entityCache cachedObjectsForEntity:human.entity
+                                         withMapping:mapping
+                                           inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(2)));
 }
 
 - (void)testShouldExpireACacheEntryForAnObjectWhenAsked {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 
-    [entityCache expireCacheEntryForObject:human withMapping:mapping inContext:objectStore.managedObjectContext];
+    [entityCache expireCacheEntryForObject:human withMapping:mapping inContext:objectStore.context];
     assertThatInteger([entityCache.entityCache count], is(equalToInt(0)));
 }
 
 - (void)testShouldExpireEntityCacheWhenAsked {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 
     [entityCache expireCacheEntryForEntity:human.entity];
@@ -178,18 +181,18 @@
 }
 
 - (void)testShouldExpireEntityCacheInResponseToMemoryWarning {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidReceiveMemoryWarningNotification object:nil];
@@ -197,54 +200,54 @@
 }
 
 - (void)testShouldAddInstancesOfInsertedObjectsToCache {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:human.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 
     RKHuman* newHuman = [RKHuman createEntity];
     newHuman.railsID = [NSNumber numberWithInt:5678];
-    [objectStore save];
+    [objectStore save:nil];
 
     humanCache = [entityCache cachedObjectsForEntity:human.entity
                                          withMapping:mapping
-                                           inContext:objectStore.managedObjectContext];
+                                           inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(2)));
 }
 
 - (void)testShouldRemoveInstancesOfDeletedObjectsToCache {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* humanOne = [RKHuman createEntity];
     humanOne.railsID = [NSNumber numberWithInt:1234];
 
     RKHuman* humanTwo = [RKHuman createEntity];
     humanTwo.railsID = [NSNumber numberWithInt:5678];
-    [objectStore save];
+    [objectStore save:nil];
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKInMemoryEntityCache *entityCache = [[[RKInMemoryEntityCache alloc] init] autorelease];
     NSMutableDictionary *humanCache = [entityCache cachedObjectsForEntity:humanOne.entity
                                                               withMapping:mapping
-                                                                inContext:objectStore.managedObjectContext];
+                                                                inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(2)));
 
     [humanTwo deleteEntity];
-    [objectStore save];
+    [objectStore save:nil];
 
     humanCache = [entityCache cachedObjectsForEntity:humanOne.entity
                                          withMapping:mapping
-                                           inContext:objectStore.managedObjectContext];
+                                           inContext:objectStore.context];
     assertThatInteger([humanCache count], is(equalToInt(1)));
 }
 
