@@ -465,6 +465,34 @@
 		2516112E1456F5520060A5C5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2516112D1456F5520060A5C5 /* CoreData.framework */; };
 		251611301456F5590060A5C5 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2516112F1456F5590060A5C5 /* Security.framework */; };
 		251611321456F56C0060A5C5 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251611311456F56C0060A5C5 /* MobileCoreServices.framework */; };
+		252EFAE914D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE214D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m */; };
+		252EFAEA14D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE214D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m */; };
+		252EFAEB14D8C1BF004863C8 /* RKFormSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE314D8C1BF004863C8 /* RKFormSpec.m */; };
+		252EFAEC14D8C1BF004863C8 /* RKFormSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE314D8C1BF004863C8 /* RKFormSpec.m */; };
+		252EFAED14D8C1BF004863C8 /* RKTableControllerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE414D8C1BF004863C8 /* RKTableControllerSpec.m */; };
+		252EFAEE14D8C1BF004863C8 /* RKTableControllerSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE414D8C1BF004863C8 /* RKTableControllerSpec.m */; };
+		252EFAEF14D8C1BF004863C8 /* RKTableControllerSpec.m.orig in Resources */ = {isa = PBXBuildFile; fileRef = 252EFAE514D8C1BF004863C8 /* RKTableControllerSpec.m.orig */; };
+		252EFAF014D8C1BF004863C8 /* RKTableControllerSpec.m.orig in Resources */ = {isa = PBXBuildFile; fileRef = 252EFAE514D8C1BF004863C8 /* RKTableControllerSpec.m.orig */; };
+		252EFAF114D8C1BF004863C8 /* RKTableSectionSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE614D8C1BF004863C8 /* RKTableSectionSpec.m */; };
+		252EFAF214D8C1BF004863C8 /* RKTableSectionSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE614D8C1BF004863C8 /* RKTableSectionSpec.m */; };
+		252EFAF314D8C1BF004863C8 /* RKTableViewCellMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE714D8C1BF004863C8 /* RKTableViewCellMappingSpec.m */; };
+		252EFAF414D8C1BF004863C8 /* RKTableViewCellMappingSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE714D8C1BF004863C8 /* RKTableViewCellMappingSpec.m */; };
+		252EFAF514D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE814D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m */; };
+		252EFAF614D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAE814D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m */; };
+		252EFAFA14D8EAEC004863C8 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAF914D8EAEC004863C8 /* RKEvent.m */; };
+		252EFAFB14D8EAEC004863C8 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAF914D8EAEC004863C8 /* RKEvent.m */; };
+		252EFAFE14D8EB31004863C8 /* RKSpecNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKSpecNotificationObserver.m */; };
+		252EFAFF14D8EB31004863C8 /* RKSpecNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKSpecNotificationObserver.m */; };
+		252EFB0214D98EB0004863C8 /* RKTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB0014D98EB0004863C8 /* RKTableView.h */; };
+		252EFB0314D98EB0004863C8 /* RKTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB0014D98EB0004863C8 /* RKTableView.h */; };
+		252EFB0414D98EB0004863C8 /* RKTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0114D98EB0004863C8 /* RKTableView.m */; };
+		252EFB0514D98EB0004863C8 /* RKTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0114D98EB0004863C8 /* RKTableView.m */; };
+		252EFB0814D98F4D004863C8 /* RKSearchableManagedObjectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0614D98F4D004863C8 /* RKSearchableManagedObjectSpec.m */; };
+		252EFB0914D98F4D004863C8 /* RKSearchableManagedObjectSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0614D98F4D004863C8 /* RKSearchableManagedObjectSpec.m */; };
+		252EFB0A14D98F4D004863C8 /* RKSearchWordObserverSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0714D98F4D004863C8 /* RKSearchWordObserverSpec.m */; };
+		252EFB0B14D98F4D004863C8 /* RKSearchWordObserverSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0714D98F4D004863C8 /* RKSearchWordObserverSpec.m */; };
+		252EFB0D14D98F76004863C8 /* RKMutableBlockDictionarySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0C14D98F76004863C8 /* RKMutableBlockDictionarySpec.m */; };
+		252EFB0E14D98F76004863C8 /* RKMutableBlockDictionarySpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0C14D98F76004863C8 /* RKMutableBlockDictionarySpec.m */; };
 		254A62B914AD544200939BEE /* RKObjectPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = 254A62B714AD544200939BEE /* RKObjectPaginator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		254A62BA14AD544200939BEE /* RKObjectPaginator.h in Headers */ = {isa = PBXBuildFile; fileRef = 254A62B714AD544200939BEE /* RKObjectPaginator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		254A62BB14AD544200939BEE /* RKObjectPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62B814AD544200939BEE /* RKObjectPaginator.m */; };
@@ -952,6 +980,22 @@
 		2516112D1456F5520060A5C5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		2516112F1456F5590060A5C5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		251611311456F56C0060A5C5 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		252EFAE214D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchedResultsTableControllerSpec.m; sourceTree = "<group>"; };
+		252EFAE314D8C1BF004863C8 /* RKFormSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFormSpec.m; sourceTree = "<group>"; };
+		252EFAE414D8C1BF004863C8 /* RKTableControllerSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableControllerSpec.m; sourceTree = "<group>"; };
+		252EFAE514D8C1BF004863C8 /* RKTableControllerSpec.m.orig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = RKTableControllerSpec.m.orig; sourceTree = "<group>"; };
+		252EFAE614D8C1BF004863C8 /* RKTableSectionSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableSectionSpec.m; sourceTree = "<group>"; };
+		252EFAE714D8C1BF004863C8 /* RKTableViewCellMappingSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableViewCellMappingSpec.m; sourceTree = "<group>"; };
+		252EFAE814D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableViewCellMappingsSpec.m; sourceTree = "<group>"; };
+		252EFAF814D8EAEC004863C8 /* RKEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEvent.h; sourceTree = "<group>"; };
+		252EFAF914D8EAEC004863C8 /* RKEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEvent.m; sourceTree = "<group>"; };
+		252EFAFC14D8EB30004863C8 /* RKSpecNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSpecNotificationObserver.h; sourceTree = "<group>"; };
+		252EFAFD14D8EB30004863C8 /* RKSpecNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSpecNotificationObserver.m; sourceTree = "<group>"; };
+		252EFB0014D98EB0004863C8 /* RKTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableView.h; sourceTree = "<group>"; };
+		252EFB0114D98EB0004863C8 /* RKTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableView.m; sourceTree = "<group>"; };
+		252EFB0614D98F4D004863C8 /* RKSearchableManagedObjectSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchableManagedObjectSpec.m; sourceTree = "<group>"; };
+		252EFB0714D98F4D004863C8 /* RKSearchWordObserverSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchWordObserverSpec.m; sourceTree = "<group>"; };
+		252EFB0C14D98F76004863C8 /* RKMutableBlockDictionarySpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMutableBlockDictionarySpec.m; sourceTree = "<group>"; };
 		254A62B714AD544200939BEE /* RKObjectPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectPaginator.h; sourceTree = "<group>"; };
 		254A62B814AD544200939BEE /* RKObjectPaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginator.m; sourceTree = "<group>"; };
 		254A62BF14AD591C00939BEE /* RKObjectPaginatorSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginatorSpec.m; sourceTree = "<group>"; };
@@ -1504,6 +1548,7 @@
 		25160FC51456F2330060A5C5 /* Specs */ = {
 			isa = PBXGroup;
 			children = (
+				252EFAE114D8C1BF004863C8 /* UI */,
 				25160FC61456F2330060A5C5 /* CoreData */,
 				25160FCD1456F2330060A5C5 /* Fixtures */,
 				25160FF31456F2330060A5C5 /* Models */,
@@ -1519,6 +1564,8 @@
 		25160FC61456F2330060A5C5 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				252EFB0614D98F4D004863C8 /* RKSearchableManagedObjectSpec.m */,
+				252EFB0714D98F4D004863C8 /* RKSearchWordObserverSpec.m */,
 				25160FC71456F2330060A5C5 /* RKManagedObjectLoaderSpec.m */,
 				25160FC81456F2330060A5C5 /* RKManagedObjectMappingOperationSpec.m */,
 				25160FC91456F2330060A5C5 /* RKManagedObjectMappingSpec.m */,
@@ -1619,6 +1666,8 @@
 		25160FF31456F2330060A5C5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				252EFAF814D8EAEC004863C8 /* RKEvent.h */,
+				252EFAF914D8EAEC004863C8 /* RKEvent.m */,
 				25B6E9D514CF912500B1E881 /* RKSearchable.h */,
 				25B6E9D614CF912500B1E881 /* RKSearchable.m */,
 				25B6E9D714CF912500B1E881 /* RKSpecAddress.h */,
@@ -1690,6 +1739,8 @@
 		251610281456F2330060A5C5 /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				252EFAFC14D8EB30004863C8 /* RKSpecNotificationObserver.h */,
+				252EFAFD14D8EB30004863C8 /* RKSpecNotificationObserver.m */,
 				250CA67A147D8E7F0047D347 /* OCHamcrest */,
 				2516102B1456F2330060A5C5 /* OCMock */,
 				251610351456F2330060A5C5 /* RKSpecEnvironment.h */,
@@ -1749,6 +1800,7 @@
 		251610511456F2330060A5C5 /* Support */ = {
 			isa = PBXGroup;
 			children = (
+				252EFB0C14D98F76004863C8 /* RKMutableBlockDictionarySpec.m */,
 				251610521456F2330060A5C5 /* NSDictionary+RKRequestSerializationSpec.m */,
 				251610531456F2330060A5C5 /* NSStringRestKitSpec.m */,
 				251610541456F2330060A5C5 /* RKDotNetDateFormatterSpec.m */,
@@ -1759,9 +1811,25 @@
 			path = Support;
 			sourceTree = "<group>";
 		};
+		252EFAE114D8C1BF004863C8 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				252EFAE214D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m */,
+				252EFAE314D8C1BF004863C8 /* RKFormSpec.m */,
+				252EFAE414D8C1BF004863C8 /* RKTableControllerSpec.m */,
+				252EFAE514D8C1BF004863C8 /* RKTableControllerSpec.m.orig */,
+				252EFAE614D8C1BF004863C8 /* RKTableSectionSpec.m */,
+				252EFAE714D8C1BF004863C8 /* RKTableViewCellMappingSpec.m */,
+				252EFAE814D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		25B6E90214CF778D00B1E881 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				252EFB0014D98EB0004863C8 /* RKTableView.h */,
+				252EFB0114D98EB0004863C8 /* RKTableView.m */,
 				25B6E90314CF778D00B1E881 /* RKAbstractTableController.h */,
 				25B6E90414CF778D00B1E881 /* RKAbstractTableController.m */,
 				25B6E90614CF778D00B1E881 /* RKAbstractTableController_Internals.h */,
@@ -2020,6 +2088,7 @@
 				25B6E9F514CF940700B1E881 /* RKSearchWordObserver.h in Headers */,
 				25B6E9FD14CF943E00B1E881 /* RKCache.h in Headers */,
 				25B6EA0114CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
+				252EFB0214D98EB0004863C8 /* RKTableView.h in Headers */,
 				49A66B1214CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2137,6 +2206,7 @@
 				25B6E9F614CF940700B1E881 /* RKSearchWordObserver.h in Headers */,
 				25B6E9FE14CF943E00B1E881 /* RKCache.h in Headers */,
 				25B6EA0214CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
+				252EFB0314D98EB0004863C8 /* RKTableView.h in Headers */,
 				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2289,6 +2359,7 @@
 				73D3907914CA1DD40093E3D6 /* channels.xml in Resources */,
 				25B6E9A414CF829400B1E881 /* InfoPlist.strings in Resources */,
 				25B6E9BE14CF829400B1E881 /* OCMock-Info.plist in Resources */,
+				252EFAEF14D8C1BF004863C8 /* RKTableControllerSpec.m.orig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2356,6 +2427,7 @@
 				73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */,
 				25B6E9A514CF829400B1E881 /* InfoPlist.strings in Resources */,
 				25B6E9BF14CF829400B1E881 /* OCMock-Info.plist in Resources */,
+				252EFAF014D8C1BF004863C8 /* RKTableControllerSpec.m.orig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2505,6 +2577,7 @@
 				25B6E9F714CF940700B1E881 /* RKSearchWordObserver.m in Sources */,
 				25B6E9FF14CF943E00B1E881 /* RKCache.m in Sources */,
 				25B6EA0314CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */,
+				252EFB0414D98EB0004863C8 /* RKTableView.m in Sources */,
 				49A66B0E14CEFB0400A6F062 /* XMLReader.m in Sources */,
 				49A66B1414CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */,
 			);
@@ -2584,6 +2657,17 @@
 				25B6E9DB14CF912500B1E881 /* RKSearchable.m in Sources */,
 				25B6E9DD14CF912500B1E881 /* RKSpecAddress.m in Sources */,
 				25B6E9DF14CF912500B1E881 /* RKSpecUser.m in Sources */,
+				252EFAE914D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m in Sources */,
+				252EFAEB14D8C1BF004863C8 /* RKFormSpec.m in Sources */,
+				252EFAED14D8C1BF004863C8 /* RKTableControllerSpec.m in Sources */,
+				252EFAF114D8C1BF004863C8 /* RKTableSectionSpec.m in Sources */,
+				252EFAF314D8C1BF004863C8 /* RKTableViewCellMappingSpec.m in Sources */,
+				252EFAF514D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m in Sources */,
+				252EFAFA14D8EAEC004863C8 /* RKEvent.m in Sources */,
+				252EFAFE14D8EB31004863C8 /* RKSpecNotificationObserver.m in Sources */,
+				252EFB0814D98F4D004863C8 /* RKSearchableManagedObjectSpec.m in Sources */,
+				252EFB0A14D98F4D004863C8 /* RKSearchWordObserverSpec.m in Sources */,
+				252EFB0D14D98F76004863C8 /* RKMutableBlockDictionarySpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2673,6 +2757,7 @@
 				25B6E9F814CF940700B1E881 /* RKSearchWordObserver.m in Sources */,
 				25B6EA0014CF943E00B1E881 /* RKCache.m in Sources */,
 				25B6EA0414CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */,
+				252EFB0514D98EB0004863C8 /* RKTableView.m in Sources */,
 				49A66B0F14CEFB0400A6F062 /* XMLReader.m in Sources */,
 				49A66B1514CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */,
 			);
@@ -2752,6 +2837,17 @@
 				25B6E9DC14CF912500B1E881 /* RKSearchable.m in Sources */,
 				25B6E9DE14CF912500B1E881 /* RKSpecAddress.m in Sources */,
 				25B6E9E014CF912500B1E881 /* RKSpecUser.m in Sources */,
+				252EFAEA14D8C1BF004863C8 /* RKFetchedResultsTableControllerSpec.m in Sources */,
+				252EFAEC14D8C1BF004863C8 /* RKFormSpec.m in Sources */,
+				252EFAEE14D8C1BF004863C8 /* RKTableControllerSpec.m in Sources */,
+				252EFAF214D8C1BF004863C8 /* RKTableSectionSpec.m in Sources */,
+				252EFAF414D8C1BF004863C8 /* RKTableViewCellMappingSpec.m in Sources */,
+				252EFAF614D8C1BF004863C8 /* RKTableViewCellMappingsSpec.m in Sources */,
+				252EFAFB14D8EAEC004863C8 /* RKEvent.m in Sources */,
+				252EFAFF14D8EB31004863C8 /* RKSpecNotificationObserver.m in Sources */,
+				252EFB0914D98F4D004863C8 /* RKSearchableManagedObjectSpec.m in Sources */,
+				252EFB0B14D98F4D004863C8 /* RKSearchWordObserverSpec.m in Sources */,
+				252EFB0E14D98F76004863C8 /* RKMutableBlockDictionarySpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
