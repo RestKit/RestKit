@@ -136,6 +136,30 @@ transformed into one or more instances of the `Article` class. Once mappable dat
 key path should be assigned to the target object at the destination key path. This is the fundamental trick of object mapping and all other features
 are built upon this foundation.
 
+### Parameters
+
+GET query parameters should be added with the new NSString method appendQueryParameters.  For example,
+
+```objc
+- (void)loadArticlesContainingText:(NSString *)searchText {
+    NSDictionary *queryParams = [NSDictionary dictionaryWithObject:searchText forKey:@"q"];
+    NSString *resourcePath = [@"/articles" appendQueryParameters:queryParams];
+    [[RKObjectManager sharedManager] loadObjectsAtResourcePath:resourcePath delegate:self];
+}
+```
+
+POST parameters can be provided by setting the RKObjectLoader's params property:
+
+```objc
+- (void)saveArticleWithAdditionalParams:(NSDictionary *)extraPOSTParams {
+    RKObjectLoader* loader = [objectManager sendObject:human delegate:responseLoader block:^(RKObjectLoader* loader) {
+    loader.method = RKRequestMethodPOST;
+        loader.resourcePath = @"/articles/create";
+        loader.params = extraPOSTParams;
+    }];
+}
+```
+
 ## Object Mapping Fundamentals
 
 Now that we have established a foundation for the basics of object mapping, we can explore the remaining portions of the system. We'll examine
