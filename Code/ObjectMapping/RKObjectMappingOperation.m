@@ -241,7 +241,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         currentValue = nil;
     }
     
-    /**
+    /*
      WTF - This workaround should not be necessary, but I have been unable to replicate
      the circumstances that trigger it in a unit test to fix elsewhere. The proper place
      to handle it is in transformValue:atKeyPath:toType:
