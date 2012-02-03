@@ -23,6 +23,7 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
 #import "RKDirectory.h"
+#import "RKInMemoryMappingCache.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -46,7 +47,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 @synthesize pathToStoreFile = _pathToStoreFile;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize managedObjectCache = _managedObjectCache;
+@synthesize cacheStrategy = _cacheStrategy;
 
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename {
     return [self objectStoreWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
@@ -90,6 +91,8 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         _delegate = delegate;
         
 		[self createPersistentStoreCoordinator];
+        
+        _cacheStrategy = [[RKInMemoryMappingCache alloc] init];
 	}
     
 	return self;
@@ -119,8 +122,8 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	_managedObjectModel = nil;
     [_persistentStoreCoordinator release];
 	_persistentStoreCoordinator = nil;
-	[_managedObjectCache release];
-	_managedObjectCache = nil;
+    [_cacheStrategy release];
+    _cacheStrategy = nil;
     
 	[super dealloc];
 }
@@ -189,11 +192,6 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	[managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[managedObjectContext setUndoManager:nil];
 	[managedObjectContext setMergePolicy:NSOverwriteMergePolicy];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-											 selector:@selector(objectsDidChange:)
-												 name:NSManagedObjectContextObjectsDidChangeNotification
-											   object:managedObjectContext];
 	return managedObjectContext;
 }
 
@@ -302,25 +300,6 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	[self performSelectorOnMainThread:@selector(mergeChangesOnMainThreadWithNotification:) withObject:notification waitUntilDone:YES];
 }
 
-- (void)objectsDidChange:(NSNotification*)notification {
-	NSDictionary* userInfo = notification.userInfo;
-	NSSet* insertedObjects = [userInfo objectForKey:NSInsertedObjectsKey];
-	NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-	
-	for (NSManagedObject* object in insertedObjects) {
-		if ([object respondsToSelector:@selector(primaryKeyProperty)]) {
-			Class theClass = [object class];
-			NSString* primaryKey = [theClass performSelector:@selector(primaryKeyProperty)];
-			id primaryKeyValue = [object valueForKey:primaryKey];
-			
-			NSMutableDictionary* classCache = [threadDictionary objectForKey:theClass];
-			if (classCache && primaryKeyValue && [classCache objectForKey:primaryKeyValue] == nil) {
-				[classCache setObject:object forKey:primaryKeyValue];
-			}
-		}
-	}
-}
-
 #pragma mark -
 #pragma mark Helpers
 
@@ -337,68 +316,6 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	[objects release];
 	
 	return objectArray;
-}
-
-- (NSManagedObject*)findOrCreateInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue {
-    NSAssert(entity, @"Cannot instantiate managed object without a target class");
-    NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without a primary key attribute");
-    NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
-	NSManagedObject* object = nil;
-    
-    // NOTE: We coerce the primary key into a string (if possible) for convenience. Generally
-    // primary keys are expressed either as a number of a string, so this lets us support either case interchangeably
-    id lookupValue = [primaryKeyValue respondsToSelector:@selector(stringValue)] ? [primaryKeyValue stringValue] : primaryKeyValue;
-    NSArray* objects = nil;
-    NSString* entityName = entity.name;
-    NSMutableDictionary* threadDictionary = [[NSThread currentThread] threadDictionary];
-    
-    if (nil == [threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey]) {
-        [threadDictionary setObject:[NSMutableDictionary dictionary] forKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey];
-    }
-    
-    // Construct the cache if necessary
-    NSMutableDictionary* entityCache = [threadDictionary objectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey];
-    if (nil == [entityCache objectForKey:entityName]) {
-        NSFetchRequest* fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
-        [fetchRequest setEntity:entity];
-        [fetchRequest setReturnsObjectsAsFaults:NO];
-        objects = [NSManagedObject executeFetchRequest:fetchRequest];
-        RKLogInfo(@"Caching all %lu %@ objects to thread local storage", (unsigned long) [objects count], entity.name);
-        NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-        BOOL coerceToString = [[[objects lastObject] valueForKey:primaryKeyAttribute] respondsToSelector:@selector(stringValue)];
-        for (id theObject in objects) {			
-            id attributeValue = [theObject valueForKey:primaryKeyAttribute];
-            // Coerce to a string if possible
-            attributeValue = coerceToString ? [attributeValue stringValue] : attributeValue;
-            if (attributeValue) {
-                [dictionary setObject:theObject forKey:attributeValue];
-            }
-        }
-        
-        [entityCache setObject:dictionary forKey:entityName];
-    }
-    
-    NSMutableDictionary* dictionary = [entityCache objectForKey:entityName];
-    NSAssert1(dictionary, @"Thread local cache of %@ objects should not be nil", entityName);
-    object = [dictionary objectForKey:lookupValue];
-    
-    if (object == nil) {
-        object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
-        [dictionary setObject:object forKey:lookupValue];
-    }
-        
-	return object;
-}
-
-- (NSArray*)objectsForResourcePath:(NSString *)resourcePath {
-    NSArray* cachedObjects = nil;
-    
-    if (self.managedObjectCache) {
-        NSArray* cacheFetchRequests = [self.managedObjectCache fetchRequestsForResourcePath:resourcePath];
-        cachedObjects = [NSManagedObject objectsWithFetchRequests:cacheFetchRequests];
-    }
-    
-    return cachedObjects;
 }
 
 @end

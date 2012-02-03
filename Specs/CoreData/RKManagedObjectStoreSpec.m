@@ -27,20 +27,5 @@
 
 @implementation RKManagedObjectStoreSpec
 
-- (void)testShouldCoercePrimaryKeysToStringsForLookup {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
-    RKHuman* human = [RKHuman createEntity];
-    human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
-    NSManagedObject* newReference = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:@"1234"];
-    assertThat(newReference, is(equalTo(human)));
-}
-
-- (void)testShouldStoreNewInstancesOfCreatedObjectsByStringKey {
-    RKManagedObjectStore* objectStore = RKSpecNewManagedObjectStore();
-    NSManagedObject* firstInstance = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:[NSNumber numberWithInt:1234]];
-    NSManagedObject* secondInstance = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:[NSNumber numberWithInt:1234]];
-    assertThat(secondInstance, is(equalTo(firstInstance)));
-}
 
 @end
