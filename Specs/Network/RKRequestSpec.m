@@ -95,7 +95,7 @@
 - (void)testShouldTimeoutAtInterval {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     id loaderMock = [OCMockObject partialMockForObject:loader];
-    NSString* url = [NSString stringWithFormat:@"%@/timeout", RKSpecGetBaseURL()];
+    NSString* url = [NSString stringWithFormat:@"%@/timeout", RKSpecGetBaseURLString()];
     NSURL* URL = [NSURL URLWithString:url];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.delegate = loaderMock;
