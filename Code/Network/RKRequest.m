@@ -257,10 +257,23 @@
         
         // use the suitable parameters dict
         NSDictionary *parameters = nil;
-        if ([self.params isKindOfClass:[RKParams class]])
-            parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
-        else 
+        
+        // entity-body should only be included in base string calculation if it's of type application/x-www-form-urlencoded
+        // (http://tools.ietf.org/html/rfc5849#section-3.4.1.3.1)
+        if ([self.params conformsToProtocol:@protocol(RKRequestSerializable)] &&
+            [[_URLRequest valueForHTTPHeaderField:@"Content-Type"] isEqualToString:@"application/x-www-form-urlencoded"]) {
+            
+            // GCOAuth doesn't have support for duplicate parameters in query and entity-body.
+            // For a duplicate parameter name example, see "a3" in http://tools.ietf.org/html/rfc5849#section-3.4.1.3.1
+            // We arbitrarily choose entity-body to take precedence over query for duplicate keys.
+            NSMutableDictionary *paramMerge = [[_URL queryDictionary] mutableCopy];
+            [paramMerge addEntriesFromDictionary:(NSDictionary*)self.params];
+            parameters = [NSDictionary dictionaryWithDictionary:paramMerge];
+            [paramMerge release];
+        }
+        else {
             parameters = [_URL queryDictionary];
+        }
             
         if (self.method == RKRequestMethodPUT)
             echo = [GCOAuth URLRequestForPath:[_URL path]
