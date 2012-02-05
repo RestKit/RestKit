@@ -122,6 +122,7 @@ typedef enum {
     RKRequestQueue *_queue;
     RKReachabilityObserver *_reachabilityObserver;
     NSTimer *_timeoutTimer;
+    NSStringEncoding _defaultHTTPEncoding;
     
     #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
@@ -191,6 +192,13 @@ typedef enum {
  * @default 120.0
  */
 @property (nonatomic, assign) NSTimeInterval timeoutInterval;
+
+/**
+ * The default HTTP string encoding used when generating the body content of a response, whenever the HTTP headers received do not provide such information.
+ *
+ * @default NSUTF8StringEncoding
+ */
+@property (nonatomic, assign) NSStringEncoding defaultHTTPEncoding;
 
 /**
  * The policy to take on transition to the background (iOS 4.x and higher only)

@@ -91,6 +91,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize cachePolicy = _cachePolicy;
 @synthesize requestQueue = _requestQueue;
 @synthesize timeoutInterval = _timeoutInterval;
+@synthesize defaultHTTPEncoding = _defaultHTTPEncoding;
 
 + (RKClient *)sharedClient {
 	return sharedClient;
@@ -119,6 +120,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	if (self) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
         _additionalRootCertificates = [[NSMutableSet alloc] init];
+        _defaultHTTPEncoding = NSUTF8StringEncoding;
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
 		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
@@ -222,6 +224,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     request.cache = self.requestCache;
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;
+    request.defaultHTTPEncoding = self.defaultHTTPEncoding;
     
     // If a timeoutInterval was set on the client, we'll pass it on to the request.
     // Otherwise, we'll let the request default to its own timeout interval.

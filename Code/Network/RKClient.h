@@ -173,6 +173,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
+    NSStringEncoding _defaultHTTPEncoding;
     
     // Queue suspension flags
     BOOL _awaitingReachabilityDetermination;
@@ -242,6 +243,12 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
  * @see HTTPHeaders
  */
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header;
+
+/**
+ The default value used to decode HTTP body content when HTTP headers received do not provide information on the content.
+ This encoding will be used by the RKResponse when creating the body content
+ */
+@property (nonatomic, assign) NSStringEncoding defaultHTTPEncoding;
 
 /////////////////////////////////////////////////////////////////////////
 /// @name SSL Validation
