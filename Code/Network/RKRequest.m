@@ -63,6 +63,7 @@
 @synthesize queue = _queue;
 @synthesize timeoutInterval = _timeoutInterval;
 @synthesize reachabilityObserver = _reachabilityObserver;
+@synthesize defaultHTTPEncoding = _defaultHTTPEncoding;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -81,6 +82,7 @@
 		_cachePolicy = RKRequestCachePolicyDefault;
         _cacheTimeoutInterval = 0;
         _timeoutInterval = 120.0;
+        _defaultHTTPEncoding = NSUTF8StringEncoding;
 	}
 	return self;
 }
