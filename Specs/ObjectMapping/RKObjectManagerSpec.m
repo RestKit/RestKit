@@ -121,7 +121,7 @@
 	[objectLoader send];
     [loader waitForResponse];
 
-    assertThat(temporaryHuman.managedObjectContext, is(nilValue()));
+    assertThat(temporaryHuman.managedObjectContext, is(equalTo(nil)));
 }
 
 - (void)testShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved {
