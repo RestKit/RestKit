@@ -3,10 +3,8 @@
 
 require 'rubygems'
 require 'sinatra/base'
-require "sinatra/reloader"
+require 'sinatra/reloader'
 require 'json'
-require 'ruby-debug'
-Debugger.start
 
 # Import the RestKit Spec server
 $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
