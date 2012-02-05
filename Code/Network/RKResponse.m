@@ -237,7 +237,7 @@ extern NSString* cacheURLKey;
     if (textEncodingName) {
         cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef) textEncodingName);
     }
-    return (cfEncoding ==  kCFStringEncodingInvalidId) ? NSUTF8StringEncoding : CFStringConvertEncodingToNSStringEncoding(cfEncoding);
+    return (cfEncoding ==  kCFStringEncodingInvalidId) ? self.request.defaultHTTPEncoding : CFStringConvertEncodingToNSStringEncoding(cfEncoding);
 }
 
 - (NSString *)bodyAsString {

@@ -110,6 +110,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize queue = _queue;
 @synthesize timeoutInterval = _timeoutInterval;
 @synthesize reachabilityObserver = _reachabilityObserver;
+@synthesize defaultHTTPEncoding = _defaultHTTPEncoding;
 @synthesize configurationDelegate = _configurationDelegate;
 @synthesize onDidLoadResponse;
 @synthesize onDidFailLoadWithError;
@@ -133,6 +134,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 		_cachePolicy = RKRequestCachePolicyDefault;
         _cacheTimeoutInterval = 0;
         _timeoutInterval = 120.0;
+        _defaultHTTPEncoding = NSUTF8StringEncoding;
 	}
 	return self;
 }
