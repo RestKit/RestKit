@@ -131,7 +131,7 @@
 
 #pragma mark - NSURL Overloads
 
-/**
+/*
  Overload implementations from NSURL. We consider a naked string to be initialized
  with a baseURL == self. Otherwise appending/replacing resourcePath will not work.
  */
