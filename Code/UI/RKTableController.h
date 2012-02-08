@@ -25,9 +25,9 @@
 #import "RKTableViewCellMappings.h"
 #import "RKTableItem.h"
 #import "RKForm.h"
-#import "../ObjectMapping/RKObjectManager.h"
-#import "../ObjectMapping/RKObjectMapping.h"
-#import "../ObjectMapping/RKObjectLoader.h"
+#import "RKObjectManager.h"
+#import "RKObjectMapping.h"
+#import "RKObjectLoader.h"
 
 @interface RKTableController : RKAbstractTableController
 

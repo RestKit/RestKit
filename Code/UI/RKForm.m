@@ -22,8 +22,8 @@
 #import "RKFormSection.h"
 #import "RKTableViewCellMapping.h"
 #import "RKTableController.h"
-#import "../ObjectMapping/RKObjectMappingOperation.h"
-#import "../Support/RKLog.h"
+#import "RKObjectMappingOperation.h"
+#import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent

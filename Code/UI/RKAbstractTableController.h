@@ -23,9 +23,9 @@
 #import "RKTableSection.h"
 #import "RKTableViewCellMappings.h"
 #import "RKTableItem.h"
-#import "../ObjectMapping/RKObjectManager.h"
-#import "../ObjectMapping/RKObjectMapping.h"
-#import "../ObjectMapping/RKObjectLoader.h"
+#import "RKObjectManager.h"
+#import "RKObjectMapping.h"
+#import "RKObjectLoader.h"
 
 /** @name Constants */
 

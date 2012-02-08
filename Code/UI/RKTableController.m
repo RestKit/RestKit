@@ -20,7 +20,7 @@
 
 #import "RKTableController.h"
 #import "RKAbstractTableController_Internals.h"
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 #import "RKFormSection.h"
 
 // Define logging component

@@ -9,7 +9,7 @@
 #import <CoreData/CoreData.h>
 #import "RKSearchWordObserver.h"
 #import "RKSearchableManagedObject.h"
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent

@@ -513,13 +513,16 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         [self fireAsynchronousRequest];
 #endif
 	} else {
-        RKLogTrace(@"Declined to dispatch request %@: shared client reported the network is not available.", self);
+        RKLogTrace(@"Declined to dispatch request %@: reachability observer reported the network is not available.", self);
 
 	    if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
 			[self.cache hasResponseForRequest:self]) {
 
 			_isLoading = YES;
-            [self performSelector:@selector(didFinishLoad:) withObject:[self loadResponseFromCache] afterDelay:0];
+
+            // TODO: WTF? Why was this afterDelay in here???
+//            [self performSelector:@selector(didFinishLoad:) withObject:[self loadResponseFromCache] afterDelay:0];
+            [self didFinishLoad:[self loadResponseFromCache]];
 
 		} else {
             RKLogError(@"Failed to send request to %@ due to unreachable network. Reachability observer = %@", [[self URL] absoluteString], self.reachabilityObserver);

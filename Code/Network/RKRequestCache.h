@@ -20,7 +20,7 @@
 
 #import "RKRequest.h"
 #import "RKResponse.h"
-#import "../Support/RKCache.h"
+#import "RKCache.h"
 
 /**
  Cache storage policy used to determines how long we keep a specific cache for.

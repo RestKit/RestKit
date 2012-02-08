@@ -430,6 +430,20 @@ static const NSTimeInterval kFlushDelay = 0.3;
 	[pool drain];
 }
 
+- (void)abortRequestsWithDelegate:(NSObject<RKRequestDelegate>*)delegate {
+    RKLogDebug(@"Aborting all request in queue %@ with delegate %p", self, delegate);
+
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	NSArray* requestsCopy = [NSArray arrayWithArray:_requests];
+	for (RKRequest* request in requestsCopy) {
+		if (request.delegate && request.delegate == delegate) {
+            request.delegate = nil;
+			[self cancelRequest:request];
+		}
+	}
+	[pool drain];
+}
+
 - (void)cancelAllRequests {
     RKLogDebug(@"Cancelling all request in queue %@", self);
 

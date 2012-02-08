@@ -23,7 +23,7 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectMappingOperation.h"
 #import "RKManagedObjectMapping.h"
-#import "../Support/RKLog.h"
+#import "RKLog.h"
 
 // Define logging component
 #undef RKLogComponent

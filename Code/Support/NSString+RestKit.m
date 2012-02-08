@@ -135,8 +135,13 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
     return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
+- (NSDictionary *)fileExtensionsToMIMETypesDictionary {
+    return [NSDictionary dictionaryWithObjectsAndKeys:@"application/json", @"json", nil];
+}
+
 - (NSString *)MIMETypeForPathExtension {
-    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)[self pathExtension], NULL);
+    NSString *fileExtension = [self pathExtension];
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef) fileExtension, NULL);
     if (uti != NULL) {
         CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
         CFRelease(uti);
@@ -146,8 +151,9 @@ RK_FIX_CATEGORY_BUG(NSString_RestKit)
             return type;
         }
     }
-	
-    return nil;
+
+    // Consult our internal dictionary of mappings if not found
+    return [[self fileExtensionsToMIMETypesDictionary] valueForKey:fileExtension];
 }
 
 - (BOOL)isIPAddress {

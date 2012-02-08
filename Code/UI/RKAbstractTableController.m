@@ -176,6 +176,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     // Disconnect from the tableView
     if (_tableView.delegate == self) _tableView.delegate = nil;
     if (_tableView.dataSource == self) _tableView.dataSource = nil;
+    _tableView = nil;
 
     // Remove overlay and pull-to-refresh subviews
     [_stateOverlayImageView removeFromSuperview];
@@ -195,7 +196,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [self removeObserver:self forKeyPath:@"online"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [_objectManager.client.requestQueue cancelRequestsWithDelegate:self];
+    // TODO: WTF? Get UI crashes when enabled...
+//    [_objectManager.requestQueue abortRequestsWithDelegate:self];
     _objectLoader.delegate = nil;
     _objectLoader = nil;
 
