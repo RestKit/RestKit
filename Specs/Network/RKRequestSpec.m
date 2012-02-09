@@ -92,7 +92,7 @@
     assertThat(request.HTTPBodyString, equalTo(JSON));
 }
 
-- (void)testShouldTimeoutAtInterval {
+- (void)testShouldTimeoutAtIntervalWhenSentAsynchronously {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     id loaderMock = [OCMockObject partialMockForObject:loader];
     NSString* url = [NSString stringWithFormat:@"%@/timeout", RKSpecGetBaseURLString()];
@@ -107,7 +107,21 @@
     [request release];
 }
 
-- (void)testShouldCreateOneTimeoutTimer {
+- (void)testShouldTimeoutAtIntervalWhenSentSynchronously {
+    RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
+    id loaderMock = [OCMockObject partialMockForObject:loader];
+    NSString* url = [NSString stringWithFormat:@"%@/timeout", RKSpecGetBaseURLString()];
+    NSURL* URL = [NSURL URLWithString:url];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loaderMock;
+    request.timeoutInterval = 3.0;
+    [[[loaderMock expect] andForwardToRealObject] request:request didFailLoadWithError:OCMOCK_ANY];
+    [request sendSynchronously];
+    assertThatInt((int)loader.failureError.code, equalToInt(RKRequestConnectionTimeoutError));
+    [request release];
+}
+
+- (void)testShouldCreateOneTimeoutTimerWhenSentAsynchronously {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
     RKURL* url = RKSpecGetBaseURL();
     RKRequest* request = [[RKRequest alloc] initWithURL:url];

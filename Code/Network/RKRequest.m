@@ -497,7 +497,6 @@
         [self didFinishLoad:response];
     } else if ([self shouldDispatchRequest]) {
         RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
-        [self createTimeoutTimer];
         
         if (![self prepareURLRequest]) {
             // TODO: Logging
@@ -511,16 +510,20 @@
             [self.delegate requestDidStartLoad:self];
         }
         
-		payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
-		if (payload != nil) error = nil;
+        _URLRequest.timeoutInterval = _timeoutInterval;
+        payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
+        
+        if (payload != nil) error = nil;
 		
-		response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
+        response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
 		
-		if (payload == nil) {
-			[self didFailLoadWithError:error];
-		} else {
-			[self didFinishLoad:response];
-		}
+        if (error.code == NSURLErrorTimedOut) {
+            [self timeout];
+        } else if (payload == nil) {
+            [self didFailLoadWithError:error];
+        } else {
+            [self didFinishLoad:response];
+        }
         
 	} else {
 		if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
