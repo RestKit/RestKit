@@ -435,9 +435,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
     [self setSuspended:NO];
 }
 
-/**
- * Invoked via observation when a request has loaded a response or failed with an error. Remove
- * the completed request from the queue and continue processing
+/*
+ Invoked via observation when a request has loaded a response or failed with an
+ error. Remove the completed request from the queue and continue processing
  */
 - (void)requestFinishedWithNotification:(NSNotification*)notification {
     NSAssert([notification.object isKindOfClass:[RKRequest class]], @"Notification expected to contain an RKRequest, got a %@", NSStringFromClass([notification.object class]));
