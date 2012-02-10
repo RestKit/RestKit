@@ -20,6 +20,7 @@
 
 #import "RKRequest.h"
 #import "RKResponse.h"
+#import "RKCache.h"
 
 /**
  Cache storage policy used to determines how long we keep a specific cache for.
@@ -43,36 +44,31 @@ typedef enum {
  Stores and retrieves cache entries for RestKit request objects.
  */
 @interface RKRequestCache : NSObject {
-    NSString *_cachePath;
     RKRequestCacheStoragePolicy _storagePolicy;
-	NSRecursiveLock *_cacheLock;
+    RKCache *_cache;
 }
 
-
 ///-----------------------------------------------------------------------------
-/// @name Creating a Request Cache
+/// @name Initializating the Cache
 ///-----------------------------------------------------------------------------
 
 /**
- Returns an RKRequestCache object with the specified cache path and storage
- policy.
+ Initializes the receiver with a cache at a given path and storage policy.
  
- @param cachePath A string of the full path to the cache.
- @param storagePolicy The RKRequestStoragePolicy to determine how long to retain
- this cache.
- @return An RKRequestCache object with the cachePath and storagePolicy set.
+ @param cachePath The path to store cached data in.
+ @param storagePolicy The storage policy to use for cached data.
+ @return An initialized request cache object.
  */
-- (id)initWithCachePath:(NSString *)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
-
+- (id)initWithPath:(NSString *)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
 
 ///-----------------------------------------------------------------------------
 /// @name Locating the Cache
 ///-----------------------------------------------------------------------------
 
 /**
- Returns the full path to the cache.
+ Returns the full pathname to the cache.
  */
-@property (nonatomic, readonly) NSString *cachePath;
+@property (nonatomic, readonly) NSString *path;
 
 /**
  Returns the cache path for the specified request.
@@ -111,7 +107,6 @@ typedef enum {
  */
 - (void)setCacheDate:(NSDate *)date forRequest:(RKRequest *)request;
 
-
 ///-----------------------------------------------------------------------------
 /// @name Preparing Requests and Responses
 ///-----------------------------------------------------------------------------
@@ -148,7 +143,6 @@ typedef enum {
  @return An RKResponse object that was cached for a given request.
  */
 - (RKResponse *)responseForRequest:(RKRequest *)request;
-
 
 ///-----------------------------------------------------------------------------
 /// @name Invalidating the Cache

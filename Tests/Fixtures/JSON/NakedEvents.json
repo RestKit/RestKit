@@ -1,0 +1,14 @@
+[
+    {
+      "type": "Meeting",
+      "event_id": "EV2321",
+      "location": "Building 3",
+      "summary": "Senior staff meeting"
+    },
+    {
+      "type": "Party",
+      "event_id": "EV4432",
+      "location": "Your House",
+      "summary": "Hootnanny"
+    }
+]

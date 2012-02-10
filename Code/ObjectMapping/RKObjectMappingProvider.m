@@ -29,6 +29,12 @@
     return [[self new] autorelease];
 }
 
++ (RKObjectMappingProvider *)mappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *))block {
+    RKObjectMappingProvider* mappingProvider = [self mappingProvider];
+    block(mappingProvider);
+    return mappingProvider;
+}
+
 - (id)init {
     self = [super init];
     if (self) {
@@ -64,7 +70,7 @@
 }
 
 - (RKObjectMapping *)serializationMappingForClass:(Class)objectClass {
-    return [self mappingForKeyPath:NSStringFromClass(objectClass) context:RKObjectMappingProviderContextSerialization];
+    return (RKObjectMapping *) [self mappingForKeyPath:NSStringFromClass(objectClass) context:RKObjectMappingProviderContextSerialization];
 }
 
 - (NSDictionary*)objectMappingsByKeyPath {
@@ -108,7 +114,7 @@
 #pragma mark - Error Mappings
 
 - (RKObjectMapping *)errorMapping {
-    return [self mappingForContext:RKObjectMappingProviderContextErrors];
+    return (RKObjectMapping *) [self mappingForContext:RKObjectMappingProviderContextErrors];
 }
 
 - (void)setErrorMapping:(RKObjectMapping *)errorMapping {
@@ -120,7 +126,7 @@
 #pragma mark - Pagination Mapping
 
 - (RKObjectMapping *)paginationMapping {
-    return [self mappingForContext:RKObjectMappingProviderContextPagination];
+    return (RKObjectMapping *) [self mappingForContext:RKObjectMappingProviderContextPagination];
 }
 
 - (void)setPaginationMapping:(RKObjectMapping *)paginationMapping {
@@ -276,6 +282,11 @@
 
 - (void)removeMappingForKeyPath:(NSString *)keyPath {
     [self removeObjectMappingForKeyPath:keyPath];
+}
+
+// Deprecated
++ (id)mappingProviderWithBlock:(void (^)(RKObjectMappingProvider*))block {
+    return [self mappingProviderUsingBlock:block];
 }
 
 @end

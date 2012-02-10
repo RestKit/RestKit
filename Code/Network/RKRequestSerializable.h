@@ -32,7 +32,7 @@
  payload from disk instead of memory.
 
  */
-@protocol RKRequestSerializable
+@protocol RKRequestSerializable <NSObject>
 
 ///-----------------------------------------------------------------------------
 /// @name HTTP Headers

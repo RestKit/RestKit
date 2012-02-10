@@ -30,8 +30,8 @@
 @interface RKRequestQueue : NSObject {
     NSString *_name;
     NSMutableArray *_requests;
+    NSMutableSet *_loadingRequests;
     NSObject<RKRequestQueueDelegate> *_delegate;
-    NSUInteger _loadingCount;
     NSUInteger _concurrentRequestsLimit;
     NSUInteger _requestTimeout;
     NSTimer *_queueTimer;
@@ -152,7 +152,19 @@
  
  @param delegate The delegate assigned to the requests to be cancelled.
  */
-- (void)cancelRequestsWithDelegate:(NSObject<RKRequestDelegate> *)delegate;
+- (void)cancelRequestsWithDelegate:(id<RKRequestDelegate>)delegate;
+
+/**
+ Aborts all requests with a given delegate by nullifying the delegate
+ reference and canceling the request.
+
+ Useful when an object that acts as the delegate for one or more requests
+ is being deallocated and all outstanding requests should be canceled
+ without generating any further delegate callbacks.
+
+ @param delegate The object acting as the delegate for all enqueued requests that are to be aborted.
+ */
+- (void)abortRequestsWithDelegate:(id<RKRequestDelegate>)delegate;
 
 /**
  Cancel all active or pending requests.

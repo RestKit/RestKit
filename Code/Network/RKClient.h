@@ -209,6 +209,14 @@
  */
 @property (nonatomic, readonly) NSMutableDictionary *HTTPHeaders;
 
+#ifdef RESTKIT_SSL_VALIDATION
+/**
+ A set of additional certificates to be used in evaluating server
+ SSL certificates.
+ */
+@property(nonatomic, readonly) NSSet* additionalRootCertificates;
+#endif
+
 /**
  An optional timeout interval within which the request should be cancelled.
  
@@ -361,6 +369,7 @@
 /// @name OAuth2 Secrets
 ///-----------------------------------------------------------------------------
 
+
 /**
  The OAuth 2.0 access token
  
@@ -483,7 +492,7 @@
 
 /**
  The default cache policy to apply for all requests sent through this client
- 
+
  This must be assigned one of the following:
  
  - `RKRequestCachePolicyNone`: Never use the cache.

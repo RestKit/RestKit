@@ -28,6 +28,10 @@
 #import "RKRequest_Internals.h"
 #import "RKLog.h"
 
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
+
 @implementation RKManagedObjectLoader
 
 @synthesize objectStore = _objectStore;
@@ -201,6 +205,20 @@
             RKLogDebug(@"Skipping deletion of existing managed object");
         }
     }
+}
+
+- (BOOL)isResponseMappable {
+    if ([self.response wasLoadedFromCache] && self.objectStore.managedObjectCache) {
+        NSFetchRequest* cacheFetchRequest = [self.objectStore.managedObjectCache fetchRequestForResourcePath:self.resourcePath];
+        if (! cacheFetchRequest) {
+            RKLogDebug(@"Skipping managed object mapping optimization -> Managed object cache returned nil cacheFetchRequest for resourcePath: %@", self.resourcePath);
+            return [super isResponseMappable];
+        }
+        NSArray* cachedObjects = [NSManagedObject objectsWithFetchRequest:cacheFetchRequest];
+        [self informDelegateOfObjectLoadWithResultDictionary:[NSDictionary dictionaryWithObject:cachedObjects forKey:@""]];
+        return NO;
+    }
+    return [super isResponseMappable];
 }
 
 @end

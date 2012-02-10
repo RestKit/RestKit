@@ -1,0 +1,33 @@
+{
+"groups":[
+    {
+        "name":"restkit",
+        "users": {
+            "blake": {
+                "id": 31337,
+                "website": "http://restkit.org/"
+            },
+            "rachit": {
+                "id": 7,
+                "website": "http://www.twotoasters.com/",
+                "address": {
+                    "city": "New York",
+                    "state": "New York"
+                }
+            }
+        }
+    },
+    {
+        "name":"others",
+        "users":{
+            "bjorn": {
+                "id": 10,
+                "address": {
+                    "city": "Gothenburg",
+                    "country": "Sweden"
+                }
+            }
+        }
+    }
+]
+}

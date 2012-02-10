@@ -15,10 +15,10 @@
 @required
 
 /**
- * Must return an array containing NSFetchRequests for use in retrieving locally
+ * Must return an NSFetchRequest for use in retrieving locally
  * cached objects associated with a given request resourcePath.
  */
-- (NSArray*)fetchRequestsForResourcePath:(NSString*)resourcePath;
+- (NSFetchRequest *)fetchRequestForResourcePath:(NSString *)resourcePath;
 
 @optional
 
