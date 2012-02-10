@@ -21,6 +21,9 @@
 #import "RKOAuthClient.h"
 #import "Errors.h"
 
+@interface RKOAuthClient () <RKRequestDelegate>
+@end
+
 @implementation RKOAuthClient
 
 @synthesize clientID = _clientID;
@@ -31,22 +34,16 @@
 @synthesize delegate = _delegate;
 @synthesize accessToken = _accessToken;
 
-+ (RKOAuthClient *)clientWithClientID:(NSString *)clientId 
-                               secret:(NSString *)secret 
-                             delegate:(id<RKOAuthClientDelegate>)delegate {
-    RKOAuthClient *client = [[[self alloc] initWithClientID:clientId secret:secret delegate:delegate] autorelease];
++ (RKOAuthClient *)clientWithClientID:(NSString *)clientID secret:(NSString *)secret {
+    RKOAuthClient *client = [[[self alloc] initWithClientID:clientID secret:secret] autorelease];
     return client;
 }
 
-- (id)initWithClientID:(NSString *)clientId 
-                secret:(NSString *)secret 
-              delegate:(id<RKOAuthClientDelegate>)delegate
-{
+- (id)initWithClientID:(NSString *)clientID secret:(NSString *)secret {
     self = [super init];
     if (self) {
-        _clientID = [clientId copy];
+        _clientID = [clientID copy];
         _clientSecret = [secret copy];
-        _delegate = delegate;
     }
     
     return self;
