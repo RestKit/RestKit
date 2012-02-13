@@ -2241,8 +2241,6 @@
 				25160D1214564E810060A5C5 /* Sources */,
 				25160D1314564E810060A5C5 /* Frameworks */,
 				25160D1414564E810060A5C5 /* Headers */,
-				25BB65871485D15C00D62E64 /* Copy Headers to Legacy Build Location */,
-				25BB65891485D17A00D62E64 /* Protect Copied Headers */,
 			);
 			buildRules = (
 			);
@@ -2478,34 +2476,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-		25BB65871485D15C00D62E64 /* Copy Headers to Legacy Build Location */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Headers to Legacy Build Location";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = "/bin/sh Scripts/CopyHeadersToLegacyBuildDir.command";
-			shellScript = "";
-		};
-		25BB65891485D17A00D62E64 /* Protect Copied Headers */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Protect Copied Headers";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = "/bin/sh Scripts/Protect.command";
-			shellScript = "";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2941,7 +2911,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/RestKit;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -2960,7 +2930,7 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "$(PUBLIC_HEADERS_FOLDER_PATH)/Private";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = include/RestKit;
+				PUBLIC_HEADERS_FOLDER_PATH = ../RestKit/RestKit;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
