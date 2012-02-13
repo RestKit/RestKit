@@ -764,6 +764,14 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  */
 - (BOOL)wasSentToResourcePath:(NSString *)resourcePath;
 
+/**
+ Returns YES when the receiver was sent to the specified resource path with a given request method.
+ 
+ @param resourcePath A string of the resource path that we want to check against
+ @param method The HTTP method to confirm the request was sent with.
+ */
+- (BOOL)wasSentToResourcePath:(NSString *)resourcePath method:(RKRequestMethod)method;
+
 @end
 
 /**
