@@ -597,6 +597,14 @@
 - (RKRequest *)get:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
+ Fetches a resource via an HTTP GET after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
  Create a resource via an HTTP POST with a set of form parameters.
  
  The form parameters passed here must conform to RKRequestSerializable, such as
@@ -610,6 +618,14 @@
  @see RKRequestSerializable
  */
 - (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(NSObject<RKRequestDelegate> *)delegate;
+
+/**
+ Creates a resource via an HTTP POST after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
 
 /**
  Update a resource via an HTTP PUT.
@@ -628,6 +644,14 @@
 - (RKRequest *)put:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
+ Updates a resource via an HTTP PUT after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
  Destroy a resource via an HTTP DELETE.
  
  @param resourcePath The resourcePath to target the request at
@@ -636,6 +660,13 @@
  */
 - (RKRequest *)delete:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
+/**
+ Destroys a resource via an HTTP DELETE after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
 
 ///-----------------------------------------------------------------------------
 /// @name Constructing Resource Paths and URLs

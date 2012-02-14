@@ -422,29 +422,29 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     return request;
 }
 
-- (RKRequest *)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodGET;
         block(request);
     }];
 }
 
-- (RKRequest *)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodPOST;
         block(request);
     }];
 }
 
-- (RKRequest *)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodPUT;
         block(request);
     }];
 }
 
-- (RKRequest *)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodDELETE;
         block(request);
     }];
