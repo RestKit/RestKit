@@ -10,7 +10,7 @@ module RestKit
         else
           etag(tag)
           content_type 'application/json'
-          send_file 'Specs/Server/../Fixtures/JSON/humans/all.json'
+          send_file 'Tests/Server/../Fixtures/JSON/humans/all.json'
         end
       end
     end
