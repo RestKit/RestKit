@@ -80,6 +80,35 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
+- (void)testConnectionOfHasManyRelationshipsByPrimaryKey {
+    RKManagedObjectStore* objectStore = RKTestNewManagedObjectStore();
+    
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    catMapping.primaryKeyAttribute = @"railsID";
+    [catMapping mapAttributes:@"name", nil];
+    
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    humanMapping.primaryKeyAttribute = @"railsID";
+    [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
+    [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
+    [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
+    
+    // Create a cat to connect
+    RKCat* cat = [RKCat object];
+    cat.name = @"Asia";
+    cat.railsID = [NSNumber numberWithInt:31337];
+    [objectStore save];
+    
+    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman* human = [RKHuman object];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(human.favoriteCat, isNot(nilValue()));
+    assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
+}
+
 - (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths {
     RKManagedObjectStore* objectStore = RKTestNewManagedObjectStore();
 
@@ -89,24 +118,31 @@
 
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
-    [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
-    [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
-    [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
+    [humanMapping mapAttributes:@"name", @"favoriteCatID", @"catIDs", nil];
+    [humanMapping mapRelationship:@"cats" withMapping:catMapping];
+    [humanMapping connectRelationship:@"cats" withObjectForPrimaryKeyAttribute:@"catIDs"];
 
-    // Create a cat to connect
-    RKCat* cat = [RKCat object];
-    cat.name = @"Asia";
-    cat.railsID = [NSNumber numberWithInt:31337];
+    // Create a couple of cats to connect
+    RKCat* asia = [RKCat object];
+    asia.name = @"Asia";
+    asia.railsID = [NSNumber numberWithInt:31337];
+    
+    RKCat* roy = [RKCat object];
+    roy.name = @"Reginald Royford Williams III";
+    roy.railsID = [NSNumber numberWithInt:31338];
+    
     [objectStore save];
 
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    NSArray *catIDs = [NSArray arrayWithObjects:[NSNumber numberWithInt:31337], [NSNumber numberWithInt:31338], nil];
+    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"catIDs", catIDs, nil];
     RKHuman* human = [RKHuman object];
+    
     RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
     NSError* error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
-    assertThat(human.favoriteCat, isNot(nilValue()));
-    assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
+    assertThat(human.cats, isNot(nilValue()));
+    assertThat([human.cats valueForKeyPath:@"name"], containsInAnyOrder(@"Asia", @"Reginald Royford Williams III", nil));
 }
 
 - (void)testShouldLoadNestedHasManyRelationship {

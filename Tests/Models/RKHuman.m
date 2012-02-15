@@ -36,6 +36,7 @@
 
 @dynamic favoriteCat;
 @dynamic cats;
+@dynamic catIDs;
 
 - (NSString*)polymorphicResourcePath {
 	return @"/this/is/the/path";

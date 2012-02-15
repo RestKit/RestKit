@@ -30,17 +30,6 @@
 
 @implementation RKManagedObjectMappingOperation
 
-// TODO: Move this to a better home to take exposure out of the mapper
-- (Class)operationClassForMapping:(RKObjectMapping *)mapping {
-    Class managedMappingClass = NSClassFromString(@"RKManagedObjectMapping");
-    Class managedMappingOperationClass = NSClassFromString(@"RKManagedObjectMappingOperation");
-    if (managedMappingClass != nil && [mapping isMemberOfClass:managedMappingClass]) {
-        return managedMappingOperationClass;
-    }
-
-    return [RKObjectMappingOperation class];
-}
-
 - (void)connectRelationship:(NSString *)relationshipName {
     NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     id primaryKeyObject = [relationshipsAndPrimaryKeyAttributes objectForKey:relationshipName];
@@ -74,14 +63,23 @@
     NSString* primaryKeyAttributeOfRelatedObject = [(RKManagedObjectMapping*)objectMapping primaryKeyAttribute];
     NSAssert(primaryKeyAttributeOfRelatedObject, @"Cannot connect relationship: mapping for %@ has no primary key attribute specified", NSStringFromClass(objectMapping.objectClass));
     id valueOfLocalPrimaryKeyAttribute = [self.destinationObject valueForKey:primaryKeyAttribute];
-    RKLogTrace(@"Connecting relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
     if (valueOfLocalPrimaryKeyAttribute) {
-        id relatedObject = [objectMapping.objectClass findFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute];
-        if (relatedObject) {                
-            RKLogTrace(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
+        id relatedObject = nil;
+        if ([valueOfLocalPrimaryKeyAttribute conformsToProtocol:@protocol(NSFastEnumeration)]) {
+            RKLogTrace(@"Connecting has-many relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", primaryKeyAttributeOfRelatedObject, valueOfLocalPrimaryKeyAttribute];
+            NSArray *objects = [objectMapping.objectClass findAllWithPredicate:predicate];
+            relatedObject = [NSSet setWithArray:objects];
         } else {
-            RKLogTrace(@"Failed to find object to connect relationship '%@' with primary key value '%@'", relationshipName, valueOfLocalPrimaryKeyAttribute);
+            RKLogTrace(@"Connecting has-one relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
+            relatedObject = [objectMapping.objectClass findFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute];
+        }      
+        if (relatedObject) {                
+            RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
+        } else {
+RKLogDebug(@"Failed to find object to connect relationship '%@' with primary key value '%@'", relationshipName, valueOfLocalPrimaryKeyAttribute);
         }
+        NSLog(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
         [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
     } else {
         RKLogTrace(@"Failed to find primary key value for attribute '%@'", primaryKeyAttribute);

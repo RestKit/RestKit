@@ -25,18 +25,20 @@
 @interface RKHuman : NSManagedObject {
 }
 
-@property (nonatomic, retain) NSNumber* railsID;
-@property (nonatomic, retain) NSString* name;
-@property (nonatomic, retain) NSString* nickName;
-@property (nonatomic, retain) NSDate* birthday;
-@property (nonatomic, retain) NSString* sex;
-@property (nonatomic, retain) NSNumber* age;
-@property (nonatomic, retain) NSDate* createdAt;
-@property (nonatomic, retain) NSDate* updatedAt;
+@property (nonatomic, retain) NSNumber *railsID;
+@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSString *nickName;
+@property (nonatomic, retain) NSDate *birthday;
+@property (nonatomic, retain) NSString *sex;
+@property (nonatomic, retain) NSNumber *age;
+@property (nonatomic, retain) NSDate *createdAt;
+@property (nonatomic, retain) NSDate *updatedAt;
 @property (nonatomic, retain) NSArray *favoriteColors;
 
-@property (nonatomic, retain) NSSet* cats;
-@property (nonatomic, retain) RKCat* favoriteCat;
+@property (nonatomic, retain) NSSet *cats;
+@property (nonatomic, retain) RKCat *favoriteCat;
+
+@property (nonatomic, retain) NSArray *catIDs;
 
 @end
 
