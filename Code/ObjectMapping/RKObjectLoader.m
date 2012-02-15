@@ -351,6 +351,10 @@
             [self didFailLoadWithError:error];
             return NO;
         }
+        
+        if ([self.delegate respondsToSelector:@selector(objectLoader:didSerializeSourceObject:toSerialization:)]) {
+            [self.delegate objectLoader:self didSerializeSourceObject:self.sourceObject toSerialization:&params];
+        }
 
         self.params = params;
     }

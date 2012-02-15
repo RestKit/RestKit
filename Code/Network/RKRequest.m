@@ -365,12 +365,17 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 // Setup the NSURLRequest. The request must be prepared right before dispatching
 - (BOOL)prepareURLRequest {
 	[_URLRequest setHTTPMethod:[self HTTPMethod]];
+    
+    if ([self.delegate respondsToSelector:@selector(requestWillPrepareForSend:)]) {
+        [self.delegate requestWillPrepareForSend:self];
+    }
+    
 	[self setRequestBody];
 	[self addHeadersToRequest];
 
     NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
     RKLogTrace(@"Prepared %@ URLRequest '%@'. HTTP Headers: %@. HTTP Body: %@.", [self HTTPMethod], _URLRequest, [_URLRequest allHTTPHeaderFields], body);
-    [body release];
+    [body release];        
 
     return YES;
 }

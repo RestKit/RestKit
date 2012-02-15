@@ -81,6 +81,16 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader;
 
 /**
+ Informs the delegate that the object loader has serialized the source object into a serializable representation
+ for sending to the remote system. The serialization can be modified to allow customization of the request payload independent of mapping.
+ 
+ @param objectLoader The object loader performing the serialization.
+ @param sourceObject The object that was serialized.
+ @param serialization The serialization of sourceObject to be sent to the remote backend for processing.
+ */
+- (void)objectLoader:(RKObjectLoader *)objectLoader didSerializeSourceObject:(id)sourceObject toSerialization:(inout id<RKRequestSerializable> *)serialization;
+
+/**
  Sent when an object loader encounters a response status code or MIME Type that RestKit does not know how to handle.
  
  Response codes in the 2xx, 4xx, and 5xx range are all handled as you would expect. 2xx (successful) response codes

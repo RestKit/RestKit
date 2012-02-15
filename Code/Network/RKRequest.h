@@ -784,6 +784,14 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 ///-----------------------------------------------------------------------------
 /// @name Observing Request Progress
 ///-----------------------------------------------------------------------------
+
+/**
+ Tells the delegate the request is about to be prepared for sending to the remote host.
+ 
+ @param request The RKRequest object that is about to be sent.
+ */
+- (void)requestWillPrepareForSend:(RKRequest *)request;
+
 /**
  Sent when a request has started loading
  

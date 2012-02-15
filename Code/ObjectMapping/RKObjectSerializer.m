@@ -90,7 +90,7 @@
     return nil;
 }
 
-- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)MIMEType error:(NSError**)error {    
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString *)MIMEType error:(NSError **)error {
     if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
         // Dictionaries are natively RKRequestSerializable as Form Encoded
         return [self serializedObject:error];
