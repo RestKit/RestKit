@@ -43,13 +43,12 @@ relationship. Relationships are processed using an object mapping as well.
  Instances of RKObjectMapping are used to configure RKObjectMappingOperation instances, which actually
  perform the mapping work. Both object loading and serialization are defined in terms of object mappings.
  */
-@interface RKObjectMapping : NSObject <RKObjectMappingDefinition, NSCopying> {
+@interface RKObjectMapping : RKObjectMappingDefinition <NSCopying> {
     Class _objectClass;
     NSMutableArray* _mappings;
     NSString* _rootKeyPath;
     BOOL _setDefaultValueForMissingAttributes;
     BOOL _setNilForMissingRelationships;
-    BOOL _forceCollectionMapping;
     BOOL _performKeyValueValidation;
     NSArray *_dateFormatters;
     NSFormatter *_preferredDateFormatter;
@@ -63,36 +62,23 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  The aggregate collection of attribute and relationship mappings within this object mapping
  */
-@property (nonatomic, readonly) NSArray* mappings;
+@property (nonatomic, readonly) NSArray *mappings;
 
 /**
  The collection of attribute mappings within this object mapping
  */
-@property (nonatomic, readonly) NSArray* attributeMappings;
+@property (nonatomic, readonly) NSArray *attributeMappings;
 
 /**
  The collection of relationship mappings within this object mapping
  */
-@property (nonatomic, readonly) NSArray* relationshipMappings;
+@property (nonatomic, readonly) NSArray *relationshipMappings;
 
 /**
  The collection of mappable keyPaths that are defined within this object mapping. These
  keyPaths refer to keys within the source object being mapped (i.e. the parsed JSON payload).
  */
-@property (nonatomic, readonly) NSArray* mappedKeyPaths;
-
-/**
- The root key path for the receiver.
- 
- Root key paths are handled differently depending on the context in which the mapping is
- being used. If the receiver is used for object mapping, the rootKeyPath specifies a nested
- root dictionary that all attribute and relationship mappings will be considered relative to. When
- the mapping is used in a serialization context, the rootKeyPath specifies that the serialized content
- should be stored in a dictionary nested with the rootKeyPath as the key.
-
- @see RKObjectSerializer
- */
-@property (nonatomic, retain) NSString* rootKeyPath;
+@property (nonatomic, readonly) NSArray *mappedKeyPaths;
 
 /**
  When YES, any attributes that have mappings defined but are not present within the source
@@ -120,37 +106,12 @@ relationship. Relationships are processed using an object mapping as well.
  be ignored and mapping will continue. When NO, unknown keyPath mappings will generate
  NSUnknownKeyException errors for the unknown keyPath.
 
- Defaulted to NO to help the developer catch incorrect mapping configurations during
+ Defaults to NO to help the developer catch incorrect mapping configurations during
  development.
 
  **Default**: NO
  */
 @property (nonatomic, assign) BOOL ignoreUnknownKeyPaths;
-
-/**
- Forces the mapper to treat the mapped keyPath as a collection even if it does not
- return an array or a set of objects. This permits mapping where a dictionary identifies
- a collection of objects.
-
- When enabled, each key/value pair in the resolved dictionary will be mapped as a separate
- entity. This is useful when you have a JSON structure similar to:
-
-     { "users":
-        {
-            "blake": { "id": 1234, "email": "blake@restkit.org" },
-            "rachit": { "id": 5678", "email": "rachit@restkit.org" }
-        }
-     }
-
- By enabling forceCollectionMapping, RestKit will map "blake" => attributes and
- "rachit" => attributes as independent objects. This can be combined with
- mapKeyOfNestedDictionaryToAttribute: to properly map these sorts of structures.
-
- @default NO
- @see mapKeyOfNestedDictionaryToAttribute
- */
-@property (nonatomic, assign) BOOL forceCollectionMapping;
-
 
 /**
  An array of NSDateFormatter objects to use when mapping string values
@@ -353,7 +314,7 @@ relationship. Relationships are processed using an object mapping as well.
     on the destination class that have the same name.
  @param objectOrDynamicMapping An RKObjectMapping or RKObjectDynamic mapping to apply when mapping the relationship
  */
-- (void)mapRelationship:(NSString*)relationshipKey withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
+- (void)mapRelationship:(NSString*)relationshipKey withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -361,7 +322,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasMany:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
+- (void)hasMany:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -369,7 +330,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasOne:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
+- (void)hasOne:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
 
 /**
  Instantiate and add an RKObjectAttributeMapping instance targeting a keyPath within the mappable
@@ -410,7 +371,7 @@ relationship. Relationships are processed using an object mapping as well.
  @param objectMapping An object mapping to use when processing the nested objects
  @see RKObjectRelationshipMapping
  */
-- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString*)destinationRelationship withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
+- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString*)destinationRelationship withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
 
 /**
  Instantiate and add an RKObjectRelationshipMapping instance targeting a keyPath within the mappable
@@ -425,7 +386,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see mapKeyPath:toRelationship:withObjectMapping:
  */
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping serialize:(BOOL)serialize;
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping serialize:(BOOL)serialize;
 
 /**
  Quickly define a group of attribute mappings using alternating keyPath and attribute names. You must provide

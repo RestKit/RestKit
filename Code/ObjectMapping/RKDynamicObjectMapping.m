@@ -31,7 +31,6 @@
 
 @synthesize delegate = _delegate;
 @synthesize objectMappingForDataBlock = _objectMappingForDataBlock;
-@synthesize forceCollectionMapping = _forceCollectionMapping;
 
 + (RKDynamicObjectMapping*)dynamicMapping {
     return [[self new] autorelease];

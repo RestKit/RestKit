@@ -214,7 +214,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
     @synchronized(self) {
         [_loadingRequests addObject:request];
     }
-    RKLogTrace(@"Loading count now %d for queue %@", self.loadingCount, self);
+    RKLogTrace(@"Loading count now %ld for queue %@", (long) self.loadingCount, self);
 }
 
 - (void)removeLoadingRequest:(RKRequest*)request {
@@ -235,7 +235,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
     @synchronized(self) {
         [_loadingRequests removeObject:request];
     }
-    RKLogTrace(@"Loading count now %d for queue %@", self.loadingCount, self);
+    RKLogTrace(@"Loading count now %ld for queue %@", (long) self.loadingCount, self);
 }
 
 - (void)loadNextInQueueDelayed {
@@ -468,7 +468,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
     NSDictionary* userInfo = [notification userInfo];
 
     // We successfully loaded a response
-    RKLogDebug(@"Received response for request %@, removing from queue. (Now loading %d of %d)", request, self.loadingCount, _concurrentRequestsLimit);
+    RKLogDebug(@"Received response for request %@, removing from queue. (Now loading %ld of %ld)", request, (long) self.loadingCount, (long) _concurrentRequestsLimit);
 
     RKResponse* response = [userInfo objectForKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
     if ([_delegate respondsToSelector:@selector(requestQueue:didLoadResponse:)]) {
@@ -490,8 +490,8 @@ static const NSTimeInterval kFlushDelay = 0.3;
     NSError* error = nil;
     if (userInfo) {
         error = [userInfo objectForKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
-        RKLogDebug(@"Request %@ failed loading in queue %@ with error: %@.(Now loading %d of %d)", request, self,
-                   [error localizedDescription], self.loadingCount, _concurrentRequestsLimit);
+        RKLogDebug(@"Request %@ failed loading in queue %@ with error: %@.(Now loading %ld of %ld)", request, self,
+                   [error localizedDescription], (long) self.loadingCount, (long) _concurrentRequestsLimit);
     } else {
         RKLogWarning(@"Received RKRequestDidFailWithErrorNotification without a userInfo, something is amiss...");
     }

@@ -50,7 +50,7 @@
     NSAssert(primaryKeyAttribute, @"Cannot connect relationship without primaryKeyAttribute");
 
     RKObjectRelationshipMapping* relationshipMapping = [self.objectMapping mappingForRelationship:relationshipName];
-    id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
+    RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
     NSAssert(mapping, @"Attempted to connect relationship for keyPath '%@' without a relationship mapping defined.");
     if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
         RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));

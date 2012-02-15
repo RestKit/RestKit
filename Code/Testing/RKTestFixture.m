@@ -35,9 +35,11 @@ static NSBundle *fixtureBundle = nil;
     fixtureBundle = bundle;
 }
 
+#if TARGET_OS_IPHONE
 + (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName {
     return [fixtureBundle imageWithContentsOfResource:fixtureName withExtension:nil];
 }
+#endif
 
 + (NSString *)stringWithContentsOfFixture:(NSString *)fixtureName {
     return [fixtureBundle stringWithContentsOfResource:fixtureName withExtension:nil encoding:NSUTF8StringEncoding];

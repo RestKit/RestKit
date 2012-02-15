@@ -210,7 +210,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
     
-    id<RKObjectMappingDefinition> objectMapping = [self.mappingProvider objectMappingForResourcePath:resourcePath];
+    RKObjectMappingDefinition * objectMapping = [self.mappingProvider objectMappingForResourcePath:resourcePath];
     if (objectMapping == nil || ([objectMapping isKindOfClass:[RKObjectMapping class]] && [object isMemberOfClass:[(RKObjectMapping *)objectMapping objectClass]])) {
         loader.targetObject = object;
     } else {

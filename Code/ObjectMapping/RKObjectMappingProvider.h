@@ -82,7 +82,7 @@ typedef enum {
  @see RKObjectMapper
  @see RKObjectMappingOperation
  */
-- (void)setObjectMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
+- (void)setObjectMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
 
 /**
  Returns the RKObjectMapping or RKObjectDynamic mapping configured for use 
@@ -91,7 +91,7 @@ typedef enum {
  @param keyPath A registered keyPath to retrieve the object mapping for
  @return The RKObjectMapping or RKDynamicObjectMapping for the specified keyPath or nil if none is registered.
  */
-- (id<RKObjectMappingDefinition>)objectMappingForKeyPath:(NSString *)keyPath;
+- (RKObjectMappingDefinition *)objectMappingForKeyPath:(NSString *)keyPath;
 
 /**
  Removes the RKObjectMapping or RKDynamicObjectMapping registered at the specified keyPath
@@ -231,7 +231,7 @@ typedef enum {
  @see RKURL
  @see RKObjectLoader
  */
-- (void)setObjectMapping:(id<RKObjectMappingDefinition>)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern;
+- (void)setObjectMapping:(RKObjectMappingDefinition *)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern;
 
 /**
  Returns the first objectMapping configured in the provider with a resourcePathPattern matching
@@ -242,7 +242,7 @@ typedef enum {
  @return An RKObjectMapping or RKDynamicObjectMapping for a resource path pattern matching resourcePath
     or nil if no match was found.
  */
-- (id<RKObjectMappingDefinition>)objectMappingForResourcePath:(NSString *)resourcePath;
+- (RKObjectMappingDefinition *)objectMappingForResourcePath:(NSString *)resourcePath;
 
 /**
  An object mapping used when the remote system returns an error status code
@@ -277,8 +277,8 @@ typedef enum {
 @interface RKObjectMappingProvider (CompatibilityAliases)
 + (RKObjectMappingProvider *)objectMappingProvider;
 - (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath;
-- (void)setMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
-- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath;
+- (void)setMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
+- (RKObjectMappingDefinition *)mappingForKeyPath:(NSString *)keyPath;
 - (NSDictionary *)mappingsByKeyPath;
 - (void)removeMappingForKeyPath:(NSString *)keyPath;
 @end

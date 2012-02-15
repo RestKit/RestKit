@@ -51,7 +51,7 @@
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
-    NSObject <RKObjectMappingDefinition> *returnedMapping = [_objectManager.mappingProvider objectMappingForClass:[RKHuman class]];
+    RKObjectMappingDefinition *returnedMapping = [_objectManager.mappingProvider objectMappingForClass:[RKHuman class]];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     assertThat(returnedMapping, is(equalTo(humanMapping)));
 }
@@ -62,7 +62,7 @@
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
-    NSObject <RKObjectMappingDefinition> *returnedMapping = [_objectManager.mappingProvider mappingForKeyPath:@"cat"];
+    RKObjectMappingDefinition *returnedMapping = [_objectManager.mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     assertThat(returnedMapping, is(equalTo(catMapping)));
 }
@@ -74,7 +74,7 @@
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];
-    NSObject <RKObjectMappingDefinition> *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
+    RKObjectMappingDefinition *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     [mappingProvider removeMappingForKeyPath:@"cat"];
     returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
@@ -200,7 +200,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    id<RKObjectMappingDefinition> matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
+    RKObjectMappingDefinition * matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 
@@ -209,7 +209,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    id<RKObjectMappingDefinition> matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
+    RKObjectMappingDefinition * matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 

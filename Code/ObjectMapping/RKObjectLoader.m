@@ -226,7 +226,7 @@
     return result;
 }
 
-- (RKObjectMapping *)configuredObjectMapping {
+- (RKObjectMappingDefinition *)configuredObjectMapping {
     if (self.objectMapping) {
         return self.objectMapping;
     }
@@ -238,7 +238,7 @@
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping should occur on a background thread");
     
     RKObjectMappingProvider* mappingProvider;
-    RKObjectMapping *configuredObjectMapping = [self configuredObjectMapping];
+    RKObjectMappingDefinition *configuredObjectMapping = [self configuredObjectMapping];
     if (configuredObjectMapping) {        
         mappingProvider = [RKObjectMappingProvider mappingProvider];
         NSString *rootKeyPath = configuredObjectMapping.rootKeyPath ? configuredObjectMapping.rootKeyPath : @"";

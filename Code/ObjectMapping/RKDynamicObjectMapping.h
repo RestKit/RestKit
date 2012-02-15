@@ -40,13 +40,12 @@ typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
  object mapping to apply at mapping time. This allows you to map very similar payloads
  differently depending on the type of data contained therein.
  */
-@interface RKDynamicObjectMapping : NSObject <RKObjectMappingDefinition> {
+@interface RKDynamicObjectMapping : RKObjectMappingDefinition {
     NSMutableArray *_matchers;
     id<RKDynamicObjectMappingDelegate> _delegate;
     #ifdef NS_BLOCKS_AVAILABLE
     RKDynamicObjectMappingDelegateBlock _objectMappingForDataBlock;
     #endif
-    BOOL _forceCollectionMapping;
 }
 
 /**
@@ -64,13 +63,6 @@ typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
  */
 @property (nonatomic, copy) RKDynamicObjectMappingDelegateBlock objectMappingForDataBlock;
 #endif
-
-/**
- When YES, an NSDictionary encountered by RKObjectMapper will be treated as a collection
- rather than as a single mappable entity. This is used to perform sub-keypath mapping wherein
- the keys of the dictionary are part of the mappable data.
- */
-@property (nonatomic, assign) BOOL forceCollectionMapping;
 
 /**
  Return a new auto-released dynamic object mapping

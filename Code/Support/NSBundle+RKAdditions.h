@@ -19,7 +19,10 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#if TARGET_OS_IPHONE
 #import <UIKit/UIImage.h>
+#endif
 
 /**
  Provides convenience methods for accessing data in resources
@@ -55,6 +58,7 @@
  */
 - (NSString *)stringWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension encoding:(NSStringEncoding)encoding;
 
+#if TARGET_OS_IPHONE
 /**
  Creates and returns an image object by loading the image data from the resource identified by the specified name and file extension.
 
@@ -63,6 +67,7 @@
  @return A new image object for the specified file, or nil if the method could not initialize the image from the specified file.
  */
 - (UIImage *)imageWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension;
+#endif
 
 /**
  Creates and returns an object representation of the data from the resource identified by the specified name and file extension by reading the

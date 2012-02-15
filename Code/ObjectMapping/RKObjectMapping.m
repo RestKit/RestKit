@@ -36,7 +36,6 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 @synthesize rootKeyPath = _rootKeyPath;
 @synthesize setDefaultValueForMissingAttributes = _setDefaultValueForMissingAttributes;
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
-@synthesize forceCollectionMapping = _forceCollectionMapping;
 @synthesize performKeyValueValidation = _performKeyValueValidation;
 @synthesize ignoreUnknownKeyPaths = _ignoreUnknownKeyPaths;
 
@@ -212,16 +211,16 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [self mapAttributesCollection:[NSSet setWithArray:array]];
 }
 
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping serialize:(BOOL)serialize {
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping serialize:(BOOL)serialize {
     RKObjectRelationshipMapping* mapping = [RKObjectRelationshipMapping mappingFromKeyPath:relationshipKeyPath toKeyPath:keyPath withMapping:objectOrDynamicMapping reversible:serialize];
     [self addRelationshipMapping:mapping];
 }
 
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping {
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
     [self mapKeyPath:relationshipKeyPath toRelationship:keyPath withMapping:objectOrDynamicMapping serialize:YES];
 }
 
-- (void)mapRelationship:(NSString*)relationshipKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping {
+- (void)mapRelationship:(NSString*)relationshipKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
     [self mapKeyPath:relationshipKeyPath toRelationship:relationshipKeyPath withMapping:objectOrDynamicMapping];
 }
 
@@ -230,11 +229,11 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [self addAttributeMapping:mapping];
 }
 
-- (void)hasMany:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping {
+- (void)hasMany:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
     [self mapRelationship:keyPath withMapping:objectOrDynamicMapping];
 }
 
-- (void)hasOne:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping {
+- (void)hasOne:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
     [self mapRelationship:keyPath withMapping:objectOrDynamicMapping];
 }
 
@@ -263,7 +262,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 
     for (RKObjectRelationshipMapping* relationshipMapping in self.relationshipMappings) {
         if (relationshipMapping.reversible) {
-            id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
+            RKObjectMappingDefinition * mapping = relationshipMapping.mapping;
             if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
                 RKLogWarning(@"Unable to generate inverse mapping for relationship '%@': %@ relationships cannot be inversed.", relationshipMapping.sourceKeyPath, NSStringFromClass([mapping class]));
                 continue;

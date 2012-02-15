@@ -269,13 +269,13 @@
     humanMapping.primaryKeyAttribute = @"railsID";
 
     [RKHuman truncateAll];
-    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
+    assertThatInteger([RKHuman count:nil], is(equalToInteger(0)));
     RKHuman* blake = [RKHuman createEntity];
     blake.railsID = [NSNumber numberWithInt:123];
     RKHuman* other = [RKHuman createEntity];
     other.railsID = [NSNumber numberWithInt:456];
     [objectStore save];
-    assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+    assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
 
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
 
@@ -297,7 +297,7 @@
         assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
         assertThatBool([responseLoader wasSuccessful], is(equalToBool(YES)));
         assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(NO)));
-        assertThatInt([responseLoader.objects count], is(equalToInt(2)));
+        assertThatInteger([responseLoader.objects count], is(equalToInteger(2)));
     }
     {
         RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
@@ -310,10 +310,10 @@
         [responseLoader waitForResponse];
 
         [mockLoader verify];
-        assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+        assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
         assertThatBool([responseLoader wasSuccessful], is(equalToBool(YES)));
         assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(YES)));
-        assertThatInt([responseLoader.objects count], is(equalToInt(2)));
+        assertThatInteger([responseLoader.objects count], is(equalToInteger(2)));
     }
 }
 

@@ -61,6 +61,7 @@
 	return fixtureData;
 }
 
+#if TARGET_OS_IPHONE
 - (UIImage *)imageWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (! resourcePath) {
@@ -70,6 +71,7 @@
 
     return [UIImage imageWithContentsOfFile:resourcePath];
 }
+#endif
 
 - (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
     NSError* error = nil;

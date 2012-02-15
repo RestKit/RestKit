@@ -433,7 +433,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         [fetchRequest setResultType:NSManagedObjectIDResultType];
 
         objectIds = [NSManagedObject executeFetchRequest:fetchRequest];
-        RKLogInfo(@"Caching all %d %@ objectsIDs to thread local storage", [objectIds count], entity.name);
+        RKLogInfo(@"Caching all %ld %@ objectsIDs to thread local storage", (long) [objectIds count], entity.name);
         NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
         if ([objectIds count] > 0) {
             BOOL coerceToString = [self shouldCoerceAttributeToString:primaryKeyAttribute forEntity:entity];

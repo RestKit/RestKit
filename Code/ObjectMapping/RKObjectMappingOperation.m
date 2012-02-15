@@ -69,7 +69,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 @synthesize delegate = _delegate;
 @synthesize queue = _queue;
 
-+ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(id<RKObjectMappingDefinition>)objectMapping {
++ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectMappingDefinition *)objectMapping {
     // Check for availability of ManagedObjectMappingOperation. Better approach for handling?
     Class targetClass = NSClassFromString(@"RKManagedObjectMappingOperation");
     if (targetClass == nil) targetClass = [RKObjectMappingOperation class];
@@ -77,7 +77,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return [[[targetClass alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectMapping] autorelease];
 }
 
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(id<RKObjectMappingDefinition>)objectMapping {
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKObjectMappingDefinition *)objectMapping {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
     NSAssert(objectMapping != nil, @"Cannot perform a mapping operation without a mapping");
@@ -501,7 +501,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
             }
             for (id nestedObject in value) {                
-                id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
+                RKObjectMappingDefinition * mapping = relationshipMapping.mapping;
                 RKObjectMapping* objectMapping = nil;
                 if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
                     objectMapping = [(RKDynamicObjectMapping*)mapping objectMappingForDictionary:nestedObject];
@@ -549,7 +549,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             // One to one relationship
             RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);            
             
-            id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
+            RKObjectMappingDefinition * mapping = relationshipMapping.mapping;
             RKObjectMapping* objectMapping = nil;
             if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
                 objectMapping = [(RKDynamicObjectMapping*)mapping objectMappingForDictionary:value];
