@@ -186,6 +186,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
     RKRequestQueue *_queue;
     RKReachabilityObserver *_reachabilityObserver;
     NSTimer *_timeoutTimer;
+    NSStringEncoding _defaultHTTPEncoding;
     
     NSSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
@@ -293,6 +294,11 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  */
 @property (nonatomic, readonly) NSMutableURLRequest *URLRequest;
 
+/**
+ The default value used to decode HTTP body content when HTTP headers received do not provide information on the content.
+ This encoding will be used by the RKResponse when creating the body content
+ */
+@property (nonatomic, assign) NSStringEncoding defaultHTTPEncoding;
 
 ///-----------------------------------------------------------------------------
 /// @name Working with the HTTP Body

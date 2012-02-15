@@ -57,6 +57,19 @@
 	assertThat(request.cache, is(equalTo(client.requestCache)));
 }
 
+- (void)testShouldLoadPageWithNoContentTypeInformation {
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.semiose.fr"];
+    client.defaultHTTPEncoding = NSISOLatin1StringEncoding;
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKRequest* request = [client requestWithResourcePath:@"/"];
+    request.delegate = loader;
+    [request send];
+    [loader waitForResponse];
+    assertThatBool(loader.wasSuccessful, is(equalToBool(YES)));
+    assertThat([loader.response bodyEncodingName], is(nilValue()));
+    assertThatInteger([loader.response bodyEncoding], is(equalToInteger(NSISOLatin1StringEncoding)));
+}
+
 - (void)testShouldAllowYouToChangeTheBaseURL {
     RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle

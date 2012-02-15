@@ -115,6 +115,7 @@
 	RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
+    NSStringEncoding _defaultHTTPEncoding;
     
     // Queue suspension flags
     BOOL _awaitingReachabilityDetermination;
@@ -209,14 +210,6 @@
  */
 @property (nonatomic, readonly) NSMutableDictionary *HTTPHeaders;
 
-#ifdef RESTKIT_SSL_VALIDATION
-/**
- A set of additional certificates to be used in evaluating server
- SSL certificates.
- */
-@property(nonatomic, readonly) NSSet* additionalRootCertificates;
-#endif
-
 /**
  An optional timeout interval within which the request should be cancelled.
  
@@ -233,6 +226,12 @@
  *Default*: A new request queue is instantiated for you during init.
  */
 @property (nonatomic, retain) RKRequestQueue *requestQueue;
+
+/**
+ The default value used to decode HTTP body content when HTTP headers received do not provide information on the content.
+ This encoding will be used by the RKResponse when creating the body content
+ */
+@property (nonatomic, assign) NSStringEncoding defaultHTTPEncoding;
 
 /**
  Adds an HTTP header to each request dispatched through the client
@@ -257,6 +256,7 @@
  **ONLY while debugging** in a controlled environment.
  */
 @property (nonatomic, assign) BOOL disableCertificateValidation;
+
 
 /**
  A set of additional certificates to be used in evaluating server SSL
