@@ -6,7 +6,8 @@
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "RKObjectManager.h"
+#import "RKManagedObjectSyncQueue.h"
 
 typedef enum {
     RKSyncStatusNone,
@@ -16,5 +17,11 @@ typedef enum {
 } RKSyncStatus;
 
 @interface RKSyncManager : NSObject
+
+@property (nonatomic, readonly) RKObjectManager* objectManager;
+
+- (id)initWithObjectManager:(RKObjectManager*)objectManager;
+- (void)contextDidSave:(NSNotification*)notification;
+- (int)highestQueuePosition;
 
 @end

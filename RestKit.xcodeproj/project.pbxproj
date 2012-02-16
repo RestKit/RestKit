@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2080057B14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; };
+		2080057B14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2080057C14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; };
 		2080057D14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
 		2080057E14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
 		2080057F14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
 		2080058014ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
-		2080058414ED8C240052EB8C /* RKSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080058214ED8C240052EB8C /* RKSyncManager.h */; };
+		2080058414ED8C240052EB8C /* RKSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080058214ED8C240052EB8C /* RKSyncManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2080058514ED8C240052EB8C /* RKSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080058214ED8C240052EB8C /* RKSyncManager.h */; };
 		2080058614ED8C240052EB8C /* RKSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080058314ED8C240052EB8C /* RKSyncManager.m */; };
 		2080058714ED8C240052EB8C /* RKSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080058314ED8C240052EB8C /* RKSyncManager.m */; };
@@ -2117,6 +2117,8 @@
 				25B6E9ED14CF940700B1E881 /* RKSearchableManagedObject.h in Headers */,
 				25B6E9F114CF940700B1E881 /* RKSearchWord.h in Headers */,
 				25B6E9F514CF940700B1E881 /* RKSearchWordObserver.h in Headers */,
+				2080057B14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */,
+				2080058414ED8C240052EB8C /* RKSyncManager.h in Headers */,
 				25B6E9FD14CF943E00B1E881 /* RKCache.h in Headers */,
 				25B6EA0114CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
 				252EFB0214D98EB0004863C8 /* RKTableView.h in Headers */,
@@ -2126,8 +2128,6 @@
 				252EFB2514D9B6F2004863C8 /* Testing.h in Headers */,
 				253B495214E35D1A00B0483F /* RKTestFixture.h in Headers */,
 				25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */,
-				2080057B14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */,
-				2080058414ED8C240052EB8C /* RKSyncManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
