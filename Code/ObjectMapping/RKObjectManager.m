@@ -45,6 +45,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize networkStatus = _networkStatus;
 @synthesize mappingQueue = _mappingQueue;
+@synthesize syncManager = _syncManager;
 
 + (dispatch_queue_t)defaultMappingQueue {
     if (! defaultMappingQueue) {

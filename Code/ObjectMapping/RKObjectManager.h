@@ -24,6 +24,7 @@
 #import "RKObjectMappingProvider.h"
 #import "RKConfigurationDelegate.h"
 #import "RKObjectPaginator.h"
+#import "RKSyncManager.h"
 
 @protocol RKParser;
 
@@ -231,6 +232,12 @@ typedef enum {
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
 @property (nonatomic, retain) RKManagedObjectStore *objectStore;
+
+/**
+ An object that handles the syncronization of objects with the server.
+ */
+@property (nonatomic, readonly) RKSyncManager *syncManager;
+
 
 /**
  The Grand Dispatch Queue to use when performing expensive object mapping operations
