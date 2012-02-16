@@ -35,6 +35,7 @@
 @synthesize entity = _entity;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
 @synthesize objectStore = _objectStore;
+@synthesize syncMode = _syncMode;
 
 + (id)mappingForClass:(Class)objectClass {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException

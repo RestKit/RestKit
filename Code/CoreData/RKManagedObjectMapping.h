@@ -22,6 +22,13 @@
 #import "RKObjectMapping.h"
 //#import "RKManagedObjectStore.h"
 
+typedef enum {
+    RKSyncModeNone,
+    RKSyncModeInterval,
+    RKSyncModeTransparent,
+    RKSyncModeManual
+} RKSyncMode;
+
 @class RKManagedObjectStore;
 
 /**
@@ -83,6 +90,11 @@
  The RKManagedObjectStore containing the Core Data entity being mapped
  */
 @property (nonatomic, readonly) RKManagedObjectStore *objectStore;
+
+/**
+ The RKSyncMode specifying the way in which objects should be synced, if at all.
+ */
+@property (nonatomic, assign) RKSyncMode syncMode;
 
 /**
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
