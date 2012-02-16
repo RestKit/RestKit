@@ -145,6 +145,13 @@ class RestKit::SpecServer < Sinatra::Base
     content_type 'application/json'
     params.to_json
   end
+  
+  post '/timeout' do
+    sleep 2
+    status 200
+    content_type 'application/json'
+    params.to_json
+  end
 
   get '/empty/array' do
     status 200

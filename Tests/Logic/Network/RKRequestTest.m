@@ -94,8 +94,7 @@
 - (void)testShouldTimeoutAtIntervalWhenSentAsynchronously {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     id loaderMock = [OCMockObject partialMockForObject:loader];
-    NSString* url = [NSString stringWithFormat:@"%@/timeout", RKTestGetBaseURLString()];
-    NSURL* URL = [NSURL URLWithString:url];
+    NSURL* URL = [RKTestGetBaseURL() URLByAppendingResourcePath:@"/timeout"];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.delegate = loaderMock;
     request.timeoutInterval = 3.0;
@@ -109,8 +108,7 @@
 - (void)testShouldTimeoutAtIntervalWhenSentSynchronously {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     id loaderMock = [OCMockObject partialMockForObject:loader];
-    NSString* url = [NSString stringWithFormat:@"%@/timeout", RKTestGetBaseURLString()];
-    NSURL* URL = [NSURL URLWithString:url];
+    NSURL* URL = [RKTestGetBaseURL() URLByAppendingResourcePath:@"/timeout"];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.delegate = loaderMock;
     request.timeoutInterval = 3.0;
@@ -122,14 +120,28 @@
 
 - (void)testShouldCreateOneTimeoutTimerWhenSentAsynchronously {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKURL* url = RKTestGetBaseURL();
-    RKRequest* request = [[RKRequest alloc] initWithURL:url];
+    RKRequest* request = [[RKRequest alloc] initWithURL:RKTestGetBaseURL()];
     request.delegate = loader;
     id requestMock = [OCMockObject partialMockForObject:request];
     [[[requestMock expect] andCall:@selector(incrementMethodInvocationCounter) onObject:self] createTimeoutTimer];
     [requestMock sendAsynchronously];
     [loader waitForResponse];
     assertThatInt(_methodInvocationCounter, equalToInt(1));
+    [request release];
+}
+
+- (void)testThatSendingDataInvalidatesTimeoutTimer {
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    loader.timeout = 3.0;
+    NSURL* URL = [RKTestGetBaseURL() URLByAppendingResourcePath:@"/timeout"];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.method = RKRequestMethodPOST;
+    request.delegate = loader;
+    request.params = [NSDictionary dictionaryWithObject:@"test" forKey:@"test"];
+request.timeoutInterval = 1.0;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    assertThatBool([loader wasSuccessful], is(equalToBool(YES)));
     [request release];
 }
 
