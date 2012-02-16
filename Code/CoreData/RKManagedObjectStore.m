@@ -106,7 +106,42 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
-
+        
+        //Add queue to core data model before persistant store is created
+        //TODO: check if exists
+        NSEntityDescription *syncQueue = [[NSEntityDescription alloc] init];
+        [syncQueue setName: @"RKManagedObjectSyncQueue"];
+        [syncQueue setManagedObjectClassName: @"RKManagedObjectSyncQueue"];
+        [syncQueue setAbstract:NO];
+        
+        NSAttributeDescription *queuePositionAttribute = [[NSAttributeDescription alloc] init];
+        [queuePositionAttribute setName:@"queuePosition"];
+        [queuePositionAttribute setAttributeType:NSInteger32AttributeType];
+        [queuePositionAttribute setOptional:NO];
+        [queuePositionAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
+        
+        NSAttributeDescription *syncStatusAttribute = [[NSAttributeDescription alloc] init];
+        [syncStatusAttribute setName:@"SyncStatus"];
+        [syncStatusAttribute setAttributeType:NSInteger16AttributeType];
+        [syncStatusAttribute setOptional:NO];
+        [syncStatusAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
+        
+        NSAttributeDescription *objectIDStringAttribute = [[NSAttributeDescription alloc] init];
+        [objectIDStringAttribute setName:@"ObjectIDString"];
+        [objectIDStringAttribute setAttributeType:NSStringAttributeType];
+        [objectIDStringAttribute setOptional:NO];
+        [objectIDStringAttribute setDefaultValue:@""];
+        
+        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, objectIDStringAttribute, nil]];
+        
+        [queuePositionAttribute release];
+        [syncStatusAttribute release];
+        [objectIDStringAttribute release];
+        
+        [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObject:syncQueue]];
+        
+        [syncQueue release];
+        
         _delegate = delegate;
 
 		[self createPersistentStoreCoordinator];
