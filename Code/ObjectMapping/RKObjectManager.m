@@ -163,6 +163,19 @@ static dispatch_queue_t defaultMappingQueue = nil;
     return [self.client.HTTPHeaders valueForKey:@"Accept"];
 }
 
+- (void)setObjectStore:(RKManagedObjectStore *)objectStore {
+    // Retain object store and create a syncmanager
+    if (_objectStore != objectStore)
+    {
+        [objectStore retain];
+        if (_objectStore) {
+            [_objectStore release];
+        }
+        _objectStore = objectStore;
+    }
+    _syncManager = [[RKSyncManager alloc] initWithObjectManager:self];
+}
+
 /////////////////////////////////////////////////////////////
 #pragma mark - Object Collection Loaders
 

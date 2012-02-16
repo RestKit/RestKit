@@ -7,6 +7,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "NSManagedObject+ActiveRecord.h"
 
 @interface RKManagedObjectSyncQueue : NSManagedObject
 

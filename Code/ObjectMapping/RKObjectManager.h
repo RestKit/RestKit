@@ -47,6 +47,7 @@ typedef enum {
 } RKObjectManagerNetworkStatus;
 
 @class RKManagedObjectStore;
+@class RKSyncManager;
 
 /**
  The object manager is the primary interface for interacting with RESTful resources via HTTP. It is
@@ -237,7 +238,6 @@ typedef enum {
  An object that handles the syncronization of objects with the server.
  */
 @property (nonatomic, readonly) RKSyncManager *syncManager;
-
 
 /**
  The Grand Dispatch Queue to use when performing expensive object mapping operations
