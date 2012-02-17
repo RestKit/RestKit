@@ -26,7 +26,7 @@
     RKSearchable* searchable = [RKSearchable createEntity];
     searchable.title = @"This is the title of my new object";
     assertThat(searchable.searchWords, is(empty()));
-    [store save];
+    [store save:nil];
     assertThat(searchable.searchWords, isNot(empty()));
     assertThat(searchable.searchWords, hasCountOf(8));
 }

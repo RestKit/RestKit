@@ -134,7 +134,7 @@
     [self addRowForAttribute:attributeKeyPath withControlType:controlType usingBlock:nil];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *))block {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block {
     RKTableItem *tableItem = [RKTableItem tableItem];
     tableItem.cellMapping.cellClass = cellClass;
     RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];

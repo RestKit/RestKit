@@ -75,7 +75,7 @@
 
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
-    [store save];
+    [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
 
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
@@ -94,7 +94,7 @@
     [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
-    [store save];
+    [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
 
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];

@@ -111,7 +111,7 @@
     // set before the managed object store.
     if (self.targetObject && [self.targetObject isKindOfClass:[NSManagedObject class]]) {
         _deleteObjectOnFailure = [(NSManagedObject*)self.targetObject isNew];
-        [self.objectStore save];
+        [self.objectStore save:nil];
         _targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
     }
     
@@ -162,8 +162,9 @@
     // If the response was successful, save the store...
     if ([self.response isSuccessful]) {
         [self deleteCachedObjectsMissingFromResult:result];
-        NSError* error = [self.objectStore save];
-        if (error) {
+        NSError *error = nil;
+        BOOL success = [self.objectStore save:&error];
+        if (! success) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
             NSMethodSignature* signature = [(NSObject *)self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
             RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
@@ -197,7 +198,7 @@
             NSManagedObject* objectToDelete = [self.objectStore objectWithID:_targetObjectID];
             if (objectToDelete) {
                 [[self.objectStore managedObjectContext] deleteObject:objectToDelete];
-                [self.objectStore save];
+                [self.objectStore save:nil];
             } else {
                 RKLogWarning(@"Unable to delete existing managed object with ID: %@. Object not found in the store.", _targetObjectID);
             }

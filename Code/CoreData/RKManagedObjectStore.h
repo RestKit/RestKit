@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/22/09.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 /**
  * Save the current contents of the managed object store
  */
-- (NSError*)save;
+- (BOOL)save:(NSError **)error;
 
 /**
  * This deletes and recreates the managed object context and

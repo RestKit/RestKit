@@ -167,7 +167,7 @@ relationship. Relationships are processed using an object mapping as well.
         }];
     }];
  */
-+ (id)mappingForClass:(Class)objectClass usingBlock:(void (^)(RKObjectMapping *))block;
++ (id)mappingForClass:(Class)objectClass usingBlock:(void (^)(RKObjectMapping *mapping))block;
 
 /**
  Returns serialization mapping for encoding a local object to a dictionary for transport. The RKObjectMapping instance will
@@ -190,7 +190,7 @@ relationship. Relationships are processed using an object mapping as well.
  
  Using the block forms we are able to quickly configure and send this request on the fly.
  */
-+ (id)serializationMappingUsingBlock:(void (^)(RKObjectMapping*))block;
++ (id)serializationMappingUsingBlock:(void (^)(RKObjectMapping *serializationMapping))block;
 #endif
 
 /**

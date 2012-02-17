@@ -68,7 +68,7 @@
     RKCat* cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [objectStore save];
+    [objectStore save:nil];
 
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman* human = [RKHuman object];
@@ -97,7 +97,7 @@
     RKCat* cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [objectStore save];
+    [objectStore save:nil];
     
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman* human = [RKHuman object];
@@ -131,7 +131,7 @@
     roy.name = @"Reginald Royford Williams III";
     roy.railsID = [NSNumber numberWithInt:31338];
     
-    [objectStore save];
+    [objectStore save:nil];
 
     NSArray *catIDs = [NSArray arrayWithObjects:[NSNumber numberWithInt:31337], [NSNumber numberWithInt:31338], nil];
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"catIDs", catIDs, nil];
@@ -219,7 +219,7 @@
     RKCat* cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [objectStore save];
+    [objectStore save:nil];
 
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman* human = [RKHuman object];
@@ -248,7 +248,7 @@
     RKCat* cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [objectStore save];
+    [objectStore save:nil];
 
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman* human = [RKHuman object];

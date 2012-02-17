@@ -29,7 +29,7 @@
     return [[self new] autorelease];
 }
 
-+ (RKObjectMappingProvider *)mappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *))block {
++ (RKObjectMappingProvider *)mappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *mappingProvider))block {
     RKObjectMappingProvider* mappingProvider = [self mappingProvider];
     block(mappingProvider);
     return mappingProvider;

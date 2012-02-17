@@ -93,7 +93,7 @@
     // spec pass. Without it we are crashing inside the mapper internals. Believe
     // that we just need a way to save the context before we begin mapping or something
     // on success. Always saving means that we can abandon objects on failure...
-    [_objectManager.objectStore save];
+    [_objectManager.objectStore save:nil];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     [_objectManager postObject:temporaryHuman delegate:loader];
     [loader waitForResponse];
@@ -130,7 +130,7 @@
     [mapping mapAttributes:@"name", nil];
 
     // Save it to suppress deletion
-    [_objectManager.objectStore save];
+    [_objectManager.objectStore save:nil];
 
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     NSString* resourcePath = @"/humans/fail";

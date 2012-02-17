@@ -74,8 +74,8 @@ typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
 /**
  Return a new auto-released dynamic object mapping after yielding it to the block for configuration
  */
-+ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *))block;
-+ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *))block DEPRECATED_ATTRIBUTE;
++ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *dynamicMapping))block;
++ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *dynamicMapping))block DEPRECATED_ATTRIBUTE;
 
 #endif
 

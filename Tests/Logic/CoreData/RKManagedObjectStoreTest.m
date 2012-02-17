@@ -33,7 +33,7 @@
     objectManager.objectStore = objectStore;
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
+    [objectStore save:nil];
     NSManagedObject* newReference = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:@"1234"];
     assertThat(newReference, is(equalTo(human)));
 }

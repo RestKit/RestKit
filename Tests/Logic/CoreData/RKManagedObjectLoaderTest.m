@@ -71,7 +71,7 @@
     RKHuman* human = [RKHuman object];
     human.name = @"Blake Watters";
     human.railsID = [NSNumber numberWithInt:1];
-    [objectManager.objectStore save];
+    [objectManager.objectStore save:nil];
 
     assertThat(objectManager.objectStore.managedObjectContext, is(equalTo(store.managedObjectContext)));
 
@@ -128,7 +128,7 @@
     other.railsID = [NSNumber numberWithInt:456];
     RKHuman* deleteMe = [RKHuman createEntity];
     deleteMe.railsID = [NSNumber numberWithInt:9999];
-    [store save];
+    [store save:nil];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(3)));
 
     RKObjectManager* objectManager = RKTestNewObjectManager();
@@ -169,7 +169,7 @@
     deleteOdd.railsID = [NSNumber numberWithInt:9999];
     RKHuman* doNotDeleteMe = [RKHuman createEntity];
     doNotDeleteMe.railsID = [NSNumber numberWithInt:1000];
-    [store save];
+    [store save:nil];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
 
     RKObjectManager* objectManager = RKTestNewObjectManager();
@@ -217,7 +217,7 @@
     deleteOdd.railsID = [NSNumber numberWithInt:9999];
     RKHuman* doNotDeleteMe = [RKHuman createEntity];
     doNotDeleteMe.railsID = [NSNumber numberWithInt:1000];
-    [store save];
+    [store save:nil];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
 
     RKObjectManager* objectManager = RKTestNewObjectManager();
@@ -274,7 +274,7 @@
     blake.railsID = [NSNumber numberWithInt:123];
     RKHuman* other = [RKHuman createEntity];
     other.railsID = [NSNumber numberWithInt:456];
-    [objectStore save];
+    [objectStore save:nil];
     assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
 
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];

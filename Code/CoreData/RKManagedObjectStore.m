@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/22/09.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -184,21 +184,21 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
  Performs the save action for the application, which is to send the save:
  message to the application's managed object context.
  */
-- (NSError*)save {
+- (BOOL)save:(NSError **)error {
 	NSManagedObjectContext* moc = [self managedObjectContext];
-    NSError *error = nil;
-
+    NSError *localError = nil;
+    
 	@try {
-		if (![moc save:&error]) {
+		if (![moc save:&localError]) {
 			if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-				[self.delegate managedObjectStore:self didFailToSaveContext:moc error:error exception:nil];
+				[self.delegate managedObjectStore:self didFailToSaveContext:moc error:localError exception:nil];
 			}
 
-			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:@"error"];
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:localError forKey:@"error"];
 			[[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
 
-			if ([[error domain] isEqualToString:@"NSCocoaErrorDomain"]) {
-				NSDictionary *userInfo = [error userInfo];
+			if ([[localError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+				NSDictionary *userInfo = [localError userInfo];
 				NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
 				if (errors) {
 					for (NSError *detailedError in errors) {
@@ -225,8 +225,13 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 							   [userInfo valueForKey:@"NSValidationErrorPredicate"], 
 							   [userInfo valueForKey:@"NSValidationErrorObject"]);
 				}
-			} 
-			return error;
+			}
+            
+            if (error) {
+                *error = localError;
+            }
+            
+			return NO;
 		}
 	}
 	@catch (NSException* e) {
@@ -237,7 +242,8 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 			@throw;
 		}
 	}
-	return nil;
+    
+	return YES;
 }
 
 - (NSManagedObjectContext*)newManagedObjectContext {

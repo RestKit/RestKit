@@ -648,7 +648,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [self loadTableWithObjectLoader:[self.objectManager loaderWithResourcePath:resourcePath]];
 }
 
-- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader*))block {
+- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *loader))block {
     RKObjectLoader* theObjectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
     block(theObjectLoader);
     [self loadTableWithObjectLoader:theObjectLoader];
