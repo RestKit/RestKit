@@ -1158,7 +1158,7 @@
 			isa = PBXGroup;
 			children = (
 				25160D44145650490060A5C5 /* Code */,
-				25160FC51456F2330060A5C5 /* Specs */,
+				25160FC51456F2330060A5C5 /* Tests */,
 				25160E8D145652E40060A5C5 /* Vendor */,
 				25160D1814564E810060A5C5 /* Frameworks */,
 				25160D1714564E810060A5C5 /* Products */,
@@ -1522,7 +1522,7 @@
 			path = SOCKit;
 			sourceTree = "<group>";
 		};
-		25160FC51456F2330060A5C5 /* Specs */ = {
+		25160FC51456F2330060A5C5 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				251610351456F2330060A5C5 /* RKTestEnvironment.h */,
@@ -1536,7 +1536,6 @@
 				251610281456F2330060A5C5 /* Vendor */,
 				251610471456F2330060A5C5 /* Server */,
 			);
-			name = Specs;
 			path = Tests;
 			sourceTree = "<group>";
 		};
