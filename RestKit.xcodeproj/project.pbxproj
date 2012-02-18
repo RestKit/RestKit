@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		25055B8414EEF32A00B9C4DD /* RKMappingTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8014EEF32A00B9C4DD /* RKMappingTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B8514EEF32A00B9C4DD /* RKMappingTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8014EEF32A00B9C4DD /* RKMappingTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B8614EEF32A00B9C4DD /* RKMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8114EEF32A00B9C4DD /* RKMappingTest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		25055B8714EEF32A00B9C4DD /* RKMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8114EEF32A00B9C4DD /* RKMappingTest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		25055B8814EEF32A00B9C4DD /* RKTestFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8214EEF32A00B9C4DD /* RKTestFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B8914EEF32A00B9C4DD /* RKTestFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8214EEF32A00B9C4DD /* RKTestFactory.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B8A14EEF32A00B9C4DD /* RKTestFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8314EEF32A00B9C4DD /* RKTestFactory.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		25055B8B14EEF32A00B9C4DD /* RKTestFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8314EEF32A00B9C4DD /* RKTestFactory.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		25055B8F14EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B9014EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25055B9114EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		25055B9214EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		25055B9314EEFEC800B9C4DD /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1614564E810060A5C5 /* libRestKit.a */; };
 		250CA67D147D8E8B0047D347 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
 		250CA67E147D8E8F0047D347 /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */; };
 		250CA680147D8F050047D347 /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
@@ -357,7 +370,6 @@
 		2516108F1456F2330060A5C5 /* user.json in Resources */ = {isa = PBXBuildFile; fileRef = 25160FE71456F2330060A5C5 /* user.json */; };
 		251610901456F2330060A5C5 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25160FE81456F2330060A5C5 /* users.json */; };
 		251610911456F2330060A5C5 /* users.json in Resources */ = {isa = PBXBuildFile; fileRef = 25160FE81456F2330060A5C5 /* users.json */; };
-		251610921456F2330060A5C5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 25160FEA1456F2330060A5C5 /* .gitignore */; };
 		251610931456F2330060A5C5 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 25160FEA1456F2330060A5C5 /* .gitignore */; };
 		251610961456F2330060A5C5 /* attributes_without_text_content.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25160FED1456F2330060A5C5 /* attributes_without_text_content.xml */; };
 		251610971456F2330060A5C5 /* attributes_without_text_content.xml in Resources */ = {isa = PBXBuildFile; fileRef = 25160FED1456F2330060A5C5 /* attributes_without_text_content.xml */; };
@@ -453,7 +465,6 @@
 		251611171456F2340060A5C5 /* RKPathMatcherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610561456F2330060A5C5 /* RKPathMatcherTest.m */; };
 		251611181456F2340060A5C5 /* RKXMLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610571456F2330060A5C5 /* RKXMLParserTest.m */; };
 		251611191456F2340060A5C5 /* RKXMLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 251610571456F2330060A5C5 /* RKXMLParserTest.m */; };
-		251611271456F4A90060A5C5 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1614564E810060A5C5 /* libRestKit.a */; };
 		251611291456F50F0060A5C5 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251611281456F50F0060A5C5 /* SystemConfiguration.framework */; };
 		2516112B1456F5170060A5C5 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2516112A1456F5170060A5C5 /* CFNetwork.framework */; };
 		2516112C1456F51D0060A5C5 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160F161456538B0060A5C5 /* libxml2.dylib */; };
@@ -681,6 +692,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		25055B8014EEF32A00B9C4DD /* RKMappingTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingTest.h; path = Testing/RKMappingTest.h; sourceTree = "<group>"; };
+		25055B8114EEF32A00B9C4DD /* RKMappingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTest.m; path = Testing/RKMappingTest.m; sourceTree = "<group>"; };
+		25055B8214EEF32A00B9C4DD /* RKTestFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestFactory.h; path = Testing/RKTestFactory.h; sourceTree = "<group>"; };
+		25055B8314EEF32A00B9C4DD /* RKTestFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestFactory.m; path = Testing/RKTestFactory.m; sourceTree = "<group>"; };
+		25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingTestExpectation.h; path = Testing/RKMappingTestExpectation.h; sourceTree = "<group>"; };
+		25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTestExpectation.m; path = Testing/RKMappingTestExpectation.m; sourceTree = "<group>"; };
 		250CA67B147D8E800047D347 /* OCHamcrest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrest.framework; sourceTree = "<group>"; };
 		250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = OCHamcrestIOS.framework; sourceTree = "<group>"; };
 		250DF22814C5190E0001DEFA /* RKOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKOrderedDictionary.h; sourceTree = "<group>"; };
@@ -1104,6 +1121,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25055B9314EEFEC800B9C4DD /* libRestKit.a in Frameworks */,
 				25B6EA0814CF947E00B1E881 /* CoreGraphics.framework in Frameworks */,
 				25B6EA0614CF946400B1E881 /* QuartzCore.framework in Frameworks */,
 				251611321456F56C0060A5C5 /* MobileCoreServices.framework in Frameworks */,
@@ -1112,7 +1130,6 @@
 				2516112C1456F51D0060A5C5 /* libxml2.dylib in Frameworks */,
 				2516112B1456F5170060A5C5 /* CFNetwork.framework in Frameworks */,
 				251611291456F50F0060A5C5 /* SystemConfiguration.framework in Frameworks */,
-				251611271456F4A90060A5C5 /* libRestKit.a in Frameworks */,
 				25160D2814564E820060A5C5 /* SenTestingKit.framework in Frameworks */,
 				25160D2A14564E820060A5C5 /* UIKit.framework in Frameworks */,
 				25160D2B14564E820060A5C5 /* Foundation.framework in Frameworks */,
@@ -1799,12 +1816,18 @@
 		252EFB1F14D9A8D4004863C8 /* Testing */ = {
 			isa = PBXGroup;
 			children = (
+				25055B8214EEF32A00B9C4DD /* RKTestFactory.h */,
+				25055B8314EEF32A00B9C4DD /* RKTestFactory.m */,
 				25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */,
 				25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */,
 				252EFB2014D9B35D004863C8 /* RKTestFixture.h */,
 				252EFB2114D9B35D004863C8 /* RKTestFixture.m */,
 				252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */,
 				252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */,
+				25055B8014EEF32A00B9C4DD /* RKMappingTest.h */,
+				25055B8114EEF32A00B9C4DD /* RKMappingTest.m */,
+				25055B8D14EEF40000B9C4DD /* RKMappingTestExpectation.h */,
+				25055B8E14EEF40000B9C4DD /* RKMappingTestExpectation.m */,
 				252EFB2414D9B6F2004863C8 /* Testing.h */,
 			);
 			name = Testing;
@@ -2080,6 +2103,9 @@
 				252EFB2514D9B6F2004863C8 /* Testing.h in Headers */,
 				253B495214E35D1A00B0483F /* RKTestFixture.h in Headers */,
 				25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */,
+				25055B8414EEF32A00B9C4DD /* RKMappingTest.h in Headers */,
+				25055B8814EEF32A00B9C4DD /* RKTestFactory.h in Headers */,
+				25055B8F14EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2186,6 +2212,9 @@
 				25FABED714E37A2B00E609E7 /* RKTestResponseLoader.h in Headers */,
 				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
 				25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */,
+				25055B8514EEF32A00B9C4DD /* RKMappingTest.h in Headers */,
+				25055B8914EEF32A00B9C4DD /* RKTestFactory.h in Headers */,
+				25055B9014EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2323,7 +2352,6 @@
 				2516108C1456F2330060A5C5 /* SameKeyDifferentTargetClasses.json in Resources */,
 				2516108E1456F2330060A5C5 /* user.json in Resources */,
 				251610901456F2330060A5C5 /* users.json in Resources */,
-				251610921456F2330060A5C5 /* .gitignore in Resources */,
 				251610961456F2330060A5C5 /* attributes_without_text_content.xml in Resources */,
 				251610981456F2330060A5C5 /* container_attributes.xml in Resources */,
 				2516109A1456F2330060A5C5 /* national_weather_service.xml in Resources */,
@@ -2533,6 +2561,9 @@
 				25FABED114E3796400E609E7 /* RKTestNotificationObserver.m in Sources */,
 				25FABED814E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */,
 				25CA7A8F14EC570200888FF8 /* RKObjectMappingDefinition.m in Sources */,
+				25055B8614EEF32A00B9C4DD /* RKMappingTest.m in Sources */,
+				25055B8A14EEF32A00B9C4DD /* RKTestFactory.m in Sources */,
+				25055B9114EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2695,6 +2726,9 @@
 				25FABED914E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */,
 				25CA7A9014EC570200888FF8 /* RKObjectMappingDefinition.m in Sources */,
 				25CA7A9114EC5C2D00888FF8 /* RKTestFixture.m in Sources */,
+				25055B8714EEF32A00B9C4DD /* RKMappingTest.m in Sources */,
+				25055B8B14EEF32A00B9C4DD /* RKTestFactory.m in Sources */,
+				25055B9214EEF40000B9C4DD /* RKMappingTestExpectation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
