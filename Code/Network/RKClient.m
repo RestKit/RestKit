@@ -183,7 +183,6 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     self.serviceUnavailableAlertTitle = nil;
     self.serviceUnavailableAlertMessage = nil;
     self.requestCache = nil;
-    [self.runLoopMode release];
     self.runLoopMode = nil;
     [_HTTPHeaders release];
     [_additionalRootCertificates release];
