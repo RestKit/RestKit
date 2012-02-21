@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 #import <RestKit/RestKit.h>
-#import <RestKit/UI/UI.h>
+#import <RestKit/UI.h>
 
 @interface MasterViewController : UITableViewController <RKTableControllerDelegate, NSFetchedResultsControllerDelegate>
 

@@ -112,7 +112,7 @@
     RKLogConfigureByName("RestKit/Network*", RKLogLevelDebug);
 
     // Configure the object manager
-    RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://localhost:4567/"];
+    RKObjectManager *manager = [RKObjectManager objectManagerWithBaseURL:[NSURL URLWithString:@"http://localhost:4567/"]];
     [manager.mappingProvider setMapping:[RKObjectMapping mappingForClass:[Contact class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapKeyPath:@"first_name" toAttribute:@"firstName"];
         [mapping mapKeyPath:@"last_name" toAttribute:@"lastName"];
