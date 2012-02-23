@@ -9,10 +9,45 @@
 #import <RestKit/RestKit.h>
 
 /**
+ Defines optional callback methods for extending the functionality of the
+ factory. Implementation can be provided via a category.
+ */
+@protocol RKTestFactoryCallbacks <NSObject>
+
+@optional
+
+///-----------------------------------------------------------------------------
+/// @name Customizing the Factory
+///-----------------------------------------------------------------------------
+
+/**
+ Application specific initialization point for the sharedFactory.
+ Called once per unit testing run when the sharedFactory instance is initialized. RestKit
+ applications can override via a category.
+ */
+- (void)didInitialize;
+
+/**
+ Application specific customization point for the sharedFactory.
+ Invoked each time the factory is asked to set up the environment. RestKit applications
+ leveraging the factory may override via a category.
+ */
+- (void)didSetUp;
+
+/**
+ Application specific customization point for the sharedFactory.
+ Invoked each time the factory is tearing down the environment. RestKit applications
+ leveraging the factory may override via a category.
+ */
+- (void)didTearDown;
+
+@end
+
+/**
  RKTestFactory provides an interface for initializing RestKit
  objects within a unit testing environment.
  */
-@interface RKTestFactory : NSObject
+@interface RKTestFactory : NSObject <RKTestFactoryCallbacks>
 
 ///-----------------------------------------------------------------------------
 /// @name Configuring the Factory
@@ -80,31 +115,6 @@
  cleanup.
  */
 - (void)tearDown;
-
-///-----------------------------------------------------------------------------
-/// @name Customizing the Factory
-///-----------------------------------------------------------------------------
-
-/**
- Application specific initialization point for the sharedFactory.
- Called once per unit testing run when the sharedFactory instance is initialized. RestKit
- applications can override via a category.
- */
-- (void)didInitialize;
-
-/**
- Application specific customization point for the sharedFactory.
- Invoked each time the factory is asked to set up the environment. RestKit applications
- leveraging the factory may override via a category.
- */
-- (void)didSetUp;
-
-/**
- Application specific customization point for the sharedFactory.
- Invoked each time the factory is tearing down the environment. RestKit applications
- leveraging the factory may override via a category.
- */
-- (void)didTearDown;
 
 @end
 

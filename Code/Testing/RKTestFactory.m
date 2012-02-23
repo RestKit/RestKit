@@ -31,7 +31,9 @@ static RKTestFactory *sharedFactory = nil;
         self.clientClass = [RKClient class];
         self.objectManagerClass = [RKObjectManager class];
         
-        [self didInitialize];
+        if ([self respondsToSelector:@selector(didInitialize)]) {
+            [self didInitialize];
+        }
     }
     
     return self;
@@ -61,33 +63,25 @@ static RKTestFactory *sharedFactory = nil;
 - (RKManagedObjectStore *)objectStore {
     RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [store deletePersistantStore];
-    [RKObjectManager sharedManager].objectStore = store;
+    [RKManagedObjectStore setDefaultObjectStore:store];
+
     return store;
 }
 
 - (void)setUp {
-    [self didSetUp];
+    if ([self respondsToSelector:@selector(didSetUp)]) {
+        [self didSetUp];
+    }
 }
 
 - (void)tearDown {
     [RKObjectManager setSharedManager:nil];
     [RKClient setSharedClient:nil];
+    [RKManagedObjectStore setDefaultObjectStore:nil];
     
-    [self didTearDown];
-}
-
-#pragma - Customization Hooks
-
-- (void)didInitialize {
-    // Should be overloaded via a category
-}
-
-- (void)didSetUp {
-    // Should be overloaded via a category
-}
-
-- (void)didTearDown {
-    // Should be overloaded via a category    
+    if ([self respondsToSelector:@selector(didTearDown)]) {
+        [self didTearDown];
+    }
 }
 
 @end

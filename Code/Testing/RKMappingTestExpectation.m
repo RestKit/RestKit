@@ -49,14 +49,21 @@
     return expectation;
 }
 
+- (NSString *)mappingDescription {
+    return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@'",
+            self.sourceKeyPath, self.destinationKeyPath];
+}
+
 - (NSString *)description {
     if (self.value) {
-        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' with value: %@", self.sourceKeyPath, self.destinationKeyPath, self.value];
+        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' with %@ value '%@'",
+                self.sourceKeyPath, self.destinationKeyPath, [self.value class], self.value];
     } else if (self.evaluationBlock) {
-        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' satisfying evaluation block", self.sourceKeyPath, self.destinationKeyPath];
+        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' satisfying evaluation block",
+                self.sourceKeyPath, self.destinationKeyPath];
     }
     
-    return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@'", self.sourceKeyPath, self.destinationKeyPath];
+    return [self mappingDescription];
 }
 
 @end

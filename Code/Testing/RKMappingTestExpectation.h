@@ -77,4 +77,11 @@
  */
 @property (nonatomic, copy, readonly) BOOL (^evaluationBlock)(RKObjectAttributeMapping *mapping, id value);
 
+/**
+ Returns a string summary of the expected keyPath mapping within the expectation
+
+ @return A string describing the expected sourceKeyPath to destinationKeyPath mapping.
+ */
+- (NSString *)mappingDescription;
+
 @end

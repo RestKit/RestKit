@@ -113,27 +113,27 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath evaluationBlock:evaluationBlock]];
 }
 
-- (RKMappingTestEvent *)eventSatisfyingExpectation:(RKMappingTestExpectation *)expectation {
+- (RKMappingTestEvent *)eventMatchingKeyPathsForExpectation:(RKMappingTestExpectation *)expectation {
     for (RKMappingTestEvent *event in self.events) {
         if ([event.sourceKeyPath isEqualToString:expectation.sourceKeyPath] && [event.destinationKeyPath isEqualToString:expectation.destinationKeyPath]) {
-            if (expectation.evaluationBlock) {
-                // Let the expectation block evaluate the match
-                if (expectation.evaluationBlock(event.mapping, event.value)) {
-                    return event;
-                }
-            } else if (expectation.value) {
-                // Use RestKit comparison magic to match values
-                if (RKObjectIsValueEqualToValue(event.value, expectation.value)) {
-                    return event;
-                }
-            } else {
-                // We only wanted to know that a mapping occured between the keyPaths
-                return event;
-            }
+            return event;
         }
     }
     
     return nil;
+}
+
+- (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(RKMappingTestExpectation *)expectation {
+    if (expectation.evaluationBlock) {
+        // Let the expectation block evaluate the match
+        return expectation.evaluationBlock(event.mapping, event.value);
+    } else if (expectation.value) {
+        // Use RestKit comparison magic to match values
+        return RKObjectIsValueEqualToValue(event.value, expectation.value);
+    }
+
+    // We only wanted to know that a mapping occured between the keyPaths
+    return YES;
 }
 
 - (void)verify {
@@ -148,10 +148,17 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     }
     
     for (RKMappingTestExpectation *expectation in self.expectations) {
-        RKMappingTestEvent *event = [self eventSatisfyingExpectation:expectation];
-        if (! event) {
-            [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@",
-             [self description], expectation];
+        RKMappingTestEvent *event = [self eventMatchingKeyPathsForExpectation:expectation];
+        if (event) {
+            // Found a matching event, check if it satisfies the expectation
+            if (! [self event:event satisfiesExpectation:expectation]) {
+                [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but instead got %@ '%@'",
+                 [self description], expectation, [event.value class], event.value];
+            }
+        } else {
+            // No match
+            [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but did not.",
+             [self description], [expectation mappingDescription]];
         }
     }
 }
@@ -162,7 +169,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self.events addObject:event];
 }
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping*)_mapping {
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)_mapping {
     [self addEvent:[RKMappingTestEvent eventWithMapping:_mapping value:value]];
 }
 
