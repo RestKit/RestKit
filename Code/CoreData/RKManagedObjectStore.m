@@ -108,7 +108,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         }
         
         //Add queue to core data model before persistant store is created
-        //TODO: check if exists
+        //TODO: Check if exists before creating new entity. This doesn't seem necessary (Core Data handles internally?)
         NSEntityDescription *syncQueue = [[NSEntityDescription alloc] init];
         [syncQueue setName: @"RKManagedObjectSyncQueue"];
         [syncQueue setManagedObjectClassName: @"RKManagedObjectSyncQueue"];
