@@ -36,7 +36,11 @@ NSString* const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectS
 static NSString* const RKManagedObjectStoreThreadDictionaryContextKey = @"RKManagedObjectStoreThreadDictionaryContextKey";
 static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RKManagedObjectStoreThreadDictionaryEntityCacheKey";
 
-@interface RKManagedObjectStore (Private)
+static RKManagedObjectStore *defaultObjectStore = nil;
+
+@interface RKManagedObjectStore ()
+@property (nonatomic, retain, readwrite) NSManagedObjectContext *context;
+
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
 - (void)createPersistentStoreCoordinator;
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString*)seedDatabase;
@@ -51,6 +55,19 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize managedObjectCache = _managedObjectCache;
+@synthesize context;
+
++ (RKManagedObjectStore *)defaultObjectStore {
+    return defaultObjectStore;
+}
+
++ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore {
+    [objectStore retain];
+    [defaultObjectStore release];
+    defaultObjectStore = objectStore;
+    
+    [NSManagedObjectContext setDefaultContext:objectStore.context];
+}
 
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename {
     return [self objectStoreWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
@@ -110,9 +127,16 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         _delegate = delegate;
 
 		[self createPersistentStoreCoordinator];
+        self.context = [self newManagedObjectContext];
+        
 
         // Ensure there is a search word observer
         [RKSearchWordObserver sharedObserver];
+        
+        // Hydrate the defaultObjectStore
+        if (! defaultObjectStore) {
+            [RKManagedObjectStore setDefaultObjectStore:self];
+        }
 	}
 
 	return self;
@@ -176,7 +200,9 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	_persistentStoreCoordinator = nil;
 	[_managedObjectCache release];
 	_managedObjectCache = nil;
-
+    [context release];
+    context = nil;
+    
 	[super dealloc];
 }
 
@@ -185,7 +211,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
  message to the application's managed object context.
  */
 - (BOOL)save:(NSError **)error {
-	NSManagedObjectContext* moc = [self managedObjectContext];
+	NSManagedObjectContext* moc = [self contextForCurrentThread];
     NSError *localError = nil;
     
 	@try {
@@ -246,7 +272,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	return YES;
 }
 
-- (NSManagedObjectContext*)newManagedObjectContext {
+- (NSManagedObjectContext *)newManagedObjectContext {
 	NSManagedObjectContext* managedObjectContext = [[NSManagedObjectContext alloc] init];
 	[managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[managedObjectContext setUndoManager:nil];
@@ -329,13 +355,12 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	[self deletePersistantStoreUsingSeedDatabaseName:nil];
 }
 
-/**
- *
- *	Override managedObjectContext getter to ensure we return a separate context
- *	for each NSThread.
- *
- */
--(NSManagedObjectContext*)managedObjectContext {
+- (NSManagedObjectContext *)contextForCurrentThread {
+    if ([NSThread isMainThread]) {
+        return self.context;
+    }
+    
+    // Background threads leverage thread-local storage
 	NSManagedObjectContext* managedObjectContext = [self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
 	if (!managedObjectContext) {
 		managedObjectContext = [self newManagedObjectContext];
@@ -345,19 +370,17 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 		[managedObjectContext release];
 
         // If we are a background Thread MOC, we need to inform the main thread on save
-        if (![NSThread isMainThread]) {
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(mergeChanges:)
-                                                         name:NSManagedObjectContextDidSaveNotification
-                                                       object:managedObjectContext];
-        }
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(mergeChanges:)
+                                                     name:NSManagedObjectContextDidSaveNotification
+                                                   object:managedObjectContext];
 	}
 	return managedObjectContext;
 }
 
 - (void)mergeChangesOnMainThreadWithNotification:(NSNotification*)notification {
 	assert([NSThread isMainThread]);
-	[self.managedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
+	[self.context performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
 												withObject:notification
 											 waitUntilDone:YES];
 }
@@ -399,9 +422,9 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 #pragma mark -
 #pragma mark Helpers
 
-- (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID {
+- (NSManagedObject*)objectWithID:(NSManagedObjectID *)objectID {
     NSAssert(objectID, @"Cannot fetch a managedObject with a nil objectID");
-	return [self.managedObjectContext objectWithID:objectID];
+	return [[self contextForCurrentThread] objectWithID:objectID];
 }
 
 - (NSArray*)objectsWithIDs:(NSArray*)objectIDs {
@@ -459,12 +482,13 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     NSMutableDictionary* dictionary = [entityCache objectForKey:entityName];
     NSAssert1(dictionary, @"Thread local cache of %@ objectIDs should not be nil", entityName);
     NSManagedObjectID* objectId = [dictionary objectForKey:lookupValue];
+    NSManagedObjectContext *managedObjectContext = [self contextForCurrentThread];
 
     if (objectId == nil) {
-        object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
+        object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:managedObjectContext] autorelease];
 
         NSError* error = nil;
-        BOOL success = [self.managedObjectContext obtainPermanentIDsForObjects:[NSArray arrayWithObject:object]
+        BOOL success = [managedObjectContext obtainPermanentIDsForObjects:[NSArray arrayWithObject:object]
                                                                          error:&error];
         if (success) {
             [dictionary setObject:[object objectID] forKey:lookupValue];

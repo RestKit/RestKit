@@ -22,50 +22,54 @@
 #import "RKObjectMapping.h"
 #import "RKManagedObjectStore.h"
 
+/**
+ An RKManagedObjectMapping defines an object mapping with a Core Data destination
+ entity.
+ */
 @interface RKManagedObjectMapping : RKObjectMapping {
-    NSEntityDescription* _entity;
-    NSString* _primaryKeyAttribute;
-    NSMutableDictionary* _relationshipToPrimaryKeyMappings;
+    NSEntityDescription *_entity;
+    NSString *_primaryKeyAttribute;
+    NSMutableDictionary *_relationshipToPrimaryKeyMappings;
 }
 
 /**
  Creates a new object mapping targetting the Core Data entity represented by objectClass
  */
-+ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore*)objectStore;
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore;
 
 /**
  Creates a new object mapping targetting the specified Core Data entity
  */
-+ (RKManagedObjectMapping*)mappingForEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore*)objectStore;
++ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore;
 
 /**
  Creates a new object mapping targetting the Core Data entity with the specified name.
  The entity description is fetched from the managed object context associated with objectStore
  */
-+ (RKManagedObjectMapping*)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore*)objectStore;
++ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore;
 
 /**
  The Core Data entity description used for this object mapping
  */
-@property (nonatomic, readonly) NSEntityDescription* entity;
+@property (nonatomic, readonly) NSEntityDescription *entity;
 
 /**
  The attribute containing the primary key value for the class. This is consulted by
  RestKit to uniquely identify objects within the store using the primary key in your
  remote backend system.
  */
-@property (nonatomic, retain) NSString* primaryKeyAttribute;
+@property (nonatomic, retain) NSString *primaryKeyAttribute;
 
 /**
  Returns a dictionary containing Core Data relationships and attribute pairs containing
  the primary key for 
  */
-@property (nonatomic, readonly) NSDictionary* relationshipsAndPrimaryKeyAttributes;
+@property (nonatomic, readonly) NSDictionary *relationshipsAndPrimaryKeyAttributes;
 
 /**
  The RKManagedObjectStore containing the Core Data entity being mapped
  */
-@property (nonatomic, readonly) RKManagedObjectStore* objectStore;
+@property (nonatomic, readonly) RKManagedObjectStore *objectStore;
 
 /**
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
@@ -83,7 +87,7 @@
  In effect, this approach allows foreign key relationships between managed objects
  to be automatically maintained from the server to the underlying Core Data object graph.
  */
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute;
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute;
 
 /**
  Connects relationships using the primary key values contained in the specified attribute. This method is
@@ -91,7 +95,7 @@
  
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString*)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION;
+- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -109,7 +113,7 @@
 
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value;
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has

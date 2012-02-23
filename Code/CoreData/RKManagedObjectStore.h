@@ -73,12 +73,16 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  */
 @property (nonatomic, retain) NSObject<RKManagedObjectCache>* managedObjectCache;
 
-/*
- * This returns an appropriate managed object context for this object store.
- * Because of the intrecacies of how Core Data works across threads it returns
- * a different NSManagedObjectContext for each thread.
- */
-@property (nonatomic, readonly) NSManagedObjectContext* managedObjectContext;
+///-----------------------------------------------------------------------------
+/// @name Accessing the Default Object Store
+///-----------------------------------------------------------------------------
+
++ (RKManagedObjectStore *)defaultObjectStore;
++ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore;
+
+///-----------------------------------------------------------------------------
+/// @name Initializing an Object Store
+///-----------------------------------------------------------------------------
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified
@@ -145,5 +149,27 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * See managedObjectCache above
  */
 - (NSArray*)objectsForResourcePath:(NSString*)resourcePath;
+
+///-----------------------------------------------------------------------------
+/// @name Retrieving Managed Object Contexts
+///-----------------------------------------------------------------------------
+
+/**
+ Retrieves the Managed Object Context for the main thread that was initialized when
+ the object store was created.
+ */
+@property (nonatomic, retain, readonly) NSManagedObjectContext *context;
+
+/**
+ Instantiates a new managed object context
+ */
+- (NSManagedObjectContext *)newManagedObjectContext;
+
+/*
+ * This returns an appropriate managed object context for this object store.
+ * Because of the intrecacies of how Core Data works across threads it returns
+ * a different NSManagedObjectContext for each thread.
+ */
+- (NSManagedObjectContext *)contextForCurrentThread;
 
 @end

@@ -41,16 +41,16 @@
                                  userInfo:nil];
 }
 
-+ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore*)objectStore {
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore {
     return [self mappingForEntityWithName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
 }
 
-+ (RKManagedObjectMapping*)mappingForEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore*)objectStore {
++ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore {
     return [[[self alloc] initWithEntity:entity inManagedObjectStore:objectStore] autorelease];
 }
 
-+ (RKManagedObjectMapping*)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore*)objectStore {
-    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.managedObjectContext]
++ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore {
+    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.context]
              inManagedObjectStore:objectStore];
 }
 
@@ -161,7 +161,7 @@
         NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
     } else {
         object = [[[NSManagedObject alloc] initWithEntity:entity
-                           insertIntoManagedObjectContext:_objectStore.managedObjectContext] autorelease];
+                           insertIntoManagedObjectContext:[_objectStore contextForCurrentThread]] autorelease];
     }
     
     return object;
