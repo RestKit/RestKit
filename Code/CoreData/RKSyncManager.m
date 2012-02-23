@@ -44,7 +44,8 @@
     NSSet *allObjects = [[insertedObjects setByAddingObjectsFromSet:updatedObjects] setByAddingObjectsFromSet:deletedObjects];
     
     for (NSManagedObject *object in allObjects) {
-        if (![object isKindOfClass:[RKManagedObjectSyncQueue class]]) {
+        RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:[object class]];
+        if (![object isKindOfClass:[RKManagedObjectSyncQueue class]] && mapping.syncMode != RKSyncModeNone) {
             //push new object onto queue
             RKManagedObjectSyncQueue *newRecord = [RKManagedObjectSyncQueue object];
             if ([insertedObjects containsObject:object]) {
@@ -58,8 +59,6 @@
             }
             
             newRecord.queuePosition = [NSNumber numberWithInt: [self highestQueuePosition] + 1];
-            
-            RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:[object class]];
             newRecord.primaryKeyString = [[object valueForKey:[mapping primaryKeyAttribute]] stringValue];
             newRecord.objectIDString = [[[object objectID] URIRepresentation] absoluteString];
             
