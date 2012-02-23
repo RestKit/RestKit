@@ -147,21 +147,28 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         [queuePositionAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
         
         NSAttributeDescription *syncStatusAttribute = [[NSAttributeDescription alloc] init];
-        [syncStatusAttribute setName:@"SyncStatus"];
+        [syncStatusAttribute setName:@"syncStatus"];
         [syncStatusAttribute setAttributeType:NSInteger16AttributeType];
         [syncStatusAttribute setOptional:NO];
         [syncStatusAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
         
+        NSAttributeDescription *primaryKeyStringAttribute = [[NSAttributeDescription alloc] init];
+        [primaryKeyStringAttribute setName:@"primaryKeyString"];
+        [primaryKeyStringAttribute setAttributeType:NSStringAttributeType];
+        [primaryKeyStringAttribute setOptional:NO];
+        [primaryKeyStringAttribute setDefaultValue:@""];
+        
         NSAttributeDescription *objectIDStringAttribute = [[NSAttributeDescription alloc] init];
-        [objectIDStringAttribute setName:@"ObjectIDString"];
+        [objectIDStringAttribute setName:@"objectIDString"];
         [objectIDStringAttribute setAttributeType:NSStringAttributeType];
         [objectIDStringAttribute setOptional:NO];
         [objectIDStringAttribute setDefaultValue:@""];
         
-        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, objectIDStringAttribute, nil]];
+        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, primaryKeyStringAttribute, objectIDStringAttribute, nil]];
         
         [queuePositionAttribute release];
         [syncStatusAttribute release];
+        [primaryKeyStringAttribute release];
         [objectIDStringAttribute release];
         
         [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObject:syncQueue]];
