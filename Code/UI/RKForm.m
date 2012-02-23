@@ -158,11 +158,6 @@
     [self addRowMappingAttribute:attributeKeyPath toKeyPath:cellKeyPath onCellWithClass:cellClass usingBlock:nil];
 }
 
-- (void)setOnSubmit:(RKFormBlock)onSubmit {
-    if (_onSubmit) Block_release(_onSubmit);
-    _onSubmit = Block_copy(onSubmit);
-}
-
 - (RKTableItem *)tableItemForAttribute:(NSString *)attributeKeyPath {
     for (RKTableItem *tableItem in self.tableItems) {
         if ([[tableItem.userData valueForKey:@"__RestKit__attributeKeyPath"] isEqualToString:attributeKeyPath]) {

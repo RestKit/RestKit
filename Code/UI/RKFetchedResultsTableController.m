@@ -235,7 +235,7 @@
 
     _fetchedResultsController =
     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                        managedObjectContext:[NSManagedObject managedObjectContext]
+                                        managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
                                           sectionNameKeyPath:_sectionNameKeyPath
                                                    cacheName:_cacheName];
     _fetchedResultsController.delegate = self;
@@ -602,18 +602,6 @@
     }
 
     [self didFinishLoad];
-}
-
-#pragma mark - Block setters
-
-// NOTE: We get crashes when relying on just the copy property. Using Block_copy ensures
-// correct behavior
-- (void)setOnViewForHeaderInSection:(RKFetchedResultsTableViewViewForHeaderInSectionBlock)onViewForHeaderInSection {
-    if (_onViewForHeaderInSection) {
-        Block_release(_onViewForHeaderInSection);
-        _onViewForHeaderInSection = nil;
-    }
-    _onViewForHeaderInSection = Block_copy(onViewForHeaderInSection);
 }
 
 @end

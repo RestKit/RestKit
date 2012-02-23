@@ -93,11 +93,16 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 @synthesize targetIndexPathForMove = _targetIndexPathForMove;
 @synthesize rowHeight = _rowHeight;
 @synthesize deselectsRowOnSelection = _deselectsRowOnSelection;
-
-// TODO: Figure out nib support...
+@synthesize managesCellAttributes;
 
 + (id)cellMapping {
     return [self mappingForClass:[UITableViewCell class]];
+}
+
++ (id)defaultCellMapping {
+    RKTableViewCellMapping *cellMapping = [self cellMapping];
+    [cellMapping addDefaultMappings];
+    return cellMapping;
 }
 
 + (id)cellMappingUsingBlock:(void (^)(RKTableViewCellMapping*))block {
@@ -111,9 +116,10 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     if (self) {
         self.cellClass = [UITableViewCell class];
         self.style = UITableViewCellStyleDefault;
-        self.accessoryType = UITableViewCellAccessoryNone;
-        self.selectionStyle = UITableViewCellSelectionStyleBlue;
-        self.rowHeight = 44; // TODO: Should row height be an informal protocol on cells???
+        self.managesCellAttributes = NO;
+        _accessoryType = UITableViewCellAccessoryNone;
+        _selectionStyle = UITableViewCellSelectionStyleBlue;
+        self.rowHeight = 44;
         self.deselectsRowOnSelection = YES;
         _prepareCellBlocks = [NSMutableArray new];
     }
@@ -161,33 +167,46 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     copy.targetIndexPathForMove = self.targetIndexPathForMove;
     copy.rowHeight = self.rowHeight;
 
-    for (NSValue *blockValue in [self prepareCellBlocks]) {
-        [copy addPrepareCellBlock:[blockValue pointerValue]];
+    @synchronized(_prepareCellBlocks) {
+        for (void (^block)(UITableViewCell *) in _prepareCellBlocks) {
+            [copy addPrepareCellBlock:[block copy]];
+        }
     }
 
     return copy;
 }
 
 
-- (id)mappableObjectForData:(UITableView*)tableView {
+- (id)mappableObjectForData:(UITableView *)tableView {
     NSAssert([tableView isKindOfClass:[UITableView class]], @"Expected to be invoked with a tableView as the data. Got %@", tableView);
-    // TODO: Support for non-dequeueable cells???
     RKLogTrace(@"About to dequeue reusable cell using self.reuseIdentifier=%@", self.reuseIdentifier);
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:self.reuseIdentifier];
     if (! cell) {
         cell = [[[self.objectClass alloc] initWithStyle:self.style
                                        reuseIdentifier:self.reuseIdentifier] autorelease];
     }
-    cell.accessoryType = self.accessoryType;
-    cell.selectionStyle = self.selectionStyle;
+    
+    if (self.managesCellAttributes) {
+        cell.accessoryType = self.accessoryType;
+        cell.selectionStyle = self.selectionStyle;
+    }
 
     // Fire the prepare callbacks
-    for (NSValue *value in _prepareCellBlocks) {
-        __block void (^prepareCellBlock)(id sender) = [value pointerValue];
-        prepareCellBlock(cell);
+    for (void (^block)(UITableViewCell *) in _prepareCellBlocks) {
+        block(cell);
     }
 
     return cell;
+}
+
+- (void)setSelectionStyle:(UITableViewCellSelectionStyle)selectionStyle {
+    self.managesCellAttributes = YES;
+    _selectionStyle = selectionStyle;
+}
+
+- (void)setAccessoryType:(UITableViewCellAccessoryType)accessoryType {
+    self.managesCellAttributes = YES;
+    _accessoryType = accessoryType;
 }
 
 - (void)setObjectClass:(Class)objectClass {
@@ -218,10 +237,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 #pragma mark - Control Action Helpers
 
 - (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block {
-    NSValue *value = [NSValue valueWithPointer:Block_copy(block)];
-    [_prepareCellBlocks addObject:value];
-    // TODO: WTF? We can't use blocks naturally...
-//    [_prepareCellBlocks addObject:Block_copy(block)];
+    [_prepareCellBlocks addObject:[block copy]];
 }
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath {
@@ -253,75 +269,6 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 
 - (void)addBlockAction:(void (^)(id sender))block forTouchEventToControlAtKeyPath:(NSString *)keyPath {
     [self addBlockAction:block forControlEvents:UIControlEventTouchUpInside toControlAtKeyPath:keyPath];
-}
-
-#pragma mark - Block setters
-
-// NOTE: We get crashes when relying on just the copy property. Using Block_copy ensures
-// correct behavior
-
-- (void)setOnSelectCell:(RKTableViewAnonymousBlock)onSelectCell {
-    if (_onSelectCell) {
-        Block_release(_onSelectCell);
-        _onSelectCell = nil;
-    }
-    _onSelectCell = Block_copy(onSelectCell);
-}
-
-- (void)setOnSelectCellForObjectAtIndexPath:(RKTableViewCellForObjectAtIndexPathBlock)onSelectCellForObjectAtIndexPath {
-    if (_onSelectCellForObjectAtIndexPath) {
-        Block_release(_onSelectCellForObjectAtIndexPath);
-        _onSelectCellForObjectAtIndexPath = nil;
-    }
-    _onSelectCellForObjectAtIndexPath = Block_copy(onSelectCellForObjectAtIndexPath);
-}
-
-- (void)setOnCellWillAppearForObjectAtIndexPath:(RKTableViewCellForObjectAtIndexPathBlock)onCellWillAppearForObjectAtIndexPath {
-    if (_onCellWillAppearForObjectAtIndexPath) {
-        Block_release(_onCellWillAppearForObjectAtIndexPath);
-        _onCellWillAppearForObjectAtIndexPath = nil;
-    }
-    _onCellWillAppearForObjectAtIndexPath = Block_copy(onCellWillAppearForObjectAtIndexPath);
-}
-
-- (void)setHeightOfCellForObjectAtIndexPath:(RKTableViewHeightOfCellForObjectAtIndexPathBlock)heightOfCellForObjectAtIndexPath {
-    if (_heightOfCellForObjectAtIndexPath) {
-        Block_release(_heightOfCellForObjectAtIndexPath);
-        _heightOfCellForObjectAtIndexPath = nil;
-    }
-    _heightOfCellForObjectAtIndexPath = Block_copy(heightOfCellForObjectAtIndexPath);
-}
-
-- (void)setOnTapAccessoryButtonForObjectAtIndexPath:(RKTableViewAccessoryButtonTappedForObjectAtIndexPathBlock)onTapAccessoryButtonForObjectAtIndexPath {
-    if (_onTapAccessoryButtonForObjectAtIndexPath) {
-        Block_release(_onTapAccessoryButtonForObjectAtIndexPath);
-        _onTapAccessoryButtonForObjectAtIndexPath = nil;
-    }
-    _onTapAccessoryButtonForObjectAtIndexPath = Block_copy(onTapAccessoryButtonForObjectAtIndexPath);
-}
-
-- (void)setTitleForDeleteButtonForObjectAtIndexPath:(RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock)titleForDeleteButtonForObjectAtIndexPath {
-    if (_titleForDeleteButtonForObjectAtIndexPath) {
-        Block_release(_titleForDeleteButtonForObjectAtIndexPath);
-        _titleForDeleteButtonForObjectAtIndexPath = nil;
-    }
-    _titleForDeleteButtonForObjectAtIndexPath = Block_copy(titleForDeleteButtonForObjectAtIndexPath);
-}
-
-- (void)setEditingStyleForObjectAtIndexPath:(RKTableViewEditingStyleForObjectAtIndexPathBlock)editingStyleForObjectAtIndexPath {
-    if (_editingStyleForObjectAtIndexPath) {
-        Block_release(_editingStyleForObjectAtIndexPath);
-        _editingStyleForObjectAtIndexPath = nil;
-    }
-    _editingStyleForObjectAtIndexPath = Block_copy(editingStyleForObjectAtIndexPath);
-}
-
-- (void)setTargetIndexPathForMove:(RKTableViewTargetIndexPathForMoveBlock)targetIndexPathForMove {
-    if (_targetIndexPathForMove) {
-        Block_release(_targetIndexPathForMove);
-        _targetIndexPathForMove = nil;
-    }
-    _targetIndexPathForMove = Block_copy(targetIndexPathForMove);
 }
 
 @end
