@@ -13,6 +13,7 @@
 
 @property (nonatomic, retain) NSNumber * queuePosition;
 @property (nonatomic, retain) NSNumber * syncStatus;
+@property (nonatomic, retain) NSString * primaryKeyString;
 @property (nonatomic, retain) NSString * objectIDString;
 
 @end

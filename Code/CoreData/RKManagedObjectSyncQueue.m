@@ -12,6 +12,7 @@
 
 @dynamic queuePosition;
 @dynamic syncStatus;
+@dynamic primaryKeyString;
 @dynamic objectIDString;
 
 @end

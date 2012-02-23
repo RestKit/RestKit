@@ -58,7 +58,11 @@
             }
             
             newRecord.queuePosition = [NSNumber numberWithInt: [self highestQueuePosition] + 1];
+            
+            RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:[object class]];
+            newRecord.primaryKeyString = [[object valueForKey:[mapping primaryKeyAttribute]] stringValue];
             newRecord.objectIDString = [[[object objectID] URIRepresentation] absoluteString];
+            
             NSLog(@"Writing to queue: %@", newRecord);
             NSError *error = nil;
             [[newRecord managedObjectContext] save:&error];
@@ -70,6 +74,7 @@
 }
 
 - (int)highestQueuePosition {
+    //Taken directly from apple docs
     NSManagedObjectContext *context = self.objectManager.objectStore.managedObjectContext;
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];

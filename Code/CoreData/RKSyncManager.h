@@ -8,6 +8,7 @@
 
 #import "RKObjectManager.h"
 #import "RKManagedObjectSyncQueue.h"
+#import "RKManagedObjectMapping.h"
 
 typedef enum {
     RKSyncStatusNone,
