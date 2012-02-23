@@ -30,6 +30,7 @@
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKSearchableManagedObject.h"
 #import "RKSearchWord.h"
+#import "RKSyncManager.h"
 
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKObjectMappingProvider+CoreData.h"

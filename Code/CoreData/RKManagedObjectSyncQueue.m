@@ -14,5 +14,6 @@
 @dynamic syncStatus;
 @dynamic primaryKeyString;
 @dynamic objectIDString;
+@dynamic className;
 
 @end

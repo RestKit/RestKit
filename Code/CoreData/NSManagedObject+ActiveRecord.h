@@ -214,4 +214,10 @@
 
 #endif
 
+//To and from a dictionary
+- (NSDictionary*) toDictionary;
+- (void) populateFromDictionary:(NSDictionary*)dict;
++ (NSManagedObject*) createManagedObjectFromDictionary:(NSDictionary*)dict
+                                                   inContext:(NSManagedObjectContext*)context;
+
 @end

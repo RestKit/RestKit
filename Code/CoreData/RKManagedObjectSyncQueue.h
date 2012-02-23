@@ -15,5 +15,6 @@
 @property (nonatomic, retain) NSNumber * syncStatus;
 @property (nonatomic, retain) NSString * primaryKeyString;
 @property (nonatomic, retain) NSString * objectIDString;
+@property (nonatomic, retain) NSString * className;
 
 @end
