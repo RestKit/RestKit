@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		20255DD614F610F90042FC00 /* RKDeletedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 20255DD414F610F90042FC00 /* RKDeletedObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20255DD714F610F90042FC00 /* RKDeletedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 20255DD514F610F90042FC00 /* RKDeletedObject.m */; };
 		2080057B14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2080057C14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; };
 		2080057D14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
@@ -720,6 +722,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		20255DD414F610F90042FC00 /* RKDeletedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDeletedObject.h; sourceTree = "<group>"; };
+		20255DD514F610F90042FC00 /* RKDeletedObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDeletedObject.m; sourceTree = "<group>"; };
 		2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectSyncQueue.h; sourceTree = "<group>"; };
 		2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectSyncQueue.m; sourceTree = "<group>"; };
 		2080058214ED8C240052EB8C /* RKSyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKSyncManager.h; sourceTree = "<group>"; };
@@ -1287,6 +1291,8 @@
 				25160D57145650490060A5C5 /* RKObjectPropertyInspector+CoreData.m */,
 				2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */,
 				2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */,
+				20255DD414F610F90042FC00 /* RKDeletedObject.h */,
+				20255DD514F610F90042FC00 /* RKDeletedObject.m */,
 				2080058214ED8C240052EB8C /* RKSyncManager.h */,
 				2080058314ED8C240052EB8C /* RKSyncManager.m */,
 			);
@@ -2128,6 +2134,7 @@
 				252EFB2514D9B6F2004863C8 /* Testing.h in Headers */,
 				253B495214E35D1A00B0483F /* RKTestFixture.h in Headers */,
 				25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */,
+				20255DD614F610F90042FC00 /* RKDeletedObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2600,6 +2607,7 @@
 				25FABED814E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */,
 				2080057D14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */,
 				2080058614ED8C240052EB8C /* RKSyncManager.m in Sources */,
+				20255DD714F610F90042FC00 /* RKDeletedObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

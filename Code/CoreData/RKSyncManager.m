@@ -10,13 +10,13 @@
 
 @implementation RKSyncManager
 
-@synthesize objectManager = _objectManager;
+@synthesize objectManager = _objectManager, delegate = _delegate;
 
 - (id)initWithObjectManager:(RKObjectManager*)objectManager {
     self = [super init];
 	if (self) {
         _objectManager = [objectManager retain];
-        
+        _queue = [[NSMutableArray alloc] init];
         //Register for notifications from the managed object context associated with the object manager
         [[NSNotificationCenter defaultCenter] addObserver: self 
                                                  selector: @selector(contextDidSave:) 
@@ -32,6 +32,11 @@
     [_objectManager release];
     _objectManager = nil;
     
+    [_queue release];
+    _queue = nil;
+    
+    _delegate = nil;
+    
     [super dealloc];
 }
 
@@ -45,7 +50,19 @@
     
     for (NSManagedObject *object in allObjects) {
         RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:[object class]];
-        if (![object isKindOfClass:[RKManagedObjectSyncQueue class]] && mapping.syncMode != RKSyncModeNone) {
+        if (![object isKindOfClass:[RKManagedObjectSyncQueue class]] && ![object isKindOfClass:[RKDeletedObject class]] && mapping.syncMode != RKSyncModeNone) {
+            RKDeletedObject *newDeletedObject = nil;
+            if ([deletedObjects containsObject:object]) {
+                //Archive deleted objects
+                newDeletedObject = [RKDeletedObject object];
+                newDeletedObject.data = [object toDictionary];
+                NSLog(@"Archiving deleted object: %@", newDeletedObject);
+                NSError *error = nil;
+                [[newDeletedObject managedObjectContext] save:&error];
+                if (error) {
+                    NSLog(@"Error! %@", error);
+                }
+            }
             //push new object onto queue
             RKManagedObjectSyncQueue *newRecord = [RKManagedObjectSyncQueue object];
             if ([insertedObjects containsObject:object]) {
@@ -56,11 +73,17 @@
             }
             if ([deletedObjects containsObject:object]) {
                 newRecord.syncStatus = [NSNumber numberWithInt:RKSyncStatusDelete];
+                if (newDeletedObject) {
+                    newRecord.objectIDString = [[[newDeletedObject objectID] URIRepresentation] absoluteString];
+                }
             }
             
             newRecord.queuePosition = [NSNumber numberWithInt: [self highestQueuePosition] + 1];
             newRecord.primaryKeyString = [[object valueForKey:[mapping primaryKeyAttribute]] stringValue];
-            newRecord.objectIDString = [[[object objectID] URIRepresentation] absoluteString];
+            if (!newDeletedObject) {
+                newRecord.objectIDString = [[[object objectID] URIRepresentation] absoluteString];
+            }
+            newRecord.className = NSStringFromClass([object class]);
             
             NSLog(@"Writing to queue: %@", newRecord);
             NSError *error = nil;
@@ -74,6 +97,7 @@
 
 - (int)highestQueuePosition {
     //Taken directly from apple docs
+    
     NSManagedObjectContext *context = self.objectManager.objectStore.managedObjectContext;
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -118,4 +142,81 @@
     [request release];
     return [requestedValue intValue];
 }
+
+- (void)sync {
+    //[self performSelectorInBackground:@selector(pushObjects) withObject:nil];
+    [self performSelector:@selector(pushObjects) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
+    [self performSelector:@selector(pullObjects) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
+}
+
+- (void)pushObjects {
+    NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContext;
+    [_queue removeAllObjects];
+    [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO inContext:context]];
+    while ([_queue lastObject]) {
+        RKManagedObjectSyncQueue *item = [_queue lastObject];
+        NSManagedObjectID *itemID = [_objectManager.objectStore.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:item.objectIDString]];
+        id object = [context objectWithID:itemID];
+        switch ([item.syncStatus intValue]) {
+            case RKSyncStatusPost:
+                [_objectManager postObject:object delegate:self];
+                break;
+            case RKSyncStatusPut:
+                [_objectManager putObject:object delegate:self];
+                break;
+            case RKSyncStatusDelete:
+            {
+                Class objectClass = NSClassFromString(item.className);
+                RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:objectClass];
+                NSManagedObject *toDelete = [[objectClass alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:context];
+                [toDelete populateFromDictionary:((RKDeletedObject*)object).data];
+                [_objectManager deleteObject:toDelete delegate:self];    
+                [toDelete release];
+                break;
+            }
+            default:
+                break;
+        }
+        [item deleteEntity];
+        [_queue removeObject:item];
+    }
+}
+
+- (void)pullObjects {
+    NSDictionary *mappings = _objectManager.mappingProvider.mappingsByKeyPath;
+    for (id key in mappings) {
+        RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[mappings objectForKey:key];
+        if (mapping.syncMode != RKSyncModeNone) {
+            NSManagedObject *object = [[NSManagedObject alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil]; 
+            NSString *resourcePath = [_objectManager.router resourcePathForObject:object method:RKRequestMethodGET]; 
+            [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
+        }
+    }
+}
+
+#pragma mark RKObjectLoaderDelegate (RKRequestDelegate) methods
+
+- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
+    if ([objectLoader.response isSuccessful]) {
+        if ([objectLoader isPOST] || [objectLoader isPUT] || [objectLoader isDELETE]) {
+            [_objectManager.objectStore save];
+            NSLog(@"Total unsynced objects: %i", [_queue count]);
+        } else if ([objectLoader isGET]) {
+            //A GET request means everything has been pushed and now we're pulling
+            if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
+                [_delegate didFinishSyncing];
+            }
+        }
+    }
+}
+
+- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
+    //if (![objectLoader isDELETE]) {
+        if (_delegate && [_delegate respondsToSelector:@selector(didFailSyncingWithError:)]) {
+            [_delegate didFailSyncingWithError:error];
+        }
+
+    //}
+}
+
 @end

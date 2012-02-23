@@ -28,3 +28,4 @@
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKSearchableManagedObject.h"
 #import "RKSearchWord.h"
+#import "RKSyncManager.h"

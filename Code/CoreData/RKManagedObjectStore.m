@@ -138,16 +138,38 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         [objectIDStringAttribute setOptional:NO];
         [objectIDStringAttribute setDefaultValue:@""];
         
-        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, primaryKeyStringAttribute, objectIDStringAttribute, nil]];
+        NSAttributeDescription *classNameStringAttribute = [[NSAttributeDescription alloc] init];
+        [classNameStringAttribute setName:@"className"];
+        [classNameStringAttribute setAttributeType:NSStringAttributeType];
+        [classNameStringAttribute setOptional:NO];
+        [classNameStringAttribute setDefaultValue:@""];
+        
+        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, primaryKeyStringAttribute, objectIDStringAttribute, classNameStringAttribute, nil]];
         
         [queuePositionAttribute release];
         [syncStatusAttribute release];
         [primaryKeyStringAttribute release];
         [objectIDStringAttribute release];
+        [classNameStringAttribute release];
         
-        [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObject:syncQueue]];
+        NSEntityDescription *deletedObjectEntity = [[NSEntityDescription alloc] init];
+        [deletedObjectEntity setName:@"RKDeletedObject"];
+        [deletedObjectEntity setManagedObjectClassName: @"RKDeletedObject"];
+        [deletedObjectEntity setAbstract:NO];
+        
+        NSAttributeDescription *dataAttribute = [[NSAttributeDescription alloc] init];
+        [dataAttribute setName:@"data"];
+        [dataAttribute setAttributeType:NSTransformableAttributeType];
+        [classNameStringAttribute setOptional:YES];
+        
+        [deletedObjectEntity setProperties:[NSArray arrayWithObject:dataAttribute]];
+        
+        [dataAttribute release];
+        
+        [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObjectsFromArray:[NSArray arrayWithObjects:syncQueue, deletedObjectEntity, nil]]];
         
         [syncQueue release];
+        [deletedObjectEntity release];
         
         _delegate = delegate;
 
