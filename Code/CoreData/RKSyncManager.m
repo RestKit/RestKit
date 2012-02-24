@@ -54,6 +54,7 @@
             RKDeletedObject *newDeletedObject = nil;
             if ([deletedObjects containsObject:object]) {
                 //Archive deleted objects
+                
                 newDeletedObject = [RKDeletedObject object];
                 newDeletedObject.data = [object toDictionary];
                 NSLog(@"Archiving deleted object: %@", newDeletedObject);
@@ -79,7 +80,7 @@
             }
             
             newRecord.queuePosition = [NSNumber numberWithInt: [self highestQueuePosition] + 1];
-            newRecord.primaryKeyString = [[object valueForKey:[mapping primaryKeyAttribute]] stringValue];
+
             if (!newDeletedObject) {
                 newRecord.objectIDString = [[[object objectID] URIRepresentation] absoluteString];
             }
@@ -144,7 +145,6 @@
 }
 
 - (void)sync {
-    //[self performSelectorInBackground:@selector(pushObjects) withObject:nil];
     [self performSelector:@selector(pushObjects) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
     [self performSelector:@selector(pullObjects) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
 }
@@ -154,7 +154,7 @@
     [_queue removeAllObjects];
     [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO inContext:context]];
     while ([_queue lastObject]) {
-        RKManagedObjectSyncQueue *item = [_queue lastObject];
+        RKManagedObjectSyncQueue *item = (RKManagedObjectSyncQueue*)[_queue lastObject];
         NSManagedObjectID *itemID = [_objectManager.objectStore.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:item.objectIDString]];
         id object = [context objectWithID:itemID];
         switch ([item.syncStatus intValue]) {
@@ -168,18 +168,26 @@
             {
                 Class objectClass = NSClassFromString(item.className);
                 RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:objectClass];
-                NSManagedObject *toDelete = [[objectClass alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:context];
+                NSManagedObject *toDelete = [[objectClass alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil];
                 [toDelete populateFromDictionary:((RKDeletedObject*)object).data];
-                [_objectManager deleteObject:toDelete delegate:self];    
+                
+                //We don't use deleteObject so that Restkit doesn't try to clean up our transient nsmanagedobject
+                [[_objectManager client] delete:[_objectManager.router resourcePathForObject:toDelete method:RKRequestMethodDELETE] delegate:self];
                 [toDelete release];
                 break;
             }
             default:
                 break;
         }
-        [item deleteEntity];
         [_queue removeObject:item];
+        [item deleteInContext:context];
+        NSError *error = nil;
+        [context save:&error];
+        if (error) {
+            NSLog(@"Error removing queue item! %@", error);
+        }
     }
+    [RKManagedObjectSyncQueue truncateAllInContext:context];
 }
 
 - (void)pullObjects {
@@ -189,6 +197,7 @@
         if (mapping.syncMode != RKSyncModeNone) {
             NSManagedObject *object = [[NSManagedObject alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil]; 
             NSString *resourcePath = [_objectManager.router resourcePathForObject:object method:RKRequestMethodGET]; 
+            [object release];
             [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
         }
     }
@@ -211,12 +220,9 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-    //if (![objectLoader isDELETE]) {
-        if (_delegate && [_delegate respondsToSelector:@selector(didFailSyncingWithError:)]) {
-            [_delegate didFailSyncingWithError:error];
-        }
-
-    //}
+    if (_delegate && [_delegate respondsToSelector:@selector(didFailSyncingWithError:)]) {
+        [_delegate didFailSyncingWithError:error];
+    }
 }
 
 @end

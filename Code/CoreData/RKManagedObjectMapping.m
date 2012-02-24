@@ -63,6 +63,7 @@
         self.objectClass = NSClassFromString([entity managedObjectClassName]);
         _entity = [entity retain];
         _objectStore = objectStore;
+        _syncMode = RKSyncModeNone;
     }
     
     return self;
