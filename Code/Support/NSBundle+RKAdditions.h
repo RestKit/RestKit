@@ -31,6 +31,17 @@
 @interface NSBundle (RKAdditions)
 
 /**
+ Returns an NSBundle reference to the RestKitResources.bundle file containing
+ RestKit specific resource assets.
+
+ This method is a convenience wrapper for invoking
+ `[NSBundle bundleWithIdentifier:@"org.restkit.RestKitResources"]`
+
+ @return An NSBundle object corresponding to the RestKitResources.bundle file.
+ */
++ (NSBundle *)restKitResourcesBundle;
+
+/**
  Returns the MIME Type for the resource identified by the specified name and file extension.
 
  @param name The name of the resource file.

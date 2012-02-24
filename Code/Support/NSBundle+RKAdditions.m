@@ -26,6 +26,10 @@
 
 @implementation NSBundle (RKAdditions)
 
++ (NSBundle *)restKitResourcesBundle {
+    return [NSBundle bundleWithIdentifier:@"org.restkit.RestKitResources"];
+}
+
 - (NSString *)MIMETypeForResource:(NSString *)name withExtension:(NSString *)extension {
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (resourcePath) {

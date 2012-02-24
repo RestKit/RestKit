@@ -2595,7 +2595,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rsync -av --delete ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME} ${SOURCE_ROOT}/${FULL_PRODUCT_NAME}";
+			shellScript = "echo \"rsync -av --delete ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME} ${SOURCE_ROOT}/${FULL_PRODUCT_NAME}\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3314,6 +3314,7 @@
 				25EC1B0A14F8078100C3CF3F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
