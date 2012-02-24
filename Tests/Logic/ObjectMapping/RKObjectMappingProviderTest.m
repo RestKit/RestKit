@@ -46,7 +46,7 @@
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAClass {
-    RKManagedObjectStore *objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
@@ -57,7 +57,7 @@
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAKeyPath {
-    RKManagedObjectStore *objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
@@ -68,7 +68,7 @@
 }
 
 - (void)testShouldAllowYouToRemoveAMappingByKeyPath {
-    RKManagedObjectStore *objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));

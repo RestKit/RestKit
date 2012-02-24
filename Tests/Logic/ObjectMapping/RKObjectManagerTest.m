@@ -86,7 +86,7 @@
 
 // TODO: Move to Core Data specific spec file...
 - (void)testShouldUpdateACoreDataBackedTargetObject {
-    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
+    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.context] insertIntoManagedObjectContext:_objectManager.objectStore.context];
     temporaryHuman.name = @"My Name";
 
     // TODO: We should NOT have to save the object store here to make this
@@ -105,7 +105,7 @@
 }
 
 - (void)testShouldDeleteACoreDataBackedTargetObjectOnError {
-    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
+    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.context] insertIntoManagedObjectContext:_objectManager.objectStore.context];
     temporaryHuman.name = @"My Name";
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"name", nil];
@@ -124,7 +124,7 @@
 }
 
 - (void)testShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved {
-    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.managedObjectContext] insertIntoManagedObjectContext:_objectManager.objectStore.managedObjectContext];
+    RKHuman* temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.objectStore.context] insertIntoManagedObjectContext:_objectManager.objectStore.context];
     temporaryHuman.name = @"My Name";
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"name", nil];
@@ -142,7 +142,7 @@
 	[objectLoader send];
     [loader waitForResponse];
 
-    assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.objectStore.managedObjectContext)));
+    assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.objectStore.context)));
 }
 
 // TODO: Move to Core Data specific spec file...

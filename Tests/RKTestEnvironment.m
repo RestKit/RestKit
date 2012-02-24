@@ -65,15 +65,6 @@ RKObjectManager* RKTestNewObjectManager(void) {
     return objectManager;
 }
 
-// TODO: Store initialization should not be coupled to object manager...
-RKManagedObjectStore* RKTestNewManagedObjectStore(void) {
-    RKManagedObjectStore* store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
-    [store deletePersistantStore];
-    RKObjectManager* objectManager = RKTestNewObjectManager();
-    objectManager.objectStore = store;
-    return store;
-}
-
 void RKTestClearCacheDirectory(void) {
     NSError* error = nil;
     NSString* cachePath = [RKDirectory cachesDirectory];

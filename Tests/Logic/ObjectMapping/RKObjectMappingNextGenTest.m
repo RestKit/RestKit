@@ -1792,7 +1792,7 @@
 }
 
 - (void)testShouldSerializeManagedHasManyRelationshipsToJSON {
-    RKTestNewManagedObjectStore();
+    [RKTestFactory objectStore];
     RKObjectMapping* humanMapping = [RKObjectMapping mappingForClass:[RKHuman class]];
     [humanMapping mapAttributes:@"name", nil];
     RKObjectMapping* catMapping = [RKObjectMapping mappingForClass:[RKCat class]];

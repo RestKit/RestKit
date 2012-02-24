@@ -65,15 +65,16 @@
 @implementation RKManagedObjectLoaderTest
 
 - (void)testShouldDeleteObjectFromLocalStoreOnDELETE {
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    [store save:nil];
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
     RKHuman* human = [RKHuman object];
     human.name = @"Blake Watters";
     human.railsID = [NSNumber numberWithInt:1];
     [objectManager.objectStore save:nil];
 
-    assertThat(objectManager.objectStore.managedObjectContext, is(equalTo(store.managedObjectContext)));
+    assertThat(objectManager.objectStore.context, is(equalTo(store.context)));
 
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
@@ -89,8 +90,8 @@
 }
 
 - (void)testShouldLoadAnObjectWithAToOneRelationship {
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
     RKObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
@@ -112,7 +113,7 @@
 }
 
 - (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory objectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"
                                                                        inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
@@ -131,7 +132,7 @@
     [store save:nil];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(3)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
     objectManager.objectStore.managedObjectCache = [[[TestObjectCache alloc] init] autorelease];
@@ -152,7 +153,7 @@
 
 - (void)testShouldNotDeleteOrphansFromManagedObjectCache
 {
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory objectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
@@ -172,7 +173,7 @@
     [store save:nil];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
 
@@ -200,7 +201,7 @@
 
 - (void)testShouldNotDeleteOddOrphansFromManagedObjectCache
 {
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory objectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
@@ -220,7 +221,7 @@
     [store save:nil];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(4)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
     objectManager.objectStore.managedObjectCache = [[[TestCacheRemoveOddOrphans alloc] init] autorelease];
@@ -243,8 +244,8 @@
 }
 
 - (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
     RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
@@ -260,8 +261,8 @@
 - (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent {
     RKTestClearCacheDirectory();
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
-    RKManagedObjectStore* objectStore = RKTestNewManagedObjectStore();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     objectManager.objectStore = objectStore;
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:objectStore];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];

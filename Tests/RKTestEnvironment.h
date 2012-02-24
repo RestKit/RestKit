@@ -43,7 +43,6 @@ NSString* RKTestGetBaseURLString(void);
 RKClient* RKTestNewClient(void);
 RKObjectManager* RKTestNewObjectManager(void);
 RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader);
-RKManagedObjectStore* RKTestNewManagedObjectStore(void);
 void RKTestClearCacheDirectory(void);
 void RKTestSpinRunLoop(void);
 void RKTestSpinRunLoopWithDuration(NSTimeInterval timeInterval);

@@ -28,7 +28,7 @@
 @implementation RKManagedObjectStoreTest
 
 - (void)testShouldCoercePrimaryKeysToStringsForLookup {
-    RKManagedObjectStore* objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKObjectManager *objectManager = RKTestNewObjectManager();
     objectManager.objectStore = objectStore;
     RKHuman* human = [RKHuman createEntity];
@@ -39,7 +39,7 @@
 }
 
 - (void)testShouldStoreNewInstancesOfCreatedObjectsByStringKey {
-    RKManagedObjectStore* objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKObjectManager *objectManager = RKTestNewObjectManager();
     objectManager.objectStore = objectStore;
     NSManagedObject* firstInstance = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:[NSNumber numberWithInt:1234]];
