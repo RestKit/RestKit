@@ -22,7 +22,6 @@
 
 typedef UIView*(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteger sectionIndex, NSString* sectionTitle);
 
-// TODO: Conditionally compile me based on Core Data?
 @interface RKFetchedResultsTableController : RKAbstractTableController <NSFetchedResultsControllerDelegate> {
 @private
     NSFetchedResultsController* _fetchedResultsController;

@@ -30,13 +30,6 @@
 
 /** @name Constants */
 
-/**
- A tag used to identify the overlay view used to draw the loading, error,
- and empty views over the table view.
- */
-// TODO: Maybe this just becomes a UIImageView ivar...
-// extern const NSUInteger RKTableControllerOverlayViewTag;
-
 /** Posted when the table view model starts loading */
 extern NSString* const RKTableControllerDidStartLoadNotification;
 
@@ -75,7 +68,7 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 }
 
 /////////////////////////////////////////////////////////////////////////
-/// @name Basic Configuration
+/// @name Configuring the Table Controller
 /////////////////////////////////////////////////////////////////////////
 
 @property (nonatomic, assign)   id<RKTableControllerDelegate> delegate;
@@ -146,8 +139,6 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, assign) BOOL autoRefreshFromNetwork;
 @property (nonatomic, assign) NSTimeInterval autoRefreshRate;
 
-- (void)loadTableFromResourcePath:(NSString *)resourcePath;
-- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *objectLoader))block;
 - (void)loadTableWithObjectLoader:(RKObjectLoader *)objectLoader;
 - (void)cancelLoad;
 - (BOOL)isAutoRefreshNeeded;

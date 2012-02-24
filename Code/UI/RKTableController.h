@@ -48,7 +48,7 @@
  After the block is invoked, the objects will be loaded into the specified section.
  */
 // TODO: Update comments...
-- (void)loadTableItems:(NSArray *)tableItems withMappingBlock:(void (^)(RKTableViewCellMapping *))block;
+- (void)loadTableItems:(NSArray *)tableItems withMappingBlock:(void (^)(RKTableViewCellMapping *))block; // TODO: Eliminate...
 - (void)loadTableItems:(NSArray *)tableItems withMapping:(RKTableViewCellMapping *)cellMapping;
 - (void)loadTableItems:(NSArray *)tableItems
              inSection:(NSUInteger)sectionIndex
@@ -79,12 +79,17 @@
  */
 - (void)loadTableItems:(NSArray *)tableItems inSection:(NSUInteger)sectionIndex;
 
+/** @name Network Tables */
+
+- (void)loadTableFromResourcePath:(NSString *)resourcePath;
+- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *objectLoader))block;
+
 /** @name Forms */
 
 /**
  The form that the table has been loaded with (if any)
  */
-@property (nonatomic, retain) RKForm *form;
+@property (nonatomic, retain, readonly) RKForm *form;
 
 /**
  Loads the table with the contents of the specified form object.

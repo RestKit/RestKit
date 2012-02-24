@@ -245,6 +245,19 @@
     [self loadTableItems:tableItems inSection:0 withMapping:[RKTableViewCellMapping cellMappingUsingBlock:block]];
 }
 
+#pragma mark - Network Table Loading
+
+- (void)loadTableFromResourcePath:(NSString*)resourcePath {
+    NSAssert(self.objectManager, @"Cannot perform a network load without an object manager");
+    [self loadTableWithObjectLoader:[self.objectManager loaderWithResourcePath:resourcePath]];
+}
+
+- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *loader))block {
+    RKObjectLoader* theObjectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
+    block(theObjectLoader);
+    [self loadTableWithObjectLoader:theObjectLoader];
+}
+
 #pragma mark - Forms
 
 - (void)loadForm:(RKForm *)form {

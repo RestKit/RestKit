@@ -36,7 +36,6 @@
  */
 #define BOUNCE_PIXELS 5.0
 
-//const NSUInteger RKTableControllerOverlayViewTag = 123456789;
 NSString* const RKTableControllerDidStartLoadNotification = @"RKTableControllerDidStartLoadNotification";
 NSString* const RKTableControllerDidFinishLoadNotification = @"RKTableControllerDidFinishLoadNotification";
 NSString* const RKTableControllerDidLoadObjectsNotification = @"RKTableControllerDidLoadObjectsNotification";
@@ -643,42 +642,20 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 #pragma mark - Network Table Loading
 
-- (void)loadTableFromResourcePath:(NSString*)resourcePath {
-    NSAssert(self.objectManager, @"Cannot perform a network load without an object manager");
-    [self loadTableWithObjectLoader:[self.objectManager loaderWithResourcePath:resourcePath]];
-}
-
-- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *loader))block {
-    RKObjectLoader* theObjectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
-    block(theObjectLoader);
-    [self loadTableWithObjectLoader:theObjectLoader];
-}
-
-- (void)loadTableWithObjectLoader:(RKObjectLoader*)theObjectLoader {
-    NSAssert(theObjectLoader, @"Cannot perform a network load without an object loader");
-    if (! [self.objectLoader isEqual:theObjectLoader]) {
-        theObjectLoader.delegate = self;
-        self.objectLoader = theObjectLoader;
-    }
-    if ([self.delegate respondsToSelector:@selector(tableController:willLoadTableWithObjectLoader:)]) {
-        [self.delegate tableController:self willLoadTableWithObjectLoader:self.objectLoader];
-    }
-    if (self.objectLoader.queue && ![self.objectLoader.queue containsRequest:self.objectLoader]) {
-        [self.objectLoader.queue addRequest:self.objectLoader];
-    }
-}
-
 - (void)cancelLoad {
     [self.objectLoader cancel];
 }
 
 - (NSDate*)lastUpdatedDate {
+    if (! self.objectLoader) {
+        return nil;        
+    }
+    
     if (_autoRefreshFromNetwork) {
         NSAssert(_cache, @"Found a nil cache when trying to read our last loaded time");
         NSDictionary* lastUpdatedDates = [_cache dictionaryForCacheKey:lastUpdatedDateDictionaryKey];
         RKLogTrace(@"Last updated dates dictionary retrieved from tableController cache: %@", lastUpdatedDates);
         if (lastUpdatedDates) {
-            NSAssert(self.objectLoader, @"Found a nil objectLoader when attempting to retrieve our last loaded time");
             NSString* absoluteURLString = [self.objectLoader.URL absoluteString];
             NSNumber* lastUpdatedTimeIntervalSince1970 = (NSNumber*)[lastUpdatedDates objectForKey:absoluteURLString];
             if (absoluteURLString && lastUpdatedTimeIntervalSince1970) {
@@ -1365,6 +1342,20 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         self.tableView.contentInset = contentInsets;
         self.tableView.scrollIndicatorInsets = contentInsets;
         [UIView commitAnimations];
+    }
+}
+
+- (void)loadTableWithObjectLoader:(RKObjectLoader*)theObjectLoader {
+    NSAssert(theObjectLoader, @"Cannot perform a network load without an object loader");
+    if (! [self.objectLoader isEqual:theObjectLoader]) {
+        theObjectLoader.delegate = self;
+        self.objectLoader = theObjectLoader;
+    }
+    if ([self.delegate respondsToSelector:@selector(tableController:willLoadTableWithObjectLoader:)]) {
+        [self.delegate tableController:self willLoadTableWithObjectLoader:self.objectLoader];
+    }
+    if (self.objectLoader.queue && ![self.objectLoader.queue containsRequest:self.objectLoader]) {
+        [self.objectLoader.queue addRequest:self.objectLoader];
     }
 }
 
