@@ -20,6 +20,7 @@
 
 #import "RKObjectMapping.h"
 #import "RKDynamicObjectMapping.h"
+#import "RKObjectMappingProviderContextEntry.h"
 
 // Internal framework contexts
 // @see RKObjectMappingProvider+Contexts.h
@@ -243,6 +244,10 @@ typedef enum {
     or nil if no match was found.
  */
 - (RKObjectMappingDefinition *)objectMappingForResourcePath:(NSString *)resourcePath;
+
+
+- (void)setEntry:(RKObjectMappingProviderContextEntry *)entry forResourcePathPattern:(NSString *)resourcePath;
+- (RKObjectMappingProviderContextEntry *)entryForResourcePath:(NSString *)resourcePath;
 
 /**
  An object mapping used when the remote system returns an error status code

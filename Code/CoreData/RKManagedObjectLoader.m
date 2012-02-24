@@ -26,6 +26,7 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectLoader_Internals.h"
 #import "RKRequest_Internals.h"
+#import "RKObjectMappingProvider+CoreData.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -118,6 +119,15 @@
     return [super prepareURLRequest];
 }
 
+- (NSArray *)cachedObjects {
+    NSFetchRequest *fetchRequest = [self.mappingProvider fetchRequestForResourcePath:self.resourcePath];
+    if (fetchRequest) {
+        return [NSManagedObject objectsWithFetchRequest:fetchRequest];
+    }
+    
+    return nil;
+}
+
 - (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result {
     if (! [self isGET]) {
         RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
@@ -125,24 +135,12 @@
     }
     
     if ([self.URL isKindOfClass:[RKURL class]]) {
-        RKURL* rkURL = (RKURL*)self.URL;
-        
-        NSArray* results = [result asCollection];
-        NSArray* cachedObjects = [self.objectStore objectsForResourcePath:rkURL.resourcePath];
-        NSObject<RKManagedObjectCache>* managedObjectCache = self.objectStore.managedObjectCache;
-        BOOL queryForDeletion = [managedObjectCache respondsToSelector:@selector(shouldDeleteOrphanedObject:)];
-      
+        NSArray *results = [result asCollection];
+        NSArray *cachedObjects = [self cachedObjects];
         for (id object in cachedObjects) {
             if (NO == [results containsObject:object]) {
-              if (queryForDeletion && [managedObjectCache shouldDeleteOrphanedObject:object] == NO)
-              {
-                RKLogTrace(@"Sparing orphaned object %@ even though not returned in result set", object);
-              }
-              else
-              {
                 RKLogTrace(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
                 [[self.objectStore contextForCurrentThread] deleteObject:object];
-              }
             }
         }
     } else {
@@ -209,13 +207,12 @@
 }
 
 - (BOOL)isResponseMappable {
-    if ([self.response wasLoadedFromCache] && self.objectStore.managedObjectCache) {
-        NSFetchRequest* cacheFetchRequest = [self.objectStore.managedObjectCache fetchRequestForResourcePath:self.resourcePath];
-        if (! cacheFetchRequest) {
-            RKLogDebug(@"Skipping managed object mapping optimization -> Managed object cache returned nil cacheFetchRequest for resourcePath: %@", self.resourcePath);
+    if ([self.response wasLoadedFromCache]) {
+        NSArray* cachedObjects = [self cachedObjects];
+        if (! cachedObjects) {
+            RKLogDebug(@"Skipping managed object mapping optimization -> Managed object cache returned nil cachedObjects for resourcePath: %@", self.resourcePath);
             return [super isResponseMappable];
         }
-        NSArray* cachedObjects = [NSManagedObject objectsWithFetchRequest:cacheFetchRequest];
         [self informDelegateOfObjectLoadWithResultDictionary:[NSDictionary dictionaryWithObject:cachedObjects forKey:@""]];
         return NO;
     }
