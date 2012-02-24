@@ -353,6 +353,9 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
 - (void)deletePersistantStore {
 	[self deletePersistantStoreUsingSeedDatabaseName:nil];
+    
+    // Recreate the MOC
+    self.context = [self newManagedObjectContext];
 }
 
 - (NSManagedObjectContext *)contextForCurrentThread {
@@ -375,6 +378,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
                                                      name:NSManagedObjectContextDidSaveNotification
                                                    object:managedObjectContext];
 	}
+    
 	return managedObjectContext;
 }
 
