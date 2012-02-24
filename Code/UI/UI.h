@@ -31,5 +31,6 @@
 #import "RKTableView.h"
 #import "RKRefreshTriggerView.h"
 #import "RKObjectManager+RKTableController.h"
+#import "UIImage+RKAdditions.h"
 
 #endif

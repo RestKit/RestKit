@@ -662,6 +662,10 @@
 		25EC1B1314F8079800C3CF3F /* grayArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE314F8022600C3CF3F /* grayArrow@2x.png */; };
 		25EC1B1414F8079800C3CF3F /* whiteArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE414F8022600C3CF3F /* whiteArrow.png */; };
 		25EC1B1514F8079800C3CF3F /* whiteArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE514F8022600C3CF3F /* whiteArrow@2x.png */; };
+		25EC1B3914F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25EC1B3A14F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25EC1B3B14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */; };
+		25EC1B3C14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */; };
 		25FABED014E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED114E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1134,6 +1138,8 @@
 		25EC1B0014F8078100C3CF3F /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		25EC1B1E14F821B500C3CF3F /* RestKitResources-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RestKitResources-Prefix.pch"; sourceTree = "<group>"; };
 		25EC1B1F14F8220800C3CF3F /* RestKitResources-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RestKitResources-Info.plist"; sourceTree = "<group>"; };
+		25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+RKAdditions.h"; sourceTree = "<group>"; };
+		25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RKAdditions.m"; sourceTree = "<group>"; };
 		25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestResponseLoader.h; path = Testing/RKTestResponseLoader.h; sourceTree = "<group>"; };
 		25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestResponseLoader.m; path = Testing/RKTestResponseLoader.m; sourceTree = "<group>"; };
 		49A66B0814CEFB0400A6F062 /* LICENCE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENCE; path = XMLReader/LICENCE; sourceTree = "<group>"; };
@@ -1947,6 +1953,8 @@
 				25B6E91D14CF778D00B1E881 /* UIView+FindFirstResponder.m */,
 				25EC1A2A14F6FDAC00C3CF3F /* RKObjectManager+RKTableController.h */,
 				25EC1A2B14F6FDAC00C3CF3F /* RKObjectManager+RKTableController.m */,
+				25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */,
+				25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -2191,6 +2199,7 @@
 				25EC1A6314F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */,
 				25EC1ABC14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */,
 				25EC1AC014F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */,
+				25EC1B3914F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2308,6 +2317,7 @@
 				25EC1A6514F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */,
 				25EC1ABD14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */,
 				25EC1AC114F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */,
+				25EC1B3A14F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2705,6 +2715,7 @@
 				25EC1A4514F7393D00C3CF3F /* RKObjectMappingProviderContextEntry.m in Sources */,
 				25EC1ABE14F8019F00C3CF3F /* RKRefreshGestureRecognizer.m in Sources */,
 				25EC1AC214F8019F00C3CF3F /* RKRefreshTriggerView.m in Sources */,
+				25EC1B3B14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2878,6 +2889,7 @@
 				25EC1A4614F7393E00C3CF3F /* RKObjectMappingProviderContextEntry.m in Sources */,
 				25EC1ABF14F8019F00C3CF3F /* RKRefreshGestureRecognizer.m in Sources */,
 				25EC1AC314F8019F00C3CF3F /* RKRefreshTriggerView.m in Sources */,
+				25EC1B3C14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

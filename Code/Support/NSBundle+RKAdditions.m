@@ -20,6 +20,7 @@
 
 #import "NSBundle+RKAdditions.h"
 #import "NSString+RestKit.h"
+#import "UIImage+RKAdditions.h"
 #import "RKLog.h"
 #import "RKParser.h"
 #import "RKParserRegistry.h"
@@ -73,7 +74,7 @@
         return nil;
     }
 
-    return [UIImage imageWithContentsOfFile:resourcePath];
+    return [UIImage imageWithContentsOfResolutionIndependentFile:resourcePath];
 }
 #endif
 
