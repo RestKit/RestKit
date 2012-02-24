@@ -652,6 +652,16 @@
 		25EC1AC114F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1ABA14F8019F00C3CF3F /* RKRefreshTriggerView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1AC214F8019F00C3CF3F /* RKRefreshTriggerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1ABB14F8019F00C3CF3F /* RKRefreshTriggerView.m */; };
 		25EC1AC314F8019F00C3CF3F /* RKRefreshTriggerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1ABB14F8019F00C3CF3F /* RKRefreshTriggerView.m */; };
+		25EC1B0114F8078100C3CF3F /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25EC1B0014F8078100C3CF3F /* CoreFoundation.framework */; };
+		25EC1B0D14F8079800C3CF3F /* RestKitCoreData.xcdatamodeld in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1ADB14F8022600C3CF3F /* RestKitCoreData.xcdatamodeld */; };
+		25EC1B0E14F8079800C3CF3F /* blackArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1ADE14F8022600C3CF3F /* blackArrow.png */; };
+		25EC1B0F14F8079800C3CF3F /* blackArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1ADF14F8022600C3CF3F /* blackArrow@2x.png */; };
+		25EC1B1014F8079800C3CF3F /* blueArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE014F8022600C3CF3F /* blueArrow.png */; };
+		25EC1B1114F8079800C3CF3F /* blueArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE114F8022600C3CF3F /* blueArrow@2x.png */; };
+		25EC1B1214F8079800C3CF3F /* grayArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE214F8022600C3CF3F /* grayArrow.png */; };
+		25EC1B1314F8079800C3CF3F /* grayArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE314F8022600C3CF3F /* grayArrow@2x.png */; };
+		25EC1B1414F8079800C3CF3F /* whiteArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE414F8022600C3CF3F /* whiteArrow.png */; };
+		25EC1B1514F8079800C3CF3F /* whiteArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE514F8022600C3CF3F /* whiteArrow@2x.png */; };
 		25FABED014E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED114E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1120,6 +1130,10 @@
 		25EC1AE314F8022600C3CF3F /* grayArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grayArrow@2x.png"; sourceTree = "<group>"; };
 		25EC1AE414F8022600C3CF3F /* whiteArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteArrow.png; sourceTree = "<group>"; };
 		25EC1AE514F8022600C3CF3F /* whiteArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "whiteArrow@2x.png"; sourceTree = "<group>"; };
+		25EC1AFF14F8078100C3CF3F /* RestKitResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitResources.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		25EC1B0014F8078100C3CF3F /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		25EC1B1E14F821B500C3CF3F /* RestKitResources-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RestKitResources-Prefix.pch"; sourceTree = "<group>"; };
+		25EC1B1F14F8220800C3CF3F /* RestKitResources-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RestKitResources-Info.plist"; sourceTree = "<group>"; };
 		25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestResponseLoader.h; path = Testing/RKTestResponseLoader.h; sourceTree = "<group>"; };
 		25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestResponseLoader.m; path = Testing/RKTestResponseLoader.m; sourceTree = "<group>"; };
 		49A66B0814CEFB0400A6F062 /* LICENCE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENCE; path = XMLReader/LICENCE; sourceTree = "<group>"; };
@@ -1201,6 +1215,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		25EC1AFC14F8078100C3CF3F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25EC1B0114F8078100C3CF3F /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1232,6 +1254,7 @@
 				25160D2614564E820060A5C5 /* RestKitTests.octest */,
 				25160E62145651060060A5C5 /* RestKit.framework */,
 				25160E78145651060060A5C5 /* RestKitFrameworkTests.octest */,
+				25EC1AFF14F8078100C3CF3F /* RestKitResources.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1255,6 +1278,7 @@
 				25160D2714564E820060A5C5 /* SenTestingKit.framework */,
 				25160D2914564E820060A5C5 /* UIKit.framework */,
 				25160E63145651060060A5C5 /* Cocoa.framework */,
+				25EC1B0014F8078100C3CF3F /* CoreFoundation.framework */,
 				25160E65145651060060A5C5 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -1977,8 +2001,9 @@
 		25EC1AD614F8022600C3CF3F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				25EC1AD714F8022600C3CF3F /* PLISTs */,
 				25EC1ADB14F8022600C3CF3F /* RestKitCoreData.xcdatamodeld */,
+				25EC1B1E14F821B500C3CF3F /* RestKitResources-Prefix.pch */,
+				25EC1AD714F8022600C3CF3F /* PLISTs */,
 				25EC1ADD14F8022600C3CF3F /* RKRefreshTriggerViewAssets */,
 			);
 			path = Resources;
@@ -1987,6 +2012,7 @@
 		25EC1AD714F8022600C3CF3F /* PLISTs */ = {
 			isa = PBXGroup;
 			children = (
+				25EC1B1F14F8220800C3CF3F /* RestKitResources-Info.plist */,
 				25EC1AD814F8022600C3CF3F /* RestKitFramework-Info.plist */,
 				25EC1AD914F8022600C3CF3F /* RestKitFrameworkTests-Info.plist */,
 				25EC1ADA14F8022600C3CF3F /* RestKitTests-Info.plist */,
@@ -2362,6 +2388,24 @@
 			productReference = 25160E78145651060060A5C5 /* RestKitFrameworkTests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
+		25EC1AFE14F8078100C3CF3F /* RestKitResources */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 25EC1B0B14F8078100C3CF3F /* Build configuration list for PBXNativeTarget "RestKitResources" */;
+			buildPhases = (
+				25EC1AFB14F8078100C3CF3F /* Sources */,
+				25EC1AFC14F8078100C3CF3F /* Frameworks */,
+				25EC1AFD14F8078100C3CF3F /* Resources */,
+				25EC1B2414F8229E00C3CF3F /* RSync Bundle to Source Tree */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RestKitResources;
+			productName = RestKitResources;
+			productReference = 25EC1AFF14F8078100C3CF3F /* RestKitResources.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2387,6 +2431,7 @@
 				25160D2514564E820060A5C5 /* RestKitTests */,
 				25160E61145651060060A5C5 /* RestKitFramework */,
 				25160E77145651060060A5C5 /* RestKitFrameworkTests */,
+				25EC1AFE14F8078100C3CF3F /* RestKitResources */,
 			);
 		};
 /* End PBXProject section */
@@ -2493,6 +2538,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		25EC1AFD14F8078100C3CF3F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25EC1B0D14F8079800C3CF3F /* RestKitCoreData.xcdatamodeld in Resources */,
+				25EC1B0E14F8079800C3CF3F /* blackArrow.png in Resources */,
+				25EC1B0F14F8079800C3CF3F /* blackArrow@2x.png in Resources */,
+				25EC1B1014F8079800C3CF3F /* blueArrow.png in Resources */,
+				25EC1B1114F8079800C3CF3F /* blueArrow@2x.png in Resources */,
+				25EC1B1214F8079800C3CF3F /* grayArrow.png in Resources */,
+				25EC1B1314F8079800C3CF3F /* grayArrow@2x.png in Resources */,
+				25EC1B1414F8079800C3CF3F /* whiteArrow.png in Resources */,
+				25EC1B1514F8079800C3CF3F /* whiteArrow@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -2521,6 +2582,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		25EC1B2414F8229E00C3CF3F /* RSync Bundle to Source Tree */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "RSync Bundle to Source Tree";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rsync -av --delete ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME} ${SOURCE_ROOT}/${FULL_PRODUCT_NAME}";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2886,6 +2961,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		25EC1AFB14F8078100C3CF3F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -3139,6 +3221,44 @@
 			};
 			name = Release;
 		};
+		25EC1B0914F8078100C3CF3F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Resources/RestKitResources-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitResources-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		25EC1B0A14F8078100C3CF3F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Resources/RestKitResources-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				INFOPLIST_FILE = "Resources/PLISTs/RestKitResources-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3186,6 +3306,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		25EC1B0B14F8078100C3CF3F /* Build configuration list for PBXNativeTarget "RestKitResources" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				25EC1B0914F8078100C3CF3F /* Debug */,
+				25EC1B0A14F8078100C3CF3F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSManagedObjectModel_VersionHashes</key>
+	<dict>
+		<key>RestKitCoreData</key>
+		<dict>
+			<key>RKSearchWord</key>
+			<data>
+			8ILMzYCnYe8uGzdLHqnxo6RUX+ifEi9tjcRr4dRZL24=
+			</data>
+			<key>RKSearchableManagedObject</key>
+			<data>
+			mkPRCudukXRO5vBX5pUU6ldJVkhf7bE7wkbmDOlxJDo=
+			</data>
+		</dict>
+	</dict>
+</dict>
+</plist>
