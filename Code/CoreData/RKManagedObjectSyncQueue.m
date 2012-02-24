@@ -12,7 +12,6 @@
 
 @dynamic queuePosition;
 @dynamic syncStatus;
-@dynamic primaryKeyString;
 @dynamic objectIDString;
 @dynamic className;
 

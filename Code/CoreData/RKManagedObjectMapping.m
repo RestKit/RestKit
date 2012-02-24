@@ -66,6 +66,7 @@
         _objectClass = [objectClass retain];
         _entity = [entity retain];
         _objectStore = objectStore;
+        _syncMode = RKSyncModeNone;
 
         [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
         [self addObserver:self forKeyPath:@"primaryKeyAttribute" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
