@@ -70,9 +70,28 @@
                 newRecord.syncStatus = [NSNumber numberWithInt:RKSyncStatusPost];
             }
             if ([updatedObjects containsObject:object]) {
+                RKManagedObjectSyncQueue *existingRecord = [RKManagedObjectSyncQueue findFirstWithPredicate:[NSPredicate predicateWithFormat:@"objectIDString == %@", [[[object objectID] URIRepresentation] absoluteString], nil]];
+                //if object is modified but already has an entry for something, skip it
+                if (existingRecord) {
+                    [newRecord deleteEntity];
+                     continue;
+                } 
                 newRecord.syncStatus = [NSNumber numberWithInt:RKSyncStatusPut];
             }
             if ([deletedObjects containsObject:object]) {
+                RKManagedObjectSyncQueue *existingRecord = [RKManagedObjectSyncQueue findFirstWithPredicate:[NSPredicate predicateWithFormat:@"objectIDString == %@", [[[object objectID] URIRepresentation] absoluteString], nil]];
+                if (existingRecord)
+                {
+                    //If there's a post or a put for an object that exists, we don't even bother sending to the server
+                    if ([existingRecord.syncStatus intValue] == RKSyncStatusPost) {
+                        [existingRecord deleteEntity];
+                        [newRecord deleteEntity];
+                        continue;
+                    }
+                    if ([existingRecord.syncStatus intValue] == RKSyncStatusPut) {
+                        [existingRecord deleteEntity];
+                    }
+                }
                 newRecord.syncStatus = [NSNumber numberWithInt:RKSyncStatusDelete];
                 if (newDeletedObject) {
                     newRecord.objectIDString = [[[newDeletedObject objectID] URIRepresentation] absoluteString];
