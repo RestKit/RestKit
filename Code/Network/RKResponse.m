@@ -23,6 +23,7 @@
 #import "RKLog.h"
 #import "RKParserRegistry.h"
 #import "RKClient.h"
+#import "NSData+GZip.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -243,8 +244,13 @@ extern NSString* cacheURLKey;
     return (cfEncoding ==  kCFStringEncodingInvalidId) ? NSUTF8StringEncoding : CFStringConvertEncodingToNSStringEncoding(cfEncoding);
 }
 
-- (NSString *)bodyAsString {
-	return [[[NSString alloc] initWithData:self.body encoding:[self bodyEncoding]] autorelease];
+- (NSString*)bodyAsString {
+    if ([self.MIMEType isEqualToString:RKMIMETypeGZIP]) {
+        // if body contains gzipped data, unzip it before returning
+        return [[[NSString alloc] initWithData:[self.body dataFromCompressedData] encoding:NSUTF8StringEncoding] autorelease];
+    } else {
+        return [[[NSString alloc] initWithData:self.body encoding:NSUTF8StringEncoding] autorelease];
+    }
 }
 
 - (id)bodyAsJSON {

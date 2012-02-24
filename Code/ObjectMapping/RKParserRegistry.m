@@ -79,6 +79,7 @@ RKParserRegistry* gSharedRegistry;
         parserClass = NSClassFromString(parserClassName);
         if (parserClass) {
             [self setParserClass:parserClass forMIMEType:RKMIMETypeJSON];
+            [self setParserClass:parserClass forMIMEType:RKMIMETypeGZIP];
             break;
         }
     }
@@ -88,6 +89,7 @@ RKParserRegistry* gSharedRegistry;
     if (parserClass) {
         [self setParserClass:parserClass forMIMEType:RKMIMETypeXML];
         [self setParserClass:parserClass forMIMEType:RKMIMETypeTextXML];
+        [self setParserClass:parserClass forMIMEType:RKMIMETypeGZIP];
     }
 }
 
