@@ -652,6 +652,8 @@
 		25EC1A4814F7394200C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 73DA8E2014D1C3870054DD73 /* RKObjectMappingProviderContextEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1A4A14F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1A4914F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m */; };
 		25EC1A4B14F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1A4914F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m */; };
+		25EC1A6314F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectMappingCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25EC1A6514F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectMappingCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FABED014E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED114E3796400E609E7 /* RKTestNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */; };
 		25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2160,6 +2162,7 @@
 				25EC1A3D14F72B2800C3CF3F /* RKInMemoryMappingCache.h in Headers */,
 				25EC1A4114F72C7200C3CF3F /* RKObjectMappingProvider+CoreData.h in Headers */,
 				25EC1A4714F7394100C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */,
+				25EC1A6314F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2274,6 +2277,7 @@
 				25EC1A3E14F72B2900C3CF3F /* RKInMemoryMappingCache.h in Headers */,
 				25EC1A4214F72C7300C3CF3F /* RKObjectMappingProvider+CoreData.h in Headers */,
 				25EC1A4814F7394200C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */,
+				25EC1A6514F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
