@@ -564,15 +564,15 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
             // If the relationship has changed, set it
             if ([self shouldSetValue:destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+                appliedMappings = YES;
                 RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                 [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
             }
         }
         
-        // If the relationship has changed, set it
-        if ([self shouldSetValue:destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
-            RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
-            [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
+        // Notify the delegate
+        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
+            [self.delegate objectMappingOperation:self didSetValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
         }
         
         // Fail out if a validation error has occurred
