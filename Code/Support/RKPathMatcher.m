@@ -126,7 +126,6 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     if (![self matches])
         return NO;
     if (!arguments) {
-        RKLogWarning(@"The parsed arguments dictionary reference is nil.");
         return YES;
     }
     NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
