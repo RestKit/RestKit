@@ -45,6 +45,7 @@
 		258F33F51432CB11001EEEFC /* RKAuthenticationExample.xib in Resources */ = {isa = PBXBuildFile; fileRef = 258F33F31432CB11001EEEFC /* RKAuthenticationExample.xib */; };
 		25A34207147C4C540009758D /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A341FF147C4C300009758D /* libRestKit.a */; };
 		25A3421D147D87800009758D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A3421C147D87800009758D /* Security.framework */; };
+		25BE938114F96CAD008BC1C0 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25BE938014F96CAD008BC1C0 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -141,6 +142,7 @@
 		258F33F21432CB11001EEEFC /* RKAuthenticationExample.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKAuthenticationExample.m; path = RKAuthenticationExample/RKAuthenticationExample.m; sourceTree = "<group>"; };
 		258F33F31432CB11001EEEFC /* RKAuthenticationExample.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = RKAuthenticationExample.xib; path = RKAuthenticationExample/RKAuthenticationExample.xib; sourceTree = "<group>"; };
 		25A3421C147D87800009758D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		25BE938014F96CAD008BC1C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25BE938114F96CAD008BC1C0 /* QuartzCore.framework in Frameworks */,
 				25A3421D147D87800009758D /* Security.framework in Frameworks */,
 				25A34207147C4C540009758D /* libRestKit.a in Frameworks */,
 				258BAA6513609F6D00ED0614 /* MobileCoreServices.framework in Frameworks */,
@@ -167,6 +170,7 @@
 		2501DE4D13607B67003DE9E4 = {
 			isa = PBXGroup;
 			children = (
+				25BE938014F96CAD008BC1C0 /* QuartzCore.framework */,
 				258BAA3413608BDB00ED0614 /* App */,
 				258BAA4213608BDB00ED0614 /* Examples */,
 				2501DE5B13607B67003DE9E4 /* Frameworks */,
@@ -550,7 +554,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "App/RKCatalog-Prefix.pch";
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "App/RKCatalog-Info.plist";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)\"";
 				OTHER_LDFLAGS = "-ObjC";
@@ -566,7 +570,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "App/RKCatalog-Prefix.pch";
-				HEADER_SEARCH_PATHS = "";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "App/RKCatalog-Info.plist";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)\"";
 				OTHER_LDFLAGS = "-ObjC";

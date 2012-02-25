@@ -47,7 +47,7 @@
                 article.body = @"This is the body";
                 
                 // Persist the object store
-                [manager.objectStore save];
+                [manager.objectStore save:nil];
             }
         }
         
