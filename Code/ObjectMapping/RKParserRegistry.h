@@ -25,8 +25,31 @@
  The Parser Registry provides for the registration of RKParser classes
  for a particular MIME Type. This enables
  */
+
+/*
+ RegexForMIMEType:  MIMETypes should be specifiable as regular expressions.
+
+		_MIMETypeToParserClasses			will remain as a dictionary of MIMETypes; existing could will remain unaffected and this retains the definitive nature of looking up the MIMEtype in a dictionary.
+ (new)	_MIMETypeToParserClassesRegularExpressions
+											add NSArray of regular expressions.
+ 
+ Design notes:
+		1.	Separate literals from regular expressions; this will preserve current runtime characteristics (lookup time) and provide greater compatibility with existing client code.
+		2.	Keep RegularExpressions in an array; since multiple regular expressions may match a single MIMEType, it is important that there be a definite order of evaluation.
+		3.	Order of Evaluation (parserForMIMEType:MIMEType: and parserClassForMIMEType:MIMEType:)
+			a.	Lookup MIMEType in _MIMETypeToParserClasses
+			b.	Lookup MIMEType in _MIMETypeToParserClassesRegularExpressions, starting with _MIMETypeToParserClassesRegularExpressions[0]
+ 
+		setParserClass:forMIMEType:			should add a literal _MIMETypeToParserClasses
+ (new)	setParserClass:forMIMETypeRegex:	should add a regular expression to _MIMETypeToParserClassesRegularExpressions
+
+		parserForMIMEType:MIMEType:			and
+		parserClassForMIMEType:MIMEType:	should return the parser class following the specified order of evaluation
+ 
+*/
 @interface RKParserRegistry : NSObject {
     NSMutableDictionary *_MIMETypeToParserClasses;
+	NSMutableArray *_MIMETypeToParserClassesRegularExpressions;
 }
 
 /**
@@ -54,6 +77,11 @@
  Registers an RKParser conformant class as the handler for the specified MIME Type
  */
 - (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString *)MIMEType;
+
+/**
+ Registers an RKParser conformant class as the handler for the specified MIME Type
+ */
+- (void)setParserClass:(Class<RKParser>)parserClass forMIMETypeRegex:(NSRegularExpression *)MIMETypeExpression;
 
 /**
  Automatically configure the registry via run-time reflection of the RKParser classes
