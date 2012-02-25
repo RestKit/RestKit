@@ -130,7 +130,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
                     RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
                 }
-//            	date = [dateFormatter dateFromString:string];
                 NSString *errorDescription = nil;
                 success = [dateFormatter getObjectValue:&date forString:string errorDescription:&errorDescription];
 		}

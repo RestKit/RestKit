@@ -19,6 +19,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
+    
     // Initialize RestKit
 	RKObjectManager* objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
     
@@ -33,12 +35,12 @@
     
     RKObjectMapping* statusMapping = [RKObjectMapping mappingForClass:[RKTStatus class]];
     [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
-         @"created_at", @"createdAt",
-         @"text", @"text",
-         @"url", @"urlString",
-         @"in_reply_to_screen_name", @"inReplyToScreenName",
-         @"favorited", @"isFavorited",
-         nil];
+     @"created_at", @"createdAt",
+     @"text", @"text",
+     @"url", @"urlString",
+     @"in_reply_to_screen_name", @"inReplyToScreenName",
+     @"favorited", @"isFavorited",
+     nil];
     [statusMapping mapRelationship:@"user" withMapping:userMapping];
     
     // Update date format so that we can parse Twitter dates properly
@@ -46,11 +48,11 @@
     [RKObjectMapping addDefaultDateFormatterForString:@"E MMM d HH:mm:ss Z y" inTimeZone:nil];
     
     // Register our mappings with the provider using a resource path pattern
+    statusMapping.rootKeyPath = @"statuses.status";
     [objectManager.mappingProvider setObjectMapping:statusMapping forResourcePathPattern:@"/status/user_timeline/:username"];
     
     // Uncomment this to use XML, comment it to use JSON
-//  objectManager.acceptMIMEType = RKMIMETypeXML;
-//  [objectManager.mappingProvider setMapping:statusMapping forKeyPath:@"statuses.status"];
+//    objectManager.acceptMIMEType = RKMIMETypeXML;
 	
     // Create Window and View Controllers
 	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
