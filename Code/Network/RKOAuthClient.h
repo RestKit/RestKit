@@ -58,6 +58,7 @@ typedef enum RKOAuthClientErrors {
     NSString *_authorizationURL;
     NSString *_callbackURL;
     NSString *_accessToken;
+    NSString *_refreshToken;
     id<RKOAuthClientDelegate> _delegate;
 }
 
@@ -76,6 +77,11 @@ typedef enum RKOAuthClientErrors {
  Returns the access token retrieved
  */
 @property (nonatomic, readonly) NSString *accessToken;
+
+/**
+ Returns the refresh token retrieved
+ */
+@property (nonatomic, readonly) NSString *refreshToken;
 
 // Client Delegate
 @property (nonatomic,assign) id<RKOAuthClientDelegate> delegate;
@@ -102,6 +108,11 @@ typedef enum RKOAuthClientErrors {
  * Sent when a new access token has being acquired
  */
 - (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token;
+
+/**
+ * Sent when a new access token has being acquired with its refresh token
+ */
+- (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token refreshToken:(NSString *)refreshToken;
 
 /**
  * Sent when an access token request has failed due an invalid authorization code
