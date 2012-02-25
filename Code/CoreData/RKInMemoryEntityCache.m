@@ -104,7 +104,7 @@
     NSArray *objectIds = [NSManagedObject executeFetchRequest:fetchRequest inContext:managedObjectContext];
     [fetchRequest release];
 
-    RKLogInfo(@"Caching all %d %@ objectsIDs to thread local storage", [objectIds count], entity.name);
+    RKLogInfo(@"Caching all %ld %@ objectsIDs to thread local storage", (long) [objectIds count], entity.name);
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     if ([objectIds count] > 0) {
         BOOL coerceToString = [self shouldCoerceAttributeToString:mapping.primaryKeyAttribute forEntity:entity];

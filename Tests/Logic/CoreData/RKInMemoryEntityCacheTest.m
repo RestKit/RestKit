@@ -180,6 +180,7 @@
     assertThatInteger([entityCache.entityCache count], is(equalToInt(0)));
 }
 
+#if TARGET_OS_IPHONE
 - (void)testShouldExpireEntityCacheInResponseToMemoryWarning {
     RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     RKHuman* human = [RKHuman createEntity];
@@ -198,6 +199,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     assertThatInteger([entityCache.entityCache count], is(equalToInt(0)));
 }
+#endif
 
 - (void)testShouldAddInstancesOfInsertedObjectsToCache {
     RKManagedObjectStore* objectStore = [RKTestFactory objectStore];

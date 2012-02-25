@@ -8,7 +8,7 @@
 
 #import "RKObjectManager.h"
 
-#ifdef TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
 
 @class RKTableController, RKFetchedResultsTableController;
 

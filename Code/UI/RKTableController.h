@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#ifdef TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #import "RKAbstractTableController.h"
 #import "RKTableSection.h"
