@@ -62,4 +62,21 @@
  */
 - (NSString*)ContentTypeHTTPHeader DEPRECATED_ATTRIBUTE;
 
+/**
+ Get the dictionary of the params which are:
+     *  The entity-body is single-part.
+     *  The entity-body follows the encoding requirements of the
+        "application/x-www-form-urlencoded" content-type as defined by
+        [W3C.REC-html40-19980424].
+     *  The HTTP request entity-header includes the "Content-Type"
+     header field set to "application/x-www-form-urlencoded".
+ Source: http://tools.ietf.org/html/rfc5849#section-3.4.1.3
+ 
+ This method is used for OAuth 1.0 HMAC signature. It should return a valid dictionary if
+ [self HTTPHeaderValueForContentType] returns "application/x-www-form-urlencoded"
+ 
+ If this method does not exist, it assumes no extra params to be signed.
+ */
+- (NSDictionary *)dictionaryForOAuthHmacSignature;
+
 @end

@@ -383,6 +383,21 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
     // check parameters
     if (host == nil || path == nil) { return nil; }
     
+    //
+    urlMethod = [urlMethod uppercaseString];
+    
+    // if urlMethod is GET, use the appropriate function
+    if ([urlMethod isEqualToString:@"GET"]) {
+        return [self URLRequestForPath:path
+                         GETParameters:parameters
+                                scheme:scheme
+                                  host:host
+                           consumerKey:consumerKey
+                        consumerSecret:consumerSecret
+                           accessToken:accessToken
+                           tokenSecret:tokenSecret];
+    }
+    
     // create object
     GCOAuth *oauth = [[GCOAuth alloc] initWithConsumerKey:consumerKey
                                            consumerSecret:consumerSecret

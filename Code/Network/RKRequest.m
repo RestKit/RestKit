@@ -257,8 +257,8 @@
         
         // use the suitable parameters dict
         NSDictionary *parameters = nil;
-        if ([self.params isKindOfClass:[RKParams class]])
-            parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
+        if ([self.params respondsToSelector:@selector(dictionaryForOAuthHmacSignature)])
+            parameters = [self.params dictionaryForOAuthHmacSignature];
         else 
             parameters = [_URL queryDictionary];
             
@@ -274,6 +274,16 @@
         else if (self.method == RKRequestMethodPOST)
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                POSTParameters:parameters
+                                       scheme:[_URL scheme]
+                                         host:[_URL host]
+                                  consumerKey:self.OAuth1ConsumerKey
+                               consumerSecret:self.OAuth1ConsumerSecret
+                                  accessToken:self.OAuth1AccessToken
+                                  tokenSecret:self.OAuth1AccessTokenSecret];
+        else if (self.method == RKRequestMethodDELETE)
+            echo = [GCOAuth URLRequestForPath:[_URL path]
+                                    urlMethod:@"DELETE"
+                                   parameters:parameters
                                        scheme:[_URL scheme]
                                          host:[_URL host]
                                   consumerKey:self.OAuth1ConsumerKey
