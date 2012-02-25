@@ -21,6 +21,8 @@
 #import "RKDotNetDateFormatter.h"
 #import "RestKit.h"
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
+
 BOOL isValidRange(NSRange rangeOfMatch);
 NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs);
 NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
@@ -113,3 +115,4 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds) {
     return seconds * 1000.f;
 }
 
+#endif
