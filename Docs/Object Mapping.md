@@ -485,7 +485,7 @@ take a look at how this works:
 
 ```objc
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
+#import <RestKit/CoreData.h>
 
 RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
 RKManagedObjectStore* objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"MyApp.sqlite"];
