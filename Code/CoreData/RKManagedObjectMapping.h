@@ -92,7 +92,12 @@ typedef enum {
 @property (nonatomic, readonly) RKManagedObjectStore *objectStore;
 
 /**
- The RKSyncMode specifying the way in which objects should be synced, if at all.
+ The RKSyncMode specifying the way in which objects should be synced, if at all. 
+ 
+ If set to RKSyncModeNone, the objects will not be managed by the syncManager. 
+ If set to RKSyncTransparent, the objects will be synced immediately if a connection is available, or saved for later and synced as soon as a connection is available. 
+ If set to RKSyncManual, the objects will be synced only when a call is made directly on the syncManager to do so.
+ RKSyncInterval is for convenience - to sync with a set interval, create a timer that calls `[syncManager syncObjectsWithSyncMode:RKSyncModeInterval andClass:nil];` This could be done with any of the other types of syncMode, but setting to RKSyncInterval prevents those objects from being synced manually or transparently as well.
  */
 @property (nonatomic, assign) RKSyncMode syncMode;
 
