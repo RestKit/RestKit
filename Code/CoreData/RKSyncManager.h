@@ -61,7 +61,8 @@ typedef enum {
 - (int)highestQueuePosition;
 
 - (void)sync;
+- (void)transparentSync;
 - (void)pushObjects;
-- (void)pullObjects;
+- (void)pullObjectsWithSyncMode:(NSNumber *)syncMode;
 
 @end
