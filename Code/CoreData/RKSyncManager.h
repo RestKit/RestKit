@@ -19,6 +19,8 @@ typedef enum {
     RKSyncStatusDelete
 } RKSyncStatus;
 
+@class RKSyncManager;
+
 /**
  * Notified of sync events for RKManagedObjectSyncObserver
  */
@@ -28,24 +30,40 @@ typedef enum {
 /**
  * Sent when there is an error syncing. 
  */
-- (void)didFailSyncingWithError:(NSError*)error;
+- (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
 
 @optional
 
 /**
  * When implemented, sent when the syncing process begins.
  */
-- (void)didStartSyncing;
+- (void)syncManager:(RKSyncManager *)syncManager willSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
 /**
  * When implemented, sent when the syncing process completes successfully.
  */
-- (void)didFinishSyncing;
+- (void)syncManager:(RKSyncManager *)syncManager didSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
 /**
- * When implemented, sent when the syncing completes successfully, but there were no objects that needed syncing.
+ * When implemented, sent before objects are pushed to the server.
  */
-- (void)didSyncNothing;
+- (void)syncManager:(RKSyncManager *)syncManager willPushObjectsInQueue:(NSArray *)queue withSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
+
+/**
+ * When implemented, sent before updates are pulled from ther server.
+ */
+- (void)syncManager:(RKSyncManager *)syncManager willPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
+/**
+ * When implemented, sent when all push requests have been added to the request queue.
+ */
+- (void)syncManager:(RKSyncManager *)syncManager didPushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
+/**
+ * When implemented, sent when all pull requests have been added to the request queue.
+ */
+- (void)syncManager:(RKSyncManager *)syncManager didPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
 @end
 
@@ -57,12 +75,15 @@ typedef enum {
 @property (nonatomic, assign) id<RKManagedObjectSyncDelegate> delegate;
 
 - (id)initWithObjectManager:(RKObjectManager*)objectManager;
-- (void)contextDidSave:(NSNotification*)notification;
-- (int)highestQueuePosition;
 
+- (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
+
+//Shortcuts for syncing all classes set to RKSyncModeManual
 - (void)sync;
-- (void)transparentSync;
-- (void)pushObjects;
-- (void)pullObjectsWithSyncMode:(NSNumber *)syncMode;
+- (void)push;
+- (void)pull;
 
 @end

@@ -8,6 +8,15 @@
 
 #import "RKSyncManager.h"
 
+
+@interface RKSyncManager (Private)
+- (void)contextDidSave:(NSNotification*)notification;
+- (int)highestQueuePosition;
+
+//Shortcut for transparent syncing; used for notification call
+- (void)transparentSync;
+@end
+
 @implementation RKSyncManager
 
 @synthesize objectManager = _objectManager, delegate = _delegate;
@@ -17,6 +26,7 @@
 	if (self) {
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
+        
         //Register for notifications from the managed object context associated with the object manager
         [[NSNotificationCenter defaultCenter] addObserver: self 
                                                  selector: @selector(contextDidSave:) 
@@ -131,6 +141,8 @@
             }
             newRecord.className = NSStringFromClass([object class]);
             
+            newRecord.syncMode = [NSNumber numberWithInt:mapping.syncMode];
+            
             NSLog(@"Writing to queue: %@", newRecord);
             NSError *error = nil;
             [[newRecord managedObjectContext] save:&error];
@@ -194,44 +206,36 @@
     return [requestedValue intValue];
 }
 
-- (void)sync {
-    //This will sync objects set to manual
-    NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContext;
-    [_queue removeAllObjects];
-    [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO inContext:context]];
-    [self performSelector:@selector(pushObjects) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
-    [self performSelector:@selector(pullObjectsWithSyncMode:) onThread:[NSThread currentThread] withObject:[NSNumber numberWithInt:RKSyncModeManual] waitUntilDone:YES];
-}
-
-- (void)transparentSync {
-    //only syncs objects with syncMode = RKSyncModeTransparent, called whenever network access is available
-    if ([_objectManager.client.reachabilityObserver isNetworkReachable]) {
-        NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContext;
-        [_queue removeAllObjects];
-        
-        NSMutableArray *allObjects = [[NSMutableArray alloc] initWithArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO inContext:context]];
-        
-        BOOL shouldPush = NO;
-        for (RKManagedObjectSyncQueue *item in allObjects) {
-            Class objectClass = NSClassFromString(item.className);
-            RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:objectClass];
-            if (mapping.syncMode == RKSyncModeTransparent) {
-                shouldPush = YES;
-                [_queue addObject:item];
-            }
-        }
-        
-        [allObjects release];
-        
-        if (shouldPush) {
-            [self performSelector:@selector(pushObjects) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
-            [self performSelector:@selector(pullObjectsWithSyncMode:) onThread:[NSThread currentThread] withObject:[NSNumber numberWithInt:RKSyncModeTransparent] waitUntilDone:YES];
-        }
+- (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willSyncWithSyncMode:andClass:)]) {
+        [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
+    }
+    [self pushObjectsWithSyncMode:syncMode andClass:objectClass];
+    [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didSyncWithSyncMode:andClass:)]) {
+        [_delegate syncManager:self didSyncWithSyncMode:syncMode andClass:objectClass];
     }
 }
 
-- (void)pushObjects {
+- (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContext;
+    [_queue removeAllObjects];
+    
+    //Build predicate for fetching the right records
+    NSPredicate *predicate = nil;
+    if (syncMode) {
+        predicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects: predicate, [NSPredicate predicateWithFormat:@"syncMode == %@", [NSNumber numberWithInt:syncMode], nil], nil]];
+    }
+    if (objectClass) {
+        predicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:predicate, [NSPredicate predicateWithFormat:@"className == %@", NSStringFromClass(objectClass), nil], nil]];
+    }
+    
+    [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO withPredicate:predicate inContext:context]];
+    
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjectsInQueue:withSyncMode:andClass:)]) {
+        [_delegate syncManager:self willPushObjectsInQueue:_queue withSyncMode:syncMode andClass:objectClass];
+    }
+    
     while ([_queue lastObject]) {
         RKManagedObjectSyncQueue *item = (RKManagedObjectSyncQueue*)[_queue lastObject];
         NSManagedObjectID *itemID = [_objectManager.objectStore.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:item.objectIDString]];
@@ -246,9 +250,9 @@
                 break;
             case RKSyncStatusDelete:
             {
-                Class objectClass = NSClassFromString(item.className);
+                Class itemClass = NSClassFromString(item.className);
                 RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:objectClass];
-                NSManagedObject *toDelete = [[objectClass alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil];
+                NSManagedObject *toDelete = [[itemClass alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil];
                 [toDelete populateFromDictionary:((RKDeletedObject*)object).data];
                 
                 //We don't use deleteObject so that Restkit doesn't try to clean up our transient nsmanagedobject
@@ -268,19 +272,48 @@
             NSLog(@"Error removing queue item! %@", error);
         }
     }
-    [RKManagedObjectSyncQueue truncateAllInContext:context];
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjectsWithSyncMode:andClass:)]) {
+        [_delegate syncManager:self didPushObjectsWithSyncMode:syncMode andClass:objectClass];
+    }
 }
 
-- (void)pullObjectsWithSyncMode:(NSNumber *)syncMode {
+- (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullWithSyncMode:andClass:)]) {
+        [_delegate syncManager:self willPullWithSyncMode:syncMode andClass:objectClass];
+    }
+    
     NSDictionary *mappings = _objectManager.mappingProvider.mappingsByKeyPath;
     for (id key in mappings) {
         RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[mappings objectForKey:key];
-        if (mapping.syncMode == [syncMode intValue]) {
+        if (mapping.syncMode == syncMode && (!objectClass  || mapping.objectClass == objectClass)) {
             NSManagedObject *object = [[NSManagedObject alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil]; 
             NSString *resourcePath = [_objectManager.router resourcePathForObject:object method:RKRequestMethodGET]; 
             [object release];
             [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
         }
+    }
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullWithSyncMode:andClass:)]) {
+        [_delegate syncManager:self didPullWithSyncMode:syncMode andClass:objectClass];
+    }
+}
+
+- (void)sync {
+    [self syncObjectsWithSyncMode:RKSyncModeManual andClass:nil];
+}
+
+- (void)push {
+    [self pushObjectsWithSyncMode:RKSyncModeManual andClass:nil];
+}
+
+- (void)pull {
+    [self pullObjectsWithSyncMode:RKSyncModeManual andClass:nil];
+}
+
+- (void)transparentSync {
+    //Syncs objects set to RKSyncModeTransparent. Called on reachability notification
+    if ([_objectManager.client.reachabilityObserver isNetworkReachable]) {
+        [self pushObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
+        [self pullObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
     }
 }
 
@@ -303,8 +336,8 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-    if (_delegate && [_delegate respondsToSelector:@selector(didFailSyncingWithError:)]) {
-        [_delegate didFailSyncingWithError:error];
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
+        [_delegate syncManager:self didFailSyncingWithError:error];
     }
 }
 
