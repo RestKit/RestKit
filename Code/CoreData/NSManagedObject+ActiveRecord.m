@@ -773,6 +773,8 @@ static NSNumber *defaultBatchSize = nil;
 	return [[self class] objectWithMinValueFor:property inContext:[self currentContext]];
 }
 
+
+//Taken from http://vladimir.zardina.org/2010/03/serializing-archivingunarchiving-an-nsmanagedobject-graph/
 - (NSDictionary*) toDictionary
 {
     self.accessibilityLabel = @"traversed";
