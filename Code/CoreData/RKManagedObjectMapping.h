@@ -25,6 +25,7 @@
 typedef enum {
     RKSyncModeNone,
     RKSyncModeTransparent,
+    RKSyncModeInterval,
     RKSyncModeManual
 } RKSyncMode;
 

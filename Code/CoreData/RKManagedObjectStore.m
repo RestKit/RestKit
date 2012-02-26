@@ -126,6 +126,12 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         [syncStatusAttribute setOptional:NO];
         [syncStatusAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
         
+        NSAttributeDescription *syncModeAttribute = [[NSAttributeDescription alloc] init];
+        [syncModeAttribute setName:@"syncMode"];
+        [syncModeAttribute setAttributeType:NSInteger16AttributeType];
+        [syncModeAttribute setOptional:NO];
+        [syncModeAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
+        
         NSAttributeDescription *objectIDStringAttribute = [[NSAttributeDescription alloc] init];
         [objectIDStringAttribute setName:@"objectIDString"];
         [objectIDStringAttribute setAttributeType:NSStringAttributeType];
@@ -138,10 +144,11 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         [classNameStringAttribute setOptional:NO];
         [classNameStringAttribute setDefaultValue:@""];
         
-        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, objectIDStringAttribute, classNameStringAttribute, nil]];
+        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, syncModeAttribute, objectIDStringAttribute, classNameStringAttribute, nil]];
         
         [queuePositionAttribute release];
         [syncStatusAttribute release];
+        [syncModeAttribute release];
         [objectIDStringAttribute release];
         [classNameStringAttribute release];
         
