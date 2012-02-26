@@ -441,17 +441,18 @@
             RKLogInfo(@"Beginning background task to perform processing...");
             
             // Fork a background task for continueing a long-running request
+            __block RKRequest* weakSelf = self;
+            __block id<RKRequestDelegate> weakDelegate = _delegate;
             _backgroundTaskIdentifier = [app beginBackgroundTaskWithExpirationHandler:^{
                 RKLogInfo(@"Background request time expired, canceling request.");
                 
-                [self cancelAndInformDelegate:NO];
-                [self cleanupBackgroundTask];
+                [weakSelf cancelAndInformDelegate:NO];
+                [weakSelf cleanupBackgroundTask];
                 
-                if ([_delegate respondsToSelector:@selector(requestDidTimeout:)]) {
-                    [_delegate requestDidTimeout:self];
+                if ([weakDelegate respondsToSelector:@selector(requestDidTimeout:)]) {
+                    [weakDelegate requestDidTimeout:weakSelf];
                 }
-            }];
-            
+            }];           
             // Start the potentially long-running request
             [self fireAsynchronousRequest];
         }
