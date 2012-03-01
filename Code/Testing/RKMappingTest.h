@@ -37,9 +37,19 @@
  @param mapping The object mapping being tested.
  @param sourceObject The source object being mapped from.
  @param destinationObject The destionation object being to.
- @return A new mapping test object for a mapping, a sourceObject and a destination object.
+ @return A new mapping test object for a mapping, a source object and a destination object.
  */
 + (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
+
+/**
+ Initializes the receiver with a given object mapping, source object, and destination object.
+ 
+ @param mapping The object mapping being tested.
+ @param sourceObject The source object being mapped from.
+ @param destinationObject The destionation object being to.
+ @return The receiver, initialized with mapping, sourceObject and destinationObject.
+ */
+- (id)initWithMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject;
 
 ///-----------------------------------------------------------------------------
 /// @name Setting Expectations
