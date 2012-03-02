@@ -269,21 +269,10 @@ static dispatch_queue_t defaultMappingQueue = nil;
 	[loader send];
 }
 
-- (void)sendObject:(id<NSObject>)object toResourcePath:(NSString *)resourcePath usingBlock:(void(^)(RKObjectLoader*))block {
-    RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodInvalid];
-    loader.URL = [self.baseURL URLByAppendingResourcePath:resourcePath];
-    // Yield to the block for setup
-    block(loader);
-    
-    [loader send];
-}
-
 - (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader*))block {
-    NSString *resourcePath = [self.router resourcePathForObject:object method:method];    
-    [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
-        loader.method = method;
-        block(loader);
-    }];
+    RKObjectLoader *loader = [self loaderForObject:object method:method];
+    block(loader);
+    [loader send];
 }
 
 - (void)getObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block {
