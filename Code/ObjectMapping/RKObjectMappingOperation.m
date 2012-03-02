@@ -539,6 +539,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                         RKLogTrace(@"Mapped NSArray relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                         NSMutableArray* destinationArray = [self.destinationObject mutableArrayValueForKey:relationshipMapping.destinationKeyPath];
                         [destinationArray setArray:destinationObject];
+                    } else if ([destinationObject isKindOfClass:[NSOrderedSet class]]) {
+                        RKLogTrace(@"Mapped NSOrderedSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
+                        [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
                     }
                 } else {
                     RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
