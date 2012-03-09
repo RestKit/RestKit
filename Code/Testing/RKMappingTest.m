@@ -93,6 +93,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 - (id)initWithMapping:(RKObjectMapping *)_mapping sourceObject:(id)_sourceObject destinationObject:(id)_destinationObject {
+    NSAssert(_sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
+    NSAssert(_mapping != nil, @"Cannot perform a mapping operation without a mapping");
+ 
     self = [super init];
     if (self) {        
         self.sourceObject = _sourceObject;
@@ -103,7 +106,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         self.verifiesOnExpect = NO;
         self.performedMapping = NO;
     }
-    
+
     return self;
 }
 
