@@ -26,6 +26,7 @@ static NSBundle *fixtureBundle = nil;
 @implementation RKTestFixture
 
 + (NSBundle *)fixtureBundle {
+    NSAssert(fixtureBundle != nil, @"Bundle for fixture is nil, or has not been set.");
     return fixtureBundle;
 }
 
