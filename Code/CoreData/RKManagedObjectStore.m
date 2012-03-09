@@ -28,6 +28,7 @@
 #import "RKLog.h"
 #import "RKDirectory.h"
 #import "RKInMemoryMappingCache.h"
+#import "NSBundle+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -106,16 +107,14 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 		NSMutableArray* allManagedObjectModels = [[NSMutableArray alloc] init];
 		[allManagedObjectModels addObject:nilOrManagedObjectModel];
 
-		NSString* rkBundlePath = [[NSBundle mainBundle] pathForResource:@"RestKitResources"
-																 ofType:@"bundle"];
-		NSURL* rkCoreDataLibraryMOMURL = [[NSBundle bundleWithPath:rkBundlePath] URLForResource:@"RestKitCoreData"
-																				  withExtension:@"momd"];
+		NSURL* rkCoreDataLibraryMOMURL = [[NSBundle restKitResourcesBundle] URLForResource:@"RestKitCoreData"
+                                                                             withExtension:@"momd"];
 		NSManagedObjectModel* rkCoreDataLibraryMOM = [[NSManagedObjectModel alloc] initWithContentsOfURL:rkCoreDataLibraryMOMURL];
         if (rkCoreDataLibraryMOM) {
             [allManagedObjectModels addObject:rkCoreDataLibraryMOM];
             [rkCoreDataLibraryMOM release];
         } else {
-            RKLogWarning(@"Unable to find RestKitCoreData.momd within the RestKitCoreDataBundle.bundle");
+            RKLogWarning(@"Unable to find RestKitCoreData.momd within the RestKitResources.bundle");
         }
 
 		_managedObjectModel = [[NSManagedObjectModel modelByMergingModels:allManagedObjectModels] retain];
