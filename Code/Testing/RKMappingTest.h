@@ -15,7 +15,7 @@
  a RestKit object mapping operation by evaluation expectations
  against events recorded during an object mapping operation.
  */
-@interface RKMappingTest : NSObject <RKObjectMappingOperationDelegate>
+@interface RKMappingTest : NSObject
 
 ///-----------------------------------------------------------------------------
 /// @name Creating Tests
@@ -88,10 +88,14 @@
 - (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock;
 
 /**
- Adds an expectation to the test to be evaluated during verification.
+ Adds an expectation to the receiver to be evaluated during verification.
  
- @param expectation An expectation object to evaluate during test verification.
+ If the receiver has been configured with verifiesOnExpect = YES, the mapping
+ operation is performed immediately and the expectation is evaluated.
+ 
+ @param expectation An expectation object to evaluate during test verification. 
  @see RKObjectMappingTestExpectation
+ @see verifiesOnExpect
  */
 - (void)addExpectation:(RKMappingTestExpectation *)expectation;
 
@@ -112,8 +116,32 @@
 /// @name Test Configuration
 ///-----------------------------------------------------------------------------
 
+/**
+ The object mapping under test.
+ */
 @property (nonatomic, strong, readonly) RKObjectMapping *mapping;
+
+/**
+ The source object being mapped from.
+ */
 @property (nonatomic, strong, readonly) id sourceObject;
+
+/**
+ The destionation object being mapped to.
+ 
+ If nil, the mapping test will instantiate a destination object to perform the mapping
+ by invoking `[self.mapping mappableObjectForData:self.sourceObject]`
+ 
+ @see [RKObjectMapping mappableObjectForData:]
+ */
 @property (nonatomic, strong, readonly) id destinationObject;
+
+/**
+ A Boolean value that determines if expectations should be verified immediately
+ when added to the receiver.
+ 
+ **Default**: NO
+ */
+@property (nonatomic, assign) BOOL verifiesOnExpect;
 
 @end

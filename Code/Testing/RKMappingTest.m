@@ -60,12 +60,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 ///-----------------------------------------------------------------------------
 ///-----------------------------------------------------------------------------
 
-@interface RKMappingTest ()
+@interface RKMappingTest () <RKObjectMappingOperationDelegate>
 @property (nonatomic, strong, readwrite) RKObjectMapping *mapping;
 @property (nonatomic, strong, readwrite) id sourceObject;
 @property (nonatomic, strong, readwrite) id destinationObject;
 @property (nonatomic, strong) NSMutableArray *expectations;
 @property (nonatomic, strong) NSMutableArray *events;
+@property (nonatomic, assign, getter = hasPerformedMapping) BOOL performedMapping;
+
+// Method Definitions for old compilers
+- (void)performMapping;
+- (void)verifyExpectation:(RKMappingTestExpectation *)expectation;
+
 @end
 
 @implementation RKMappingTest
@@ -75,6 +81,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @synthesize mapping;
 @synthesize expectations;
 @synthesize events;
+@synthesize verifiesOnExpect;
+@synthesize performedMapping;
 
 + (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject {
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:nil];
@@ -92,6 +100,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         self.mapping = _mapping;
         self.expectations = [NSMutableArray new];
         self.events = [NSMutableArray new];
+        self.verifiesOnExpect = NO;
+        self.performedMapping = NO;
     }
     
     return self;
@@ -99,6 +109,11 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (void)addExpectation:(RKMappingTestExpectation *)expectation {
     [self.expectations addObject:expectation];
+    
+    if (self.verifiesOnExpect) {
+        [self performMapping];
+        [self verifyExpectation:expectation];
+    }
 }
 
 - (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath {
@@ -136,30 +151,43 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return YES;
 }
 
-- (void)verify {
-    id destination = self.destinationObject ? self.destinationObject : [self.mapping mappableObjectForData:self.sourceObject];
-    RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:self.sourceObject toObject:destination withMapping:self.mapping];
-    NSError *error = nil;
-    mappingOperation.delegate = self;
-    BOOL success = [mappingOperation performMapping:&error];
-    if (! success) {
-        [NSException raise:NSInternalInconsistencyException format:@"%@: failure when mapping from %@ to %@ with mapping %@",
-         [self description], self.sourceObject, self.destinationObject, self.mapping];
+- (void)performMapping {
+    // Ensure repeated invocations of verify only result in a single mapping operation
+    if (! self.hasPerformedMapping) {
+        id destination = self.destinationObject ? self.destinationObject : [self.mapping mappableObjectForData:self.sourceObject];
+        RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:self.sourceObject toObject:destination withMapping:self.mapping];
+        NSError *error = nil;
+        mappingOperation.delegate = self;
+        BOOL success = [mappingOperation performMapping:&error];
+        if (! success) {
+            [NSException raise:NSInternalInconsistencyException format:@"%@: failure when mapping from %@ to %@ with mapping %@",
+             [self description], self.sourceObject, self.destinationObject, self.mapping];
+        }
+        
+        self.performedMapping = YES;
     }
+}
+
+- (void)verifyExpectation:(RKMappingTestExpectation *)expectation {
+    RKMappingTestEvent *event = [self eventMatchingKeyPathsForExpectation:expectation];
+    if (event) {
+        // Found a matching event, check if it satisfies the expectation
+        if (! [self event:event satisfiesExpectation:expectation]) {
+            [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but instead got %@ '%@'",
+             [self description], expectation, [event.value class], event.value];
+        }
+    } else {
+        // No match
+        [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but did not.",
+         [self description], [expectation mappingDescription]];
+    }
+}
+
+- (void)verify {
+    [self performMapping];
     
     for (RKMappingTestExpectation *expectation in self.expectations) {
-        RKMappingTestEvent *event = [self eventMatchingKeyPathsForExpectation:expectation];
-        if (event) {
-            // Found a matching event, check if it satisfies the expectation
-            if (! [self event:event satisfiesExpectation:expectation]) {
-                [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but instead got %@ '%@'",
-                 [self description], expectation, [event.value class], event.value];
-            }
-        } else {
-            // No match
-            [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but did not.",
-             [self description], [expectation mappingDescription]];
-        }
+        [self verifyExpectation:expectation];
     }
 }
 
