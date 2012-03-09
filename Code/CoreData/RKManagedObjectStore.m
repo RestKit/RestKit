@@ -40,7 +40,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 static RKManagedObjectStore *defaultObjectStore = nil;
 
 @interface RKManagedObjectStore ()
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *context;
+@property (nonatomic, retain, readwrite) NSManagedObjectContext *primaryManagedObjectContext;
 
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel*)nilOrManagedObjectModel delegate:(id)delegate;
 - (void)createPersistentStoreCoordinator;
@@ -56,7 +56,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize cacheStrategy = _cacheStrategy;
-@synthesize context;
+@synthesize primaryManagedObjectContext;
 
 + (RKManagedObjectStore *)defaultObjectStore {
     return defaultObjectStore;
@@ -67,7 +67,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     [defaultObjectStore release];
     defaultObjectStore = objectStore;
     
-    [NSManagedObjectContext setDefaultContext:objectStore.context];
+    [NSManagedObjectContext setDefaultContext:objectStore.primaryManagedObjectContext];
 }
 
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename {
@@ -128,7 +128,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         _delegate = delegate;
 
 		[self createPersistentStoreCoordinator];
-        self.context = [self newManagedObjectContext];
+        self.primaryManagedObjectContext = [self newManagedObjectContext];
         
 
         _cacheStrategy = [[RKInMemoryMappingCache alloc] init];
@@ -201,8 +201,8 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 	_persistentStoreCoordinator = nil;
     [_cacheStrategy release];
     _cacheStrategy = nil;
-    [context release];
-    context = nil;
+    [primaryManagedObjectContext release];
+    primaryManagedObjectContext = nil;
     
 	[super dealloc];
 }
@@ -212,7 +212,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
  message to the application's managed object context.
  */
 - (BOOL)save:(NSError **)error {
-	NSManagedObjectContext* moc = [self contextForCurrentThread];
+	NSManagedObjectContext* moc = [self managedObjectContextForCurrentThread];
     NSError *localError = nil;
     
 	@try {
@@ -352,12 +352,12 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 	[self deletePersistantStoreUsingSeedDatabaseName:nil];
     
     // Recreate the MOC
-    self.context = [self newManagedObjectContext];
+    self.primaryManagedObjectContext = [self newManagedObjectContext];
 }
 
-- (NSManagedObjectContext *)contextForCurrentThread {
+- (NSManagedObjectContext *)managedObjectContextForCurrentThread {
     if ([NSThread isMainThread]) {
-        return self.context;
+        return self.primaryManagedObjectContext;
     }
     
     // Background threads leverage thread-local storage
@@ -381,7 +381,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
 - (void)mergeChangesOnMainThreadWithNotification:(NSNotification*)notification {
 	assert([NSThread isMainThread]);
-	[self.context performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
+	[self.primaryManagedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
 												withObject:notification
 											 waitUntilDone:YES];
 }
@@ -396,7 +396,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
 - (NSManagedObject*)objectWithID:(NSManagedObjectID *)objectID {
     NSAssert(objectID, @"Cannot fetch a managedObject with a nil objectID");
-	return [[self contextForCurrentThread] objectWithID:objectID];
+	return [[self managedObjectContextForCurrentThread] objectWithID:objectID];
 }
 
 - (NSArray*)objectsWithIDs:(NSArray*)objectIDs {

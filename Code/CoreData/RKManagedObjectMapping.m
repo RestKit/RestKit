@@ -50,7 +50,7 @@
 }
 
 + (RKManagedObjectMapping *)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore {
-    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.context]
+    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.primaryManagedObjectContext]
              inManagedObjectStore:objectStore];
 }
 
@@ -160,12 +160,12 @@
         object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
                                                      withMapping:self
                                               andPrimaryKeyValue:primaryKeyValue
-                                          inManagedObjectContext:[self.objectStore contextForCurrentThread]];
+                                          inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
     }
 
     if (object == nil) {
         object = [[[NSManagedObject alloc] initWithEntity:entity
-                           insertIntoManagedObjectContext:[_objectStore contextForCurrentThread]] autorelease];
+                           insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
     }
     return object;
 }

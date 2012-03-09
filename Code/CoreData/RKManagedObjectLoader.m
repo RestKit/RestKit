@@ -140,7 +140,7 @@
         for (id object in cachedObjects) {
             if (NO == [results containsObject:object]) {
                 RKLogTrace(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
-                [[self.objectStore contextForCurrentThread] deleteObject:object];
+                [[self.objectStore managedObjectContextForCurrentThread] deleteObject:object];
             }
         }
     } else {
@@ -154,7 +154,7 @@
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
         NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
         RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
-        [[self.objectStore contextForCurrentThread] deleteObject:backgroundThreadObject];        
+        [[self.objectStore managedObjectContextForCurrentThread] deleteObject:backgroundThreadObject];        
     }
     
     // If the response was successful, save the store...
@@ -195,7 +195,7 @@
             RKLogInfo(@"Error response encountered: Deleting existing managed object with ID: %@", _targetObjectID);
             NSManagedObject* objectToDelete = [self.objectStore objectWithID:_targetObjectID];
             if (objectToDelete) {
-                [[self.objectStore contextForCurrentThread] deleteObject:objectToDelete];
+                [[self.objectStore managedObjectContextForCurrentThread] deleteObject:objectToDelete];
                 [self.objectStore save:nil];
             } else {
                 RKLogWarning(@"Unable to delete existing managed object with ID: %@. Object not found in the store.", _targetObjectID);

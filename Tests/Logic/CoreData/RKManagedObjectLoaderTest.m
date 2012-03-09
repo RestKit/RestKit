@@ -45,7 +45,7 @@
     human.railsID = [NSNumber numberWithInt:1];
     [objectManager.objectStore save:nil];
 
-    assertThat(objectManager.objectStore.context, is(equalTo(store.context)));
+    assertThat(objectManager.objectStore.primaryManagedObjectContext, is(equalTo(store.primaryManagedObjectContext)));
 
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];

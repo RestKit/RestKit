@@ -152,11 +152,11 @@
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:OCMOCK_ANY
                                                                   withMapping:mapping
                                                            andPrimaryKeyValue:@"blake"
-                                                       inManagedObjectContext:objectStore.context];
+                                                       inManagedObjectContext:objectStore.primaryManagedObjectContext];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:mapping.entity
                                                                   withMapping:mapping
                                                            andPrimaryKeyValue:@"rachit"
-                                                       inManagedObjectContext:objectStore.context];
+                                                       inManagedObjectContext:objectStore.primaryManagedObjectContext];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     [mapper performMapping];

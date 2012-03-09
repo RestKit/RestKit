@@ -142,7 +142,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  Retrieves the Managed Object Context for the main thread that was initialized when
  the object store was created.
  */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *context;
+@property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
 
 /**
  Instantiates a new managed object context
@@ -154,6 +154,6 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * Because of the intrecacies of how Core Data works across threads it returns
  * a different NSManagedObjectContext for each thread.
  */
-- (NSManagedObjectContext *)contextForCurrentThread;
+- (NSManagedObjectContext *)managedObjectContextForCurrentThread;
 
 @end
