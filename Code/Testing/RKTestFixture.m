@@ -26,11 +26,12 @@ static NSBundle *fixtureBundle = nil;
 @implementation RKTestFixture
 
 + (NSBundle *)fixtureBundle {
-    NSAssert(fixtureBundle != nil, @"Bundle for fixture is nil, or has not been set.");
+    NSAssert(fixtureBundle != nil, @"Bundle for fixture has not been set. Use setFixtureBundle: to set it.");
     return fixtureBundle;
 }
 
 + (void)setFixtureBundle:(NSBundle *)bundle {
+    NSAssert(bundle != nil, @"Bundle for fixture cannot be nil.");
     [bundle retain];
     [fixtureBundle release];
     fixtureBundle = bundle;
@@ -38,24 +39,24 @@ static NSBundle *fixtureBundle = nil;
 
 #if TARGET_OS_IPHONE
 + (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle imageWithContentsOfResource:fixtureName withExtension:nil];
+    return [[self fixtureBundle] imageWithContentsOfResource:fixtureName withExtension:nil];
 }
 #endif
 
 + (NSString *)stringWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle stringWithContentsOfResource:fixtureName withExtension:nil encoding:NSUTF8StringEncoding];
+    return [[self fixtureBundle] stringWithContentsOfResource:fixtureName withExtension:nil encoding:NSUTF8StringEncoding];
 }
 
 + (NSData *)dataWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle dataWithContentsOfResource:fixtureName withExtension:nil];
+    return [[self fixtureBundle] dataWithContentsOfResource:fixtureName withExtension:nil];
 }
 
 + (NSString *)MIMETypeForFixture:(NSString *)fixtureName {
-    return [fixtureBundle MIMETypeForResource:fixtureName withExtension:nil];
+    return [[self fixtureBundle] MIMETypeForResource:fixtureName withExtension:nil];
 }
 
 + (id)parsedObjectWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle parsedObjectWithContentsOfResource:fixtureName withExtension:nil];
+    return [[self fixtureBundle] parsedObjectWithContentsOfResource:fixtureName withExtension:nil];
 }
 
 @end
