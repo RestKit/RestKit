@@ -109,6 +109,7 @@
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
     id transformedValue = nil;
+    Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
     
     if ([value isKindOfClass:[NSDate class]]) {
         // Date's are not natively serializable, must be encoded as a string
@@ -118,9 +119,9 @@
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
         transformedValue = [(NSDecimalNumber*)value stringValue];        
-    } else if ([value isKindOfClass:[NSOrderedSet class]]) {
+    } else if ([value isKindOfClass:orderedSetClass]) {
         // NSOrderedSets are not natively serializable, so let's just turn it into an NSArray
-        transformedValue = [(NSOrderedSet *)value array];
+        transformedValue = [value array];
     }
     
     if (transformedValue) {
