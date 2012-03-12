@@ -99,14 +99,10 @@ void RKTestSpinRunLoop() {
 
 @implementation RKTestCase
 
-- (void) invokeTest {
-    // Ensure the fixture bundle is configured
-    if (! [RKTestFixture fixtureBundle]) {
-        NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-        [RKTestFixture setFixtureBundle:fixtureBundle];
-    }
-
-    [super invokeTest];
++ (void)initialize
+{
+    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
+    [RKTestFixture setFixtureBundle:fixtureBundle];
 }
 
 @end
