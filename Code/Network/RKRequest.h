@@ -555,10 +555,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 /**
  Returns YES if the request is cacheable
  
- All requests are considered cacheable unless:
- 
- - The method is DELETE
- - The request body is a stream (i.e. using RKParams)
+ Only GET requests are considered cacheable (see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html).
  */
 - (BOOL)isCacheable;
 

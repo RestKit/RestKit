@@ -333,12 +333,10 @@ request.timeoutInterval = 1.0;
     assertThat([request cacheKey], is(nilValue()));
 
     request.method = RKRequestMethodPOST;
-    assertThat([request cacheKey], isNot(nilValue()));
-    assertThat([request cacheKey], is(equalTo(@"bb373e6316a78f3f0322aa1e5f5818e2")));
+    assertThat([request cacheKey], is(nilValue()));
 
     request.method = RKRequestMethodPUT;
-    assertThat([request cacheKey], isNot(nilValue()));
-    assertThat([request cacheKey], is(equalTo(@"aba9267af702ee12cd49b5a2615df182")));
+    assertThat([request cacheKey], is(nilValue()));
 }
 
 - (void)testShouldLoadFromCacheWhenWeRecieveA304 {
@@ -842,6 +840,34 @@ request.timeoutInterval = 1.0;
     [request setBody:bodyParams forMIMEType:RKMIMETypeJSON];
     [request prepareURLRequest];
     assertThat(request.HTTPBodyString, is(equalTo(@"{\"number\":10,\"string\":\"JSON String\"}")));
+}
+
+- (void)testThatGETRequestsAreConsideredCacheable
+{
+    RKRequest *request = [RKRequest new];
+    request.method = RKRequestMethodGET;
+    assertThatBool([request isCacheable], is(equalToBool(YES)));
+}
+
+- (void)testThatPOSTRequestsAreNotConsideredCacheable
+{
+    RKRequest *request = [RKRequest new];
+    request.method = RKRequestMethodPOST;
+    assertThatBool([request isCacheable], is(equalToBool(NO)));
+}
+
+- (void)testThatPUTRequestsAreNotConsideredCacheable
+{
+    RKRequest *request = [RKRequest new];
+    request.method = RKRequestMethodPUT;
+    assertThatBool([request isCacheable], is(equalToBool(NO)));
+}
+
+- (void)testThatDELETERequestsAreNotConsideredCacheable
+{
+    RKRequest *request = [RKRequest new];
+    request.method = RKRequestMethodDELETE;
+    assertThatBool([request isCacheable], is(equalToBool(NO)));
 }
 
 @end

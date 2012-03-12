@@ -784,12 +784,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (BOOL)isCacheable {
-    // DELETE is not cacheable
-    if (_method == RKRequestMethodDELETE) {
-        return NO;
-    }
-    
-    return YES;
+    return _method == RKRequestMethodGET;
 }
 
 - (NSString*)cacheKey {
