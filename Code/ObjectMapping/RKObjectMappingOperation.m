@@ -186,7 +186,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     } else if (orderedSetClass && [sourceType isSubclassOfClass:orderedSetClass]) {
         // OrderedSet -> Array
         if ([destinationType isSubclassOfClass:[NSArray class]]) {
-            return [(NSOrderedSet*)value array];
+            return [value array];
         }
     } else if ([sourceType isSubclassOfClass:[NSArray class]]) {
         // Array -> Set
