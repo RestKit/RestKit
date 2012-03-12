@@ -39,6 +39,8 @@
 @implementation RKRequestTest
 
 - (void)setUp {
+    [RKTestFactory setUp];
+    
     // Clear the cache directory
     RKTestClearCacheDirectory();
     _methodInvocationCounter = 0;
@@ -200,6 +202,19 @@ request.timeoutInterval = 1.0;
         assertThatBool(loader.wasCancelled, is(equalToBool(YES)));
         [request release];
     }];
+}
+
+- (void)testShouldDeallocTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
+    RKTestNewClient();
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    NSURL* URL = RKTestGetBaseURL();
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.backgroundPolicy = RKRequestBackgroundPolicyCancel;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    assertThatInteger([request retainCount], is(equalToInteger(1)));
+    [request release];
 }
 
 - (void)testShouldPutTheRequestBackOntoTheQueueWhenBackgroundPolicyIsRKRequestBackgroundPolicyRequeue {
