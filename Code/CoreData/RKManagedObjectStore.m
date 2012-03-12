@@ -339,7 +339,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
 	return objectArray;
 }
 
-- (NSManagedObject*)findOrCreateInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue {
+- (NSManagedObject*)findInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue create:(BOOL)create {
     NSAssert(entity, @"Cannot instantiate managed object without a target class");
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without a primary key attribute");
     NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
@@ -382,7 +382,7 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
     NSAssert1(dictionary, @"Thread local cache of %@ objects should not be nil", entityName);
     object = [dictionary objectForKey:lookupValue];
     
-    if (object == nil) {
+    if (object == nil && create) {
         object = [[[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:self.managedObjectContext] autorelease];
         [dictionary setObject:object forKey:lookupValue];
     }
