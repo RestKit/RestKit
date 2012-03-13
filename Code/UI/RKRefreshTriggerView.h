@@ -17,6 +17,8 @@
 //  limitations under the License.
 //
 
+#if TARGET_OS_IPHONE
+
 #import <UIKit/UIKit.h>
 
 @interface RKRefreshTriggerView : UIView <UIAppearanceContainer,UIAppearance>
@@ -36,3 +38,5 @@
 #endif
 
 @end
+
+#endif

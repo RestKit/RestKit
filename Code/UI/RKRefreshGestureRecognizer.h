@@ -17,6 +17,8 @@
 //  limitations under the License.
 //
 
+#if TARGET_OS_IPHONE
+
 #import <UIKit/UIKit.h>
 #import "RKRefreshTriggerView.h"
 
@@ -37,3 +39,5 @@ typedef enum {
 @property (nonatomic, readonly) UIScrollView *scrollView;
 @property (nonatomic, readonly, retain) RKRefreshTriggerView *triggerView;
 @end
+
+#endif

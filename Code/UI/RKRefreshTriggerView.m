@@ -20,6 +20,8 @@
 
 #import "RKRefreshTriggerView.h"
 
+#if TARGET_OS_IPHONE
+
 #define DEFAULT_REFRESH_TITLE_FONT      [UIFont boldSystemFontOfSize:13.0f]
 #define DEFAULT_REFRESH_TITLE_COLOR     [UIColor darkGrayColor]
 #define DEFAULT_REFRESH_UPDATED_FONT    [UIFont systemFontOfSize:12.0f]
@@ -174,3 +176,5 @@
 #endif
 
 @end
+
+#endif

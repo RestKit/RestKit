@@ -17,6 +17,8 @@
 //  limitations under the License.
 //
 
+#if TARGET_OS_IPHONE
+
 #import <QuartzCore/QuartzCore.h>
 #import <UIKit/UIGestureRecognizerSubclass.h>
 #import "RKRefreshGestureRecognizer.h"
@@ -223,3 +225,5 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
 }
 
 @end
+
+#endif
