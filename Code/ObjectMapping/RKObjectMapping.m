@@ -354,12 +354,12 @@ static NSDateFormatter *preferredDateFormatter = nil;
         defaultDateFormatters = [[NSMutableArray alloc] initWithCapacity:2];
         
         // Setup the default formatters
-        [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
-        [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
-        
         RKISO8601DateFormatter *isoFormatter = [[RKISO8601DateFormatter alloc] init];
         [self addDefaultDateFormatter:isoFormatter];
         [isoFormatter release];
+        
+        [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
+        [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
     }
     
     return defaultDateFormatters;
