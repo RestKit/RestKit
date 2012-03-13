@@ -345,4 +345,12 @@
     assertThat(objectLoader.params, is(equalTo(myParams)));
 }
 
+- (void)testInitializationOfObjectLoaderViaManagerConfiguresSerializationMIMEType {
+    RKObjectManager *objectManager = RKTestNewObjectManager();
+    objectManager.serializationMIMEType = RKMIMETypeJSON;
+    RKObjectLoader *loader = [objectManager loaderWithResourcePath:@"/test"];
+    assertThat(loader.serializationMIMEType, isNot(nilValue()));
+    assertThat(loader.serializationMIMEType, is(equalTo(RKMIMETypeJSON)));
+}
+
 @end

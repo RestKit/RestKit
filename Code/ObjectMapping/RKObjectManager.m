@@ -361,6 +361,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 }
 
 - (void)configureObjectLoader:(RKObjectLoader *)objectLoader {
+    objectLoader.serializationMIMEType = self.serializationMIMEType;
     [self configureRequest:objectLoader];
 }
 
