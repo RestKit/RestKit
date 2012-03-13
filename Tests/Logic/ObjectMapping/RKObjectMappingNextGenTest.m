@@ -1701,10 +1701,10 @@
     [RKObjectMapping setDefaultDateFormatters:nil];
     NSArray *dateFormatters = [RKObjectMapping defaultDateFormatters];
     assertThat(dateFormatters, hasCountOf(3));
-    assertThat([[dateFormatters objectAtIndex:0] dateFormat], is(equalTo(@"yyyy-MM-dd'T'HH:mm:ss'Z'")));
+    assertThat([[dateFormatters objectAtIndex:2] dateFormat], is(equalTo(@"yyyy-MM-dd'T'HH:mm:ss'Z'")));
     assertThat([[dateFormatters objectAtIndex:1] dateFormat], is(equalTo(@"MM/dd/yyyy")));
     NSTimeZone *UTCTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    assertThat([[dateFormatters objectAtIndex:0] timeZone], is(equalTo(UTCTimeZone)));
+    assertThat([[dateFormatters objectAtIndex:2] timeZone], is(equalTo(UTCTimeZone)));
     assertThat([[dateFormatters objectAtIndex:1] timeZone], is(equalTo(UTCTimeZone)));
 }
 
@@ -1723,13 +1723,40 @@
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
 }
 
+- (void)testShouldAllowNewlyAddedDateFormatterToRunFirst {    
+    [RKObjectMapping setDefaultDateFormatters:nil];
+    NSDateFormatter *newDateFormatter = [[NSDateFormatter new] autorelease];
+    [newDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm"];
+    [RKObjectMapping addDefaultDateFormatter:newDateFormatter];
+    
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping *birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
+    [mapping addAttributeMapping:birthDateMapping];
+    
+    NSDictionary *dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    RKTestUser *user = [RKTestUser user];
+    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    NSError *error = nil;
+    [operation performMapping:&error];
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    [dateFormatter setDateFormat:@"MM/dd/yyyy"];
+
+    /*
+     If RKObjectMappingOperation is using the date formatter set above, we're
+     going to get a really wonky date, which is what we are testing for.
+     */
+    assertThat([dateFormatter stringFromDate:user.birthDate], is(equalTo(@"01/01/1112")));
+}
+
 - (void)testShouldLetYouConfigureANewDateFormatterFromAStringAndATimeZone {
     [RKObjectMapping setDefaultDateFormatters:nil];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     [RKObjectMapping addDefaultDateFormatterForString:@"mm/dd/YYYY" inTimeZone:EDTTimeZone];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
-    NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:3];
+    NSDateFormatter *dateFormatter = [[RKObjectMapping defaultDateFormatters] objectAtIndex:0];
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
 
