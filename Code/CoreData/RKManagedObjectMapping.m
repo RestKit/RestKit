@@ -138,7 +138,7 @@
     
     // If we have found the primary key attribute & value, try to find an existing instance to update
     if (primaryKeyAttribute && primaryKeyValue) {                
-        object = [objectStore findOrCreateInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
+        object = [objectStore findInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue create:YES];
         NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
     } else {
         object = [[[NSManagedObject alloc] initWithEntity:entity
