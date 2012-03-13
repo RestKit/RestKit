@@ -238,16 +238,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return RKObjectIsValueEqualToValue(sourceValue, destinationValue);
 }
 
-- (BOOL)validateValue:(id)value atKeyPath:(NSString*)keyPath {
+- (BOOL)validateValue:(id *)value atKeyPath:(NSString*)keyPath {
     BOOL success = YES;        
     
     if (self.objectMapping.performKeyValueValidation && [self.destinationObject respondsToSelector:@selector(validateValue:forKeyPath:error:)]) {
-        success = [self.destinationObject validateValue:&value forKeyPath:keyPath error:&_validationError];
+        success = [self.destinationObject validateValue:value forKeyPath:keyPath error:&_validationError];
         if (!success) {
             if (_validationError) {
-                RKLogError(@"Validation failed while mapping attribute at key path %@ to value %@. Error: %@", keyPath, value, [_validationError localizedDescription]);
+                RKLogError(@"Validation failed while mapping attribute at key path %@ to value %@. Error: %@", keyPath, *value, [_validationError localizedDescription]);
             } else {
-                RKLogWarning(@"Destination object %@ rejected attribute value %@ for keyPath %@. Skipping...", self.destinationObject, value, keyPath);
+                RKLogWarning(@"Destination object %@ rejected attribute value %@ for keyPath %@. Skipping...", self.destinationObject, *value, keyPath);
             }
         }
     }
@@ -255,7 +255,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return success;
 }
 
-- (BOOL)shouldSetValue:(id)value atKeyPath:(NSString*)keyPath {
+- (BOOL)shouldSetValue:(id *)value atKeyPath:(NSString*)keyPath {
     id currentValue = [self.destinationObject valueForKeyPath:keyPath];
     if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
         currentValue = nil;
@@ -268,20 +268,20 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
      
      See issue & pull request: https://github.com/RestKit/RestKit/pull/436
      */
-    if (value == [NSNull null] || [value isEqual:[NSNull null]]) {
+    if (*value == [NSNull null] || [*value isEqual:[NSNull null]]) {
         RKLogWarning(@"Coercing NSNull value to nil in shouldSetValue:atKeyPath: -- should be fixed.");
-        value = nil;
+        *value = nil;
     }
     
-	if (nil == currentValue && nil == value) {
+	if (nil == currentValue && nil == *value) {
 		// Both are nil
         return NO;
-	} else if (nil == value || nil == currentValue) {
+	} else if (nil == *value || nil == currentValue) {
 		// One is nil and the other is not
         return [self validateValue:value atKeyPath:keyPath];
 	}
 
-    if (! [self isValue:value equalToValue:currentValue]) {
+    if (! [self isValue:*value equalToValue:currentValue]) {
         // Validate value for key
         return [self validateValue:value atKeyPath:keyPath];
     }
@@ -328,7 +328,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     }
 
     // Ensure that the value is different
-    if ([self shouldSetValue:value atKeyPath:attributeMapping.destinationKeyPath]) {
+    if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
         
         [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
@@ -448,7 +448,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
             
             // Optionally nil out the property
-            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:nil atKeyPath:relationshipMapping.destinationKeyPath]) {
+            id nilReference = nil;
+            if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
                 RKLogTrace(@"Setting nil for missing relationship value at keyPath '%@'", relationshipMapping.sourceKeyPath);
                 [self.destinationObject setValue:nil forKeyPath:relationshipMapping.destinationKeyPath];
             }
@@ -527,7 +528,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             }
 
             // If the relationship has changed, set it
-            if ([self shouldSetValue:destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+            if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
                 Class managedObjectClass = NSClassFromString(@"NSManagedObject");
                 if (managedObjectClass && [self.destinationObject isKindOfClass:managedObjectClass]) {
                     RKLogTrace(@"Found a managedObject collection. About to apply value via mutable[Set|Array]ValueForKey");
@@ -563,7 +564,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             }
 
             // If the relationship has changed, set it
-            if ([self shouldSetValue:destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
+            if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
                 appliedMappings = YES;
                 RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                 [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];

@@ -55,7 +55,10 @@
         return NO;
     } else if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"REJECT"]) {
         return NO;
-    }
+    } else if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"MODIFY"]) {
+        *ioValue = @"modified value";
+        return YES;
+    }        
 
     return YES;
 }
@@ -203,6 +206,19 @@
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"should not change")));
+    [operation release];
+}
+
+- (void)testModifyingValueWithinKeyValueValidationIsRespected {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
+    [mapping mapAttributes:@"boolString", nil];
+    TestMappable* object = [[[TestMappable alloc] init] autorelease];
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"MODIFY" forKey:@"boolString"];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    NSError* error = nil;
+    BOOL success = [operation performMapping:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(object.boolString, is(equalTo(@"modified value")));
     [operation release];
 }
 
