@@ -376,7 +376,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
 
 + (void)addDefaultDateFormatter:(id)dateFormatter {
     [self defaultDateFormatters];
-    [defaultDateFormatters addObject:dateFormatter];
+    [defaultDateFormatters insertObject:dateFormatter atIndex:0];
 }
 
 + (void)addDefaultDateFormatterForString:(NSString *)dateFormatString inTimeZone:(NSTimeZone *)nilOrTimeZone {
