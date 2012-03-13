@@ -2578,7 +2578,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+			shellScript = "# Run the unit tests in this test bundle.\n#\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n\n# Run the unit tests in this test bundle.\n\"${SRCROOT}/Tests/RunPlatformUnitTests\"";
 		};
 		25160E76145651060060A5C5 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3102,8 +3102,11 @@
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/Tests/Vendor/OCMock";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
+				LIBRARY_SEARCH_PATHS = "${CONFIGURATION_BUILD_DIR}";
+				OBJROOT = "$(SRCROOT)/Build";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = "$(SRCROOT)/Build/Products";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -3121,8 +3124,11 @@
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/Tests/Vendor/OCMock";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
+				LIBRARY_SEARCH_PATHS = "${CONFIGURATION_BUILD_DIR}";
+				OBJROOT = "$(SRCROOT)/Build";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = "$(SRCROOT)/Build/Products";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
