@@ -4,8 +4,12 @@
 require 'rubygems'
 require 'sinatra/base'
 require 'json'
-require 'ruby-debug'
-Debugger.start
+begin
+  require 'ruby-debug'
+  Debugger.start
+rescue LoadError
+  # No debugging...
+end
 
 # Import the RestKit Test server
 $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
