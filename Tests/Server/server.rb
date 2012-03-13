@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# RestKit Spec Server
+# RestKit Test Server
 
 require 'rubygems'
 require 'sinatra/base'
@@ -8,7 +8,7 @@ require 'json'
 require 'ruby-debug'
 Debugger.start
 
-# Import the RestKit Spec server
+# Import the RestKit Test server
 $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
 require 'restkit/network/authentication'
 require 'restkit/network/etags'
@@ -22,7 +22,7 @@ class Person < Struct.new(:name, :age)
   end
 end
 
-class RestKit::SpecServer < Sinatra::Base
+class RestKitTestServer < Sinatra::Base
   self.app_file = __FILE__
   use RestKit::Network::Authentication
   use RestKit::Network::ETags
