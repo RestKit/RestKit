@@ -3,7 +3,6 @@
 
 require 'rubygems'
 require 'sinatra/base'
-require "sinatra/reloader"
 require 'json'
 require 'ruby-debug'
 Debugger.start
