@@ -80,6 +80,35 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
+- (void)testConnectRelationshipsDoesNotLeakMemory {
+    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    
+    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    catMapping.primaryKeyAttribute = @"railsID";
+    [catMapping mapAttributes:@"name", nil];
+    
+    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    humanMapping.primaryKeyAttribute = @"railsID";
+    [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
+    [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
+    [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
+    
+    // Create a cat to connect
+    RKCat* cat = [RKCat object];
+    cat.name = @"Asia";
+    cat.railsID = [NSNumber numberWithInt:31337];
+    [objectStore save:nil];
+    
+    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman* human = [RKHuman object];
+    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    operation.queue = [RKMappingOperationQueue new];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    assertThatInteger([operation retainCount], is(equalToInteger(1)));
+}
+
 - (void)testConnectionOfHasManyRelationshipsByPrimaryKey {
     RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
     

@@ -93,8 +93,9 @@ RKLogDebug(@"Failed to find object to connect relationship '%@' with primary key
         for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
             if (self.queue) {
                 RKLogTrace(@"Enqueueing relationship connection using operation queue");
+                __block RKManagedObjectMappingOperation *selfRef = self;
                 [self.queue addOperationWithBlock:^{
-                    [self connectRelationship:relationshipName];
+                    [selfRef connectRelationship:relationshipName];
                 }];
             } else {
                 [self connectRelationship:relationshipName];
