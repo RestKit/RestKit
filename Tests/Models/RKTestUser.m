@@ -14,6 +14,7 @@
 @synthesize userID = _userID;
 @synthesize name = _name;
 @synthesize birthDate = _birthDate;
+@synthesize favoriteDate = _favoriteDate;
 @synthesize favoriteColors = _favoriteColors;
 @synthesize addressDictionary = _addressDictionary;
 @synthesize website = _website;

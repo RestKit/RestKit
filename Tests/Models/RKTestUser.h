@@ -30,6 +30,7 @@
 @property (nonatomic, retain) NSNumber* userID;
 @property (nonatomic, retain) NSString* name;
 @property (nonatomic, retain) NSDate* birthDate;
+@property (nonatomic, retain) NSDate *favoriteDate;
 @property (nonatomic, retain) NSArray* favoriteColors;
 @property (nonatomic, retain) NSDictionary* addressDictionary;
 @property (nonatomic, retain) NSURL* website;
