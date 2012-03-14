@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 3/31/11.
-//  Copyright 2009 Two Toasters
+//  Copyright 2009 RestKit
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
