@@ -497,8 +497,8 @@
 		254A62BC14AD544200939BEE /* RKObjectPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62B814AD544200939BEE /* RKObjectPaginator.m */; };
 		254A62C014AD591C00939BEE /* RKObjectPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */; };
 		254A62C114AD591C00939BEE /* RKObjectPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */; };
-		257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; };
-		257ABAB115112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; };
+		257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		257ABAB115112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257ABAB215112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */; };
 		257ABAB315112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */; };
 		257ABAB61511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAB41511371C00CCAA76 /* NSManagedObject+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
