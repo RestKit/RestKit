@@ -35,6 +35,17 @@
 	return [NSArray array];
 }
 
++ (NSPredicate *)predicateForSearchWithText:(NSString *)searchText searchMode:(RKSearchMode)mode 
+{
+	if (searchText == nil) {
+		return nil;
+	} else {
+        RKManagedObjectSearchEngine *searchEngine = [RKManagedObjectSearchEngine searchEngine];
+        searchEngine.mode = mode;
+		return [searchEngine predicateForSearch:searchText];
+	}
+}
+
 - (void)refreshSearchWords
 {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];

@@ -54,6 +54,20 @@
 + (NSArray *)searchableAttributes;
 
 ///-----------------------------------------------------------------------------
+/// @name Obtaining a Search Predicate
+///-----------------------------------------------------------------------------
+
+/**
+ A predicate that will search for the specified text with the specified mode. Mode can be 
+ configured to be RKSearchModeAnd or RKSearchModeOr.
+  
+ @return A predicate that will search for the specified text with the specified mode. 
+ @see RKSearchMode
+ */
+
++ (NSPredicate *)predicateForSearchWithText:(NSString *)searchText searchMode:(RKSearchMode)mode;
+
+///-----------------------------------------------------------------------------
 /// @name Managing the Search Words
 ///-----------------------------------------------------------------------------
 
