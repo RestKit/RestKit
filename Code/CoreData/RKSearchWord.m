@@ -25,14 +25,11 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
+NSString * const RKSearchWordPrimaryKeyAttribute = @"word";
 
 @implementation RKSearchWord
 
 @dynamic word;
 @dynamic searchableManagedObjects;
-
-+ (NSString*)primaryKeyProperty {
-	return @"word";
-}
 
 @end

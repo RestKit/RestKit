@@ -21,10 +21,9 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKSearchableManagedObject.h"
 
+extern NSString * const RKSearchWordPrimaryKeyAttribute;
 
-@interface RKSearchWord : NSManagedObject {
-
-}
+@interface RKSearchWord : NSManagedObject
 
 @property (nonatomic, retain) NSString* word;
 @property (nonatomic, retain) NSSet* searchableManagedObjects;

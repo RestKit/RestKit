@@ -23,26 +23,83 @@
 
 @class RKSearchWord;
 
-@interface RKSearchableManagedObject : NSManagedObject {
-}
+/**
+ RKSearchableManagedObject provides an abstract base class for Core Data entities
+ that are searchable using the RKManagedObjectSearchEngine interface. The collection of
+ search words is maintained by the RKSearchWordObserver singleton at managed object context
+ save time.
+ 
+ @see RKSearchWord
+ @see RKSearchWordObserver
+ @see RKManagedObjectSearchEngine
+ */
+@interface RKSearchableManagedObject : NSManagedObject
 
-@property (nonatomic, retain) NSSet* searchWords;
+///-----------------------------------------------------------------------------
+/// @name Configuring Searchable Attributes
+///-----------------------------------------------------------------------------
 
-// NOTE: Can only be attributes, not keyPaths
-+ (NSArray*)searchableAttributes;
+/**
+ Returns an array of attributes which should be processed by the search word observer to
+ build the set of search words for entities with the type of the receiver. Subclasses must
+ provide an implementation for indexing to occur as the base implementation returns an empty
+ array.
+ 
+ @warning *NOTE*: May only include attributes property names, not key paths.
+ 
+ @return An array of attribute names containing searchable textual content for entities with the type of the receiver.
+ @see RKSearchWordObserver
+ @see searchWords
+ */
++ (NSArray *)searchableAttributes;
 
-+ (NSPredicate*)predicateForSearchWithText:(NSString*)searchText searchMode:(RKSearchMode)mode;
+///-----------------------------------------------------------------------------
+/// @name Managing the Search Words
+///-----------------------------------------------------------------------------
 
+/**
+ The set of tokenized search words contained in the receiver.
+ */
+@property (nonatomic, retain) NSSet *searchWords;
+
+/**
+ Rebuilds the set of tokenized search words associated with the receiver by processing the
+ searchable attributes and tokenizing the contents into RKSearchWord instances.
+ 
+ @see [RKSearchableManagedObject searchableAttributes]
+ */
 - (void)refreshSearchWords;
 
 @end
 
-
 @interface RKSearchableManagedObject (SearchWordsAccessors)
 
-- (void)addSearchWordsObject:(RKSearchWord*)searchWord;
-- (void)removeSearchWordsObject:(RKSearchWord*)searchWord;
-- (void)addSearchWords:(NSSet*)searchWords;
-- (void)removeSearchWords:(NSSet*)searchWords;
+/**
+ Adds a search word object to the receiver's set of search words.
+ 
+ @param searchWord The search word to be added to the set of search words.
+ */
+- (void)addSearchWordsObject:(RKSearchWord *)searchWord;
+
+/**
+ Removes a search word object from the receiver's set of search words.
+ 
+ @param searchWord The search word to be removed from the receiver's set of search words.
+ */
+- (void)removeSearchWordsObject:(RKSearchWord *)searchWord;
+
+/**
+ Adds a set of search word objects to the receiver's set of search words.
+ 
+ @param searchWords The set of search words to be added to receiver's the set of search words.
+ */
+- (void)addSearchWords:(NSSet *)searchWords;
+
+/**
+ Removes a set of search word objects from the receiver's set of search words.
+ 
+ @param searchWords The set of search words to be removed from receiver's the set of search words.
+ */
+- (void)removeSearchWords:(NSSet *)searchWords;
 
 @end

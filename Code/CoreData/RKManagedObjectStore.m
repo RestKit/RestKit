@@ -25,10 +25,10 @@
 #import "RKObjectPropertyInspector.h"
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKAlert.h"
-#import "RKLog.h"
 #import "RKDirectory.h"
 #import "RKInMemoryMappingCache.h"
 #import "NSBundle+RKAdditions.h"
+#import "NSManagedObjectContext+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -277,6 +277,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 	[managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
 	[managedObjectContext setUndoManager:nil];
 	[managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+    managedObjectContext.managedObjectStore = self;
     
 	return managedObjectContext;
 }

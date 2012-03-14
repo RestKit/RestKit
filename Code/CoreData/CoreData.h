@@ -33,3 +33,5 @@
 
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKObjectMappingProvider+CoreData.h"
+#import "NSManagedObjectContext+RKAdditions.h"
+#import "NSManagedObject+RKAdditions.h"

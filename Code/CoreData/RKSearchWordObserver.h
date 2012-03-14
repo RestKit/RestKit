@@ -20,15 +20,15 @@
 
 #import <Foundation/Foundation.h>
 
-/*!
+/**
  Provides an observer responsible for initiating refresh of searchable
  Core Data attributes at managed object context save time.
  */
 @interface RKSearchWordObserver : NSObject
 
-/*!
+/**
  Returns the shared observer
  */
-+ (RKSearchWordObserver*)sharedObserver;
++ (RKSearchWordObserver *)sharedObserver;
 
 @end
