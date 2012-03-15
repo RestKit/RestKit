@@ -64,6 +64,7 @@
     _targetObjectID = nil;
     _deleteObjectOnFailure = NO;
     [_managedObjectKeyPaths release];
+    [_objectStore release];
     
     [super dealloc];
 }
