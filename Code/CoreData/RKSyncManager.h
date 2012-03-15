@@ -22,7 +22,7 @@
 #import "RKManagedObjectSyncQueue.h"
 #import "RKDeletedObject.h"
 #import "RKManagedObjectMapping.h"
-#import "RKManagedObjectMappingOperation.h"
+#import "RKLog.h"
 
 /**
  Sync status types indicating HTTP method
