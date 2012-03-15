@@ -197,6 +197,11 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 + (id)cellMapping;
 
 /**
+ Returns a new auto-released mapping targeting UITableViewCell with the specified reuseIdentifier
+ */
++ (id)cellMappingForReuseIdentifier:(NSString *)reuseIdentifier;
+
+/**
  Creates and returns an RKTableCellMapping instance configured with the default cell mappings.
  
  @return An RKTableCellMapping instance with default mappings applied.

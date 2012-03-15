@@ -99,6 +99,12 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     return [self mappingForClass:[UITableViewCell class]];
 }
 
++ (id)cellMappingForReuseIdentifier:(NSString *)reuseIdentifier {
+    RKTableViewCellMapping *cellMapping = [self cellMapping];
+    cellMapping.reuseIdentifier = reuseIdentifier;
+    return cellMapping;
+}
+
 + (id)defaultCellMapping {
     RKTableViewCellMapping *cellMapping = [self cellMapping];
     [cellMapping addDefaultMappings];
