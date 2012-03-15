@@ -514,7 +514,6 @@
 		259C3027151280A1003066A2 /* grayArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE314F8022600C3CF3F /* grayArrow@2x.png */; };
 		259C3028151280A1003066A2 /* whiteArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE414F8022600C3CF3F /* whiteArrow.png */; };
 		259C3029151280A1003066A2 /* whiteArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1AE514F8022600C3CF3F /* whiteArrow@2x.png */; };
-		259C302A151280B0003066A2 /* RestKitCoreData.xcdatamodeld in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1ADB14F8022600C3CF3F /* RestKitCoreData.xcdatamodeld */; };
 		25A34245147D8AAA0009758D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A34244147D8AAA0009758D /* Security.framework */; };
 		25B408261491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408271491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2572,7 +2571,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				259C302A151280B0003066A2 /* RestKitCoreData.xcdatamodeld in Resources */,
 				259C3022151280A1003066A2 /* blackArrow.png in Resources */,
 				259C3023151280A1003066A2 /* blackArrow@2x.png in Resources */,
 				259C3024151280A1003066A2 /* blueArrow.png in Resources */,

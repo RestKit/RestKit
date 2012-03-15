@@ -104,24 +104,8 @@ static RKManagedObjectStore *defaultObjectStore = nil;
             // NOTE: allBundles permits Core Data setup in unit tests
 			nilOrManagedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
         }
-		NSMutableArray* allManagedObjectModels = [[NSMutableArray alloc] init];
-		[allManagedObjectModels addObject:nilOrManagedObjectModel];
-
-        NSBundle *restKitResourcesBundle = [NSBundle restKitResourcesBundle];
-        if (restKitResourcesBundle) {
-            NSURL* rkCoreDataLibraryMOMURL = [restKitResourcesBundle URLForResource:@"RestKitCoreData"
-                                                                                 withExtension:@"momd"];
-            NSManagedObjectModel* rkCoreDataLibraryMOM = [[NSManagedObjectModel alloc] initWithContentsOfURL:rkCoreDataLibraryMOMURL];
-            if (rkCoreDataLibraryMOM) {
-                [allManagedObjectModels addObject:rkCoreDataLibraryMOM];
-                [rkCoreDataLibraryMOM release];
-            } else {
-                RKLogWarning(@"Unable to find RestKitCoreData.momd within the RestKitResources.bundle");
-            }
-        }
-
+		NSMutableArray* allManagedObjectModels = [NSMutableArray arrayWithObject:nilOrManagedObjectModel];
 		_managedObjectModel = [[NSManagedObjectModel modelByMergingModels:allManagedObjectModels] retain];
-		[allManagedObjectModels release];
 
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
