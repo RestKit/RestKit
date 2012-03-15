@@ -281,7 +281,7 @@
         NSError *error = nil;
         [context save:&error];
         if (error) {
-            NSLog(@"Error removing queue item! %@", error);
+            RKLogError(@"Error removing queue item! %@", error);
         }
     }
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjectsWithSyncMode:andClass:)]) {
