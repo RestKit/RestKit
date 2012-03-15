@@ -211,7 +211,7 @@
 
 - (void)expireCacheEntryForEntity:(NSEntityDescription *)entity {
     NSAssert(entity, @"Cannot expire cache entry for an entity without an entity");
-    RKLogTrace(@"About to expirce cache for entity name=%@", entity.name);
+    RKLogTrace(@"About to expire cache for entity name=%@", entity.name);
     [_entityCache removeObjectForKey:entity.name];
 }
 
