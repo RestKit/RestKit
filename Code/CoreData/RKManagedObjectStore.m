@@ -107,14 +107,17 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 		NSMutableArray* allManagedObjectModels = [[NSMutableArray alloc] init];
 		[allManagedObjectModels addObject:nilOrManagedObjectModel];
 
-		NSURL* rkCoreDataLibraryMOMURL = [[NSBundle restKitResourcesBundle] URLForResource:@"RestKitCoreData"
-                                                                             withExtension:@"momd"];
-		NSManagedObjectModel* rkCoreDataLibraryMOM = [[NSManagedObjectModel alloc] initWithContentsOfURL:rkCoreDataLibraryMOMURL];
-        if (rkCoreDataLibraryMOM) {
-            [allManagedObjectModels addObject:rkCoreDataLibraryMOM];
-            [rkCoreDataLibraryMOM release];
-        } else {
-            RKLogWarning(@"Unable to find RestKitCoreData.momd within the RestKitResources.bundle");
+        NSBundle *restKitResourcesBundle = [NSBundle restKitResourcesBundle];
+        if (restKitResourcesBundle) {
+            NSURL* rkCoreDataLibraryMOMURL = [restKitResourcesBundle URLForResource:@"RestKitCoreData"
+                                                                                 withExtension:@"momd"];
+            NSManagedObjectModel* rkCoreDataLibraryMOM = [[NSManagedObjectModel alloc] initWithContentsOfURL:rkCoreDataLibraryMOMURL];
+            if (rkCoreDataLibraryMOM) {
+                [allManagedObjectModels addObject:rkCoreDataLibraryMOM];
+                [rkCoreDataLibraryMOM release];
+            } else {
+                RKLogWarning(@"Unable to find RestKitCoreData.momd within the RestKitResources.bundle");
+            }
         }
 
 		_managedObjectModel = [[NSManagedObjectModel modelByMergingModels:allManagedObjectModels] retain];
