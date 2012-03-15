@@ -11,6 +11,8 @@
 /**
  Defines optional callback methods for extending the functionality of the
  factory. Implementation can be provided via a category.
+
+ @see RKTestFactory
  */
 @protocol RKTestFactoryCallbacks <NSObject>
 
@@ -119,9 +121,9 @@
 @end
 
 /**
- Provides a static interface for common tasks on the RKTestFactory
- sharedInstance. All methods are static aliases for instance method
- counterparts on [RKTestFactory sharedFactory]
+ The ConvenienceAliases category provides a static interface for performing
+ common tasks on the RKTestFactory sharedInstance. All methods defined within the category
+ are static aliases for instance method counterparts on [RKTestFactory sharedFactory].
  */
 @interface RKTestFactory (ConvenienceAliases)
 
