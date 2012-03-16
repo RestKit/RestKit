@@ -272,11 +272,6 @@
             
             RKLogTrace(@"Total unsynced objects: %i", [objectLoader.queue loadingCount]);
             
-        } else if ([objectLoader isGET]) {
-            //A GET request means everything has been pushed and now we're pulling
-            if (_delegate && [_delegate respondsToSelector:@selector(didFinishSyncing)]) {
-                [_delegate didFinishSyncing];
-            }
         }
     }
 }
