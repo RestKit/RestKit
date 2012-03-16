@@ -144,32 +144,24 @@ static NSString* const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RK
         [classNameStringAttribute setOptional:NO];
         [classNameStringAttribute setDefaultValue:@""];
         
-        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, syncModeAttribute, objectIDStringAttribute, classNameStringAttribute, nil]];
+        NSAttributeDescription *objectRouteAttribute = [[NSAttributeDescription alloc] init];
+        [objectRouteAttribute setName:@"objectRoute"];
+        [objectRouteAttribute setAttributeType:NSStringAttributeType];
+        [objectRouteAttribute setOptional:YES];
+        [objectRouteAttribute setDefaultValue:@""];
+        
+        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, syncModeAttribute, objectIDStringAttribute, classNameStringAttribute, objectRouteAttribute, nil]];
         
         [queuePositionAttribute release];
         [syncStatusAttribute release];
         [syncModeAttribute release];
         [objectIDStringAttribute release];
         [classNameStringAttribute release];
+        [objectRouteAttribute release];
         
-        NSEntityDescription *deletedObjectEntity = [[NSEntityDescription alloc] init];
-        [deletedObjectEntity setName:@"RKDeletedObject"];
-        [deletedObjectEntity setManagedObjectClassName: @"RKDeletedObject"];
-        [deletedObjectEntity setAbstract:NO];
-        
-        NSAttributeDescription *dataAttribute = [[NSAttributeDescription alloc] init];
-        [dataAttribute setName:@"data"];
-        [dataAttribute setAttributeType:NSTransformableAttributeType];
-        [classNameStringAttribute setOptional:YES];
-        
-        [deletedObjectEntity setProperties:[NSArray arrayWithObject:dataAttribute]];
-        
-        [dataAttribute release];
-        
-        [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObjectsFromArray:[NSArray arrayWithObjects:syncQueue, deletedObjectEntity, nil]]];
+        [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObject: syncQueue]];
         
         [syncQueue release];
-        [deletedObjectEntity release];
         
         _delegate = delegate;
 

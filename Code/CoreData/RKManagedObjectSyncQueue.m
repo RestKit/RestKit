@@ -27,5 +27,6 @@
 @dynamic syncMode;
 @dynamic objectIDString;
 @dynamic className;
+@dynamic objectRoute;
 
 @end

@@ -83,13 +83,10 @@
         
         //don't check housekeeping objects
         if (![object isKindOfClass:[RKManagedObjectSyncQueue class]] && 
-            ![object isKindOfClass:[RKDeletedObject class]] && 
             mapping.syncMode != RKSyncModeNone) {
             
             //if we find important changes, we should transparent sync
             shouldTransparentSync = YES;
-            
-            RKDeletedObject *newDeletedObject = nil;
             
             //push new item onto queue
             RKManagedObjectSyncQueue *newRecord = [RKManagedObjectSyncQueue object];
@@ -132,34 +129,22 @@
                     [newRecord deleteEntity];
                     continue;
                 } else {
-                    //Archive deleted objects
-                    newDeletedObject = [RKDeletedObject object];
-                    newDeletedObject.data = [object toDictionary];
-                    NSLog(@"Archiving deleted object: %@", newDeletedObject);
-                    NSError *error = nil;
-                    [[newDeletedObject managedObjectContext] save:&error];
-                    if (error) {
-                        NSLog(@"Error! %@", error);
-                    }
-                    newRecord.objectIDString = [[[newDeletedObject objectID] URIRepresentation] absoluteString];
+                    //save the delete route
+                    newRecord.objectRoute = [_objectManager.router resourcePathForObject:object method:RKRequestMethodDELETE];
                 }
                 newRecord.syncStatus = [NSNumber numberWithInt:RKSyncStatusDelete];
             }
             
             newRecord.queuePosition = [NSNumber numberWithInt: [self highestQueuePosition] + 1];
-
-            if (!newDeletedObject) {
-                newRecord.objectIDString = [[[object objectID] URIRepresentation] absoluteString];
-            }
+            newRecord.objectIDString = [[[object objectID] URIRepresentation] absoluteString];
             newRecord.className = NSStringFromClass([object class]);
-            
             newRecord.syncMode = [NSNumber numberWithInt:mapping.syncMode];
             
-            NSLog(@"Writing to queue: %@", newRecord);
+            RKLogTrace(@"Writing to queue: %@", newRecord);
             NSError *error = nil;
             [[newRecord managedObjectContext] save:&error];
             if (error) {
-                NSLog(@"Error! %@", error);
+                RKLogError(@"Error writing queue item: %@", error);
             }
         }
     }
@@ -251,27 +236,17 @@
     while ([_queue lastObject]) {
         RKManagedObjectSyncQueue *item = (RKManagedObjectSyncQueue*)[_queue lastObject];
         NSManagedObjectID *itemID = [_objectManager.objectStore.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:item.objectIDString]];
-        id object = [context objectWithID:itemID];
         
         switch ([item.syncStatus intValue]) {
             case RKSyncStatusPost:
-                [_objectManager postObject:object delegate:self];
+                [_objectManager postObject:[context objectWithID:itemID] delegate:self];
                 break;
             case RKSyncStatusPut:
-                [_objectManager putObject:object delegate:self];
+                [_objectManager putObject:[context objectWithID:itemID] delegate:self];
                 break;
             case RKSyncStatusDelete:
-            {
-                Class itemClass = NSClassFromString(item.className);
-                RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:objectClass];
-                NSManagedObject *toDelete = [[itemClass alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil];
-                [toDelete populateFromDictionary:((RKDeletedObject*)object).data];
-                
-                //We don't use deleteObject so that Restkit doesn't try to clean up our transient nsmanagedobject
-                [[_objectManager client] delete:[_objectManager.router resourcePathForObject:toDelete method:RKRequestMethodDELETE] delegate:self];
-                [toDelete release];
+                [[_objectManager client] delete:item.objectRoute delegate:self];
                 break;
-            }
             default:
                 break;
         }
@@ -281,7 +256,7 @@
         NSError *error = nil;
         [context save:&error];
         if (error) {
-            RKLogError(@"Error removing queue item! %@", error);
+            RKLogError(@"Error removing queue item: %@", error);
         }
     }
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjectsWithSyncMode:andClass:)]) {
@@ -336,7 +311,7 @@
         if ([objectLoader isPOST] || [objectLoader isPUT] || [objectLoader isDELETE]) {
             [_objectManager.objectStore save];
             
-            NSLog(@"Total unsynced objects: %i", [objectLoader.queue loadingCount]);
+            RKLogTrace(@"Total unsynced objects: %i", [objectLoader.queue loadingCount]);
             
         } else if ([objectLoader isGET]) {
             //A GET request means everything has been pushed and now we're pulling

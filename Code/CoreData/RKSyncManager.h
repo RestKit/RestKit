@@ -20,7 +20,6 @@
 
 #import "RKObjectManager.h"
 #import "RKManagedObjectSyncQueue.h"
-#import "RKDeletedObject.h"
 #import "RKManagedObjectMapping.h"
 #import "RKLog.h"
 
