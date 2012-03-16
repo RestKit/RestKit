@@ -87,7 +87,7 @@
     self = [self initWithString:[completeURL absoluteString]];
     if (self) {
         self.baseURL = theBaseURL;
-        self.resourcePath = theResourcePath;
+        self.resourcePath = completePathWithQuery;
     }
     
     return self;

@@ -25,16 +25,13 @@
     NSAssert(mapping.primaryKeyAttribute, @"Cannot find existing managed object instance without mapping that defines a primaryKeyAttribute");
     NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
-
-    // NOTE: We coerce the primary key into a string (if possible) for convenience. Generally
-    // primary keys are expressed either as a number or a string, so this lets us support either case interchangeably
-    id lookupValue = [primaryKeyValue respondsToSelector:@selector(stringValue)] ? [primaryKeyValue stringValue] : primaryKeyValue;
-
+    
     NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:entity];
     [fetchRequest setFetchLimit:1];
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%@ = %@", mapping.primaryKeyAttribute, lookupValue]];
+    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%K = %@", mapping.primaryKeyAttribute, primaryKeyValue]];
     NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest];
+    [fetchRequest setShouldRefreshRefetchedObjects:YES];
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
 
     NSManagedObject *object = nil;
