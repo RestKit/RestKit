@@ -108,7 +108,7 @@
 }
 
 - (void)testShouldHandleTheErrorCaseAppropriately {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/errors.json"];
     objectLoader.delegate = responseLoader;
@@ -132,7 +132,7 @@
 }
 
 - (void)testShouldNotCrashWhenLoadingAnErrorResponseWithAnUnmappableMIMEType {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     [objectManager loadObjectsAtResourcePath:@"/404" delegate:loader];
     [loader waitForResponse];
@@ -143,7 +143,7 @@
 
 - (void)testShouldLoadAComplexUserObjectWithTargetObject {
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -160,7 +160,7 @@
 }
 
 - (void)testShouldLoadAComplexUserObjectWithoutTargetObject {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -176,7 +176,7 @@
 }
 
 - (void)testShouldLoadAComplexUserObjectUsingRegisteredKeyPath {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -193,7 +193,7 @@
 #pragma mark - willSendWithObjectLoader:
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSend {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
 
@@ -210,7 +210,7 @@
 }
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSendAsynchronously {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     [objectManager setMappingProvider:[self providerForComplexUser]];
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
@@ -227,7 +227,7 @@
 }
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSendSynchronously {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     [objectManager setMappingProvider:[self providerForComplexUser]];
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
@@ -241,7 +241,7 @@
 }
 
 - (void)testShouldLoadResultsNestedAtAKeyPath {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKObjectMapping* objectMapping = [RKObjectMapping mappingForClass:[RKObjectLoaderTestResultModel class]];
     [objectMapping mapKeyPath:@"id" toAttribute:@"ID"];
     [objectMapping mapKeyPath:@"ends_at" toAttribute:@"endsAt"];
@@ -259,7 +259,7 @@
 
 - (void)testShouldAllowMutationOfTheParsedDataInWillMapData {
     RKTestResponseLoaderWithWillMapData* loader = (RKTestResponseLoaderWithWillMapData*)[RKTestResponseLoaderWithWillMapData responseLoader];
-    RKObjectManager* manager = RKTestNewObjectManager();
+    RKObjectManager* manager = [RKTestFactory objectManager];
     [manager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
     [loader waitForResponse];
     assertThat([loader.mappableData valueForKey:@"newKey"], is(equalTo(@"monkey!")));
@@ -270,7 +270,7 @@
     [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
     RKObjectMapping* serializationMapping = [mapping inverseMapping];
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKTestComplexUser class] toResourcePath:@"/204"];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
@@ -294,7 +294,7 @@
     [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
     RKObjectMapping* serializationMapping = [mapping inverseMapping];
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKTestComplexUser class] toResourcePath:@"/notNestedUser"];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
@@ -321,7 +321,7 @@
     [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
     RKObjectMapping* serializationMapping = [mapping inverseMapping];
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [[RKParserRegistry sharedRegistry] setParserClass:[RKJSONParserJSONKit class] forMIMEType:@"text/html"];
     [objectManager.router routeClass:[RKTestComplexUser class] toResourcePath:@"/noMIME"];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
@@ -349,7 +349,7 @@
     RKObjectMapping* targetMapping = [RKObjectMapping mappingForClass:[RKObjectLoaderTestResultModel class]];
     [targetMapping mapAttributes:@"ID", nil];
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKTestComplexUser class] toResourcePath:@"/notNestedUser"];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
@@ -385,7 +385,7 @@
     RKObjectMapping* targetMapping = [RKObjectMapping mappingForClass:[RKObjectLoaderTestResultModel class]];
     [targetMapping mapAttributes:@"ID", nil];
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKTestComplexUser class] toResourcePath:@"/notNestedUser"];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
     [objectManager.mappingProvider setObjectMapping:targetMapping forResourcePathPattern:@"/notNestedUser"];
@@ -419,7 +419,7 @@
     [mapping mapAttributes:@"firstname", @"lastname", @"email", nil];
     RKObjectMapping* serializationMapping = [mapping inverseMapping];
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKTestComplexUser class] toResourcePath:@"/notNestedUser"];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
@@ -445,7 +445,7 @@
     [userMapping mapAttributes:@"firstname", nil];
 
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
 
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
@@ -466,7 +466,7 @@
     [userMapping mapAttributes:@"firstname", nil];
 
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/ComplexNestedUser.json"];
@@ -491,7 +491,7 @@
     [userMapping mapAttributes:@"firstname", nil];
 
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     [mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/JSON/:name\\.json"];
@@ -511,7 +511,7 @@
 }
 
 - (void)testShouldReturnSuccessWhenTheStatusCodeIs200AndTheResponseBodyIsEmpty {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
 
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
     user.firstname = @"Blake";
@@ -533,7 +533,7 @@
 }
 
 - (void)testShouldInvokeTheDelegateWithTheTargetObjectWhenTheStatusCodeIs200AndTheResponseBodyIsEmpty {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
 
     RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
     user.firstname = @"Blake";
@@ -556,7 +556,7 @@
 }
 
 - (void)testShouldConsiderTheLoadOfEmptyObjectsWithoutAnyMappableAttributesAsSuccess {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
 
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     [userMapping mapAttributes:@"firstname", nil];
@@ -570,7 +570,7 @@
 }
 
 - (void)testShouldInvokeTheDelegateOnSuccessIfTheResponseIsAnEmptyArray {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     responseLoader.timeout = 20;
     [objectManager loadObjectsAtResourcePath:@"/empty/array" delegate:responseLoader];
@@ -581,7 +581,7 @@
 }
 
 - (void)testShouldInvokeTheDelegateOnSuccessIfTheResponseIsAnEmptyDictionary {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     responseLoader.timeout = 20;
     [objectManager loadObjectsAtResourcePath:@"/empty/dictionary" delegate:responseLoader];
@@ -592,7 +592,7 @@
 }
 
 - (void)testShouldInvokeTheDelegateOnSuccessIfTheResponseIsAnEmptyString {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     responseLoader.timeout = 20;
     [objectManager loadObjectsAtResourcePath:@"/empty/string" delegate:responseLoader];
@@ -603,7 +603,7 @@
 }
 
 - (void)testShouldNotBlockNetworkOperationsWhileAwaitingObjectMapping {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.requestCache.storagePolicy = RKRequestCacheStoragePolicyDisabled;
     objectManager.client.requestQueue.concurrentRequestsLimit = 1;
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
@@ -626,7 +626,7 @@
 #pragma mark - Block Tests
 
 - (void)testInvocationOfDidLoadObjectBlock {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -643,7 +643,7 @@
 }
 
 - (void)testInvocationOfDidLoadObjectBlockIsSingularObjectOfCorrectType {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -660,7 +660,7 @@
 }
 
 - (void)testInvocationOfDidLoadObjectsBlock {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -677,7 +677,7 @@
 }
 
 - (void)testInvocationOfDidLoadObjectsBlocksIsCollectionOfObjects {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -697,7 +697,7 @@
 }
 
 - (void)testInvocationOfDidLoadObjectsDictionaryBlock {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -714,7 +714,7 @@
 }
 
 - (void)testInvocationOfDidLoadObjectsDictionaryBlocksIsDictionaryOfObjects {
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:[RKTestFactory baseURL]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/JSON/ComplexNestedUser.json"];
     objectLoader.delegate = responseLoader;
@@ -745,7 +745,7 @@
 }
 
 - (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
 
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
     userMapping.rootKeyPath = @"data.STUser";

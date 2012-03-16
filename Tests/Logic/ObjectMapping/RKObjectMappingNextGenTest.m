@@ -1372,7 +1372,7 @@
 #pragma mark - RKObjectMappingProvider
 
 - (void)testShouldRegisterRailsIdiomaticObjects {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     [mapping mapAttributes:@"name", @"website", nil];
     [mapping mapKeyPath:@"id" toAttribute:@"userID"];
@@ -1819,7 +1819,7 @@
 }
 
 - (void)testShouldSerializeManagedHasManyRelationshipsToJSON {
-    [RKTestFactory objectStore];
+    [RKTestFactory managedObjectStore];
     RKObjectMapping* humanMapping = [RKObjectMapping mappingForClass:[RKHuman class]];
     [humanMapping mapAttributes:@"name", nil];
     RKObjectMapping* catMapping = [RKObjectMapping mappingForClass:[RKCat class]];

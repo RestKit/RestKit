@@ -39,14 +39,14 @@
 @implementation RKObjectMappingProviderTest
 
 - (void)setUp {
-    _objectManager = RKTestNewObjectManager();
+    _objectManager = [RKTestFactory objectManager];
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
     [_objectManager.objectStore deletePersistantStore];
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAClass {
-    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
@@ -57,7 +57,7 @@
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAKeyPath {
-    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
@@ -68,7 +68,7 @@
 }
 
 - (void)testShouldAllowYouToRemoveAMappingByKeyPath {
-    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));

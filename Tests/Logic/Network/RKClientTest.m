@@ -22,9 +22,7 @@
 #import "RKTestEnvironment.h"
 #import "RKURL.h"
 
-@interface RKClientTest : RKTestCase {
-}
-
+@interface RKClientTest : RKTestCase
 @end
 
 
@@ -86,7 +84,7 @@
 }
 
 - (void)testShouldLetYouChangeTheHTTPAuthCredentials {
-    RKClient *client = RKTestNewClient();
+    RKClient *client = [RKTestFactory client];
     client.authenticationType = RKRequestAuthenticationTypeHTTP;
     client.username = @"invalid";
     client.password = @"password";

@@ -31,7 +31,7 @@
 - (void)testShouldNotOverReleaseTheParams {
     NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
     RKParams* params = [[RKParams alloc] initWithDictionary:dictionary];
-    NSURL* URL = [NSURL URLWithString:[RKTestGetBaseURLString() stringByAppendingFormat:@"/echo_params"]];
+    NSURL* URL = [NSURL URLWithString:[[RKTestFactory baseURLString] stringByAppendingFormat:@"/echo_params"]];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.method = RKRequestMethodPOST;
@@ -43,7 +43,7 @@
 }
 
 - (void)testShouldUploadFilesViaRKParams {
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     RKParams* params = [RKParams params];
     [params setValue:@"one" forParam:@"value"];
     [params setValue:@"two" forParam:@"value"];
@@ -87,7 +87,7 @@
     [params setValue:lon forParam:@"lon"];
     [params setValue:lat forParam:@"lat"];
 
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     [client post:@"/upload" params:params delegate:responseLoader];
     [responseLoader waitForResponse];
@@ -102,7 +102,7 @@
 }
 
 - (void)testShouldProperlyCalculateContentLengthForFileUploads {
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     RKParams* params = [RKParams params];
     [params setValue:@"one" forParam:@"value"];
     [params setValue:@"two" forParam:@"value"];

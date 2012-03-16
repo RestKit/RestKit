@@ -34,7 +34,7 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 
 - (void)testShouldAccessUnprotectedResourcePaths {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     [client get:@"/authentication/none" delegate:loader];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
@@ -42,7 +42,7 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 
 - (void)testShouldAuthenticateViaHTTPAuthBasic {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = RKAuthenticationTestPassword;
     [client get:@"/authentication/basic" delegate:loader];
@@ -52,7 +52,7 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 
 - (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = @"INVALID";
     [client get:@"/authentication/basic" delegate:loader];
@@ -64,7 +64,7 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 
 - (void)testShouldAuthenticateViaHTTPAuthDigest {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = RKAuthenticationTestPassword;
     [client get:@"/authentication/digest" delegate:loader];

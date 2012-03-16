@@ -260,7 +260,7 @@
 }
 
 - (void)testLoadingNonUTF8Charset {
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     [client get:@"/encoding" delegate:loader];
     [loader waitForResponse];

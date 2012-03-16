@@ -17,12 +17,12 @@
 @implementation RKSearchWordObserverTest
 
 - (void)testInstantiateASearchWordObserverOnObjectStoreInit {
-    [RKTestFactory objectStore];
+    [RKTestFactory managedObjectStore];
     assertThat([RKSearchWordObserver sharedObserver], isNot(nil));
 }
 
 - (void)testTriggerSearchWordRegenerationForChagedSearchableValuesAtObjectContextSaveTime {
-    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKSearchable* searchable = [RKSearchable createEntity];
     searchable.title = @"This is the title of my new object";
     assertThat(searchable.searchWords, is(empty()));

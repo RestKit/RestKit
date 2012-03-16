@@ -176,9 +176,9 @@
     }
     assertThatInteger([longResourcePath length], is(equalToInt(1050)));
 
-    RKURL *URL = [RKURL URLWithBaseURLString:RKTestGetBaseURLString()
+    RKURL *URL = [RKURL URLWithBaseURLString:[RKTestFactory baseURLString]
                                 resourcePath:longResourcePath];
-    assertThat([URL absoluteString], is(equalTo([NSString stringWithFormat:@"%@/%@", RKTestGetBaseURLString(), longResourcePath])));
+    assertThat([URL absoluteString], is(equalTo([NSString stringWithFormat:@"%@/%@", [RKTestFactory baseURLString], longResourcePath])));
 }
 
 @end

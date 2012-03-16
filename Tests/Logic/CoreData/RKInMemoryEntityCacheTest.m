@@ -28,7 +28,7 @@
 @implementation RKInMemoryEntityCacheTest
 
 - (void)testShouldCoercePrimaryKeysToStringsForLookup {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -38,7 +38,7 @@
 }
 
 - (void)testShouldCacheAllObjectsForEntityWhenAccessingEntityCache {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -54,7 +54,7 @@
 }
 
 - (void)testShouldCacheAllObjectsForEntityWhenAsked {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -71,7 +71,7 @@
 }
 
 - (void)testShouldRetrieveObjectsProperlyFromTheEntityCache {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -87,7 +87,7 @@
 }
 
 - (void)testShouldCacheAnIndividualObjectWhenAsked {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -113,7 +113,7 @@
 }
 
 - (void)testShouldCacheAnIndividualObjectByPrimaryKeyValueWhenAsked {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -143,7 +143,7 @@
 }
 
 - (void)testShouldExpireACacheEntryForAnObjectWhenAsked {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -162,7 +162,7 @@
 }
 
 - (void)testShouldExpireEntityCacheWhenAsked {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -182,7 +182,7 @@
 
 #if TARGET_OS_IPHONE
 - (void)testShouldExpireEntityCacheInResponseToMemoryWarning {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -202,7 +202,7 @@
 #endif
 
 - (void)testShouldAddInstancesOfInsertedObjectsToCache {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:1234];
     [objectStore save:nil];
@@ -227,7 +227,7 @@
 }
 
 - (void)testShouldRemoveInstancesOfDeletedObjectsToCache {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKHuman* humanOne = [RKHuman createEntity];
     humanOne.railsID = [NSNumber numberWithInt:1234];
 

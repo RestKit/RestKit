@@ -22,79 +22,16 @@
 #import "RKTestEnvironment.h"
 #import "RKParserRegistry.h"
 
-NSString* RKTestGetBaseURLString(void) {
-    char* ipAddress = getenv("RESTKIT_IP_ADDRESS");
-    if (NULL == ipAddress) {
-        ipAddress = "127.0.0.1";
-    }
-
-    return [NSString stringWithFormat:@"http://%s:4567", ipAddress];
-}
-
-RKURL* RKTestGetBaseURL(void) {
-    return [RKURL URLWithString:RKTestGetBaseURLString()];
-}
-
-RKClient* RKTestNewClient(void) {
-    RKClient* client = [RKClient clientWithBaseURL:RKTestGetBaseURL()];
-    [RKClient setSharedClient:client];
-    [client release];
-    client.requestQueue.suspended = NO;
-
-    return client;
-}
-
 RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader){
     [loader setTimeout:10];
     RKOAuthClient* client = [RKOAuthClient clientWithClientID:@"appID" secret:@"appSecret"];
     client.delegate = loader;
-    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize", RKTestGetBaseURLString()];
+    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize", [RKTestFactory baseURLString]];
     return client;
 }
 
-RKObjectManager* RKTestNewObjectManager(void) {
-    [RKObjectManager setDefaultMappingQueue:dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL)];
-    [RKObjectMapping setDefaultDateFormatters:nil];
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:RKTestGetBaseURL()];
-    [RKObjectManager setSharedManager:objectManager];
-    [RKClient setSharedClient:objectManager.client];
-
-    // Force reachability determination
-    [objectManager.client.reachabilityObserver getFlags];
-
-    return objectManager;
-}
-
 void RKTestClearCacheDirectory(void) {
-    NSError* error = nil;
-    NSString* cachePath = [RKDirectory cachesDirectory];
-    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
-    if (success) {
-        RKLogInfo(@"Cleared cache directory...");
-        success = [[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:YES attributes:nil error:&error];
-        if (!success) {
-            RKLogError(@"Failed creation of cache path '%@': %@", cachePath, [error localizedDescription]);
-        }
-    } else {
-        RKLogError(@"Failed to clear cache path '%@': %@", cachePath, [error localizedDescription]);
-    }
-}
-
-void RKTestSpinRunLoopWithDuration(NSTimeInterval timeInterval) {
-    BOOL waiting = YES;
-	NSDate* startDate = [NSDate date];
-
-	while (waiting) {
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-		if ([[NSDate date] timeIntervalSinceDate:startDate] > timeInterval) {
-			waiting = NO;
-		}
-        usleep(100);
-	}
-}
-
-void RKTestSpinRunLoop() {
-    RKTestSpinRunLoopWithDuration(0.1);
+    
 }
 
 @implementation RKTestCase

@@ -35,7 +35,7 @@
 @implementation RKManagedObjectMappingOperationTest
 
 - (void)testShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate {
-    RKManagedObjectStore *store = [RKTestFactory objectStore];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* managedMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     NSDictionary* sourceObject = [NSDictionary dictionary];
     RKHuman* human = [RKHuman createEntity];
@@ -52,7 +52,7 @@
 }
 
 - (void)testShouldConnectRelationshipsByPrimaryKey {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -81,7 +81,7 @@
 }
 
 - (void)testConnectRelationshipsDoesNotLeakMemory {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -110,7 +110,7 @@
 }
 
 - (void)testConnectionOfHasManyRelationshipsByPrimaryKey {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -139,7 +139,7 @@
 }
 
 - (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -175,7 +175,7 @@
 }
 
 - (void)testShouldLoadNestedHasManyRelationship {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
@@ -195,7 +195,7 @@
 }
 
 - (void)testShouldMapNullToAHasManyRelationship {
-    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     [catMapping mapAttributes:@"name", nil];
 
@@ -213,7 +213,7 @@
 }
 
 - (void)testShouldLoadNestedHasManyRelationshipWithoutABackingClass {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* cloudMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCloud" inManagedObjectStore:objectStore];
     [cloudMapping mapAttributes:@"name", nil];
 
@@ -232,7 +232,7 @@
 }
 
 - (void)testShouldDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingSucceeds {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -261,7 +261,7 @@
 }
 
 - (void)testShouldNotDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingFails {
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -289,7 +289,7 @@
 }
 
 - (void)testShouldConnectManyToManyRelationships {
-    RKManagedObjectStore *store = [RKTestFactory objectStore];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"railsID";
     [childMapping mapAttributes:@"name", nil];
@@ -317,7 +317,7 @@
 }
 
 - (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder {
-    RKManagedObjectStore *store = [RKTestFactory objectStore];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", nil];
     parentMapping.primaryKeyAttribute = @"parentID";

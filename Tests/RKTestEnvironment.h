@@ -35,17 +35,10 @@
 #undef OCMOCK_VALUE
 #define OCMOCK_VALUE(variable) [NSValue value:&variable withObjCType:@encode(__typeof(variable))]
 
-// The Base URL for the Spec server. See Specs/Server/
-RKURL* RKTestGetBaseURL(void);
-NSString* RKTestGetBaseURLString(void);
-
-// Helpers for returning new instances that clear global state
-RKClient* RKTestNewClient(void);
-RKObjectManager* RKTestNewObjectManager(void);
 RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader);
+
+// TODO: Figure out how to extract...
 void RKTestClearCacheDirectory(void);
-void RKTestSpinRunLoop(void);
-void RKTestSpinRunLoopWithDuration(NSTimeInterval timeInterval);
 
 /* 
  Base class for RestKit test cases. Provides initialization of testing

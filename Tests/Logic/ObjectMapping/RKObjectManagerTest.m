@@ -37,7 +37,7 @@
 @implementation RKObjectManagerTest
 
 - (void)setUp {
-    _objectManager = RKTestNewObjectManager();
+    _objectManager = [RKTestFactory objectManager];
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
     [_objectManager.objectStore deletePersistantStore];
@@ -177,7 +177,7 @@
 }
 
 - (void)testShouldPOSTAnObject {
-    RKObjectManager* manager = RKTestNewObjectManager();
+    RKObjectManager* manager = [RKTestFactory objectManager];
 
     RKObjectRouter* router = [[RKObjectRouter new] autorelease];
     [router routeClass:[RKObjectMapperTestModel class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
@@ -203,7 +203,7 @@
 }
 
 - (void)testShouldNotSetAContentBodyOnAGET {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKObjectMapperTestModel class] toResourcePath:@"/humans/1"];
 
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
@@ -225,7 +225,7 @@
 }
 
 - (void)testShouldNotSetAContentBodyOnADELETE {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKObjectMapperTestModel class] toResourcePath:@"/humans/1"];
 
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
@@ -249,7 +249,7 @@
 #pragma mark - Block Helpers
 
 - (void)testShouldLetYouLoadObjectsWithABlock {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
@@ -265,7 +265,7 @@
 }
 
 - (void)testShouldAllowYouToOverrideTheRoutedResourcePath {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.router routeClass:[RKObjectMapperTestModel class] toResourcePath:@"/humans/2"];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
@@ -284,7 +284,7 @@
 }
 
 - (void)testShouldAllowYouToUseObjectHelpersWithoutRouting {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     [mapping mapAttributes:@"name", @"age", nil];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
@@ -303,7 +303,7 @@
 }
 
 - (void)testShouldAllowYouToSkipTheMappingProvider {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
     [mapping mapAttributes:@"name", @"age", nil];
@@ -323,7 +323,7 @@
 }
 
 - (void)testShouldLetYouOverloadTheParamsOnAnObjectLoaderRequest {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
     [mapping mapAttributes:@"name", @"age", nil];
@@ -346,7 +346,7 @@
 }
 
 - (void)testInitializationOfObjectLoaderViaManagerConfiguresSerializationMIMEType {
-    RKObjectManager *objectManager = RKTestNewObjectManager();
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.serializationMIMEType = RKMIMETypeJSON;
     RKObjectLoader *loader = [objectManager loaderWithResourcePath:@"/test"];
     assertThat(loader.serializationMIMEType, isNot(nilValue()));

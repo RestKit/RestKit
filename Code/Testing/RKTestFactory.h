@@ -27,27 +27,31 @@
  Called once per unit testing run when the sharedFactory instance is initialized. RestKit
  applications can override via a category.
  */
-- (void)didInitialize;
++ (void)didInitialize;
 
 /**
  Application specific customization point for the sharedFactory.
  Invoked each time the factory is asked to set up the environment. RestKit applications
  leveraging the factory may override via a category.
  */
-- (void)didSetUp;
++ (void)didSetUp;
 
 /**
  Application specific customization point for the sharedFactory.
  Invoked each time the factory is tearing down the environment. RestKit applications
  leveraging the factory may override via a category.
  */
-- (void)didTearDown;
++ (void)didTearDown;
 
 @end
 
 /**
  RKTestFactory provides an interface for initializing RestKit
- objects within a unit testing environment.
+ objects within a unit testing environment. The factory is used to ensure isolation
+ between test cases by ensuring that RestKit's important singleton objects are torn
+ down between tests and that each test is working within a clean Core Data environment.
+ Callback hooks are provided so that application specific set up and tear down logic can be
+ integrated as well.
  */
 @interface RKTestFactory : NSObject <RKTestFactoryCallbacks>
 
@@ -56,90 +60,91 @@
 ///-----------------------------------------------------------------------------
 
 /**
- The baseURL with which to initialize RKClient and RKObjectManager
+ Returns the base URL with which to initialize RKClient and RKObjectManager
  instances created via the factory.
+ 
+ @return The base URL for the factory.
  */
-@property (nonatomic, strong) RKURL *baseURL;
++ (RKURL *)baseURL;
 
 /**
- The class to use when instantiating new client instances.
+ Sets the base URL for the factory.
  
- **Default**: [RKClient class]
+ @param URL The new base URL.
  */
-@property (nonatomic, strong) Class clientClass;
++ (void)setBaseURL:(RKURL *)URL;
 
 /**
- The class to use when instantiating new object manager instances.
+ Returns the base URL as a string value.
  
- **Default**: [RKObjectManager class]
+ @return The base URL for the factory, as a string.
  */
-@property (nonatomic, strong) Class objectManagerClass;
-
-///-----------------------------------------------------------------------------
-/// @name Accessing the Shared Factory Instance
-///-----------------------------------------------------------------------------
++ (NSString *)baseURLString;
 
 /**
- Returns the shared test factory object.
+ Sets the base URL for the factory to a new value by constructing an RKURL
+ from the given string.
  
- @return The shared test factory.
+ @param A string containing the URL to set as the base URL for the factory.
  */
-+ (RKTestFactory *)sharedFactory;
++ (void)setBaseURLString:(NSString *)baseURLString;
 
 ///-----------------------------------------------------------------------------
 /// @name Building Instances
 ///-----------------------------------------------------------------------------
 
 /**
- Create and return an RKClient instance.
+ Creates and returns an RKClient instance.
+ 
+ @return A new client object.
  */
-- (RKClient *)client;
++ (RKClient *)client;
 
 /**
- Create and return an RKObjectManager instance.
+ Creates and returns an RKObjectManager instance.
+ 
+ @return A new client object.
  */
-- (RKObjectManager *)objectManager;
++ (RKObjectManager *)objectManager;
 
 /**
- Create and return an RKManagedObjectStore instance.
+ Creates and returns a RKManagedObjectStore instance.
+ 
+ A new managed object store will be configured and returned. If there is an existing
+ persistent store (i.e. from a previous test invocation), then the persistent store
+ is deleted.
+ 
+ @return A new managed object store object.
  */
-- (RKManagedObjectStore *)objectStore;
++ (RKManagedObjectStore *)managedObjectStore;
+
+///-----------------------------------------------------------------------------
+/// @name Managing Test State
+///-----------------------------------------------------------------------------
 
 /**
  Sets up the RestKit testing environment. Invokes the didSetUp callback for application 
  specific setup.
  */
-- (void)setUp;
++ (void)setUp;
 
 /**
  Tears down the RestKit testing environment by clearing singleton instances, helping to
  ensure test case isolation. Invokes the didTearDown callback for application specific
  cleanup.
  */
-- (void)tearDown;
-
-@end
-
-/**
- The ConvenienceAliases category provides a static interface for performing
- common tasks on the RKTestFactory sharedInstance. All methods defined within the category
- are static aliases for instance method counterparts on [RKTestFactory sharedFactory].
- */
-@interface RKTestFactory (ConvenienceAliases)
-
-/**
- Ensures the test factory has been initialized
- */
-+ (void)setUp;
 + (void)tearDown;
 
-+ (RKURL *)baseURL;
-+ (void)setBaseURL:(RKURL *)URL;
-+ (NSString *)baseURLString;
-+ (void)setBaseURLString:(NSString *)baseURLString;
+///-----------------------------------------------------------------------------
+/// @name Other Tasks
+///-----------------------------------------------------------------------------
 
-+ (RKClient *)client;
-+ (RKObjectManager *)objectManager;
-+ (RKManagedObjectStore *)objectStore;
+/**
+ Clears the contents of the cache directory by removing the directory and
+ recreating it.
+ 
+ @see [RKDirectory cachesDirectory]
+ */
++ (void)clearCacheDirectory;
 
 @end

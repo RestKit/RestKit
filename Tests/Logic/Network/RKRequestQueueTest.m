@@ -102,7 +102,7 @@
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidBeginLoading:queue];
     queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
-    NSURL* URL = RKTestGetBaseURL();
+    NSURL* URL = [RKTestFactory baseURL];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     [queue addLoadingRequest:request];
     [delegateMock verify];
@@ -114,7 +114,7 @@
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidFinishLoading:queue];
     queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
-    NSURL* URL = RKTestGetBaseURL();
+    NSURL* URL = [RKTestFactory baseURL];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     [queue addLoadingRequest:request];
     [queue removeLoadingRequest:request];
@@ -126,7 +126,7 @@
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
 
-    NSString* url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", RKTestGetBaseURLString()];
+    NSString* url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", [RKTestFactory baseURLString]];
     NSURL* URL = [NSURL URLWithString:url];
     RKRequest * request = [[RKRequest alloc] initWithURL:URL];
     request.delegate = loader;
@@ -171,14 +171,14 @@
 //
 //    RKRequestQueue *queue1 = [RKRequestQueue new];
 //    queue1.showsNetworkActivityIndicatorWhenBusy = YES;
-//    NSString* url1 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", RKTestGetBaseURL()];
+//    NSString* url1 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", [RKTestFactory baseURL]];
 //    NSURL* URL1 = [NSURL URLWithString:url1];
 //    RKRequest * request1 = [[RKRequest alloc] initWithURL:URL1];
 //    request1.delegate = loader;
 //
 //    RKRequestQueue *queue2 = [RKRequestQueue new];
 //    queue2.showsNetworkActivityIndicatorWhenBusy = YES;
-//    NSString* url2 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", RKTestGetBaseURL()];
+//    NSString* url2 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", [RKTestFactory baseURL]];
 //    NSURL* URL2 = [NSURL URLWithString:url2];
 //    RKRequest * request2 = [[RKRequest alloc] initWithURL:URL2];
 //    request2.delegate = loader;
@@ -246,7 +246,7 @@
 
 - (void)testShouldRemoveItemsFromTheQueueWithAnUnmappableResponse {
     RKRequestQueue *queue = [RKRequestQueue requestQueue];
-    RKObjectManager *objectManager = RKTestNewObjectManager();
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/403"];
     objectLoader.delegate = loader;

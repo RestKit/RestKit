@@ -44,7 +44,7 @@
 
 - (void)testShouldReturnTheDefaultValueForACoreDataAttribute {
     // Load Core Data
-    RKManagedObjectStore *store = [RKTestFactory objectStore];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCat" inManagedObjectStore:store];
     id value = [mapping defaultValueForMissingAttribute:@"name"];
@@ -52,7 +52,7 @@
 }
 
 - (void)testShouldCreateNewInstancesOfUnmanagedObjects {
-    [RKTestFactory objectStore];
+    [RKTestFactory managedObjectStore];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
     assertThat(object, isNot(nilValue()));
@@ -60,7 +60,7 @@
 }
 
 - (void)testShouldCreateNewInstancesOfManagedObjectsWhenTheMappingIsAnRKObjectMapping {
-    [RKTestFactory objectStore];
+    [RKTestFactory managedObjectStore];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
     assertThat(object, isNot(nilValue()));
@@ -68,7 +68,7 @@
 }
 
 - (void)testShouldFindExistingManagedObjectsByPrimaryKey {
-    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
@@ -85,7 +85,7 @@
 }
 
 - (void)testShouldFindExistingManagedObjectsByPrimaryKeyPath {
-    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     [RKHuman truncateAll];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
@@ -105,7 +105,7 @@
 }
 
 - (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData {
-    RKManagedObjectStore *store = [RKTestFactory objectStore];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
 
@@ -116,7 +116,7 @@
 }
 
 - (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute {
-    RKManagedObjectStore *store = [RKTestFactory objectStore];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
 
     NSDictionary* data = [NSDictionary dictionary];
@@ -126,7 +126,7 @@
 }
 
 - (void)testShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull {
-    RKManagedObjectStore *store = [RKTestFactory objectStore];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
@@ -138,7 +138,7 @@
 }
 
 - (void)testShouldMapACollectionOfObjectsWithDynamicKeys {
-    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";
@@ -164,7 +164,7 @@
 }
 
 - (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue {
-    RKManagedObjectStore *objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:objectStore];
     childMapping.primaryKeyAttribute = @"railsID";
@@ -188,7 +188,7 @@
 }
 
 - (void)testShouldIncludeTransformableAttributesInPropertyNamesAndTypes {
-    [RKTestFactory objectStore];
+    [RKTestFactory managedObjectStore];
     NSDictionary *attributesByName = [[RKHuman entity] attributesByName];
     NSDictionary *propertiesByName = [[RKHuman entity] propertiesByName];
     NSDictionary *relationshipsByName = [[RKHuman entity] relationshipsByName];

@@ -17,7 +17,7 @@
 @implementation RKSearchableManagedObjectTest
 
 - (void)testGenerateSearchWordsForSearchableObjects {
-    [RKTestFactory objectStore];
+    [RKTestFactory managedObjectStore];
     RKSearchable* searchable = [RKSearchable createEntity];
     searchable.title = @"This is the title of my new object";
     searchable.body = @"This is the point at which I begin pontificating at length about various and sundry things for no real reason at all. Furthermore, ...";

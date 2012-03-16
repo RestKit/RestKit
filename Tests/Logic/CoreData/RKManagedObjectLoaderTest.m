@@ -26,7 +26,6 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectMappingProvider+CoreData.h"
 
-
 @interface RKManagedObjectLoaderTest : RKTestCase {
 
 }
@@ -36,7 +35,7 @@
 @implementation RKManagedObjectLoaderTest
 
 - (void)testShouldDeleteObjectFromLocalStoreOnDELETE {
-    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     [store save:nil];
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
@@ -61,7 +60,7 @@
 }
 
 - (void)testShouldLoadAnObjectWithAToOneRelationship {
-    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
@@ -84,7 +83,7 @@
 }
 
 - (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
-    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"
                                                                        inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
@@ -127,7 +126,7 @@
 }
 
 - (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
-    RKManagedObjectStore* store = [RKTestFactory objectStore];
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
@@ -142,10 +141,10 @@
 }
 
 - (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent {
-    RKTestClearCacheDirectory();
+    [RKTestFactory clearCacheDirectory];
 
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKManagedObjectStore* objectStore = [RKTestFactory objectStore];
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     objectManager.objectStore = objectStore;
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:objectStore];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
