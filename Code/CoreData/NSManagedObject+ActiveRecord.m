@@ -780,10 +780,52 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 
 + (NSNumber *)maxValueFor:(NSString *)property
 {
-	NSManagedObject *obj = [[self class] findFirstByAttribute:property
-													withValue:[NSString stringWithFormat:@"max(%@)", property]];
-
-	return [obj valueForKey:property];
+	//Taken directly from apple docs
+    
+    NSManagedObjectContext *context = [[self class] managedObjectContext];
+    
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([self class])
+                                              inManagedObjectContext:context];
+    [request setEntity:entity];
+    
+    // Specify that the request should return dictionaries.
+    [request setResultType:NSDictionaryResultType];
+    
+    // Create an expression for the key path.
+    NSExpression *keyPathExpression = [NSExpression expressionForKeyPath:property];
+    
+    // Create an expression to represent the function you want to apply
+    NSExpression *expression = [NSExpression expressionForFunction:@"max:"
+                                                         arguments:[NSArray arrayWithObject:keyPathExpression]];
+    
+    // Create an expression description using the minExpression and returning a date.
+    NSExpressionDescription *expressionDescription = [[NSExpressionDescription alloc] init];
+    
+    // The name is the key that will be used in the dictionary for the return value.
+    [expressionDescription setName:@"maxValue"];
+    [expressionDescription setExpression:expression];
+    [expressionDescription setExpressionResultType:NSInteger32AttributeType]; // For example, NSDateAttributeType
+    
+    // Set the request's properties to fetch just the property represented by the expressions.
+    [request setPropertiesToFetch:[NSArray arrayWithObject:expressionDescription]];
+    
+    // Execute the fetch.
+    NSError *error;
+    NSNumber *requestedValue = nil;
+    NSArray *objects = [context executeFetchRequest:request error:&error];
+    if (objects == nil) {
+        return nil;
+    }
+    else {
+        if ([objects count] > 0) {
+            requestedValue = [[objects objectAtIndex:0] valueForKey:@"maxValue"];
+        }
+    }
+    
+    [expressionDescription release];
+    [request release];
+    return requestedValue;
 }
 
 + (id)objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context
