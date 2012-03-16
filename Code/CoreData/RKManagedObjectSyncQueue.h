@@ -28,5 +28,6 @@
 @property (nonatomic, retain) NSNumber * syncMode;
 @property (nonatomic, retain) NSString * objectIDString;
 @property (nonatomic, retain) NSString * className;
+@property (nonatomic, retain) NSString * objectRoute;
 
 @end
