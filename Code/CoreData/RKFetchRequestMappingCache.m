@@ -33,7 +33,8 @@
     NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:entity];
     [fetchRequest setFetchLimit:1];
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%@ = %@", mapping.primaryKeyAttribute, lookupValue]];
+    NSString *predicateString = [mapping.primaryKeyAttribute stringByAppendingString:@" = %@"];
+    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:predicateString, lookupValue]];
     NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest];
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
 
