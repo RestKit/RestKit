@@ -258,6 +258,7 @@
 }
 
 - (RKObjectMappingDefinition *)mappingForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context {
+    NSAssert(string, @"Cannot look up mapping matching nil pattern string.");
     RKOrderedDictionary *contextValue = [self valueForContext:context];
     NSAssert(contextValue, @"Attempted to retrieve mapping from undefined context: %d", context);
     for (NSString *pattern in contextValue) {

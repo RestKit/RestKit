@@ -353,4 +353,21 @@
     assertThat(loader.serializationMIMEType, is(equalTo(RKMIMETypeJSON)));
 }
 
+- (void)testInitializationOfRoutedPathViaSendObjectMethodUsingBlock
+{
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+    mapping.rootKeyPath = @"human";
+    [objectManager.mappingProvider registerObjectMapping:mapping withRootKeyPath:@"human"];
+    [objectManager.router routeClass:[RKObjectMapperTestModel class] toResourcePath:@"/human/1"];
+    objectManager.serializationMIMEType = RKMIMETypeJSON;
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    
+    RKObjectMapperTestModel *object = [RKObjectMapperTestModel new];
+    [objectManager putObject:object usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = responseLoader;
+    }];
+    [responseLoader waitForResponse];
+}
+
 @end

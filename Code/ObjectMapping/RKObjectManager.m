@@ -210,7 +210,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
     
-    RKObjectMappingDefinition * objectMapping = [self.mappingProvider objectMappingForResourcePath:resourcePath];
+    RKObjectMappingDefinition *objectMapping = resourcePath ? [self.mappingProvider objectMappingForResourcePath:resourcePath] : nil;
     if (objectMapping == nil || ([objectMapping isKindOfClass:[RKObjectMapping class]] && [object isMemberOfClass:[(RKObjectMapping *)objectMapping objectClass]])) {
         loader.targetObject = object;
     } else {
@@ -269,7 +269,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 	[loader send];
 }
 
-- (void)sendObject:(id<NSObject>)object toResourcePath:(NSString *)resourcePath usingBlock:(void(^)(RKObjectLoader*))block {
+- (void)sendObject:(id<NSObject>)object toResourcePath:(NSString *)resourcePath usingBlock:(void(^)(RKObjectLoader *))block {
     RKObjectLoader *loader = [self loaderForObject:object method:RKRequestMethodInvalid];
     loader.URL = [self.baseURL URLByAppendingResourcePath:resourcePath];
     // Yield to the block for setup
@@ -278,7 +278,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
     [loader send];
 }
 
-- (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader*))block {
+- (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block {
     NSString *resourcePath = [self.router resourcePathForObject:object method:method];    
     [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
         loader.method = method;
