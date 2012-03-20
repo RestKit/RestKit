@@ -815,7 +815,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     NSError *error = nil;
     NSString* parsedValue = [parser stringFromObject:body error:&error];
     
-    NSLog(@"parser=%@, error=%@, parsedValue=%@", parser, error, parsedValue);
+    RKLogTrace(@"parser=%@, error=%@, parsedValue=%@", parser, error, parsedValue);
     
     if (error == nil && parsedValue) {
         self.params = [RKRequestSerialization serializationWithData:[parsedValue dataUsingEncoding:NSUTF8StringEncoding]

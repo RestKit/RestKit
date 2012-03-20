@@ -79,7 +79,7 @@
         } else {
 RKLogDebug(@"Failed to find object to connect relationship '%@' with primary key value '%@'", relationshipName, valueOfLocalPrimaryKeyAttribute);
         }
-        NSLog(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
+        RKLogTrace(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
         [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
     } else {
         RKLogTrace(@"Failed to find primary key value for attribute '%@'", primaryKeyAttribute);

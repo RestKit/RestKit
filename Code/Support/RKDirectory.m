@@ -32,7 +32,7 @@
             NSError* error = nil;
             
             if(! [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:NO attributes:nil error:&error]) {
-                NSLog(@"%@", error);
+                RKLogError(@"%@", error);
             }
         }
         
@@ -63,7 +63,7 @@
             NSError* error = nil;
             
             if(![sharedFM createDirectoryAtURL:appDirectory withIntermediateDirectories:NO attributes:nil error:&error]) {
-                NSLog(@"%@", error);
+                RKLogError(@"%@", error);
             }
         }
         return [appDirectory path];
