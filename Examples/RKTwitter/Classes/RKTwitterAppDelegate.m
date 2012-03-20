@@ -48,12 +48,12 @@
     [RKObjectMapping addDefaultDateFormatterForString:@"E MMM d HH:mm:ss Z y" inTimeZone:nil];
     
     // Register our mappings with the provider using a resource path pattern
-    statusMapping.rootKeyPath = @"statuses.status";
     [objectManager.mappingProvider setObjectMapping:statusMapping forResourcePathPattern:@"/status/user_timeline/:username"];
     
-    // Uncomment this to use XML, comment it to use JSON
-//    objectManager.acceptMIMEType = RKMIMETypeXML;
-	
+    // Uncomment these lines to use XML, comment it to use JSON
+    //objectManager.acceptMIMEType = RKMIMETypeXML;
+	//statusMapping.rootKeyPath = @"statuses.status";
+    
     // Create Window and View Controllers
 	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 	UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
