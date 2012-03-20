@@ -4,7 +4,7 @@ namespace :spec do
   desc "Run the RestKit spec server"
   task :server do
     server_path = File.dirname(__FILE__) + '/Specs/Server/server.rb'
-    system("ruby #{server_path}")
+    system("ruby \"#{server_path}\"")
   end
 end
 
