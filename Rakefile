@@ -4,7 +4,7 @@ namespace :test do
   desc "Run the RestKit test server"
   task :server do
     server_path = File.dirname(__FILE__) + '/Tests/Server/server.rb'
-    system("ruby #{server_path}")
+    system("ruby \"#{server_path}\"")
   end
 end
 
