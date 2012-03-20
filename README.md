@@ -85,6 +85,7 @@ button and confirm that your "Build Location" is the "Derived Data Location".
     1. **MobileCoreServices.framework** on iOS or **CoreServices.framework** on OS X
     1. **SystemConfiguration.framework**
     1. **libxml2.dylib**
+    1. **QuartzCore.framework** on iOS
 1. Link against RestKit:
     1. **libRestKit.a** on iOS
     1. **RestKit.framework** on OS X
