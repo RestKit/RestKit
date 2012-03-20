@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+// NSRegularExpression not available until OS X 10.7 and iOS 4.0 (NS_CLASS_AVAILABLE(10_7, 4_0))
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
+
 /**
  A subclass of NSDateFormatter that serves as translator between ASP.NET date serializations in JSON
  strings and NSDate objects. This is useful for properly mapping these dates from an ASP.NET driven backend.
@@ -76,3 +79,5 @@
  */
 - (NSString *)stringFromDate:(NSDate *)date;
 @end
+
+#endif
