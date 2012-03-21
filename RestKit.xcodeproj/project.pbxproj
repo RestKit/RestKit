@@ -2403,14 +2403,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"\"$(SRCROOT)/Specs/Runner\"",
 					"\"$(SRCROOT)/Specs/Runner/OCHamcrest\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Specs/Runner/OCMock";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Specs/Runner/OCMock\"";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2422,14 +2422,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"\"$(SRCROOT)/Specs/Runner\"",
 					"\"$(SRCROOT)/Specs/Runner/OCHamcrest\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Specs/Runner/OCMock";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Specs/Runner/OCMock\"";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
