@@ -28,7 +28,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 
 // Private interface
 @interface RKObjectPaginator () <RKObjectLoaderDelegate>
-@property (nonatomic, retain) RKManagedObjectLoader *objectLoader;
+@property (nonatomic, retain) RKObjectLoader *objectLoader;
 @end
 
 @implementation RKObjectPaginator
@@ -198,7 +198,11 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     NSAssert(! objectLoader, @"Cannot perform a load while one is already in progress.");
     currentPage = pageNumber;
     
-    self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
+    if (self.objectStore) {
+        self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
+    } else {
+        self.objectLoader = [[[RKObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider] autorelease];
+    }
   
     if ([self.configurationDelegate respondsToSelector:@selector(configureObjectLoader:)]) {
         [self.configurationDelegate configureObjectLoader:objectLoader];
