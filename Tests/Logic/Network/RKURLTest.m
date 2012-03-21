@@ -181,4 +181,25 @@
     assertThat([URL absoluteString], is(equalTo([NSString stringWithFormat:@"%@/%@", [RKTestFactory baseURLString], longResourcePath])));
 }
 
+- (void)testThatPathIsPreservedWhenURLIsConstructedFromAnotherRKURL
+{
+    RKURL *URL = [RKURL URLWithBaseURL:[RKTestFactory baseURL] resourcePath:@"/this/and/that"];
+    RKURL *newURL = [URL URLByAppendingResourcePath:@"/the/other/thing" queryParameters:[NSDictionary dictionaryWithObject:@"up" forKey:@"word"]];
+    assertThat([newURL absoluteString], is(equalTo(@"http://127.0.0.1:4567/this/and/that/the/other/thing?word=up")));
+}
+
+- (void)testThatResourcePathIsPreservedWhenURLIsConstructedFromAnotherRKURL
+{
+    RKURL *URL = [RKURL URLWithBaseURL:[RKTestFactory baseURL] resourcePath:@"/this/and/that"];
+    RKURL *newURL = [URL URLByAppendingResourcePath:@"/the/other/thing" queryParameters:[NSDictionary dictionaryWithObject:@"up" forKey:@"word"]];
+    assertThat([newURL resourcePath], is(equalTo(@"/the/other/thing")));
+}
+
+- (void)testThatPathAndQueryParamsArePreservedWhenURLIsConstructedFromAnotherRKURL
+{
+    RKURL *URL = [RKURL URLWithBaseURL:[RKTestFactory baseURL] resourcePath:@"/this/and/that" queryParameters:[NSDictionary dictionaryWithObject:@"who" forKey:@"where"]];
+    RKURL *newURL = [URL URLByAppendingResourcePath:@"/the/other/thing" queryParameters:[NSDictionary dictionaryWithObject:@"up" forKey:@"word"]];
+    assertThat([newURL absoluteString], is(equalTo(@"http://127.0.0.1:4567/this/and/that/the/other/thing?where=who&word=up")));
+}
+
 @end
