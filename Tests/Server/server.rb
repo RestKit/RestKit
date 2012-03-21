@@ -2,6 +2,7 @@
 # RestKit Test Server
 
 require 'rubygems'
+require 'bundler/setup'
 require 'sinatra/base'
 require 'json'
 begin
