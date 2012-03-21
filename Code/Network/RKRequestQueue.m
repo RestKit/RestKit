@@ -289,8 +289,8 @@ static const NSTimeInterval kFlushDelay = 0.3;
             }
 
             [self addLoadingRequest:request];
-            [request sendAsynchronously];
             RKLogDebug(@"Sent request %@ from queue %@. Loading count = %ld of %ld", request, self, (long) self.loadingCount, (long) _concurrentRequestsLimit);
+            [request sendAsynchronously];
 
             if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
                 [_delegate requestQueue:self didSendRequest:request];
