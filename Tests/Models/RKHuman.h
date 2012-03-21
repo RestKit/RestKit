@@ -39,6 +39,7 @@
 @property (nonatomic, retain) RKCat *favoriteCat;
 
 @property (nonatomic, retain) NSArray *catIDs;
+@property (nonatomic, retain) NSOrderedSet *catsInOrderByAge;
 
 @end
 

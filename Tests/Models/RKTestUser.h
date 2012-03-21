@@ -42,6 +42,7 @@
 @property (nonatomic, retain) RKTestAddress* address;
 @property (nonatomic, retain) NSArray* friends;
 @property (nonatomic, retain) NSSet* friendsSet;
+@property (nonatomic, retain) NSOrderedSet *friendsOrderedSet;
 
 + (RKTestUser*)user;
 

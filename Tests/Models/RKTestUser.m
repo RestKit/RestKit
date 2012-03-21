@@ -26,6 +26,7 @@
 @synthesize address = _address;
 @synthesize friends = _friends;
 @synthesize friendsSet = _friendsSet;
+@synthesize friendsOrderedSet = _friendsOrderedSet;
 
 + (RKTestUser*)user {
     return [[self new] autorelease];

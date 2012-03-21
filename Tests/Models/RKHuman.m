@@ -37,6 +37,7 @@
 @dynamic favoriteCat;
 @dynamic cats;
 @dynamic catIDs;
+@dynamic catsInOrderByAge;
 
 - (NSString*)polymorphicResourcePath {
 	return @"/this/is/the/path";

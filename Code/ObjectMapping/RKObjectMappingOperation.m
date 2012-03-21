@@ -530,6 +530,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             // If the relationship has changed, set it
             if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
                 Class managedObjectClass = NSClassFromString(@"NSManagedObject");
+                Class nsOrderSetClass = NSClassFromString(@"NSOrderedSet");
                 if (managedObjectClass && [self.destinationObject isKindOfClass:managedObjectClass]) {
                     RKLogTrace(@"Found a managedObject collection. About to apply value via mutable[Set|Array]ValueForKey");
                     if ([destinationObject isKindOfClass:[NSSet class]]) {
@@ -540,6 +541,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                         RKLogTrace(@"Mapped NSArray relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                         NSMutableArray* destinationArray = [self.destinationObject mutableArrayValueForKey:relationshipMapping.destinationKeyPath];
                         [destinationArray setArray:destinationObject];
+                    } else if (nsOrderSetClass && [destinationObject isKindOfClass:nsOrderSetClass]) {
+                        RKLogTrace(@"Mapped NSOrderedSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
+                        [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
                     }
                 } else {
                     RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);

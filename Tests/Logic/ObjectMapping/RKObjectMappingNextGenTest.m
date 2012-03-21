@@ -1259,6 +1259,28 @@
     assertThat([user.friendsSet valueForKey:@"name"], is(equalTo(names)));
 }
 
+- (void)testShouldMapANestedArrayIntoAnOrderedSet {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    
+    RKObjectRelationshipMapping* hasManyMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friends" toKeyPath:@"friendsOrderedSet" withMapping:userMapping];
+    [userMapping addRelationshipMapping:hasManyMapping];
+    
+    RKObjectMapper* mapper = [RKObjectMapper new];
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    RKTestUser* user = [RKTestUser user];
+    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    [mapper release];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"Blake Watters")));
+    assertThat(user.friendsOrderedSet, isNot(nilValue()));
+    assertThatBool([user.friendsOrderedSet isKindOfClass:[NSOrderedSet class]], is(equalToBool(YES)));
+    assertThatUnsignedInteger([user.friendsOrderedSet count], is(equalToInt(2)));
+    NSOrderedSet *names = [NSOrderedSet orderedSetWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
+    assertThat([user.friendsOrderedSet valueForKey:@"name"], is(equalTo(names)));
+}
+
 - (void)testShouldNotSetThePropertyWhenTheNestedObjectIsIdentical {
     RKTestUser* user = [RKTestUser user];
     RKTestAddress* address = [RKTestAddress address];
