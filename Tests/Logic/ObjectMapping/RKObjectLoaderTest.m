@@ -193,13 +193,13 @@
 #pragma mark - willSendWithObjectLoader:
 
 - (void)testShouldInvokeWillSendWithObjectLoaderOnSend {
-    RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];
     id mockObject = [OCMockObject partialMockForObject:user];
 
     // Explicitly init so we don't get a managed object loader...
-    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectLoader* objectLoader = [[RKObjectLoader alloc] initWithURL:objectManager.baseURL mappingProvider:[self providerForComplexUser]];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    RKObjectLoader *objectLoader = [[RKObjectLoader alloc] initWithURL:[objectManager.baseURL URLByAppendingResourcePath:@"/200"] mappingProvider:[self providerForComplexUser]];
     objectLoader.configurationDelegate = objectManager;
     objectLoader.sourceObject = mockObject;
     objectLoader.delegate = responseLoader;
