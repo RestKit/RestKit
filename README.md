@@ -102,6 +102,9 @@ Community Resources
 
 A Google Group (high traffic) for development discussions and user support is available at: [http://groups.google.com/group/restkit](http://groups.google.com/group/restkit)
 
+The preferred venue for discussing bugs and feature requests is on Github Issues. The mailing list support traffic can be overwhelming
+for our small development team. Please file all bug reports and feature requests at: <https://github.com/RestKit/RestKit/issues>
+
 For users interested in low traffic updates about the library, an announcements list is also available:
 [http://groups.google.com/group/restkit-announce](http://groups.google.com/group/restkit-announce)
 
