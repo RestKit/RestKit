@@ -706,12 +706,12 @@ request.timeoutInterval = 1.0;
 }
 
 - (void)testShouldOptionallySkipSSLValidation {
-    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKRequest* request = [RKRequest requestWithURL:URL];
-    request.disableCertificateValidation = YES;
-    request.delegate = loader;
+    NSURL *URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [RKRequest requestWithURL:URL];
     [[RKClient sharedClient] configureRequest:request];
+    request.delegate = loader;
+    request.disableCertificateValidation = YES;
     [request send];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
