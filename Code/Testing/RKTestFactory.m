@@ -26,6 +26,12 @@ static RKTestFactory *sharedFactory = nil;
 @synthesize clientClass;
 @synthesize objectManagerClass;
 
++ (void)initialize
+{
+    // Ensure the shared factory is initialized
+    [self sharedFactory];
+}
+
 + (RKTestFactory *)sharedFactory
 {
     if (! sharedFactory) {
