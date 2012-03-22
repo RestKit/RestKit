@@ -3121,14 +3121,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"\"$(SRCROOT)/Tests/Vendor\"",
 					"\"$(SRCROOT)/Tests/Vendor/OCHamcrest\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Tests/Vendor/OCMock";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Tests/Vendor/OCMock\"";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "${CONFIGURATION_BUILD_DIR}";
 				OBJROOT = "$(SRCROOT)/Build";
@@ -3143,14 +3143,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"\"$(SRCROOT)/Tests/Vendor\"",
 					"\"$(SRCROOT)/Tests/Vendor/OCHamcrest\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Tests/Vendor/OCMock";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Tests/Vendor/OCMock\"";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = "${CONFIGURATION_BUILD_DIR}";
 				OBJROOT = "$(SRCROOT)/Build";
@@ -3218,7 +3218,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"\"$(SRCROOT)/Tests/Vendor\"",
 					"\"$(SRCROOT)/Tests/Vendor/OCHamcrest\"",
 				);
@@ -3226,7 +3226,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Tests/Vendor/OCMock";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Tests/Vendor/OCMock\"";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitFrameworkTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3246,7 +3246,7 @@
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"\"$(SRCROOT)/Tests/Vendor\"",
 					"\"$(SRCROOT)/Tests/Vendor/OCHamcrest\"",
 				);
@@ -3254,7 +3254,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Code/Support/RestKit-Prefix.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				HEADER_SEARCH_PATHS = "$(SRCROOT)/Tests/Vendor/OCMock";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/Tests/Vendor/OCMock\"";
 				INFOPLIST_FILE = "Resources/PLISTs/RestKitFrameworkTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
