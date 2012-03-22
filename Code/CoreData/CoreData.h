@@ -26,8 +26,8 @@
 #import "RKManagedObjectMapping.h"
 #import "RKManagedObjectMappingOperation.h"
 #import "RKManagedObjectMappingCache.h"
-#import "RKInMemoryMappingCache.h"
-#import "RKFetchRequestMappingCache.h"
+#import "RKInMemoryManagedObjectCache.h"
+#import "RKFetchRequestManagedObjectCache.h"
 #import "RKSearchableManagedObject.h"
 #import "RKSearchWord.h"
 
@@ -35,3 +35,4 @@
 #import "RKObjectMappingProvider+CoreData.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "NSManagedObject+RKAdditions.h"
+#import "NSEntityDescription+RKAdditions.h"

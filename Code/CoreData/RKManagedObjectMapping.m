@@ -23,6 +23,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKDynamicObjectMappingMatcher.h"
 #import "RKObjectPropertyInspector+CoreData.h"
+#import "NSEntityDescription+RKAdditions.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -62,6 +63,9 @@
         self.objectClass = NSClassFromString([entity managedObjectClassName]);
         _entity = [entity retain];
         _objectStore = objectStore;
+
+        [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
+        [self addObserver:self forKeyPath:@"primaryKeyAttribute" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
     }
     
     return self;
@@ -77,6 +81,9 @@
 }
 
 - (void)dealloc {
+    [self removeObserver:self forKeyPath:@"entity"];
+    [self removeObserver:self forKeyPath:@"primaryKeyAttribute"];
+
     [_entity release];
     [_relationshipToPrimaryKeyMappings release];
     [super dealloc];
@@ -158,9 +165,7 @@
     // If we have found the primary key attribute & value, try to find an existing instance to update
     if (primaryKeyAttribute && primaryKeyValue) {
         object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
-                                                     withMapping:self
-                                              andPrimaryKeyValue:primaryKeyValue
-                                          inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
+                                              withPrimaryKeyAttribute:self.primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
     }
 
     if (object == nil) {
@@ -179,4 +184,19 @@
     return propertyClass;
 }
 
+/*
+ Allows the primaryKeyAttribute property on the NSEntityDescription to configure the mapping and vice-versa
+ */
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"entity"]) {
+        if (! self.primaryKeyAttribute) {
+            self.primaryKeyAttribute = [self.entity primaryKeyAttribute];
+        }
+    } else if ([keyPath isEqualToString:@"primaryKeyAttribute"]) {
+        if (! self.entity.primaryKeyAttribute) {
+            self.entity.primaryKeyAttribute = self.primaryKeyAttribute;
+        }
+    }
+}
 @end

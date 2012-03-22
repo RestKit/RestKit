@@ -56,9 +56,20 @@
 @property (nonatomic, readonly) NSEntityDescription *entity;
 
 /**
- The attribute containing the primary key value for the class. This is consulted by
- RestKit to uniquely identify objects within the store using the primary key in your
- remote backend system.
+ The name of the attribute on the destination entity that acts as the primary key for instances
+ of the entity in the remote backend system. Used to uniquely identify objects within the store
+ so that existing objects are updated rather than creating new ones.
+
+ @warning Note that primaryKeyAttribute defaults to the primaryKeyAttribute configured
+ on the NSEntityDescription for the entity targetted by the receiving mapping. This provides
+ flexibility in cases where a single entity is the target of many mappings with differing
+ primary key definitions.
+
+ If the primaryKeyAttribute is set on an RKManagedObjectMapping that targets an entity with a
+ nil primaryKeyAttribute, then the primaryKeyAttribute will be set on the entity as well for
+ convenience and backwards compatibility. This may change in the future.
+
+ @see [NSEntityDescription primaryKeyAttribute]
  */
 @property (nonatomic, retain) NSString *primaryKeyAttribute;
 

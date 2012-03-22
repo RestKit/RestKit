@@ -366,7 +366,7 @@ typedef enum {
  For example:
     
     - (void)loadObjectUsingBlockExample {
-        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" delegate:self block:^(RKObjectLoader* loader) {
+        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" usingBlock:^(RKObjectLoader* loader) {
             loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
         }];
     }

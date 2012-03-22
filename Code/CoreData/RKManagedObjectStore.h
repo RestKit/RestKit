@@ -81,7 +81,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 /**
 
  */
-@property (nonatomic, retain) NSObject<RKManagedObjectMappingCache> *cacheStrategy;
+@property (nonatomic, retain) NSObject<RKManagedObjectCacheing> *cacheStrategy;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified

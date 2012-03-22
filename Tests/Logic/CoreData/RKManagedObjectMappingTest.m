@@ -24,23 +24,13 @@
 #import "RKMappableObject.h"
 #import "RKChild.h"
 #import "RKParent.h"
+#import "NSEntityDescription+RKAdditions.h"
 
-@interface RKManagedObjectMappingTest : RKTestCase {
-    NSAutoreleasePool *_autoreleasePool;
-}
+@interface RKManagedObjectMappingTest : RKTestCase
 
 @end
 
-
 @implementation RKManagedObjectMappingTest
-
-//- (void)setUp {
-//    _autoreleasePool = [NSAutoreleasePool new];
-//}
-//
-//- (void)tearDown {
-//    [_autoreleasePool drain];
-//}
 
 - (void)testShouldReturnTheDefaultValueForACoreDataAttribute {
     // Load Core Data
@@ -150,12 +140,12 @@
 
     id mockCacheStrategy = [OCMockObject partialMockForObject:objectStore.cacheStrategy];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:OCMOCK_ANY
-                                                                  withMapping:mapping
-                                                           andPrimaryKeyValue:@"blake"
+                                                                  withPrimaryKeyAttribute:mapping.primaryKeyAttribute
+                                                           value:@"blake"
                                                        inManagedObjectContext:objectStore.primaryManagedObjectContext];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:mapping.entity
-                                                                  withMapping:mapping
-                                                           andPrimaryKeyValue:@"rachit"
+                                                                  withPrimaryKeyAttribute:mapping.primaryKeyAttribute
+                                                           value:@"rachit"
                                                        inManagedObjectContext:objectStore.primaryManagedObjectContext];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
@@ -198,6 +188,22 @@
 
     NSDictionary *propertyNamesAndTypes = [[RKObjectPropertyInspector sharedInspector] propertyNamesAndTypesForEntity:[RKHuman entity]];
     assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"], is(notNilValue()));
+}
+
+- (void)testThatAssigningAnEntityWithANonNilPrimaryKeyAttributeSetsTheDefaultValueForTheMapping {
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:store.primaryManagedObjectContext];
+    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForEntity:entity inManagedObjectStore:store];
+    assertThat(mapping.primaryKeyAttribute, is(equalTo(@"railsID")));
+}
+
+- (void)testThatAssigningAPrimaryKeyAttributeToAMappingWhoseEntityHasANilPrimaryKeyAttributeAssignsItToTheEntity {
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCloud" inManagedObjectContext:store.primaryManagedObjectContext];
+    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForEntity:entity inManagedObjectStore:store];
+    assertThat(mapping.primaryKeyAttribute, is(nilValue()));
+    mapping.primaryKeyAttribute = @"cloudID";
+    assertThat(entity.primaryKeyAttribute, is(equalTo(@"cloudID")));
 }
 
 @end

@@ -10,6 +10,9 @@
 
 @class RKManagedObjectStore, RKManagedObjectMapping;
 
+/**
+ Provides extensions to NSManagedObject for various common tasks.
+ */
 @interface NSManagedObject (RKAdditions)
 
 /**

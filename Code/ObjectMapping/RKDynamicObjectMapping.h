@@ -27,12 +27,12 @@
 @protocol RKDynamicObjectMappingDelegate <NSObject>
 
 @required
-- (RKObjectMapping*)objectMappingForData:(id)data;
+- (RKObjectMapping *)objectMappingForData:(id)data;
 
 @end
 
 #ifdef NS_BLOCKS_AVAILABLE
-typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
+typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
 #endif
 
 /**

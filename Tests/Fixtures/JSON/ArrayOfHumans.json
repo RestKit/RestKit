@@ -2,6 +2,7 @@
     {
         "human": {
             "id": 201,
+            "name": "Blake",
             "human_id": 1,
             "cats": [
                 {
@@ -22,6 +23,7 @@
     {
         "human": {
             "id": 202,
+            "name": "Sarah",
             "human_id": 1,
             "cats": [
                 {
