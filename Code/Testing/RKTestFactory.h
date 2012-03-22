@@ -23,21 +23,21 @@
 ///-----------------------------------------------------------------------------
 
 /**
- Application specific initialization point for the sharedFactory.
- Called once per unit testing run when the sharedFactory instance is initialized. RestKit
- applications can override via a category.
+ Application specific initialization point for the factory.
+ Called once per unit testing run when the factory singleton instance is initialized. RestKit
+ applications may override via a category.
  */
 + (void)didInitialize;
 
 /**
- Application specific customization point for the sharedFactory.
+ Application specific customization point for the factory.
  Invoked each time the factory is asked to set up the environment. RestKit applications
  leveraging the factory may override via a category.
  */
 + (void)didSetUp;
 
 /**
- Application specific customization point for the sharedFactory.
+ Application specific customization point for the factory.
  Invoked each time the factory is tearing down the environment. RestKit applications
  leveraging the factory may override via a category.
  */
