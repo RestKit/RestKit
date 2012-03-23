@@ -25,6 +25,8 @@
     NSEntityDescription* _entity;
     NSString* _primaryKeyAttribute;
     NSMutableDictionary* _relationshipToPrimaryKeyMappings;
+    NSMutableDictionary* _relationshipsAndOrderings;
+    
 }
 
 /**
@@ -57,6 +59,11 @@
 @property (nonatomic, readonly) NSDictionary* relationshipsAndPrimaryKeyAttributes;
 
 /**
+ Returns a dictionary containing Core Data relationships and whether they should be ordered
+ */
+@property (nonatomic, readonly) NSDictionary* relationshipsAndOrderings;
+
+/**
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
  the related object by primary key.
  
@@ -73,7 +80,7 @@
  to be automatically maintained from the server to the underlying Core Data object graph.
  */
 - (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute;
-
+- (void)connectToManyRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute ordered:(BOOL)ordered;
 /**
  Connects relationships using the primary key values contained in the specified attribute. This method is
  a short-cut for repeated invocation of `connectRelationship:withObjectForPrimaryKeyAttribute:`.

@@ -355,7 +355,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 }
 
 - (BOOL)isValueACollection:(id)value {
-    return ([value isKindOfClass:[NSSet class]] || [value isKindOfClass:[NSArray class]]);
+    return ([value isKindOfClass:[NSSet class]] || [value isKindOfClass:[NSArray class]] || [value isKindOfClass:[NSOrderedSet class]]);
+    //return ([value conformsToProtocol:@protocol(NSFastEnumeration)]);
 }
 
 - (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withRealtionshipMapping:(RKObjectRelationshipMapping*)relationshipMapping {
@@ -413,7 +414,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         // Handle case where incoming content is a single object, but we want a collection
         Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
         BOOL mappingToCollection = (relationshipType && 
-                                    ([relationshipType isSubclassOfClass:[NSSet class]] || [relationshipType isSubclassOfClass:[NSArray class]]));
+                                    ([relationshipType isSubclassOfClass:[NSSet class]] || [relationshipType isSubclassOfClass:[NSOrderedSet class]] || [relationshipType isSubclassOfClass:[NSArray class]]));
         if (mappingToCollection && ![self isValueACollection:value]) {
             RKLogDebug(@"Asked to map a single object into a collection relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipType));
             if ([relationshipType isSubclassOfClass:[NSArray class]]) {
