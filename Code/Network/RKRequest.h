@@ -461,6 +461,11 @@ typedef enum {
 @optional
 
 /**
+ * Sent when a request has received a response
+ */
+- (void)request:(RKRequest *)request didReceiveResponse:(RKResponse *)response;
+
+/**
  * Sent when a request has finished loading
  */
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response;
