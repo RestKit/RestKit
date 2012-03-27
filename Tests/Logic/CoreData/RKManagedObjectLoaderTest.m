@@ -200,5 +200,18 @@
     }
 }
 
+- (void)testTheOnDidFailBlockIsInvokedOnFailure {
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    RKManagedObjectLoader *loader = [objectManager loaderWithResourcePath:@"/fail"];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    __block BOOL invoked = NO;
+    loader.onDidFailWithError = ^ (NSError *error) {
+        invoked = YES;
+    };
+    loader.delegate = responseLoader;
+    [loader sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(invoked, is(equalToBool(YES)));
+}
 
 @end
