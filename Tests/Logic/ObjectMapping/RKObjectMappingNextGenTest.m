@@ -1782,6 +1782,23 @@
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
 
+- (void)testShouldReturnNilForEmptyDateValues {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
+    [mapping addAttributeMapping:birthDateMapping];
+    
+    NSDictionary* dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
+    [mutableDictionary setValue:@"" forKey:@"birthdate"];
+    RKTestUser* user = [RKTestUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:mutableDictionary destinationObject:user mapping:mapping];
+    [mutableDictionary release];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.birthDate, is(equalTo(nil)));
+}
+
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone {
     [RKObjectMapping setDefaultDateFormatters:nil];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
