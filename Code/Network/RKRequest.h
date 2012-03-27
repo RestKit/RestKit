@@ -803,6 +803,14 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 - (void)requestWillPrepareForSend:(RKRequest *)request;
 
 /**
+ Sent when a request has received a response from the remote host.
+
+ @param request The RKRequest object that received a response.
+ @param response The RKResponse object for the HTTP response that was received.
+ */
+- (void)request:(RKRequest *)request didReceiveResponse:(RKResponse *)response;
+
+/**
  Sent when a request has started loading
  
  @param request The RKRequest object that has begun loading.

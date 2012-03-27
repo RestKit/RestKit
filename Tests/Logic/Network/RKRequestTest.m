@@ -888,4 +888,17 @@ request.timeoutInterval = 1.0;
     assertThatBool([request isCacheable], is(equalToBool(NO)));
 }
 
+- (void)testInvocationOfDidReceiveResponse {
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    id loaderMock = [OCMockObject partialMockForObject:loader];
+    NSURL* URL = [[RKTestFactory baseURL] URLByAppendingResourcePath:@"/200"];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loaderMock;
+    [[loaderMock expect] request:request didReceiveResponse:OCMOCK_ANY];
+    [request sendAsynchronously];
+    [loaderMock waitForResponse];    
+    [request release];
+    [loaderMock verify];
+}
+
 @end
