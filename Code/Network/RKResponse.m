@@ -191,6 +191,9 @@ extern NSString* cacheURLKey;
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
     [_request invalidateTimeoutTimer];
+    if ([[_request delegate] respondsToSelector:@selector(request:didReceiveResponse:)]) {
+      [[_request delegate] request:_request didReceiveResponse:self];
+    }
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
