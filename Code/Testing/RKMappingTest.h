@@ -104,11 +104,20 @@
 ///-----------------------------------------------------------------------------
 
 /**
+ Performs the object mapping operation and records any mapping events that occur. The
+ mapping events can be verified against expectation through a subsequent call to verify.
+
+ @exception NSInternalInconsistencyException Raises an
+ NSInternalInconsistencyException if mapping fails.
+ */
+- (void)performMapping;
+
+/**
  Verifies that the mapping is configured correctly by performing an object mapping operation
  and ensuring that all expectations are met.
  
  @exception NSInternalInconsistencyException Raises an
- NSInternalInconsistencyException if mapping failes or any expectation is not satisfied.
+ NSInternalInconsistencyException if mapping fails or any expectation is not satisfied.
  */
 - (void)verify;
 
@@ -139,7 +148,8 @@
  The destionation object being mapped to.
  
  If nil, the mapping test will instantiate a destination object to perform the mapping
- by invoking `[self.mapping mappableObjectForData:self.sourceObject]`
+ by invoking `[self.mapping mappableObjectForData:self.sourceObject]` and set the
+ new object as the value for the destinationObject property.
  
  @see [RKObjectMapping mappableObjectForData:]
  */

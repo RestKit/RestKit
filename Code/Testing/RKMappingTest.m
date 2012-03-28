@@ -159,8 +159,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     // Ensure repeated invocations of verify only result in a single mapping operation
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
-        id destination = self.destinationObject ? self.destinationObject : [self.mapping mappableObjectForData:self.sourceObject];
-        RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:destination withMapping:self.mapping];
+        if (nil == self.destinationObject) {
+            self.destinationObject = [self.mapping mappableObjectForData:self.sourceObject];
+        }
+        RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:self.destinationObject withMapping:self.mapping];
         NSError *error = nil;
         mappingOperation.delegate = self;
         BOOL success = [mappingOperation performMapping:&error];
