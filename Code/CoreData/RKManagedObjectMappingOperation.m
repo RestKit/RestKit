@@ -56,7 +56,7 @@
         RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));
         return;
     }
-    RKObjectMapping* objectMapping = (RKObjectMapping*)mapping;
+    RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *) mapping;
     NSAssert(relationshipMapping, @"Unable to find relationship mapping '%@' to connect by primaryKey", relationshipName);
     NSAssert([relationshipMapping isKindOfClass:[RKObjectRelationshipMapping class]], @"Expected mapping for %@ to be a relationship mapping", relationshipName);
     NSAssert([relationshipMapping.mapping isKindOfClass:[RKManagedObjectMapping class]], @"Can only connect RKManagedObjectMapping relationships");
@@ -77,7 +77,7 @@
         if (relatedObject) {                
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {
-RKLogDebug(@"Failed to find object to connect relationship '%@' with primary key value '%@'", relationshipName, valueOfLocalPrimaryKeyAttribute);
+RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with primary key value '%@'", [[objectMapping entity] name], relationshipName, valueOfLocalPrimaryKeyAttribute);
         }
         RKLogTrace(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
         [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
