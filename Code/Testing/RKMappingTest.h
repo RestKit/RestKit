@@ -119,12 +119,21 @@
 /**
  The object mapping under test.
  */
-@property (nonatomic, strong, readonly) RKObjectMapping *mapping;
+@property(nonatomic, strong, readonly) RKObjectMapping *mapping;
+
+/**
+ A key path to apply to the source object to specify the location of the root
+ of the data under test. Useful when testing subsets of a larger payload or
+ object graph.
+
+ **Default**: nil
+ */
+@property(nonatomic, copy) NSString *rootKeyPath;
 
 /**
  The source object being mapped from.
  */
-@property (nonatomic, strong, readonly) id sourceObject;
+@property(nonatomic, strong, readonly) id sourceObject;
 
 /**
  The destionation object being mapped to.
@@ -134,7 +143,7 @@
  
  @see [RKObjectMapping mappableObjectForData:]
  */
-@property (nonatomic, strong, readonly) id destinationObject;
+@property(nonatomic, strong, readonly) id destinationObject;
 
 /**
  A Boolean value that determines if expectations should be verified immediately
@@ -142,6 +151,6 @@
  
  **Default**: NO
  */
-@property (nonatomic, assign) BOOL verifiesOnExpect;
+@property(nonatomic, assign) BOOL verifiesOnExpect;
 
 @end
