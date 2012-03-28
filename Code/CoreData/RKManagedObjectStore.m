@@ -72,6 +72,25 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     [NSManagedObjectContext setDefaultContext:objectStore.primaryManagedObjectContext];
 }
 
++ (void)deleteStoreAtPath:(NSString *)path
+{
+    NSURL* storeURL = [NSURL fileURLWithPath:path];
+	NSError* error = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
+        if (! [[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
+            NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
+        }
+    } else {
+        RKLogWarning(@"Asked to delete persistent store but no store file exists at path: %@", storeURL.path);
+    }
+}
+
++ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename
+{
+    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:filename];
+    [self deleteStoreAtPath:path];
+}
+
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename {
     return [self objectStoreWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
 }

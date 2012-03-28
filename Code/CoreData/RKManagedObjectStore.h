@@ -75,6 +75,25 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 + (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore;
 
 ///-----------------------------------------------------------------------------
+/// @name Deleting Store Files
+///-----------------------------------------------------------------------------
+
+/**
+ Deletes the SQLite file backing an RKManagedObjectStore instance at a given path.
+
+ @param path The complete path to the store file to delete.
+ */
++ (void)deleteStoreAtPath:(NSString *)path;
+
+/**
+ Deletes the SQLite file backing an RKManagedObjectStore instance with a given
+ filename within the application data directory.
+
+ @param filename The name of the file within the application data directory backing a managed object store.
+ */
++ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename;
+
+///-----------------------------------------------------------------------------
 /// @name Initializing an Object Store
 ///-----------------------------------------------------------------------------
 
