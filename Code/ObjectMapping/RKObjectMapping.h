@@ -60,6 +60,13 @@ relationship. Relationships are processed using an object mapping as well.
 @property (nonatomic, assign) Class objectClass;
 
 /**
+ The name of the target class the receiver defines a mapping for.
+
+ @see objectClass
+ */
+@property (nonatomic, copy) NSString *objectClassName;
+
+/**
  The aggregate collection of attribute and relationship mappings within this object mapping
  */
 @property (nonatomic, readonly) NSArray *mappings;
@@ -145,6 +152,14 @@ relationship. Relationships are processed using an object mapping as well.
  Returns an object mapping for the specified class that is ready for configuration
  */
 + (id)mappingForClass:(Class)objectClass;
+
+/**
+ Creates and returns an object mapping for the class with the given name
+
+ @param objectClassName The name of the class the mapping is for.
+ @return A new object mapping with for the class with given name.
+ */
++ (id)mappingForClassWithName:(NSString *)objectClassName;
 
 /**
  Returns an object mapping useful for configuring a serialization mapping. The object

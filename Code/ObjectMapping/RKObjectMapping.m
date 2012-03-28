@@ -45,6 +45,10 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     return [mapping autorelease];
 }
 
++ (id)mappingForClassWithName:(NSString *)objectClassName {
+    return [self mappingForClass:NSClassFromString(objectClassName)];
+}
+
 + (id)serializationMapping {
     return [self mappingForClass:[NSMutableDictionary class]];
 }
@@ -118,6 +122,14 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [_dateFormatters release];
     [_preferredDateFormatter release];
     [super dealloc];
+}
+
+- (NSString *)objectClassName {
+    return NSStringFromClass(self.objectClass);
+}
+
+- (void)setObjectClassName:(NSString *)objectClassName {
+    self.objectClass = NSClassFromString(objectClassName);
 }
 
 - (NSArray *)mappedKeyPaths {
