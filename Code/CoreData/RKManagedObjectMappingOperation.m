@@ -68,12 +68,18 @@
         if ([valueOfLocalPrimaryKeyAttribute conformsToProtocol:@protocol(NSFastEnumeration)]) {
             RKLogTrace(@"Connecting has-many relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", primaryKeyAttributeOfRelatedObject, valueOfLocalPrimaryKeyAttribute];
-            NSArray *objects = [objectMapping.objectClass findAllWithPredicate:predicate inContext:[self.destinationObject managedObjectContext]];
+            NSFetchRequest *fetchRequest = [NSManagedObject requestAllInContext:[self.destinationObject managedObjectContext]];
+            fetchRequest.predicate = predicate;
+            fetchRequest.entity = objectMapping.entity;
+            NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:[self.destinationObject managedObjectContext]];
             relatedObject = [NSSet setWithArray:objects];
         } else {
             RKLogTrace(@"Connecting has-one relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            relatedObject = [objectMapping.objectClass findFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute inContext:[self.destinationObject managedObjectContext]];
-        }      
+            NSFetchRequest *fetchRequest = [NSManagedObject requestFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute inContext:[self.destinationObject managedObjectContext]];
+            fetchRequest.entity = objectMapping.entity;
+            NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:[self.destinationObject managedObjectContext]];
+            relatedObject = [objects lastObject];
+        }
         if (relatedObject) {                
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {
