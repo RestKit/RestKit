@@ -8,6 +8,8 @@
 
 #import "RKTestFactory.h"
 
+static NSString * const RKTestFactoryDefaultStoreFilename = @"RKTests.sqlite";
+
 @interface RKTestFactory ()
 
 @property (nonatomic, strong) RKURL *baseURL;
@@ -114,7 +116,8 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)managedObjectStore
 {
-    RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
+    [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+    RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
     [store deletePersistantStore];
     [RKManagedObjectStore setDefaultObjectStore:store];
     
