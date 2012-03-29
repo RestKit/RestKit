@@ -101,6 +101,7 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, retain) RKTableViewCellMappings* cellMappings;
 
 - (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
+- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (RKTableViewCellMapping*)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath;
 

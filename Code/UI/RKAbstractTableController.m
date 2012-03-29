@@ -401,6 +401,10 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [_cellMappings setCellMapping:cellMapping forClass:objectClass];
 }
 
+- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping {
+    [self mapObjectsWithClass:NSClassFromString(objectClassName) toTableCellsWithMapping:cellMapping];
+}
+
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(indexPath, @"Cannot lookup object with a nil indexPath");
     RKTableSection* section = [self sectionAtIndex:indexPath.section];
@@ -418,8 +422,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     return indexPath ? [self cellForObjectAtIndexPath:indexPath] : nil;
 }
 
-// TODO: unit test...
-// TODO: This needs to be updated to take into account header & footer rows...
 - (NSIndexPath *)indexPathForObject:(id)object {
     NSUInteger sectionIndex = 0;
     for (RKTableSection *section in self.sections) {
