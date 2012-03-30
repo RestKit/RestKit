@@ -1216,6 +1216,28 @@
     assertThatUnsignedInteger([user.friends count], is(equalToInt(1)));
 }
 
+- (void)testShouldMapANestedObjectToOrderedSetCollection {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    RKObjectAttributeMapping* cityMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"city" toKeyPath:@"city"];
+    [addressMapping addAttributeMapping:cityMapping];
+    
+    RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"friendsOrderedSet" withMapping:addressMapping];
+    [userMapping addRelationshipMapping:hasOneMapping];
+    
+    RKObjectMapper* mapper = [RKObjectMapper new];
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    RKTestUser* user = [RKTestUser user];
+    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    [mapper release];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"Blake Watters")));
+    assertThat(user.friendsOrderedSet, isNot(nilValue()));
+    assertThatUnsignedInteger([user.friendsOrderedSet count], is(equalToInt(1)));
+}
+
 - (void)testShouldMapANestedObjectCollection {
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
