@@ -471,16 +471,12 @@
 		251611321456F56C0060A5C5 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 251611311456F56C0060A5C5 /* MobileCoreServices.framework */; };
 		252EFAFA14D8EAEC004863C8 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAF914D8EAEC004863C8 /* RKEvent.m */; };
 		252EFAFB14D8EAEC004863C8 /* RKEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFAF914D8EAEC004863C8 /* RKEvent.m */; };
-		252EFB0214D98EB0004863C8 /* RKTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB0014D98EB0004863C8 /* RKTableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		252EFB0414D98EB0004863C8 /* RKTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0114D98EB0004863C8 /* RKTableView.m */; };
 		252EFB0814D98F4D004863C8 /* RKSearchableManagedObjectTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0614D98F4D004863C8 /* RKSearchableManagedObjectTest.m */; };
 		252EFB0914D98F4D004863C8 /* RKSearchableManagedObjectTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0614D98F4D004863C8 /* RKSearchableManagedObjectTest.m */; };
 		252EFB0A14D98F4D004863C8 /* RKSearchWordObserverTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0714D98F4D004863C8 /* RKSearchWordObserverTest.m */; };
 		252EFB0B14D98F4D004863C8 /* RKSearchWordObserverTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0714D98F4D004863C8 /* RKSearchWordObserverTest.m */; };
 		252EFB0D14D98F76004863C8 /* RKMutableBlockDictionaryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0C14D98F76004863C8 /* RKMutableBlockDictionaryTest.m */; };
 		252EFB0E14D98F76004863C8 /* RKMutableBlockDictionaryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB0C14D98F76004863C8 /* RKMutableBlockDictionaryTest.m */; };
-		252EFB1614D99222004863C8 /* UDTableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB1414D99222004863C8 /* UDTableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		252EFB1714D99222004863C8 /* UDTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB1514D99222004863C8 /* UDTableView.m */; };
 		252EFB1B14D9A7CB004863C8 /* NSBundle+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB1914D9A7CB004863C8 /* NSBundle+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		252EFB1C14D9A7CB004863C8 /* NSBundle+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFB1914D9A7CB004863C8 /* NSBundle+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		252EFB1D14D9A7CB004863C8 /* NSBundle+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB1A14D9A7CB004863C8 /* NSBundle+RKAdditions.m */; };
@@ -1013,14 +1009,9 @@
 		252EFAF914D8EAEC004863C8 /* RKEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEvent.m; sourceTree = "<group>"; };
 		252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestNotificationObserver.h; path = Testing/RKTestNotificationObserver.h; sourceTree = "<group>"; };
 		252EFAFD14D8EB30004863C8 /* RKTestNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestNotificationObserver.m; path = Testing/RKTestNotificationObserver.m; sourceTree = "<group>"; };
-		252EFB0014D98EB0004863C8 /* RKTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableView.h; sourceTree = "<group>"; };
-		252EFB0114D98EB0004863C8 /* RKTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKTableView.m; sourceTree = "<group>"; };
 		252EFB0614D98F4D004863C8 /* RKSearchableManagedObjectTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchableManagedObjectTest.m; sourceTree = "<group>"; };
 		252EFB0714D98F4D004863C8 /* RKSearchWordObserverTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKSearchWordObserverTest.m; sourceTree = "<group>"; };
 		252EFB0C14D98F76004863C8 /* RKMutableBlockDictionaryTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMutableBlockDictionaryTest.m; sourceTree = "<group>"; };
-		252EFB1314D99222004863C8 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		252EFB1414D99222004863C8 /* UDTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UDTableView.h; sourceTree = "<group>"; };
-		252EFB1514D99222004863C8 /* UDTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UDTableView.m; sourceTree = "<group>"; };
 		252EFB1914D9A7CB004863C8 /* NSBundle+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+RKAdditions.h"; sourceTree = "<group>"; };
 		252EFB1A14D9A7CB004863C8 /* NSBundle+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+RKAdditions.m"; sourceTree = "<group>"; };
 		252EFB2014D9B35D004863C8 /* RKTestFixture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestFixture.h; path = Testing/RKTestFixture.h; sourceTree = "<group>"; };
@@ -1550,7 +1541,6 @@
 		25160E8D145652E40060A5C5 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
-				252EFB1214D99222004863C8 /* UDTableView-allowsMultipleSelection */,
 				49A66B0614CEFAD800A6F062 /* XMLReader */,
 				49D2759714C9E83E0090845D /* iso8601parser */,
 				25160E8E1456532C0060A5C5 /* cocoa-oauth */,
@@ -1905,16 +1895,6 @@
 			path = Logic/Support;
 			sourceTree = "<group>";
 		};
-		252EFB1214D99222004863C8 /* UDTableView-allowsMultipleSelection */ = {
-			isa = PBXGroup;
-			children = (
-				252EFB1314D99222004863C8 /* README.md */,
-				252EFB1414D99222004863C8 /* UDTableView.h */,
-				252EFB1514D99222004863C8 /* UDTableView.m */,
-			);
-			path = "UDTableView-allowsMultipleSelection";
-			sourceTree = "<group>";
-		};
 		252EFB1F14D9A8D4004863C8 /* Testing */ = {
 			isa = PBXGroup;
 			children = (
@@ -1942,8 +1922,6 @@
 				25EC1AB914F8019F00C3CF3F /* RKRefreshGestureRecognizer.m */,
 				25EC1ABA14F8019F00C3CF3F /* RKRefreshTriggerView.h */,
 				25EC1ABB14F8019F00C3CF3F /* RKRefreshTriggerView.m */,
-				252EFB0014D98EB0004863C8 /* RKTableView.h */,
-				252EFB0114D98EB0004863C8 /* RKTableView.m */,
 				25B6E90314CF778D00B1E881 /* RKAbstractTableController.h */,
 				25B6E90414CF778D00B1E881 /* RKAbstractTableController.m */,
 				25B6E90614CF778D00B1E881 /* RKAbstractTableController_Internals.h */,
@@ -2199,9 +2177,7 @@
 				25B6E9F514CF940700B1E881 /* RKSearchWordObserver.h in Headers */,
 				25B6E9FD14CF943E00B1E881 /* RKCache.h in Headers */,
 				25B6EA0114CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
-				252EFB0214D98EB0004863C8 /* RKTableView.h in Headers */,
 				49A66B1214CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */,
-				252EFB1614D99222004863C8 /* UDTableView.h in Headers */,
 				252EFB1B14D9A7CB004863C8 /* NSBundle+RKAdditions.h in Headers */,
 				252EFB2514D9B6F2004863C8 /* Testing.h in Headers */,
 				253B495214E35D1A00B0483F /* RKTestFixture.h in Headers */,
@@ -2718,10 +2694,8 @@
 				25B6E9F714CF940700B1E881 /* RKSearchWordObserver.m in Sources */,
 				25B6E9FF14CF943E00B1E881 /* RKCache.m in Sources */,
 				25B6EA0314CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */,
-				252EFB0414D98EB0004863C8 /* RKTableView.m in Sources */,
 				49A66B0E14CEFB0400A6F062 /* XMLReader.m in Sources */,
 				49A66B1414CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */,
-				252EFB1714D99222004863C8 /* UDTableView.m in Sources */,
 				252EFB1D14D9A7CB004863C8 /* NSBundle+RKAdditions.m in Sources */,
 				25FABED114E3796400E609E7 /* RKTestNotificationObserver.m in Sources */,
 				25FABED814E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */,
