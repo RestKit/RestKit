@@ -630,6 +630,8 @@
 		25CA7A8F14EC570200888FF8 /* RKObjectMappingDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CA7A8E14EC570100888FF8 /* RKObjectMappingDefinition.m */; };
 		25CA7A9014EC570200888FF8 /* RKObjectMappingDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CA7A8E14EC570100888FF8 /* RKObjectMappingDefinition.m */; };
 		25CA7A9114EC5C2D00888FF8 /* RKTestFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB2114D9B35D004863C8 /* RKTestFixture.m */; };
+		25CAAA9415254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
+		25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
 		25E36E0215195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */; };
 		25E36E0315195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */; };
 		25EC1A2C14F6FDAD00C3CF3F /* RKObjectManager+RKTableController.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1A2A14F6FDAC00C3CF3F /* RKObjectManager+RKTableController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1120,6 +1122,7 @@
 		25B6EA0514CF946300B1E881 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		25CA7A8E14EC570100888FF8 /* RKObjectMappingDefinition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingDefinition.m; sourceTree = "<group>"; };
+		25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfHumans.json; sourceTree = "<group>"; };
 		25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchRequestMappingCacheTest.m; sourceTree = "<group>"; };
 		25EC1A2A14F6FDAC00C3CF3F /* RKObjectManager+RKTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKObjectManager+RKTableController.h"; sourceTree = "<group>"; };
 		25EC1A2B14F6FDAC00C3CF3F /* RKObjectManager+RKTableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKObjectManager+RKTableController.m"; sourceTree = "<group>"; };
@@ -1703,6 +1706,7 @@
 				25160FE61456F2330060A5C5 /* SameKeyDifferentTargetClasses.json */,
 				25160FE71456F2330060A5C5 /* user.json */,
 				25160FE81456F2330060A5C5 /* users.json */,
+				25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -2485,6 +2489,7 @@
 				25B6E9A414CF829400B1E881 /* InfoPlist.strings in Resources */,
 				25B6E9BE14CF829400B1E881 /* OCMock-Info.plist in Resources */,
 				252EFB2814DA0689004863C8 /* NakedEvents.json in Resources */,
+				25CAAA9415254E7800CAE5D7 /* ArrayOfHumans.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2544,6 +2549,7 @@
 				25B6E9A514CF829400B1E881 /* InfoPlist.strings in Resources */,
 				25B6E9BF14CF829400B1E881 /* OCMock-Info.plist in Resources */,
 				252EFB2914DA0689004863C8 /* NakedEvents.json in Resources */,
+				25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

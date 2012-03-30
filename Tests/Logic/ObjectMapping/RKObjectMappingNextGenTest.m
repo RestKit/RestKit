@@ -1884,4 +1884,30 @@
     assertThat(catNames, is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", nil])));
 }
 
+- (void)testUpdatingArrayOfExistingCats {
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    NSArray *array = [RKTestFixture parsedObjectWithContentsOfFixture:@"ArrayOfHumans.json"];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
+    humanMapping.primaryKeyAttribute = @"railsID";
+    RKObjectMappingProvider *provider = [RKObjectMappingProvider mappingProvider];
+    [provider setObjectMapping:humanMapping forKeyPath:@"human"];
+    
+    // Create instances that should match the fixture
+    RKHuman *human1 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
+    human1.railsID = [NSNumber numberWithInt:201];
+    RKHuman *human2 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
+    human2.railsID = [NSNumber numberWithInt:202];
+    [objectStore save:nil];
+    
+    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:array mappingProvider:provider];
+    RKObjectMappingResult *result = [mapper performMapping];
+    assertThat(result, is(notNilValue()));
+    
+    NSArray *humans = [result asCollection];
+    assertThat(humans, hasCountOf(2));    
+    assertThat([humans objectAtIndex:0], is(equalTo(human1)));
+    assertThat([humans objectAtIndex:1], is(equalTo(human2)));
+}
+
 @end
