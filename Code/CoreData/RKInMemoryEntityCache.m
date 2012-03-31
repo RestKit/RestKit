@@ -226,26 +226,32 @@
 - (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)managedObjectContext {
     NSAssert(objectID, @"Cannot fetch a managedObject with a nil objectID");
     NSAssert(managedObjectContext, @"Cannot fetch a managedObject with a nil managedObjectContext");
-    return [managedObjectContext objectWithID:objectID];
+    /*
+     NOTE:
+     We use objectRegisteredForID: as opposed to objectWithID: as objectWithID: can return us a fault
+     that will raise an exception when fired. objectRegisteredForID: will return nil if the ID has been
+     deleted. existingObjectWithID:error: is also an acceptable approach.
+     */
+    return [managedObjectContext objectRegisteredForID:objectID];
 }
 
 
 #pragma mark Notifications
 
 - (void)objectsDidChange:(NSNotification *)notification {
-	NSDictionary *userInfo = notification.userInfo;
-	NSSet *insertedObjects = [userInfo objectForKey:NSInsertedObjectsKey];
+    NSDictionary *userInfo = notification.userInfo;
+    NSSet *insertedObjects = [userInfo objectForKey:NSInsertedObjectsKey];
     NSSet *deletedObjects = [userInfo objectForKey:NSDeletedObjectsKey];
     RKLogTrace(@"insertedObjects=%@, deletedObjects=%@", insertedObjects, deletedObjects);
 
     NSMutableSet *entitiesToExpire = [NSMutableSet set];
-	for (NSManagedObject *object in insertedObjects) {
+    for (NSManagedObject *object in insertedObjects) {
         [entitiesToExpire addObject:object.entity];
-	}
+    }
 
     for (NSManagedObject *object in deletedObjects) {
         [entitiesToExpire addObject:object.entity];
-	}
+    }
 
     for (NSEntityDescription *entity in entitiesToExpire) {
         [self expireCacheEntryForEntity:entity];
