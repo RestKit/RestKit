@@ -217,7 +217,7 @@
 
     // Explicitly init so we don't get a managed object loader...
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:objectManager.baseURL mappingProvider:objectManager.mappingProvider];
+    RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:[objectManager.baseURL URLByAppendingResourcePath:@"/200"] mappingProvider:objectManager.mappingProvider];
     objectLoader.delegate = responseLoader;
     objectLoader.sourceObject = mockObject;
     [[mockObject expect] willSendWithObjectLoader:objectLoader];
