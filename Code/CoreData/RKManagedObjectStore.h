@@ -136,7 +136,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
  * the primary key attribute and value for the desired object. Internally, this method
  * constructs a thread-local cache of managed object instances to avoid repeated fetches from the store
  */
-- (NSManagedObject*)findOrCreateInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue;
+- (NSManagedObject*)findInstanceOfEntity:(NSEntityDescription*)entity withPrimaryKeyAttribute:(NSString*)primaryKeyAttribute andValue:(id)primaryKeyValue create:(BOOL)create;
 
 /**
  * Returns an array of objects that the 'live' at the specified resource path. Usage of this

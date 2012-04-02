@@ -22,6 +22,8 @@
 #import "RKManagedObjectMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
+#import "RKManagedObjectStore.h"
+#import "RKObjectManager.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -44,13 +46,14 @@
     NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     NSString* primaryKeyAttribute = [relationshipsAndPrimaryKeyAttributes objectForKey:relationshipName];
     RKObjectRelationshipMapping* relationshipMapping = [self.objectMapping mappingForRelationship:relationshipName];
+    BOOL ordered = [[[(RKManagedObjectMapping*)self.objectMapping relationshipsAndOrderings] objectForKey:relationshipName] boolValue];
     id<RKObjectMappingDefinition> mapping = relationshipMapping.mapping;
     NSAssert(mapping, @"Attempted to connect relationship for keyPath '%@' without a relationship mapping defined.");
-    if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
-        RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));
+    if (! [mapping isKindOfClass:[RKManagedObjectMapping class]]) {
+        RKLogWarning(@"Can only connect relationships for RKManagedObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));
         return;
     }
-    RKObjectMapping* objectMapping = (RKObjectMapping*)mapping;
+    RKManagedObjectMapping* objectMapping = (RKManagedObjectMapping*)mapping;
     NSAssert(relationshipMapping, @"Unable to find relationship mapping '%@' to connect by primaryKey", relationshipName);
     NSAssert([relationshipMapping isKindOfClass:[RKObjectRelationshipMapping class]], @"Expected mapping for %@ to be a relationship mapping", relationshipName);
     NSAssert([relationshipMapping.mapping isKindOfClass:[RKManagedObjectMapping class]], @"Can only connect RKManagedObjectMapping relationships");
@@ -58,8 +61,35 @@
     NSAssert(primaryKeyAttributeOfRelatedObject, @"Cannot connect relationship: mapping for %@ has no primary key attribute specified", NSStringFromClass(objectMapping.objectClass));
     id valueOfLocalPrimaryKeyAttribute = [self.destinationObject valueForKey:primaryKeyAttribute];
     RKLogDebug(@"Connecting relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-    if (valueOfLocalPrimaryKeyAttribute) {
-        id relatedObject = [objectMapping.objectClass findFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute];
+    
+    // TODO: We do not want to be using this singleton reference to the object store.
+    // Clean this up when we update the Core Data internals
+    RKManagedObjectStore* objectStore = [RKObjectManager sharedManager].objectStore;
+    NSAssert(objectStore, @"Object store cannot be nil");
+    
+    if ([valueOfLocalPrimaryKeyAttribute conformsToProtocol:@protocol(NSFastEnumeration)]) {
+        RKLogDebug(@"Connecting one to many relationship");
+        id newValue;
+        if(ordered) {
+            newValue = [NSMutableOrderedSet orderedSetWithCapacity:[valueOfLocalPrimaryKeyAttribute count]];
+        }
+        else {
+            newValue = [NSMutableSet setWithCapacity:[valueOfLocalPrimaryKeyAttribute count]];
+        }
+        for (id key in valueOfLocalPrimaryKeyAttribute) {
+            id relatedObject = [objectStore findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject andValue:key create:NO];
+            if (relatedObject) {                
+                [newValue addObject:relatedObject];
+                RKLogTrace(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, key, relatedObject);
+            } else {
+                RKLogTrace(@"Failed to find object to connect relationship '%@' with primary key value '%@'", relationshipName, key);
+            }
+        }
+        [self.destinationObject setValue:newValue forKey:relationshipName];
+    }
+    else if (valueOfLocalPrimaryKeyAttribute) {
+        RKLogDebug(@"Connecting one to one relationship");
+        id relatedObject = [objectStore findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject andValue:valueOfLocalPrimaryKeyAttribute create:NO];
         if (relatedObject) {                
             RKLogTrace(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {

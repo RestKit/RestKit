@@ -61,6 +61,7 @@
     self = [super init];
     if (self) {
         _relationshipToPrimaryKeyMappings = [[NSMutableDictionary alloc] init];
+        _relationshipsAndOrderings = [[NSMutableDictionary alloc] init];
     }
     
     return self;
@@ -76,9 +77,18 @@
     return _relationshipToPrimaryKeyMappings;
 }
 
+- (NSDictionary*)relationshipsAndOrderings {
+    return _relationshipsAndOrderings;
+}
+
 - (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute {
     NSAssert([_relationshipToPrimaryKeyMappings objectForKey:relationshipName] == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", relationshipName);
     [_relationshipToPrimaryKeyMappings setObject:primaryKeyAttribute forKey:relationshipName];
+}
+
+- (void)connectToManyRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute ordered:(BOOL)ordered {
+    [self connectRelationship:relationshipName withObjectForPrimaryKeyAttribute:primaryKeyAttribute];
+    [_relationshipsAndOrderings setObject:[NSNumber numberWithBool:ordered] forKey:relationshipName];
 }
 
 - (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString*)firstRelationshipName, ... {
@@ -138,7 +148,7 @@
     
     // If we have found the primary key attribute & value, try to find an existing instance to update
     if (primaryKeyAttribute && primaryKeyValue) {                
-        object = [objectStore findOrCreateInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
+        object = [objectStore findInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue create:YES];
         NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
     } else {
         object = [[[NSManagedObject alloc] initWithEntity:entity
