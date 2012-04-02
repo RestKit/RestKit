@@ -156,6 +156,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 - (void)performMapping {
+    NSAssert(self.mapping.objectClass, @"Cannot test a mapping that does not have a destination objectClass");
+    
     // Ensure repeated invocations of verify only result in a single mapping operation
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
