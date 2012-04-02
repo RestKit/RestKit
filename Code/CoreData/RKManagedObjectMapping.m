@@ -58,9 +58,11 @@
 - (id)initWithEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore*)objectStore {
     NSAssert(entity, @"Cannot initialize an RKManagedObjectMapping without an entity. Maybe you want RKObjectMapping instead?");
     NSAssert(objectStore, @"Object store cannot be nil");
+    Class objectClass = NSClassFromString([entity managedObjectClassName]);
+    NSAssert(objectClass, @"The managedObjectClass for an object mapped entity cannot be nil.");
     self = [self init];
     if (self) {
-        self.objectClass = NSClassFromString([entity managedObjectClassName]);
+        _objectClass = [objectClass retain];
         _entity = [entity retain];
         _objectStore = objectStore;
 
