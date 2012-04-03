@@ -626,6 +626,13 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 - (RKResponse *)sendSynchronously;
 
 /**
+ Returns a Boolean value indicating whether the request has been cancelled.
+
+ @return YES if the request was sent a cancel message, otherwise NO.
+ */
+@property(nonatomic, assign, readonly, getter=isCancelled) BOOL cancelled;
+
+/**
  Cancels the underlying URL connection.
  
  This will call the requestDidCancel: delegate method if your delegate responds

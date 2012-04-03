@@ -116,6 +116,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize onDidFailLoadWithError;
 @synthesize additionalRootCertificates = _additionalRootCertificates;
 @synthesize disableCertificateValidation = _disableCertificateValidation;
+@synthesize cancelled = _cancelled;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -167,6 +168,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     _connection = nil;
     _isLoading = NO;
     _isLoaded = NO;
+    _cancelled = NO;
 }
 
 - (void)cleanupBackgroundTask {
@@ -383,6 +385,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (void)cancelAndInformDelegate:(BOOL)informDelegate {
+    _cancelled = YES;
 	[_connection cancel];
 	[_connection release];
 	_connection = nil;

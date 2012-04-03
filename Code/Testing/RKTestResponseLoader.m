@@ -117,6 +117,9 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
         [self loadError:anError];
     }
+
+    // Ensure we get no further delegate messages
+    [request cancel];
 }
 
 - (void)requestDidCancelLoad:(RKRequest *)request {
