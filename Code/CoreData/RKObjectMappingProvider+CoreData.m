@@ -8,7 +8,9 @@
 
 #import "RKObjectMappingProvider+CoreData.h"
 #import "RKOrderedDictionary.h"
+#import "RKFixCategoryBug.h"
 
+RK_FIX_CATEGORY_BUG(RKObjectMappingProvider_CoreData)
 @implementation RKObjectMappingProvider (CoreData)
 
 - (void)setObjectMapping:(RKObjectMappingDefinition *)objectMapping forResourcePathPattern:(NSString *)resourcePath withFetchRequestBlock:(RKObjectMappingProviderFetchRequestBlock)fetchRequestBlock {

@@ -26,6 +26,7 @@
 		25079C72151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25079C6E151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m */; };
 		25079C76151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */; };
 		25079C77151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */; };
+		250B849E152B6F63002581F9 /* RKObjectMappingProvider+CoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 73DA8E1B14D1BA960054DD73 /* RKObjectMappingProvider+CoreData.m */; };
 		250CA67D147D8E8B0047D347 /* OCHamcrest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
 		250CA67E147D8E8F0047D347 /* OCHamcrestIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA67C147D8E800047D347 /* OCHamcrestIOS.framework */; };
 		250CA680147D8F050047D347 /* OCHamcrest.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250CA67B147D8E800047D347 /* OCHamcrest.framework */; };
@@ -2919,6 +2920,7 @@
 				257ABAB315112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */,
 				257ABAB91511371E00CCAA76 /* NSManagedObject+RKAdditions.m in Sources */,
 				25079C72151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m in Sources */,
+				250B849E152B6F63002581F9 /* RKObjectMappingProvider+CoreData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
