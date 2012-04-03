@@ -41,6 +41,24 @@ typedef enum {
 } RKRequestCacheStoragePolicy;
 
 /**
+ Location of session specific cache files within the Caches path.
+ */
+NSString * const RKRequestCacheSessionCacheDirectory;
+
+/**
+ Location of permanent cache files within the Caches path.
+ */
+NSString * const RKRequestCachePermanentCacheDirectory;
+
+/**
+ */
+NSString * const RKRequestCacheHeadersExtension;
+NSString * const RKRequestCacheDateHeaderKey;
+NSString * const RKRequestCacheStatusCodeKey;
+NSString * const RKRequestCacheMIMETypeKey;
+NSString * const RKRequestCacheURLKey;
+
+/**
  Stores and retrieves cache entries for RestKit request objects.
  */
 @interface RKRequestCache : NSObject {

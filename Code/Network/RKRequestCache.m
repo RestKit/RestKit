@@ -25,13 +25,13 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetworkCache
 
-static NSString* sessionCacheFolder = @"SessionStore";
-static NSString* permanentCacheFolder = @"PermanentStore";
-static NSString* headersExtension = @"headers";
-static NSString* cacheDateHeaderKey = @"X-RESTKIT-CACHEDATE";
-NSString* cacheResponseCodeKey = @"X-RESTKIT-CACHED-RESPONSE-CODE";
-NSString* cacheMIMETypeKey = @"X-RESTKIT-CACHED-MIME-TYPE";
-NSString* cacheURLKey = @"X-RESTKIT-CACHED-URL";
+NSString * const RKRequestCacheSessionCacheDirectory = @"SessionStore";
+NSString * const RKRequestCachePermanentCacheDirectory = @"PermanentStore";
+NSString * const RKRequestCacheHeadersExtension = @"headers";
+NSString * const RKRequestCacheDateHeaderKey = @"X-RESTKIT-CACHEDATE";
+NSString * const RKRequestCacheStatusCodeKey = @"X-RESTKIT-CACHED-RESPONSE-CODE";
+NSString * const RKRequestCacheMIMETypeKey = @"X-RESTKIT-CACHED-MIME-TYPE";
+NSString * const RKRequestCacheURLKey = @"X-RESTKIT-CACHED-URL";
 
 static NSDateFormatter* __rfc1123DateFormatter;
 
@@ -52,8 +52,9 @@ static NSDateFormatter* __rfc1123DateFormatter;
     self = [super init];
 	if (self) {
         _cache = [[RKCache alloc] initWithPath:cachePath
-                                     subDirectories:[NSArray arrayWithObjects:sessionCacheFolder,
-                                                     permanentCacheFolder, nil]];
+                                     subDirectories:
+                  [NSArray arrayWithObjects:RKRequestCacheSessionCacheDirectory,
+                   RKRequestCachePermanentCacheDirectory, nil]];
 		self.storagePolicy = storagePolicy;
 	}
 
@@ -75,10 +76,10 @@ static NSDateFormatter* __rfc1123DateFormatter;
     NSString* requestCacheKey = [request cacheKey];
     if (requestCacheKey) {
         if (_storagePolicy == RKRequestCacheStoragePolicyForDurationOfSession) {
-            pathForRequest = [sessionCacheFolder stringByAppendingPathComponent:requestCacheKey];
+            pathForRequest = [RKRequestCacheSessionCacheDirectory stringByAppendingPathComponent:requestCacheKey];
 
         } else if (_storagePolicy == RKRequestCacheStoragePolicyPermanently) {
-            pathForRequest = [permanentCacheFolder stringByAppendingPathComponent:requestCacheKey];
+            pathForRequest = [RKRequestCachePermanentCacheDirectory stringByAppendingPathComponent:requestCacheKey];
         }
         RKLogTrace(@"Found cacheKey '%@' for %@", pathForRequest, request);
     } else {
@@ -92,7 +93,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	NSString* cacheKey = [self pathForRequest:request];
     if (cacheKey) {
         hasEntryForRequest = ([_cache hasEntry:cacheKey] &&
-                              [_cache hasEntry:[cacheKey stringByAppendingPathExtension:headersExtension]]);
+                              [_cache hasEntry:[cacheKey stringByAppendingPathExtension:RKRequestCacheHeadersExtension]]);
     }
     RKLogTrace(@"Determined hasResponseForRequest: %@ => %@", request, hasEntryForRequest ? @"YES" : @"NO");
 	return hasEntryForRequest;
@@ -114,18 +115,18 @@ static NSDateFormatter* __rfc1123DateFormatter;
                 NSHTTPURLResponse* urlResponse = [response valueForKey:@"_httpURLResponse"];
                 // Cache Loaded Time
 				[headers setObject:[[RKRequestCache rfc1123DateFormatter] stringFromDate:[NSDate date]]
-							forKey:cacheDateHeaderKey];
+							forKey:RKRequestCacheDateHeaderKey];
                 // Cache status code
                 [headers setObject:[NSNumber numberWithInteger:urlResponse.statusCode]
-							forKey:cacheResponseCodeKey];
+							forKey:RKRequestCacheStatusCodeKey];
                 // Cache MIME Type
                 [headers setObject:urlResponse.MIMEType
-							forKey:cacheMIMETypeKey];
+							forKey:RKRequestCacheMIMETypeKey];
                 // Cache URL
                 [headers setObject:[urlResponse.URL absoluteString]
-							forKey:cacheURLKey];
+							forKey:RKRequestCacheURLKey];
                 // Save
-                [_cache writeDictionary:headers withCacheKey:[cacheKey stringByAppendingPathExtension:headersExtension]];
+                [_cache writeDictionary:headers withCacheKey:[cacheKey stringByAppendingPathExtension:RKRequestCacheHeadersExtension]];
 			}
 			[headers release];
 		}
@@ -137,7 +138,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	NSString* cacheKey = [self pathForRequest:request];
 	if (cacheKey) {
 		NSData* responseData = [_cache dataForCacheKey:cacheKey];
-        NSDictionary* responseHeaders = [_cache dictionaryForCacheKey:[cacheKey stringByAppendingPathExtension:headersExtension]];
+        NSDictionary* responseHeaders = [_cache dictionaryForCacheKey:[cacheKey stringByAppendingPathExtension:RKRequestCacheHeadersExtension]];
 		response = [[[RKResponse alloc] initWithRequest:request body:responseData headers:responseHeaders] autorelease];
 	}
     RKLogDebug(@"Found cached RKResponse '%@' for '%@'", response, request);
@@ -148,7 +149,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
     NSDictionary* headers = nil;
 	NSString* cacheKey = [self pathForRequest:request];
     if (cacheKey) {
-        NSString* headersCacheKey = [cacheKey stringByAppendingPathExtension:headersExtension];
+        NSString* headersCacheKey = [cacheKey stringByAppendingPathExtension:RKRequestCacheHeadersExtension];
         headers = [_cache dictionaryForCacheKey:headersCacheKey];
         if (headers) {
             RKLogDebug(@"Read cached headers '%@' from headersCacheKey '%@' for '%@'", headers, headersCacheKey, request);
@@ -182,9 +183,9 @@ static NSDateFormatter* __rfc1123DateFormatter;
         NSMutableDictionary* responseHeaders = [[self headersForRequest:request] mutableCopy];
 
         [responseHeaders setObject:[[RKRequestCache rfc1123DateFormatter] stringFromDate:date]
-                                     forKey:cacheDateHeaderKey];
+                                     forKey:RKRequestCacheDateHeaderKey];
         [_cache writeDictionary:responseHeaders
-                   withCacheKey:[cacheKey stringByAppendingPathExtension:headersExtension]];
+                   withCacheKey:[cacheKey stringByAppendingPathExtension:RKRequestCacheHeadersExtension]];
         [responseHeaders release];
     }
 }
@@ -196,7 +197,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
     NSDictionary* responseHeaders = [self headersForRequest:request];
     if (responseHeaders) {
         for (NSString* responseHeader in responseHeaders) {
-            if ([[responseHeader uppercaseString] isEqualToString:[cacheDateHeaderKey uppercaseString]]) {
+            if ([[responseHeader uppercaseString] isEqualToString:[RKRequestCacheDateHeaderKey uppercaseString]]) {
                 dateString = [responseHeaders objectForKey:responseHeader];
             }
         }
@@ -211,7 +212,7 @@ static NSDateFormatter* __rfc1123DateFormatter;
 	NSString* cacheKey = [self pathForRequest:request];
 	if (cacheKey) {
         [_cache invalidateEntry:cacheKey];
-        [_cache invalidateEntry:[cacheKey stringByAppendingPathExtension:headersExtension]];
+        [_cache invalidateEntry:[cacheKey stringByAppendingPathExtension:RKRequestCacheHeadersExtension]];
         RKLogTrace(@"Removed cache entry at path '%@' for '%@'", cacheKey, request);
 	}
 }
@@ -219,17 +220,17 @@ static NSDateFormatter* __rfc1123DateFormatter;
 - (void)invalidateWithStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy {
 	if (storagePolicy != RKRequestCacheStoragePolicyDisabled) {
 		if (storagePolicy == RKRequestCacheStoragePolicyForDurationOfSession) {
-            [_cache invalidateSubDirectory:sessionCacheFolder];
+            [_cache invalidateSubDirectory:RKRequestCacheSessionCacheDirectory];
 		} else {
-            [_cache invalidateSubDirectory:permanentCacheFolder];
+            [_cache invalidateSubDirectory:RKRequestCachePermanentCacheDirectory];
 		}
 	}
 }
 
 - (void)invalidateAll {
     RKLogInfo(@"Invalidating all cache entries...");
-    [_cache invalidateSubDirectory:sessionCacheFolder];
-    [_cache invalidateSubDirectory:permanentCacheFolder];
+    [_cache invalidateSubDirectory:RKRequestCacheSessionCacheDirectory];
+    [_cache invalidateSubDirectory:RKRequestCachePermanentCacheDirectory];
 }
 
 - (void)setStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy {
