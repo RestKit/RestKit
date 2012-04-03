@@ -206,7 +206,6 @@ extern NSString* const kRKStringBoundary;
     return sent;
 }
 
-// NOTE: Cannot handle MD5 for files. We don't want to read the contents into memory
 - (NSString *)MD5 {
     if (_body) {
         return [_body MD5];
