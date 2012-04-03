@@ -35,10 +35,13 @@ class RestKitTestServer < Sinatra::Base
   use RestKit::CoreData::Cache
 
   configure do
-    set :logging, true
-    set :dump_errors, true
+    enable :logging, :dump_errors
     set :public_folder, Proc.new { File.expand_path(File.join(root, '../Fixtures')) }
     set :uploads_path, Proc.new { File.expand_path(File.join(root, '../Fixtures/Uploads')) }
+  end
+
+  def render_fixture(path, options = {})
+    send_file File.join(settings.public_folder, path), options
   end
 
   get '/' do
@@ -52,9 +55,8 @@ class RestKitTestServer < Sinatra::Base
   end
 
   get '/errors.json' do
-    status 400
     content_type 'application/json'
-    send_file settings.public_folder + '/JSON/errors.json'
+    render_fixture('/JSON/errors.json', :status => 400)
   end
 
   post '/humans' do
@@ -65,9 +67,8 @@ class RestKitTestServer < Sinatra::Base
   end
 
   post '/humans/fail' do
-    status 500
     content_type 'application/json'
-    send_file settings.public_folder + '/JSON/errors.json'
+    render_fixture('/JSON/errors.json', :status => 500)
   end
 
   get '/humans/1' do
@@ -175,9 +176,8 @@ class RestKitTestServer < Sinatra::Base
   end
 
   get '/fail' do
-    status 500
     content_type 'application/json'
-    send_file settings.public_folder + '/JSON/errors.json'
+    render_fixture('/JSON/errors.json', :status => 500)
   end
 
   # Expects an uploaded 'file' param
