@@ -21,6 +21,7 @@
 #import "RKTestEnvironment.h"
 #import "RKObjectPaginator.h"
 #import "RKObjectMapperTestModel.h"
+#import "NSURL+RestKit.h"
 
 NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDelegateTimeoutException";
 
@@ -204,7 +205,10 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     NSUInteger currentPage = 1;
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
-    assertThat([[mockPaginator URL] absoluteString], is(equalTo(@"http://restkit.org/paginate?page=1&per_page=25")));
+    NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"1", @"page",
+                                 @"25", @"per_page", nil];
+    assertThat([[mockPaginator URL] queryParameters], is(equalTo(queryParams)));
 }
 
 - (void)testLoadingAPageOfObjects {

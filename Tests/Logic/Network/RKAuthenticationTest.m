@@ -51,7 +51,7 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 }
 
 - (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader* loader = [RKTestResponseLoader new];
     RKClient* client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = @"INVALID";
@@ -60,6 +60,8 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
     assertThatBool([loader.response isOK], is(equalToBool(NO)));
     assertThatInteger([loader.response statusCode], is(equalToInt(0)));
     assertThatInteger([loader.error code], is(equalToInt(NSURLErrorUserCancelledAuthentication)));
+    [loader.response.request cancel];
+    [loader release];
 }
 
 - (void)testShouldAuthenticateViaHTTPAuthDigest {
