@@ -38,8 +38,24 @@ void RKTestClearCacheDirectory(void) {
 
 + (void)initialize
 {
+    // Configure fixture bundle
     NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
     [RKTestFixture setFixtureBundle:fixtureBundle];
+
+    // Ensure the required directories exist
+    BOOL directoryExists;
+    NSError *error = nil;
+    directoryExists = [RKDirectory ensureDirectoryExistsAtPath:[RKDirectory applicationDataDirectory] error:&error];
+    if (! directoryExists) {
+        RKLogError(@"Failed to create application data directory. Unable to run tests: %@", error);
+        NSAssert(directoryExists, @"Failed to create application data directory.");
+    }
+
+    directoryExists = [RKDirectory ensureDirectoryExistsAtPath:[RKDirectory cachesDirectory] error:&error];
+    if (! directoryExists) {
+        RKLogError(@"Failed to create caches directory. Unable to run tests: %@", error);
+        NSAssert(directoryExists, @"Failed to create caches directory.");
+    }
 }
 
 @end

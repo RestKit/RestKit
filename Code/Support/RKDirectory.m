@@ -7,12 +7,14 @@
 //
 
 #import "RKDirectory.h"
+#import "NSBundle+RKAdditions.h"
 #import "RKLog.h"
 
 @implementation RKDirectory
 
-+ (NSString *)executableName {
-    NSString *executableName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
++ (NSString *)executableName
+{
+    NSString *executableName = [[[NSBundle mainBundle] executablePath] lastPathComponent];
     if (nil == executableName) {
         RKLogWarning(@"Unable to determine CFBundleExecutable: storing data under RestKit directory name.");
         executableName = @"RestKit";
@@ -21,34 +23,21 @@
     return executableName;
 }
 
-+ (NSString *)applicationDataDirectory {
++ (NSString *)applicationDataDirectory
+{
 #if TARGET_OS_IPHONE
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    if (basePath) {
-        // In unit tests the Documents/ path may not exist
-        if(! [[NSFileManager defaultManager] fileExistsAtPath:basePath]) {
-            NSError* error = nil;
-            
-            if(! [[NSFileManager defaultManager] createDirectoryAtPath:basePath withIntermediateDirectories:NO attributes:nil error:&error]) {
-                RKLogError(@"%@", error);
-            }
-        }
-        
-        return basePath;
-    }
-    
-    return nil;
+    return ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
     
 #else
     
-    NSFileManager* sharedFM = [NSFileManager defaultManager];
+    NSFileManager *sharedFM = [NSFileManager defaultManager];
     
-    NSArray* possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
+    NSArray *possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
                                              inDomains:NSUserDomainMask];
-    NSURL* appSupportDir = nil;
-    NSURL* appDirectory = nil;
+    NSURL *appSupportDir = nil;
+    NSURL *appDirectory = nil;
     
     if ([possibleURLs count] >= 1) {
         appSupportDir = [possibleURLs objectAtIndex:0];
@@ -57,15 +46,6 @@
     if (appSupportDir) {
         NSString *executableName = [RKDirectory executableName];
         appDirectory = [appSupportDir URLByAppendingPathComponent:executableName];
-        
-        
-        if(![sharedFM fileExistsAtPath:[appDirectory path]]) {
-            NSError* error = nil;
-            
-            if(![sharedFM createDirectoryAtURL:appDirectory withIntermediateDirectories:NO attributes:nil error:&error]) {
-                RKLogError(@"%@", error);
-            }
-        }
         return [appDirectory path];
     }
     
@@ -73,7 +53,8 @@
 #endif
 }
 
-+ (NSString *)cachesDirectory {
++ (NSString *)cachesDirectory
+{
 #if TARGET_OS_IPHONE    
     return [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 #else
@@ -85,6 +66,27 @@
             
     return path;
 #endif
+}
+
++ (BOOL)ensureDirectoryExistsAtPath:(NSString *)path error:(NSError **)error
+{
+    BOOL isDirectory;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory]) {
+        if (isDirectory) {
+            // Exists at a path and is a directory, we're good
+            if (error) *error = nil;
+            return YES;
+        }
+    }
+
+    // Create the directory and any intermediates
+    NSError *errorReference = (error == nil) ? nil : *error;
+    if (! [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&errorReference]) {
+        RKLogError(@"Failed to create requested directory at path '%@': %@", path, errorReference);
+        return NO;
+    }
+
+    return YES;
 }
 
 @end
