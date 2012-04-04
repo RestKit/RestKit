@@ -28,7 +28,6 @@
 #import "RKFetchedResultsTableController.h"
 #import "RKForm.h"
 #import "RKFormSection.h"
-#import "RKTableView.h"
 #import "RKRefreshTriggerView.h"
 #import "RKObjectManager+RKTableController.h"
 #import "UIImage+RKAdditions.h"
