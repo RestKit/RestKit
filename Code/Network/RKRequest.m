@@ -117,6 +117,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize additionalRootCertificates = _additionalRootCertificates;
 @synthesize disableCertificateValidation = _disableCertificateValidation;
 @synthesize cancelled = _cancelled;
+@synthesize followRedirect = _followRedirect;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -136,6 +137,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         _cacheTimeoutInterval = 0;
         _timeoutInterval = 120.0;
         _defaultHTTPEncoding = NSUTF8StringEncoding;
+        _followRedirect = YES;
 	}
 	return self;
 }

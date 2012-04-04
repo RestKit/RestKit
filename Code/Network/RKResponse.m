@@ -181,6 +181,16 @@ return __VA_ARGS__;                                                             
     return hasCredentials;
 }
 
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response {
+  if (nil == response || _request.followRedirect) {
+    RKLogDebug(@"Proceeding with request to %@", request);
+    return request;
+  } else {
+    RKLogDebug(@"Not following redirect to %@", request);
+    return nil;
+  }
+}
+
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     RKResponseIgnoreDelegateIfCancelled();
 	[_body appendData:data];

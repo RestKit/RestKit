@@ -1163,6 +1163,7 @@
 		25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RKAdditions.m"; sourceTree = "<group>"; };
 		25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestResponseLoader.h; path = Testing/RKTestResponseLoader.h; sourceTree = "<group>"; };
 		25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestResponseLoader.m; path = Testing/RKTestResponseLoader.m; sourceTree = "<group>"; };
+		41A4EBF715374D1800740BC8 /* redirection.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = redirection.rb; sourceTree = "<group>"; };
 		49A66B0814CEFB0400A6F062 /* LICENCE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENCE; path = XMLReader/LICENCE; sourceTree = "<group>"; };
 		49A66B0914CEFB0400A6F062 /* XMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMLReader.h; path = XMLReader/XMLReader.h; sourceTree = "<group>"; };
 		49A66B0A14CEFB0400A6F062 /* XMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = XMLReader.m; path = XMLReader/XMLReader.m; sourceTree = "<group>"; };
@@ -1887,6 +1888,7 @@
 		2516104A1456F2330060A5C5 /* network */ = {
 			isa = PBXGroup;
 			children = (
+				41A4EBF715374D1800740BC8 /* redirection.rb */,
 				2516104B1456F2330060A5C5 /* authentication.rb */,
 				2516104C1456F2330060A5C5 /* etags.rb */,
 				2516104D1456F2330060A5C5 /* oauth2.rb */,
