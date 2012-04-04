@@ -25,10 +25,16 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping");
     NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
-    RKInMemoryEntityCache *cache = [[[NSThread currentThread] threadDictionary] objectForKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
+    NSMutableDictionary *contextDictionary = [[[NSThread currentThread] threadDictionary] objectForKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
+    if (! contextDictionary) {
+        contextDictionary = [NSMutableDictionary dictionaryWithCapacity:1];
+        [[[NSThread currentThread] threadDictionary] setObject:contextDictionary forKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
+    }
+    NSNumber *hashNumber = [NSNumber numberWithUnsignedInteger:[managedObjectContext hash]];
+    RKInMemoryEntityCache *cache = [contextDictionary objectForKey:hashNumber];
     if (! cache) {
         cache = [[RKInMemoryEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
-        [[[NSThread currentThread] threadDictionary] setObject:cache forKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
+        [contextDictionary setObject:cache forKey:hashNumber];
         [cache release];
     }
     return [cache cachedObjectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue inContext:managedObjectContext];
