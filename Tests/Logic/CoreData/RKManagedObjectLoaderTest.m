@@ -176,7 +176,7 @@
         [mockLoader send];
         [responseLoader waitForResponse];
 
-        [mockLoader verify];
+        STAssertNoThrow([mockLoader verify], nil);
         assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
         assertThatBool([responseLoader wasSuccessful], is(equalToBool(YES)));
         assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(NO)));
@@ -192,7 +192,7 @@
         [mockLoader send];
         [responseLoader waitForResponse];
 
-        [mockLoader verify];
+        STAssertNoThrow([mockLoader verify], nil);
         assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
         assertThatBool([responseLoader wasSuccessful], is(equalToBool(YES)));
         assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(YES)));
