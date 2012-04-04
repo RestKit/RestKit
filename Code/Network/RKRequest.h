@@ -190,7 +190,8 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
     
     NSSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
-    
+    BOOL _followRedirect;
+
     #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
     UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
@@ -373,6 +374,12 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  */
 @property (nonatomic, copy) RKRequestDidFailLoadWithErrorBlock onDidFailLoadWithError;
 
+/**
+ Whether this request should follow server redirects or not.
+
+ @default YES
+ */
+@property (nonatomic, assign) BOOL followRedirect;
 
 #if TARGET_OS_IPHONE
 ///-----------------------------------------------------------------------------
