@@ -20,7 +20,7 @@
 
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "NSDictionary+RKAdditions.h"
 #import "RKLog.h"
 
@@ -130,7 +130,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     }
     NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
     if (extracted)
-        [argumentsCollection addEntriesFromDictionary:[extracted removePercentEscapesFromKeysAndObjects]];
+        [argumentsCollection addEntriesFromDictionary:[extracted dictionaryByReplacingPercentEscapesInEntries]];
     *arguments = argumentsCollection;
     return YES;
 }

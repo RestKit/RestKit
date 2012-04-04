@@ -1,8 +1,8 @@
 //
-//  NSString+MD5.h
+//  NSURL+RKAdditions.h
 //  RestKit
 //
-//  Created by Jeff Arena on 4/4/11.
+//  Created by Blake Watters on 10/11/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,21 @@
 //  limitations under the License.
 //
 
+#import "NSURL+RKAdditions.h"
+#import "NSDictionary+RKAdditions.h"
+#import "RKFixCategoryBug.h"
+#import "NSString+RKAdditions.h"
 
-@interface NSString (MD5)
+RK_FIX_CATEGORY_BUG(NSURL_RKAdditions)
 
-- (NSString*)MD5;
+@implementation NSURL (RKAdditions)
+
+- (NSDictionary *)queryParameters {
+    return [NSDictionary dictionaryWithURLEncodedString:self.query];
+}
+
+- (NSString *)MIMETypeForPathExtension {
+    return [[self path] MIMETypeForPathExtension];
+}
 
 @end

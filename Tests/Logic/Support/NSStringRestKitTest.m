@@ -19,7 +19,7 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "RKObjectMapperTestModel.h"
 
 @interface NSStringRestKitTest : RKTestCase

@@ -20,7 +20,7 @@
 
 #import "RKTestEnvironment.h"
 #import "RKURL.h"
-#import "NSURL+RestKit.h"
+#import "NSURL+RKAdditions.h"
 
 @interface RKURLTest : RKTestCase
 @end

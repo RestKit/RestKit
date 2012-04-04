@@ -20,8 +20,8 @@
 
 #import "RKURL.h"
 #import "RKClient.h"
-#import "NSURL+RestKit.h"
-#import "NSString+RestKit.h"
+#import "NSURL+RKAdditions.h"
+#import "NSString+RKAdditions.h"
 #import "NSDictionary+RKAdditions.h"
 #import "RKLog.h"
 

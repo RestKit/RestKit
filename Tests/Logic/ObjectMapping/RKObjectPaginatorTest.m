@@ -21,7 +21,7 @@
 #import "RKTestEnvironment.h"
 #import "RKObjectPaginator.h"
 #import "RKObjectMapperTestModel.h"
-#import "NSURL+RestKit.h"
+#import "NSURL+RKAdditions.h"
 
 NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDelegateTimeoutException";
 

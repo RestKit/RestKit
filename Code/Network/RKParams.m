@@ -20,7 +20,7 @@
 
 #import "RKParams.h"
 #import "RKLog.h"
-#import "NSString+MD5.h"
+#import "NSString+RKAdditions.h"
 
 // Need for iOS 5 UIDevice workaround
 #if TARGET_OS_IPHONE

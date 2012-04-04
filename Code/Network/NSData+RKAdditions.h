@@ -1,5 +1,5 @@
 //
-//  NSData+MD5.h
+//  NSData+RKAdditions.h
 //  RestKit
 //
 //  Created by Jeff Arena on 4/4/11.
@@ -18,9 +18,16 @@
 //  limitations under the License.
 //
 
+/**
+ Provides extensions to NSData for various common tasks.
+ */
+@interface NSData (RKAdditions)
 
-@interface NSData (MD5)
-
-- (NSString*)MD5;
+/**
+ Returns a string of the MD5 sum of the receiver.
+ 
+ @return A new string containing the MD5 sum of the receiver.
+ */
+- (NSString *)MD5;
 
 @end

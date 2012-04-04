@@ -24,7 +24,7 @@
 #import "RKAlert.h"
 #import "RKLog.h"
 #import "RKPathMatcher.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "RKDirectory.h"
 
 // Set Logging Component
@@ -34,7 +34,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
 
-static RKClient* sharedClient = nil;
+static RKClient *sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // URL Conveniences functions

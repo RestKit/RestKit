@@ -1,8 +1,8 @@
 //
-//  NSURL+RestKit.h
+//  NSData+MD5.m
 //  RestKit
 //
-//  Created by Blake Watters on 10/11/11.
+//  Created by Jeff Arena on 4/4/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,21 +18,28 @@
 //  limitations under the License.
 //
 
-#import "NSURL+RestKit.h"
-#import "NSDictionary+RKAdditions.h"
+#import <CommonCrypto/CommonDigest.h>
+#import "NSData+RKAdditions.h"
 #import "RKFixCategoryBug.h"
-#import "NSString+RestKit.h"
 
-RK_FIX_CATEGORY_BUG(NSURL_RestKit)
+RK_FIX_CATEGORY_BUG(NSData_RKAdditions)
 
-@implementation NSURL (RestKit)
+@implementation NSData (RKAdditions)
 
-- (NSDictionary *)queryParameters {
-    return [NSDictionary dictionaryWithURLEncodedString:self.query];
-}
+- (NSString *)MD5 {
+	// Create byte array of unsigned chars
+	unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
 
-- (NSString *)MIMETypeForPathExtension {
-    return [[self path] MIMETypeForPathExtension];
+	// Create 16 byte MD5 hash value, store in buffer
+	CC_MD5(self.bytes, (CC_LONG) self.length, md5Buffer);
+
+	// Convert unsigned char buffer to NSString of hex values
+	NSMutableString* output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+	for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
+		[output appendFormat:@"%02x",md5Buffer[i]];
+	}
+
+	return output;
 }
 
 @end

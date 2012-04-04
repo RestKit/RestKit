@@ -24,7 +24,7 @@
  A library of helpful additions to the NSString class to simplify
  common tasks within RestKit
  */
-@interface NSString (RestKit)
+@interface NSString (RKAdditions)
 
 /**
  Returns a resource path from a dictionary of query parameters URL encoded and appended
@@ -133,5 +133,12 @@
  while @"restkit.org" would return NO
  */
 - (BOOL)isIPAddress;
+
+/**
+ Returns a string of the MD5 sum of the receiver.
+ 
+ @return A new string containing the MD5 sum of the receiver.
+ */
+- (NSString *)MD5;
 
 @end

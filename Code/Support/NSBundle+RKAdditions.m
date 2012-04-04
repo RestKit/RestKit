@@ -19,7 +19,7 @@
 //
 
 #import "NSBundle+RKAdditions.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "UIImage+RKAdditions.h"
 #import "RKLog.h"
 #import "RKParser.h"

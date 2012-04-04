@@ -20,9 +20,9 @@
 
 #import "RKParamsAttachment.h"
 #import "RKLog.h"
-#import "NSData+MD5.h"
+#import "NSData+RKAdditions.h"
 #import "FileMD5Hash.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent

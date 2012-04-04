@@ -1,5 +1,5 @@
 //
-//  NSURL+RestKit.h
+//  NSURL+RKAdditions.h
 //  RestKit
 //
 //  Created by Blake Watters on 10/11/11.
@@ -20,7 +20,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSURL (RestKit)
+@interface NSURL (RKAdditions)
 
 /**
  Returns the query portion of the URL as a dictionary

@@ -28,5 +28,5 @@
 
 // Load our categories
 #import "NSDictionary+RKAdditions.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "NSBundle+RKAdditions.h"

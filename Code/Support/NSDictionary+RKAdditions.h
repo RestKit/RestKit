@@ -20,6 +20,9 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ Provides useful additions to the NSDictionary interface.
+ */
 @interface NSDictionary (RKAdditions)
 
 /**
@@ -29,9 +32,13 @@
 + (id)dictionaryWithKeysAndObjects:(id)firstKey, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
- Strips out any percent escapes (such as %20) from the receiving dictionary's key and objects.
+ Return a new dictionary by stripping out any percent escapes (such as %20) 
+ from the receiving dictionary's key and values.
+ 
+ @return A new dictionary wherein any percent escape sequences in the key and values
+ have been replaced with their literal values.
  */
-- (NSDictionary *)removePercentEscapesFromKeysAndObjects;
+- (NSDictionary *)dictionaryByReplacingPercentEscapesInEntries;
 
 /**
  Returns a dictionary by digesting a URL encoded set of key/value pairs into unencoded
@@ -39,5 +46,13 @@
  values.
  */
 + (NSDictionary *)dictionaryWithURLEncodedString:(NSString *)URLEncodedString;
+
+/**
+ Returns a representation of the dictionary as a URLEncoded string
+ 
+ @returns A UTF-8 encoded string representation of the keys/values in the dictionary
+ */
+- (NSString *)stringWithURLEncodedEntries;
+- (NSString *)URLEncodedString; // TODO: Deprecated..
 
 @end
