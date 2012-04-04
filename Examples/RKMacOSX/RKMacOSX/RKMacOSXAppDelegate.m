@@ -3,7 +3,7 @@
 //  RKMacOSX
 //
 //  Created by Blake Watters on 4/10/11.
-//  Copyright 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKMacOSXAppDelegate.h"

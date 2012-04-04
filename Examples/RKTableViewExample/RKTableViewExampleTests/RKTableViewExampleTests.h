@@ -3,7 +3,7 @@
 //  RKTableViewExampleTests
 //
 //  Created by Blake Watters on 8/2/11.
-//  Copyright 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <SenTestingKit/SenTestingKit.h>

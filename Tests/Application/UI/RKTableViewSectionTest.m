@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/3/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTestEnvironment.h"

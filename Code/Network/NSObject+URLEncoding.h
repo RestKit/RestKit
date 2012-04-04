@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 7/11/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/31/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -192,10 +192,12 @@
 - (void)testShouldFindExistingManagedObjectsByPrimaryKeyPathWithFetchedResultsCache {
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
+    [RKHuman truncateAll];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
+    [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
     [store save:nil];
@@ -212,6 +214,7 @@
 
 - (void)testShouldFindExistingManagedObjectsByPrimaryKeyWithInMemoryCache {
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
+    [RKHuman truncateAllInContext:store.primaryManagedObjectContext];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
@@ -230,11 +233,14 @@
 
 - (void)testShouldFindExistingManagedObjectsByPrimaryKeyPathWithInMemoryCache {
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
+    [RKHuman truncateAllInContext:store.primaryManagedObjectContext];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
+    [RKHuman truncateAll];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
     
+    [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
     [store save:nil];

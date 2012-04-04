@@ -3,7 +3,7 @@
 //  RKGithub
 //
 //  Created by Blake Watters on 2/17/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKMappingTest.h"
