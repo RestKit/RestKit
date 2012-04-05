@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 4/4/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,53 +20,185 @@
 
 #import "RKRequest.h"
 #import "RKResponse.h"
+#import "RKCache.h"
 
 /**
- * Storage policy. Determines if we clear the cache out when the app is shut down.
- * Cache instance needs to register for
+ Cache storage policy used to determines how long we keep a specific cache for.
  */
 typedef enum {
-    RKRequestCacheStoragePolicyDisabled,				// The cache has been disabled. Attempts to store data will silently fail
-    RKRequestCacheStoragePolicyForDurationOfSession,	// Cache data for the length of the session. Clear cache at app exit.
-    RKRequestCacheStoragePolicyPermanently				// Cache data permanently, until explicitly expired or flushed
+    /**
+     The cache is disabled. Attempts to store data will silently fail.
+     */
+    RKRequestCacheStoragePolicyDisabled,
+    /**
+     Cache data for the length of the session and clear when the app exits.
+     */
+    RKRequestCacheStoragePolicyForDurationOfSession,
+    /**
+     Cache data permanently until explicitly expired or flushed.
+     */
+    RKRequestCacheStoragePolicyPermanently
 } RKRequestCacheStoragePolicy;
+
+/**
+ Location of session specific cache files within the Caches path.
+ */
+NSString * const RKRequestCacheSessionCacheDirectory;
+
+/**
+ Location of permanent cache files within the Caches path.
+ */
+NSString * const RKRequestCachePermanentCacheDirectory;
+
+/**
+ */
+NSString * const RKRequestCacheHeadersExtension;
+NSString * const RKRequestCacheDateHeaderKey;
+NSString * const RKRequestCacheStatusCodeKey;
+NSString * const RKRequestCacheMIMETypeKey;
+NSString * const RKRequestCacheURLKey;
 
 /**
  Stores and retrieves cache entries for RestKit request objects.
  */
 @interface RKRequestCache : NSObject {
-    NSString* _cachePath;
     RKRequestCacheStoragePolicy _storagePolicy;
-	NSRecursiveLock* _cacheLock;
+    RKCache *_cache;
 }
 
-@property (nonatomic, readonly) NSString* cachePath; // Full path to the cache
-@property (nonatomic, assign) RKRequestCacheStoragePolicy storagePolicy; // User can change storage policy.
+///-----------------------------------------------------------------------------
+/// @name Initializating the Cache
+///-----------------------------------------------------------------------------
 
-+ (NSDateFormatter*)rfc1123DateFormatter;
+/**
+ Initializes the receiver with a cache at a given path and storage policy.
+ 
+ @param cachePath The path to store cached data in.
+ @param storagePolicy The storage policy to use for cached data.
+ @return An initialized request cache object.
+ */
+- (id)initWithPath:(NSString *)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
 
-- (id)initWithCachePath:(NSString*)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
+///-----------------------------------------------------------------------------
+/// @name Locating the Cache
+///-----------------------------------------------------------------------------
 
-- (NSString*)pathForRequest:(RKRequest*)request;
+/**
+ Returns the full pathname to the cache.
+ */
+@property (nonatomic, readonly) NSString *path;
 
-- (BOOL)hasResponseForRequest:(RKRequest*)request;
+/**
+ Returns the cache path for the specified request.
+ 
+ @param request An RKRequest object to determine the cache path.
+ @return A string of the cache path for the specified request.
+ */
+- (NSString *)pathForRequest:(RKRequest *)request;
 
-- (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request;
+/**
+ Determine if a response exists for a request.
+ 
+ @param request An RKRequest object that is looking for cached content.
+ @return A boolean value for if a response exists in the cache.
+ */
+- (BOOL)hasResponseForRequest:(RKRequest *)request;
 
-- (RKResponse*)responseForRequest:(RKRequest*)request;
 
-- (NSDictionary*)headersForRequest:(RKRequest*)request;
+///-----------------------------------------------------------------------------
+/// @name Populating the Cache
+///-----------------------------------------------------------------------------
 
-- (NSString*)etagForRequest:(RKRequest*)request;
+/**
+ Store a request's response in the cache.
+ 
+ @param response The response to be stored in the cache.
+ @param request The request that retrieved the response.
+ */
+- (void)storeResponse:(RKResponse *)response forRequest:(RKRequest *)request;
 
-- (NSDate*)cacheDateForRequest:(RKRequest*)request;
+/**
+ Set the cache date for a request.
+ 
+ @param date The date the response for a request was cached.
+ @param request The request to store the cache date for.
+ */
+- (void)setCacheDate:(NSDate *)date forRequest:(RKRequest *)request;
 
-- (void)setCacheDate:(NSDate*)date forRequest:(RKRequest*)request;
+///-----------------------------------------------------------------------------
+/// @name Preparing Requests and Responses
+///-----------------------------------------------------------------------------
 
-- (void)invalidateRequest:(RKRequest*)request;
+/**
+ Returns a dictionary of cached headers for a cached request.
+ 
+ @param request The request to retrieve cached headers for.
+ @return An NSDictionary of the cached headers that were stored for the
+ specified request.
+ */
+- (NSDictionary *)headersForRequest:(RKRequest *)request;
 
+/**
+ Returns an ETag for a request if it is stored in the cached headers.
+ 
+ @param request The request that an ETag is to be determined for.
+ @return A string of the ETag value stored for the specified request.
+ */
+- (NSString *)etagForRequest:(RKRequest *)request;
+
+/**
+ Returns the date of the cached request.
+ 
+ @param request The request that needs a cache date returned.
+ @return A date object for the cached request.
+ */
+- (NSDate *)cacheDateForRequest:(RKRequest *)request;
+
+/**
+ Returns the cached response for a given request.
+ 
+ @param request The request used to find the cached response.
+ @return An RKResponse object that was cached for a given request.
+ */
+- (RKResponse *)responseForRequest:(RKRequest *)request;
+
+///-----------------------------------------------------------------------------
+/// @name Invalidating the Cache
+///-----------------------------------------------------------------------------
+
+/**
+ The storage policy for the cache.
+ */
+@property (nonatomic, assign) RKRequestCacheStoragePolicy storagePolicy;
+
+/**
+ Invalidate the cache for a given request.
+ 
+ @param request The request that needs its cache invalidated.
+ */
+- (void)invalidateRequest:(RKRequest *)request;
+
+/**
+ Invalidate any caches that fall under the given storage policy.
+ 
+ @param storagePolicy The RKRequestCacheStorePolicy used to determine which
+ caches need to be invalidated.
+ */
 - (void)invalidateWithStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy;
 
+/**
+ Invalidate all caches on disk.
+ */
 - (void)invalidateAll;
+
+
+///-----------------------------------------------------------------------------
+/// @name Helpers
+///-----------------------------------------------------------------------------
+
+/**
+ The date formatter used to generate the cache date for the HTTP header.
+ */
++ (NSDateFormatter *)rfc1123DateFormatter;
 
 @end

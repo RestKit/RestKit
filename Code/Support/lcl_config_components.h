@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 6/8/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -49,11 +49,17 @@
 // RestKit Logging Components
 //
 
-_lcl_component(RestKit,                     "restkit",                      "RestKit")
-_lcl_component(RestKitNetwork,              "restkit.network",              "RestKit/Network")
-_lcl_component(RestKitNetworkCache,         "restkit.network.cache",        "RestKit/Network/Cache")
-_lcl_component(RestKitNetworkQueue,         "restkit.network.queue",        "RestKit/Network/Queue")
-_lcl_component(RestKitNetworkReachability,  "restkit.network.reachability", "RestKit/Network/Reachability")
-_lcl_component(RestKitObjectMapping,        "restkit.object_mapping",       "RestKit/ObjectMapping")
-_lcl_component(RestKitCoreData,             "restkit.core_data",            "RestKit/CoreData")
-_lcl_component(App,                         "app",                          "App")
+_lcl_component(RestKit,                     "restkit",                          "RestKit")
+_lcl_component(RestKitNetwork,              "restkit.network",                  "RestKit/Network")
+_lcl_component(RestKitNetworkCache,         "restkit.network.cache",            "RestKit/Network/Cache")
+_lcl_component(RestKitNetworkQueue,         "restkit.network.queue",            "RestKit/Network/Queue")
+_lcl_component(RestKitNetworkReachability,  "restkit.network.reachability",     "RestKit/Network/Reachability")
+_lcl_component(RestKitObjectMapping,        "restkit.object_mapping",           "RestKit/ObjectMapping")
+_lcl_component(RestKitCoreData,             "restkit.core_data",                "RestKit/CoreData")
+_lcl_component(RestKitCoreDataSearchEngine, "restkit.core_data.search_engine",  "RestKit/CoreData/SearchEngine")
+_lcl_component(RestKitSupport,              "restkit.support",                  "RestKit/Support")
+_lcl_component(RestKitSupportParsers,       "restkit.support.parsers",          "RestKit/Support/Parsers")
+_lcl_component(RestKitThree20,              "restkit.three20",                  "RestKit/Three20")
+_lcl_component(RestKitUI,                   "restkit.ui",                       "RestKit/UI")
+_lcl_component(RestKitTesting,              "restkit.testing",                  "RestKit/Testing")
+_lcl_component(App,                         "app",                              "App")

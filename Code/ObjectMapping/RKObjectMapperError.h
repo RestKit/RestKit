@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/31/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "Errors.h"
+#import "RKErrors.h"
 
-typedef enum RKObjectMapperErrors {
+typedef enum {
     RKObjectMapperErrorObjectMappingNotFound        = 1001,     // No mapping found
     RKObjectMapperErrorObjectMappingTypeMismatch    = 1002,     // Target class and object mapping are in disagreement
     RKObjectMapperErrorUnmappableContent            = 1003,     // No mappable attributes or relationships were found

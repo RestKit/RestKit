@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -27,12 +27,12 @@
 @protocol RKDynamicObjectMappingDelegate <NSObject>
 
 @required
-- (RKObjectMapping*)objectMappingForData:(id)data;
+- (RKObjectMapping *)objectMappingForData:(id)data;
 
 @end
 
 #ifdef NS_BLOCKS_AVAILABLE
-typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
+typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
 #endif
 
 /**
@@ -40,13 +40,12 @@ typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
  object mapping to apply at mapping time. This allows you to map very similar payloads
  differently depending on the type of data contained therein.
  */
-@interface RKDynamicObjectMapping : NSObject <RKObjectMappingDefinition> {
+@interface RKDynamicObjectMapping : RKObjectMappingDefinition {
     NSMutableArray *_matchers;
     id<RKDynamicObjectMappingDelegate> _delegate;
     #ifdef NS_BLOCKS_AVAILABLE
     RKDynamicObjectMappingDelegateBlock _objectMappingForDataBlock;
     #endif
-    BOOL _forceCollectionMapping;
 }
 
 /**
@@ -66,23 +65,17 @@ typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
 #endif
 
 /**
- When YES, an NSDictionary encountered by RKObjectMapper will be treated as a collection
- rather than as a single mappable entity. This is used to perform sub-keypath mapping wherein
- the keys of the dictionary are part of the mappable data.
- */
-@property (nonatomic, assign) BOOL forceCollectionMapping;
-
-/**
  Return a new auto-released dynamic object mapping
  */
 + (RKDynamicObjectMapping *)dynamicMapping;
 
 #if NS_BLOCKS_AVAILABLE
-    
+
 /**
  Return a new auto-released dynamic object mapping after yielding it to the block for configuration
  */
-+ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *))block;
++ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *dynamicMapping))block;
++ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *dynamicMapping))block DEPRECATED_ATTRIBUTE;
 
 #endif
 

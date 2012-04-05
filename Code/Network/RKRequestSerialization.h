@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/18/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,30 +21,56 @@
 #import "RKRequestSerializable.h"
 
 /**
- A simple implementation of the RKRequestSerializable protocol suitable
- for wrapping a MIME Type string and HTTP Body into a format that
- can be sent as the params of an RKRequest
+ A simple implementation of the RKRequestSerializable protocol suitable for
+ wrapping a MIME Type string and HTTP Body into a format that can be sent as the
+ params of an RKRequest.
  
  @see RKRequestSerializable
  */
 @interface RKRequestSerialization : NSObject <RKRequestSerializable> {
-    NSData* _data;
-    NSString* _MIMEType;
+    NSData *_data;
+    NSString *_MIMEType;
 }
 
-/**
- The data enclosed in this serialization
- */
-@property (nonatomic, readonly) NSData* data;
+
+///-----------------------------------------------------------------------------
+/// @name Creating a Serialization
+///-----------------------------------------------------------------------------
 
 /**
- The MIME type of the data in this serialization
+ Creates and returns a new serialization enclosing an NSData object with the
+ specified MIME type.
+ 
+ @param data An NSData object to initialize the serialization with.
+ @param MIMEType A string of the MIME type of the provided data.
+ @return An autoreleased RKRequestSerialization object with the data and MIME
+ type set.
  */
-@property (nonatomic, readonly) NSString* MIMEType;
++ (id)serializationWithData:(NSData *)data MIMEType:(NSString *)MIMEType;
 
 /**
- Return a new serialization enclosing an NSData object with the specified MIME Type
+ Returns a new serialization enclosing an NSData object with the specified MIME
+ type.
+ 
+ @param data An NSData object to initialize the serialization with.
+ @param MIMEType A string of the MIME type of the provided data.
+ @return An RKRequestSerialization object with the data and MIME type set.
  */
-+ (id)serializationWithData:(NSData*)data MIMEType:(NSString*)MIMEType;
+- (id)initWithData:(NSData *)data MIMEType:(NSString *)MIMEType;
+
+
+///-----------------------------------------------------------------------------
+/// @name Properties
+///-----------------------------------------------------------------------------
+
+/**
+ Returns the data enclosed in this serialization.
+ */
+@property (nonatomic, readonly) NSData *data;
+
+/**
+ Returns the MIME type of the data in this serialization.
+ */
+@property (nonatomic, readonly) NSString *MIMEType;
 
 @end

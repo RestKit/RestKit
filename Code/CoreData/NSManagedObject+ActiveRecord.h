@@ -1,5 +1,5 @@
 //
-//  RKManagedObject+ActiveRecord.h
+//  NSManagedObject+ActiveRecord.h
 //
 //  Adapted from https://github.com/magicalpanda/MagicalRecord
 //  Created by Saul Mora on 11/15/09.
@@ -10,16 +10,25 @@
 
 #import <CoreData/CoreData.h>
 
+/**
+ Extensions to NSManagedObjectContext for RestKit's Active Record pattern implementation
+ */
+@interface NSManagedObjectContext (ActiveRecord)
+
++ (NSManagedObjectContext *)defaultContext;
++ (void)setDefaultContext:(NSManagedObjectContext *)context;
++ (NSManagedObjectContext *)contextForCurrentThread;
+
+@end
+
+/**
+ Provides extensions to NSManagedObject implementing a low-ceremony querying
+ interface.
+ */
 @interface NSManagedObject (ActiveRecord)
 
 /**
- * The Core Data managed object context from the RKObjectManager's objectStore
- * that is managing this model
- */
-+ (NSManagedObjectContext*)managedObjectContext;
-
-/**
- *	The NSEntityDescription for the Subclass 
+ *	The NSEntityDescription for the Subclass
  *	defaults to the subclass className, may be overridden
  */
 + (NSEntityDescription*)entity;
@@ -33,6 +42,12 @@
  * Fetches all objects from the persistent store identified by the fetchRequest
  */
 + (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
+
+/**
+ * Retrieves the number of objects that would be retrieved by the fetchRequest,
+ * if executed
+ */
++ (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
 
 /**
  * Fetches all objects from the persistent store via a set of fetch requests and
@@ -87,6 +102,25 @@
  * Returns YES when an object has not been saved to the managed object context yet
  */
 - (BOOL)isNew;
+
+/**
+ Finds the instance of the receiver's entity with the given value for the primary key attribute
+ in the managed object context for the current thread.
+
+ @param primaryKeyValue The value for the receiving entity's primary key attribute.
+ @return The object with the primary key attribute equal to the given value or nil.
+ */
++ (id)findByPrimaryKey:(id)primaryKeyValue;
+
+/**
+ Finds the instance of the receiver's entity with the given value for the primary key attribute in
+ the given managed object context.
+
+ @param primaryKeyValue The value for the receiving entity's primary key attribute.
+ @param context The managed object context to find the instance in.
+ @return The object with the primary key attribute equal to the given value or nil.
+ */
++ (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

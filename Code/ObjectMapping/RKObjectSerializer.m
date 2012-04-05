@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/2/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@
     return nil;
 }
 
-- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)MIMEType error:(NSError**)error {    
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString *)MIMEType error:(NSError **)error {
     if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
         // Dictionaries are natively RKRequestSerializable as Form Encoded
         return [self serializedObject:error];
@@ -109,15 +109,19 @@
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
     id transformedValue = nil;
+    Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
     
     if ([value isKindOfClass:[NSDate class]]) {
         // Date's are not natively serializable, must be encoded as a string
         @synchronized(self.mapping.preferredDateFormatter) {
-            transformedValue = [self.mapping.preferredDateFormatter stringFromDate:value];
+            transformedValue = [self.mapping.preferredDateFormatter stringForObjectValue:value];
         }
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
         transformedValue = [(NSDecimalNumber*)value stringValue];        
+    } else if ([value isKindOfClass:orderedSetClass]) {
+        // NSOrderedSets are not natively serializable, so let's just turn it into an NSArray
+        transformedValue = [value array];
     }
     
     if (transformedValue) {

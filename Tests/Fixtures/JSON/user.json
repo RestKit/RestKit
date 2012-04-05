@@ -1,0 +1,30 @@
+{
+    "id": 31337,
+    "name": "Blake Watters",
+    "birthdate": "11/27/1982",
+    "favorite_date": "03/01/2012",
+    "website": "http://restkit.org/",
+    "is_developer": "true",
+    "weight": "131.3",
+    "lucky_number": "187",
+    "interests": [
+        "Hacking",
+        "Running"
+    ],
+    "address": {
+        "id": 1234,
+        "city": "Carrboro",
+        "state": "North Carolina",
+        "country": "USA"
+    },
+    "friends": [
+        {
+            "id": 187,
+            "name": "Jeremy Ellison"
+        },
+        {
+            "id": 7,
+            "name": "Rachit Shukla"
+        }
+    ]
+}

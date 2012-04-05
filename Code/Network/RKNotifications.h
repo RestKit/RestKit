@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/24/09.
-//  Copyright 2009 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,17 +20,18 @@
 
 #import <Foundation/Foundation.h>
 
-/******************
- * Request Auditing
- *
- * RKClient exposes a set of NSNotifications that can be
- * used to audit the request/response cycle of your application.
- * This is useful for doing things like generating automatic logging
- * for all your requests or sending the response times 
+/**
+ Request Auditing
+ 
+ RKClient exposes a set of NSNotifications that can be used to audit the
+ request/response cycle of your application. This is useful for doing things
+ like generating automatic logging for all your requests or sending the response
+ times.
  */
-extern NSString* const RKRequestSentNotification;
-extern NSString* const RKRequestDidLoadResponseNotification;
-extern NSString* const RKRequestDidLoadResponseNotificationUserInfoResponseKey;
-extern NSString* const RKRequestDidFailWithErrorNotification;
-extern NSString* const RKRequestDidFailWithErrorNotificationUserInfoErrorKey;
-extern NSString* const RKServiceDidBecomeUnavailableNotification;
+extern NSString * const RKRequestSentNotification;
+extern NSString * const RKRequestDidLoadResponseNotification;
+extern NSString * const RKRequestDidLoadResponseNotificationUserInfoResponseKey;
+extern NSString * const RKRequestDidFailWithErrorNotification;
+extern NSString * const RKRequestDidFailWithErrorNotificationUserInfoErrorKey;
+extern NSString * const RKRequestDidFinishLoadingNotification;
+extern NSString * const RKServiceDidBecomeUnavailableNotification;

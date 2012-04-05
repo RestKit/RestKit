@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -37,5 +37,11 @@
  Returns the Class type of the specified property on the object class
  */
 - (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass;
+
+/**
+ Returns the name of a property when provided the name of a property obtained
+ via the property_getAttributes reflection API
+ */
++ (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString;
 
 @end

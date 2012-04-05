@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -32,7 +32,8 @@
 }
 
 - (IBAction)sendRequest {
-    RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample" delegate:self];
+    RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample"];
+    request.delegate = self;
     request.backgroundPolicy = _segmentedControl.selectedSegmentIndex;
     [request send];
     _sendButton.enabled = NO;

@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/CoreData.h>
@@ -34,7 +34,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        RKObjectManager* manager = [RKObjectManager objectManagerWithBaseURL:@"http://restkit.org"];
+        RKObjectManager* manager = [RKObjectManager managerWithBaseURLString:@"http://restkit.org"];
         manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKCoreDataExample.sqlite"];
         [RKObjectManager setSharedManager:manager];
         
@@ -47,7 +47,7 @@
                 article.body = @"This is the body";
                 
                 // Persist the object store
-                [manager.objectStore save];
+                [manager.objectStore save:nil];
             }
         }
         

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 3/16/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,12 +20,19 @@
 
 #import "RKJSONParserJSONKit.h"
 #import "JSONKit.h"
+#import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitSupportParsers
+
 
 // TODO: JSONKit serializer instance should be reused to enable leverage
-// the internal cacheing capabilities from the JSONKit serializer
+// the internal caching capabilities from the JSONKit serializer
 @implementation RKJSONParserJSONKit
 
 - (NSDictionary*)objectFromString:(NSString*)string error:(NSError**)error {
+	RKLogTrace(@"string='%@'", string);
     return [string objectFromJSONStringWithParseOptions:JKParseOptionStrict error:error];
 }
 

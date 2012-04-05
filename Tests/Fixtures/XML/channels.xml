@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<Channels>
+    <Channel Identifier="1172" Title="MySpecialTitle" Position="2234">
+        <Image>http://domain.com/Images/MySpecialTitle.png</Image>
+        <Image Width="65" Height="35">http://domain.com/Images/65x35/2234.png</Image>
+        <Stream Identifier="MySpecialTitle" Index="0">MySpecialTitle</Stream>
+        <Languages>it</Languages>
+        <Program Identifier="42883461" Start="2011-12-19 20:00:00Z" End="2011-12-19 21:00:00Z" Title="Program Title 1"/>
+        <Program Identifier="42883471" Start="2011-12-19 21:00:00Z" End="2011-12-19 23:00:00Z" Title="Program Title"/>
+    </Channel>
+</Channels>

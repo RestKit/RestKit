@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/24/09.
-//  Copyright 2009 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@
 
 #import "RKNotifications.h"
 
-NSString* const RKRequestSentNotification = @"RKRequestSentNotification";
-NSString* const RKRequestDidFailWithErrorNotification = @"RKRequestDidFailWithErrorNotification";
-NSString* const RKRequestDidFailWithErrorNotificationUserInfoErrorKey = @"error";
-NSString* const RKRequestDidLoadResponseNotification = @"RKRequestDidLoadResponseNotification";
-NSString* const RKRequestDidLoadResponseNotificationUserInfoResponseKey = @"response";
-NSString* const RKServiceDidBecomeUnavailableNotification = @"RKServiceDidBecomeUnavailableNotification";
+NSString * const RKRequestSentNotification = @"RKRequestSentNotification";
+NSString * const RKRequestDidFailWithErrorNotification = @"RKRequestDidFailWithErrorNotification";
+NSString * const RKRequestDidFailWithErrorNotificationUserInfoErrorKey = @"error";
+NSString * const RKRequestDidLoadResponseNotification = @"RKRequestDidLoadResponseNotification";
+NSString * const RKRequestDidLoadResponseNotificationUserInfoResponseKey = @"response";
+NSString * const RKServiceDidBecomeUnavailableNotification = @"RKServiceDidBecomeUnavailableNotification";
+NSString * const RKRequestDidFinishLoadingNotification = @"RKRequestDidFinishLoadingNotification";

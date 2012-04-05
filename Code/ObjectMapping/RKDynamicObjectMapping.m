@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,67 +19,18 @@
 //
 
 #import "RKDynamicObjectMapping.h"
+#import "RKDynamicObjectMappingMatcher.h"
 #import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-// Implemented in RKObjectMappingOperation
-BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
-
-@interface RKDynamicObjectMappingMatcher : NSObject {
-    NSString* _keyPath;
-    id _value;
-    RKObjectMapping* _objectMapping;
-}
-
-@property (nonatomic, readonly) RKObjectMapping* objectMapping;
-
-- (id)initWithKey:(NSString*)key value:(id)value objectMapping:(RKObjectMapping*)objectMapping;
-- (BOOL)isMatchForData:(id)data;
-- (NSString*)matchDescription;
-@end
-
-@implementation RKDynamicObjectMappingMatcher
-
-@synthesize objectMapping = _objectMapping;
-
-- (id)initWithKey:(NSString*)key value:(id)value objectMapping:(RKObjectMapping*)objectMapping {
-    self = [super init];
-    if (self) {
-        _keyPath = [key retain];
-        _value = [value retain];
-        _objectMapping = [objectMapping retain];
-    }
-    
-    return self;
-}
-
-- (void)dealloc {
-    [_keyPath release];
-    [_value release];
-    [_objectMapping release];
-    [super dealloc];
-}
-
-- (BOOL)isMatchForData:(id)data {
-    return RKObjectIsValueEqualToValue([data valueForKeyPath:_keyPath], _value);
-}
-
-- (NSString*)matchDescription {
-    return [NSString stringWithFormat:@"%@ == %@", _keyPath, _value];
-}
-
-@end
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation RKDynamicObjectMapping
 
 @synthesize delegate = _delegate;
 @synthesize objectMappingForDataBlock = _objectMappingForDataBlock;
-@synthesize forceCollectionMapping = _forceCollectionMapping;
 
 + (RKDynamicObjectMapping*)dynamicMapping {
     return [[self new] autorelease];
@@ -87,10 +38,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 #if NS_BLOCKS_AVAILABLE
 
-+ (RKDynamicObjectMapping*)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping*))block {
++ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *))block {
     RKDynamicObjectMapping* mapping = [self dynamicMapping];
     block(mapping);
     return mapping;
+}
+
++ (RKDynamicObjectMapping*)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping*))block {
+    return [self dynamicMappingUsingBlock:block];
 }
 
 #endif

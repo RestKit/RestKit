@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/12/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -70,6 +70,7 @@
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
+                    NSAssert(self.objectStore, @"Object store cannot be nil");
                     NSManagedObject* managedObject = [self.objectStore objectWithID:(NSManagedObjectID*)subObject];
                     [collection addObject:managedObject];
                 } else {

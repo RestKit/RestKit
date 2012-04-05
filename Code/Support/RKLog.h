@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/3/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -83,6 +83,7 @@ lcl_log(RKLogComponent, lcl_vTrace, @"" __VA_ARGS__)
  
  These aliases simply map the log levels defined within LibComponentLogger to something more friendly
  */
+#define RKLogLevelOff       lcl_vOff
 #define RKLogLevelCritical  lcl_vCritical
 #define RKLogLevelError     lcl_vError
 #define RKLogLevelWarning   lcl_vWarning
@@ -137,13 +138,23 @@ lcl_configure_by_name("App", level);
         }                                                                               \
     } while(false);
 
+
 /**
  Temporarily changes the logging level for the configured RKLogComponent and executes the block. Any logging
  statements executed within the body of the block for the current logging component will log at the new
- logging level. After the block has finished excution, the logging level is restored to its previous state.
+ logging level. After the block has finished execution, the logging level is restored to its previous state.
  */
 #define RKLogWithLevelWhileExecutingBlock(_level, _block)                               \
     RKLogToComponentWithLevelWhileExecutingBlock(RKLogComponent, _level, _block)
+
+
+/**
+ Temporarily turns off logging for the execution of the block.
+ After the block has finished execution, the logging level is restored to its previous state.
+ */
+#define RKLogSilenceWhileExecutingBlock(_block)                                        \
+    RKLogToComponentWithLevelWhileExecutingBlock(RKLogComponent, RKLogLevelOff, _block)
+
 
 /**
  Set the Default Log Level
@@ -165,3 +176,26 @@ lcl_configure_by_name("App", level);
  Initialize the logging environment
  */
 void RKLogInitialize(void);
+
+
+/**
+ Configure RestKit logging from environment variables.
+ (Use Option + Command + R to set Environment Variables prior to run.)
+
+ For example to configure the equivalent of setting the following in code:
+ RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+
+ Define an environment variable named RKLogLevel.RestKit.Network and set its value to "Trace"
+
+ See lcl_config_components.h for configurable RestKit logging components.
+
+ Valid values are the following:
+    Default  or 0
+    Critical or 1
+    Error    or 2
+    Warning  or 3
+    Info     or 4
+    Debug    or 5
+    Trace    or 6
+ */
+void RKLogConfigureFromEnvironment(void);

@@ -1,10 +1,10 @@
 require 'rubygems'
 
-namespace :spec do
-  desc "Run the RestKit spec server"
+namespace :test do
+  desc "Run the RestKit test server"
   task :server do
-    server_path = File.dirname(__FILE__) + '/Specs/Server/server.rb'
-    system("ruby #{server_path}")
+    server_path = File.dirname(__FILE__) + '/Tests/Server/server.rb'
+    system("ruby \"#{server_path}\"")
   end
 end
 
@@ -28,14 +28,13 @@ def run(command, min_exit_status = 0)
   return $?.exitstatus
 end
 
-task :default => 'spec:server'
+task :default => 'test:server'
 
 desc "Build RestKit for iOS and Mac OS X"
 task :build do
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphonesimulator5.0 clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk iphoneos clean build")
   run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKit -sdk macosx10.6 clean build")
-  run("xcodebuild -workspace RestKit.xcodeproj/project.xcworkspace -scheme RestKitThree20 -sdk iphoneos clean build")
   run("xcodebuild -workspace Examples/RKCatalog/RKCatalog.xcodeproj/project.xcworkspace -scheme RKCatalog -sdk iphoneos clean build")
 end
 
@@ -62,8 +61,8 @@ namespace :docs do
       exit(exitstatus)
     else
       puts "!! appledoc generation failed with a fatal error"
-      exit(exitstatus)
     end    
+    exit(exitstatus)
   end
   
   desc "Generate & install a docset into Xcode from the current sources"
@@ -115,7 +114,7 @@ end
 
 task :ensure_server_is_running do
   unless is_port_open?('127.0.0.1', 4567)
-    puts "Unable to find RestKit Specs server listening on port 4567. Run `rake uispec:server` and try again."
+    puts "Unable to find RestKit Test server listening on port 4567. Run `rake test:server` and try again."
     exit(-1)
   end
 end
@@ -145,5 +144,5 @@ end
 
 desc "Validate a branch is ready for merging by checking for common issues"
 task :validate => [:ensure_server_is_running, :build, 'docs:check', 'uispec:all'] do  
-  puts "Project stated validated successfully. Proceed with merge."  
+  puts "Project state validated successfully. Proceed with merge."
 end

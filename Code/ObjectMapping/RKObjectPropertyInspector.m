@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 	[super dealloc];
 }
 
-- (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
++ (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
 	NSString *type = [NSString string];
 	NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
 	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
@@ -91,7 +91,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 			propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
 			
 			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-				const char* className = [[self propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
+				const char* className = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
 				Class aClass = objc_getClass(className);
 				if (aClass) {
 					[propertyNames setObject:aClass forKey:propName];
