@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -43,6 +43,10 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     RKObjectMapping* mapping = [self new];
     mapping.objectClass = objectClass;
     return [mapping autorelease];
+}
+
++ (id)mappingForClassWithName:(NSString *)objectClassName {
+    return [self mappingForClass:NSClassFromString(objectClassName)];
 }
 
 + (id)serializationMapping {
@@ -118,6 +122,14 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [_dateFormatters release];
     [_preferredDateFormatter release];
     [super dealloc];
+}
+
+- (NSString *)objectClassName {
+    return NSStringFromClass(self.objectClass);
+}
+
+- (void)setObjectClassName:(NSString *)objectClassName {
+    self.objectClass = NSClassFromString(objectClassName);
 }
 
 - (NSArray *)mappedKeyPaths {

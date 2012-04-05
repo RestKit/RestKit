@@ -13,6 +13,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKLog.h"
 #import "RKFixCategoryBug.h"
+#import "NSEntityDescription+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -134,6 +135,21 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 - (BOOL)isNew {
     NSDictionary *vals = [self committedValuesForKeys:nil];
     return [vals count] == 0;
+}
+
++ (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context {
+    NSEntityDescription *entity = [self entityDescriptionInContext:context];
+    NSString *primaryKeyAttribute = entity.primaryKeyAttribute;
+    if (! primaryKeyAttribute) {
+        RKLogWarning(@"Attempt to findByPrimaryKey for entity with nil primaryKeyAttribute. Set the primaryKeyAttribute and try again! %@", entity);
+        return nil;
+    }
+
+    return [self findFirstByAttribute:primaryKeyAttribute withValue:primaryKeyValue inContext:context];
+}
+
++ (id)findByPrimaryKey:(id)primaryKeyValue {
+    return [self findByPrimaryKey:primaryKeyValue inContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
 #pragma mark - MagicalRecord Ported Methods

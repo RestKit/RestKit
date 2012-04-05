@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/6/09.
-//  Copyright 2009 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@
 
 #import "RKParamsAttachment.h"
 #import "RKLog.h"
-#import "NSData+MD5.h"
+#import "NSData+RKAdditions.h"
 #import "FileMD5Hash.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -206,7 +206,6 @@ extern NSString* const kRKStringBoundary;
     return sent;
 }
 
-// NOTE: Cannot handle MD5 for files. We don't want to read the contents into memory
 - (NSString *)MD5 {
     if (_body) {
         return [_body MD5];

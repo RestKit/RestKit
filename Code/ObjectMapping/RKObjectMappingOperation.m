@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     
     if (numeric) {
         date = [NSDate dateWithTimeIntervalSince1970:[numeric doubleValue]];
-    } else {
+    } else if(![string isEqualToString:@""]) {
         for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
             BOOL success;
 		@synchronized(dateFormatter) {
@@ -404,8 +404,15 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return appliedMappings;
 }
 
+- (BOOL)isTypeACollection:(Class)type {
+    Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
+    return (type && ([type isSubclassOfClass:[NSSet class]] || 
+                     [type isSubclassOfClass:[NSArray class]] ||
+                     (orderedSetClass && [type isSubclassOfClass:orderedSetClass])));
+}
+
 - (BOOL)isValueACollection:(id)value {
-    return ([value isKindOfClass:[NSSet class]] || [value isKindOfClass:[NSArray class]]);
+    return [self isTypeACollection:[value class]];
 }
 
 - (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withRealtionshipMapping:(RKObjectRelationshipMapping*)relationshipMapping {
@@ -474,15 +481,17 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         }
         
         // Handle case where incoming content is a single object, but we want a collection
-        Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
-        BOOL mappingToCollection = (relationshipType && 
-                                    ([relationshipType isSubclassOfClass:[NSSet class]] || [relationshipType isSubclassOfClass:[NSArray class]]));
+        Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];        
+        BOOL mappingToCollection = [self isTypeACollection:relationshipType];
         if (mappingToCollection && ![self isValueACollection:value]) {
+            Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
             RKLogDebug(@"Asked to map a single object into a collection relationship. Transforming to an instance of: %@", NSStringFromClass(relationshipType));
             if ([relationshipType isSubclassOfClass:[NSArray class]]) {
                 value = [relationshipType arrayWithObject:value];
             } else if ([relationshipType isSubclassOfClass:[NSSet class]]) {
                 value = [relationshipType setWithObject:value];
+            } else if (orderedSetClass && [relationshipType isSubclassOfClass:orderedSetClass]) {
+                value = [relationshipType orderedSetWithObject:value];
             } else {
                 RKLogWarning(@"Failed to transform single object");
             }
@@ -530,7 +539,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             // If the relationship has changed, set it
             if ([self shouldSetValue:&destinationObject atKeyPath:relationshipMapping.destinationKeyPath]) {
                 Class managedObjectClass = NSClassFromString(@"NSManagedObject");
-                Class nsOrderSetClass = NSClassFromString(@"NSOrderedSet");
+                Class nsOrderedSetClass = NSClassFromString(@"NSOrderedSet");
                 if (managedObjectClass && [self.destinationObject isKindOfClass:managedObjectClass]) {
                     RKLogTrace(@"Found a managedObject collection. About to apply value via mutable[Set|Array]ValueForKey");
                     if ([destinationObject isKindOfClass:[NSSet class]]) {
@@ -541,7 +550,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                         RKLogTrace(@"Mapped NSArray relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                         NSMutableArray* destinationArray = [self.destinationObject mutableArrayValueForKey:relationshipMapping.destinationKeyPath];
                         [destinationArray setArray:destinationObject];
-                    } else if (nsOrderSetClass && [destinationObject isKindOfClass:nsOrderSetClass]) {
+                    } else if (nsOrderedSetClass && [destinationObject isKindOfClass:nsOrderedSetClass]) {
                         RKLogTrace(@"Mapped NSOrderedSet relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                         [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
                     }

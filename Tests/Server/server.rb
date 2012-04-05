@@ -18,7 +18,6 @@ require 'restkit/network/authentication'
 require 'restkit/network/etags'
 require 'restkit/network/timeout'
 require 'restkit/network/oauth2'
-require 'restkit/coredata/cache'
 
 class Person < Struct.new(:name, :age)
   def to_json(*args)
@@ -27,18 +26,21 @@ class Person < Struct.new(:name, :age)
 end
 
 class RestKitTestServer < Sinatra::Base
-  self.app_file = __FILE__
+  self.app_file = __FILE__  
+
+  configure do
+    enable :logging, :dump_errors
+    set :public_folder, Proc.new { File.expand_path(File.join(root, '../Fixtures')) }
+    set :uploads_path, Proc.new { File.expand_path(File.join(root, '../Fixtures/Uploads')) }
+  end
+  
   use RestKit::Network::Authentication
   use RestKit::Network::ETags
   use RestKit::Network::Timeout
   use RestKit::Network::OAuth2
-  use RestKit::CoreData::Cache
 
-  configure do
-    set :logging, true
-    set :dump_errors, true
-    set :public_folder, Proc.new { File.expand_path(File.join(root, '../Fixtures')) }
-    set :uploads_path, Proc.new { File.expand_path(File.join(root, '../Fixtures/Uploads')) }
+  def render_fixture(path, options = {})
+    send_file File.join(settings.public_folder, path), options
   end
 
   get '/' do
@@ -52,9 +54,8 @@ class RestKitTestServer < Sinatra::Base
   end
 
   get '/errors.json' do
-    status 400
     content_type 'application/json'
-    send_file settings.public_folder + '/JSON/errors.json'
+    render_fixture('/JSON/errors.json', :status => 400)
   end
 
   post '/humans' do
@@ -65,9 +66,8 @@ class RestKitTestServer < Sinatra::Base
   end
 
   post '/humans/fail' do
-    status 500
     content_type 'application/json'
-    send_file settings.public_folder + '/JSON/errors.json'
+    render_fixture('/JSON/errors.json', :status => 500)
   end
 
   get '/humans/1' do
@@ -175,9 +175,8 @@ class RestKitTestServer < Sinatra::Base
   end
 
   get '/fail' do
-    status 500
     content_type 'application/json'
-    send_file settings.public_folder + '/JSON/errors.json'
+    render_fixture('/JSON/errors.json', :status => 500)
   end
 
   # Expects an uploaded 'file' param
@@ -233,6 +232,18 @@ class RestKitTestServer < Sinatra::Base
 
     {:per_page => per_page, :total_entries => total_entries,
      :current_page => current_page, :entries => entries}.to_json
+  end
+  
+  get '/coredata/etag' do
+    content_type 'application/json'
+    tag = '2cdd0a2b329541d81e82ab20aff6281b'
+    if tag == request.env["HTTP_IF_NONE_MATCH"]
+      status 304
+      ""
+    else
+      etag(tag)
+      render_fixture '/JSON/humans/all.json'
+    end
   end
 
   # start the server if ruby file executed directly

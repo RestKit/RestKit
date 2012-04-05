@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/8/09.
-//  Copyright 2009 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -293,8 +293,16 @@
         [self didFailLoadWithError:self.response.failureError];
 		return NO;
     } else if ([self.response isNoContent]) {
-        // The No Content (204) response will never have a message body or a MIME Type. Invoke the delegate with self
-        [self informDelegateOfObjectLoadWithResultDictionary:[NSDictionary dictionaryWithObject:self forKey:@""]];
+        // The No Content (204) response will never have a message body or a MIME Type.
+        id resultDictionary = nil;
+        if (self.targetObject) {
+            resultDictionary = [NSDictionary dictionaryWithObject:self.targetObject forKey:@""];
+        } else if (self.sourceObject) {
+            resultDictionary = [NSDictionary dictionaryWithObject:self.sourceObject forKey:@""];
+        } else {
+            resultDictionary = [NSDictionary dictionary];
+        }
+        [self informDelegateOfObjectLoadWithResultDictionary:resultDictionary];
         return NO;
 	} else if (NO == [self canParseMIMEType:[self.response MIMEType]]) {
         // We can't parse the response, it's unmappable regardless of the status code

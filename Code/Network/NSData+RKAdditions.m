@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 4/4/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@
 //
 
 #import <CommonCrypto/CommonDigest.h>
-#import "NSData+MD5.h"
+#import "NSData+RKAdditions.h"
 #import "RKFixCategoryBug.h"
 
-RK_FIX_CATEGORY_BUG(NSData_MD5)
+RK_FIX_CATEGORY_BUG(NSData_RKAdditions)
 
-@implementation NSData (MD5)
+@implementation NSData (RKAdditions)
 
 - (NSString *)MD5 {
 	// Create byte array of unsigned chars

@@ -79,7 +79,7 @@ button and confirm that your "Build Location" is the "Derived Data Location".
 1. Open target settings editor for the target you want to link RestKit into
 1. Add direct dependency on the **RestKit** aggregate target
 1. Link against required frameworks:
-    1. **CFNetwork.framework**
+    1. **CFNetwork.framework** on iOS
     1. **CoreData.framework**
     1. **Security.framework**
     1. **MobileCoreServices.framework** on iOS or **CoreServices.framework** on OS X

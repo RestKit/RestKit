@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/25/11.
-//  Copyright 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <CoreData/CoreData.h>

@@ -1,9 +1,9 @@
 //
-//  NSURL+RestKit.h
+//  NSData+RKAdditions.h
 //  RestKit
 //
-//  Created by Blake Watters on 10/11/11.
-//  Copyright 2011 RestKit
+//  Created by Jeff Arena on 4/4/11.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,24 +18,16 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
-
-@interface NSURL (RestKit)
+/**
+ Provides extensions to NSData for various common tasks.
+ */
+@interface NSData (RKAdditions)
 
 /**
- Returns the query portion of the URL as a dictionary
- */
-- (NSDictionary *)queryParameters;
-
-/**
- Returns the MIME Type for the resource identified by the URL by interpretting the
- path extension using Core Services.
+ Returns a string of the MD5 sum of the receiver.
  
- For example, given a URL to http://restkit.org/monkey.json we would get 
- @"application/json" as the MIME Type.
- 
- @return The expected MIME Type of the resource identified by the URL or nil if unknown
+ @return A new string containing the MD5 sum of the receiver.
  */
-- (NSString *)MIMETypeForPathExtension;
+- (NSString *)MD5;
 
 @end

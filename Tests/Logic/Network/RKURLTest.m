@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 6/29/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 #import "RKTestEnvironment.h"
 #import "RKURL.h"
-#import "NSURL+RestKit.h"
+#import "NSURL+RKAdditions.h"
 
 @interface RKURLTest : RKTestCase
 @end
@@ -115,7 +115,11 @@
 - (void)testInitializationFromURLandResourcePathIncludingQueryParameters {
     NSString *resourcePath = @"/bar?another=option";
     RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org/foo?bar=1&this=that" resourcePath:resourcePath];
+#if TARGET_OS_IPHONE
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/foo/bar?bar=1&this=that&another=option")));
+#else
+    assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/foo/bar?bar=1&another=option&this=that")));
+#endif
     assertThat([URL queryParameters], hasEntries(@"bar", equalTo(@"1"),
                                                  @"this", equalTo(@"that"),
                                                  @"another", equalTo(@"option"), nil));
@@ -166,7 +170,13 @@
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"1", @"page", @"25", @"per_page", nil];
     RKURL *interpolatedURL = [URL URLByInterpolatingResourcePathWithObject:dictionary];
     assertThat([interpolatedURL resourcePath], is(equalTo(@"/paginate?page=1&perPage=25")));
-    assertThat([interpolatedURL absoluteString], is(equalTo(@"http://restkit.org/paginate?page=1&perPage=25")));
+
+    NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"25", @"perPage",
+                                 @"1", @"page",
+                                 nil];
+    assertThat([interpolatedURL resourcePath], is(equalTo(@"/paginate?page=1&perPage=25")));
+    assertThat([interpolatedURL queryParameters], is(equalTo(queryParams)));
 }
 
 - (void)testShouldProperlyHandleLongURLParameterValues {

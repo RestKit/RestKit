@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 8/11/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -101,6 +101,7 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, retain) RKTableViewCellMappings* cellMappings;
 
 - (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
+- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (RKTableViewCellMapping*)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath;
 

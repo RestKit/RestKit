@@ -22,7 +22,8 @@
 @end
 
 /**
- Extensions for NSManage
+ Provides extensions to NSManagedObject implementing a low-ceremony querying
+ interface.
  */
 @interface NSManagedObject (ActiveRecord)
 
@@ -101,6 +102,25 @@
  * Returns YES when an object has not been saved to the managed object context yet
  */
 - (BOOL)isNew;
+
+/**
+ Finds the instance of the receiver's entity with the given value for the primary key attribute
+ in the managed object context for the current thread.
+
+ @param primaryKeyValue The value for the receiving entity's primary key attribute.
+ @return The object with the primary key attribute equal to the given value or nil.
+ */
++ (id)findByPrimaryKey:(id)primaryKeyValue;
+
+/**
+ Finds the instance of the receiver's entity with the given value for the primary key attribute in
+ the given managed object context.
+
+ @param primaryKeyValue The value for the receiving entity's primary key attribute.
+ @param context The managed object context to find the instance in.
+ @return The object with the primary key attribute equal to the given value or nil.
+ */
++ (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

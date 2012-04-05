@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/27/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -217,7 +217,7 @@
 
     // Explicitly init so we don't get a managed object loader...
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
-    RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:objectManager.baseURL mappingProvider:objectManager.mappingProvider];
+    RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:[objectManager.baseURL URLByAppendingResourcePath:@"/200"] mappingProvider:objectManager.mappingProvider];
     objectLoader.delegate = responseLoader;
     objectLoader.sourceObject = mockObject;
     [[mockObject expect] willSendWithObjectLoader:objectLoader];
@@ -233,7 +233,7 @@
     id mockObject = [OCMockObject partialMockForObject:user];
 
     // Explicitly init so we don't get a managed object loader...
-    RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:objectManager.baseURL mappingProvider:objectManager.mappingProvider];
+    RKObjectLoader *objectLoader = [RKObjectLoader loaderWithURL:[objectManager.baseURL URLByAppendingResourcePath:@"/200"] mappingProvider:objectManager.mappingProvider];
     objectLoader.sourceObject = mockObject;
     [[mockObject expect] willSendWithObjectLoader:objectLoader];
     [objectLoader sendSynchronously];

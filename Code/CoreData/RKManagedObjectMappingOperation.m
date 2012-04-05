@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/31/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@
         RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));
         return;
     }
-    RKObjectMapping* objectMapping = (RKObjectMapping*)mapping;
+    RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *) mapping;
     NSAssert(relationshipMapping, @"Unable to find relationship mapping '%@' to connect by primaryKey", relationshipName);
     NSAssert([relationshipMapping isKindOfClass:[RKObjectRelationshipMapping class]], @"Expected mapping for %@ to be a relationship mapping", relationshipName);
     NSAssert([relationshipMapping.mapping isKindOfClass:[RKManagedObjectMapping class]], @"Can only connect RKManagedObjectMapping relationships");
@@ -68,16 +68,22 @@
         if ([valueOfLocalPrimaryKeyAttribute conformsToProtocol:@protocol(NSFastEnumeration)]) {
             RKLogTrace(@"Connecting has-many relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", primaryKeyAttributeOfRelatedObject, valueOfLocalPrimaryKeyAttribute];
-            NSArray *objects = [objectMapping.objectClass findAllWithPredicate:predicate inContext:[self.destinationObject managedObjectContext]];
+            NSFetchRequest *fetchRequest = [NSManagedObject requestAllInContext:[self.destinationObject managedObjectContext]];
+            fetchRequest.predicate = predicate;
+            fetchRequest.entity = objectMapping.entity;
+            NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:[self.destinationObject managedObjectContext]];
             relatedObject = [NSSet setWithArray:objects];
         } else {
             RKLogTrace(@"Connecting has-one relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            relatedObject = [objectMapping.objectClass findFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute inContext:[self.destinationObject managedObjectContext]];
-        }      
+            NSFetchRequest *fetchRequest = [NSManagedObject requestFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute inContext:[self.destinationObject managedObjectContext]];
+            fetchRequest.entity = objectMapping.entity;
+            NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:[self.destinationObject managedObjectContext]];
+            relatedObject = [objects lastObject];
+        }
         if (relatedObject) {                
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {
-RKLogDebug(@"Failed to find object to connect relationship '%@' with primary key value '%@'", relationshipName, valueOfLocalPrimaryKeyAttribute);
+RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with primary key value '%@'", [[objectMapping entity] name], relationshipName, valueOfLocalPrimaryKeyAttribute);
         }
         RKLogTrace(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
         [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];

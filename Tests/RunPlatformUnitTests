@@ -92,8 +92,12 @@ Main() {
     
     if [ "${TEST_HOST}" != "" ]; then
 
-        #Warning ${LINENO} "Skipping tests; the iPhoneSimulator platform does not currently support application-hosted tests (TEST_HOST set)."
-        export OTHER_TEST_FLAGS="-RegisterForSystemEvents"
+        export CFFIXED_USER_HOME="${BUILT_PRODUCTS_DIR}/UserHome/"
+        mkdir -p "${CFFIXED_USER_HOME}"
+        mkdir -p "${CFFIXED_USER_HOME}/Library/Caches"
+        mkdir "${CFFIXED_USER_HOME}/Library/Preferences"
+        mkdir "${CFFIXED_USER_HOME}/Documents"
+        export OTHER_TEST_FLAGS="${OTHER_TEST_FLAGS} -RegisterForSystemEvents"
         RunTestsForApplication "${TEST_HOST}" "${TEST_BUNDLE_PATH}"
         
     else

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 #import "RKAlert.h"
 #import "RKLog.h"
 #import "RKPathMatcher.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "RKDirectory.h"
 
 // Set Logging Component
@@ -34,7 +34,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
 
-static RKClient* sharedClient = nil;
+static RKClient *sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // URL Conveniences functions

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 2/13/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -165,12 +165,11 @@
         BOOL success = [self.objectStore save:&error];
         if (! success) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
-            NSMethodSignature* signature = [(NSObject *)self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
+            NSMethodSignature* signature = [(NSObject *)self methodSignatureForSelector:@selector(informDelegateOfError:)];
             RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
             [invocation setTarget:self.delegate];
-            [invocation setSelector:@selector(objectLoader:didFailWithError:)];
-            [invocation setArgument:&self atIndex:2];
-            [invocation setArgument:&error atIndex:3];
+            [invocation setSelector:@selector(informDelegateOfError:)];
+            [invocation setArgument:&error atIndex:2];
             [invocation invokeOnMainThread];
             return;
         }

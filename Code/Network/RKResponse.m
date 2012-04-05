@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,14 +22,17 @@
 #import "RKNotifications.h"
 #import "RKLog.h"
 #import "RKParserRegistry.h"
+#import "RKRequestCache.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
-extern NSString* cacheResponseCodeKey;
-extern NSString* cacheMIMETypeKey;
-extern NSString* cacheURLKey;
+#define RKResponseIgnoreDelegateIfCancelled(...)                                   \
+if (self.request && [self.request isCancelled]) {                                                  \
+RKLogDebug(@"%s: Ignoring NSURLConnection delegate message sent after cancel.", __PRETTY_FUNCTION__);     \
+return __VA_ARGS__;                                                                \
+}
 
 @implementation RKResponse
 
@@ -83,6 +86,7 @@ extern NSString* cacheURLKey;
 }
 
 - (void)dealloc {
+    _request = nil;
 	[_httpURLResponse release];
 	_httpURLResponse = nil;
 	[_body release];
@@ -129,6 +133,7 @@ extern NSString* cacheURLKey;
 
 // Handle basic auth & SSL certificate validation
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+    RKResponseIgnoreDelegateIfCancelled();
     RKLogDebug(@"Received authentication challenge");
     
 	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
@@ -155,6 +160,7 @@ extern NSString* cacheURLKey;
 }
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)space {
+    RKResponseIgnoreDelegateIfCancelled(NO);
     RKLogDebug(@"Asked if canAuthenticateAgainstProtectionSpace: with authenticationMethod = %@", [space authenticationMethod]);
 	if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		// server is using an SSL certificate that the OS can't validate
@@ -176,6 +182,7 @@ extern NSString* cacheURLKey;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+    RKResponseIgnoreDelegateIfCancelled();
 	[_body appendData:data];
     [_request invalidateTimeoutTimer];
     if ([[_request delegate] respondsToSelector:@selector(request:didReceiveData:totalBytesReceived:totalBytesExpectedToReceive:)]) {
@@ -184,6 +191,7 @@ extern NSString* cacheURLKey;
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
+    RKResponseIgnoreDelegateIfCancelled();
     RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long) [response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
@@ -191,17 +199,20 @@ extern NSString* cacheURLKey;
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+    RKResponseIgnoreDelegateIfCancelled();
 	RKLogTrace(@"Read response body: %@", [self bodyAsString]);
 	[_request didFinishLoad:self];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+    RKResponseIgnoreDelegateIfCancelled();
     _failureError = [error retain];
     [_request invalidateTimeoutTimer];
     [_request didFailLoadWithError:_failureError];
 }
 
 - (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
+    RKResponseIgnoreDelegateIfCancelled(nil);
     RKLogWarning(@"RestKit was asked to retransmit a new body stream for a request. Possible connection error or authentication challenge?");
     return nil;
 }
@@ -213,6 +224,7 @@ extern NSString* cacheURLKey;
 // in connection:didReceiveResponse: to ensure that the RKRequestDelegate
 // callbacks get called in the correct order.
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+    RKResponseIgnoreDelegateIfCancelled();
     [_request invalidateTimeoutTimer];
     
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
@@ -280,21 +292,21 @@ extern NSString* cacheURLKey;
 
 - (NSURL*)URL {
     if ([self wasLoadedFromCache]) {
-        return [NSURL URLWithString:[_responseHeaders valueForKey:cacheURLKey]];
+        return [NSURL URLWithString:[_responseHeaders valueForKey:RKRequestCacheURLKey]];
     }
 	return [_httpURLResponse URL];
 }
 
 - (NSString*)MIMEType {
     if ([self wasLoadedFromCache]) {
-        return [_responseHeaders valueForKey:cacheMIMETypeKey];
+        return [_responseHeaders valueForKey:RKRequestCacheMIMETypeKey];
     }
 	return [_httpURLResponse MIMEType];
 }
 
 - (NSInteger)statusCode {
     if ([self wasLoadedFromCache]) {
-        return [[_responseHeaders valueForKey:cacheResponseCodeKey] intValue];
+        return [[_responseHeaders valueForKey:RKRequestCacheStatusCodeKey] intValue];
     }
     return ([_httpURLResponse respondsToSelector:@selector(statusCode)] ? [_httpURLResponse statusCode] : 200);
 }

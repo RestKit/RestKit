@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 6/15/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
  A library of helpful additions to the NSString class to simplify
  common tasks within RestKit
  */
-@interface NSString (RestKit)
+@interface NSString (RKAdditions)
 
 /**
  Returns a resource path from a dictionary of query parameters URL encoded and appended
@@ -133,5 +133,12 @@
  while @"restkit.org" would return NO
  */
 - (BOOL)isIPAddress;
+
+/**
+ Returns a string of the MD5 sum of the receiver.
+ 
+ @return A new string containing the MD5 sum of the receiver.
+ */
+- (NSString *)MD5;
 
 @end

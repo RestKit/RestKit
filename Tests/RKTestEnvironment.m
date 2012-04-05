@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 3/14/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -38,8 +38,24 @@ void RKTestClearCacheDirectory(void) {
 
 + (void)initialize
 {
+    // Configure fixture bundle
     NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
     [RKTestFixture setFixtureBundle:fixtureBundle];
+
+    // Ensure the required directories exist
+    BOOL directoryExists;
+    NSError *error = nil;
+    directoryExists = [RKDirectory ensureDirectoryExistsAtPath:[RKDirectory applicationDataDirectory] error:&error];
+    if (! directoryExists) {
+        RKLogError(@"Failed to create application data directory. Unable to run tests: %@", error);
+        NSAssert(directoryExists, @"Failed to create application data directory.");
+    }
+
+    directoryExists = [RKDirectory ensureDirectoryExistsAtPath:[RKDirectory cachesDirectory] error:&error];
+    if (! directoryExists) {
+        RKLogError(@"Failed to create caches directory. Unable to run tests: %@", error);
+        NSAssert(directoryExists, @"Failed to create caches directory.");
+    }
 }
 
 @end

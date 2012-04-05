@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/30/10.
-//  Copyright 2010 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@
 #import "RKManagedObjectMapping.h"
 #import "RKManagedObjectMappingOperation.h"
 #import "RKManagedObjectMappingCache.h"
-#import "RKInMemoryMappingCache.h"
-#import "RKFetchRequestMappingCache.h"
+#import "RKInMemoryManagedObjectCache.h"
+#import "RKFetchRequestManagedObjectCache.h"
 #import "RKSearchableManagedObject.h"
 #import "RKSearchWord.h"
 
@@ -35,3 +35,4 @@
 #import "RKObjectMappingProvider+CoreData.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "NSManagedObject+RKAdditions.h"
+#import "NSEntityDescription+RKAdditions.h"

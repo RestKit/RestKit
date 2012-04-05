@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/28/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -176,7 +176,7 @@
         [mockLoader send];
         [responseLoader waitForResponse];
 
-        [mockLoader verify];
+        STAssertNoThrow([mockLoader verify], nil);
         assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
         assertThatBool([responseLoader wasSuccessful], is(equalToBool(YES)));
         assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(NO)));
@@ -192,7 +192,7 @@
         [mockLoader send];
         [responseLoader waitForResponse];
 
-        [mockLoader verify];
+        STAssertNoThrow([mockLoader verify], nil);
         assertThatInteger([RKHuman count:nil], is(equalToInteger(2)));
         assertThatBool([responseLoader wasSuccessful], is(equalToBool(YES)));
         assertThatBool([responseLoader.response wasLoadedFromCache], is(equalToBool(YES)));
@@ -200,5 +200,18 @@
     }
 }
 
+- (void)testTheOnDidFailBlockIsInvokedOnFailure {
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    RKManagedObjectLoader *loader = [objectManager loaderWithResourcePath:@"/fail"];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    __block BOOL invoked = NO;
+    loader.onDidFailWithError = ^ (NSError *error) {
+        invoked = YES;
+    };
+    loader.delegate = responseLoader;
+    [loader sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(invoked, is(equalToBool(YES)));
+}
 
 @end

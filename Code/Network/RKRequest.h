@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -624,6 +624,13 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  @return An RKResponse object with the result of the request.
  */
 - (RKResponse *)sendSynchronously;
+
+/**
+ Returns a Boolean value indicating whether the request has been cancelled.
+
+ @return YES if the request was sent a cancel message, otherwise NO.
+ */
+@property(nonatomic, assign, readonly, getter=isCancelled) BOOL cancelled;
 
 /**
  Cancels the underlying URL connection.

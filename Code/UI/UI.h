@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/8/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@
 #import "RKFetchedResultsTableController.h"
 #import "RKForm.h"
 #import "RKFormSection.h"
-#import "RKTableView.h"
 #import "RKRefreshTriggerView.h"
 #import "RKObjectManager+RKTableController.h"
 #import "UIImage+RKAdditions.h"

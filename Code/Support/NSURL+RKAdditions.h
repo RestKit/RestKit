@@ -1,9 +1,9 @@
 //
-//  NSURL+RestKit.h
+//  NSURL+RKAdditions.h
 //  RestKit
 //
 //  Created by Blake Watters on 10/11/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,21 +18,24 @@
 //  limitations under the License.
 //
 
-#import "NSURL+RestKit.h"
-#import "NSDictionary+RKAdditions.h"
-#import "RKFixCategoryBug.h"
-#import "NSString+RestKit.h"
+#import <Foundation/Foundation.h>
 
-RK_FIX_CATEGORY_BUG(NSURL_RestKit)
+@interface NSURL (RKAdditions)
 
-@implementation NSURL (RestKit)
+/**
+ Returns the query portion of the URL as a dictionary
+ */
+- (NSDictionary *)queryParameters;
 
-- (NSDictionary *)queryParameters {
-    return [NSDictionary dictionaryWithURLEncodedString:self.query];
-}
-
-- (NSString *)MIMETypeForPathExtension {
-    return [[self path] MIMETypeForPathExtension];
-}
+/**
+ Returns the MIME Type for the resource identified by the URL by interpretting the
+ path extension using Core Services.
+ 
+ For example, given a URL to http://restkit.org/monkey.json we would get 
+ @"application/json" as the MIME Type.
+ 
+ @return The expected MIME Type of the resource identified by the URL or nil if unknown
+ */
+- (NSString *)MIMETypeForPathExtension;
 
 @end

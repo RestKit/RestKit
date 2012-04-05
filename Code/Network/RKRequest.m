@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@
 #import "RKNotifications.h"
 #import "Support.h"
 #import "RKURL.h"
-#import "NSData+MD5.h"
-#import "NSString+MD5.h"
+#import "NSData+RKAdditions.h"
+#import "NSString+RKAdditions.h"
 #import "RKLog.h"
 #import "RKRequestCache.h"
 #import "GCOAuth.h"
-#import "NSURL+RestKit.h"
+#import "NSURL+RKAdditions.h"
 #import "RKReachabilityObserver.h"
 #import "RKRequestQueue.h"
 #import "RKParams.h"
@@ -116,6 +116,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize onDidFailLoadWithError;
 @synthesize additionalRootCertificates = _additionalRootCertificates;
 @synthesize disableCertificateValidation = _disableCertificateValidation;
+@synthesize cancelled = _cancelled;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -167,6 +168,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     _connection = nil;
     _isLoading = NO;
     _isLoaded = NO;
+    _cancelled = NO;
 }
 
 - (void)cleanupBackgroundTask {
@@ -383,6 +385,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (void)cancelAndInformDelegate:(BOOL)informDelegate {
+    _cancelled = YES;
 	[_connection cancel];
 	[_connection release];
 	_connection = nil;

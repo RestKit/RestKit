@@ -3,10 +3,12 @@
 //  RKGithub
 //
 //  Created by Blake Watters on 2/16/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTestFactory.h"
+
+static NSString * const RKTestFactoryDefaultStoreFilename = @"RKTests.sqlite";
 
 @interface RKTestFactory ()
 
@@ -114,7 +116,8 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)managedObjectStore
 {
-    RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
+    [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+    RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
     [store deletePersistantStore];
     [RKManagedObjectStore setDefaultObjectStore:store];
     

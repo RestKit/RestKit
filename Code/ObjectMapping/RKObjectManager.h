@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 8/14/09.
-//  Copyright 2009 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -366,7 +366,7 @@ typedef enum {
  For example:
     
     - (void)loadObjectUsingBlockExample {
-        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" delegate:self block:^(RKObjectLoader* loader) {
+        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" usingBlock:^(RKObjectLoader* loader) {
             loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
         }];
     }

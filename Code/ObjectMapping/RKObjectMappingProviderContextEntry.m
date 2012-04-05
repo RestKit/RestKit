@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 1/26/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKObjectMappingProviderContextEntry.h"
