@@ -18,6 +18,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		25678093152D124D000725F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2516F10D144A8841004631A1 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 259C301615128079003066A2;
+			remoteInfo = RestKitResources;
+		};
 		25A34226147D885B0009758D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2516F10D144A8841004631A1 /* RestKit.xcodeproj */;
@@ -153,6 +160,7 @@
 				25A34229147D885B0009758D /* RestKitTests.octest */,
 				25A3422B147D885B0009758D /* RestKit.framework */,
 				25A3422D147D885B0009758D /* RestKitFrameworkTests.octest */,
+				25678094152D124D000725F5 /* RestKitResources.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -211,6 +219,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		25678094152D124D000725F5 /* RestKitResources.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitResources.bundle;
+			remoteRef = 25678093152D124D000725F5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		25A34227147D885B0009758D /* libRestKit.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
