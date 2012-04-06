@@ -20,7 +20,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "RKSearchableManagedObject.h"
+#import <RestKit/RKSearchableManagedObject.h>
 
 @interface RKSearchable : RKSearchableManagedObject
 

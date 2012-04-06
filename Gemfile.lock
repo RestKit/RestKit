@@ -1,20 +1,19 @@
 GIT
-  remote: git://github.com/GateGuru/xcoder.git
-  revision: ba4079305cc28ef46e19c9c4de1ad568c03c3b02
-  branch: gateguru
+  remote: git://github.com/RestKit/RestKit-Gem.git
+  revision: b8fa45c770b20b8b07f18027f14d7b2a4261a43b
   specs:
-    xcoder (0.1.10)
+    restkit (0.0.0)
+
+GIT
+  remote: git://github.com/rayh/xcoder.git
+  revision: 5641054a7dd5e688bf1f2b318b1852d6a20adf20
+  specs:
+    xcoder (0.1.11)
       builder
       json
       nokogiri
       plist
       rest-client
-
-GIT
-  remote: git://github.com/RestKit/RestKit-Gem.git
-  revision: b8fa45c770b20b8b07f18027f14d7b2a4261a43b
-  specs:
-    restkit (0.0.0)
 
 GIT
   remote: git://github.com/sinatra/sinatra.git
@@ -28,10 +27,14 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
+    archive-tar-minitar (0.5.2)
     builder (3.0.0)
+    columnize (0.3.6)
     daemons (1.1.4)
     eventmachine (0.12.10)
     json (1.6.6)
+    linecache19 (0.5.12)
+      ruby_core_source (>= 0.1.4)
     mime-types (1.18)
     nokogiri (1.5.2)
     plist (3.1.0)
@@ -41,6 +44,16 @@ GEM
     rake (0.9.2.2)
     rest-client (1.6.7)
       mime-types (>= 1.16)
+    ruby-debug-base19 (0.11.25)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby_core_source (>= 0.1.4)
+    ruby-debug19 (0.11.6)
+      columnize (>= 0.3.1)
+      linecache19 (>= 0.5.11)
+      ruby-debug-base19 (>= 0.11.19)
+    ruby_core_source (0.1.5)
+      archive-tar-minitar (>= 0.5.2)
     thin (1.3.1)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -54,6 +67,7 @@ DEPENDENCIES
   bundler (~> 1.1.0)
   rake (~> 0.9.0)
   restkit!
+  ruby-debug19
   sinatra!
   thin (~> 1.3.1)
   xcoder!

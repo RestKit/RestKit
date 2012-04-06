@@ -676,7 +676,7 @@
 #pragma mark - Network Load
 
 - (void)testLoadCollectionOfObjectsAndMapThemIntoTableViewCells {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.client.cachePolicy = RKRequestCachePolicyNone;
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
@@ -798,7 +798,7 @@
 #pragma mark - RKTableViewDelegate specs
 
 - (void)testNotifyTheDelegateWhenLoadingStarts {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -820,7 +820,7 @@
 }
 
 - (void)testNotifyTheDelegateWhenLoadingFinishes {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -843,7 +843,7 @@
 }
 
 - (void)testNotifyTheDelegateWhenAnErrorOccurs {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -866,7 +866,7 @@
 }
 
 - (void)testNotifyTheDelegateWhenAnEmptyCollectionIsLoaded {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.client.cachePolicy = RKRequestCachePolicyNone;
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
@@ -891,7 +891,7 @@
 }
 
 - (void)testNotifyTheDelegateWhenModelWillLoadWithObjectLoader {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -914,7 +914,7 @@
 }
 
 - (void)testNotifyTheDelegateWhenModelDidLoadWithObjectLoader {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -937,7 +937,7 @@
 }
 
 - (void)testNotifyTheDelegateWhenModelDidCancelLoad {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -1063,7 +1063,7 @@
 #pragma mark - Notifications
 
 - (void)testPostANotificationWhenLoadingStarts {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -1087,7 +1087,7 @@
 }
 
 - (void)testPostANotificationWhenLoadingFinishes {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -1113,7 +1113,7 @@
 }
 
 - (void)testPostANotificationWhenAnErrorOccurs {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
@@ -1139,7 +1139,7 @@
 }
 
 - (void)testPostANotificationWhenAnEmptyCollectionIsLoaded {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.client.cachePolicy = RKRequestCachePolicyNone;
     RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
@@ -1828,7 +1828,7 @@
 #pragma mark - Reachability Integration
 
 - (void)testTransitionToTheOnlineStateWhenAReachabilityNoticeIsReceived {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     BOOL online = YES;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
@@ -1840,7 +1840,7 @@
 }
 
 - (void)testTransitionToTheOfflineStateWhenAReachabilityNoticeIsReceived {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     BOOL online = NO;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
@@ -1852,7 +1852,7 @@
 }
 
 - (void)testNotifyTheDelegateOnTransitionToOffline {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     [mockManager setExpectationOrderMatters:YES];
     RKObjectManagerNetworkStatus networkStatus = RKObjectManagerNetworkStatusOnline;
@@ -1871,7 +1871,7 @@
 }
 
 - (void)testPostANotificationOnTransitionToOffline {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     [mockManager setExpectationOrderMatters:YES];
     RKObjectManagerNetworkStatus networkStatus = RKObjectManagerNetworkStatusOnline;
@@ -1892,7 +1892,7 @@
 }
 
 - (void)testNotifyTheDelegateOnTransitionToOnline {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     BOOL online = YES;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
@@ -1909,7 +1909,7 @@
 }
 
 - (void)testPostANotificationOnTransitionToOnline {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     BOOL online = YES;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
@@ -1926,7 +1926,7 @@
 }
 
 - (void)testShowTheOfflineImageOnTransitionToOffline {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     [mockManager setExpectationOrderMatters:YES];
     RKObjectManagerNetworkStatus networkStatus = RKObjectManagerNetworkStatusOnline;
@@ -1948,7 +1948,7 @@
 }
 
 - (void)testRemoveTheOfflineImageOnTransitionToOnlineFromOffline {
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     [mockManager setExpectationOrderMatters:YES];
     RKObjectManagerNetworkStatus networkStatus = RKObjectManagerNetworkStatusOnline;

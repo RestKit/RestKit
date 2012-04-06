@@ -12,8 +12,8 @@
 #import "RKManagedObjectMapping.h"
 #import "RKHuman.h"
 #import "RKEvent.h"
-#import "RKManagedObjectCache.h"
 #import "RKAbstractTableController_Internals.h"
+#import "RKManagedObjectCaching.h"
 
 // Expose the object loader delegate for testing purposes...
 @interface RKFetchedResultsTableController () <RKObjectLoaderDelegate>
@@ -56,7 +56,7 @@
 
 - (void)bootstrapStoreAndCache {
 //    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
@@ -70,22 +70,23 @@
     RKHuman* other = [RKHuman createEntity];
     other.railsID = [NSNumber numberWithInt:5678];
     other.name = @"other";
-    NSError* error = [store save];
+    NSError* error = nil;
+    [store save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([RKHuman count:nil], is(equalToInt(2)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
 
-    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
+    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCaching)];
     [[[mockObjectCache stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
-    objectManager.objectStore.managedObjectCache = mockObjectCache;
+    objectManager.objectStore.cacheStrategy = mockObjectCache;
 }
 
 - (void)bootstrapNakedObjectStoreAndCache {
 //    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping *eventMapping = [RKManagedObjectMapping mappingForClass:[RKEvent class] inManagedObjectStore:store];
     [eventMapping mapKeyPath:@"event_id" toAttribute:@"eventID"];
     [eventMapping mapKeyPath:@"type" toAttribute:@"eventType"];
@@ -99,22 +100,23 @@
     nakedEvent.eventType = @"Concert";
     nakedEvent.location = @"Performance Hall";
     nakedEvent.summary = @"Shindig";
-    NSError* error = [store save];
+    NSError* error = nil;
+    [store save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([RKEvent count:nil], is(equalToInt(1)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider addObjectMapping:eventMapping];
     objectManager.objectStore = store;
 
-    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
+    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCaching)];
     [[[mockObjectCache stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
-    objectManager.objectStore.managedObjectCache = mockObjectCache;
+    objectManager.objectStore.cacheStrategy = mockObjectCache;
 }
 
 - (void)bootstrapEmptyStoreAndCache {
 //    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
@@ -123,14 +125,14 @@
     [RKHuman truncateAll];
     assertThatInt([RKHuman count:nil], is(equalToInt(0)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
 
-    id mockObjectCache = [OCMockObject niceMockForProtocol:@protocol(RKManagedObjectCache)];
+    id mockObjectCache = [OCMockObject niceMockForProtocol:@protocol(RKManagedObjectCaching)];
     [[[mockObjectCache stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
     [[[mockObjectCache stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/empty/array"];
-    objectManager.objectStore.managedObjectCache = mockObjectCache;
+    objectManager.objectStore.cacheStrategy = mockObjectCache;
 }
 
 - (void)stubObjectManagerToOnline {

@@ -1,5 +1,5 @@
 ---
-chdir: Tests/Server/Fixtures
+chdir: Tests/Fixtures
 environment: development
 address: 0.0.0.0
 port: 4567

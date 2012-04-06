@@ -2,6 +2,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'xcoder'
 require 'restkit/rake'
+require 'ruby-debug'
 
 RestKit::Rake::ServerTask.new do |t|
   t.port = 4567
@@ -19,32 +20,48 @@ namespace :test do
     system(%q{killall -m -KILL "iPhone Simulator"})
   end
   
-  namespace :units do
-    desc "Run the RestKit unit tests for iOS"
+  namespace :logic do
+    desc "Run the logic tests for iOS"
     task :ios => :kill_simulator do
       config = Xcode.project(:RestKit).target(:RestKitTests).config(:Debug)
       builder = config.builder
       build_dir = File.dirname(config.target.project.path) + '/Build'
       builder.symroot = build_dir + '/Products'
       builder.objroot = build_dir
-    	builder.test('iphonesimulator')
+    	builder.test(:sdk => 'iphonesimulator')
     end
     
-    desc "Run the RestKit unit tests for OS X"
-    task :osx => :kill_simulator do
+    desc "Run the logic tests for OS X"
+    task :osx do
       config = Xcode.project(:RestKit).target(:RestKitFrameworkTests).config(:Debug)
       builder = config.builder
       build_dir = File.dirname(config.target.project.path) + '/Build'
       builder.symroot = build_dir + '/Products'
       builder.objroot = build_dir
-    	builder.test('macosx')
+    	builder.test(:sdk => 'macosx')
+    end
+  end    
+  
+  desc "Run the unit tests for iOS and OS X"
+  task :logic => ['logic:ios', 'logic:osx']
+  
+  namespace :application do
+    desc "Run the application tests for iOS"
+    task :ios => :kill_simulator do
+      config = Xcode.project(:RKApplicationTests).target('Application Tests').config(:Debug)
+      builder = config.builder
+      build_dir = File.dirname(config.target.project.path) + '/Build'
+      builder.symroot = build_dir + '/Products'
+      builder.objroot = build_dir
+    	builder.test(:sdk => 'iphonesimulator')
     end
   end
   
-  desc "Run the RestKit unit tests for iOS and OS X"
-  task :units => ['units:ios', 'units:osx']
-
-  task :all => ['test:units', 'test:integration']
+  desc "Run the application tests for iOS"
+  task :application => 'application:ios'
+  
+  desc "Run all tests for iOS and OS X"
+  task :all => ['test:logic', 'test:application']
 end
 
 desc 'Run all the GateGuru tests'
