@@ -59,8 +59,7 @@
 	NSURL* URL = [NSURL URLWithString:URLString];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
 	RKParams* params = [[RKParams params] retain];
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-	NSString* filePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+	NSString* filePath = [RKTestFixture pathForFixture:@"blake.png"];
 	[params setFile:filePath forParam:@"file"];
 	[params setValue:@"this is the value" forParam:@"test"];
 	request.method = RKRequestMethodPOST;

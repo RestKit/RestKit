@@ -38,8 +38,9 @@ void RKTestClearCacheDirectory(void) {
 
 + (void)initialize
 {
-    // Configure fixture bundle
-    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
+    // Configure fixture bundle. The 'org.restkit.tests' identifier is shared between
+    // the logic and application test bundles
+    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.tests"];
     [RKTestFixture setFixtureBundle:fixtureBundle];
 
     // Ensure the required directories exist
