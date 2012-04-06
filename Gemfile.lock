@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/GateGuru/xcoder.git
-  revision: 01c76b85b3f69039ea02f74d0e853e15a227f291
+  revision: ba4079305cc28ef46e19c9c4de1ad568c03c3b02
   branch: gateguru
   specs:
     xcoder (0.1.10)

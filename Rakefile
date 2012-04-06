@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'bundler/setup'
+require 'xcoder'
 require 'restkit/rake'
 
 RestKit::Rake::ServerTask.new do |t|
@@ -12,6 +13,44 @@ RestKit::Rake::ServerTask.new do |t|
     thin.config_file = 'Tests/Server/thin.yml'
   end
 end
+
+namespace :test do
+  task :kill_simulator do
+    system(%q{killall -m -KILL "iPhone Simulator"})
+  end
+  
+  namespace :units do
+    desc "Run the RestKit unit tests for iOS"
+    task :ios => :kill_simulator do
+      config = Xcode.project(:RestKit).target(:RestKitTests).config(:Debug)
+      builder = config.builder
+      build_dir = File.dirname(config.target.project.path) + '/Build'
+      builder.symroot = build_dir + '/Products'
+      builder.objroot = build_dir
+    	builder.test('iphonesimulator')
+    end
+    
+    desc "Run the RestKit unit tests for OS X"
+    task :osx => :kill_simulator do
+      config = Xcode.project(:RestKit).target(:RestKitFrameworkTests).config(:Debug)
+      builder = config.builder
+      build_dir = File.dirname(config.target.project.path) + '/Build'
+      builder.symroot = build_dir + '/Products'
+      builder.objroot = build_dir
+    	builder.test('macosx')
+    end
+  end
+  
+  desc "Run the RestKit unit tests for iOS and OS X"
+  task :units => ['units:ios', 'units:osx']
+
+  task :all => ['test:units', 'test:integration']
+end
+
+desc 'Run all the GateGuru tests'
+task :test => "test:all"
+
+task :default => "test:all"
 
 def restkit_version
   @restkit_version ||= ENV['VERSION'] || File.read("VERSION").chomp
@@ -32,8 +71,6 @@ def run(command, min_exit_status = 0)
   end
   return $?.exitstatus
 end
-
-task :default => 'test:server'
 
 desc "Build RestKit for iOS and Mac OS X"
 task :build do
