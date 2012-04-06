@@ -1,10 +1,15 @@
 require 'rubygems'
+require 'bundler/setup'
+require 'restkit/rake'
 
-namespace :test do
-  desc "Run the RestKit test server"
-  task :server do
-    server_path = File.dirname(__FILE__) + '/Tests/Server/server.rb'
-    system("ruby \"#{server_path}\"")
+RestKit::Rake::ServerTask.new do |t|
+  t.port = 4567
+  t.pid_file = 'Tests/Server/server.pid'
+  t.rackup_file = 'Tests/Server/server.ru'
+  t.log_file = 'Tests/Server/server.log'
+
+  t.adapter(:thin) do |thin|
+    thin.config_file = 'Tests/Server/thin.yml'
   end
 end
 
@@ -92,33 +97,6 @@ namespace :docs do
   end
 end
 
-def is_port_open?(ip, port)
-  require 'socket'
-  require 'timeout'
-  
-  begin
-    Timeout::timeout(1) do
-      begin
-        s = TCPSocket.new(ip, port)
-        s.close
-        return true
-      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-        return false
-      end
-    end
-  rescue Timeout::Error
-  end
-
-  return false
-end
-
-task :ensure_server_is_running do
-  unless is_port_open?('127.0.0.1', 4567)
-    puts "Unable to find RestKit Test server listening on port 4567. Run `rake test:server` and try again."
-    exit(-1)
-  end
-end
-
 namespace :build do
   desc "Build all Example projects to ensure they are building properly"
   task :examples do
@@ -143,6 +121,6 @@ namespace :build do
 end
 
 desc "Validate a branch is ready for merging by checking for common issues"
-task :validate => [:ensure_server_is_running, :build, 'docs:check', 'uispec:all'] do  
+task :validate => [:build, 'docs:check', 'uispec:all'] do  
   puts "Project state validated successfully. Proceed with merge."
 end
