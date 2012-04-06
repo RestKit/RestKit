@@ -34,7 +34,7 @@
  */
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
-/// @name Cacheing Objects by Attribute
+/// @name Caching Objects by Attribute
 
 /**
  Retrieves all objects within the cache

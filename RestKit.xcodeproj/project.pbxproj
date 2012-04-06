@@ -664,8 +664,8 @@
 		25EC1A4814F7394200C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */ = {isa = PBXBuildFile; fileRef = 73DA8E2014D1C3870054DD73 /* RKObjectMappingProviderContextEntry.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1A4A14F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1A4914F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m */; };
 		25EC1A4B14F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1A4914F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m */; };
-		25EC1A6314F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectMappingCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25EC1A6514F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectMappingCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1ABC14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1AB814F8019F00C3CF3F /* RKRefreshGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1ABD14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1AB814F8019F00C3CF3F /* RKRefreshGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1ABE14F8019F00C3CF3F /* RKRefreshGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1AB914F8019F00C3CF3F /* RKRefreshGestureRecognizer.m */; };
@@ -1162,7 +1162,7 @@
 		49D2759C14C9EF1E0090845D /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.txt; path = iso8601parser/README.txt; sourceTree = "<group>"; };
 		49D275AB14C9F3020090845D /* RKISO8601DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKISO8601DateFormatter.h; sourceTree = "<group>"; };
 		49D275AC14C9F3020090845D /* RKISO8601DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKISO8601DateFormatter.m; sourceTree = "<group>"; };
-		7394DF3514CF157A00CE7BCE /* RKManagedObjectMappingCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectMappingCache.h; sourceTree = "<group>"; };
+		7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectCaching.h; sourceTree = "<group>"; };
 		7394DF3814CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKFetchRequestManagedObjectCache.h; sourceTree = "<group>"; };
 		7394DF3914CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchRequestManagedObjectCache.m; sourceTree = "<group>"; };
 		7394DF3C14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKInMemoryManagedObjectCache.h; sourceTree = "<group>"; };
@@ -1337,7 +1337,7 @@
 				25160D4B145650490060A5C5 /* RKManagedObjectLoader.m */,
 				25160D4C145650490060A5C5 /* RKManagedObjectMapping.h */,
 				25160D4D145650490060A5C5 /* RKManagedObjectMapping.m */,
-				7394DF3514CF157A00CE7BCE /* RKManagedObjectMappingCache.h */,
+				7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */,
 				25160D4E145650490060A5C5 /* RKManagedObjectMappingOperation.h */,
 				25160D4F145650490060A5C5 /* RKManagedObjectMappingOperation.m */,
 				25160D50145650490060A5C5 /* RKManagedObjectSeeder.h */,
@@ -2191,7 +2191,7 @@
 				25EC1A3D14F72B2800C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A4114F72C7200C3CF3F /* RKObjectMappingProvider+CoreData.h in Headers */,
 				25EC1A4714F7394100C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */,
-				25EC1A6314F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */,
+				25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
 				25EC1ABC14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */,
 				25EC1AC014F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */,
 				25EC1B3914F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */,
@@ -2311,7 +2311,7 @@
 				25EC1A3E14F72B2900C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A4214F72C7300C3CF3F /* RKObjectMappingProvider+CoreData.h in Headers */,
 				25EC1A4814F7394200C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */,
-				25EC1A6514F7402A00C3CF3F /* RKManagedObjectMappingCache.h in Headers */,
+				25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
 				25EC1ABD14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */,
 				25EC1AC114F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */,
 				25EC1B3A14F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */,
