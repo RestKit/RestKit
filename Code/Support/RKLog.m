@@ -36,8 +36,9 @@ void RKLogInitialize(void) {
 
 
 void RKLogConfigureFromEnvironment(void) {
-
-    NSOrderedSet *validEnvVariables = [NSOrderedSet orderedSetWithObjects:
+    Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
+    
+    id *validEnvVariables = [orderedSetClass orderedSetWithObjects:
                                        @"RKLogLevel.App",
                                        @"RKLogLevel.RestKit",
                                        @"RKLogLevel.RestKit.CoreData",
