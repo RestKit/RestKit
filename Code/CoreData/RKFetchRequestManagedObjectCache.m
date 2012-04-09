@@ -33,6 +33,7 @@
     [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, primaryKeyValue]];
     NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest];
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
+    [fetchRequest release];
 
     NSManagedObject *object = nil;
     if ([objects count] > 0) {

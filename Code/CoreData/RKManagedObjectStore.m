@@ -134,7 +134,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         _delegate = delegate;
 
 		[self createPersistentStoreCoordinator];
-        self.primaryManagedObjectContext = [self newManagedObjectContext];
+        self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
         
 
         _cacheStrategy = [RKInMemoryManagedObjectCache new];
@@ -359,7 +359,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 	[self deletePersistantStoreUsingSeedDatabaseName:nil];
     
     // Recreate the MOC
-    self.primaryManagedObjectContext = [self newManagedObjectContext];
+    self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
 }
 
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread {

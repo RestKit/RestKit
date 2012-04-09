@@ -175,7 +175,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 
     @synchronized(_prepareCellBlocks) {
         for (void (^block)(UITableViewCell *) in _prepareCellBlocks) {
-            [copy addPrepareCellBlock:[block copy]];
+            [copy addPrepareCellBlock:block];
         }
     }
 
@@ -243,7 +243,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 #pragma mark - Control Action Helpers
 
 - (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block {
-    [_prepareCellBlocks addObject:[block copy]];
+    [_prepareCellBlocks addObject:block];
 }
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath {
