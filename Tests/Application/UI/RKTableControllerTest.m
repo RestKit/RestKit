@@ -20,8 +20,9 @@
 
 @interface RKTestTableControllerDelegate : NSObject <RKTableControllerDelegate>
 
-@property (nonatomic, assign) NSTimeInterval timeout;
-@property (nonatomic, assign) BOOL awaitingResponse;
+@property(nonatomic, readonly, getter = isCancelled) BOOL cancelled;
+@property(nonatomic, assign) NSTimeInterval timeout;
+@property(nonatomic, assign) BOOL awaitingResponse;
 
 + (id)tableControllerDelegate;
 - (void)waitForLoad;
@@ -31,6 +32,7 @@
 
 @synthesize timeout = _timeout;
 @synthesize awaitingResponse = _awaitingResponse;
+@synthesize cancelled = _cancelled;
 
 + (id)tableControllerDelegate {
     return [[self new] autorelease];
@@ -41,6 +43,7 @@
 	if (self) {
 		_timeout = 3;
 		_awaitingResponse = NO;
+        _cancelled = NO;
 	}
 
 	return self;
@@ -51,10 +54,12 @@
 	NSDate* startDate = [NSDate date];
 
 	while (_awaitingResponse) {
+        NSLog(@"Awaiting response = %d", _awaitingResponse);
 		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
-			[NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
-			_awaitingResponse = NO;
+            NSLog(@"%@: Timed out!!!", self);
+            _awaitingResponse = NO;
+			[NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];			
 		}
 	}
 }
@@ -69,6 +74,11 @@
     _awaitingResponse = NO;
 }
 
+- (void)tableControllerDidCancelLoad:(RKAbstractTableController*)tableController {
+    _awaitingResponse = NO;
+    _cancelled = YES;
+}
+
 // NOTE - Delegate methods below are implemented to allow trampoline through
 // OCMock expectations
 
@@ -76,7 +86,6 @@
 - (void)tableControllerDidBecomeEmpty:(RKAbstractTableController*)tableController {}
 - (void)tableController:(RKAbstractTableController*)tableController willLoadTableWithObjectLoader:(RKObjectLoader*)objectLoader {}
 - (void)tableController:(RKAbstractTableController*)tableController didLoadTableWithObjectLoader:(RKObjectLoader*)objectLoader {}
-- (void)tableControllerDidCancelLoad:(RKAbstractTableController*)tableController {}
 - (void)tableController:(RKAbstractTableController*)tableController willBeginEditing:(id)object atIndexPath:(NSIndexPath*)indexPath {}
 - (void)tableController:(RKAbstractTableController*)tableController didEndEditing:(id)object atIndexPath:(NSIndexPath*)indexPath {}
 - (void)tableController:(RKAbstractTableController*)tableController didInsertSection:(RKTableSection*)section atIndex:(NSUInteger)sectionIndex {}
@@ -89,10 +98,10 @@
 
 @end
 
-@interface RKTableControllerSpecTableViewController : UITableViewController
+@interface RKTableControllerTestTableViewController : UITableViewController
 @end
 
-@implementation RKTableControllerSpecTableViewController
+@implementation RKTableControllerTestTableViewController
 @end
 
 @interface RKTableControllerSpecViewController : UIViewController
@@ -109,30 +118,24 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface RKTableControllerTest : SenTestCase {
-    NSAutoreleasePool *_autoreleasePool;
-}
+@interface RKTableControllerTest : SenTestCase
 
 @end
 
 @implementation RKTableControllerTest
 
-- (void)setUp {
-    // Ensure the fixture bundle is configured
-    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.Application-Tests"];
-    [RKTestFixture setFixtureBundle:fixtureBundle];
-
-//    [RKObjectManager setSharedManager:nil];
-//    _autoreleasePool = [[NSAutoreleasePool alloc] init];
+- (void)setUp
+{
+    [RKTestFactory setUp];
 }
 
-- (void)tearDown {
-//    [_autoreleasePool drain];
-//    _autoreleasePool = nil;
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
 }
 
 - (void)testInitializeWithATableViewController {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     assertThat(viewController.tableView, is(notNilValue()));
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThat(tableController.viewController, is(equalTo(viewController)));
@@ -148,7 +151,7 @@
 }
 
 - (void)testAlwaysHaveAtLeastOneSection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     assertThat(viewController.tableView, is(notNilValue()));
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
@@ -157,7 +160,7 @@
 - (void)testDisconnectFromTheTableViewOnDealloc {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
     [pool drain];
@@ -166,7 +169,7 @@
 }
 
 - (void)testNotDisconnectFromTheTableViewIfDelegateOrDataSourceAreNotSelf {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [[RKTableController alloc] initWithTableView:viewController.tableView viewController:viewController];
     viewController.tableView.delegate = viewController;
     viewController.tableView.dataSource = viewController;
@@ -179,7 +182,7 @@
 #pragma mark - Section Management
 
 - (void)testAddASection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -190,11 +193,11 @@
     tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThatInt([tableController.sections count], is(equalToInt(2)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testConnectTheSectionToTheTableModelOnAdd {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -205,11 +208,11 @@
     tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThat(section.tableController, is(equalTo(tableController)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testConnectTheSectionToTheCellMappingsOfTheTableModelWhenNil {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -221,11 +224,11 @@
     assertThat(section.cellMappings, is(nilValue()));
     [tableController addSection:section];
     assertThat(section.cellMappings, is(equalTo(tableController.cellMappings)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotConnectTheSectionToTheCellMappingsOfTheTableModelWhenNonNil {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -237,11 +240,11 @@
     section.cellMappings = [NSMutableDictionary dictionary];
     [tableController addSection:section];
     assertThatBool(section.cellMappings == tableController.cellMappings, is(equalToBool(NO)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testCountTheSections {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -252,11 +255,11 @@
     tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRemoveASection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -272,11 +275,11 @@
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
     [tableController removeSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotLetRemoveTheLastSection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -288,11 +291,11 @@
     [tableController addSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
     [tableController removeSection:section];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testInsertASectionAtASpecificIndex {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* referenceSection = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -308,11 +311,11 @@
     [tableController insertSection:referenceSection atIndex:2];
     assertThatInt(tableController.sectionCount, is(equalToInt(6)));
     assertThat([tableController.sections objectAtIndex:2], is(equalTo(referenceSection)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRemoveASectionByIndex {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -328,11 +331,11 @@
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
     [tableController removeSectionAtIndex:1];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRaiseAnExceptionWhenAttemptingToRemoveTheLastSection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     NSException* exception = nil;
     @try {
@@ -347,7 +350,7 @@
 }
 
 - (void)testReturnTheSectionAtAGivenIndex {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* referenceSection = [RKTableSection section];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -363,11 +366,11 @@
     [tableController insertSection:referenceSection atIndex:2];
     assertThatInt(tableController.sectionCount, is(equalToInt(6)));
     assertThat([tableController sectionAtIndex:2], is(equalTo(referenceSection)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRemoveAllSections {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
@@ -409,11 +412,11 @@
     assertThatInt(tableController.sectionCount, is(equalToInt(5)));
     [tableController removeAllSections];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testReturnASectionByHeaderTitle {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
@@ -461,7 +464,7 @@
 #pragma mark - UITableViewDataSource specs
 
 - (void)testRaiseAnExceptionIfSentAMessageWithATableViewItIsNotBoundTo {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     NSException* exception = nil;
     @try {
@@ -476,7 +479,7 @@
 }
 
 - (void)testReturnTheNumberOfSectionsInTableView {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatInt([tableController numberOfSectionsInTableView:viewController.tableView], is(equalToInt(1)));
     [tableController addSection:[RKTableSection section]];
@@ -484,7 +487,7 @@
 }
 
 - (void)testReturnTheNumberOfRowsInSectionInTableView {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatInt([tableController tableView:viewController.tableView numberOfRowsInSection:0], is(equalToInt(0)));
     NSArray* objects = [NSArray arrayWithObject:@"one"];
@@ -493,7 +496,7 @@
 }
 
 - (void)testReturnTheHeaderTitleForSection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     [tableController addSection:section];
@@ -503,7 +506,7 @@
 }
 
 - (void)testReturnTheTitleForFooterInSection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     [tableController addSection:section];
@@ -513,7 +516,7 @@
 }
 
 - (void)testReturnTheNumberOfRowsAcrossAllSections {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
     id sectionMock = [OCMockObject partialMockForObject:section];
@@ -524,7 +527,7 @@
 }
 
 - (void)testReturnTheTableViewCellForRowAtIndexPath {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* item = [RKTableItem tableItemWithText:@"Test!" detailText:@"Details!" image:nil];
     [tableController loadTableItems:[NSArray arrayWithObject:item] inSection:0 withMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
@@ -541,13 +544,13 @@
 #pragma mark - Table Cell Mapping
 
 - (void)testInitializeCellMappings {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThat(tableController.cellMappings, is(notNilValue()));
 }
 
 - (void)testRegisterMappingsForObjectsToTableViewCell {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThat([tableController.cellMappings cellMappingForClass:[RKTestUser class]], is(nilValue()));
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMapping]];
@@ -557,7 +560,7 @@
 }
 
 - (void)testDefaultTheReuseIdentifierToTheNameOfTheObjectClass {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThat([tableController.cellMappings cellMappingForClass:[RKTestUser class]], is(nilValue()));
     RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping cellMapping];
@@ -566,7 +569,7 @@
 }
 
 - (void)testDefaultTheReuseIdentifierToTheNameOfTheObjectClassWhenCreatingMappingWithBlockSyntax {
-    RKTableControllerSpecTableViewController *viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController *viewController = [RKTableControllerTestTableViewController new];
     RKTableController *tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThat([tableController.cellMappings cellMappingForClass:[RKTestUser class]], is(nilValue()));
     RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
@@ -577,7 +580,7 @@
 }
 
 - (void)testReturnTheObjectForARowAtIndexPath {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTestUser* user = [RKTestUser user];
     [tableController loadObjects:[NSArray arrayWithObject:user]];
@@ -586,7 +589,7 @@
 }
 
 - (void)testReturnTheCellMappingForTheRowAtIndexPath {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping cellMapping];
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:cellMapping];
@@ -616,7 +619,7 @@
 }
 
 - (void)testChangeTheReuseIdentifierWhenMutatedWithinTheBlockInitializer {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThat([tableController.cellMappings cellMappingForClass:[RKTestUser class]], is(nilValue()));
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
@@ -631,7 +634,7 @@
 #pragma mark - Static Object Loading
 
 - (void)testLoadAnArrayOfObjects {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     NSArray* objects = [NSArray arrayWithObject:@"one"];
     assertThat([tableController sectionAtIndex:0].objects, is(empty()));
@@ -640,7 +643,7 @@
 }
 
 - (void)testLoadAnArrayOfObjectsToTheSpecifiedSection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addSection:[RKTableSection section]];
     NSArray* objects = [NSArray arrayWithObject:@"one"];
@@ -650,7 +653,7 @@
 }
 
 - (void)testLoadAnArrayOfTableItems {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     NSArray* tableItems = [RKTableItem tableItemsFromStrings:@"One", @"Two", @"Three", nil];
     [tableController loadTableItems:tableItems];
@@ -665,7 +668,7 @@
 }
 
 - (void)testAllowYouToTriggerAnEmptyLoad {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     [tableController loadEmpty];
@@ -678,7 +681,7 @@
 - (void)testLoadCollectionOfObjectsAndMapThemIntoTableViewCells {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.client.cachePolicy = RKRequestCachePolicyNone;
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -700,7 +703,7 @@
 }
 
 - (void)testSetTheModelToTheLoadedStateIfObjectsAreLoadedSuccessfully {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     NSArray* objects = [NSArray arrayWithObject:[RKTestUser new]];
@@ -711,7 +714,7 @@
 }
 
 - (void)testSetTheModelToErrorStateIfTheObjectLoaderFailsWithAnError {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     id mockObjectLoader = [OCMockObject niceMockForClass:[RKObjectLoader class]];
     NSError* error = [NSError errorWithDomain:@"Test" code:0 userInfo:nil];
@@ -723,7 +726,7 @@
 }
 
 - (void)testSetTheModelToAnEmptyStateIfTheObjectLoaderReturnsAnEmptyCollection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     NSArray* objects = [NSArray array];
@@ -734,7 +737,7 @@
 }
 
 - (void)testSetTheModelToALoadedStateEvenIfTheObjectLoaderReturnsAnEmptyCollection {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     NSArray* objects = [NSArray array];
@@ -746,7 +749,7 @@
 }
 
 - (void)testEnterTheLoadingStateWhenTheRequestStartsLoading {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     assertThatBool([tableController isLoading], is(equalToBool(NO)));
@@ -756,7 +759,7 @@
 }
 
 - (void)testExitTheLoadingStateWhenTheRequestFinishesLoading {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     assertThatBool([tableController isLoading], is(equalToBool(NO)));
@@ -768,7 +771,7 @@
 }
 
 - (void)testClearTheLoadingStateWhenARequestIsCancelled {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     assertThatBool([tableController isLoading], is(equalToBool(NO)));
@@ -780,7 +783,7 @@
 }
 
 - (void)testClearTheLoadingStateWhenARequestTimesOut {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     assertThatBool([tableController isLoading], is(equalToBool(NO)));
@@ -799,7 +802,7 @@
 
 - (void)testNotifyTheDelegateWhenLoadingStarts {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -816,12 +819,12 @@
         }];
     }];
     [mockDelegate waitForLoad];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenLoadingFinishes {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -839,12 +842,12 @@
         }];
     }];
     [mockDelegate waitForLoad];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenAnErrorOccurs {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -862,13 +865,13 @@
         }];
     }];
     [mockDelegate waitForLoad];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenAnEmptyCollectionIsLoaded {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.client.cachePolicy = RKRequestCachePolicyNone;
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -887,12 +890,12 @@
         }];
     }];
     [mockDelegate waitForLoad];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenModelWillLoadWithObjectLoader {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -910,12 +913,12 @@
         }];
     }];
     [mockDelegate waitForLoad];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenModelDidLoadWithObjectLoader {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -933,12 +936,12 @@
         }];
     }];
     [mockDelegate waitForLoad];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenModelDidCancelLoad {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -956,12 +959,11 @@
         }];
     }];
     [tableController cancelLoad];
-    [mockDelegate waitForLoad];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenDidEndEditingARow {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -972,11 +974,11 @@
     tableController.delegate = mockDelegate;
     [tableController loadTableItems:[NSArray arrayWithObject:tableItem]];
     [tableController tableView:tableController.tableView didEndEditingRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenWillBeginEditingARow {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
@@ -987,12 +989,12 @@
     tableController.delegate = mockDelegate;
     [tableController loadTableItems:[NSArray arrayWithObject:tableItem]];
     [tableController tableView:tableController.tableView willBeginEditingRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenAnObjectIsInserted {
     NSArray* objects = [NSArray arrayWithObject:@"first object"];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
@@ -1009,12 +1011,12 @@
     [[tableController.sections objectAtIndex:0] insertObject:@"new object" atIndex:1];
     assertThat([[tableController.sections objectAtIndex:0] objectAtIndex:0], is(equalTo(@"first object")));
     assertThat([[tableController.sections objectAtIndex:0] objectAtIndex:1], is(equalTo(@"new object")));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenAnObjectIsUpdated {
     NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
@@ -1033,12 +1035,12 @@
     assertThat([[tableController.sections objectAtIndex:0] objectAtIndex:1], is(equalTo(@"second object")));
     [[tableController.sections objectAtIndex:0] replaceObjectAtIndex:1 withObject:@"new second object"];
     assertThat([[tableController.sections objectAtIndex:0] objectAtIndex:1], is(equalTo(@"new second object")));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotifyTheDelegateWhenAnObjectIsDeleted {
     NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
@@ -1057,14 +1059,14 @@
     assertThat([[tableController.sections objectAtIndex:0] objectAtIndex:1], is(equalTo(@"second object")));
     [[tableController.sections objectAtIndex:0] removeObjectAtIndex:1];
     assertThat([[tableController.sections objectAtIndex:0] objectAtIndex:0], is(equalTo(@"first object")));
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 #pragma mark - Notifications
 
 - (void)testPostANotificationWhenLoadingStarts {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -1088,7 +1090,7 @@
 
 - (void)testPostANotificationWhenLoadingFinishes {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -1114,7 +1116,7 @@
 
 - (void)testPostANotificationWhenAnErrorOccurs {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -1141,7 +1143,7 @@
 - (void)testPostANotificationWhenAnEmptyCollectionIsLoaded {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.client.cachePolicy = RKRequestCachePolicyNone;
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
@@ -1167,7 +1169,7 @@
 #pragma mark - State Views
 
 - (void)testPermitYouToOverlayAnImageOnTheTable {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     [tableController showImageInOverlay:image];
@@ -1177,7 +1179,7 @@
 }
 
 - (void)testPermitYouToRemoveAnImageOverlayFromTheTable {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     [tableController showImageInOverlay:image];
@@ -1187,7 +1189,7 @@
 }
 
 - (void)testTriggerDisplayOfTheErrorViewOnTransitionToErrorState {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     tableController.imageForError = image;
@@ -1200,7 +1202,7 @@
 }
 
 - (void)testTriggerHidingOfTheErrorViewOnTransitionOutOfTheErrorState {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     tableController.imageForError = image;
@@ -1216,7 +1218,7 @@
 }
 
 - (void)testTriggerDisplayOfTheEmptyViewOnTransitionToEmptyState {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     tableController.imageForEmpty = image;
@@ -1228,7 +1230,7 @@
 }
 
 - (void)testTriggerHidingOfTheEmptyViewOnTransitionOutOfTheEmptyState {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     tableController.imageForEmpty = image;
@@ -1242,7 +1244,7 @@
 }
 
 - (void)testTriggerDisplayOfTheLoadingViewOnTransitionToTheLoadingState {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     tableController.loadingView = spinner;
@@ -1252,7 +1254,7 @@
 }
 
 - (void)testTriggerHidingOfTheLoadingViewOnTransitionOutOfTheLoadingState {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     tableController.loadingView = spinner;
@@ -1267,7 +1269,7 @@
 #pragma mark - Header, Footer, and Empty Rows
 
 - (void)testShowHeaderRows {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Header";
@@ -1298,7 +1300,7 @@
 }
 
 - (void)testShowFooterRows {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Footer";
@@ -1329,7 +1331,7 @@
 }
 
 - (void)testHideHeaderRowsWhenEmptyWhenPropertyIsNotSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Header";
@@ -1349,7 +1351,7 @@
 }
 
 - (void)testHideFooterRowsWhenEmptyWhenPropertyIsNotSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addFooterRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Footer";
@@ -1369,7 +1371,7 @@
 }
 
 - (void)testRemoveHeaderAndFooterCountsWhenDeterminingIsEmpty {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Header";
@@ -1398,7 +1400,7 @@
 }
 
 - (void)testNotShowTheEmptyItemWhenTheTableIsNotEmpty {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Header";
@@ -1449,7 +1451,7 @@
 }
 
 - (void)testShowTheEmptyItemWhenTheTableIsEmpty {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Header";
@@ -1490,7 +1492,7 @@
 }
 
 - (void)testShowTheEmptyItemPlusHeadersAndFootersWhenTheTableIsEmpty {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addHeaderRowForItem:[RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Header";
@@ -1533,7 +1535,7 @@
 #pragma mark - UITableViewDelegate specs
 
 - (void)testInvokeTheOnSelectCellForObjectAtIndexPathBlockHandler {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     __block BOOL dispatched = NO;
@@ -1547,7 +1549,7 @@
 }
 
 - (void)testInvokeTheOnCellWillAppearForObjectAtIndexPathBlockHandler {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     __block BOOL dispatched = NO;
@@ -1562,7 +1564,7 @@
 }
 
 - (void)testOptionallyHideHeaderRowsWhenTheyAppearAndTheTableIsEmpty {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.showsHeaderRowsWhenEmpty = NO;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -1575,7 +1577,7 @@
 }
 
 - (void)testOptionallyHideFooterRowsWhenTheyAppearAndTheTableIsEmpty {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.showsFooterRowsWhenEmpty = NO;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -1588,7 +1590,7 @@
 }
 
 - (void)testInvokeABlockCallbackWhenTheCellAccessoryButtonIsTapped {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     __block BOOL dispatched = NO;
@@ -1602,7 +1604,7 @@
 }
 
 - (void)testInvokeABlockCallbackWhenTheDeleteConfirmationButtonTitleIsDetermined {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     NSString* deleteTitle = @"Delete Me";
@@ -1617,7 +1619,7 @@
 }
 
 - (void)testInvokeABlockCallbackWhenCellEditingStyleIsDetermined {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canEditRows = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -1632,7 +1634,7 @@
 }
 
 - (void)testInvokeABlockCallbackWhenACellIsMoved {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canMoveRows = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -1650,7 +1652,7 @@
 #pragma mark Variable Height Rows
 
 - (void)testReturnTheRowHeightConfiguredOnTheTableViewWhenVariableHeightRowsIsDisabled {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.variableHeightRows = NO;
     tableController.tableView.rowHeight = 55;
@@ -1663,7 +1665,7 @@
 }
 
 - (void)testReturnTheHeightFromTheTableCellMappingWhenVariableHeightRowsAreEnabled {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.variableHeightRows = YES;
     tableController.tableView.rowHeight = 55;
@@ -1676,7 +1678,7 @@
 }
 
 - (void)testInvokeAnBlockCallbackToDetermineTheCellHeightWhenVariableHeightRowsAreEnabled {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.variableHeightRows = YES;
     tableController.tableView.rowHeight = 55;
@@ -1692,7 +1694,7 @@
 #pragma mark - Editing
 
 - (void)testAllowEditingWhenTheCanEditRowsPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canEditRows = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -1703,7 +1705,7 @@
 }
 
 - (void)testCommitADeletionWhenTheCanEditRowsPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canEditRows = YES;
     [tableController loadObjects:[NSArray arrayWithObjects:@"First Object", @"Second Object", nil]];
@@ -1720,7 +1722,7 @@
 }
 
 - (void)testNotCommitADeletionWhenTheCanEditRowsPropertyIsNotSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController loadObjects:[NSArray arrayWithObjects:@"First Object", @"Second Object", nil]];
     assertThatInt([tableController rowCount], is(equalToInt(2)));
@@ -1738,7 +1740,7 @@
 }
 
 - (void)testDoNothingToCommitAnInsertionWhenTheCanEditRowsPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canEditRows = YES;
     [tableController loadObjects:[NSArray arrayWithObjects:@"First Object", @"Second Object", nil]];
@@ -1757,7 +1759,7 @@
 }
 
 - (void)testAllowMovingWhenTheCanMoveRowsPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canMoveRows = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -1768,7 +1770,7 @@
 }
 
 - (void)testMoveARowWithinASectionWhenTheCanMoveRowsPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canMoveRows = YES;
     [tableController loadObjects:[NSArray arrayWithObjects:@"First Object", @"Second Object", nil]];
@@ -1787,7 +1789,7 @@
 }
 
 - (void)testMoveARowAcrossSectionsWhenTheCanMoveRowsPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canMoveRows = YES;
     [tableController loadObjects:[NSArray arrayWithObjects:@"First Object", @"Second Object", nil]];
@@ -1808,7 +1810,7 @@
 }
 
 - (void)testNotMoveARowWhenTheCanMoveRowsPropertyIsNotSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController loadObjects:[NSArray arrayWithObjects:@"First Object", @"Second Object", nil]];
     assertThatInt([tableController rowCount], is(equalToInt(2)));
@@ -1832,7 +1834,7 @@
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     BOOL online = YES;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOnlineNotification object:objectManager];
@@ -1844,7 +1846,7 @@
     id mockManager = [OCMockObject partialMockForObject:objectManager];
     BOOL online = NO;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOfflineNotification object:objectManager];
@@ -1861,13 +1863,13 @@
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
     online = NO; // After the notification is posted
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKTableControllerDelegate)];
     [[mockDelegate expect] tableControllerDidBecomeOffline:tableController];
     tableController.delegate = mockDelegate;
     [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOfflineNotification object:objectManager];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testPostANotificationOnTransitionToOffline {
@@ -1880,7 +1882,7 @@
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
     online = NO; // After the notification is posted
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
 
     id observerMock = [OCMockObject observerMock];
@@ -1894,26 +1896,31 @@
 - (void)testNotifyTheDelegateOnTransitionToOnline {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
-    BOOL online = YES;
+    BOOL online = NO;
+    [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
+    online = YES;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    [RKObjectManager setSharedManager:nil]; // Don't want the controller to initialize with the sharedManager...
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
     id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKTableControllerDelegate)];
     [[mockDelegate expect] tableControllerDidBecomeOnline:tableController];
     tableController.delegate = mockDelegate;
     [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOnlineNotification object:objectManager];
-    [mockDelegate verify];
-    [mockManager release];
-    [mockDelegate release];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testPostANotificationOnTransitionToOnline {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     id mockManager = [OCMockObject partialMockForObject:objectManager];
-    BOOL online = YES;
+    BOOL online = NO;
+    [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
+    online = YES;
     [[[mockManager stub] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    [RKObjectManager setSharedManager:nil]; // Don't want the controller to initialize with the sharedManager...
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.objectManager = objectManager;
 
@@ -1935,7 +1942,7 @@
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
     online = NO; // After the notification is posted
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     tableController.imageForOffline = image;
@@ -1957,7 +1964,7 @@
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
     online = NO; // After the notification is posted
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     tableController.imageForOffline = image;
@@ -1979,7 +1986,7 @@
 #pragma mark - Swipe Menus
 
 - (void)testAllowSwipeMenusWhenTheSwipeViewsEnabledPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -1989,7 +1996,7 @@
 }
 
 - (void)testNotAllowEditingWhenTheSwipeViewsEnabledPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -2000,7 +2007,7 @@
 }
 
 - (void)testRaiseAnExceptionWhenEnablingSwipeViewsWhenTheCanEditRowsPropertyIsSet {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canEditRows = YES;
 
@@ -2017,7 +2024,7 @@
 }
 
 - (void)testCallTheDelegateBeforeShowingTheSwipeView {
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -2032,12 +2039,12 @@
     [tableController addSwipeViewTo:[RKTestUserTableViewCell new]
                         withObject:@"object"
                          direction:UISwipeGestureRecognizerDirectionRight];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testCallTheDelegateBeforeHidingTheSwipeView {
 //    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
-    RKTableControllerSpecTableViewController* viewController = [RKTableControllerSpecTableViewController new];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
@@ -2060,7 +2067,7 @@
                                            finished:nil
                                             context:nil];
     [tableController removeSwipeView:YES];
-    [mockDelegate verify];
+    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 @end
