@@ -37,6 +37,10 @@ static NSBundle *fixtureBundle = nil;
     fixtureBundle = bundle;
 }
 
++ (NSString *)pathForFixture:(NSString *)fixtureName {
+    return [[self fixtureBundle] pathForResource:fixtureName ofType:nil];
+}
+
 #if TARGET_OS_IPHONE
 + (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName {
     return [[self fixtureBundle] imageWithContentsOfResource:fixtureName withExtension:nil];

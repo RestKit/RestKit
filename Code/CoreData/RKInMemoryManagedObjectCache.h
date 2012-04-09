@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RKManagedObjectMappingCache.h"
+#import "RKManagedObjectCaching.h"
 #import "RKInMemoryEntityCache.h"
 
 /**
@@ -14,6 +14,6 @@
  memory to avoid hitting the Core Data persistent store. Performance is greatly
  increased over fetch request based strategy at the expense of memory consumption.
  */
-@interface RKInMemoryManagedObjectCache : NSObject <RKManagedObjectCacheing>
+@interface RKInMemoryManagedObjectCache : NSObject <RKManagedObjectCaching>
 
 @end

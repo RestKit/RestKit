@@ -1,0 +1,17 @@
+#!/bin/bash -e
+
+# Configure RVM
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+source .rvmrc
+
+# Git submodules
+git submodule update --init
+
+# Bundler
+bundle
+
+# Run the build
+rake server:stop || true
+rake server:start
+rake test
+rake server:stop

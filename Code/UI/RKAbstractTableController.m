@@ -240,19 +240,21 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
     _objectManager = objectManager;
 
-    // Set observers
-    [notificationCenter addObserver:self
-                           selector:@selector(objectManagerConnectivityDidChange:)
-                               name:RKObjectManagerDidBecomeOnlineNotification
-                             object:objectManager];
-    [notificationCenter addObserver:self
-                           selector:@selector(objectManagerConnectivityDidChange:)
-                               name:RKObjectManagerDidBecomeOfflineNotification
-                             object:objectManager];
+    if (objectManager) {
+        // Set observers
+        [notificationCenter addObserver:self
+                               selector:@selector(objectManagerConnectivityDidChange:)
+                                   name:RKObjectManagerDidBecomeOnlineNotification
+                                 object:objectManager];
+        [notificationCenter addObserver:self
+                               selector:@selector(objectManagerConnectivityDidChange:)
+                                   name:RKObjectManagerDidBecomeOfflineNotification
+                                 object:objectManager];
 
-    // Initialize online/offline state (if it is known)
-    if (objectManager.networkStatus != RKObjectManagerNetworkStatusUnknown) {
-        self.online = objectManager.isOnline;
+        // Initialize online/offline state (if it is known)
+        if (objectManager.networkStatus != RKObjectManagerNetworkStatusUnknown) {
+            self.online = objectManager.isOnline;
+        }
     }
 }
 

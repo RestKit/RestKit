@@ -51,8 +51,7 @@
 }
 
 - (void)testShouldReturnAnMD5ForFiles {
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-    NSString *filePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+    NSString *filePath = [RKTestFixture pathForFixture:@"blake.png"];
     RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" file:filePath] autorelease];
     assertThat([attachment MD5], is(equalTo(@"db6cb9d879b58e7e15a595632af345cd")));
 }
