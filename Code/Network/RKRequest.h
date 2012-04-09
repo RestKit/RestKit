@@ -650,7 +650,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  
  Generally configured by the RKClient instance that minted this request.
  */
-@property (nonatomic, assign) RKReachabilityObserver *reachabilityObserver;
+@property (nonatomic, retain) RKReachabilityObserver *reachabilityObserver;
 
 
 ///-----------------------------------------------------------------------------

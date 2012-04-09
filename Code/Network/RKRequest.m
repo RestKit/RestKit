@@ -195,6 +195,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     
   	_delegate = nil;
     _configurationDelegate = nil;
+    [_reachabilityObserver release];
+    _reachabilityObserver = nil;
   	[_connection cancel];
   	[_connection release];
   	_connection = nil;
