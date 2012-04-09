@@ -12,7 +12,7 @@ GIT
 
 GIT
   remote: git://github.com/RestKit/RestKit-Gem.git
-  revision: b8fa45c770b20b8b07f18027f14d7b2a4261a43b
+  revision: 2286fbbf054c03565fbdc5cfcfc877204968b922
   specs:
     restkit (0.0.0)
 

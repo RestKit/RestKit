@@ -67,7 +67,7 @@ end
 desc 'Run all the GateGuru tests'
 task :test => "test:all"
 
-task :default => "test:all"
+task :default => ["server:autostart", "test:all", "server:autostop"]
 
 def restkit_version
   @restkit_version ||= ENV['VERSION'] || File.read("VERSION").chomp
