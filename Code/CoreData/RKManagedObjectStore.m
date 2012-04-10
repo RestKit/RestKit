@@ -136,7 +136,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 		[self createPersistentStoreCoordinator];
         self.primaryManagedObjectContext = [self newManagedObjectContext];
         
-        _cacheStrategy = [RKInMemoryManagedObjectCache new];
+        _cacheStrategy = [RKFetchRequestManagedObjectCache new];
 
         // Ensure there is a search word observer
         [RKSearchWordObserver sharedObserver];
