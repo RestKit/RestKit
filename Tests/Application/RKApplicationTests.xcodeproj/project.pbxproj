@@ -111,6 +111,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		252A204215347F0B0078F8AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 253B489814E341C500B0483F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 259C301615128079003066A2;
+			remoteInfo = RestKitResources;
+		};
 		253B488514E3415800B0483F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 253B485614E3415800B0483F /* Project object */;
@@ -152,13 +159,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 25160D1514564E810060A5C5;
 			remoteInfo = RestKit;
-		};
-		25A41055152F23990098D0D0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 253B489814E341C500B0483F /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 259C301615128079003066A2;
-			remoteInfo = RestKitResources;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -434,7 +434,7 @@
 				253B48A514E341C500B0483F /* RestKitTests.octest */,
 				253B48A714E341C500B0483F /* RestKit.framework */,
 				253B48A914E341C500B0483F /* RestKitFrameworkTests.octest */,
-				25A41056152F23990098D0D0 /* RestKitResources.bundle */,
+				252A204315347F0B0078F8AD /* RestKitResources.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -734,6 +734,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		252A204315347F0B0078F8AD /* RestKitResources.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitResources.bundle;
+			remoteRef = 252A204215347F0B0078F8AD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		253B48A314E341C500B0483F /* libRestKit.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -760,13 +767,6 @@
 			fileType = wrapper.cfbundle;
 			path = RestKitFrameworkTests.octest;
 			remoteRef = 253B48A814E341C500B0483F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		25A41056152F23990098D0D0 /* RestKitResources.bundle */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitResources.bundle;
-			remoteRef = 25A41055152F23990098D0D0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

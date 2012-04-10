@@ -48,7 +48,6 @@
  After the block is invoked, the objects will be loaded into the specified section.
  */
 // TODO: Update comments...
-- (void)loadTableItems:(NSArray *)tableItems withMappingBlock:(void (^)(RKTableViewCellMapping *))block; // TODO: Eliminate...
 - (void)loadTableItems:(NSArray *)tableItems withMapping:(RKTableViewCellMapping *)cellMapping;
 - (void)loadTableItems:(NSArray *)tableItems
              inSection:(NSUInteger)sectionIndex
@@ -103,6 +102,11 @@
 /// @name Managing Sections
 /////////////////////////////////////////////////////////////////////////
 
+/** 
+ The key path on the loaded objects used to determine the section they belong to.
+ */
+@property(nonatomic, copy) NSString *sectionNameKeyPath;
+
 // Coalesces a series of table view updates performed within the block into
 // a single animation using beginUpdates: and endUpdates: on the table view
 // TODO: Move to super-class?
@@ -112,12 +116,6 @@
  *	@param section Must be a valid non nil RKTableViewSection. */
 // NOTE: connects cellMappings if section.cellMappings is nil...
 - (void)addSection:(RKTableSection *)section;
-
-/**
- Creates an section and yields it to the block for configuration. After the block
- is evaluated, the section is added to the table.
- */
-- (void)addSectionUsingBlock:(void (^)(RKTableSection *section))block;
 
 /** Inserts a new section at the specified index.
  *	@param section Must be a valid non nil RKTableViewSection.

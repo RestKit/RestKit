@@ -798,6 +798,32 @@
     RKLogCritical(@"PENDING - Undefined Behavior!!!");
 }
 
+- (void)testLoadCollectionOfObjectsAndMapThemIntoSections {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    objectManager.client.cachePolicy = RKRequestCachePolicyNone;
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = objectManager;
+    [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
+        mapping.cellClass = [RKTestUserTableViewCell class];
+        [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+        [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
+    }]];
+    tableController.sectionNameKeyPath = @"name";
+    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate tableControllerDelegate];
+    delegate.timeout = 10;
+    tableController.delegate = delegate;
+    [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [delegate waitForLoad];
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatInt(tableController.sectionCount, is(equalToInt(3)));
+    assertThatInt(tableController.rowCount, is(equalToInt(3)));
+}
+
 #pragma mark - RKTableViewDelegate specs
 
 - (void)testNotifyTheDelegateWhenLoadingStarts {
@@ -1594,11 +1620,12 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     __block BOOL dispatched = NO;
-    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
+    RKTableViewCellMapping *mapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
         cellMapping.onTapAccessoryButtonForObjectAtIndexPath = ^(UITableViewCell* cell, id object, NSIndexPath* indexPath) {
             dispatched = YES;
         };
     }];
+    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:mapping];
     [tableController tableView:tableController.tableView accessoryButtonTappedForRowWithIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThatBool(dispatched, is(equalToBool(YES)));
 }
@@ -1608,11 +1635,12 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
     NSString* deleteTitle = @"Delete Me";
-    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
+    RKTableViewCellMapping *mapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
         cellMapping.titleForDeleteButtonForObjectAtIndexPath = ^ NSString*(UITableViewCell* cell, id object, NSIndexPath* indexPath) {
             return deleteTitle;
         };
-    }];
+    }];    
+    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:mapping];
     NSString* delegateTitle = [tableController tableView:tableController.tableView
       titleForDeleteConfirmationButtonForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThat(delegateTitle, is(equalTo(deleteTitle)));
@@ -1623,11 +1651,12 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.canEditRows = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
+    RKTableViewCellMapping *mapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping *cellMapping) {
         cellMapping.editingStyleForObjectAtIndexPath = ^ UITableViewCellEditingStyle(UITableViewCell* cell, id object, NSIndexPath* indexPath) {
             return UITableViewCellEditingStyleInsert;
         };
-    }];
+    }];    
+    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:mapping];
     UITableViewCellEditingStyle delegateStyle = [tableController tableView:tableController.tableView
                                             editingStyleForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThatInt(delegateStyle, is(equalToInt(UITableViewCellEditingStyleInsert)));
@@ -1639,11 +1668,11 @@
     tableController.canMoveRows = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
     NSIndexPath* moveToIndexPath = [NSIndexPath indexPathForRow:2 inSection:0];
-    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
+    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
         cellMapping.targetIndexPathForMove = ^ NSIndexPath*(UITableViewCell* cell, id object, NSIndexPath* sourceIndexPath, NSIndexPath* destinationIndexPath) {
             return moveToIndexPath;
         };
-    }];
+    }]];
     NSIndexPath* delegateIndexPath = [tableController tableView:tableController.tableView
                       targetIndexPathForMoveFromRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]toProposedIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
     assertThat(delegateIndexPath, is(equalTo(moveToIndexPath)));
@@ -1657,9 +1686,9 @@
     tableController.variableHeightRows = NO;
     tableController.tableView.rowHeight = 55;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
+    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
         cellMapping.rowHeight = 200;
-    }];
+    }]];
     CGFloat height = [tableController tableView:tableController.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThatFloat(height, is(equalToFloat(55)));
 }
@@ -1670,9 +1699,9 @@
     tableController.variableHeightRows = YES;
     tableController.tableView.rowHeight = 55;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
-        cellMapping.rowHeight = 200;
-    }];
+    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
+        cellMapping.rowHeight = 200;        
+    }]];
     CGFloat height = [tableController tableView:tableController.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThatFloat(height, is(equalToFloat(200)));
 }
@@ -1683,10 +1712,10 @@
     tableController.variableHeightRows = YES;
     tableController.tableView.rowHeight = 55;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMappingBlock:^(RKTableViewCellMapping* cellMapping) {
+    [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
         cellMapping.rowHeight = 200;
         cellMapping.heightOfCellForObjectAtIndexPath = ^ CGFloat(id object, NSIndexPath* indexPath) { return 150; };
-    }];
+    }]];
     CGFloat height = [tableController tableView:tableController.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThatFloat(height, is(equalToFloat(150)));
 }
