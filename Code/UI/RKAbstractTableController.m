@@ -328,6 +328,10 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     return nil;
 }
 
+- (NSUInteger)numberOfRowsInSectionAtIndex:(NSUInteger)index {
+    return [self sectionAtIndex:index].rowCount;
+}
+
 - (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath {
     RKTableSection* section = [self sectionAtIndex:indexPath.section];
     id mappableObject = [section objectAtIndex:indexPath.row];

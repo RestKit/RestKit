@@ -233,6 +233,16 @@ extern NSString* const RKTableControllerDidBecomeOffline;
  *	@param title The header title. */
 - (RKTableSection *)sectionWithHeaderTitle:(NSString *)title;
 
+/**
+ Returns the number of rows in the section at the given index.
+
+ @param index The index of the section to return the row count for.
+ @returns The
+ @raises NSInvalidArgumentException Raised if index is greater than or
+ equal to the total number of sections in the table.
+ */
+- (NSUInteger)numberOfRowsInSectionAtIndex:(NSUInteger)index;
+
 /** Returns the index of the specified section.
  *	@param section Must be a valid non nil RKTableViewSection.
  *	@return If section is not found, method returns NSNotFound. */
