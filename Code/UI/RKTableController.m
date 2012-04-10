@@ -323,8 +323,6 @@
     // TODO: Apply any sorting...
     
     if (self.sectionNameKeyPath) {
-        [self removeAllSections];
-        
         NSArray *sectionedObjects = [objects sectionsGroupedByKeyPath:self.sectionNameKeyPath];
         for (NSArray *sectionOfObjects in sectionedObjects) {
             NSUInteger sectionIndex = [sectionedObjects indexOfObject:sectionOfObjects];
