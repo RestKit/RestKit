@@ -23,7 +23,7 @@
 	// Create the first section and establish the first section's grouping value.
 	NSMutableArray *sectionItems = [NSMutableArray array];
 	id currentGroup = [[self objectAtIndex:0] valueForKeyPath:keyPath];
-
+    
 	// Iterate over our items, placing them in the appropriate section and
 	// creating new sections when necessary.
 	for (id item in self) {
@@ -32,7 +32,7 @@
 
 		// Compare the current item's grouping value to the current section's
 		// grouping value.
-		if (![itemGroup isEqual:currentGroup]) {
+		if (![itemGroup isEqual:currentGroup] && (currentGroup != nil || itemGroup != nil)) {
 			// The current item doesn't belong in the current section, so
 			// store the section we've been building and create a new one,
 			// caching the new grouping value.

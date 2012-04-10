@@ -56,4 +56,31 @@
     assertThat([sections objectAtIndex:1], contains(user3, nil));
 }
 
+- (void)testCreationOfSingleSectionForNullValues
+{
+    RKTestUser *user1 = [RKTestUser new];
+    user1.name = @"Blake";
+    user1.country = @"USA";        
+    
+    RKTestUser *user2 = [RKTestUser new];
+    user2.name = @"Expatriate";
+    user2.country = nil;
+    
+    RKTestUser *user3 = [RKTestUser new];
+    user3.name = @"John Doe";
+    user3.country = nil;
+    
+    RKTestUser *user4 = [RKTestUser new];
+    user4.name = @"Pepe";
+    user4.country = @"Spain";
+    
+    NSArray *users = [NSArray arrayWithObjects:user1, user2, user3, user4, nil];
+    
+    NSArray *sections = [users sectionsGroupedByKeyPath:@"country"];
+    assertThat(sections, hasCountOf(3));
+    assertThat([sections objectAtIndex:0], contains(user1, nil));
+    assertThat([sections objectAtIndex:1], contains(user2, user3, nil));
+    assertThat([sections objectAtIndex:2], contains(user4, nil));
+}
+
 @end
