@@ -25,7 +25,8 @@ int RKLogLevelForString(NSString *, NSString *);
 
 static BOOL loggingInitialized = NO;
 
-void RKLogInitialize(void) {
+void RKLogInitialize(void)
+{
     if (loggingInitialized == NO) {
         lcl_configure_by_name("RestKit*", RKLogLevelDefault);
         lcl_configure_by_name("App", RKLogLevelDefault);
@@ -35,9 +36,9 @@ void RKLogInitialize(void) {
 }
 
 
-void RKLogConfigureFromEnvironment(void) {
-
-    NSOrderedSet *validEnvVariables = [NSOrderedSet orderedSetWithObjects:
+void RKLogConfigureFromEnvironment(void)
+{
+    NSArray *validEnvVariables = [NSArray arrayWithObjects:
                                        @"RKLogLevel.App",
                                        @"RKLogLevel.RestKit",
                                        @"RKLogLevel.RestKit.CoreData",
@@ -75,8 +76,8 @@ void RKLogConfigureFromEnvironment(void) {
 }
 
 
-int RKLogLevelForString(NSString *logLevel, NSString *envVarName) {
-
+int RKLogLevelForString(NSString *logLevel, NSString *envVarName)
+{
     // Forgive the user if they specify the full name for the value i.e. "RKLogLevelDebug" instead of "Debug"
     logLevel = [logLevel stringByReplacingOccurrencesOfString:@"RKLogLevel" withString:@""];
 
