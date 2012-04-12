@@ -109,7 +109,7 @@
 
 - (void)testShouldCreateOneTimeoutTimer {
     RKSpecResponseLoader* loader = [RKSpecResponseLoader responseLoader];
-    RKURL* url = RKSpecGetBaseURL();
+    RKURL* url = [RKURL URLWithString:RKSpecGetBaseURL()];
     RKRequest* request = [[RKRequest alloc] initWithURL:url];
     request.delegate = loader;
     id requestMock = [OCMockObject partialMockForObject:request];
