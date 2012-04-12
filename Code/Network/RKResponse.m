@@ -292,21 +292,21 @@ return __VA_ARGS__;                                                             
 
 - (NSURL*)URL {
     if ([self wasLoadedFromCache]) {
-        return [NSURL URLWithString:[_responseHeaders valueForKey:RKRequestCacheURLKey]];
+        return [NSURL URLWithString:[_responseHeaders valueForKey:RKRequestCacheURLHeadersKey]];
     }
 	return [_httpURLResponse URL];
 }
 
 - (NSString*)MIMEType {
     if ([self wasLoadedFromCache]) {
-        return [_responseHeaders valueForKey:RKRequestCacheMIMETypeKey];
+        return [_responseHeaders valueForKey:RKRequestCacheMIMETypeHeadersKey];
     }
 	return [_httpURLResponse MIMEType];
 }
 
 - (NSInteger)statusCode {
     if ([self wasLoadedFromCache]) {
-        return [[_responseHeaders valueForKey:RKRequestCacheStatusCodeKey] intValue];
+        return [[_responseHeaders valueForKey:RKRequestCacheStatusCodeHeadersKey] intValue];
     }
     return ([_httpURLResponse respondsToSelector:@selector(statusCode)] ? [_httpURLResponse statusCode] : 200);
 }

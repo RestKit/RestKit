@@ -43,20 +43,30 @@ typedef enum {
 /**
  Location of session specific cache files within the Caches path.
  */
-NSString * const RKRequestCacheSessionCacheDirectory;
+extern NSString * const RKRequestCacheSessionCacheDirectory;
 
 /**
  Location of permanent cache files within the Caches path.
  */
-NSString * const RKRequestCachePermanentCacheDirectory;
+extern NSString * const RKRequestCachePermanentCacheDirectory;
 
-/**
- */
-NSString * const RKRequestCacheHeadersExtension;
-NSString * const RKRequestCacheDateHeaderKey;
-NSString * const RKRequestCacheStatusCodeKey;
-NSString * const RKRequestCacheMIMETypeKey;
-NSString * const RKRequestCacheURLKey;
+/** 
+ @constant RKRequestCache Header Keys
+ 
+ Constants for accessing cache specific X-RESTKIT
+ headers used to store cache metadata within the cache entry.
+*/
+/** The key for accessing the date the entry was cached. **/
+extern NSString * const RKRequestCacheDateHeaderKey;
+
+/** The key for accessing the status code of the cached request. **/
+extern NSString * const RKRequestCacheStatusCodeHeadersKey;
+
+/** The key for accessing the MIME Type of the cached request. **/
+extern NSString * const RKRequestCacheMIMETypeHeadersKey;
+
+/** The key for accessing the URL of the cached request. **/
+extern NSString * const RKRequestCacheURLHeadersKey;
 
 /**
  Stores and retrieves cache entries for RestKit request objects.
