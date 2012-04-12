@@ -147,6 +147,19 @@ request.timeoutInterval = 1.0;
     [request release];
 }
 
+- (void)testThatRunLoopModePropertyRespected {
+    NSString * const dummyRunLoopMode = @"dummyRunLoopMode";
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [[RKRequest alloc] initWithURL:[RKTestFactory baseURL]];
+    request.delegate = loader;
+    request.runLoopMode = dummyRunLoopMode;
+    [request sendAsynchronously];
+    while ([[NSRunLoop currentRunLoop] runMode:dummyRunLoopMode beforeDate:[[NSRunLoop currentRunLoop] limitDateForMode:dummyRunLoopMode]])
+        ;
+    assertThatBool([loader wasSuccessful], is(equalToBool(YES)));
+    [request release];
+}
+
 #pragma mark - Background Policies
 
 #if TARGET_OS_IPHONE
