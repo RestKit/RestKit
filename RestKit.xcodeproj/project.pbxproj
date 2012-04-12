@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2501405315366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
+		2501405415366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		25055B8414EEF32A00B9C4DD /* RKMappingTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8014EEF32A00B9C4DD /* RKMappingTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25055B8514EEF32A00B9C4DD /* RKMappingTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8014EEF32A00B9C4DD /* RKMappingTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25055B8614EEF32A00B9C4DD /* RKMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8114EEF32A00B9C4DD /* RKMappingTest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -747,6 +749,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2501405215366000004E0466 /* RKObjectiveCppTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RKObjectiveCppTest.mm; sourceTree = "<group>"; };
 		25055B8014EEF32A00B9C4DD /* RKMappingTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingTest.h; path = Testing/RKMappingTest.h; sourceTree = "<group>"; };
 		25055B8114EEF32A00B9C4DD /* RKMappingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTest.m; path = Testing/RKMappingTest.m; sourceTree = "<group>"; };
 		25055B8214EEF32A00B9C4DD /* RKTestFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTestFactory.h; path = Testing/RKTestFactory.h; sourceTree = "<group>"; };
@@ -1903,6 +1906,7 @@
 				251610561456F2330060A5C5 /* RKPathMatcherTest.m */,
 				251610571456F2330060A5C5 /* RKXMLParserTest.m */,
 				252A2033153477870078F8AD /* NSArray+RKAdditionsTest.m */,
+				2501405215366000004E0466 /* RKObjectiveCppTest.mm */,
 			);
 			name = Support;
 			path = Logic/Support;
@@ -2816,6 +2820,7 @@
 				25079C76151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */,
 				25DB7508151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m in Sources */,
 				252A2034153477870078F8AD /* NSArray+RKAdditionsTest.m in Sources */,
+				2501405315366000004E0466 /* RKObjectiveCppTest.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2998,6 +3003,7 @@
 				25079C77151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */,
 				25DB7509151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m in Sources */,
 				252A2035153477870078F8AD /* NSArray+RKAdditionsTest.m in Sources */,
+				2501405415366000004E0466 /* RKObjectiveCppTest.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
