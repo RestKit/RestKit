@@ -451,7 +451,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
 
     _connection = [[[[NSURLConnection alloc] initWithRequest:_URLRequest delegate:response startImmediately:NO] autorelease] retain];
-    [_connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:self.runLoopMode];
+    [_connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:self.runLoopMode];
     [_connection start];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
