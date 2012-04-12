@@ -125,7 +125,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
         _additionalRootCertificates = [[NSMutableSet alloc] init];
         _defaultHTTPEncoding = NSUTF8StringEncoding;
         self.cacheTimeoutInterval = 0;
-        self.runLoopMode = NSDefaultRunLoopMode;
+        self.runLoopMode = NSRunLoopCommonModes;
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
 		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);

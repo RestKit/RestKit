@@ -144,7 +144,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 - (id)init {
     self = [super init];
     if (self) {
-        self.runLoopMode = NSDefaultRunLoopMode;
+        self.runLoopMode = NSRunLoopCommonModes;
 #if TARGET_OS_IPHONE
         _backgroundPolicy = RKRequestBackgroundPolicyNone;
         _backgroundTaskIdentifier = 0;
