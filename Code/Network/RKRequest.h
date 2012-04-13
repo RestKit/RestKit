@@ -286,7 +286,9 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 @property (nonatomic, retain) NSDictionary *additionalHTTPHeaders;
 
 /**
- * The run loop mode under which the underlying NSURLConnection is performed
+ The run loop mode under which the underlying NSURLConnection is performed
+
+ *Default*: NSRunLoopCommonModes
  */
 @property (nonatomic, copy) NSString *runLoopMode;
 
