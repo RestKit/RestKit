@@ -118,7 +118,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
     RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
-    [store deletePersistantStore];
+    [store deletePersistentStore];
     [RKManagedObjectStore setDefaultObjectStore:store];
     
     return store;
