@@ -32,6 +32,10 @@ static RKTestFactory *sharedFactory = nil;
 {
     // Ensure the shared factory is initialized
     [self sharedFactory];
+    
+    if ([RKTestFactory respondsToSelector:@selector(didInitialize)]) {
+        [RKTestFactory didInitialize];
+    }
 }
 
 + (RKTestFactory *)sharedFactory
@@ -49,11 +53,7 @@ static RKTestFactory *sharedFactory = nil;
     if (self) {
         self.baseURL = [RKURL URLWithString:@"http://127.0.0.1:4567"];
         self.clientClass = [RKClient class];
-        self.objectManagerClass = [RKObjectManager class];
-        
-        if ([RKTestFactory respondsToSelector:@selector(didInitialize)]) {
-            [RKTestFactory didInitialize];
-        }
+        self.objectManagerClass = [RKObjectManager class];                
     }
     
     return self;
