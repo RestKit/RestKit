@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		250DF27B14C684510001DEFA /* RestKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A3422B147D885B0009758D /* RestKit.framework */; };
 		2516F0FC144A8577004631A1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2516F0FB144A8577004631A1 /* Foundation.framework */; };
 		2516F0FF144A8577004631A1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2516F0FE144A8577004631A1 /* main.m */; };
 		2516F103144A8577004631A1 /* RestKit_CLI.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2516F102144A8577004631A1 /* RestKit_CLI.1 */; };
@@ -85,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				250DF27B14C684510001DEFA /* RestKit.framework in Frameworks */,
 				25A34230147D88630009758D /* Security.framework in Frameworks */,
 				2516F162144A8AED004631A1 /* CoreServices.framework in Frameworks */,
 				2516F160144A895E004631A1 /* libxml2.dylib in Frameworks */,

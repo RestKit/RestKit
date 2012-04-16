@@ -20,6 +20,18 @@
 
 #import "RKObjectMapping.h"
 #import "RKDynamicObjectMapping.h"
+#import "RKObjectMappingProviderContextEntry.h"
+
+// Internal framework contexts
+// @see RKObjectMappingProvider+Contexts.h
+typedef enum {
+    RKObjectMappingProviderContextObjectsByKeyPath = 1000,
+    RKObjectMappingProviderContextObjectsByType,
+    RKObjectMappingProviderContextObjectsByResourcePathPattern,
+    RKObjectMappingProviderContextSerialization,
+    RKObjectMappingProviderContextErrors,
+    RKObjectMappingProviderContextPagination
+} RKObjectMappingProviderContext;
 
 /**
  The mapping provider is a repository of registered object mappings for use by instances
@@ -42,17 +54,21 @@
     that they target.
  */
 @interface RKObjectMappingProvider : NSObject {
-    NSMutableArray *_objectMappings;
-    NSMutableDictionary *_mappingsByKeyPath;
-    NSMutableDictionary *_serializationMappings;
+    NSMutableDictionary *mappingContexts;
 }
 
 /**
- Returns a new autoreleased object mapping provider
+ Creates and returns an autoreleased RKObjectMappingProvider instance.
  
  @return A new autoreleased object mapping provider instance.
  */
-+ (RKObjectMappingProvider *)objectMappingProvider;
++ (id)mappingProvider;
+
+/**
+ Instantiate and return a new auto-released object mapping provider after
+ yielding it to the specified block for configuration
+ */
++ (id)mappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *))block;
 
 /**
  Configures the mapping provider to use the RKObjectMapping or RKDynamicObjectMapping provided when
@@ -67,7 +83,7 @@
  @see RKObjectMapper
  @see RKObjectMappingOperation
  */
-- (void)setObjectMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
+- (void)setObjectMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
 
 /**
  Returns the RKObjectMapping or RKObjectDynamic mapping configured for use 
@@ -76,7 +92,7 @@
  @param keyPath A registered keyPath to retrieve the object mapping for
  @return The RKObjectMapping or RKDynamicObjectMapping for the specified keyPath or nil if none is registered.
  */
-- (id<RKObjectMappingDefinition>)objectMappingForKeyPath:(NSString *)keyPath;
+- (RKObjectMappingDefinition *)objectMappingForKeyPath:(NSString *)keyPath;
 
 /**
  Removes the RKObjectMapping or RKDynamicObjectMapping registered at the specified keyPath
@@ -187,7 +203,7 @@
 
 /**
  Returns the serialization mapping for a specific object class
- which has been previously registered. The 
+ which has been previously registered. 
  
  @param objectClass The class we wish to obtain the serialization mapping for
  @return The RKObjectMapping instance used for mapping instances of objectClass for transport
@@ -195,14 +211,79 @@
  */
 - (RKObjectMapping *)serializationMappingForClass:(Class)objectClass;
 
+/**
+ Configures an object mapping to be used when during a load event where the resourcePath of
+ the RKObjectLoader instance matches resourcePathPattern.
+ 
+ The resourcePathPattern is a SOCKit pattern matching property names preceded by colons within
+ a path. For example, if a collection of reviews for a product were loaded from a remote system
+ at the resourcePath @"/products/1234/reviews", object mapping could be configured to handle 
+ this request with a resourcePathPattern of @"/products/:productID/reviews".
+ 
+ **NOTE** that care must be taken when configuring patterns within the provider. The patterns
+ will be evaluated in the order they are added to the provider, so more specific patterns must
+ precede more general patterns where either would generate a match.
+ 
+ @param objectMapping The object mapping to use when the resourcePath matches the specified
+    resourcePathPattern.
+ @param resourcePathPattern A pattern to be evaluated using an RKPathMatcher against a resourcePath
+    to determine if objectMapping is the appropriate mapping.
+ @see RKPathMatcher
+ @see RKURL
+ @see RKObjectLoader
+ */
+- (void)setObjectMapping:(RKObjectMappingDefinition *)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern;
+
+/**
+ Returns the first objectMapping configured in the provider with a resourcePathPattern matching
+ the specified resourcePath.
+ 
+ @param resourcePath A resource path to retrieve the first RKObjectMapping or RKDynamicObjectMapping
+    configured with a matching pattern.
+ @return An RKObjectMapping or RKDynamicObjectMapping for a resource path pattern matching resourcePath
+    or nil if no match was found.
+ */
+- (RKObjectMappingDefinition *)objectMappingForResourcePath:(NSString *)resourcePath;
+
+
+- (void)setEntry:(RKObjectMappingProviderContextEntry *)entry forResourcePathPattern:(NSString *)resourcePath;
+- (RKObjectMappingProviderContextEntry *)entryForResourcePath:(NSString *)resourcePath;
+
+/**
+ An object mapping used when the remote system returns an error status code
+ and a payload with a MIME Type that RestKit is capable of parsing.
+ 
+ @see RKObjectLoader
+ @see RKParserRegistry
+ */
+@property (nonatomic, retain) RKObjectMapping *errorMapping;
+
+/**
+ An object mapping used when mapping pagination metadata (current page, object count, etc)
+ during a paginated object loading operation. The objectClass of the paginationMapping must
+ be RKObjectPaginator.
+ 
+ For example, if using the popular will_paginate plugin with Ruby on Rails, we would configure
+ our pagination mapping like so:
+ 
+ // Assumes the JSON format of http://stackoverflow.com/questions/4699182/will-paginate-json-support
+ RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
+ [paginationMapping mapKeyPath:@"current_page" toAttribute:@"currentPage"];
+ [paginationMapping mapKeyPath:@"per_page" toAttribute:@"perPage"];
+ [paginationMapping mapKeyPath:@"total_entries" toAttribute:@"objectCount"];
+ 
+ @see RKObjectPaginator
+ */
+@property (nonatomic, retain) RKObjectMapping *paginationMapping;
+
 @end
 
 // Method signatures being phased out
 @interface RKObjectMappingProvider (CompatibilityAliases)
-+ (RKObjectMappingProvider *)mappingProvider;
++ (RKObjectMappingProvider *)objectMappingProvider;
 - (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath;
-- (void)setMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
-- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath;
+- (void)setMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
+- (RKObjectMappingDefinition *)mappingForKeyPath:(NSString *)keyPath;
 - (NSDictionary *)mappingsByKeyPath;
 - (void)removeMappingForKeyPath:(NSString *)keyPath;
 @end

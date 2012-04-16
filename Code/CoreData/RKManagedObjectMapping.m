@@ -20,8 +20,8 @@
 
 #import "RKManagedObjectMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
-#import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
+#import "RKDynamicObjectMappingMatcher.h"
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKLog.h"
 
@@ -33,25 +33,35 @@
 
 @synthesize entity = _entity;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
+@synthesize objectStore = _objectStore;
 
 + (id)mappingForClass:(Class)objectClass {
-    return [self mappingForEntityWithName:NSStringFromClass(objectClass)];
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:[NSString stringWithFormat:@"You must provide a managedObjectStore. Invoke mappingForClass:inManagedObjectStore: instead."]
+                                 userInfo:nil];
 }
 
-+ (RKManagedObjectMapping*)mappingForEntity:(NSEntityDescription*)entity {
-    return [[[self alloc] initWithEntity:entity] autorelease];
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore {
+    return [self mappingForEntityWithName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
 }
 
-+ (RKManagedObjectMapping*)mappingForEntityWithName:(NSString*)entityName {
-    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:[NSManagedObject managedObjectContext]]];
++ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore {
+    return [[[self alloc] initWithEntity:entity inManagedObjectStore:objectStore] autorelease];
 }
 
-- (id)initWithEntity:(NSEntityDescription*)entity {
++ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore {
+    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.primaryManagedObjectContext]
+             inManagedObjectStore:objectStore];
+}
+
+- (id)initWithEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore*)objectStore {
     NSAssert(entity, @"Cannot initialize an RKManagedObjectMapping without an entity. Maybe you want RKObjectMapping instead?");
+    NSAssert(objectStore, @"Object store cannot be nil");
     self = [self init];
     if (self) {
         self.objectClass = NSClassFromString([entity managedObjectClassName]);
         _entity = [entity retain];
+        _objectStore = objectStore;
     }
     
     return self;
@@ -93,6 +103,20 @@
     va_end(args);
 }
 
+- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value {
+    NSAssert([_relationshipToPrimaryKeyMappings objectForKey:relationshipName] == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", relationshipName);
+    RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value primaryKeyAttribute:primaryKeyAttribute];
+    [_relationshipToPrimaryKeyMappings setObject:matcher forKey:relationshipName];
+    [matcher release];
+}
+
+- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block {
+    NSAssert([_relationshipToPrimaryKeyMappings objectForKey:relationshipName] == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", relationshipName);
+    RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithPrimaryKeyAttribute:primaryKeyAttribute evaluationBlock:block];
+    [_relationshipToPrimaryKeyMappings setObject:matcher forKey:relationshipName];
+    [matcher release];
+}
+
 - (id)defaultValueForMissingAttribute:(NSString*)attributeName {
     NSAttributeDescription *desc = [[self.entity attributesByName] valueForKey:attributeName];
     return [desc defaultValue];
@@ -100,12 +124,7 @@
 
 - (id)mappableObjectForData:(id)mappableData {    
     NSAssert(mappableData, @"Mappable data cannot be nil");
-    
-    // TODO: We do not want to be using this singleton reference to the object store.
-    // Clean this up when we update the Core Data internals
-    RKManagedObjectStore* objectStore = [RKObjectManager sharedManager].objectStore;
-    NSAssert(objectStore, @"Object store cannot be nil");
-    
+
     id object = nil;
     id primaryKeyValue = nil;
     NSString* primaryKeyAttribute;
@@ -137,14 +156,17 @@
     }
     
     // If we have found the primary key attribute & value, try to find an existing instance to update
-    if (primaryKeyAttribute && primaryKeyValue) {                
-        object = [objectStore findOrCreateInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
-        NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
-    } else {
-        object = [[[NSManagedObject alloc] initWithEntity:entity
-                           insertIntoManagedObjectContext:objectStore.managedObjectContext] autorelease];
+    if (primaryKeyAttribute && primaryKeyValue) {
+        object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
+                                                     withMapping:self
+                                              andPrimaryKeyValue:primaryKeyValue
+                                          inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
     }
-    
+
+    if (object == nil) {
+        object = [[[NSManagedObject alloc] initWithEntity:entity
+                           insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
+    }
     return object;
 }
 

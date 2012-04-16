@@ -26,15 +26,36 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectLoader_Internals.h"
 #import "RKRequest_Internals.h"
+#import "RKObjectMappingProvider+CoreData.h"
 #import "RKLog.h"
+
+// Set Logging Component
+#undef RKLogComponent
+#define RKLogComponent lcl_cRestKitCoreData
 
 @implementation RKManagedObjectLoader
 
-- (id)init {
-    self = [super init];
+@synthesize objectStore = _objectStore;
+
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
+    return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider objectStore:objectStore] autorelease];
+}
+
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
+    self = [self initWithURL:URL mappingProvider:mappingProvider];
+    if (self) {
+        _objectStore = [objectStore retain];
+    }
+    
+    return self;
+}
+
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
+    self = [super initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
         _managedObjectKeyPaths = [[NSMutableSet alloc] init];
     }
+    
     return self;
 }
     
@@ -43,6 +64,7 @@
     _targetObjectID = nil;
     _deleteObjectOnFailure = NO;
     [_managedObjectKeyPaths release];
+    [_objectStore release];
     
     [super dealloc];
 }
@@ -51,10 +73,6 @@
     [super reset]; 
     [_targetObjectID release];
     _targetObjectID = nil;
-}
-
-- (RKManagedObjectStore*)objectStore {
-    return self.objectManager.objectStore;
 }
 
 #pragma mark - RKObjectMapperDelegate methods
@@ -95,11 +113,20 @@
     // set before the managed object store.
     if (self.targetObject && [self.targetObject isKindOfClass:[NSManagedObject class]]) {
         _deleteObjectOnFailure = [(NSManagedObject*)self.targetObject isNew];
-        [self.objectStore save];
+        [self.objectStore save:nil];
         _targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
     }
     
     return [super prepareURLRequest];
+}
+
+- (NSArray *)cachedObjects {
+    NSFetchRequest *fetchRequest = [self.mappingProvider fetchRequestForResourcePath:self.resourcePath];
+    if (fetchRequest) {
+        return [NSManagedObject objectsWithFetchRequest:fetchRequest];
+    }
+    
+    return nil;
 }
 
 - (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result {
@@ -109,24 +136,12 @@
     }
     
     if ([self.URL isKindOfClass:[RKURL class]]) {
-        RKURL* rkURL = (RKURL*)self.URL;
-        
-        NSArray* results = [result asCollection];
-        NSArray* cachedObjects = [self.objectStore objectsForResourcePath:rkURL.resourcePath];
-        NSObject<RKManagedObjectCache>* managedObjectCache = self.objectStore.managedObjectCache;
-        BOOL queryForDeletion = [managedObjectCache respondsToSelector:@selector(shouldDeleteOrphanedObject:)];
-      
+        NSArray *results = [result asCollection];
+        NSArray *cachedObjects = [self cachedObjects];
         for (id object in cachedObjects) {
             if (NO == [results containsObject:object]) {
-              if (queryForDeletion && [managedObjectCache shouldDeleteOrphanedObject:object] == NO)
-              {
-                RKLogTrace(@"Sparing orphaned object %@ even though not returned in result set", object);
-              }
-              else
-              {
                 RKLogTrace(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
-                [[self.objectStore managedObjectContext] deleteObject:object];
-              }
+                [[self.objectStore managedObjectContextForCurrentThread] deleteObject:object];
             }
         }
     } else {
@@ -140,16 +155,17 @@
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
         NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
         RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
-        [[self.objectStore managedObjectContext] deleteObject:backgroundThreadObject];        
+        [[self.objectStore managedObjectContextForCurrentThread] deleteObject:backgroundThreadObject];        
     }
     
     // If the response was successful, save the store...
     if ([self.response isSuccessful]) {
         [self deleteCachedObjectsMissingFromResult:result];
-        NSError* error = [self.objectStore save];
-        if (error) {
+        NSError *error = nil;
+        BOOL success = [self.objectStore save:&error];
+        if (! success) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
-            NSMethodSignature* signature = [self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
+            NSMethodSignature* signature = [(NSObject *)self.delegate methodSignatureForSelector:@selector(objectLoader:didFailWithError:)];
             RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
             [invocation setTarget:self.delegate];
             [invocation setSelector:@selector(objectLoader:didFailWithError:)];
@@ -180,8 +196,8 @@
             RKLogInfo(@"Error response encountered: Deleting existing managed object with ID: %@", _targetObjectID);
             NSManagedObject* objectToDelete = [self.objectStore objectWithID:_targetObjectID];
             if (objectToDelete) {
-                [[self.objectStore managedObjectContext] deleteObject:objectToDelete];
-                [self.objectStore save];
+                [[self.objectStore managedObjectContextForCurrentThread] deleteObject:objectToDelete];
+                [self.objectStore save:nil];
             } else {
                 RKLogWarning(@"Unable to delete existing managed object with ID: %@. Object not found in the store.", _targetObjectID);
             }
@@ -189,6 +205,19 @@
             RKLogDebug(@"Skipping deletion of existing managed object");
         }
     }
+}
+
+- (BOOL)isResponseMappable {
+    if ([self.response wasLoadedFromCache]) {
+        NSArray* cachedObjects = [self cachedObjects];
+        if (! cachedObjects) {
+            RKLogDebug(@"Skipping managed object mapping optimization -> Managed object cache returned nil cachedObjects for resourcePath: %@", self.resourcePath);
+            return [super isResponseMappable];
+        }
+        [self informDelegateOfObjectLoadWithResultDictionary:[NSDictionary dictionaryWithObject:cachedObjects forKey:@""]];
+        return NO;
+    }
+    return [super isResponseMappable];
 }
 
 @end

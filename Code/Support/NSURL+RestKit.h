@@ -25,7 +25,7 @@
 /**
  Returns the query portion of the URL as a dictionary
  */
-- (NSDictionary *)queryDictionary;
+- (NSDictionary *)queryParameters;
 
 /**
  Returns the MIME Type for the resource identified by the URL by interpretting the

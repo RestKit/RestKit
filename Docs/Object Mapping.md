@@ -288,7 +288,6 @@ RKObjectMapping* authorMapping = [RKObjectMapping mappingForClass:[Author class]
 RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
 [articleMapping mapKeyPath:@"title" toAttribute:@"title"];
 [articleMapping mapKeyPath:@"body" toAttribute:@"body"];
-[articleMapping mapKeyPath:@"author" toAttribute:@"author"];
 [articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 // Define the relationship mapping
@@ -485,7 +484,6 @@ take a look at how this works:
 
 ```objc
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
 
 RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
 RKManagedObjectStore* objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"MyApp.sqlite"];
@@ -860,7 +858,6 @@ RKObjectRelationshipMapping* articleCommentsMapping = [RKObjectRelationshipMappi
 ### Configuring a Core Data Object Mapping
 ```objc
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
 
 RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
 RKManagedObjectStore* objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"MyApp.sqlite"];

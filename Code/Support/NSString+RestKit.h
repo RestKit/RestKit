@@ -33,12 +33,11 @@
  will return /contacts?foo=bar&amp;color=red
  
  *NOTE* - Assumes that the resource path does not already contain any query parameters.
- @param queryParams A dictionary of query parameters to be URL encoded and appended to the resource path
+ @param queryParameters A dictionary of query parameters to be URL encoded and appended to the resource path
  @return A new resource path with the query parameters appended
- @see RKPathAppendQueryParams
  */
-// TODO: Rename to stringByAppendingQueryDictionary:
-- (NSString *)appendQueryParams:(NSDictionary*)queryParams;
+- (NSString *)stringByAppendingQueryParameters:(NSDictionary *)queryParameters;
+- (NSString *)appendQueryParams:(NSDictionary*)queryParams DEPRECATED_ATTRIBUTE;
 
 /**
  Convenience method for generating a path against the properties of an object. Takes
@@ -105,6 +104,16 @@
  their literal values.
  */
 - (NSString *)stringByReplacingURLEncoding;
+
+/**
+ Returns a new string made by appending a path component to the original string, 
+ along with a trailing slash if the component is designated a directory.
+ 
+ @param pathComponent The path component to add to the URL.
+ @param isDirectory: If TRUE, a trailing slash is appended after pathComponent.
+ @return A new string with pathComponent appended.
+ */
+- (NSString *)stringByAppendingPathComponent:(NSString *)pathComponent isDirectory:(BOOL)isDirectory;
 
 /**
  Interprets the receiver as a path and returns the MIME Type for the path extension 

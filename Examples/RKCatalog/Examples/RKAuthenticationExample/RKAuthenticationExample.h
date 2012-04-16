@@ -11,6 +11,7 @@
 
 @interface RKAuthenticationExample : UIViewController <RKRequestDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 
+@property (nonatomic, retain) RKRequest *authenticatedRequest;
 @property (nonatomic, retain) IBOutlet UITextField  *URLTextField;
 @property (nonatomic, retain) IBOutlet UITextField  *usernameTextField;
 @property (nonatomic, retain) IBOutlet UITextField  *passwordTextField;

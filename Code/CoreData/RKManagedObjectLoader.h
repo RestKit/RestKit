@@ -28,11 +28,20 @@
  concerns imposed by Core Data.
  */
 @interface RKManagedObjectLoader : RKObjectLoader {
+    RKManagedObjectStore *_objectStore;
     NSManagedObjectID* _targetObjectID;	
     NSMutableSet* _managedObjectKeyPaths;
     BOOL _deleteObjectOnFailure;
 }
 
-@property (nonatomic, readonly) RKManagedObjectStore* objectStore;
+/**
+ A reference to a RestKit managed object store for interacting with Core Data
+ 
+ @see RKManagedObjectStore
+ */
+@property (nonatomic, retain) RKManagedObjectStore* objectStore;
+
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
 
 @end

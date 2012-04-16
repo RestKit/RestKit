@@ -20,6 +20,6 @@ Docs/API
 
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*
 
-# UISpecRunner cached build path
-.uispec.app
-Specs/Runner/UISpec
+# Thin
+log
+tmp

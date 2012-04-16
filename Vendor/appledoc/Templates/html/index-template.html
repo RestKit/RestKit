@@ -39,6 +39,17 @@
 						{{/comment}}
 					</div>
 					{{/indexDescription}}
+
+                    {{#hasDocs}}
+                        <div class="index-column">
+						<h2 class="index-title">{{strings/indexPage/docsTitle}}</h2>
+						<ul>
+                        {{#docs}}
+                        <li><a href="{{href}}">{{title}}</a></li>
+                        {{/docs}}
+						</ul>
+                        </div>
+                    {{/hasDocs}}
 					
 					{{#hasClasses}}
 					<div class="index-column">

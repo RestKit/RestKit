@@ -1,0 +1,650 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2558EF2A13E9F63900910BEF /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = 2558EF2913E9F63900910BEF /* Contact.m */; };
+		255940DE13E86FD4003B4D41 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940DD13E86FD4003B4D41 /* UIKit.framework */; };
+		255940E013E86FD4003B4D41 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940DF13E86FD4003B4D41 /* Foundation.framework */; };
+		255940E213E86FD4003B4D41 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940E113E86FD4003B4D41 /* CoreGraphics.framework */; };
+		255940E413E86FD4003B4D41 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940E313E86FD4003B4D41 /* CoreData.framework */; };
+		255940EA13E86FD4003B4D41 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 255940E813E86FD4003B4D41 /* InfoPlist.strings */; };
+		255940EC13E86FD4003B4D41 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 255940EB13E86FD4003B4D41 /* main.m */; };
+		255940F013E86FD4003B4D41 /* RKTableViewExampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 255940EF13E86FD4003B4D41 /* RKTableViewExampleAppDelegate.m */; };
+		255940F313E86FD4003B4D41 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 255940F113E86FD4003B4D41 /* MainStoryboard.storyboard */; };
+		255940F613E86FD4003B4D41 /* RKTableViewExample.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 255940F413E86FD4003B4D41 /* RKTableViewExample.xcdatamodeld */; };
+		255940F913E86FD4003B4D41 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 255940F813E86FD4003B4D41 /* MasterViewController.m */; };
+		255940FC13E86FD4003B4D41 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 255940FB13E86FD4003B4D41 /* DetailViewController.m */; };
+		2559410413E86FD4003B4D41 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2559410313E86FD4003B4D41 /* SenTestingKit.framework */; };
+		2559410513E86FD4003B4D41 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940DD13E86FD4003B4D41 /* UIKit.framework */; };
+		2559410613E86FD4003B4D41 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940DF13E86FD4003B4D41 /* Foundation.framework */; };
+		2559410713E86FD4003B4D41 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940E113E86FD4003B4D41 /* CoreGraphics.framework */; };
+		2559410813E86FD4003B4D41 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 255940E313E86FD4003B4D41 /* CoreData.framework */; };
+		2559411013E86FD4003B4D41 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2559410E13E86FD4003B4D41 /* InfoPlist.strings */; };
+		2559411313E86FD4003B4D41 /* RKTableViewExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2559411213E86FD4003B4D41 /* RKTableViewExampleTests.m */; };
+		2559415913E87204003B4D41 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2559415513E87203003B4D41 /* CFNetwork.framework */; };
+		2559415A13E87204003B4D41 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2559415713E87203003B4D41 /* MobileCoreServices.framework */; };
+		2559415B13E87204003B4D41 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2559415813E87203003B4D41 /* SystemConfiguration.framework */; };
+		2590506A13F5B2C100694498 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2590506913F5B2C100694498 /* QuartzCore.framework */; };
+		259050CD13F5B9E400694498 /* blackArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050C513F5B9E400694498 /* blackArrow.png */; };
+		259050CE13F5B9E400694498 /* blackArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050C613F5B9E400694498 /* blackArrow@2x.png */; };
+		259050CF13F5B9E400694498 /* blueArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050C713F5B9E400694498 /* blueArrow.png */; };
+		259050D013F5B9E400694498 /* blueArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050C813F5B9E400694498 /* blueArrow@2x.png */; };
+		259050D113F5B9E400694498 /* grayArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050C913F5B9E400694498 /* grayArrow.png */; };
+		259050D213F5B9E400694498 /* grayArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050CA13F5B9E400694498 /* grayArrow@2x.png */; };
+		259050D313F5B9E400694498 /* whiteArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050CB13F5B9E400694498 /* whiteArrow.png */; };
+		259050D413F5B9E400694498 /* whiteArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 259050CC13F5B9E400694498 /* whiteArrow@2x.png */; };
+		D3BF202814EE56650000E918 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3BF202014EE55E50000E918 /* libRestKit.a */; };
+		D3BF202A14EE56760000E918 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D3BF202914EE56760000E918 /* Security.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		2559410913E86FD4003B4D41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 255940D013E86FD3003B4D41 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 255940D813E86FD4003B4D41;
+			remoteInfo = RKTableViewExample;
+		};
+		25D6448213E88D2E00AD76B0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2559416913E88304003B4D41 /* RestKit.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 25160D1514564E810060A5C5;
+			remoteInfo = RestKit;
+		};
+		D3BF201F14EE55E50000E918 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2559416913E88304003B4D41 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160D1614564E810060A5C5;
+			remoteInfo = RestKit;
+		};
+		D3BF202114EE55E50000E918 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2559416913E88304003B4D41 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160D2614564E820060A5C5;
+			remoteInfo = RestKitTests;
+		};
+		D3BF202314EE55E50000E918 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2559416913E88304003B4D41 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160E62145651060060A5C5;
+			remoteInfo = RestKitFramework;
+		};
+		D3BF202514EE55E50000E918 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2559416913E88304003B4D41 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 25160E78145651060060A5C5;
+			remoteInfo = RestKitFrameworkTests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2558EF2813E9F63900910BEF /* Contact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Contact.h; sourceTree = "<group>"; };
+		2558EF2913E9F63900910BEF /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
+		255940D913E86FD4003B4D41 /* RKTableViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RKTableViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		255940DD13E86FD4003B4D41 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		255940DF13E86FD4003B4D41 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		255940E113E86FD4003B4D41 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		255940E313E86FD4003B4D41 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		255940E713E86FD4003B4D41 /* RKTableViewExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RKTableViewExample-Info.plist"; sourceTree = "<group>"; };
+		255940E913E86FD4003B4D41 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		255940EB13E86FD4003B4D41 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		255940ED13E86FD4003B4D41 /* RKTableViewExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "RKTableViewExample-Prefix.pch"; sourceTree = "<group>"; };
+		255940EE13E86FD4003B4D41 /* RKTableViewExampleAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKTableViewExampleAppDelegate.h; sourceTree = "<group>"; };
+		255940EF13E86FD4003B4D41 /* RKTableViewExampleAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKTableViewExampleAppDelegate.m; sourceTree = "<group>"; };
+		255940F213E86FD4003B4D41 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
+		255940F513E86FD4003B4D41 /* RKTableViewExample.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = RKTableViewExample.xcdatamodel; sourceTree = "<group>"; };
+		255940F713E86FD4003B4D41 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
+		255940F813E86FD4003B4D41 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
+		255940FA13E86FD4003B4D41 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		255940FB13E86FD4003B4D41 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		2559410213E86FD4003B4D41 /* RKTableViewExampleTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RKTableViewExampleTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2559410313E86FD4003B4D41 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		2559410D13E86FD4003B4D41 /* RKTableViewExampleTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "RKTableViewExampleTests-Info.plist"; sourceTree = "<group>"; };
+		2559410F13E86FD4003B4D41 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2559411113E86FD4003B4D41 /* RKTableViewExampleTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RKTableViewExampleTests.h; sourceTree = "<group>"; };
+		2559411213E86FD4003B4D41 /* RKTableViewExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RKTableViewExampleTests.m; sourceTree = "<group>"; };
+		2559415513E87203003B4D41 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		2559415613E87203003B4D41 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		2559415713E87203003B4D41 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		2559415813E87203003B4D41 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		2559416913E88304003B4D41 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../../RestKit.xcodeproj; sourceTree = "<group>"; };
+		2590506913F5B2C100694498 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		259050C513F5B9E400694498 /* blackArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackArrow.png; sourceTree = "<group>"; };
+		259050C613F5B9E400694498 /* blackArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blackArrow@2x.png"; sourceTree = "<group>"; };
+		259050C713F5B9E400694498 /* blueArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blueArrow.png; sourceTree = "<group>"; };
+		259050C813F5B9E400694498 /* blueArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blueArrow@2x.png"; sourceTree = "<group>"; };
+		259050C913F5B9E400694498 /* grayArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grayArrow.png; sourceTree = "<group>"; };
+		259050CA13F5B9E400694498 /* grayArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "grayArrow@2x.png"; sourceTree = "<group>"; };
+		259050CB13F5B9E400694498 /* whiteArrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = whiteArrow.png; sourceTree = "<group>"; };
+		259050CC13F5B9E400694498 /* whiteArrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "whiteArrow@2x.png"; sourceTree = "<group>"; };
+		D3BF202914EE56760000E918 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		255940D613E86FD4003B4D41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D3BF202A14EE56760000E918 /* Security.framework in Frameworks */,
+				D3BF202814EE56650000E918 /* libRestKit.a in Frameworks */,
+				2590506A13F5B2C100694498 /* QuartzCore.framework in Frameworks */,
+				2559415913E87204003B4D41 /* CFNetwork.framework in Frameworks */,
+				255940E413E86FD4003B4D41 /* CoreData.framework in Frameworks */,
+				2559415A13E87204003B4D41 /* MobileCoreServices.framework in Frameworks */,
+				2559415B13E87204003B4D41 /* SystemConfiguration.framework in Frameworks */,
+				255940DE13E86FD4003B4D41 /* UIKit.framework in Frameworks */,
+				255940E013E86FD4003B4D41 /* Foundation.framework in Frameworks */,
+				255940E213E86FD4003B4D41 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		255940FE13E86FD4003B4D41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2559410413E86FD4003B4D41 /* SenTestingKit.framework in Frameworks */,
+				2559410513E86FD4003B4D41 /* UIKit.framework in Frameworks */,
+				2559410613E86FD4003B4D41 /* Foundation.framework in Frameworks */,
+				2559410713E86FD4003B4D41 /* CoreGraphics.framework in Frameworks */,
+				2559410813E86FD4003B4D41 /* CoreData.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		255940CE13E86FD3003B4D41 = {
+			isa = PBXGroup;
+			children = (
+				D3BF202914EE56760000E918 /* Security.framework */,
+				259050C413F5B9E300694498 /* Resources */,
+				2559416913E88304003B4D41 /* RestKit.xcodeproj */,
+				255940E513E86FD4003B4D41 /* RKTableViewExample */,
+				2559410B13E86FD4003B4D41 /* RKTableViewExampleTests */,
+				255940DC13E86FD4003B4D41 /* Frameworks */,
+				255940DA13E86FD4003B4D41 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		255940DA13E86FD4003B4D41 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				255940D913E86FD4003B4D41 /* RKTableViewExample.app */,
+				2559410213E86FD4003B4D41 /* RKTableViewExampleTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		255940DC13E86FD4003B4D41 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2590506913F5B2C100694498 /* QuartzCore.framework */,
+				2559415513E87203003B4D41 /* CFNetwork.framework */,
+				2559415613E87203003B4D41 /* CoreData.framework */,
+				2559415713E87203003B4D41 /* MobileCoreServices.framework */,
+				2559415813E87203003B4D41 /* SystemConfiguration.framework */,
+				255940DD13E86FD4003B4D41 /* UIKit.framework */,
+				255940DF13E86FD4003B4D41 /* Foundation.framework */,
+				255940E113E86FD4003B4D41 /* CoreGraphics.framework */,
+				255940E313E86FD4003B4D41 /* CoreData.framework */,
+				2559410313E86FD4003B4D41 /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		255940E513E86FD4003B4D41 /* RKTableViewExample */ = {
+			isa = PBXGroup;
+			children = (
+				255940EE13E86FD4003B4D41 /* RKTableViewExampleAppDelegate.h */,
+				255940EF13E86FD4003B4D41 /* RKTableViewExampleAppDelegate.m */,
+				255940F113E86FD4003B4D41 /* MainStoryboard.storyboard */,
+				255940F713E86FD4003B4D41 /* MasterViewController.h */,
+				255940F813E86FD4003B4D41 /* MasterViewController.m */,
+				255940FA13E86FD4003B4D41 /* DetailViewController.h */,
+				255940FB13E86FD4003B4D41 /* DetailViewController.m */,
+				255940F413E86FD4003B4D41 /* RKTableViewExample.xcdatamodeld */,
+				255940E613E86FD4003B4D41 /* Supporting Files */,
+				2558EF2813E9F63900910BEF /* Contact.h */,
+				2558EF2913E9F63900910BEF /* Contact.m */,
+			);
+			path = RKTableViewExample;
+			sourceTree = "<group>";
+		};
+		255940E613E86FD4003B4D41 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				255940E713E86FD4003B4D41 /* RKTableViewExample-Info.plist */,
+				255940E813E86FD4003B4D41 /* InfoPlist.strings */,
+				255940EB13E86FD4003B4D41 /* main.m */,
+				255940ED13E86FD4003B4D41 /* RKTableViewExample-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2559410B13E86FD4003B4D41 /* RKTableViewExampleTests */ = {
+			isa = PBXGroup;
+			children = (
+				2559411113E86FD4003B4D41 /* RKTableViewExampleTests.h */,
+				2559411213E86FD4003B4D41 /* RKTableViewExampleTests.m */,
+				2559410C13E86FD4003B4D41 /* Supporting Files */,
+			);
+			path = RKTableViewExampleTests;
+			sourceTree = "<group>";
+		};
+		2559410C13E86FD4003B4D41 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				2559410D13E86FD4003B4D41 /* RKTableViewExampleTests-Info.plist */,
+				2559410E13E86FD4003B4D41 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		2559416A13E88304003B4D41 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D3BF202014EE55E50000E918 /* libRestKit.a */,
+				D3BF202214EE55E50000E918 /* RestKitTests.octest */,
+				D3BF202414EE55E50000E918 /* RestKit.framework */,
+				D3BF202614EE55E50000E918 /* RestKitFrameworkTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		259050C413F5B9E300694498 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				259050C513F5B9E400694498 /* blackArrow.png */,
+				259050C613F5B9E400694498 /* blackArrow@2x.png */,
+				259050C713F5B9E400694498 /* blueArrow.png */,
+				259050C813F5B9E400694498 /* blueArrow@2x.png */,
+				259050C913F5B9E400694498 /* grayArrow.png */,
+				259050CA13F5B9E400694498 /* grayArrow@2x.png */,
+				259050CB13F5B9E400694498 /* whiteArrow.png */,
+				259050CC13F5B9E400694498 /* whiteArrow@2x.png */,
+			);
+			name = Resources;
+			path = ../../Vendor/EGOTableViewPullRefresh/EGOTableViewPullRefresh/Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		255940D813E86FD4003B4D41 /* RKTableViewExample */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2559411613E86FD4003B4D41 /* Build configuration list for PBXNativeTarget "RKTableViewExample" */;
+			buildPhases = (
+				255940D513E86FD4003B4D41 /* Sources */,
+				255940D613E86FD4003B4D41 /* Frameworks */,
+				255940D713E86FD4003B4D41 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				25D6448313E88D2E00AD76B0 /* PBXTargetDependency */,
+			);
+			name = RKTableViewExample;
+			productName = RKTableViewExample;
+			productReference = 255940D913E86FD4003B4D41 /* RKTableViewExample.app */;
+			productType = "com.apple.product-type.application";
+		};
+		2559410113E86FD4003B4D41 /* RKTableViewExampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2559411913E86FD4003B4D41 /* Build configuration list for PBXNativeTarget "RKTableViewExampleTests" */;
+			buildPhases = (
+				255940FD13E86FD4003B4D41 /* Sources */,
+				255940FE13E86FD4003B4D41 /* Frameworks */,
+				255940FF13E86FD4003B4D41 /* Resources */,
+				2559410013E86FD4003B4D41 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2559410A13E86FD4003B4D41 /* PBXTargetDependency */,
+			);
+			name = RKTableViewExampleTests;
+			productName = RKTableViewExampleTests;
+			productReference = 2559410213E86FD4003B4D41 /* RKTableViewExampleTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		255940D013E86FD3003B4D41 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = RestKit;
+			};
+			buildConfigurationList = 255940D313E86FD3003B4D41 /* Build configuration list for PBXProject "RKTableViewExample" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 255940CE13E86FD3003B4D41;
+			productRefGroup = 255940DA13E86FD4003B4D41 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 2559416A13E88304003B4D41 /* Products */;
+					ProjectRef = 2559416913E88304003B4D41 /* RestKit.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				255940D813E86FD4003B4D41 /* RKTableViewExample */,
+				2559410113E86FD4003B4D41 /* RKTableViewExampleTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		D3BF202014EE55E50000E918 /* libRestKit.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRestKit.a;
+			remoteRef = D3BF201F14EE55E50000E918 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D3BF202214EE55E50000E918 /* RestKitTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitTests.octest;
+			remoteRef = D3BF202114EE55E50000E918 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D3BF202414EE55E50000E918 /* RestKit.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = RestKit.framework;
+			remoteRef = D3BF202314EE55E50000E918 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D3BF202614EE55E50000E918 /* RestKitFrameworkTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitFrameworkTests.octest;
+			remoteRef = D3BF202514EE55E50000E918 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		255940D713E86FD4003B4D41 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				255940EA13E86FD4003B4D41 /* InfoPlist.strings in Resources */,
+				255940F313E86FD4003B4D41 /* MainStoryboard.storyboard in Resources */,
+				259050CD13F5B9E400694498 /* blackArrow.png in Resources */,
+				259050CE13F5B9E400694498 /* blackArrow@2x.png in Resources */,
+				259050CF13F5B9E400694498 /* blueArrow.png in Resources */,
+				259050D013F5B9E400694498 /* blueArrow@2x.png in Resources */,
+				259050D113F5B9E400694498 /* grayArrow.png in Resources */,
+				259050D213F5B9E400694498 /* grayArrow@2x.png in Resources */,
+				259050D313F5B9E400694498 /* whiteArrow.png in Resources */,
+				259050D413F5B9E400694498 /* whiteArrow@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		255940FF13E86FD4003B4D41 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2559411013E86FD4003B4D41 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2559410013E86FD4003B4D41 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		255940D513E86FD4003B4D41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				255940EC13E86FD4003B4D41 /* main.m in Sources */,
+				255940F013E86FD4003B4D41 /* RKTableViewExampleAppDelegate.m in Sources */,
+				255940F613E86FD4003B4D41 /* RKTableViewExample.xcdatamodeld in Sources */,
+				255940F913E86FD4003B4D41 /* MasterViewController.m in Sources */,
+				255940FC13E86FD4003B4D41 /* DetailViewController.m in Sources */,
+				2558EF2A13E9F63900910BEF /* Contact.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		255940FD13E86FD4003B4D41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2559411313E86FD4003B4D41 /* RKTableViewExampleTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2559410A13E86FD4003B4D41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 255940D813E86FD4003B4D41 /* RKTableViewExample */;
+			targetProxy = 2559410913E86FD4003B4D41 /* PBXContainerItemProxy */;
+		};
+		25D6448313E88D2E00AD76B0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RestKit;
+			targetProxy = 25D6448213E88D2E00AD76B0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		255940E813E86FD4003B4D41 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				255940E913E86FD4003B4D41 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		255940F113E86FD4003B4D41 /* MainStoryboard.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				255940F213E86FD4003B4D41 /* en */,
+			);
+			name = MainStoryboard.storyboard;
+			sourceTree = "<group>";
+		};
+		2559410E13E86FD4003B4D41 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2559410F13E86FD4003B4D41 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		2559411413E86FD4003B4D41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		2559411513E86FD4003B4D41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		2559411713E86FD4003B4D41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "RKTableViewExample/RKTableViewExample-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
+				INFOPLIST_FILE = "RKTableViewExample/RKTableViewExample-Info.plist";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		2559411813E86FD4003B4D41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "RKTableViewExample/RKTableViewExample-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
+				INFOPLIST_FILE = "RKTableViewExample/RKTableViewExample-Info.plist";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		2559411A13E86FD4003B4D41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/RKTableViewExample.app/RKTableViewExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "RKTableViewExample/RKTableViewExample-Prefix.pch";
+				INFOPLIST_FILE = "RKTableViewExampleTests/RKTableViewExampleTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		2559411B13E86FD4003B4D41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/RKTableViewExample.app/RKTableViewExample";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "RKTableViewExample/RKTableViewExample-Prefix.pch";
+				INFOPLIST_FILE = "RKTableViewExampleTests/RKTableViewExampleTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		255940D313E86FD3003B4D41 /* Build configuration list for PBXProject "RKTableViewExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2559411413E86FD4003B4D41 /* Debug */,
+				2559411513E86FD4003B4D41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2559411613E86FD4003B4D41 /* Build configuration list for PBXNativeTarget "RKTableViewExample" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2559411713E86FD4003B4D41 /* Debug */,
+				2559411813E86FD4003B4D41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2559411913E86FD4003B4D41 /* Build configuration list for PBXNativeTarget "RKTableViewExampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2559411A13E86FD4003B4D41 /* Debug */,
+				2559411B13E86FD4003B4D41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		255940F413E86FD4003B4D41 /* RKTableViewExample.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				255940F513E86FD4003B4D41 /* RKTableViewExample.xcdatamodel */,
+			);
+			currentVersion = 255940F513E86FD4003B4D41 /* RKTableViewExample.xcdatamodel */;
+			path = RKTableViewExample.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 255940D013E86FD3003B4D41 /* Project object */;
+}

@@ -38,4 +38,10 @@
  */
 - (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass;
 
+/**
+ Returns the name of a property when provided the name of a property obtained
+ via the property_getAttributes reflection API
+ */
++ (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString;
+
 @end

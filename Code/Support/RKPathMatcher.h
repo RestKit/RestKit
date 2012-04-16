@@ -33,14 +33,14 @@
  @see RKMakePathWithObject
  @see RKRouter
  */
-@interface RKPathMatcher : NSObject {
+@interface RKPathMatcher : NSObject <NSCopying> {
 @private
     SOCPattern *socPattern_;
     NSString *sourcePath_;
     NSString *rootPath_;
     NSDictionary *queryParameters_;
 }
-@property (retain,readonly) NSDictionary *queryParameters;
+@property (copy, readonly) NSDictionary *queryParameters;
 
 /**
  Creates an RKPathMatcher starting from a resource path string.  This method should be followed by 
