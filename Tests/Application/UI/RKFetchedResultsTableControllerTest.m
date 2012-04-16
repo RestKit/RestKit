@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 8/12/11.
-//  Copyright 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTestEnvironment.h"
@@ -12,8 +12,8 @@
 #import "RKManagedObjectMapping.h"
 #import "RKHuman.h"
 #import "RKEvent.h"
-#import "RKManagedObjectCache.h"
 #import "RKAbstractTableController_Internals.h"
+#import "RKManagedObjectCaching.h"
 
 // Expose the object loader delegate for testing purposes...
 @interface RKFetchedResultsTableController () <RKObjectLoaderDelegate>
@@ -37,26 +37,22 @@
 @implementation RKFetchedResultsTableControllerSpecViewController
 @end
 
-@interface RKFetchedResultsTableControllerTest : RKTestCase {
-    NSAutoreleasePool *_autoreleasePool;
-}
+@interface RKFetchedResultsTableControllerTest : RKTestCase
 
 @end
 
 @implementation RKFetchedResultsTableControllerTest
 
 - (void)setUp {
-    _autoreleasePool = [NSAutoreleasePool new];
+    [RKTestFactory setUp];
 }
 
 - (void)tearDown {
-    [_autoreleasePool drain];
-    _autoreleasePool = nil;
+    [RKTestFactory tearDown];
 }
 
 - (void)bootstrapStoreAndCache {
-//    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
@@ -70,22 +66,23 @@
     RKHuman* other = [RKHuman createEntity];
     other.railsID = [NSNumber numberWithInt:5678];
     other.name = @"other";
-    NSError* error = [store save];
+    NSError* error = nil;
+    [store save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([RKHuman count:nil], is(equalToInt(2)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
-
-    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
-    [[[mockObjectCache stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
-    objectManager.objectStore.managedObjectCache = mockObjectCache;
+    
+    [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/all\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
+        return [RKHuman requestAllSortedBy:@"name" ascending:YES];
+    }];
 }
 
 - (void)bootstrapNakedObjectStoreAndCache {
 //    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping *eventMapping = [RKManagedObjectMapping mappingForClass:[RKEvent class] inManagedObjectStore:store];
     [eventMapping mapKeyPath:@"event_id" toAttribute:@"eventID"];
     [eventMapping mapKeyPath:@"type" toAttribute:@"eventType"];
@@ -99,22 +96,21 @@
     nakedEvent.eventType = @"Concert";
     nakedEvent.location = @"Performance Hall";
     nakedEvent.summary = @"Shindig";
-    NSError* error = [store save];
+    NSError* error = nil;
+    [store save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([RKEvent count:nil], is(equalToInt(1)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider addObjectMapping:eventMapping];
     objectManager.objectStore = store;
 
-    id mockObjectCache = [OCMockObject mockForProtocol:@protocol(RKManagedObjectCache)];
-    [[[mockObjectCache stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
-    objectManager.objectStore.managedObjectCache = mockObjectCache;
+    id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
+    [[[mockMappingProvider stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
 }
 
 - (void)bootstrapEmptyStoreAndCache {
-//    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
@@ -123,14 +119,13 @@
     [RKHuman truncateAll];
     assertThatInt([RKHuman count:nil], is(equalToInt(0)));
 
-    RKObjectManager* objectManager = RKTestNewObjectManager();
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
 
-    id mockObjectCache = [OCMockObject niceMockForProtocol:@protocol(RKManagedObjectCache)];
-    [[[mockObjectCache stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
-    [[[mockObjectCache stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/empty/array"];
-    objectManager.objectStore.managedObjectCache = mockObjectCache;
+    id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
+    [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
+    [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/empty/array"];
 }
 
 - (void)stubObjectManagerToOnline {
@@ -524,7 +519,7 @@
     [self bootstrapStoreAndCache];
     [self stubObjectManagerToOnline];
     [[RKObjectManager sharedManager].router routeClass:[RKHuman class]
-                                        toResourcePath:@"/humans/(railsID)"
+                                        toResourcePath:@"/humans/:railsID"
                                              forMethod:RKRequestMethodDELETE];
     UITableView* tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];

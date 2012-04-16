@@ -111,6 +111,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		252A204215347F0B0078F8AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 253B489814E341C500B0483F /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 259C301615128079003066A2;
+			remoteInfo = RestKitResources;
+		};
 		253B488514E3415800B0483F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 253B485614E3415800B0483F /* Project object */;
@@ -427,6 +434,7 @@
 				253B48A514E341C500B0483F /* RestKitTests.octest */,
 				253B48A714E341C500B0483F /* RestKit.framework */,
 				253B48A914E341C500B0483F /* RestKitFrameworkTests.octest */,
+				252A204315347F0B0078F8AD /* RestKitResources.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -698,7 +706,7 @@
 		253B485614E3415800B0483F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = RestKit;
 			};
 			buildConfigurationList = 253B485914E3415800B0483F /* Build configuration list for PBXProject "RKApplicationTests" */;
@@ -726,6 +734,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		252A204315347F0B0078F8AD /* RestKitResources.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitResources.bundle;
+			remoteRef = 252A204215347F0B0078F8AD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		253B48A314E341C500B0483F /* libRestKit.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -824,7 +839,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SRCROOT}/../RunPlatformUnitTests\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -981,6 +996,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKApplicationTests/App/RKApplicationTests-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "RKApplicationTests/App/RKApplicationTests-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -993,6 +1009,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "RKApplicationTests/App/RKApplicationTests-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "RKApplicationTests/App/RKApplicationTests-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1015,13 +1032,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../Models",
 					"$(SRCROOT)/..",
-					"$(SRCROOT)/../../Build",
+					"\"$(BUILT_PRODUCTS_DIR)/../../Headers\"",
 					"$(SRCROOT)/../Vendor/OCMock",
 				);
 				INFOPLIST_FILE = "RKApplicationTests/Tests/RKApplicationTestsTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build/RestKit";
+				USER_HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers/RestKit\"";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -1041,13 +1058,13 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../Models",
 					"$(SRCROOT)/..",
-					"$(SRCROOT)/../../Build",
+					"\"$(BUILT_PRODUCTS_DIR)/../../Headers\"",
 					"$(SRCROOT)/../Vendor/OCMock",
 				);
 				INFOPLIST_FILE = "RKApplicationTests/Tests/RKApplicationTestsTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../Build/RestKit";
+				USER_HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers/RestKit\"";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;

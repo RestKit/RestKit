@@ -1,9 +1,21 @@
 //
 //  RKMappingTest.m
-//  RKGithub
+//  RestKit
 //
 //  Created by Blake Watters on 2/17/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKMappingTest.h"
@@ -76,13 +88,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @implementation RKMappingTest
 
-@synthesize sourceObject;
-@synthesize destinationObject;
-@synthesize mapping;
-@synthesize expectations;
-@synthesize events;
-@synthesize verifiesOnExpect;
-@synthesize performedMapping;
+@synthesize sourceObject = _sourceObject;
+@synthesize destinationObject = _destinationObject;
+@synthesize mapping = _mapping;
+@synthesize rootKeyPath = _rootKeyPath;
+@synthesize expectations = _expectations;
+@synthesize events = _events;
+@synthesize verifiesOnExpect = _verifiesOnExpect;
+@synthesize performedMapping = _performedMapping;
 
 + (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject {
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:nil];
@@ -92,19 +105,19 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:destinationObject];
 }
 
-- (id)initWithMapping:(RKObjectMapping *)_mapping sourceObject:(id)_sourceObject destinationObject:(id)_destinationObject {
-    NSAssert(_sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
-    NSAssert(_mapping != nil, @"Cannot perform a mapping operation without a mapping");
+- (id)initWithMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject {
+    NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
+    NSAssert(mapping != nil, @"Cannot perform a mapping operation without a mapping");
  
     self = [super init];
     if (self) {        
-        self.sourceObject = _sourceObject;
-        self.destinationObject = _destinationObject;
-        self.mapping = _mapping;
-        self.expectations = [NSMutableArray new];
-        self.events = [NSMutableArray new];
-        self.verifiesOnExpect = NO;
-        self.performedMapping = NO;
+        _sourceObject = sourceObject;
+        _destinationObject = destinationObject;
+        _mapping = mapping;
+        _expectations = [NSMutableArray new];
+        _events = [NSMutableArray new];
+        _verifiesOnExpect = NO;
+        _performedMapping = NO;
     }
 
     return self;
@@ -155,10 +168,15 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 }
 
 - (void)performMapping {
+    NSAssert(self.mapping.objectClass, @"Cannot test a mapping that does not have a destination objectClass");
+    
     // Ensure repeated invocations of verify only result in a single mapping operation
     if (! self.hasPerformedMapping) {
-        id destination = self.destinationObject ? self.destinationObject : [self.mapping mappableObjectForData:self.sourceObject];
-        RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:self.sourceObject toObject:destination withMapping:self.mapping];
+        id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
+        if (nil == self.destinationObject) {
+            self.destinationObject = [self.mapping mappableObjectForData:self.sourceObject];
+        }
+        RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:self.destinationObject withMapping:self.mapping];
         NSError *error = nil;
         mappingOperation.delegate = self;
         BOOL success = [mappingOperation performMapping:&error];
@@ -200,8 +218,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self.events addObject:event];
 }
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)_mapping {
-    [self addEvent:[RKMappingTestEvent eventWithMapping:_mapping value:value]];
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
+    [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }
 
 @end

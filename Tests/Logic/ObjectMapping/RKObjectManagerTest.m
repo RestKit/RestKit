@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/14/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -351,6 +351,23 @@
     RKObjectLoader *loader = [objectManager loaderWithResourcePath:@"/test"];
     assertThat(loader.serializationMIMEType, isNot(nilValue()));
     assertThat(loader.serializationMIMEType, is(equalTo(RKMIMETypeJSON)));
+}
+
+- (void)testInitializationOfRoutedPathViaSendObjectMethodUsingBlock
+{
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
+    mapping.rootKeyPath = @"human";
+    [objectManager.mappingProvider registerObjectMapping:mapping withRootKeyPath:@"human"];
+    [objectManager.router routeClass:[RKObjectMapperTestModel class] toResourcePath:@"/human/1"];
+    objectManager.serializationMIMEType = RKMIMETypeJSON;
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    
+    RKObjectMapperTestModel *object = [RKObjectMapperTestModel new];
+    [objectManager putObject:object usingBlock:^(RKObjectLoader *loader) {
+        loader.delegate = responseLoader;
+    }];
+    [responseLoader waitForResponse];
 }
 
 @end

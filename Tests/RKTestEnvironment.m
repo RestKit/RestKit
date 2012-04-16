@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 3/14/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,38 +22,55 @@
 #import "RKTestEnvironment.h"
 #import "RKParserRegistry.h"
 
-RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader){
+RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader)
+{
     [loader setTimeout:10];
-    RKOAuthClient* client = [RKOAuthClient clientWithClientID:@"appID" secret:@"appSecret"];
+    RKOAuthClient *client = [RKOAuthClient clientWithClientID:@"appID" secret:@"appSecret"];
     client.delegate = loader;
     client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize", [RKTestFactory baseURLString]];
     return client;
-}
-
-void RKTestClearCacheDirectory(void) {
-    
 }
 
 @implementation RKTestCase
 
 + (void)initialize
 {
-    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
+    // Configure fixture bundle. The 'org.restkit.tests' identifier is shared between
+    // the logic and application test bundles
+    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.tests"];
     [RKTestFixture setFixtureBundle:fixtureBundle];
+
+    // Ensure the required directories exist
+    BOOL directoryExists;
+    NSError *error = nil;
+    directoryExists = [RKDirectory ensureDirectoryExistsAtPath:[RKDirectory applicationDataDirectory] error:&error];
+    if (! directoryExists) {
+        RKLogError(@"Failed to create application data directory. Unable to run tests: %@", error);
+        NSAssert(directoryExists, @"Failed to create application data directory.");
+    }
+
+    directoryExists = [RKDirectory ensureDirectoryExistsAtPath:[RKDirectory cachesDirectory] error:&error];
+    if (! directoryExists) {
+        RKLogError(@"Failed to create caches directory. Unable to run tests: %@", error);
+        NSAssert(directoryExists, @"Failed to create caches directory.");
+    }
 }
 
 @end
 
 @implementation SenTestCase (MethodSwizzling)
+
 - (void)swizzleMethod:(SEL)aOriginalMethod
               inClass:(Class)aOriginalClass
            withMethod:(SEL)aNewMethod
             fromClass:(Class)aNewClass
-         executeBlock:(void (^)(void))aBlock {
+         executeBlock:(void (^)(void))aBlock
+{
     Method originalMethod = class_getClassMethod(aOriginalClass, aOriginalMethod);
     Method mockMethod = class_getInstanceMethod(aNewClass, aNewMethod);
     method_exchangeImplementations(originalMethod, mockMethod);
     aBlock();
     method_exchangeImplementations(mockMethod, originalMethod);
 }
+
 @end

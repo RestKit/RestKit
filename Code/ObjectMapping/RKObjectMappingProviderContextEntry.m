@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 1/26/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKObjectMappingProviderContextEntry.h"
@@ -41,8 +41,7 @@
 - (NSUInteger)hash {
     int prime = 31;
     int result = 1;
-    result = prime * [self.mapping hash];
-    result = prime * [self.userData hash];
+    result = prime * [self.userData hash]? [self.mapping hash] : [self.userData hash];
     return result;
 }
 

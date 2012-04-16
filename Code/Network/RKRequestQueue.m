@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 12/1/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -289,8 +289,8 @@ static const NSTimeInterval kFlushDelay = 0.3;
             }
 
             [self addLoadingRequest:request];
-            [request sendAsynchronously];
             RKLogDebug(@"Sent request %@ from queue %@. Loading count = %ld of %ld", request, self, (long) self.loadingCount, (long) _concurrentRequestsLimit);
+            [request sendAsynchronously];
 
             if ([_delegate respondsToSelector:@selector(requestQueue:didSendRequest:)]) {
                 [_delegate requestQueue:self didSendRequest:request];

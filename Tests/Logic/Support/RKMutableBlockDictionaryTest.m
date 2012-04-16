@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/22/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTestEnvironment.h"

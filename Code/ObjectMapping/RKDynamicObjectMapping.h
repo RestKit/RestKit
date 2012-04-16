@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -27,12 +27,12 @@
 @protocol RKDynamicObjectMappingDelegate <NSObject>
 
 @required
-- (RKObjectMapping*)objectMappingForData:(id)data;
+- (RKObjectMapping *)objectMappingForData:(id)data;
 
 @end
 
 #ifdef NS_BLOCKS_AVAILABLE
-typedef RKObjectMapping*(^RKDynamicObjectMappingDelegateBlock)(id);
+typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
 #endif
 
 /**

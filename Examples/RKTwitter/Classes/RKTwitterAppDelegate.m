@@ -3,7 +3,7 @@
 //  RKTwitter
 //
 //  Created by Blake Watters on 9/5/10.
-//  Copyright Two Toasters 2010. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -47,12 +47,12 @@
 	// Wed Sep 29 15:31:08 +0000 2010
     [RKObjectMapping addDefaultDateFormatterForString:@"E MMM d HH:mm:ss Z y" inTimeZone:nil];
     
-    // Register our mappings with the provider using a resource path pattern
-    statusMapping.rootKeyPath = @"statuses.status";
-    [objectManager.mappingProvider setObjectMapping:statusMapping forResourcePathPattern:@"/status/user_timeline/:username"];
+    // Uncomment these lines to use XML, comment it to use JSON
+    //    objectManager.acceptMIMEType = RKMIMETypeXML;
+    //    statusMapping.rootKeyPath = @"statuses.status";
     
-    // Uncomment this to use XML, comment it to use JSON
-//    objectManager.acceptMIMEType = RKMIMETypeXML;
+    // Register our mappings with the provider using a resource path pattern
+    [objectManager.mappingProvider setObjectMapping:statusMapping forResourcePathPattern:@"/status/user_timeline/:username"];
 	
     // Create Window and View Controllers
 	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -1216,6 +1216,28 @@
     assertThatUnsignedInteger([user.friends count], is(equalToInt(1)));
 }
 
+- (void)testShouldMapANestedObjectToOrderedSetCollection {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    RKObjectAttributeMapping* cityMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"city" toKeyPath:@"city"];
+    [addressMapping addAttributeMapping:cityMapping];
+    
+    RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"friendsOrderedSet" withMapping:addressMapping];
+    [userMapping addRelationshipMapping:hasOneMapping];
+    
+    RKObjectMapper* mapper = [RKObjectMapper new];
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    RKTestUser* user = [RKTestUser user];
+    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    [mapper release];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"Blake Watters")));
+    assertThat(user.friendsOrderedSet, isNot(nilValue()));
+    assertThatUnsignedInteger([user.friendsOrderedSet count], is(equalToInt(1)));
+}
+
 - (void)testShouldMapANestedObjectCollection {
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
@@ -1257,6 +1279,28 @@
     assertThatUnsignedInteger([user.friendsSet count], is(equalToInt(2)));
     NSSet* names = [NSSet setWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
     assertThat([user.friendsSet valueForKey:@"name"], is(equalTo(names)));
+}
+
+- (void)testShouldMapANestedArrayIntoAnOrderedSet {
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    
+    RKObjectRelationshipMapping* hasManyMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friends" toKeyPath:@"friendsOrderedSet" withMapping:userMapping];
+    [userMapping addRelationshipMapping:hasManyMapping];
+    
+    RKObjectMapper* mapper = [RKObjectMapper new];
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    RKTestUser* user = [RKTestUser user];
+    BOOL success = [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
+    [mapper release];
+    assertThatBool(success, is(equalToBool(YES)));
+    assertThat(user.name, is(equalTo(@"Blake Watters")));
+    assertThat(user.friendsOrderedSet, isNot(nilValue()));
+    assertThatBool([user.friendsOrderedSet isKindOfClass:[NSOrderedSet class]], is(equalToBool(YES)));
+    assertThatUnsignedInteger([user.friendsOrderedSet count], is(equalToInt(2)));
+    NSOrderedSet *names = [NSOrderedSet orderedSetWithObjects:@"Jeremy Ellison", @"Rachit Shukla", nil];
+    assertThat([user.friendsOrderedSet valueForKey:@"name"], is(equalTo(names)));
 }
 
 - (void)testShouldNotSetThePropertyWhenTheNestedObjectIsIdentical {
@@ -1760,6 +1804,23 @@
     assertThat(dateFormatter.timeZone, is(equalTo(EDTTimeZone)));
 }
 
+- (void)testShouldReturnNilForEmptyDateValues {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
+    [mapping addAttributeMapping:birthDateMapping];
+    
+    NSDictionary* dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
+    [mutableDictionary setValue:@"" forKey:@"birthdate"];
+    RKTestUser* user = [RKTestUser user];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:mutableDictionary destinationObject:user mapping:mapping];
+    [mutableDictionary release];
+    NSError* error = nil;
+    [operation performMapping:&error];
+    
+    assertThat(user.birthDate, is(equalTo(nil)));
+}
+
 - (void)testShouldConfigureANewDateFormatterInTheUTCTimeZoneIfPassedANilTimeZone {
     [RKObjectMapping setDefaultDateFormatters:nil];
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(3));
@@ -1843,6 +1904,32 @@
     assertThat([parsedJSON valueForKey:@"name"], is(equalTo(@"Blake Watters")));
     NSArray *catNames = [[parsedJSON valueForKeyPath:@"cats.name"] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     assertThat(catNames, is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", nil])));
+}
+
+- (void)testUpdatingArrayOfExistingCats {
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    NSArray *array = [RKTestFixture parsedObjectWithContentsOfFixture:@"ArrayOfHumans.json"];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
+    humanMapping.primaryKeyAttribute = @"railsID";
+    RKObjectMappingProvider *provider = [RKObjectMappingProvider mappingProvider];
+    [provider setObjectMapping:humanMapping forKeyPath:@"human"];
+    
+    // Create instances that should match the fixture
+    RKHuman *human1 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
+    human1.railsID = [NSNumber numberWithInt:201];
+    RKHuman *human2 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
+    human2.railsID = [NSNumber numberWithInt:202];
+    [objectStore save:nil];
+    
+    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:array mappingProvider:provider];
+    RKObjectMappingResult *result = [mapper performMapping];
+    assertThat(result, is(notNilValue()));
+    
+    NSArray *humans = [result asCollection];
+    assertThat(humans, hasCountOf(2));    
+    assertThat([humans objectAtIndex:0], is(equalTo(human1)));
+    assertThat([humans objectAtIndex:1], is(equalTo(human2)));
 }
 
 @end

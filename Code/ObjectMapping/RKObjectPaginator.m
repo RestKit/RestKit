@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 12/29/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 
 // Private interface
 @interface RKObjectPaginator () <RKObjectLoaderDelegate>
-@property (nonatomic, retain) RKManagedObjectLoader *objectLoader;
+@property (nonatomic, retain) RKObjectLoader *objectLoader;
 @end
 
 @implementation RKObjectPaginator
@@ -198,7 +198,11 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     NSAssert(! objectLoader, @"Cannot perform a load while one is already in progress.");
     currentPage = pageNumber;
     
-    self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
+    if (self.objectStore) {
+        self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
+    } else {
+        self.objectLoader = [[[RKObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider] autorelease];
+    }
   
     if ([self.configurationDelegate respondsToSelector:@selector(configureObjectLoader:)]) {
         [self.configurationDelegate configureObjectLoader:objectLoader];

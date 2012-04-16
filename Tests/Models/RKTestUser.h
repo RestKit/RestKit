@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/5/11.
-//  Copyright 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -42,6 +42,7 @@
 @property (nonatomic, retain) RKTestAddress* address;
 @property (nonatomic, retain) NSArray* friends;
 @property (nonatomic, retain) NSSet* friendsSet;
+@property (nonatomic, retain) NSOrderedSet *friendsOrderedSet;
 
 + (RKTestUser*)user;
 

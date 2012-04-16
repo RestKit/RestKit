@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/1/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #import "RKAbstractTableController_Internals.h"
 #import "RKLog.h"
 #import "RKFormSection.h"
+#import "NSArray+RKAdditions.h"
 
 // Define logging component
 #undef RKLogComponent
@@ -30,6 +31,7 @@
 @implementation RKTableController
 
 @synthesize form = _form;
+@synthesize sectionNameKeyPath = _sectionNameKeyPath;
 
 #pragma mark - Instantiation
 
@@ -51,7 +53,8 @@
 - (void)dealloc {
     [self removeObserver:self forKeyPath:@"sections"];
     [_form release];
-
+    [_sectionNameKeyPath release];
+    
     [super dealloc];
 }
 
@@ -91,10 +94,6 @@
     if ([self.delegate respondsToSelector:@selector(tableController:didInsertSection:atIndex:)]) {
         [self.delegate tableController:self didInsertSection:section atIndex:[self.sections indexOfObject:section]];
     }
-}
-
-- (void)addSectionUsingBlock:(void (^)(RKTableSection *section))block {
-    [self addSection:[RKTableSection sectionUsingBlock:block]];
 }
 
 - (void)removeSection:(RKTableSection *)section {
@@ -179,7 +178,7 @@
     return [mutableObjects autorelease];
 }
 
-// TODO: NOTE - Everything currently needs to pass through this method to pick up header/footer rows...
+// NOTE - Everything currently needs to pass through this method to pick up header/footer rows...
 - (void)loadObjects:(NSArray *)objects inSection:(NSUInteger)sectionIndex {
     // Clear any existing error state from the table
     self.error = nil;
@@ -241,10 +240,6 @@
     [self loadTableItems:tableItems inSection:0];
 }
 
-- (void)loadTableItems:(NSArray *)tableItems withMappingBlock:(void (^)(RKTableViewCellMapping*))block {
-    [self loadTableItems:tableItems inSection:0 withMapping:[RKTableViewCellMapping cellMappingUsingBlock:block]];
-}
-
 #pragma mark - Network Table Loading
 
 - (void)loadTableFromResourcePath:(NSString*)resourcePath {
@@ -274,12 +269,6 @@
         section.objects = [self objectsWithHeaderAndFooters:section.objects forSection:sectionIndex];
         [self addSection:(RKTableSection *)section];
     }
-
-    // TODO: How to handle animating loading a replacement form?
-//    if (self.loaded) {
-//        NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [form.sections count] - 1)];
-//        [self.tableView reloadSections:indexSet withRowAnimation:self.defaultRowAnimation];
-//    }
 
     [self didFinishLoad];
     [form didLoadInTableController:self];
@@ -331,15 +320,23 @@
 
 - (void)objectLoader:(RKObjectLoader *)loader didLoadObjects:(NSArray *)objects {
     // TODO: Could not get the KVO to work without a boolean property...
-    // TODO: Need to figure out how to group the objects into sections
     // TODO: Apply any sorting...
-
-    // Load them into the first section for now
-    [self loadObjects:objects inSection:0];
+    
+    if (self.sectionNameKeyPath) {
+        NSArray *sectionedObjects = [objects sectionsGroupedByKeyPath:self.sectionNameKeyPath];
+        for (NSArray *sectionOfObjects in sectionedObjects) {
+            NSUInteger sectionIndex = [sectionedObjects indexOfObject:sectionOfObjects];
+            if (sectionIndex >= [self sectionCount]) {
+                [self addSection:[RKTableSection section]];
+            }
+            [self loadObjects:sectionOfObjects inSection:sectionIndex];
+        }
+    } else {
+        [self loadObjects:objects inSection:0];
+    }
 }
 
 - (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation {
-    // TODO: Find the indexPath of the object...
     NSIndexPath *indexPath = [self indexPathForObject:object];
     if (indexPath) {
         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:rowAnimation];

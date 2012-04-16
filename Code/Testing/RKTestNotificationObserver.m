@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 8/23/11.
-//  Copyright 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTestNotificationObserver.h"

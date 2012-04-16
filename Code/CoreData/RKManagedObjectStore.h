@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/22/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 #import <CoreData/CoreData.h>
 #import "RKManagedObjectMapping.h"
-#import "RKManagedObjectMappingCache.h"
+#import "RKManagedObjectCaching.h"
 
 @class RKManagedObjectStore;
 
@@ -75,13 +75,32 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 + (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore;
 
 ///-----------------------------------------------------------------------------
+/// @name Deleting Store Files
+///-----------------------------------------------------------------------------
+
+/**
+ Deletes the SQLite file backing an RKManagedObjectStore instance at a given path.
+
+ @param path The complete path to the store file to delete.
+ */
++ (void)deleteStoreAtPath:(NSString *)path;
+
+/**
+ Deletes the SQLite file backing an RKManagedObjectStore instance with a given
+ filename within the application data directory.
+
+ @param filename The name of the file within the application data directory backing a managed object store.
+ */
++ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename;
+
+///-----------------------------------------------------------------------------
 /// @name Initializing an Object Store
 ///-----------------------------------------------------------------------------
 
 /**
 
  */
-@property (nonatomic, retain) NSObject<RKManagedObjectMappingCache> *cacheStrategy;
+@property (nonatomic, retain) NSObject<RKManagedObjectCaching> *cacheStrategy;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified

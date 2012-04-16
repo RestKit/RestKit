@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/4/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -175,7 +175,9 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 
     @synchronized(_prepareCellBlocks) {
         for (void (^block)(UITableViewCell *) in _prepareCellBlocks) {
-            [copy addPrepareCellBlock:[block copy]];
+            void (^blockCopy)(UITableViewCell *cell) = [block copy];
+            [copy addPrepareCellBlock:blockCopy];
+            [blockCopy release];
         }
     }
 
@@ -243,7 +245,9 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 #pragma mark - Control Action Helpers
 
 - (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block {
-    [_prepareCellBlocks addObject:[block copy]];
+    void (^blockCopy)(UITableViewCell *cell) = [block copy];
+    [_prepareCellBlocks addObject:blockCopy];
+    [blockCopy release];
 }
 
 - (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath {

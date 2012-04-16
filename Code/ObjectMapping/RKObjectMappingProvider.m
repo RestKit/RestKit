@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 5/6/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -258,6 +258,7 @@
 }
 
 - (RKObjectMappingDefinition *)mappingForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context {
+    NSAssert(string, @"Cannot look up mapping matching nil pattern string.");
     RKOrderedDictionary *contextValue = [self valueForContext:context];
     NSAssert(contextValue, @"Attempted to retrieve mapping from undefined context: %d", context);
     for (NSString *pattern in contextValue) {

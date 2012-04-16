@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 4/4/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -39,6 +39,34 @@ typedef enum {
      */
     RKRequestCacheStoragePolicyPermanently
 } RKRequestCacheStoragePolicy;
+
+/**
+ Location of session specific cache files within the Caches path.
+ */
+extern NSString * const RKRequestCacheSessionCacheDirectory;
+
+/**
+ Location of permanent cache files within the Caches path.
+ */
+extern NSString * const RKRequestCachePermanentCacheDirectory;
+
+/** 
+ @constant RKRequestCache Header Keys
+ 
+ Constants for accessing cache specific X-RESTKIT
+ headers used to store cache metadata within the cache entry.
+*/
+/** The key for accessing the date the entry was cached. **/
+extern NSString * const RKRequestCacheDateHeaderKey;
+
+/** The key for accessing the status code of the cached request. **/
+extern NSString * const RKRequestCacheStatusCodeHeadersKey;
+
+/** The key for accessing the MIME Type of the cached request. **/
+extern NSString * const RKRequestCacheMIMETypeHeadersKey;
+
+/** The key for accessing the URL of the cached request. **/
+extern NSString * const RKRequestCacheURLHeadersKey;
 
 /**
  Stores and retrieves cache entries for RestKit request objects.

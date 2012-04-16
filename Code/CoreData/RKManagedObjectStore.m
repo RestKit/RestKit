@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/22/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKAlert.h"
 #import "RKDirectory.h"
-#import "RKInMemoryMappingCache.h"
+#import "RKInMemoryManagedObjectCache.h"
+#import "RKFetchRequestManagedObjectCache.h"
 #import "NSBundle+RKAdditions.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 
@@ -69,6 +70,25 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     defaultObjectStore = objectStore;
     
     [NSManagedObjectContext setDefaultContext:objectStore.primaryManagedObjectContext];
+}
+
++ (void)deleteStoreAtPath:(NSString *)path
+{
+    NSURL* storeURL = [NSURL fileURLWithPath:path];
+	NSError* error = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
+        if (! [[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
+            NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
+        }
+    } else {
+        RKLogWarning(@"Asked to delete persistent store but no store file exists at path: %@", storeURL.path);
+    }
+}
+
++ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename
+{
+    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:filename];
+    [self deleteStoreAtPath:path];
 }
 
 + (RKManagedObjectStore*)objectStoreWithStoreFilename:(NSString*)storeFilename {
@@ -114,10 +134,9 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         _delegate = delegate;
 
 		[self createPersistentStoreCoordinator];
-        self.primaryManagedObjectContext = [self newManagedObjectContext];
+        self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
         
-
-        _cacheStrategy = [[RKInMemoryMappingCache alloc] init];
+        _cacheStrategy = [RKFetchRequestManagedObjectCache new];
 
         // Ensure there is a search word observer
         [RKSearchWordObserver sharedObserver];
@@ -339,7 +358,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 	[self deletePersistantStoreUsingSeedDatabaseName:nil];
     
     // Recreate the MOC
-    self.primaryManagedObjectContext = [self newManagedObjectContext];
+    self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
 }
 
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread {

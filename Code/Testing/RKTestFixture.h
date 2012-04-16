@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 2/1/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -44,6 +44,14 @@
  @param bundle The new fixture NSBundle object.
  */
 + (void)setFixtureBundle:(NSBundle *)bundle;
+
+/**
+ Returns the full path to the specified fixture file on within the fixture bundle.
+ 
+ @param fixtureName The name of the fixture file.
+ @return The full path to the specified fixture file or nil if it cannot be located.
+ */
++ (NSString *)pathForFixture:(NSString *)fixtureName;
 
 #if TARGET_OS_IPHONE
 /**

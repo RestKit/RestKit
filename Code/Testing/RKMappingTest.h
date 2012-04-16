@@ -1,9 +1,21 @@
 //
 //  RKMappingTest.h
-//  RKGithub
+//  RestKit
 //
 //  Created by Blake Watters on 2/17/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//  
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//  
+//  http://www.apache.org/licenses/LICENSE-2.0
+//  
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <Foundation/Foundation.h>
@@ -104,11 +116,20 @@
 ///-----------------------------------------------------------------------------
 
 /**
+ Performs the object mapping operation and records any mapping events that occur. The
+ mapping events can be verified against expectation through a subsequent call to verify.
+
+ @exception NSInternalInconsistencyException Raises an
+ NSInternalInconsistencyException if mapping fails.
+ */
+- (void)performMapping;
+
+/**
  Verifies that the mapping is configured correctly by performing an object mapping operation
  and ensuring that all expectations are met.
  
  @exception NSInternalInconsistencyException Raises an
- NSInternalInconsistencyException if mapping failes or any expectation is not satisfied.
+ NSInternalInconsistencyException if mapping fails or any expectation is not satisfied.
  */
 - (void)verify;
 
@@ -119,22 +140,32 @@
 /**
  The object mapping under test.
  */
-@property (nonatomic, strong, readonly) RKObjectMapping *mapping;
+@property(nonatomic, strong, readonly) RKObjectMapping *mapping;
+
+/**
+ A key path to apply to the source object to specify the location of the root
+ of the data under test. Useful when testing subsets of a larger payload or
+ object graph.
+
+ **Default**: nil
+ */
+@property(nonatomic, copy) NSString *rootKeyPath;
 
 /**
  The source object being mapped from.
  */
-@property (nonatomic, strong, readonly) id sourceObject;
+@property(nonatomic, strong, readonly) id sourceObject;
 
 /**
  The destionation object being mapped to.
  
  If nil, the mapping test will instantiate a destination object to perform the mapping
- by invoking `[self.mapping mappableObjectForData:self.sourceObject]`
+ by invoking `[self.mapping mappableObjectForData:self.sourceObject]` and set the
+ new object as the value for the destinationObject property.
  
  @see [RKObjectMapping mappableObjectForData:]
  */
-@property (nonatomic, strong, readonly) id destinationObject;
+@property(nonatomic, strong, readonly) id destinationObject;
 
 /**
  A Boolean value that determines if expectations should be verified immediately
@@ -142,6 +173,6 @@
  
  **Default**: NO
  */
-@property (nonatomic, assign) BOOL verifiesOnExpect;
+@property(nonatomic, assign) BOOL verifiesOnExpect;
 
 @end

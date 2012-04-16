@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/15/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -59,8 +59,7 @@
 	NSURL* URL = [NSURL URLWithString:URLString];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
 	RKParams* params = [[RKParams params] retain];
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-	NSString* filePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+	NSString* filePath = [RKTestFixture pathForFixture:@"blake.png"];
 	[params setFile:filePath forParam:@"file"];
 	[params setValue:@"this is the value" forParam:@"test"];
 	request.method = RKRequestMethodPOST;
@@ -706,12 +705,12 @@ request.timeoutInterval = 1.0;
 }
 
 - (void)testShouldOptionallySkipSSLValidation {
-    NSURL* URL = [NSURL URLWithString:@"https://blakewatters.com/"];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKRequest* request = [RKRequest requestWithURL:URL];
-    request.disableCertificateValidation = YES;
-    request.delegate = loader;
+    NSURL *URL = [NSURL URLWithString:@"https://blakewatters.com/"];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [RKRequest requestWithURL:URL];
     [[RKClient sharedClient] configureRequest:request];
+    request.delegate = loader;
+    request.disableCertificateValidation = YES;
     [request send];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));

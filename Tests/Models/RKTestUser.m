@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/5/11.
-//  Copyright 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTestUser.h"
@@ -26,6 +26,7 @@
 @synthesize address = _address;
 @synthesize friends = _friends;
 @synthesize friendsSet = _friendsSet;
+@synthesize friendsOrderedSet = _friendsOrderedSet;
 
 + (RKTestUser*)user {
     return [[self new] autorelease];
@@ -35,10 +36,15 @@
 // to determine if assocation values should be set
 - (BOOL)isEqual:(id)object {
     if ([object isKindOfClass:[RKTestUser class]]) {
-        return [[(RKTestUser*)object userID] isEqualToNumber:self.userID];
-    } else {
-        return NO;
+        if ([(RKTestUser*)object userID] == nil && self.userID == nil) {
+            // No primary key -- consult superclass
+            return [super isEqual:object];
+        } else {
+            return [[(RKTestUser*)object userID] isEqualToNumber:self.userID];
+        }
     }
+    
+    return NO;
 }
 
 - (id)valueForUndefinedKey:(NSString *)key {

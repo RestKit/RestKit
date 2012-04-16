@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 6/30/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -49,9 +49,7 @@
     [params setValue:@"two" forParam:@"value"];
     [params setValue:@"three" forParam:@"value"];
     [params setValue:@"four" forParam:@"value"];
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-    NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
-    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    NSData *data = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
     [params setData:data MIMEType:@"image/png" forParam:@"file"];
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     [client post:@"/upload" params:params delegate:responseLoader];
@@ -65,9 +63,7 @@
     NSNumber* idTema = [NSNumber numberWithInt:1234];
     NSString* titulo = @"whatever";
     NSString* texto = @"more text";
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-    NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
-    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    NSData *data = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
     NSNumber* cel = [NSNumber numberWithFloat:1.232442];
     NSNumber* lon = [NSNumber numberWithFloat:18231.232442];;
     NSNumber* lat = [NSNumber numberWithFloat:13213123.232442];;
@@ -108,9 +104,7 @@
     [params setValue:@"two" forParam:@"value"];
     [params setValue:@"three" forParam:@"value"];
     [params setValue:@"four" forParam:@"value"];
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-    NSString *imagePath = [testBundle pathForResource:@"blake" ofType:@"png"];
-    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    NSData *data = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
     [params setData:data MIMEType:@"image/png" forParam:@"file"];
     RKRequest *request = [client requestWithResourcePath:@"/upload"];
     [request setMethod:RKRequestMethodPOST];

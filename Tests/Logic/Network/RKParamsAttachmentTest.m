@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 10/27/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -51,8 +51,7 @@
 }
 
 - (void)testShouldReturnAnMD5ForFiles {
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-    NSString *filePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+    NSString *filePath = [RKTestFixture pathForFixture:@"blake.png"];
     RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" file:filePath] autorelease];
     assertThat([attachment MD5], is(equalTo(@"db6cb9d879b58e7e15a595632af345cd")));
 }
