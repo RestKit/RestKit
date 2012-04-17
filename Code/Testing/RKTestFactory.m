@@ -90,7 +90,7 @@ static RKTestFactory *sharedFactory = nil;
 
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
         RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
-        [store deletePersistantStore];
+        [store deletePersistentStore];
 
         return store;
     }];
