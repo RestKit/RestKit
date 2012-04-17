@@ -3,9 +3,11 @@ RestKit Test Environment
 
 RestKit ships with a testing infrastructure built around OCUnit and
 a Ruby testing server environment built on Sinatra. To be able to run the
-tests, you need to do a little bit of setup:
+tests, you need to do a little bit of setup. These instructions are value for **Xcode version 4.3 and higher**.
 
-1. Ensure that you have Ruby **1.9.2** available. We recommend installation via [RVM](http://beginrescueend.com/rvm/install/) or [Homebrew](http://mxcl.github.com/homebrew/).
+1. Install the Xcode **Command Line Tools** by selecting the **Xcode** > **Preferences…** menu and then navigating to the **Downloads** tab, then clicking the **Install** button next to the appropriate entry in the table.
+2. After installation completes, ensure your command line Xcode installation is configured by executing `xcode-select -print-path`. If no path is returned, configure xcode-select by executing `xcode-select -switch /Applications/Xcode.app/Contents/Developer`.
+1. Ensure that you have **Ruby 1.9.2** available. We recommend installation via [RVM](http://beginrescueend.com/rvm/install/) or [Homebrew](http://mxcl.github.com/homebrew/).
 1. Install the Ruby Bundler Gem (if necessary): `gem install bundler`
 1. Install the other required Gems via Bundler: `bundle`
 1. Start the Test server: `rake server`
@@ -37,6 +39,25 @@ RestKit includes full support for executing the test suite via the commandline v
 
 Rake is also used for a number of other automation tasks in the project. Consult the full list of tasks via `rake -T` for more info.
 
+Test Server
+-------------
+
+RestKit includes a [Sinatra](http://www.sinatrarb.com/) powered test server that is required to exercise the majority of the HTTP specific functionality within the library. Execution of the test server is handled via a rich library of Rake tasks provided by the [RestKit Gem](https://github.com/RestKit/RestKit-Gem).
+
+The server can be run interactively or daemonized into a background process. Tasks are provided for stopping, starting, restarting, tailing the logs of a backgrounded process, and for automatically starting and stopping the server via Rake task dependencies. A list of the available server tasks as of this writing (as obtained via `rake -T server`) follows:
+
+	rake server                       # Run the Test server in the foreground
+	rake server:abort_unless_running  # Abort the task chain unless the Test server is running
+	rake server:autostart             # Starts the server if there is not already an instance running
+	rake server:autostop              # Stops the server if executed via autostart
+	rake server:logs                  # Dumps the last 25 lines from the Test server logs
+	rake server:logs:tail             # Tails the Test server logs
+	rake server:restart               # Restart the Test server daemon
+	rake server:start                 # Start the Test server daemon
+	rake server:status                # Check the status of the Test server daemon
+	rake server:stop                  # Stop the Test server daemon
+	
+The tasks are reusable via the RestKit gem and can be used to provide a test server for applications using RestKit as well. Details about configuring the RestKit gem to quickly build an application specific test server are available on the [RestKit Gem Github Page](https://github.com/RestKit/RestKit-Gem). An example application leveraging the test server is provided in the [RKGithub](https://github.com/RestKit/RKGithub) application.
 
 Writing Tests
 -------------
