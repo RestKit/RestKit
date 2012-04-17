@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 2/1/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIImage.h>
+#if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
+#endif
 
 /**
  Provides a static method API for conveniently accessing fixture data
@@ -44,12 +46,22 @@
 + (void)setFixtureBundle:(NSBundle *)bundle;
 
 /**
+ Returns the full path to the specified fixture file on within the fixture bundle.
+ 
+ @param fixtureName The name of the fixture file.
+ @return The full path to the specified fixture file or nil if it cannot be located.
+ */
++ (NSString *)pathForFixture:(NSString *)fixtureName;
+
+#if TARGET_OS_IPHONE
+/**
  Creates and returns an image object by loading the image data from the fixture identified by the specified file name.
 
  @param fixtureName The name of the fixture file.
  @return A new image object for the specified fixture, or nil if the method could not initialize the image from the specified file.
  */
 + (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName;
+#endif
 
 /**
  Creates and returns a string object by reading data from the fixture identified by the specified file name using UTF-8 encoding.

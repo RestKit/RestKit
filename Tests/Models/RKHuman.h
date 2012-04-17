@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/14/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -25,18 +25,21 @@
 @interface RKHuman : NSManagedObject {
 }
 
-@property (nonatomic, retain) NSNumber* railsID;
-@property (nonatomic, retain) NSString* name;
-@property (nonatomic, retain) NSString* nickName;
-@property (nonatomic, retain) NSDate* birthday;
-@property (nonatomic, retain) NSString* sex;
-@property (nonatomic, retain) NSNumber* age;
-@property (nonatomic, retain) NSDate* createdAt;
-@property (nonatomic, retain) NSDate* updatedAt;
+@property (nonatomic, retain) NSNumber *railsID;
+@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSString *nickName;
+@property (nonatomic, retain) NSDate *birthday;
+@property (nonatomic, retain) NSString *sex;
+@property (nonatomic, retain) NSNumber *age;
+@property (nonatomic, retain) NSDate *createdAt;
+@property (nonatomic, retain) NSDate *updatedAt;
 @property (nonatomic, retain) NSArray *favoriteColors;
 
-@property (nonatomic, retain) NSSet* cats;
-@property (nonatomic, retain) RKCat* favoriteCat;
+@property (nonatomic, retain) NSSet *cats;
+@property (nonatomic, retain) RKCat *favoriteCat;
+
+@property (nonatomic, retain) NSArray *catIDs;
+@property (nonatomic, retain) NSOrderedSet *catsInOrderByAge;
 
 @end
 

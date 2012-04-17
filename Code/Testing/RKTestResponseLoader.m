@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/14/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -117,6 +117,9 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
         [self loadError:anError];
     }
+
+    // Ensure we get no further delegate messages
+    [request cancel];
 }
 
 - (void)requestDidCancelLoad:(RKRequest *)request {

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Greg Combs on 9/18/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -39,42 +39,42 @@
 @implementation RKObjectMappingProviderTest
 
 - (void)setUp {
-    _objectManager = RKTestNewObjectManager();
+    _objectManager = [RKTestFactory objectManager];
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
-    [_objectManager.objectStore deletePersistantStore];
+    [_objectManager.objectStore deletePersistentStore];
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAClass {
-    RKManagedObjectStore *objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
-    NSObject <RKObjectMappingDefinition> *returnedMapping = [_objectManager.mappingProvider objectMappingForClass:[RKHuman class]];
+    RKObjectMappingDefinition *returnedMapping = [_objectManager.mappingProvider objectMappingForClass:[RKHuman class]];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     assertThat(returnedMapping, is(equalTo(humanMapping)));
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAKeyPath {
-    RKManagedObjectStore *objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
-    NSObject <RKObjectMappingDefinition> *returnedMapping = [_objectManager.mappingProvider mappingForKeyPath:@"cat"];
+    RKObjectMappingDefinition *returnedMapping = [_objectManager.mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     assertThat(returnedMapping, is(equalTo(catMapping)));
 }
 
 - (void)testShouldAllowYouToRemoveAMappingByKeyPath {
-    RKManagedObjectStore *objectStore = RKTestNewManagedObjectStore();
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];
-    NSObject <RKObjectMappingDefinition> *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
+    RKObjectMappingDefinition *returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
     assertThat(returnedMapping, isNot(equalTo(nil)));
     [mappingProvider removeMappingForKeyPath:@"cat"];
     returnedMapping = [mappingProvider mappingForKeyPath:@"cat"];
@@ -190,9 +190,10 @@
 - (void)testSettingMappingForPathMatcherCreatesDictionaryWithMappingAsValue {
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    RKObjectMappingProviderContextEntry *entry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
     NSDictionary *contextValue = [mappingProvider valueForContext:1];
-    assertThat([contextValue allValues], contains(mapping, nil));
+    assertThat([contextValue allValues], contains(entry, nil));
 }
 
 - (void)testRetrievalOfMappingForPathMatcher {
@@ -200,7 +201,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    id<RKObjectMappingDefinition> matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
+    RKObjectMappingDefinition * matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 
@@ -209,7 +210,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    id<RKObjectMappingDefinition> matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
+    RKObjectMappingDefinition * matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 
@@ -255,6 +256,28 @@
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.json" context:1], is(equalTo(mapping_2)));
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345.xml" context:1], is(equalTo(mapping_3)));
     assertThat([mappingProvider mappingForPatternMatchingString:@"/articles/12345/comments/3" context:1], is(equalTo(mapping_4)));
+}
+
+- (void)testRetrievalOfEntryForPathMatcher {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    RKObjectMappingProviderContextEntry *entry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
+    [mappingProvider setEntry:entry forPattern:@"/articles/:id" context:1];
+
+    RKObjectMappingProviderContextEntry *matchingEntry = [mappingProvider entryForPatternMatchingString:@"/articles/12345"
+                                                                                                context:1];
+    assertThat(matchingEntry, is(equalTo(entry)));
+}
+
+- (void)testRetrievalOfEntryForPathMatcherIncludingQueryParameters {
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
+    RKObjectMappingProviderContextEntry *entry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
+    [mappingProvider setEntry:entry forPattern:@"/articles/:id" context:1];
+
+    RKObjectMappingProviderContextEntry *matchingEntry = [mappingProvider entryForPatternMatchingString:@"/articles/12345?page=5&this=that"
+                                                                                                context:1];
+    assertThat(matchingEntry, is(equalTo(entry)));
 }
 
 @end

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 7/27/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@
 #import "RKNotifications.h"
 #import "Support.h"
 #import "RKURL.h"
-#import "NSData+MD5.h"
-#import "NSString+MD5.h"
+#import "NSData+RKAdditions.h"
+#import "NSString+RKAdditions.h"
 #import "RKLog.h"
 #import "RKRequestCache.h"
 #import "GCOAuth.h"
-#import "NSURL+RestKit.h"
+#import "NSURL+RKAdditions.h"
 #import "RKReachabilityObserver.h"
 #import "RKRequestQueue.h"
 #import "RKParams.h"
@@ -110,11 +110,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize queue = _queue;
 @synthesize timeoutInterval = _timeoutInterval;
 @synthesize reachabilityObserver = _reachabilityObserver;
+@synthesize defaultHTTPEncoding = _defaultHTTPEncoding;
 @synthesize configurationDelegate = _configurationDelegate;
 @synthesize onDidLoadResponse;
 @synthesize onDidFailLoadWithError;
 @synthesize additionalRootCertificates = _additionalRootCertificates;
 @synthesize disableCertificateValidation = _disableCertificateValidation;
+@synthesize cancelled = _cancelled;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -133,6 +135,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 		_cachePolicy = RKRequestCachePolicyDefault;
         _cacheTimeoutInterval = 0;
         _timeoutInterval = 120.0;
+        _defaultHTTPEncoding = NSUTF8StringEncoding;
 	}
 	return self;
 }
@@ -165,6 +168,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     _connection = nil;
     _isLoading = NO;
     _isLoaded = NO;
+    _cancelled = NO;
 }
 
 - (void)cleanupBackgroundTask {
@@ -191,6 +195,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     
   	_delegate = nil;
     _configurationDelegate = nil;
+    [_reachabilityObserver release];
+    _reachabilityObserver = nil;
   	[_connection cancel];
   	[_connection release];
   	_connection = nil;
@@ -365,17 +371,23 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 // Setup the NSURLRequest. The request must be prepared right before dispatching
 - (BOOL)prepareURLRequest {
 	[_URLRequest setHTTPMethod:[self HTTPMethod]];
+    
+    if ([self.delegate respondsToSelector:@selector(requestWillPrepareForSend:)]) {
+        [self.delegate requestWillPrepareForSend:self];
+    }
+    
 	[self setRequestBody];
 	[self addHeadersToRequest];
 
     NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
     RKLogTrace(@"Prepared %@ URLRequest '%@'. HTTP Headers: %@. HTTP Body: %@.", [self HTTPMethod], _URLRequest, [_URLRequest allHTTPHeaderFields], body);
-    [body release];
+    [body release];        
 
     return YES;
 }
 
 - (void)cancelAndInformDelegate:(BOOL)informDelegate {
+    _cancelled = YES;
 	[_connection cancel];
 	[_connection release];
 	_connection = nil;
@@ -495,14 +507,16 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             RKLogInfo(@"Beginning background task to perform processing...");
 
             // Fork a background task for continueing a long-running request
+            __block RKRequest* weakSelf = self;
+            __block id<RKRequestDelegate> weakDelegate = _delegate;
             _backgroundTaskIdentifier = [app beginBackgroundTaskWithExpirationHandler:^{
                 RKLogInfo(@"Background request time expired, canceling request.");
 
-                [self cancelAndInformDelegate:NO];
-                [self cleanupBackgroundTask];
+                [weakSelf cancelAndInformDelegate:NO];
+                [weakSelf cleanupBackgroundTask];
 
-                if ([_delegate respondsToSelector:@selector(requestDidTimeout:)]) {
-                    [_delegate requestDidTimeout:self];
+                if ([weakDelegate respondsToSelector:@selector(requestDidTimeout:)]) {
+                    [weakDelegate requestDidTimeout:weakSelf];
                 }
             }];
 
@@ -520,8 +534,6 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 			_isLoading = YES;
 
-            // TODO: WTF? Why was this afterDelay in here???
-//            [self performSelector:@selector(didFinishLoad:) withObject:[self loadResponseFromCache] afterDelay:0];
             [self didFinishLoad:[self loadResponseFromCache]];
 
 		} else {
@@ -530,7 +542,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
     								  errorMessage, NSLocalizedDescriptionKey,
     								  nil];
-		NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
+            NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
             _isLoading = YES;
             [self performSelector:@selector(didFailLoadWithError:) withObject:error afterDelay:0];
         }
@@ -777,12 +789,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (BOOL)isCacheable {
-    // DELETE is not cacheable
-    if (_method == RKRequestMethodDELETE) {
-        return NO;
-    }
-    
-    return YES;
+    return _method == RKRequestMethodGET;
 }
 
 - (NSString*)cacheKey {
@@ -811,7 +818,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     NSError *error = nil;
     NSString* parsedValue = [parser stringFromObject:body error:&error];
     
-    NSLog(@"parser=%@, error=%@, parsedValue=%@", parser, error, parsedValue);
+    RKLogTrace(@"parser=%@, error=%@, parsedValue=%@", parser, error, parsedValue);
     
     if (error == nil && parsedValue) {
         self.params = [RKRequestSerialization serializationWithData:[parsedValue dataUsingEncoding:NSUTF8StringEncoding]

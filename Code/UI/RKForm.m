@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/22/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -156,11 +156,6 @@
 
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass {
     [self addRowMappingAttribute:attributeKeyPath toKeyPath:cellKeyPath onCellWithClass:cellClass usingBlock:nil];
-}
-
-- (void)setOnSubmit:(RKFormBlock)onSubmit {
-    if (_onSubmit) Block_release(_onSubmit);
-    _onSubmit = Block_copy(onSubmit);
 }
 
 - (RKTableItem *)tableItemForAttribute:(NSString *)attributeKeyPath {

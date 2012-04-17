@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 #import "RKAlert.h"
 #import "RKLog.h"
 #import "RKPathMatcher.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "RKDirectory.h"
 
 // Set Logging Component
@@ -34,7 +34,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
 
-static RKClient* sharedClient = nil;
+static RKClient *sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // URL Conveniences functions
@@ -88,6 +88,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize cachePolicy = _cachePolicy;
 @synthesize requestQueue = _requestQueue;
 @synthesize timeoutInterval = _timeoutInterval;
+@synthesize defaultHTTPEncoding = _defaultHTTPEncoding;
 @synthesize cacheTimeoutInterval = _cacheTimeoutInterval;
 
 + (RKClient *)sharedClient {
@@ -121,6 +122,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 	if (self) {
 		_HTTPHeaders = [[NSMutableDictionary alloc] init];
         _additionalRootCertificates = [[NSMutableSet alloc] init];
+        _defaultHTTPEncoding = NSUTF8StringEncoding;
         self.cacheTimeoutInterval = 0;
 		self.serviceUnavailableAlertEnabled = NO;
 		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
@@ -212,6 +214,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     request.cache = self.requestCache;
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;
+    request.defaultHTTPEncoding = self.defaultHTTPEncoding;
     
     request.additionalRootCertificates = self.additionalRootCertificates;
     request.disableCertificateValidation = self.disableCertificateValidation;
@@ -422,29 +425,29 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     return request;
 }
 
-- (RKRequest *)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodGET;
         block(request);
     }];
 }
 
-- (RKRequest *)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodPOST;
         block(request);
     }];
 }
 
-- (RKRequest *)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodPUT;
         block(request);
     }];
 }
 
-- (RKRequest *)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
-    return [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+- (void)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block {
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
         request.method = RKRequestMethodDELETE;
         block(request);
     }];

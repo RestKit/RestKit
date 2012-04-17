@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 2/1/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,12 +19,27 @@
 //
 
 #import "NSBundle+RKAdditions.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
+#import "UIImage+RKAdditions.h"
 #import "RKLog.h"
 #import "RKParser.h"
 #import "RKParserRegistry.h"
 
 @implementation NSBundle (RKAdditions)
+
++ (NSBundle *)restKitResourcesBundle {
+    static BOOL searchedForBundle = NO;
+
+    if (! searchedForBundle) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"RestKitResources" ofType:@"bundle"];
+        searchedForBundle = YES;
+        NSBundle *resourcesBundle = [NSBundle bundleWithPath:path];
+        if (! resourcesBundle) RKLogWarning(@"Unable to find RestKitResources.bundle in your project. Did you forget to add it?");
+        return resourcesBundle;
+    }
+
+    return [NSBundle bundleWithIdentifier:@"org.restkit.RestKitResources"];
+}
 
 - (NSString *)MIMETypeForResource:(NSString *)name withExtension:(NSString *)extension {
     NSString *resourcePath = [self pathForResource:name ofType:extension];
@@ -61,6 +76,7 @@
 	return fixtureData;
 }
 
+#if TARGET_OS_IPHONE
 - (UIImage *)imageWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (! resourcePath) {
@@ -68,8 +84,9 @@
         return nil;
     }
 
-    return [UIImage imageWithContentsOfFile:resourcePath];
+    return [UIImage imageWithContentsOfResolutionIndependentFile:resourcePath];
 }
+#endif
 
 - (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
     NSError* error = nil;

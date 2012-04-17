@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/1/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#ifdef TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #import "RKAbstractTableController.h"
 #import "RKTableSection.h"
@@ -48,7 +48,6 @@
  After the block is invoked, the objects will be loaded into the specified section.
  */
 // TODO: Update comments...
-- (void)loadTableItems:(NSArray *)tableItems withMappingBlock:(void (^)(RKTableViewCellMapping *))block;
 - (void)loadTableItems:(NSArray *)tableItems withMapping:(RKTableViewCellMapping *)cellMapping;
 - (void)loadTableItems:(NSArray *)tableItems
              inSection:(NSUInteger)sectionIndex
@@ -79,12 +78,17 @@
  */
 - (void)loadTableItems:(NSArray *)tableItems inSection:(NSUInteger)sectionIndex;
 
+/** @name Network Tables */
+
+- (void)loadTableFromResourcePath:(NSString *)resourcePath;
+- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *objectLoader))block;
+
 /** @name Forms */
 
 /**
  The form that the table has been loaded with (if any)
  */
-@property (nonatomic, retain) RKForm *form;
+@property (nonatomic, retain, readonly) RKForm *form;
 
 /**
  Loads the table with the contents of the specified form object.
@@ -98,6 +102,11 @@
 /// @name Managing Sections
 /////////////////////////////////////////////////////////////////////////
 
+/** 
+ The key path on the loaded objects used to determine the section they belong to.
+ */
+@property(nonatomic, copy) NSString *sectionNameKeyPath;
+
 // Coalesces a series of table view updates performed within the block into
 // a single animation using beginUpdates: and endUpdates: on the table view
 // TODO: Move to super-class?
@@ -107,12 +116,6 @@
  *	@param section Must be a valid non nil RKTableViewSection. */
 // NOTE: connects cellMappings if section.cellMappings is nil...
 - (void)addSection:(RKTableSection *)section;
-
-/**
- Creates an section and yields it to the block for configuration. After the block
- is evaluated, the section is added to the table.
- */
-- (void)addSectionUsingBlock:(void (^)(RKTableSection *section))block;
 
 /** Inserts a new section at the specified index.
  *	@param section Must be a valid non nil RKTableViewSection.

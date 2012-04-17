@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/25/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <CoreData/CoreData.h>
@@ -15,11 +15,11 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreDataSearchEngine
 
-static RKSearchWordObserver* sharedSearchWordObserver = nil;
+static RKSearchWordObserver *sharedSearchWordObserver = nil;
 
 @implementation RKSearchWordObserver
 
-+ (RKSearchWordObserver*)sharedObserver {
++ (RKSearchWordObserver *)sharedObserver {
     if (! sharedSearchWordObserver) {
         sharedSearchWordObserver = [[RKSearchWordObserver alloc] init];
     }
@@ -44,23 +44,23 @@ static RKSearchWordObserver* sharedSearchWordObserver = nil;
     [super dealloc];
 }
 
-- (void)managedObjectContextWillSaveNotification:(NSNotification*)notification {
-    NSManagedObjectContext* context = [notification object];
-    NSSet* candidateObjects = [[NSSet setWithSet:context.insertedObjects] setByAddingObjectsFromSet:context.updatedObjects];
+- (void)managedObjectContextWillSaveNotification:(NSNotification *)notification {
+    NSManagedObjectContext *context = [notification object];
+    NSSet *candidateObjects = [[NSSet setWithSet:context.insertedObjects] setByAddingObjectsFromSet:context.updatedObjects];
 
     RKLogDebug(@"Managed object context will save notification received. Checking changed and inserted objects for searchable entities...");
 
-    for (NSManagedObject* object in candidateObjects) {
+    for (NSManagedObject *object in candidateObjects) {
         if (! [object isKindOfClass:[RKSearchableManagedObject class]]) {
             RKLogTrace(@"Skipping search words refresh for entity of type '%@': not searchable.", NSStringFromClass([object class]));
             continue;
         }
 
-        NSArray* searchableAttributes = [[object class] searchableAttributes];
-        for (NSString* attribute in searchableAttributes) {
+        NSArray *searchableAttributes = [[object class] searchableAttributes];
+        for (NSString *attribute in searchableAttributes) {
             if ([[object changedValues] objectForKey:attribute]) {
                 RKLogDebug(@"Detected change to searchable attribute '%@' for %@ entity: refreshing search words.", attribute, NSStringFromClass([object class]));
-                [(RKSearchableManagedObject*)object refreshSearchWords];
+                [(RKSearchableManagedObject *)object refreshSearchWords];
                 break;
             }
         }

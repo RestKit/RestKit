@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/31/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@
 #import "RKTestEnvironment.h"
 #import "RKURL.h"
 
-@interface RKClientTest : RKTestCase {
-}
-
+@interface RKClientTest : RKTestCase
 @end
 
 
@@ -57,6 +55,19 @@
 	assertThat(request.cache, is(equalTo(client.requestCache)));
 }
 
+- (void)testShouldLoadPageWithNoContentTypeInformation {
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.semiose.fr"];
+    client.defaultHTTPEncoding = NSISOLatin1StringEncoding;
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKRequest* request = [client requestWithResourcePath:@"/"];
+    request.delegate = loader;
+    [request send];
+    [loader waitForResponse];
+    assertThatBool(loader.wasSuccessful, is(equalToBool(YES)));
+    assertThat([loader.response bodyEncodingName], is(nilValue()));
+    assertThatInteger([loader.response bodyEncoding], is(equalToInteger(NSISOLatin1StringEncoding)));
+}
+
 - (void)testShouldAllowYouToChangeTheBaseURL {
     RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
@@ -73,7 +84,7 @@
 }
 
 - (void)testShouldLetYouChangeTheHTTPAuthCredentials {
-    RKClient *client = RKTestNewClient();
+    RKClient *client = [RKTestFactory client];
     client.authenticationType = RKRequestAuthenticationTypeHTTP;
     client.username = @"invalid";
     client.password = @"password";

@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -19,20 +19,27 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
-        objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
+        RKManagedObjectStore *objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
+        objectManager.objectStore = objectStore;
         
-        RKManagedObjectMapping* taskMapping = [RKManagedObjectMapping mappingForClass:[Task class]];
+        RKManagedObjectMapping* taskMapping = [RKManagedObjectMapping mappingForClass:[Task class] inManagedObjectStore:objectStore];
+        taskMapping.primaryKeyAttribute = @"taskID";
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
         [objectManager.mappingProvider setMapping:taskMapping forKeyPath:@"task"];
         
-        RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class]];
+        RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class] inManagedObjectStore:objectStore];
+        userMapping.primaryKeyAttribute = @"userID";
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
         [userMapping mapRelationship:@"tasks" withMapping:taskMapping];
         [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
         
+        // Hydrate the assignedUser association via primary key
+        [taskMapping hasOne:@"assignedUser" withMapping:userMapping];
+        [taskMapping connectRelationship:@"assignedUser" withObjectForPrimaryKeyAttribute:@"assignedUserID"];
+
         // NOTE - Project is not backed by Core Data
         RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
         [projectMapping mapKeyPath:@"id" toAttribute:@"projectID"];

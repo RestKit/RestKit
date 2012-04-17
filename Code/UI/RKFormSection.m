@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/23/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@
     [self addRowForAttribute:attributeKeyPath withControlType:controlType usingBlock:nil];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *))block {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block {
     RKTableItem *tableItem = [RKTableItem tableItem];
     tableItem.cellMapping.cellClass = cellClass;
     RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];

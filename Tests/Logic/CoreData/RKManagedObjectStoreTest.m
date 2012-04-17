@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/2/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -27,24 +27,11 @@
 
 @implementation RKManagedObjectStoreTest
 
-- (void)testShouldCoercePrimaryKeysToStringsForLookup {
-    RKManagedObjectStore* objectStore = RKTestNewManagedObjectStore();
-    RKObjectManager *objectManager = RKTestNewObjectManager();
-    objectManager.objectStore = objectStore;
-    RKHuman* human = [RKHuman createEntity];
-    human.railsID = [NSNumber numberWithInt:1234];
-    [objectStore save];
-    NSManagedObject* newReference = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:@"1234"];
-    assertThat(newReference, is(equalTo(human)));
-}
-
-- (void)testShouldStoreNewInstancesOfCreatedObjectsByStringKey {
-    RKManagedObjectStore* objectStore = RKTestNewManagedObjectStore();
-    RKObjectManager *objectManager = RKTestNewObjectManager();
-    objectManager.objectStore = objectStore;
-    NSManagedObject* firstInstance = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:[NSNumber numberWithInt:1234]];
-    NSManagedObject* secondInstance = [objectStore findOrCreateInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"railsID" andValue:[NSNumber numberWithInt:1234]];
-    assertThat(secondInstance, is(equalTo(firstInstance)));
+- (void)testInstantiationOfNewManagedObjectContextAssociatesWithObjectStore
+{
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    NSManagedObjectContext *context = [store newManagedObjectContext];
+    assertThat([context managedObjectStore], is(equalTo(store)));
 }
 
 @end

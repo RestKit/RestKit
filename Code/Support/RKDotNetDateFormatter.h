@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Greg Combs on 9/8/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@
 //
 
 #import <Foundation/Foundation.h>
+
+// NSRegularExpression not available until OS X 10.7 and iOS 4.0 (NS_CLASS_AVAILABLE(10_7, 4_0))
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
 
 /**
  A subclass of NSDateFormatter that serves as translator between ASP.NET date serializations in JSON
@@ -88,3 +91,5 @@
  */
 - (NSString *)stringFromDate:(NSDate *)date;
 @end
+
+#endif

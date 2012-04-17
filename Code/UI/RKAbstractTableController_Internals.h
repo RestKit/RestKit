@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 8/11/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EGORefreshTableHeaderView.h"
+#import "RKRefreshGestureRecognizer.h"
 
-@interface RKAbstractTableController () <RKObjectLoaderDelegate, EGORefreshTableHeaderDelegate>
+@interface RKAbstractTableController () <RKObjectLoaderDelegate, RKRefreshTriggerProtocol>
 
 @property (nonatomic, readwrite, assign) UITableView* tableView;
 @property (nonatomic, readwrite, assign) UIViewController* viewController;
@@ -55,5 +55,11 @@
 - (BOOL)removeImageFromOverlay:(UIImage *)image;
 - (void)showImageInOverlay:(UIImage *)image;
 - (void)removeImageOverlay;
+
+#pragma mark - Pull to Refresh Private Methods
+
+- (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture;
+- (void)resetPullToRefreshRecognizer;
+
 
 @end

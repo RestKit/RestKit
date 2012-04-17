@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/31/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@
 #import "RKManagedObjectStore.h"
 #import "RKDynamicObjectMappingMatcher.h"
 #import "RKObjectPropertyInspector+CoreData.h"
+#import "NSEntityDescription+RKAdditions.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -42,28 +43,33 @@
                                  userInfo:nil];
 }
 
-+ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore*)objectStore {
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore {
     return [self mappingForEntityWithName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
 }
 
-+ (RKManagedObjectMapping*)mappingForEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore*)objectStore {
++ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore {
     return [[[self alloc] initWithEntity:entity inManagedObjectStore:objectStore] autorelease];
 }
 
-+ (RKManagedObjectMapping*)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore*)objectStore {
-    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.managedObjectContext]
++ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore {
+    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.primaryManagedObjectContext]
              inManagedObjectStore:objectStore];
 }
 
 - (id)initWithEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore*)objectStore {
     NSAssert(entity, @"Cannot initialize an RKManagedObjectMapping without an entity. Maybe you want RKObjectMapping instead?");
     NSAssert(objectStore, @"Object store cannot be nil");
+    Class objectClass = NSClassFromString([entity managedObjectClassName]);
+    NSAssert(objectClass, @"The managedObjectClass for an object mapped entity cannot be nil.");
     self = [self init];
     if (self) {
-        self.objectClass = NSClassFromString([entity managedObjectClassName]);
+        _objectClass = [objectClass retain];
         _entity = [entity retain];
         _objectStore = objectStore;
         _syncMode = RKSyncModeNone;
+
+        [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
+        [self addObserver:self forKeyPath:@"primaryKeyAttribute" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
     }
     
     return self;
@@ -79,6 +85,9 @@
 }
 
 - (void)dealloc {
+    [self removeObserver:self forKeyPath:@"entity"];
+    [self removeObserver:self forKeyPath:@"primaryKeyAttribute"];
+
     [_entity release];
     [_relationshipToPrimaryKeyMappings release];
     [super dealloc];
@@ -158,14 +167,15 @@
     }
     
     // If we have found the primary key attribute & value, try to find an existing instance to update
-    if (primaryKeyAttribute && primaryKeyValue) {                
-        object = [_objectStore findOrCreateInstanceOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute andValue:primaryKeyValue];
-        NSAssert2(object, @"Failed creation of managed object with entity '%@' and primary key value '%@'", entity.name, primaryKeyValue);
-    } else {
-        object = [[[NSManagedObject alloc] initWithEntity:entity
-                           insertIntoManagedObjectContext:_objectStore.managedObjectContext] autorelease];
+    if (primaryKeyAttribute && primaryKeyValue) {
+        object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
+                                              withPrimaryKeyAttribute:self.primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
     }
-    
+
+    if (object == nil) {
+        object = [[[NSManagedObject alloc] initWithEntity:entity
+                           insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
+    }
     return object;
 }
 
@@ -178,4 +188,19 @@
     return propertyClass;
 }
 
+/*
+ Allows the primaryKeyAttribute property on the NSEntityDescription to configure the mapping and vice-versa
+ */
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"entity"]) {
+        if (! self.primaryKeyAttribute) {
+            self.primaryKeyAttribute = [self.entity primaryKeyAttribute];
+        }
+    } else if ([keyPath isEqualToString:@"primaryKeyAttribute"]) {
+        if (! self.entity.primaryKeyAttribute) {
+            self.entity.primaryKeyAttribute = self.primaryKeyAttribute;
+        }
+    }
+}
 @end

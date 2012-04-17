@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 2/1/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,13 +19,27 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#if TARGET_OS_IPHONE
 #import <UIKit/UIImage.h>
+#endif
 
 /**
  Provides convenience methods for accessing data in resources
  within an NSBundle.
  */
 @interface NSBundle (RKAdditions)
+
+/**
+ Returns an NSBundle reference to the RestKitResources.bundle file containing
+ RestKit specific resource assets.
+
+ This method is a convenience wrapper for invoking
+ `[NSBundle bundleWithIdentifier:@"org.restkit.RestKitResources"]`
+
+ @return An NSBundle object corresponding to the RestKitResources.bundle file.
+ */
++ (NSBundle *)restKitResourcesBundle;
 
 /**
  Returns the MIME Type for the resource identified by the specified name and file extension.
@@ -55,6 +69,7 @@
  */
 - (NSString *)stringWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension encoding:(NSStringEncoding)encoding;
 
+#if TARGET_OS_IPHONE
 /**
  Creates and returns an image object by loading the image data from the resource identified by the specified name and file extension.
 
@@ -63,6 +78,7 @@
  @return A new image object for the specified file, or nil if the method could not initialize the image from the specified file.
  */
 - (UIImage *)imageWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension;
+#endif
 
 /**
  Creates and returns an object representation of the data from the resource identified by the specified name and file extension by reading the

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeremy Ellison on 3/29/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -115,6 +115,7 @@
     assertThat(exchangeRate, is(notNilValue()));
     assertThat([exchangeRate objectForKey:@"type"], is(equalTo(@"XML_RATE_TYPE_EBNK_MIDDLE")));
     assertThat([exchangeRate objectForKey:@"valid_from"], is(equalTo(@"2011-08-03 00:00:00.0")));
+    assertThat([exchangeRate objectForKey:@"name"], nilValue()); // This is to test for bug in parsing
     NSArray* currency = [exchangeRate objectForKey:@"currency"];
     assertThat(currency, hasCountOf(3));
     NSDictionary* firstCurrency = [currency objectAtIndex:0];

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 3/14/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 
 - (void)testShouldAccessUnprotectedResourcePaths {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     [client get:@"/authentication/none" delegate:loader];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
@@ -42,7 +42,7 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 
 - (void)testShouldAuthenticateViaHTTPAuthBasic {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = RKAuthenticationTestPassword;
     [client get:@"/authentication/basic" delegate:loader];
@@ -51,8 +51,8 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
 }
 
 - (void)testShouldFailAuthenticationWithInvalidCredentialsForHTTPAuthBasic {
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKTestResponseLoader* loader = [RKTestResponseLoader new];
+    RKClient* client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = @"INVALID";
     [client get:@"/authentication/basic" delegate:loader];
@@ -60,11 +60,13 @@ static NSString* const RKAuthenticationTestPassword = @"authentication";
     assertThatBool([loader.response isOK], is(equalToBool(NO)));
     assertThatInteger([loader.response statusCode], is(equalToInt(0)));
     assertThatInteger([loader.error code], is(equalToInt(NSURLErrorUserCancelledAuthentication)));
+    [loader.response.request cancel];
+    [loader release];
 }
 
 - (void)testShouldAuthenticateViaHTTPAuthDigest {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKClient* client = RKTestNewClient();
+    RKClient* client = [RKTestFactory client];
     client.username = RKAuthenticationTestUsername;
     client.password = RKAuthenticationTestPassword;
     [client get:@"/authentication/digest" delegate:loader];

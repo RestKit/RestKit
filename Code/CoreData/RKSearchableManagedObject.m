@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 3/31/11.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -30,11 +30,13 @@
 
 @dynamic searchWords;
 
-+ (NSArray *)searchableAttributes {
++ (NSArray *)searchableAttributes
+{
 	return [NSArray array];
 }
 
-+ (NSPredicate *)predicateForSearchWithText:(NSString *)searchText searchMode:(RKSearchMode)mode {
++ (NSPredicate *)predicateForSearchWithText:(NSString *)searchText searchMode:(RKSearchMode)mode 
+{
 	if (searchText == nil) {
 		return nil;
 	} else {
@@ -44,22 +46,25 @@
 	}
 }
 
-- (void)refreshSearchWords {
+- (void)refreshSearchWords
+{
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
     RKLogDebug(@"Refreshing search words for %@ %@", NSStringFromClass([self class]), [self objectID]);
-    RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
-    NSMutableSet* searchWords = [NSMutableSet set];
-    for (NSString* searchableAttribute in [[self class] searchableAttributes]) {
-        NSString* attributeValue = [self valueForKey:searchableAttribute];
+    NSMutableSet *searchWords = [NSMutableSet set];
+    for (NSString *searchableAttribute in [[self class] searchableAttributes]) {
+        NSString *attributeValue = [self valueForKey:searchableAttribute];
         if (attributeValue) {
             RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
-            NSArray* attributeValueWords = [RKManagedObjectSearchEngine tokenizedNormalizedString:attributeValue];
-            for (NSString* word in attributeValueWords) {
-                if (word && [word length] > 0) {
-                    RKSearchWord* searchWord = (RKSearchWord*)[store findOrCreateInstanceOfEntity:[RKSearchWord entity]
-                                                                          withPrimaryKeyAttribute:@"word"
-                                                                                         andValue:word];
+            NSArray *attributeValueWords = [RKManagedObjectSearchEngine tokenizedNormalizedString:attributeValue];
+            for (NSString *word in attributeValueWords) {
+                if (word && [word length] > 0) {                    
+                    RKSearchWord *searchWord = [RKSearchWord findFirstByAttribute:RKSearchWordPrimaryKeyAttribute 
+                                                                        withValue:word 
+                                                                        inContext:self.managedObjectContext];
+                    if (! searchWord) {
+                        searchWord = [RKSearchWord createInContext:self.managedObjectContext];
+                    }
                     searchWord.word = word;
                     [searchWords addObject:searchWord];
                 }
@@ -68,7 +73,7 @@
     }
 
     self.searchWords = searchWords;
-    RKLogTrace(@"Generating searchWords: %@", [searchWords valueForKey:@"word"]);
+    RKLogTrace(@"Generating searchWords: %@", [searchWords valueForKey:RKSearchWordPrimaryKeyAttribute]);
 
 	[pool drain];
 }

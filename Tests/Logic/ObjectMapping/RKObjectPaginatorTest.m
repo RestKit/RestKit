@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 12/29/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #import "RKTestEnvironment.h"
 #import "RKObjectPaginator.h"
 #import "RKObjectMapperTestModel.h"
+#import "NSURL+RKAdditions.h"
 
 NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDelegateTimeoutException";
 
@@ -204,11 +205,14 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     NSUInteger currentPage = 1;
     [[[mockPaginator stub] andReturnValue:OCMOCK_VALUE(currentPage)] currentPage];
-    assertThat([[mockPaginator URL] absoluteString], is(equalTo(@"http://restkit.org/paginate?page=1&per_page=25")));
+    NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:
+                                 @"1", @"page",
+                                 @"25", @"per_page", nil];
+    assertThat([[mockPaginator URL] queryParameters], is(equalTo(queryParams)));
 }
 
 - (void)testLoadingAPageOfObjects {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -219,7 +223,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingPageOfObjectMapsPerPage {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -230,7 +234,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingPageOfObjectMapsTotalEntries {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -241,7 +245,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingPageOfObjectMapsCurrentPage {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -252,7 +256,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingPageOfObjectMapsEntriesToObjects {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -264,7 +268,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingPageOfObjectHasPageCount {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -275,7 +279,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingPageOfObjectHasObjectCount {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -286,7 +290,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testOnDidLoadObjectsForPageBlockIsInvokedOnLoad {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -301,7 +305,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testDelegateIsInformedOfWillLoadPage {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -314,7 +318,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testDelegateIsInformedOnError {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -327,7 +331,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testOnDidFailWithErrorBlockIsInvokedOnError {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     __block NSError *expectedError = nil;
@@ -342,7 +346,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testDelegateIsInformedOnLoadOfFirstPage {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -355,7 +359,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testDelegateIsInformedOnLoadOfLastPage {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -368,7 +372,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingNextPageOfObjects {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -383,7 +387,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testLoadingPreviousPageOfObjects {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -398,7 +402,7 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
 }
 
 - (void)testFailureWhenLoadingAPageOfObjects {
-    RKURL *patternURL = [RKTestGetBaseURL() URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
+    RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];

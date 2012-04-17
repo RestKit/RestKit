@@ -23,6 +23,11 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ The RKOrderedDictionary class declares the programmatic interface to objects that manage mutable
+ associations of keys and values wherein the keys have a specific order. It adds ordered key modification
+ operations to the basic operations it inherits from NSMutableDictionary.
+ */
 // Borrowed from Matt Gallagher - http://cocoawithlove.com/2008/12/ordereddictionary-subclassing-cocoa.html
 @interface RKOrderedDictionary : NSMutableDictionary
 {
@@ -30,8 +35,30 @@
 	NSMutableArray *array;
 }
 
+/**
+ Inserts an object into the dictionary for a given key at a specific index.
+
+ @param anObject The object to add the dictionary.
+ @param aKey The key to store the value under.
+ @param anIndex The index in the dictionary at which to insert aKey.
+ */
 - (void)insertObject:(id)anObject forKey:(id)aKey atIndex:(NSUInteger)anIndex;
+
+/**
+ Returns the key within the dictionary at a given index.
+
+ @param anIndex An index within the bounds of the array keys.
+ @return The key that appears at the given index.
+ */
 - (id)keyAtIndex:(NSUInteger)anIndex;
+
+/**
+ Returns an enumerator object that lets you access each key in the dictionary,
+ in reverse order.
+
+ @return An enumerator object that lets you access each key in the dictionary
+ in reverse order.
+ */
 - (NSEnumerator *)reverseKeyEnumerator;
 
 @end

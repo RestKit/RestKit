@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/2/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,26 +20,28 @@
 
 #import "RKAbstractTableController.h"
 
-typedef UIView*(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteger sectionIndex, NSString* sectionTitle);
+typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteger sectionIndex, NSString *sectionTitle);
 
-// TODO: Conditionally compile me based on Core Data?
+/**
+ Instances of RKFetchedResultsTableController provide an interface for driving a UITableView 
+ */
 @interface RKFetchedResultsTableController : RKAbstractTableController <NSFetchedResultsControllerDelegate> {
 @private
-    NSFetchedResultsController* _fetchedResultsController;
+    NSFetchedResultsController *_fetchedResultsController;
     BOOL _showsSectionIndexTitles;
-    NSArray* _arraySortedFetchedObjects;
+    NSArray *_arraySortedFetchedObjects;
     BOOL _isEmptyBeforeAnimation;
 }
 
-@property (nonatomic, readonly) NSFetchedResultsController* fetchedResultsController;
-@property (nonatomic, copy) NSString* resourcePath;
-@property (nonatomic, retain) NSFetchRequest* fetchRequest;
+@property (nonatomic, readonly) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, copy) NSString *resourcePath;
+@property (nonatomic, retain) NSFetchRequest *fetchRequest;
 @property (nonatomic, assign) CGFloat heightForHeaderInSection;
 @property (nonatomic, copy) RKFetchedResultsTableViewViewForHeaderInSectionBlock onViewForHeaderInSection;
-@property (nonatomic, retain) NSPredicate* predicate;
-@property (nonatomic, retain) NSArray* sortDescriptors;
-@property (nonatomic, copy) NSString* sectionNameKeyPath;
-@property (nonatomic, copy) NSString* cacheName;
+@property (nonatomic, retain) NSPredicate *predicate;
+@property (nonatomic, retain) NSArray *sortDescriptors;
+@property (nonatomic, copy) NSString *sectionNameKeyPath;
+@property (nonatomic, copy) NSString *cacheName;
 @property (nonatomic, assign) BOOL showsSectionIndexTitles;
 @property (nonatomic, assign) SEL sortSelector;
 @property (nonatomic, copy) NSComparator sortComparator;

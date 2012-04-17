@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/15/10.
-//  Copyright 2010 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -25,28 +25,11 @@
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "RestKit.h"
-#import "Testing.h"
-#import "RKManagedObjectStore.h"
+#import <RestKit/RestKit.h>
+#import <RestKit/Testing.h>
+#import <RestKit/RKManagedObjectStore.h>
 
-////////////////////////////////////////////////////////////////////////////
-// OCMock - For some reason this macro is incorrect. Note the use of __typeof
-
-#undef OCMOCK_VALUE
-#define OCMOCK_VALUE(variable) [NSValue value:&variable withObjCType:@encode(__typeof(variable))]
-
-// The Base URL for the Spec server. See Specs/Server/
-RKURL* RKTestGetBaseURL(void);
-NSString* RKTestGetBaseURLString(void);
-
-// Helpers for returning new instances that clear global state
-RKClient* RKTestNewClient(void);
-RKObjectManager* RKTestNewObjectManager(void);
 RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader);
-RKManagedObjectStore* RKTestNewManagedObjectStore(void);
-void RKTestClearCacheDirectory(void);
-void RKTestSpinRunLoop(void);
-void RKTestSpinRunLoopWithDuration(NSTimeInterval timeInterval);
 
 /* 
  Base class for RestKit test cases. Provides initialization of testing

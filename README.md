@@ -79,12 +79,13 @@ button and confirm that your "Build Location" is the "Derived Data Location".
 1. Open target settings editor for the target you want to link RestKit into
 1. Add direct dependency on the **RestKit** aggregate target
 1. Link against required frameworks:
-    1. **CFNetwork.framework**
+    1. **CFNetwork.framework** on iOS
     1. **CoreData.framework**
     1. **Security.framework**
     1. **MobileCoreServices.framework** on iOS or **CoreServices.framework** on OS X
     1. **SystemConfiguration.framework**
     1. **libxml2.dylib**
+    1. **QuartzCore.framework** on iOS
 1. Link against RestKit:
     1. **libRestKit.a** on iOS
     1. **RestKit.framework** on OS X
@@ -100,6 +101,9 @@ Community Resources
 -------------------------
 
 A Google Group (high traffic) for development discussions and user support is available at: [http://groups.google.com/group/restkit](http://groups.google.com/group/restkit)
+
+The preferred venue for discussing bugs and feature requests is on Github Issues. The mailing list support traffic can be overwhelming
+for our small development team. Please file all bug reports and feature requests at: <https://github.com/RestKit/RestKit/issues>
 
 For users interested in low traffic updates about the library, an announcements list is also available:
 [http://groups.google.com/group/restkit-announce](http://groups.google.com/group/restkit-announce)

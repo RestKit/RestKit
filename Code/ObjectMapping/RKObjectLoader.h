@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/8/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -79,6 +79,16 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  Invoked when the object loader has finished loading
  */
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader;
+
+/**
+ Informs the delegate that the object loader has serialized the source object into a serializable representation
+ for sending to the remote system. The serialization can be modified to allow customization of the request payload independent of mapping.
+ 
+ @param objectLoader The object loader performing the serialization.
+ @param sourceObject The object that was serialized.
+ @param serialization The serialization of sourceObject to be sent to the remote backend for processing.
+ */
+- (void)objectLoader:(RKObjectLoader *)objectLoader didSerializeSourceObject:(id)sourceObject toSerialization:(inout id<RKRequestSerializable> *)serialization;
 
 /**
  Sent when an object loader encounters a response status code or MIME Type that RestKit does not know how to handle.

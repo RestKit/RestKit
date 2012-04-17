@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 2/1/12.
-//  Copyright (c) 2012 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -26,33 +26,41 @@ static NSBundle *fixtureBundle = nil;
 @implementation RKTestFixture
 
 + (NSBundle *)fixtureBundle {
+    NSAssert(fixtureBundle != nil, @"Bundle for fixture has not been set. Use setFixtureBundle: to set it.");
     return fixtureBundle;
 }
 
 + (void)setFixtureBundle:(NSBundle *)bundle {
+    NSAssert(bundle != nil, @"Bundle for fixture cannot be nil.");
     [bundle retain];
     [fixtureBundle release];
     fixtureBundle = bundle;
 }
 
-+ (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle imageWithContentsOfResource:fixtureName withExtension:nil];
++ (NSString *)pathForFixture:(NSString *)fixtureName {
+    return [[self fixtureBundle] pathForResource:fixtureName ofType:nil];
 }
 
+#if TARGET_OS_IPHONE
++ (UIImage *)imageWithContentsOfFixture:(NSString *)fixtureName {
+    return [[self fixtureBundle] imageWithContentsOfResource:fixtureName withExtension:nil];
+}
+#endif
+
 + (NSString *)stringWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle stringWithContentsOfResource:fixtureName withExtension:nil encoding:NSUTF8StringEncoding];
+    return [[self fixtureBundle] stringWithContentsOfResource:fixtureName withExtension:nil encoding:NSUTF8StringEncoding];
 }
 
 + (NSData *)dataWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle dataWithContentsOfResource:fixtureName withExtension:nil];
+    return [[self fixtureBundle] dataWithContentsOfResource:fixtureName withExtension:nil];
 }
 
 + (NSString *)MIMETypeForFixture:(NSString *)fixtureName {
-    return [fixtureBundle MIMETypeForResource:fixtureName withExtension:nil];
+    return [[self fixtureBundle] MIMETypeForResource:fixtureName withExtension:nil];
 }
 
 + (id)parsedObjectWithContentsOfFixture:(NSString *)fixtureName {
-    return [fixtureBundle parsedObjectWithContentsOfResource:fixtureName withExtension:nil];
+    return [[self fixtureBundle] parsedObjectWithContentsOfResource:fixtureName withExtension:nil];
 }
 
 @end

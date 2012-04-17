@@ -10,11 +10,10 @@
 
 #import <objc/runtime.h>
 #import "NSManagedObject+ActiveRecord.h"
-#import "RKObjectManager.h"
+#import "RKManagedObjectStore.h"
 #import "RKLog.h"
 #import "RKFixCategoryBug.h"
-
-RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
+#import "NSEntityDescription+RKAdditions.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -23,19 +22,38 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 static NSUInteger const kActiveRecordDefaultBatchSize = 10;
 static NSNumber *defaultBatchSize = nil;
 
+static NSManagedObjectContext *defaultContext = nil;
+
+RK_FIX_CATEGORY_BUG(NSManagedObjectContext_ActiveRecord)
+
+@implementation NSManagedObjectContext (ActiveRecord)
+
++ (NSManagedObjectContext *)defaultContext {
+    return defaultContext;
+}
+
++ (void)setDefaultContext:(NSManagedObjectContext *)newDefaultContext {
+    [newDefaultContext retain];
+    [defaultContext release];
+    defaultContext = newDefaultContext;
+}
+
++ (NSManagedObjectContext *)contextForCurrentThread {
+    NSAssert([RKManagedObjectStore defaultObjectStore], @"[RKManagedObjectStore defaultObjectStore] cannot be nil");
+    return [[RKManagedObjectStore defaultObjectStore] managedObjectContextForCurrentThread];
+}
+
+@end
+
+RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
+
 @implementation NSManagedObject (ActiveRecord)
 
 #pragma mark - RKManagedObject methods
 
-+ (NSManagedObjectContext*)managedObjectContext {
-    NSAssert([RKObjectManager sharedManager], @"[RKObjectManager sharedManager] cannot be nil");
-    NSAssert([RKObjectManager sharedManager].objectStore, @"[RKObjectManager sharedManager].objectStore cannot be nil");
-	return [[[RKObjectManager sharedManager] objectStore] managedObjectContext];
-}
-
 + (NSEntityDescription*)entity {
 	NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
-	return [NSEntityDescription entityForName:className inManagedObjectContext:[self managedObjectContext]];
+	return [NSEntityDescription entityForName:className inManagedObjectContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
 + (NSFetchRequest*)fetchRequest {
@@ -47,7 +65,7 @@ static NSNumber *defaultBatchSize = nil;
 
 + (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest {
 	NSError* error = nil;
-	NSArray* objects = [[self managedObjectContext] executeFetchRequest:fetchRequest error:&error];
+	NSArray* objects = [[NSManagedObjectContext contextForCurrentThread] executeFetchRequest:fetchRequest error:&error];
 	if (objects == nil) {
 		RKLogError(@"Error: %@", [error localizedDescription]);
 	}
@@ -56,7 +74,7 @@ static NSNumber *defaultBatchSize = nil;
 
 + (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest*)fetchRequest {
 	NSError* error = nil;
-	NSUInteger objectCount = [[self managedObjectContext] countForFetchRequest:fetchRequest error:&error];
+	NSUInteger objectCount = [[NSManagedObjectContext contextForCurrentThread] countForFetchRequest:fetchRequest error:&error];
 	if (objectCount	== NSNotFound) {
 		RKLogError(@"Error: %@", [error localizedDescription]);
 	}
@@ -101,7 +119,7 @@ static NSNumber *defaultBatchSize = nil;
 
 + (NSUInteger)count:(NSError**)error {
 	NSFetchRequest* fetchRequest = [self fetchRequest];
-	return [[self managedObjectContext] countForFetchRequest:fetchRequest error:error];
+	return [[NSManagedObjectContext contextForCurrentThread] countForFetchRequest:fetchRequest error:error];
 }
 
 + (NSUInteger)count {
@@ -110,7 +128,7 @@ static NSNumber *defaultBatchSize = nil;
 }
 
 + (id)object {
-	id object = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[self managedObjectContext]];
+	id object = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[NSManagedObjectContext contextForCurrentThread]];
 	return [object autorelease];
 }
 
@@ -119,10 +137,25 @@ static NSNumber *defaultBatchSize = nil;
     return [vals count] == 0;
 }
 
++ (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context {
+    NSEntityDescription *entity = [self entityDescriptionInContext:context];
+    NSString *primaryKeyAttribute = entity.primaryKeyAttribute;
+    if (! primaryKeyAttribute) {
+        RKLogWarning(@"Attempt to findByPrimaryKey for entity with nil primaryKeyAttribute. Set the primaryKeyAttribute and try again! %@", entity);
+        return nil;
+    }
+
+    return [self findFirstByAttribute:primaryKeyAttribute withValue:primaryKeyValue inContext:context];
+}
+
++ (id)findByPrimaryKey:(id)primaryKeyValue {
+    return [self findByPrimaryKey:primaryKeyValue inContext:[NSManagedObjectContext contextForCurrentThread]];
+}
+
 #pragma mark - MagicalRecord Ported Methods
 
 + (NSManagedObjectContext*)currentContext; {
-    return [self managedObjectContext];
+    return [NSManagedObjectContext contextForCurrentThread];
 }
 
 + (void)setDefaultBatchSize:(NSUInteger)newBatchSize
@@ -172,11 +205,6 @@ static NSNumber *defaultBatchSize = nil;
 		RKLogError(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 	}
 }
-
-//- (void)handleErrors:(NSError *)error
-//{
-//	[[self class] handleErrors:error];
-//}
 
 + (NSArray *)executeFetchRequest:(NSFetchRequest *)request inContext:(NSManagedObjectContext *)context
 {

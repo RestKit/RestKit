@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/4/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -25,15 +25,15 @@
 @class RKObjectmapping;
 
 @interface RKObjectRelationshipMapping : RKObjectAttributeMapping {
-    id<RKObjectMappingDefinition> _mapping;
+    RKObjectMappingDefinition * _mapping;
     BOOL _reversible;
 }
 
-@property (nonatomic, retain) id<RKObjectMappingDefinition> mapping;
+@property (nonatomic, retain) RKObjectMappingDefinition * mapping;
 @property (nonatomic, assign) BOOL reversible;
 
-+ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping;
++ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
 
-+ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(id<RKObjectMappingDefinition>)objectOrDynamicMapping reversible:(BOOL)reversible;
++ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping reversible:(BOOL)reversible;
 
 @end

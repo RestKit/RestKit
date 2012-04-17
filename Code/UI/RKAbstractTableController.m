@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 8/11/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 #import "RKErrors.h"
 #import "RKReachabilityObserver.h"
 #import "UIView+FindFirstResponder.h"
+#import "RKRefreshGestureRecognizer.h"
 
 // Define logging component
 #undef RKLogComponent
@@ -36,7 +37,6 @@
  */
 #define BOUNCE_PIXELS 5.0
 
-//const NSUInteger RKTableControllerOverlayViewTag = 123456789;
 NSString* const RKTableControllerDidStartLoadNotification = @"RKTableControllerDidStartLoadNotification";
 NSString* const RKTableControllerDidFinishLoadNotification = @"RKTableControllerDidFinishLoadNotification";
 NSString* const RKTableControllerDidLoadObjectsNotification = @"RKTableControllerDidLoadObjectsNotification";
@@ -185,8 +185,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [_tableOverlayView removeFromSuperview];
     [_tableOverlayView release];
     _tableOverlayView = nil;
-    [_pullToRefreshHeaderView removeFromSuperview];
-    _pullToRefreshHeaderView = nil;
 
     // Remove observers
     [self removeObserver:self forKeyPath:@"loading"];
@@ -242,19 +240,21 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
     _objectManager = objectManager;
 
-    // Set observers
-    [notificationCenter addObserver:self
-                           selector:@selector(objectManagerConnectivityDidChange:)
-                               name:RKObjectManagerDidBecomeOnlineNotification
-                             object:objectManager];
-    [notificationCenter addObserver:self
-                           selector:@selector(objectManagerConnectivityDidChange:)
-                               name:RKObjectManagerDidBecomeOfflineNotification
-                             object:objectManager];
+    if (objectManager) {
+        // Set observers
+        [notificationCenter addObserver:self
+                               selector:@selector(objectManagerConnectivityDidChange:)
+                                   name:RKObjectManagerDidBecomeOnlineNotification
+                                 object:objectManager];
+        [notificationCenter addObserver:self
+                               selector:@selector(objectManagerConnectivityDidChange:)
+                                   name:RKObjectManagerDidBecomeOfflineNotification
+                                 object:objectManager];
 
-    // Initialize online/offline state (if it is known)
-    if (objectManager.networkStatus != RKObjectManagerNetworkStatusUnknown) {
-        self.online = objectManager.isOnline;
+        // Initialize online/offline state (if it is known)
+        if (objectManager.networkStatus != RKObjectManagerNetworkStatusUnknown) {
+            self.online = objectManager.isOnline;
+        }
     }
 }
 
@@ -326,6 +326,10 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     }
 
     return nil;
+}
+
+- (NSUInteger)numberOfRowsInSectionAtIndex:(NSUInteger)index {
+    return [self sectionAtIndex:index].rowCount;
 }
 
 - (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath {
@@ -403,6 +407,10 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [_cellMappings setCellMapping:cellMapping forClass:objectClass];
 }
 
+- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping {
+    [self mapObjectsWithClass:NSClassFromString(objectClassName) toTableCellsWithMapping:cellMapping];
+}
+
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(indexPath, @"Cannot lookup object with a nil indexPath");
     RKTableSection* section = [self sectionAtIndex:indexPath.section];
@@ -420,8 +428,6 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     return indexPath ? [self cellForObjectAtIndexPath:indexPath] : nil;
 }
 
-// TODO: unit test...
-// TODO: This needs to be updated to take into account header & footer rows...
 - (NSIndexPath *)indexPathForObject:(id)object {
     NSUInteger sectionIndex = 0;
     for (RKTableSection *section in self.sections) {
@@ -643,42 +649,20 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 #pragma mark - Network Table Loading
 
-- (void)loadTableFromResourcePath:(NSString*)resourcePath {
-    NSAssert(self.objectManager, @"Cannot perform a network load without an object manager");
-    [self loadTableWithObjectLoader:[self.objectManager loaderWithResourcePath:resourcePath]];
-}
-
-- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader*))block {
-    RKObjectLoader* theObjectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
-    block(theObjectLoader);
-    [self loadTableWithObjectLoader:theObjectLoader];
-}
-
-- (void)loadTableWithObjectLoader:(RKObjectLoader*)theObjectLoader {
-    NSAssert(theObjectLoader, @"Cannot perform a network load without an object loader");
-    if (! [self.objectLoader isEqual:theObjectLoader]) {
-        theObjectLoader.delegate = self;
-        self.objectLoader = theObjectLoader;
-    }
-    if ([self.delegate respondsToSelector:@selector(tableController:willLoadTableWithObjectLoader:)]) {
-        [self.delegate tableController:self willLoadTableWithObjectLoader:self.objectLoader];
-    }
-    if (self.objectLoader.queue && ![self.objectLoader.queue containsRequest:self.objectLoader]) {
-        [self.objectLoader.queue addRequest:self.objectLoader];
-    }
-}
-
 - (void)cancelLoad {
     [self.objectLoader cancel];
 }
 
 - (NSDate*)lastUpdatedDate {
+    if (! self.objectLoader) {
+        return nil;        
+    }
+    
     if (_autoRefreshFromNetwork) {
         NSAssert(_cache, @"Found a nil cache when trying to read our last loaded time");
         NSDictionary* lastUpdatedDates = [_cache dictionaryForCacheKey:lastUpdatedDateDictionaryKey];
         RKLogTrace(@"Last updated dates dictionary retrieved from tableController cache: %@", lastUpdatedDates);
         if (lastUpdatedDates) {
-            NSAssert(self.objectLoader, @"Found a nil objectLoader when attempting to retrieve our last loaded time");
             NSString* absoluteURLString = [self.objectLoader.URL absoluteString];
             NSNumber* lastUpdatedTimeIntervalSince1970 = (NSNumber*)[lastUpdatedDates objectForKey:absoluteURLString];
             if (absoluteURLString && lastUpdatedTimeIntervalSince1970) {
@@ -939,7 +923,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
             [self resetOverlayView];
         }
 
-        [(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.tableView];
+        [self resetPullToRefreshRecognizer];
     }
 
     // We don't want any image overlays applied until loading is finished
@@ -1050,71 +1034,62 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 #pragma mark - Pull to Refresh
 
-- (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled {
-    if (pullToRefreshEnabled) {
-        if (! _pullToRefreshHeaderView) {
-            // TODO: We need to expose a mechanism for styling this long term
-            // NOTE: Currently requires you to add blueArrow.png to your app's main bundle
-            CGRect frame = CGRectMake(0.0f, 0.0f - self.tableView.bounds.size.height, self.tableView.frame.size.width, self.tableView.bounds.size.height);
-            EGORefreshTableHeaderView* view = [[EGORefreshTableHeaderView alloc] initWithFrame:frame arrowImageName:@"blueArrow.png" textColor:[UIColor whiteColor]];
-            view.backgroundColor = [UIColor clearColor];
-            view.statusLabel.shadowColor = nil;
-            view.statusLabel.shadowOffset = CGSizeMake(0, -1);
-            view.lastUpdatedLabel.shadowColor = nil;
-            view.lastUpdatedLabel.shadowOffset = CGSizeMake(0, -1);
-            view.delegate = self;
-            [view refreshLastUpdatedDate];
-            [self.tableView addSubview:view];
-            _pullToRefreshHeaderView = (UIView *) view;
-            [view release];
-        }
-    } else {
-        if (_pullToRefreshHeaderView) {
-            [_pullToRefreshHeaderView removeFromSuperview];
-            _pullToRefreshHeaderView = nil;
+- (RKRefreshGestureRecognizer *)pullToRefreshGestureRecognizer {
+    RKRefreshGestureRecognizer *refreshRecognizer = nil;
+    for (RKRefreshGestureRecognizer *recognizer in self.tableView.gestureRecognizers) {
+        if ([recognizer isKindOfClass:[RKRefreshGestureRecognizer class]]) {
+            refreshRecognizer = recognizer;
+            break;
         }
     }
+    return refreshRecognizer;
+}
 
+- (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled {
+    RKRefreshGestureRecognizer *recognizer = nil;
+    if (pullToRefreshEnabled) {
+        recognizer = [[[RKRefreshGestureRecognizer alloc] initWithTarget:self action:@selector(pullToRefreshStateChanged:)] autorelease];
+        [self.tableView addGestureRecognizer:recognizer];
+    }
+    else {
+        recognizer = [self pullToRefreshGestureRecognizer];
+        if (recognizer)
+            [self.tableView removeGestureRecognizer:recognizer];
+    }
     _pullToRefreshEnabled = pullToRefreshEnabled;
 }
 
-#pragma mark UIScrollViewDelegate Methods
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	[(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-	[(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDidEndDragging:scrollView];
-}
-
-#pragma mark EGORefreshTableHeaderDelegate Methods
-
-- (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view {
-    RKLogDebug(@"%@: pull to refresh triggered from refresh table header view: %@", self, view);
-    if (self.objectLoader) {
-        [self.objectLoader reset];
-        [self.objectLoader send];
-    } else {
-        // TODO: What's the right thing to do if we don't have an object loader to refresh with?
-        [self.tableView reloadData];
-        [(EGORefreshTableHeaderView*)_pullToRefreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:self.tableView];
+- (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture {
+    if (gesture.state == UIGestureRecognizerStateRecognized) {
+        if ([self pullToRefreshDataSourceIsLoading:gesture])
+            return;
+        RKLogDebug(@"%@: pull to refresh triggered from gesture: %@", self, gesture);
+        if (self.objectLoader) {
+            [self.objectLoader reset];
+            [self.objectLoader send];
+        }
     }
 }
 
-- (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view {
+- (void)resetPullToRefreshRecognizer {
+    RKRefreshGestureRecognizer* recognizer = [self pullToRefreshGestureRecognizer];
+    if (recognizer)
+        [recognizer setRefreshState:RKRefreshIdle];
+}
+
+- (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer*)gesture {
 	// If we have already been loaded and we are loading again, a refresh is taking place...
 	return [self isLoaded] && [self isLoading] && [self isOnline];
 }
 
-- (NSDate*)egoRefreshTableHeaderDataSourceLastUpdated:(EGORefreshTableHeaderView*)view {
+- (NSDate*)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer*)gesture {
     NSDate* dataSourceLastUpdated = [self lastUpdatedDate];
     return dataSourceLastUpdated ? dataSourceLastUpdated : [NSDate date];
 }
 
 #pragma mark - Cell Swipe Menu Methods
 
-- (void)setupGestureRecognizers {
+- (void)setupSwipeGestureRecognizers {
     // Setup a right swipe gesture recognizer
     UISwipeGestureRecognizer* rightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRight:)];
     rightSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
@@ -1128,7 +1103,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [leftSwipeGestureRecognizer release];
 }
 
-- (void)removeGestureRecognizers {
+- (void)removeSwipeGestureRecognizers {
     for (UIGestureRecognizer* recognizer in self.tableView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
             [self.tableView removeGestureRecognizer:recognizer];
@@ -1144,10 +1119,10 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 - (void)setCellSwipeViewsEnabled:(BOOL)cellSwipeViewsEnabled {
     NSAssert(!_canEditRows, @"Cell swipe menus cannot be enabled for editable tableModels");
     if (cellSwipeViewsEnabled) {
-        [self setupGestureRecognizers];
+        [self setupSwipeGestureRecognizers];
     } else {
         [self removeSwipeView:YES];
-        [self removeGestureRecognizers];
+        [self removeSwipeGestureRecognizers];
     }
     _cellSwipeViewsEnabled = cellSwipeViewsEnabled;
 }
@@ -1365,6 +1340,20 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         self.tableView.contentInset = contentInsets;
         self.tableView.scrollIndicatorInsets = contentInsets;
         [UIView commitAnimations];
+    }
+}
+
+- (void)loadTableWithObjectLoader:(RKObjectLoader*)theObjectLoader {
+    NSAssert(theObjectLoader, @"Cannot perform a network load without an object loader");
+    if (! [self.objectLoader isEqual:theObjectLoader]) {
+        theObjectLoader.delegate = self;
+        self.objectLoader = theObjectLoader;
+    }
+    if ([self.delegate respondsToSelector:@selector(tableController:willLoadTableWithObjectLoader:)]) {
+        [self.delegate tableController:self willLoadTableWithObjectLoader:self.objectLoader];
+    }
+    if (self.objectLoader.queue && ![self.objectLoader.queue containsRequest:self.objectLoader]) {
+        [self.objectLoader.queue addRequest:self.objectLoader];
     }
 }
 

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/6/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@
 
 #pragma mark - Mapping Primitives
 
-- (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(id<RKObjectMappingDefinition>)mapping {
+- (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping {
     NSAssert([mappableObject respondsToSelector:@selector(setValue:forKeyPath:)], @"Expected self.object to be KVC compliant");
     id destinationObject = nil;
 
@@ -157,7 +157,7 @@
     return nil;
 }
 
-- (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(id<RKObjectMappingDefinition>)mapping {
+- (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping {
     NSAssert(mappableObjects != nil, @"Cannot map without an collection of mappable objects");
     NSAssert(mapping != nil, @"Cannot map without a mapping to consult");
 
@@ -202,7 +202,7 @@
 }
 
 // The workhorse of this entire process. Emits object loading operations
-- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(id<RKObjectMappingDefinition>)mapping {
+- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping {
     NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");    
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
     NSAssert(mapping != nil, @"Cannot map without an mapping");
@@ -234,8 +234,8 @@
     return success;
 }
 
-- (id)objectWithMapping:(id<RKObjectMappingDefinition>)mapping andData:(id)mappableData {
-    NSAssert([mapping conformsToProtocol:@protocol(RKObjectMappingDefinition)], @"Expected an object implementing RKObjectMappingDefinition");
+- (id)objectWithMapping:(RKObjectMappingDefinition *)mapping andData:(id)mappableData {
+    NSAssert([mapping isKindOfClass:[RKObjectMappingDefinition class]], @"Expected an RKObjectMappingDefinition object");
     RKObjectMapping *objectMapping = nil;
     if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
         objectMapping = [(RKDynamicObjectMapping *)mapping objectMappingForDictionary:mappableData];
@@ -255,7 +255,7 @@
     return nil;
 }
 
-- (id)performMappingForObject:(id)mappableValue atKeyPath:(NSString *)keyPath usingMapping:(id<RKObjectMappingDefinition>)mapping {
+- (id)performMappingForObject:(id)mappableValue atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping {
     id mappingResult;
     if (mapping.forceCollectionMapping || [mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]]) {
         RKLogDebug(@"Found mappable collection at keyPath '%@': %@", keyPath, mappableValue);
@@ -296,7 +296,7 @@
 
         // Found something to map
         foundMappable = YES;
-        id<RKObjectMappingDefinition> mapping = [mappingsByKeyPath objectForKey:keyPath];
+        RKObjectMappingDefinition * mapping = [mappingsByKeyPath objectForKey:keyPath];
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:mapping];
         }
@@ -332,9 +332,9 @@
     if ([mappingsForContext isKindOfClass:[NSDictionary class]]) {
         results = [self performKeyPathMappingUsingMappingDictionary:mappingsForContext];
         foundMappable = (results != nil);
-    } else if ([mappingsForContext conformsToProtocol:@protocol(RKObjectMappingDefinition)]) {
+    } else if ([mappingsForContext isKindOfClass:[RKObjectMappingDefinition class]]) {
         id mappableData = self.sourceObject;
-        if ([mappingsForContext respondsToSelector:@selector(rootKeyPath)] && [mappingsForContext rootKeyPath] != nil) {
+        if ([mappingsForContext rootKeyPath] != nil) {
             NSString* rootKeyPath = [mappingsForContext rootKeyPath];
             mappableData = [self.sourceObject valueForKeyPath:rootKeyPath];
             RKLogDebug(@"Selected object mapping has rootKeyPath. Apply valueForKeyPath to mappable data: %@", rootKeyPath);

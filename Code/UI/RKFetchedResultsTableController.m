@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/2/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 #import "RKObjectMappingOperation.h"
 #import "RKManagedObjectMapping.h"
 #import "RKLog.h"
+#import "RKObjectMappingProvider+CoreData.h"
 
 // Define logging component
 #undef RKLogComponent
@@ -212,10 +213,7 @@
 - (void)loadTable {
     NSFetchRequest *fetchRequest = nil;
     if (_resourcePath) {
-        RKManagedObjectStore* store = [RKObjectManager sharedManager].objectStore;
-        NSAssert(store.managedObjectCache != nil, @"Attempted to load RKFetchedResultsTableController with nil RKManageObjectCache");
-
-        fetchRequest = [store.managedObjectCache fetchRequestForResourcePath:_resourcePath];
+        fetchRequest = [self.objectManager.mappingProvider fetchRequestForResourcePath:self.resourcePath];
     } else {
         fetchRequest = _fetchRequest;
     }
@@ -235,7 +233,7 @@
 
     _fetchedResultsController =
     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                        managedObjectContext:[NSManagedObject managedObjectContext]
+                                        managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
                                           sectionNameKeyPath:_sectionNameKeyPath
                                                    cacheName:_cacheName];
     _fetchedResultsController.delegate = self;
@@ -326,6 +324,7 @@
     NSError* error = nil;
     BOOL success = [mappingOperation performMapping:&error];
     [mappingOperation release];
+    
     // NOTE: If there is no mapping work performed, but no error is generated then
     // we consider the operation a success. It is common for table cells to not contain
     // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
@@ -602,18 +601,6 @@
     }
 
     [self didFinishLoad];
-}
-
-#pragma mark - Block setters
-
-// NOTE: We get crashes when relying on just the copy property. Using Block_copy ensures
-// correct behavior
-- (void)setOnViewForHeaderInSection:(RKFetchedResultsTableViewViewForHeaderInSectionBlock)onViewForHeaderInSection {
-    if (_onViewForHeaderInSection) {
-        Block_release(_onViewForHeaderInSection);
-        _onViewForHeaderInSection = nil;
-    }
-    _onViewForHeaderInSection = Block_copy(onViewForHeaderInSection);
 }
 
 @end

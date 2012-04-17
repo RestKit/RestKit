@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/30/10.
-//  Copyright 2010 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,10 +22,14 @@
 #import "RKErrors.h"
 #import "RKMIMETypes.h"
 #import "RKLog.h"
-
-// Load our categories
-#import "NSDictionary+RKAdditions.h"
-#import "NSString+RestKit.h"
 #import "RKPathMatcher.h"
 #import "RKDotNetDateFormatter.h"
 #import "RKDirectory.h"
+
+// Load our categories
+#import "NSDictionary+RKAdditions.h"
+#import "NSString+RKAdditions.h"
+#import "NSBundle+RKAdditions.h"
+#import "NSArray+RKAdditions.h"
+#import "NSData+RKAdditions.h"
+#import "NSURL+RKAdditions.h"

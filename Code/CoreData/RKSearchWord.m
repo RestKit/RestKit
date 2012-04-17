@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 3/31/11.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -25,14 +25,11 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
+NSString * const RKSearchWordPrimaryKeyAttribute = @"word";
 
 @implementation RKSearchWord
 
 @dynamic word;
 @dynamic searchableManagedObjects;
-
-+ (NSString*)primaryKeyProperty {
-	return @"word";
-}
 
 @end

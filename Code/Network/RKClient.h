@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -115,6 +115,7 @@
 	RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;
     BOOL _disableCertificateValidation;
+    NSStringEncoding _defaultHTTPEncoding;
     
     // Queue suspension flags
     BOOL _awaitingReachabilityDetermination;
@@ -209,14 +210,6 @@
  */
 @property (nonatomic, readonly) NSMutableDictionary *HTTPHeaders;
 
-#ifdef RESTKIT_SSL_VALIDATION
-/**
- A set of additional certificates to be used in evaluating server
- SSL certificates.
- */
-@property(nonatomic, readonly) NSSet* additionalRootCertificates;
-#endif
-
 /**
  An optional timeout interval within which the request should be cancelled.
  
@@ -233,6 +226,12 @@
  *Default*: A new request queue is instantiated for you during init.
  */
 @property (nonatomic, retain) RKRequestQueue *requestQueue;
+
+/**
+ The default value used to decode HTTP body content when HTTP headers received do not provide information on the content.
+ This encoding will be used by the RKResponse when creating the body content
+ */
+@property (nonatomic, assign) NSStringEncoding defaultHTTPEncoding;
 
 /**
  Adds an HTTP header to each request dispatched through the client
@@ -257,6 +256,7 @@
  **ONLY while debugging** in a controlled environment.
  */
 @property (nonatomic, assign) BOOL disableCertificateValidation;
+
 
 /**
  A set of additional certificates to be used in evaluating server SSL
@@ -597,6 +597,14 @@
 - (RKRequest *)get:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
+ Fetches a resource via an HTTP GET after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
  Create a resource via an HTTP POST with a set of form parameters.
  
  The form parameters passed here must conform to RKRequestSerializable, such as
@@ -610,6 +618,14 @@
  @see RKRequestSerializable
  */
 - (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(NSObject<RKRequestDelegate> *)delegate;
+
+/**
+ Creates a resource via an HTTP POST after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
 
 /**
  Update a resource via an HTTP PUT.
@@ -628,6 +644,14 @@
 - (RKRequest *)put:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(NSObject<RKRequestDelegate> *)delegate;
 
 /**
+ Updates a resource via an HTTP PUT after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
+
+/**
  Destroy a resource via an HTTP DELETE.
  
  @param resourcePath The resourcePath to target the request at
@@ -636,6 +660,13 @@
  */
 - (RKRequest *)delete:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate;
 
+/**
+ Destroys a resource via an HTTP DELETE after executing a given a block using the configured request object.
+ 
+ @param resourcePath The resourcePath to target the request at
+ @param block The block to execute with the request before sending it for processing.
+ */
+- (void)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block;
 
 ///-----------------------------------------------------------------------------
 /// @name Constructing Resource Paths and URLs

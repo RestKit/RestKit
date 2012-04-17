@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/25/11.
-//  Copyright 2009 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@
 
 #import <Foundation/Foundation.h>
 
-/*!
+/**
  Provides an observer responsible for initiating refresh of searchable
  Core Data attributes at managed object context save time.
  */
 @interface RKSearchWordObserver : NSObject
 
-/*!
+/**
  Returns the shared observer
  */
-+ (RKSearchWordObserver*)sharedObserver;
++ (RKSearchWordObserver *)sharedObserver;
 
 @end

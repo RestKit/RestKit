@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 8/4/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 
 /** @name Cell Mapping Block Callbacks **/
 
-typedef void(^RKTableViewCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath* indexPath);
+typedef void(^RKTableViewCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef CGFloat(^RKTableViewHeightOfCellForObjectAtIndexPathBlock)(id object, NSIndexPath *indexPath);
 typedef void(^RKTableViewAccessoryButtonTappedForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef NSString*(^RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
@@ -81,6 +81,17 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
  @default NSStringFromClass(self.objectClass)
  */
 @property (nonatomic, retain) NSString* reuseIdentifier;
+
+/**
+ A Boolean value that determines whether the cell mapping manages basic cell
+ attributes (accessoryType, selectionStyle, etc.) or defers to a Storyboard/XIB
+ for defining basic cell attributes.
+ 
+ Setting the accessoryType or selectionStyle will set the value to YES.
+ 
+ **Default**: NO
+ */
+@property (nonatomic, assign) BOOL managesCellAttributes;
 
 /**
  The cell style to use for cells created with this mapping
@@ -186,12 +197,23 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 + (id)cellMapping;
 
 /**
+ Returns a new auto-released mapping targeting UITableViewCell with the specified reuseIdentifier
+ */
++ (id)cellMappingForReuseIdentifier:(NSString *)reuseIdentifier;
+
+/**
+ Creates and returns an RKTableCellMapping instance configured with the default cell mappings.
+ 
+ @return An RKTableCellMapping instance with default mappings applied.
+ @see [RKTableCellMapping addDefaultMappings]
+ */
++ (id)defaultCellMapping;
+
+/**
  Returns a new auto-released object mapping targeting UITableViewCell. The mapping
  will be yielded to the block for configuration.
  */
 + (id)cellMappingUsingBlock:(void (^)(RKTableViewCellMapping *cellMapping))block;
-
-// TODO: Needs NIB support...
 
 /**
  Sets up default mappings connecting common properties to their UITableViewCell counterparts as follows:

@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/1/11.
-//  Copyright 2011 Two Toasters
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #ifndef RestKit_RKCategoryFix_h
 #define RestKit_RKCategoryFix_h
 
-/**
+/*
  Add this macro before each category implementation, so we don't have to use
  -all_load or -force_load to load object files from static libraries that only contain
  categories and no classes.

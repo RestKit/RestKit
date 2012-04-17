@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Greg Combs on 9/2/11.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "NSDictionary+RKAdditions.h"
 #import "RKLog.h"
 
@@ -126,12 +126,11 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     if (![self matches])
         return NO;
     if (!arguments) {
-        RKLogWarning(@"The parsed arguments dictionary reference is nil.");
         return YES;
     }
     NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
     if (extracted)
-        [argumentsCollection addEntriesFromDictionary:[extracted removePercentEscapesFromKeysAndObjects]];
+        [argumentsCollection addEntriesFromDictionary:[extracted dictionaryByReplacingPercentEscapesInEntries]];
     *arguments = argumentsCollection;
     return YES;
 }

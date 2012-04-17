@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 1/17/12.
-//  Copyright 2011 RestKit
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -28,21 +28,23 @@
 - (id)valueForContext:(RKObjectMappingProviderContext)context;
 - (void)setValue:(id)value forContext:(RKObjectMappingProviderContext)context;
 
-- (id<RKObjectMappingDefinition>)mappingForContext:(RKObjectMappingProviderContext)context;
+- (RKObjectMappingDefinition *)mappingForContext:(RKObjectMappingProviderContext)context;
 /**
  Stores a single object mapping for a given context. Useful when a component needs to enable
  configuration via one (and only one) object mapping.
  */
-- (void)setMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKObjectMappingDefinition *)mapping context:(RKObjectMappingProviderContext)context;
 - (NSArray *)mappingsForContext:(RKObjectMappingProviderContext)context;
-- (void)addMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context;
-- (void)removeMapping:(id<RKObjectMappingDefinition>)mapping context:(RKObjectMappingProviderContext)context;
-- (id<RKObjectMappingDefinition>)mappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
-- (void)setMapping:(id<RKObjectMappingDefinition>)mapping forKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
+- (void)addMapping:(RKObjectMappingDefinition *)mapping context:(RKObjectMappingProviderContext)context;
+- (void)removeMapping:(RKObjectMappingDefinition *)mapping context:(RKObjectMappingProviderContext)context;
+- (RKObjectMappingDefinition *)mappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKObjectMappingDefinition *)mapping forKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
 - (void)removeMappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
 
-- (void)setMapping:(id<RKObjectMappingDefinition>)mapping forPattern:(NSString *)pattern atIndex:(NSUInteger)index context:(RKObjectMappingProviderContext)context;
-- (void)setMapping:(id<RKObjectMappingDefinition>)mapping forPattern:(NSString *)pattern context:(RKObjectMappingProviderContext)context;
-- (id<RKObjectMappingDefinition>)mappingForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKObjectMappingDefinition *)mapping forPattern:(NSString *)pattern atIndex:(NSUInteger)index context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKObjectMappingDefinition *)mapping forPattern:(NSString *)pattern context:(RKObjectMappingProviderContext)context;
+- (RKObjectMappingDefinition *)mappingForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context;
+- (void)setEntry:(RKObjectMappingProviderContextEntry *)entry forPattern:(NSString *)pattern context:(RKObjectMappingProviderContext)context;
+- (RKObjectMappingProviderContextEntry *)entryForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context;
 
 @end

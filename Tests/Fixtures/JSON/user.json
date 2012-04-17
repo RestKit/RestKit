@@ -2,6 +2,7 @@
     "id": 31337,
     "name": "Blake Watters",
     "birthdate": "11/27/1982",
+    "favorite_date": "03/01/2012",
     "website": "http://restkit.org/",
     "is_developer": "true",
     "weight": "131.3",

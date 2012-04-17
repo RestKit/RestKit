@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 12/29/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //  
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -135,10 +135,16 @@ typedef void(^RKObjectPaginatorDidFailWithErrorBlock)(NSError *error, RKObjectLo
 
 /** @name Pagination Metadata */
 
-/// The number of objects to load per page
+/**
+ The number of objects to load per page
+ */
 @property (nonatomic, assign) NSUInteger perPage;
 
-/// Returns YES when the paginator has loaded a page of objects
+/**
+ A Boolean value indicating if the paginator has loaded a page of objects
+ 
+ @returns YES when the paginator has loaded a page of objects
+ */
 @property (nonatomic, readonly, getter = isLoaded) BOOL loaded;
 
 /**

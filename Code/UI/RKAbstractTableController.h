@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Jeff Arena on 8/11/11.
-//  Copyright (c) 2011 RestKit.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@
 //  limitations under the License.
 //
 
-#ifdef TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
+
 #import <UIKit/UIKit.h>
 #import "RKTableSection.h"
 #import "RKTableViewCellMappings.h"
@@ -28,13 +29,6 @@
 #import "RKObjectLoader.h"
 
 /** @name Constants */
-
-/**
- A tag used to identify the overlay view used to draw the loading, error,
- and empty views over the table view.
- */
-// TODO: Maybe this just becomes a UIImageView ivar...
-// extern const NSUInteger RKTableControllerOverlayViewTag;
 
 /** Posted when the table view model starts loading */
 extern NSString* const RKTableControllerDidStartLoadNotification;
@@ -74,7 +68,7 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 }
 
 /////////////////////////////////////////////////////////////////////////
-/// @name Basic Configuration
+/// @name Configuring the Table Controller
 /////////////////////////////////////////////////////////////////////////
 
 @property (nonatomic, assign)   id<RKTableControllerDelegate> delegate;
@@ -107,6 +101,7 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, retain) RKTableViewCellMappings* cellMappings;
 
 - (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
+- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (RKTableViewCellMapping*)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath;
 
@@ -145,8 +140,6 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, assign) BOOL autoRefreshFromNetwork;
 @property (nonatomic, assign) NSTimeInterval autoRefreshRate;
 
-- (void)loadTableFromResourcePath:(NSString *)resourcePath;
-- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *objectLoader))block;
 - (void)loadTableWithObjectLoader:(RKObjectLoader *)objectLoader;
 - (void)cancelLoad;
 - (BOOL)isAutoRefreshNeeded;
@@ -239,6 +232,16 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 /** Returns the first section with the specified header title.
  *	@param title The header title. */
 - (RKTableSection *)sectionWithHeaderTitle:(NSString *)title;
+
+/**
+ Returns the number of rows in the section at the given index.
+
+ @param index The index of the section to return the row count for.
+ @returns The
+ @raises NSInvalidArgumentException Raised if index is greater than or
+ equal to the total number of sections in the table.
+ */
+- (NSUInteger)numberOfRowsInSectionAtIndex:(NSUInteger)index;
 
 /** Returns the index of the specified section.
  *	@param section Must be a valid non nil RKTableViewSection.

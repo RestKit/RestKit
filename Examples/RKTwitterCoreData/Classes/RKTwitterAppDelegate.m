@@ -3,7 +3,7 @@
 //  RKTwitter
 //
 //  Created by Blake Watters on 9/5/10.
-//  Copyright Two Toasters 2010. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -41,7 +41,7 @@
      name. This allows us to map back Twitter user objects directly onto NSManagedObject instances --
      there is no backing model class!
      */
-    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKTUser"];
+    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKTUser" inManagedObjectStore:objectManager.objectStore];
     userMapping.primaryKeyAttribute = @"userID";
     [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
     [userMapping mapKeyPath:@"screen_name" toAttribute:@"screenName"];
@@ -52,7 +52,7 @@
      for you using the Active Record pattern where the class name corresponds to the entity name within Core Data.
      Twitter status objects will be mapped onto RKTStatus instances.
      */
-    RKManagedObjectMapping* statusMapping = [RKManagedObjectMapping mappingForClass:[RKTStatus class]];
+    RKManagedObjectMapping* statusMapping = [RKManagedObjectMapping mappingForClass:[RKTStatus class] inManagedObjectStore:objectManager.objectStore];
     statusMapping.primaryKeyAttribute = @"statusID";
     [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
      @"created_at", @"createdAt",

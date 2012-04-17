@@ -3,7 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/26/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTestEnvironment.h"
@@ -17,16 +17,16 @@
 @implementation RKSearchWordObserverTest
 
 - (void)testInstantiateASearchWordObserverOnObjectStoreInit {
-    RKTestNewManagedObjectStore();
+    [RKTestFactory managedObjectStore];
     assertThat([RKSearchWordObserver sharedObserver], isNot(nil));
 }
 
 - (void)testTriggerSearchWordRegenerationForChagedSearchableValuesAtObjectContextSaveTime {
-    RKManagedObjectStore* store = RKTestNewManagedObjectStore();
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKSearchable* searchable = [RKSearchable createEntity];
     searchable.title = @"This is the title of my new object";
     assertThat(searchable.searchWords, is(empty()));
-    [store save];
+    [store save:nil];
     assertThat(searchable.searchWords, isNot(empty()));
     assertThat(searchable.searchWords, hasCountOf(8));
 }
