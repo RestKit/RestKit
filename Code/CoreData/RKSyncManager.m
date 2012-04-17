@@ -37,12 +37,12 @@
 	if (self) {
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
-        
+
         //Register for notifications from the managed object context associated with the object manager
         [[NSNotificationCenter defaultCenter] addObserver: self 
                                                  selector: @selector(contextDidSave:) 
                                                      name: NSManagedObjectContextDidSaveNotification
-                                                   object: self.objectManager.objectStore.managedObjectContext];
+                                                   object: self.objectManager.objectStore.managedObjectContextForCurrentThread];
         
         //Register for reachability changes for transparent syncing
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -166,7 +166,7 @@
 }
 
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
-    NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContext;
+    NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
     [_queue removeAllObjects];
     
     //Build predicate for fetching the right records
@@ -268,8 +268,11 @@
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
     if ([objectLoader.response isSuccessful]) {
         if ([objectLoader isPOST] || [objectLoader isPUT] || [objectLoader isDELETE]) {
-            [_objectManager.objectStore save];
-            
+            NSError *error = nil;
+            [_objectManager.objectStore save:&error];
+            if (error) {
+                RKLogError(@"Error saving store: %@", error);
+            }
             RKLogTrace(@"Total unsynced objects: %i", [objectLoader.queue loadingCount]);
             
         }

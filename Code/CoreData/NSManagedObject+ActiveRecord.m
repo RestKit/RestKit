@@ -782,7 +782,7 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 {
 	//Taken directly from apple docs
     
-    NSManagedObjectContext *context = [[self class] managedObjectContext];
+    NSManagedObjectContext *context = [self currentContext];
     
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:NSStringFromClass([self class])
