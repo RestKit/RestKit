@@ -1,9 +1,9 @@
 GIT
   remote: git://github.com/GateGuru/xcoder.git
-  revision: cb4258f8bb01c13a3d502813dc35985eb37b483b
-  branch: 34-force-utf8-encoding
+  revision: 10fecdf02c29361af75dc8ad8e7ce9871d2c4ea1
+  branch: gateguru
   specs:
-    xcoder (0.1.11)
+    xcoder (0.1.12)
       builder
       json
       nokogiri
