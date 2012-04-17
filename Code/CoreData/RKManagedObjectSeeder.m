@@ -76,7 +76,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
         }
         
         // Delete any existing persistent store
-        [_manager.objectStore deletePersistantStore];
+        [_manager.objectStore deletePersistentStore];
 	}
 	
 	return self;

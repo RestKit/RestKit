@@ -42,7 +42,7 @@
     _objectManager = [RKTestFactory objectManager];
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
-    [_objectManager.objectStore deletePersistantStore];
+    [_objectManager.objectStore deletePersistentStore];
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAClass {
