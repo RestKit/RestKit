@@ -46,6 +46,10 @@
     _methodInvocationCounter = 0;
 }
 
+- (void)tearDown {
+    [RKTestFactory tearDown];
+}
+
 - (int)incrementMethodInvocationCounter {
     return _methodInvocationCounter++;
 }
@@ -711,7 +715,7 @@ request.timeoutInterval = 1.0;
     [[RKClient sharedClient] configureRequest:request];
     request.delegate = loader;
     request.disableCertificateValidation = YES;
-    [request send];
+    [request sendAsynchronously];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }

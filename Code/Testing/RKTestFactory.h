@@ -45,6 +45,14 @@
 
 @end
 
+/*
+ Default Factory Names
+ */
+extern NSString * const RKTestFactoryDefaultNamesClient;
+extern NSString * const RKTestFactoryDefaultNamesObjectManager;
+extern NSString * const RKTestFactoryDefaultNamesMappingProvider;
+extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
+
 /**
  RKTestFactory provides an interface for initializing RestKit
  objects within a unit testing environment. The factory is used to ensure isolation
@@ -52,6 +60,13 @@
  down between tests and that each test is working within a clean Core Data environment.
  Callback hooks are provided so that application specific set up and tear down logic can be
  integrated as well.
+
+ The factory also provides for the definition of named factories for instantiating objects
+ quickly. At initialization, there are factories defined for creating instances of RKClient,
+ RKObjectManager, RKObjectMappingProvider, and RKManagedObjectStore. These factories may be
+ redefined within your application should you choose to utilize a subclass or wish to centralize
+ configuration of objects across the test suite. You may also define additional factories for building
+ instances of objects specific to your application using the same infrastructure.
  */
 @interface RKTestFactory : NSObject <RKTestFactoryCallbacks>
 
@@ -90,33 +105,79 @@
 + (void)setBaseURLString:(NSString *)baseURLString;
 
 ///-----------------------------------------------------------------------------
+/// @name Defining & Instantiating Objects from Factories
+///-----------------------------------------------------------------------------
+
+/**
+ Defines a factory with a given name for building object instances using the
+ given block. When the factory singleton receives an objectFromFactory: message,
+ the block designated for the given factory name is invoked and the resulting object
+ reference is returned.
+
+ Existing factories can be invoking defineFactory:withBlock: with an existing factory name.
+
+ @param factoryName The name to assign the factory.
+ @param block A block to execute when building an object instance for the factory name.
+ @return A configured object instance.
+ */
++ (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
+
+/**
+ Creates and returns a new instance of an object using the factory with the given
+ name.
+
+ @param factoryName The name of the factory to use when building the requested object.
+ @raises NSInvalidArgumentException Raised if a factory with the given name is not defined.
+ @return An object built using the factory registered for the given name.
+ */
++ (id)objectFromFactory:(NSString *)factoryName;
+
+/**
+ Returns a set of names for all defined factories.
+
+ @return A set of the string names for all defined factories.
+ */
++ (NSSet *)factoryNames;
+
+///-----------------------------------------------------------------------------
 /// @name Building Instances
 ///-----------------------------------------------------------------------------
 
 /**
- Creates and returns an RKClient instance.
- 
- @return A new client object.
+ Creates and returns an RKClient instance using the factory defined
+ for the name RKTestFactoryDefaultNamesClient.
+
+ @return A new client instance.
  */
-+ (RKClient *)client;
++ (id)client;
 
 /**
- Creates and returns an RKObjectManager instance.
+ Creates and returns an RKObjectManager instance using the factory defined
+ for the name RKTestFactoryDefaultNamesObjectManager.
  
- @return A new client object.
+ @return A new object manager instance.
  */
-+ (RKObjectManager *)objectManager;
++ (id)objectManager;
 
 /**
- Creates and returns a RKManagedObjectStore instance.
+ Creates and returns an RKObjectMappingProvider instance using the factory defined
+ for the name RKTestFactoryDefaultNamesMappingProvider.
+ 
+ @return A new object mapping provider instance.
+ */
++ (id)mappingProvider;
+
+/**
+ Creates and returns a RKManagedObjectStore instance using the factory defined
+ for the name RKTestFactoryDefaultNamesManagedObjectStore.
  
  A new managed object store will be configured and returned. If there is an existing
  persistent store (i.e. from a previous test invocation), then the persistent store
  is deleted.
  
- @return A new managed object store object.
+ @return A new managed object store instance.
  */
-+ (RKManagedObjectStore *)managedObjectStore;
++ (id)managedObjectStore;
 
 ///-----------------------------------------------------------------------------
 /// @name Managing Test State
