@@ -65,6 +65,12 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
     return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
 }
 
+- (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error {
+	NSDate *date = [self dateFromString:string];
+	if (outValue)
+		*outValue = date;
+	return (date != nil);
+}
 
 - (id)init {
     self = [super init];
