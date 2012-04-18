@@ -95,6 +95,7 @@
 - (void)tableController:(RKAbstractTableController*)tableController didDeleteObject:(id)object atIndexPath:(NSIndexPath*)indexPath {}
 - (void)tableController:(RKAbstractTableController*)tableController willAddSwipeView:(UIView*)swipeView toCell:(UITableViewCell*)cell forObject:(id)object {}
 - (void)tableController:(RKAbstractTableController*)tableController willRemoveSwipeView:(UIView*)swipeView fromCell:(UITableViewCell*)cell forObject:(id)object {}
+- (void)tableControllerDidFinalizeLoad:(RKAbstractTableController *)tableController {}
 
 @end
 
@@ -861,6 +862,29 @@
     RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidFinishLoad:tableController];
+    tableController.delegate = mockDelegate;
+    [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [mockDelegate waitForLoad];
+    STAssertNoThrow([mockDelegate verify], nil);
+}
+
+- (void)testNotifyTheDelegateOnDidFinalizeLoad {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = objectManager;
+    [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
+        mapping.cellClass = [RKTestUserTableViewCell class];
+        [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+        [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
+    }]];
+    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    id mockDelegate = [OCMockObject partialMockForObject:delegate];
+    [[mockDelegate expect] tableControllerDidFinalizeLoad:tableController];
     tableController.delegate = mockDelegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
         objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {

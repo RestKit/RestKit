@@ -194,11 +194,12 @@
     }
 
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:self.defaultRowAnimation];
-
-    // TODO: We should probably not be making this call in cases where we were
-    // loaded via a network API, as we are duplicating cleanup effort that
-    // already exists across our RKRequestDelegate & RKObjectLoaderDelegate methods
-    [self didFinishLoad];
+    
+    // The load is finalized via network callbacks for 
+    // dynamic table controllers
+    if (nil == self.objectLoader) {
+        [self didFinishLoad];
+    }    
 }
 
 - (void)loadObjects:(NSArray *)objects {

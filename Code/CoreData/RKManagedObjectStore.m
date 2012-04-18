@@ -328,7 +328,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
 }
 
-- (void)deletePersistantStoreUsingSeedDatabaseName:(NSString *)seedFile {
+- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile {
 	NSURL* storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
 	NSError* error = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
@@ -352,13 +352,13 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
 
 	[self createPersistentStoreCoordinator];
-}
-
-- (void)deletePersistantStore {
-	[self deletePersistantStoreUsingSeedDatabaseName:nil];
     
     // Recreate the MOC
     self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
+}
+
+- (void)deletePersistentStore {
+	[self deletePersistentStoreUsingSeedDatabaseName:nil];        
 }
 
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread {

@@ -135,6 +135,14 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
 
 static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?per_page=:perPage&page=:currentPage";
 
+- (void)setUp {
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown {
+    [RKTestFactory tearDown];
+}
+
 - (RKObjectMappingProvider *)paginationMappingProvider {
     RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
     [paginationMapping mapKeyPath:@"current_page" toAttribute:@"currentPage"];
