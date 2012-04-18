@@ -352,13 +352,13 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
 
 	[self createPersistentStoreCoordinator];
-}
-
-- (void)deletePersistentStore {
-	[self deletePersistentStoreUsingSeedDatabaseName:nil];
     
     // Recreate the MOC
     self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
+}
+
+- (void)deletePersistentStore {
+	[self deletePersistentStoreUsingSeedDatabaseName:nil];        
 }
 
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread {
