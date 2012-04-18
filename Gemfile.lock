@@ -1,7 +1,12 @@
 GIT
-  remote: git://github.com/GateGuru/xcoder.git
-  revision: 10fecdf02c29361af75dc8ad8e7ce9871d2c4ea1
-  branch: gateguru
+  remote: git://github.com/RestKit/RestKit-Gem.git
+  revision: 96058139a46c46aa344c1481e8c75b390c82d5e9
+  specs:
+    restkit (0.0.0)
+
+GIT
+  remote: git://github.com/rayh/xcoder.git
+  revision: 66e56c435188f89ffabdc7995208983a4a8e1dfe
   specs:
     xcoder (0.1.12)
       builder
@@ -9,12 +14,6 @@ GIT
       nokogiri
       plist
       rest-client
-
-GIT
-  remote: git://github.com/RestKit/RestKit-Gem.git
-  revision: 96058139a46c46aa344c1481e8c75b390c82d5e9
-  specs:
-    restkit (0.0.0)
 
 GIT
   remote: git://github.com/sinatra/sinatra.git
