@@ -316,6 +316,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         NSDictionary *parameters = nil;
         if ([self.params isKindOfClass:[RKParams class]])
             parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
+        else if ([self.params isKindOfClass:[NSDictionary class]])
+            parameters = self.params;
         else 
             parameters = [_URL queryParameters];
             
