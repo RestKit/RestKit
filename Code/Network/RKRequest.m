@@ -4,13 +4,13 @@
 //
 //  Created by Jeremy Ellison on 7/27/09.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -118,6 +118,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize disableCertificateValidation = _disableCertificateValidation;
 @synthesize cancelled = _cancelled;
 @synthesize followRedirect = _followRedirect;
+@synthesize runLoopMode = _runLoopMode;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
@@ -145,6 +146,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 - (id)init {
     self = [super init];
     if (self) {
+        self.runLoopMode = NSRunLoopCommonModes;
 #if TARGET_OS_IPHONE
         _backgroundPolicy = RKRequestBackgroundPolicyNone;
         _backgroundTaskIdentifier = 0;
@@ -194,7 +196,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 	self.delegate = nil;
     if (_onDidLoadResponse) Block_release(_onDidLoadResponse);
     if (_onDidFailLoadWithError) Block_release(_onDidFailLoadWithError);
-    
+
   	_delegate = nil;
     _configurationDelegate = nil;
     [_reachabilityObserver release];
@@ -217,7 +219,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
   	[_password release];
   	_password = nil;
     [_cache release];
-    _cache = nil;    
+    _cache = nil;
     [_OAuth1ConsumerKey release];
     _OAuth1ConsumerKey = nil;
     [_OAuth1ConsumerSecret release];
@@ -237,7 +239,9 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [self invalidateTimeoutTimer];
     [_timeoutTimer release];
     _timeoutTimer = nil;
-    
+    [_runLoopMode release];
+    _runLoopMode = nil;
+
     // Cleanup a background task if there is any
     [self cleanupBackgroundTask];
 
@@ -296,7 +300,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 	} else {
         [_URLRequest setValue:@"0" forHTTPHeaderField:@"Content-Length"];
     }
-    
+
     // Add authentication headers so we don't have to deal with an extra cycle for each message requiring basic auth.
     if (self.authenticationType == RKRequestAuthenticationTypeHTTPBasic && _username && _password) {
         CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
@@ -310,19 +314,19 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
           CFRelease(dummyRequest);
         }
     }
-    
+
     // Add OAuth headers if is need it
     // OAuth 1
-    if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){        
+    if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){
         NSURLRequest *echo = nil;
-        
+
         // use the suitable parameters dict
         NSDictionary *parameters = nil;
         if ([self.params isKindOfClass:[RKParams class]])
             parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
-        else 
+        else
             parameters = [_URL queryParameters];
-            
+
         if (self.method == RKRequestMethodPUT)
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                 PUTParameters:parameters
@@ -354,13 +358,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Accept-Encoding"] forHTTPHeaderField:@"Accept-Encoding"];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"User-Agent"] forHTTPHeaderField:@"User-Agent"];
     }
-    
+
     // OAuth 2 valid request
     if(self.authenticationType == RKRequestAuthenticationTypeOAuth2) {
         NSString *authorizationString = [NSString stringWithFormat:@"OAuth2 %@",self.OAuth2AccessToken];
         [_URLRequest setValue:authorizationString forHTTPHeaderField:@"Authorization"];
     }
-    
+
     if (self.cachePolicy & RKRequestCachePolicyEtag) {
         NSString* etag = [self.cache etagForRequest:self];
         if (etag) {
@@ -373,17 +377,17 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 // Setup the NSURLRequest. The request must be prepared right before dispatching
 - (BOOL)prepareURLRequest {
 	[_URLRequest setHTTPMethod:[self HTTPMethod]];
-    
+
     if ([self.delegate respondsToSelector:@selector(requestWillPrepareForSend:)]) {
         [self.delegate requestWillPrepareForSend:self];
     }
-    
+
 	[self setRequestBody];
 	[self addHeadersToRequest];
 
     NSString* body = [[NSString alloc] initWithData:[_URLRequest HTTPBody] encoding:NSUTF8StringEncoding];
     RKLogTrace(@"Prepared %@ URLRequest '%@'. HTTP Headers: %@. HTTP Body: %@.", [self HTTPMethod], _URLRequest, [_URLRequest allHTTPHeaderFields], body);
-    [body release];        
+    [body release];
 
     return YES;
 }
@@ -449,8 +453,10 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 
     RKResponse* response = [[[RKResponse alloc] initWithRequest:self] autorelease];
-    
-    _connection = [[NSURLConnection connectionWithRequest:_URLRequest delegate:response] retain];
+
+    _connection = [[[[NSURLConnection alloc] initWithRequest:_URLRequest delegate:response startImmediately:NO] autorelease] retain];
+    [_connection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:self.runLoopMode];
+    [_connection start];
 
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
@@ -478,7 +484,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     if (nil == self.reachabilityObserver || NO == [self.reachabilityObserver isReachabilityDetermined]) {
         return YES;
     }
-    
+
     return [self.reachabilityObserver isNetworkReachable];
 }
 
@@ -565,7 +571,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         [self didFinishLoad:response];
     } else if ([self shouldDispatchRequest]) {
         RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
-        
+
         if (![self prepareURLRequest]) {
             // TODO: Logging
             return nil;
@@ -580,7 +586,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
         _URLRequest.timeoutInterval = _timeoutInterval;
         payload = [NSURLConnection sendSynchronousRequest:_URLRequest returningResponse:&URLResponse error:&error];
-        
+
         if (payload != nil) error = nil;
 
         response = [[[RKResponse alloc] initWithSynchronousRequest:self URLResponse:URLResponse body:payload error:error] autorelease];
@@ -648,12 +654,12 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 		if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 			[_delegate request:self didFailLoadWithError:error];
 		}
-        
+
         if (self.onDidFailLoadWithError) {
             self.onDidFailLoadWithError(error);
         }
 
-        
+
         NSDictionary* userInfo = [NSDictionary dictionaryWithObject:error forKey:RKRequestDidFailWithErrorNotificationUserInfoErrorKey];
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
                                                             object:self
@@ -692,16 +698,16 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
 		[_delegate request:self didLoadResponse:finalResponse];
 	}
-    
+
     if (self.onDidLoadResponse) {
         self.onDidLoadResponse(finalResponse);
     }
 
-    
+
     if ([response isServiceUnavailable]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
     }
-    
+
     NSDictionary* userInfo = [NSDictionary dictionaryWithObject:finalResponse
                                                          forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification
@@ -761,7 +767,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     _URLRequest.URL = URL;
 }
 
-- (void)setResourcePath:(NSString *)resourcePath {    
+- (void)setResourcePath:(NSString *)resourcePath {
     if ([self.URL isKindOfClass:[RKURL class]]) {
         self.URL = [(RKURL *)self.URL URLByReplacingResourcePath:resourcePath];
 	} else {
@@ -798,7 +804,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     if (! [self isCacheable]) {
         return nil;
     }
-    
+
     // Use [_params HTTPBody] because the URLRequest body may not have been set up yet.
     NSString* compositeCacheKey = nil;
     if (_params) {
@@ -816,12 +822,12 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 - (void)setBody:(NSDictionary *)body forMIMEType:(NSString *)MIMEType {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-    
+
     NSError *error = nil;
     NSString* parsedValue = [parser stringFromObject:body error:&error];
-    
+
     RKLogTrace(@"parser=%@, error=%@, parsedValue=%@", parser, error, parsedValue);
-    
+
     if (error == nil && parsedValue) {
         self.params = [RKRequestSerialization serializationWithData:[parsedValue dataUsingEncoding:NSUTF8StringEncoding]
                                                            MIMEType:MIMEType];
