@@ -178,7 +178,6 @@ request.timeoutInterval = 1.0;
 }
 
 - (void)testShouldObserveForAppBackgroundTransitionsAndCancelTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
-    [RKTestFactory client];
     [self stubSharedApplicationWhileExecutingBlock:^{
         NSURL* URL = [RKTestFactory baseURL];
         RKRequest* request = [[RKRequest alloc] initWithURL:URL];
@@ -188,7 +187,6 @@ request.timeoutInterval = 1.0;
         [requestMock sendAsynchronously];
         [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
         [requestMock verify];
-        [request release];
     }];
 }
 
@@ -712,7 +710,6 @@ request.timeoutInterval = 1.0;
     NSURL *URL = [NSURL URLWithString:@"https://blakewatters.com/"];
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKRequest *request = [RKRequest requestWithURL:URL];
-    [[RKClient sharedClient] configureRequest:request];
     request.delegate = loader;
     request.disableCertificateValidation = YES;
     [request sendAsynchronously];
