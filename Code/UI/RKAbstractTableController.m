@@ -756,7 +756,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [self resetOverlayView];
 
     if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinishFinalLoad:)])
-        [_delegate performSelector:@selector(tableControllerDidFinishFinalLoad:)];
+        [_delegate performSelector:@selector(tableControllerDidFinishFinalLoad:) withObject:self];
 }
 
 #pragma mark - Table Overlay Views
