@@ -240,19 +240,21 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
     _objectManager = objectManager;
 
-    // Set observers
-    [notificationCenter addObserver:self
-                           selector:@selector(objectManagerConnectivityDidChange:)
-                               name:RKObjectManagerDidBecomeOnlineNotification
-                             object:objectManager];
-    [notificationCenter addObserver:self
-                           selector:@selector(objectManagerConnectivityDidChange:)
-                               name:RKObjectManagerDidBecomeOfflineNotification
-                             object:objectManager];
+    if (objectManager) {
+        // Set observers
+        [notificationCenter addObserver:self
+                               selector:@selector(objectManagerConnectivityDidChange:)
+                                   name:RKObjectManagerDidBecomeOnlineNotification
+                                 object:objectManager];
+        [notificationCenter addObserver:self
+                               selector:@selector(objectManagerConnectivityDidChange:)
+                                   name:RKObjectManagerDidBecomeOfflineNotification
+                                 object:objectManager];
 
-    // Initialize online/offline state (if it is known)
-    if (objectManager.networkStatus != RKObjectManagerNetworkStatusUnknown) {
-        self.online = objectManager.isOnline;
+        // Initialize online/offline state (if it is known)
+        if (objectManager.networkStatus != RKObjectManagerNetworkStatusUnknown) {
+            self.online = objectManager.isOnline;
+        }
     }
 }
 
@@ -324,6 +326,10 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     }
 
     return nil;
+}
+
+- (NSUInteger)numberOfRowsInSectionAtIndex:(NSUInteger)index {
+    return [self sectionAtIndex:index].rowCount;
 }
 
 - (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath {
@@ -749,8 +755,9 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
     [self resetOverlayView];
 
-    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinishFinalLoad:)])
-        [_delegate performSelector:@selector(tableControllerDidFinishFinalLoad:)];
+    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinalizeLoad:)]) {
+        [_delegate performSelector:@selector(tableControllerDidFinalizeLoad:) withObject:self];
+    }
 }
 
 #pragma mark - Table Overlay Views

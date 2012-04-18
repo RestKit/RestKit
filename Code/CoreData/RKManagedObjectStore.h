@@ -20,7 +20,7 @@
 
 #import <CoreData/CoreData.h>
 #import "RKManagedObjectMapping.h"
-#import "RKManagedObjectMappingCache.h"
+#import "RKManagedObjectCaching.h"
 
 @class RKManagedObjectStore;
 
@@ -100,7 +100,7 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 /**
 
  */
-@property (nonatomic, retain) NSObject<RKManagedObjectCacheing> *cacheStrategy;
+@property (nonatomic, retain) NSObject<RKManagedObjectCaching> *cacheStrategy;
 
 /**
  * Initialize a new managed object store with a SQLite database with the filename specified
@@ -137,10 +137,10 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 
 /**
  * This deletes and recreates the managed object context and
- * persistant store, effectively clearing all data
+ * persistent store, effectively clearing all data
  */
-- (void)deletePersistantStoreUsingSeedDatabaseName:(NSString *)seedFile;
-- (void)deletePersistantStore;
+- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile;
+- (void)deletePersistentStore;
 
 /**
  *	Retrieves a model object from the appropriate context using the objectId

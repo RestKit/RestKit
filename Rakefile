@@ -1,12 +1,73 @@
 require 'rubygems'
+require 'bundler/setup'
+require 'xcoder'
+require 'restkit/rake'
+require 'ruby-debug'
 
-namespace :test do
-  desc "Run the RestKit test server"
-  task :server do
-    server_path = File.dirname(__FILE__) + '/Tests/Server/server.rb'
-    system("ruby \"#{server_path}\"")
+RestKit::Rake::ServerTask.new do |t|
+  t.port = 4567
+  t.pid_file = 'Tests/Server/server.pid'
+  t.rackup_file = 'Tests/Server/server.ru'
+  t.log_file = 'Tests/Server/server.log'
+
+  t.adapter(:thin) do |thin|
+    thin.config_file = 'Tests/Server/thin.yml'
   end
 end
+
+namespace :test do
+  task :kill_simulator do
+    system(%q{killall -m -KILL "iPhone Simulator"})
+  end
+  
+  namespace :logic do
+    desc "Run the logic tests for iOS"
+    task :ios => :kill_simulator do
+      config = Xcode.project(:RestKit).target(:RestKitTests).config(:Debug)
+      builder = config.builder
+      build_dir = File.dirname(config.target.project.path) + '/Build'
+      builder.symroot = build_dir + '/Products'
+      builder.objroot = build_dir
+    	builder.test(:sdk => 'iphonesimulator')
+    end
+    
+    desc "Run the logic tests for OS X"
+    task :osx do
+      config = Xcode.project(:RestKit).target(:RestKitFrameworkTests).config(:Debug)
+      builder = config.builder
+      build_dir = File.dirname(config.target.project.path) + '/Build'
+      builder.symroot = build_dir + '/Products'
+      builder.objroot = build_dir
+    	builder.test(:sdk => 'macosx')
+    end
+  end    
+  
+  desc "Run the unit tests for iOS and OS X"
+  task :logic => ['logic:ios', 'logic:osx']
+  
+  namespace :application do
+    desc "Run the application tests for iOS"
+    task :ios => :kill_simulator do
+      config = Xcode.project(:RKApplicationTests).target('Application Tests').config(:Debug)
+      builder = config.builder
+      build_dir = File.dirname(config.target.project.path) + '/Build'
+      builder.symroot = build_dir + '/Products'
+      builder.objroot = build_dir
+    	builder.test(:sdk => 'iphonesimulator')
+    end
+  end
+  
+  desc "Run the application tests for iOS"
+  task :application => 'application:ios'
+  
+  desc "Run all tests for iOS and OS X"
+  task :all => ['test:logic', 'test:application']
+end
+
+desc 'Run all the GateGuru tests'
+task :test => "test:all"
+
+task :default => ["server:autostart", "test:all", "server:autostop"]
 
 def restkit_version
   @restkit_version ||= ENV['VERSION'] || File.read("VERSION").chomp
@@ -27,8 +88,6 @@ def run(command, min_exit_status = 0)
   end
   return $?.exitstatus
 end
-
-task :default => 'test:server'
 
 desc "Build RestKit for iOS and Mac OS X"
 task :build do
@@ -92,33 +151,6 @@ namespace :docs do
   end
 end
 
-def is_port_open?(ip, port)
-  require 'socket'
-  require 'timeout'
-  
-  begin
-    Timeout::timeout(1) do
-      begin
-        s = TCPSocket.new(ip, port)
-        s.close
-        return true
-      rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-        return false
-      end
-    end
-  rescue Timeout::Error
-  end
-
-  return false
-end
-
-task :ensure_server_is_running do
-  unless is_port_open?('127.0.0.1', 4567)
-    puts "Unable to find RestKit Test server listening on port 4567. Run `rake test:server` and try again."
-    exit(-1)
-  end
-end
-
 namespace :build do
   desc "Build all Example projects to ensure they are building properly"
   task :examples do
@@ -143,6 +175,6 @@ namespace :build do
 end
 
 desc "Validate a branch is ready for merging by checking for common issues"
-task :validate => [:ensure_server_is_running, :build, 'docs:check', 'uispec:all'] do  
+task :validate => [:build, 'docs:check', 'uispec:all'] do  
   puts "Project state validated successfully. Proceed with merge."
 end

@@ -36,10 +36,15 @@
 // to determine if assocation values should be set
 - (BOOL)isEqual:(id)object {
     if ([object isKindOfClass:[RKTestUser class]]) {
-        return [[(RKTestUser*)object userID] isEqualToNumber:self.userID];
-    } else {
-        return NO;
+        if ([(RKTestUser*)object userID] == nil && self.userID == nil) {
+            // No primary key -- consult superclass
+            return [super isEqual:object];
+        } else {
+            return [[(RKTestUser*)object userID] isEqualToNumber:self.userID];
+        }
     }
+    
+    return NO;
 }
 
 - (id)valueForUndefinedKey:(NSString *)key {

@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RKManagedObjectMappingCache.h"
+#import "RKManagedObjectCaching.h"
 
 /**
  Provides a simple managed object cache strategy in which every request for an object
@@ -14,6 +14,6 @@
  Performance can be disappointing for data sets with a large amount of redundant data
  being mapped and connected together, but the memory footprint stays flat.
  */
-@interface RKFetchRequestManagedObjectCache : NSObject <RKManagedObjectCacheing>
+@interface RKFetchRequestManagedObjectCache : NSObject <RKManagedObjectCaching>
 
 @end

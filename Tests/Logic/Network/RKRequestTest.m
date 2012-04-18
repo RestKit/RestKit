@@ -46,6 +46,10 @@
     _methodInvocationCounter = 0;
 }
 
+- (void)tearDown {
+    [RKTestFactory tearDown];
+}
+
 - (int)incrementMethodInvocationCounter {
     return _methodInvocationCounter++;
 }
@@ -59,8 +63,7 @@
 	NSURL* URL = [NSURL URLWithString:URLString];
 	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
 	RKParams* params = [[RKParams params] retain];
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-	NSString* filePath = [testBundle pathForResource:@"blake" ofType:@"png"];
+	NSString* filePath = [RKTestFixture pathForFixture:@"blake.png"];
 	[params setFile:filePath forParam:@"file"];
 	[params setValue:@"this is the value" forParam:@"test"];
 	request.method = RKRequestMethodPOST;
@@ -147,6 +150,19 @@ request.timeoutInterval = 1.0;
     [request release];
 }
 
+- (void)testThatRunLoopModePropertyRespected {
+    NSString * const dummyRunLoopMode = @"dummyRunLoopMode";
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [[RKRequest alloc] initWithURL:[RKTestFactory baseURL]];
+    request.delegate = loader;
+    request.runLoopMode = dummyRunLoopMode;
+    [request sendAsynchronously];
+    while ([[NSRunLoop currentRunLoop] runMode:dummyRunLoopMode beforeDate:[[NSRunLoop currentRunLoop] limitDateForMode:dummyRunLoopMode]])
+        ;
+    assertThatBool([loader wasSuccessful], is(equalToBool(YES)));
+    [request release];
+}
+
 #pragma mark - Background Policies
 
 #if TARGET_OS_IPHONE
@@ -175,7 +191,6 @@ request.timeoutInterval = 1.0;
 }
 
 - (void)testShouldObserveForAppBackgroundTransitionsAndCancelTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
-    [RKTestFactory client];
     [self stubSharedApplicationWhileExecutingBlock:^{
         NSURL* URL = [RKTestFactory baseURL];
         RKRequest* request = [[RKRequest alloc] initWithURL:URL];
@@ -185,7 +200,6 @@ request.timeoutInterval = 1.0;
         [requestMock sendAsynchronously];
         [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
         [requestMock verify];
-        [request release];
     }];
 }
 
@@ -709,10 +723,9 @@ request.timeoutInterval = 1.0;
     NSURL *URL = [NSURL URLWithString:@"https://blakewatters.com/"];
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKRequest *request = [RKRequest requestWithURL:URL];
-    [[RKClient sharedClient] configureRequest:request];
     request.delegate = loader;
     request.disableCertificateValidation = YES;
-    [request send];
+    [request sendAsynchronously];
     [loader waitForResponse];
     assertThatBool([loader.response isOK], is(equalToBool(YES)));
 }
@@ -883,6 +896,19 @@ request.timeoutInterval = 1.0;
     RKRequest *request = [RKRequest new];
     request.method = RKRequestMethodDELETE;
     assertThatBool([request isCacheable], is(equalToBool(NO)));
+}
+
+- (void)testInvocationOfDidReceiveResponse {
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    id loaderMock = [OCMockObject partialMockForObject:loader];
+    NSURL* URL = [[RKTestFactory baseURL] URLByAppendingResourcePath:@"/200"];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loaderMock;
+    [[loaderMock expect] request:request didReceiveResponse:OCMOCK_ANY];
+    [request sendAsynchronously];
+    [loaderMock waitForResponse];    
+    [request release];
+    [loaderMock verify];
 }
 
 @end

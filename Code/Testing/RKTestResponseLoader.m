@@ -100,6 +100,10 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     return nil;
 }
 
+- (void)request:(RKRequest *)request didReceiveResponse:(RKResponse *)response {
+    // Implemented for expectations
+}
+
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)aResponse {
 	self.response = aResponse;
 

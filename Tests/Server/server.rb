@@ -18,6 +18,7 @@ require 'restkit/network/authentication'
 require 'restkit/network/etags'
 require 'restkit/network/timeout'
 require 'restkit/network/oauth2'
+require 'restkit/network/redirection'
 
 class Person < Struct.new(:name, :age)
   def to_json(*args)
@@ -38,6 +39,7 @@ class RestKitTestServer < Sinatra::Base
   use RestKit::Network::ETags
   use RestKit::Network::Timeout
   use RestKit::Network::OAuth2
+  use RestKit::Network::Redirection
 
   def render_fixture(path, options = {})
     send_file File.join(settings.public_folder, path), options

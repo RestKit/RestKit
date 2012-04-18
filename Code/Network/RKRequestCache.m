@@ -29,9 +29,9 @@ NSString * const RKRequestCacheSessionCacheDirectory = @"SessionStore";
 NSString * const RKRequestCachePermanentCacheDirectory = @"PermanentStore";
 NSString * const RKRequestCacheHeadersExtension = @"headers";
 NSString * const RKRequestCacheDateHeaderKey = @"X-RESTKIT-CACHEDATE";
-NSString * const RKRequestCacheStatusCodeKey = @"X-RESTKIT-CACHED-RESPONSE-CODE";
-NSString * const RKRequestCacheMIMETypeKey = @"X-RESTKIT-CACHED-MIME-TYPE";
-NSString * const RKRequestCacheURLKey = @"X-RESTKIT-CACHED-URL";
+NSString * const RKRequestCacheStatusCodeHeadersKey = @"X-RESTKIT-CACHED-RESPONSE-CODE";
+NSString * const RKRequestCacheMIMETypeHeadersKey = @"X-RESTKIT-CACHED-MIME-TYPE";
+NSString * const RKRequestCacheURLHeadersKey = @"X-RESTKIT-CACHED-URL";
 
 static NSDateFormatter* __rfc1123DateFormatter;
 
@@ -118,13 +118,13 @@ static NSDateFormatter* __rfc1123DateFormatter;
 							forKey:RKRequestCacheDateHeaderKey];
                 // Cache status code
                 [headers setObject:[NSNumber numberWithInteger:urlResponse.statusCode]
-							forKey:RKRequestCacheStatusCodeKey];
+							forKey:RKRequestCacheStatusCodeHeadersKey];
                 // Cache MIME Type
                 [headers setObject:urlResponse.MIMEType
-							forKey:RKRequestCacheMIMETypeKey];
+							forKey:RKRequestCacheMIMETypeHeadersKey];
                 // Cache URL
                 [headers setObject:[urlResponse.URL absoluteString]
-							forKey:RKRequestCacheURLKey];
+							forKey:RKRequestCacheURLHeadersKey];
                 // Save
                 [_cache writeDictionary:headers withCacheKey:[cacheKey stringByAppendingPathExtension:RKRequestCacheHeadersExtension]];
 			}

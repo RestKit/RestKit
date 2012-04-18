@@ -25,20 +25,11 @@
 #import <OCHamcrestIOS/OCHamcrestIOS.h>
 #import <SenTestingKit/SenTestingKit.h>
 
-#import "RestKit.h"
-#import "Testing.h"
-#import "RKManagedObjectStore.h"
-
-////////////////////////////////////////////////////////////////////////////
-// OCMock - For some reason this macro is incorrect. Note the use of __typeof
-
-#undef OCMOCK_VALUE
-#define OCMOCK_VALUE(variable) [NSValue value:&variable withObjCType:@encode(__typeof(variable))]
+#import <RestKit/RestKit.h>
+#import <RestKit/Testing.h>
+#import <RestKit/RKManagedObjectStore.h>
 
 RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader);
-
-// TODO: Figure out how to extract...
-void RKTestClearCacheDirectory(void);
 
 /* 
  Base class for RestKit test cases. Provides initialization of testing

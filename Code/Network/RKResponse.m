@@ -181,6 +181,16 @@ return __VA_ARGS__;                                                             
     return hasCredentials;
 }
 
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response {
+  if (nil == response || _request.followRedirect) {
+    RKLogDebug(@"Proceeding with request to %@", request);
+    return request;
+  } else {
+    RKLogDebug(@"Not following redirect to %@", request);
+    return nil;
+  }
+}
+
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     RKResponseIgnoreDelegateIfCancelled();
 	[_body appendData:data];
@@ -196,6 +206,9 @@ return __VA_ARGS__;                                                             
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
 	_httpURLResponse = [response retain];
     [_request invalidateTimeoutTimer];
+    if ([[_request delegate] respondsToSelector:@selector(request:didReceiveResponse:)]) {
+      [[_request delegate] request:_request didReceiveResponse:self];
+    }
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
@@ -292,21 +305,21 @@ return __VA_ARGS__;                                                             
 
 - (NSURL*)URL {
     if ([self wasLoadedFromCache]) {
-        return [NSURL URLWithString:[_responseHeaders valueForKey:RKRequestCacheURLKey]];
+        return [NSURL URLWithString:[_responseHeaders valueForKey:RKRequestCacheURLHeadersKey]];
     }
 	return [_httpURLResponse URL];
 }
 
 - (NSString*)MIMEType {
     if ([self wasLoadedFromCache]) {
-        return [_responseHeaders valueForKey:RKRequestCacheMIMETypeKey];
+        return [_responseHeaders valueForKey:RKRequestCacheMIMETypeHeadersKey];
     }
 	return [_httpURLResponse MIMEType];
 }
 
 - (NSInteger)statusCode {
     if ([self wasLoadedFromCache]) {
-        return [[_responseHeaders valueForKey:RKRequestCacheStatusCodeKey] intValue];
+        return [[_responseHeaders valueForKey:RKRequestCacheStatusCodeHeadersKey] intValue];
     }
     return ([_httpURLResponse respondsToSelector:@selector(statusCode)] ? [_httpURLResponse statusCode] : 200);
 }

@@ -22,24 +22,22 @@
 #import "RKTestEnvironment.h"
 #import "RKParserRegistry.h"
 
-RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader){
+RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader)
+{
     [loader setTimeout:10];
-    RKOAuthClient* client = [RKOAuthClient clientWithClientID:@"appID" secret:@"appSecret"];
+    RKOAuthClient *client = [RKOAuthClient clientWithClientID:@"appID" secret:@"appSecret"];
     client.delegate = loader;
     client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize", [RKTestFactory baseURLString]];
     return client;
-}
-
-void RKTestClearCacheDirectory(void) {
-    
 }
 
 @implementation RKTestCase
 
 + (void)initialize
 {
-    // Configure fixture bundle
-    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
+    // Configure fixture bundle. The 'org.restkit.tests' identifier is shared between
+    // the logic and application test bundles
+    NSBundle *fixtureBundle = [NSBundle bundleWithIdentifier:@"org.restkit.tests"];
     [RKTestFixture setFixtureBundle:fixtureBundle];
 
     // Ensure the required directories exist
@@ -61,15 +59,18 @@ void RKTestClearCacheDirectory(void) {
 @end
 
 @implementation SenTestCase (MethodSwizzling)
+
 - (void)swizzleMethod:(SEL)aOriginalMethod
               inClass:(Class)aOriginalClass
            withMethod:(SEL)aNewMethod
             fromClass:(Class)aNewClass
-         executeBlock:(void (^)(void))aBlock {
+         executeBlock:(void (^)(void))aBlock
+{
     Method originalMethod = class_getClassMethod(aOriginalClass, aOriginalMethod);
     Method mockMethod = class_getInstanceMethod(aNewClass, aNewMethod);
     method_exchangeImplementations(originalMethod, mockMethod);
     aBlock();
     method_exchangeImplementations(mockMethod, originalMethod);
 }
+
 @end
