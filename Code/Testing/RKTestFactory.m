@@ -20,6 +20,8 @@ static NSString * const RKTestFactoryDefaultStoreFilename = @"RKTests.sqlite";
 @property(nonatomic, strong) NSMutableDictionary *factoryBlocks;
 
 + (RKTestFactory *)sharedFactory;
+- (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
+- (id)objectFromFactory:(NSString *)factoryName;
 - (void)defineDefaultFactories;
 
 @end
@@ -62,40 +64,6 @@ static RKTestFactory *sharedFactory = nil;
     return self;
 }
 
-- (void)defineDefaultFactories
-{
-    [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        RKClient *client = [RKClient clientWithBaseURL:self.baseURL];
-        client.requestQueue.suspended = NO;
-        [client.reachabilityObserver getFlags];
-
-        return client;
-    }];
-    
-    [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
-        RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
-        RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
-        objectManager.mappingProvider = mappingProvider;
-
-        // Force reachability determination
-        [objectManager.client.reachabilityObserver getFlags];
-
-        return objectManager;
-    }];
-
-    [self defineFactory:RKTestFactoryDefaultNamesMappingProvider withBlock:^id {
-        RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-        return mappingProvider;
-    }];
-
-    [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
-        RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
-        [store deletePersistentStore];
-
-        return store;
-    }];
-}
-
 - (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block
 {
     [self.factoryBlocks setObject:[block copy] forKey:factoryName];
@@ -107,6 +75,40 @@ static RKTestFactory *sharedFactory = nil;
     NSAssert(block, @"No factory is defined with the name '%@'", factoryName);
     
     return block();
+}
+
+- (void)defineDefaultFactories
+{
+    [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
+        RKClient *client = [RKClient clientWithBaseURL:self.baseURL];
+        client.requestQueue.suspended = NO;
+        [client.reachabilityObserver getFlags];
+        
+        return client;
+    }];
+    
+    [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
+        RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
+        RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
+        objectManager.mappingProvider = mappingProvider;
+        
+        // Force reachability determination
+        [objectManager.client.reachabilityObserver getFlags];
+        
+        return objectManager;
+    }];
+    
+    [self defineFactory:RKTestFactoryDefaultNamesMappingProvider withBlock:^id {
+        RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
+        return mappingProvider;
+    }];
+    
+    [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
+        RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
+        [store deletePersistentStore];
+        
+        return store;
+    }];
 }
 
 #pragma mark - Public Static Interface
