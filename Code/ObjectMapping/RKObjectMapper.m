@@ -186,6 +186,8 @@
         return nil;
     }
 
+    
+    NSUInteger sequenceIndex = 0;
     for (id mappableObject in objectsToMap) {
         id destinationObject = [self objectWithMapping:mapping andData:mappableObject];
         if (! destinationObject) {
@@ -194,7 +196,15 @@
 
         BOOL success = [self mapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
         if (success) {
+            if ([mapping isKindOfClass:[RKObjectMapping class]]) {
+                NSString *sequenceKeyAttribute = [(RKObjectMapping*)mapping sequenceKeyAttribute];
+                if (sequenceKeyAttribute.length != 0) {
+                    NSNumber *value = [NSNumber numberWithUnsignedInteger:sequenceIndex];
+                    [destinationObject setValue:value forKeyPath:sequenceKeyAttribute];
+                }
+            }
             [mappedObjects addObject:destinationObject];
+            sequenceIndex++;
         }
     }
 

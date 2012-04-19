@@ -88,6 +88,14 @@ relationship. Relationships are processed using an object mapping as well.
 @property (nonatomic, readonly) NSArray *mappedKeyPaths;
 
 /**
+ The name of the attribute on the destination entity that acts as the key for storing position
+ of the object in object array returned from server.
+ 
+ @warning **NOTE**: Attribute should be of type NSNumber.
+ */
+@property (nonatomic, retain) NSString *sequenceKeyAttribute;
+
+/**
  When YES, any attributes that have mappings defined but are not present within the source
  object will be set to nil, clearing any existing value.
  */

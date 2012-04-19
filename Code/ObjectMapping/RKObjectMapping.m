@@ -38,6 +38,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 @synthesize setNilForMissingRelationships = _setNilForMissingRelationships;
 @synthesize performKeyValueValidation = _performKeyValueValidation;
 @synthesize ignoreUnknownKeyPaths = _ignoreUnknownKeyPaths;
+@synthesize sequenceKeyAttribute = _sequenceKeyAttribute;
 
 + (id)mappingForClass:(Class)objectClass {
     RKObjectMapping* mapping = [self new];
@@ -108,6 +109,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     copy.performKeyValueValidation = self.performKeyValueValidation;
     copy.dateFormatters = self.dateFormatters;
     copy.preferredDateFormatter = self.preferredDateFormatter;
+    copy.sequenceKeyAttribute = self.sequenceKeyAttribute;
 
     for (RKObjectAttributeMapping *mapping in self.mappings) {
         [copy addAttributeMapping:mapping];
@@ -121,6 +123,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     [_mappings release];
     [_dateFormatters release];
     [_preferredDateFormatter release];
+    [_sequenceKeyAttribute release];
     [super dealloc];
 }
 
