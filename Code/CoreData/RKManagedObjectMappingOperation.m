@@ -74,10 +74,7 @@
             relatedObject = [NSMutableSet set];
             NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
             for (id foreignKey in valueOfLocalPrimaryKeyAttribute) {
-                id searchResult = [cache findInstanceOfEntity:objectMapping.entity
-                                      withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject
-                                                        value:valueOfLocalPrimaryKeyAttribute
-                                       inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
+                id searchResult = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:valueOfLocalPrimaryKeyAttribute inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
                 if (searchResult) {
                     [relatedObject addObject:searchResult];
                 }
@@ -87,10 +84,7 @@
             
             // Normal foreign key
             NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
-            relatedObject = [cache findInstanceOfEntity:objectMapping.entity
-                                withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject
-                                                  value:valueOfLocalPrimaryKeyAttribute
-                                 inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
+            relatedObject = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:valueOfLocalPrimaryKeyAttribute inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
         }
         if (relatedObject) {                
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
