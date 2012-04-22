@@ -24,7 +24,7 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping");
     NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
-    NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
+    NSAssert(managedObjectContext, @"Cannot find existing managed object without a context");
     NSMutableDictionary *contextDictionary = [[[NSThread currentThread] threadDictionary] objectForKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
     if (! contextDictionary) {
         contextDictionary = [NSMutableDictionary dictionaryWithCapacity:1];
