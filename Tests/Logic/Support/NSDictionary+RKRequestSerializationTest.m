@@ -52,7 +52,7 @@
 - (void)testShouldEncodeArrays {
     NSArray *array = [NSArray arrayWithObjects:@"item1", @"item2", nil];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:array forKey:@"anArray"];
-    NSString *validArray = @"anArray[]=item1&anArray[]=item2";
+    NSString *validArray = @"anArray[0]=item1&anArray[1]=item2";
     assertThat([dictionary stringWithURLEncodedEntries], is(equalTo(validArray)));
 }
 
@@ -70,7 +70,7 @@
     NSArray * array = [NSArray arrayWithObjects: dictA, dictB, nil];
     NSDictionary * dictRoot = [NSDictionary dictionaryWithKeysAndObjects:@"root", array, nil];
 
-    NSString * validString = @"root[][a]=x&root[][b]=y&root[][a]=1&root[][b]=2";
+    NSString * validString = @"root[0][a]=x&root[0][b]=y&root[1][a]=1&root[1][b]=2";
     assertThat([dictRoot stringWithURLEncodedEntries], is(equalTo(validString)));
 }
 
@@ -79,7 +79,7 @@
     NSArray *recursiveArray2 = [NSArray arrayWithObject:recursiveArray3];
     NSArray *recursiveArray1 = [NSArray arrayWithObject:recursiveArray2];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:recursiveArray1 forKey:@"recursiveArray"];
-    NSString *validRecursion = @"recursiveArray[]=%28%0A%20%20%20%20%20%20%20%20%28%0A%20%20%20%20%20%20%20%20item1%2C%0A%20%20%20%20%20%20%20%20item2%0A%20%20%20%20%29%0A%29";
+    NSString *validRecursion = @"recursiveArray[0]=%28%0A%20%20%20%20%20%20%20%20%28%0A%20%20%20%20%20%20%20%20item1%2C%0A%20%20%20%20%20%20%20%20item2%0A%20%20%20%20%29%0A%29";
     assertThat([dictionary stringWithURLEncodedEntries], is(equalTo(validRecursion)));
 }
 

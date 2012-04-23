@@ -135,9 +135,9 @@
 
     assertThat(error, is(nilValue()));
     #if TARGET_OS_IPHONE
-    assertThat(data, is(equalTo(@"key1-form-name=value1&relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1")));
+    assertThat(data, is(equalTo(@"key1-form-name=value1&relationship1-form-name[r1k1][0]=relationship1Value1&relationship1-form-name[r1k1][1]=relationship1Value2&key2-form-name=value2&relationship2-form-name[subKey1]=subValue1")));
     #else
-    assertThat(data, is(equalTo(@"relationship1-form-name[r1k1][]=relationship1Value1&relationship1-form-name[r1k1][]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1")));
+    assertThat(data, is(equalTo(@"relationship1-form-name[r1k1][0]=relationship1Value1&relationship1-form-name[r1k1][1]=relationship1Value2&key2-form-name=value2&key1-form-name=value1&relationship2-form-name[subKey1]=subValue1")));
     #endif
 }
 
