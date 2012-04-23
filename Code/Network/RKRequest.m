@@ -353,7 +353,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     
     // OAuth 2 valid request
     if(self.authenticationType == RKRequestAuthenticationTypeOAuth2) {
-        NSString *authorizationString = [NSString stringWithFormat:@"OAuth2 %@",self.OAuth2AccessToken];
+        NSString *authorizationString = [NSString stringWithFormat:@"Bearer %@",self.OAuth2AccessToken];
         [_URLRequest setValue:authorizationString forHTTPHeaderField:@"Authorization"];
     }
     

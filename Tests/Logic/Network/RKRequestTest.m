@@ -819,6 +819,16 @@ request.timeoutInterval = 1.0;
     assertThat(authorization, isNot(nilValue()));
 }
 
+- (void)testShouldBuildAProperAuthorizationHeaderForOAuth2 {
+    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:@"http://restkit.org/this?that=foo&bar=word"]];
+    request.authenticationType = RKRequestAuthenticationTypeOAuth2;
+    request.OAuth2AccessToken = @"12345";
+    [request prepareURLRequest];
+    NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
+    assertThat(authorization, isNot(nilValue()));
+    assertThat(authorization, is(equalTo(@"Bearer 12345")));
+}
+
 - (void)testOnDidLoadResponseBlockInvocation {
     RKURL *URL = [[RKTestFactory baseURL] URLByAppendingResourcePath:@"/200"];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
