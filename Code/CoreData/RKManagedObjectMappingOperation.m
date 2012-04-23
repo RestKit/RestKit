@@ -22,6 +22,7 @@
 #import "RKManagedObjectMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKDynamicObjectMappingMatcher.h"
+#import "RKManagedObjectStore.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -48,7 +49,7 @@
         primaryKeyAttribute = (NSString*)primaryKeyObject;
     }
     NSAssert(primaryKeyAttribute, @"Cannot connect relationship without primaryKeyAttribute");
-
+    
     RKObjectRelationshipMapping* relationshipMapping = [self.objectMapping mappingForRelationship:relationshipName];
     RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
     NSAssert(mapping, @"Attempted to connect relationship for keyPath '%@' without a relationship mapping defined.");
@@ -83,7 +84,7 @@
         if (relatedObject) {                
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {
-RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with primary key value '%@'", [[objectMapping entity] name], relationshipName, valueOfLocalPrimaryKeyAttribute);
+            RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with primary key value '%@'", [[objectMapping entity] name], relationshipName, valueOfLocalPrimaryKeyAttribute);
         }
         RKLogTrace(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
         [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
@@ -93,26 +94,34 @@ RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with p
 }
 
 - (void)connectRelationships {
-    if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
-        NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
-		RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", relationshipsAndPrimaryKeyAttributes);
-        for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
-            if (self.queue) {
-                RKLogTrace(@"Enqueueing relationship connection using operation queue");
-                __block RKManagedObjectMappingOperation *selfRef = self;
-                [self.queue addOperationWithBlock:^{
-                    [selfRef connectRelationship:relationshipName];
-                }];
-            } else {
-                [self connectRelationship:relationshipName];
-            }
+    NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
+    RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", relationshipsAndPrimaryKeyAttributes);
+    for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
+        if (self.queue) {
+            RKLogTrace(@"Enqueueing relationship connection using operation queue");
+            __block RKManagedObjectMappingOperation *selfRef = self;
+            [self.queue addOperationWithBlock:^{
+                [selfRef connectRelationship:relationshipName];
+            }];
+        } else {
+            [self connectRelationship:relationshipName];
         }
     }
 }
 
 - (BOOL)performMapping:(NSError **)error {
-    BOOL success = [super performMapping:error];
-    [self connectRelationships];
+    BOOL success = [super performMapping:error];    
+    if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
+        /**
+         NOTE: Processing the pending changes here ensures that the managed object context generates observable
+         callbacks that are important for maintaining any sort of cache that is consistent within a single
+         object mapping operation. As the MOC is only saved when the aggregate operation is processed, we must
+         manually invoke processPendingChanges to prevent recreating objects with the same primary key.
+         See https://github.com/RestKit/RestKit/issues/661
+         */
+        [[[(RKManagedObjectMapping *)self.objectMapping objectStore] managedObjectContextForCurrentThread] processPendingChanges];
+        [self connectRelationships];
+    }
     return success;
 }
 
