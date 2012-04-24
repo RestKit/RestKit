@@ -97,11 +97,13 @@
             
             //updated objects should be put, unless there's already a post or a delete
             if ([updatedObjects containsObject:object]) {
-                RKManagedObjectSyncQueue *existingRecord = [RKManagedObjectSyncQueue findFirstWithPredicate:[NSPredicate predicateWithFormat:@"objectIDString == %@", [[[object objectID] URIRepresentation] absoluteString], nil]];
+                NSString *objectId = [[[object objectID] URIRepresentation] absoluteString];
+                NSPredicate *objIdPredicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",objectId, nil];
+                RKManagedObjectSyncQueue *existingRecord = [RKManagedObjectSyncQueue findFirstWithPredicate:objIdPredicate];
                 //if object is modified but already has an entry for something, skip it
                 if (existingRecord) {
                     [newRecord deleteEntity];
-                     continue;
+                    continue;
                 } 
                 newRecord.syncStatus = [NSNumber numberWithInt:RKSyncStatusPut];
             }
@@ -110,7 +112,9 @@
             //if a post record exists, we can just delete locally
             //if a put exists without a post, we need to send the delete to the server
             if ([deletedObjects containsObject:object]) {
-                NSArray *existingRecords = [RKManagedObjectSyncQueue findAllWithPredicate:[NSPredicate predicateWithFormat:@"objectIDString == %@", [[[object objectID] URIRepresentation] absoluteString], nil]];
+                NSString *objectId = [[[object objectID] URIRepresentation] absoluteString];
+                NSPredicate *objIdPredicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",objectId, nil];
+                NSArray *existingRecords = [RKManagedObjectSyncQueue findAllWithPredicate:objIdPredicate];
                 BOOL newExists = NO;
                 
                 //remove existing records if we're sending a delete request
@@ -155,6 +159,7 @@
 }
 
 - (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
     }
@@ -166,6 +171,7 @@
 }
 
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
     [_queue removeAllObjects];
     
@@ -224,6 +230,7 @@
 }
 
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willPullWithSyncMode:syncMode andClass:objectClass];
     }
