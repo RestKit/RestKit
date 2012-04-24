@@ -292,8 +292,8 @@
         
         [self didFailLoadWithError:self.response.failureError];
 		return NO;
-    } else if ([self.response isNoContent]) {
-        // The No Content (204) response will never have a message body or a MIME Type.
+    } else if ([self.response isNoContent] || [self.response isNotModified]) {
+        // The No Content (204) and Not Modified (304) response will never have a message body or a MIME Type.
         id resultDictionary = nil;
         if (self.targetObject) {
             resultDictionary = [NSDictionary dictionaryWithObject:self.targetObject forKey:@""];
