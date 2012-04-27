@@ -20,7 +20,9 @@
 
 #import "NSBundle+RKAdditions.h"
 #import "NSString+RKAdditions.h"
+#if RestKit_UI_h
 #import "UIImage+RKAdditions.h"
+#endif
 #import "RKLog.h"
 #import "RKParser.h"
 #import "RKParserRegistry.h"
