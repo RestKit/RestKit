@@ -16,8 +16,9 @@ static NSString * const RKTestFactoryDefaultStoreFilename = @"RKTests.sqlite";
 
 @interface RKTestFactory ()
 
-@property(nonatomic, strong) RKURL *baseURL;
-@property(nonatomic, strong) NSMutableDictionary *factoryBlocks;
+@property (nonatomic, strong) RKURL *baseURL;
+@property (nonatomic, strong) NSString *managedObjectStoreFilename;
+@property (nonatomic, strong) NSMutableDictionary *factoryBlocks;
 
 + (RKTestFactory *)sharedFactory;
 - (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block;
@@ -30,8 +31,9 @@ static RKTestFactory *sharedFactory = nil;
 
 @implementation RKTestFactory
 
-@synthesize baseURL;
-@synthesize factoryBlocks;
+@synthesize baseURL = _baseURL;
+@synthesize managedObjectStoreFilename = _managedObjectStoreFilename;
+@synthesize factoryBlocks = _factoryBlocks;
 
 + (void)initialize
 {
@@ -57,6 +59,7 @@ static RKTestFactory *sharedFactory = nil;
     self = [super init];
     if (self) {
         self.baseURL = [RKURL URLWithString:@"http://127.0.0.1:4567"];
+        self.managedObjectStoreFilename = RKTestFactoryDefaultStoreFilename;
         self.factoryBlocks = [NSMutableDictionary new];
         [self defineDefaultFactories];
     }
@@ -104,8 +107,11 @@ static RKTestFactory *sharedFactory = nil;
     }];
     
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
+        NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) {
+            [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+        }
         RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
-        [store deletePersistentStore];
         
         return store;
     }];
@@ -131,6 +137,16 @@ static RKTestFactory *sharedFactory = nil;
 + (void)setBaseURLString:(NSString *)baseURLString
 {
     [[RKTestFactory sharedFactory] setBaseURL:[RKURL URLWithString:baseURLString]];
+}
+
++ (NSString *)managedObjectStoreFilename
+{
+   return [RKTestFactory sharedFactory].managedObjectStoreFilename;
+}
+
++ (void)setManagedObjectStoreFilename:(NSString *)managedObjectStoreFilename
+{
+    [RKTestFactory sharedFactory].managedObjectStoreFilename = managedObjectStoreFilename;
 }
 
 + (void)defineFactory:(NSString *)factoryName withBlock:(id (^)())block
