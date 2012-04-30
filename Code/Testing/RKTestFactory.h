@@ -9,6 +9,13 @@
 #import <RestKit/RestKit.h>
 
 /**
+ The default filename used for managed object stores created via the factory.
+ 
+ @see [RKTestFactory setManagedObjectStoreFilename:]
+ */
+extern NSString * const RKTestFactoryDefaultStoreFilename;
+
+/**
  Defines optional callback methods for extending the functionality of the
  factory. Implementation can be provided via a category.
 
