@@ -126,8 +126,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         }
 		NSMutableArray* allManagedObjectModels = [NSMutableArray arrayWithObject:nilOrManagedObjectModel];
 		_managedObjectModel = [[NSManagedObjectModel modelByMergingModels:allManagedObjectModels] retain];
-
-	_delegate = delegate;
+        _delegate = delegate;
 
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
@@ -136,7 +135,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 		[self createPersistentStoreCoordinator];
         self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
         
-        _cacheStrategy = [RKFetchRequestManagedObjectCache new];
+        _cacheStrategy = [RKInMemoryManagedObjectCache new];
 
         // Ensure there is a search word observer
         [RKSearchWordObserver sharedObserver];

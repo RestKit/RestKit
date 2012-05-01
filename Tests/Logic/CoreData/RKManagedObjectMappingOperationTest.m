@@ -352,7 +352,6 @@
     // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
     // keys are not guaranteed to return in any particular order
     [mappingProvider setMapping:parentMapping forKeyPath:@"parents"];
-    [mappingProvider setMapping:childMapping forKeyPath:@"children"];
 
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"ConnectingParents.json"];
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
@@ -361,6 +360,62 @@
     assertThat(children, hasCountOf(1));
     RKChild *child = [children lastObject];
     assertThat(child.father, is(notNilValue()));
+}
+
+- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithFetchRequestMappingCache {
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    store.cacheStrategy = [RKFetchRequestManagedObjectCache new];    
+    
+    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    childMapping.primaryKeyAttribute = @"childID";
+    [childMapping mapAttributes:@"name", @"childID", nil];
+    
+    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    [parentMapping mapAttributes:@"parentID", @"name", nil];
+    parentMapping.primaryKeyAttribute = @"parentID";
+    [parentMapping mapRelationship:@"children" withMapping:childMapping];
+    
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
+    // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
+    // keys are not guaranteed to return in any particular order
+    [mappingProvider setObjectMapping:parentMapping forKeyPath:@"parents"];
+    
+    NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"parents_and_children.json"];
+    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
+    [mapper performMapping];
+    
+    NSUInteger parentCount = [RKParent count:nil];
+    NSUInteger childrenCount = [RKChild count:nil];
+    assertThatInteger(parentCount, is(equalToInteger(2)));
+    assertThatInteger(childrenCount, is(equalToInteger(4)));
+}
+
+- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithInMemoryMappingCache {
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    store.cacheStrategy = [RKInMemoryManagedObjectCache new];    
+    
+    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    childMapping.primaryKeyAttribute = @"childID";
+    [childMapping mapAttributes:@"name", @"childID", nil];
+    
+    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    [parentMapping mapAttributes:@"parentID", @"name", nil];
+    parentMapping.primaryKeyAttribute = @"parentID";
+    [parentMapping mapRelationship:@"children" withMapping:childMapping];
+    
+    RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
+    // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
+    // keys are not guaranteed to return in any particular order
+    [mappingProvider setObjectMapping:parentMapping forKeyPath:@"parents"];
+    
+    NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"parents_and_children.json"];
+    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
+    [mapper performMapping];
+    
+    NSUInteger parentCount = [RKParent count:nil];
+    NSUInteger childrenCount = [RKChild count:nil];
+    assertThatInteger(parentCount, is(equalToInteger(2)));
+    assertThatInteger(childrenCount, is(equalToInteger(4)));
 }
 
 @end

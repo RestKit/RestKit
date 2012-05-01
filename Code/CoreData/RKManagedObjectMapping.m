@@ -160,6 +160,8 @@
             NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
             if (keyPathForPrimaryKeyElement) {
                 primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
+            } else {
+                RKLogWarning(@"Unable to find source attribute for primaryKeyAttribute '%@': unable to find existing object instances by primary key.", primaryKeyAttribute);
             }
         }        
     }

@@ -38,6 +38,8 @@
 		250DF22D14C5190E0001DEFA /* RKOrderedDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 250DF22914C5190E0001DEFA /* RKOrderedDictionary.m */; };
 		250DF25F14C680F90001DEFA /* RKObjectMappingProvider+Contexts.h in Headers */ = {isa = PBXBuildFile; fileRef = 250DF25E14C680F90001DEFA /* RKObjectMappingProvider+Contexts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		250DF26014C680F90001DEFA /* RKObjectMappingProvider+Contexts.h in Headers */ = {isa = PBXBuildFile; fileRef = 250DF25E14C680F90001DEFA /* RKObjectMappingProvider+Contexts.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25119FB6154A34B400C6BC58 /* parents_and_children.json in Resources */ = {isa = PBXBuildFile; fileRef = 25119FB5154A34B400C6BC58 /* parents_and_children.json */; };
+		25119FB7154A34B400C6BC58 /* parents_and_children.json in Resources */ = {isa = PBXBuildFile; fileRef = 25119FB5154A34B400C6BC58 /* parents_and_children.json */; };
 		2513504E14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2513504F14B8FE6B00A7E893 /* RKConfigurationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160D1A14564E810060A5C5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25160D1914564E810060A5C5 /* Foundation.framework */; };
@@ -766,6 +768,7 @@
 		250DF22814C5190E0001DEFA /* RKOrderedDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKOrderedDictionary.h; sourceTree = "<group>"; };
 		250DF22914C5190E0001DEFA /* RKOrderedDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKOrderedDictionary.m; sourceTree = "<group>"; };
 		250DF25E14C680F90001DEFA /* RKObjectMappingProvider+Contexts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKObjectMappingProvider+Contexts.h"; sourceTree = "<group>"; };
+		25119FB5154A34B400C6BC58 /* parents_and_children.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = parents_and_children.json; sourceTree = "<group>"; };
 		2513504D14B8FE6B00A7E893 /* RKConfigurationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKConfigurationDelegate.h; sourceTree = "<group>"; };
 		25160D1614564E810060A5C5 /* libRestKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRestKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		25160D1914564E810060A5C5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1722,6 +1725,7 @@
 				25160FE71456F2330060A5C5 /* user.json */,
 				25160FE81456F2330060A5C5 /* users.json */,
 				25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */,
+				25119FB5154A34B400C6BC58 /* parents_and_children.json */,
 			);
 			path = JSON;
 			sourceTree = "<group>";
@@ -2511,6 +2515,7 @@
 				25B6E9BE14CF829400B1E881 /* OCMock-Info.plist in Resources */,
 				252EFB2814DA0689004863C8 /* NakedEvents.json in Resources */,
 				25CAAA9415254E7800CAE5D7 /* ArrayOfHumans.json in Resources */,
+				25119FB6154A34B400C6BC58 /* parents_and_children.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2571,6 +2576,7 @@
 				25B6E9BF14CF829400B1E881 /* OCMock-Info.plist in Resources */,
 				252EFB2914DA0689004863C8 /* NakedEvents.json in Resources */,
 				25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */,
+				25119FB7154A34B400C6BC58 /* parents_and_children.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
