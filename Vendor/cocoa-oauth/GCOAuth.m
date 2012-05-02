@@ -180,9 +180,11 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
     
     // construct request url
     NSURL *URL = self.URL;
+    
+    
     NSString *URLString = [NSString stringWithFormat:@"%@://%@%@",
                            [[URL scheme] lowercaseString],
-                           [[URL host] lowercaseString],
+                           [[GCOAuth hostAndPortFromURL:URL] lowercaseString],
                            [[URL path] lowercaseString]];
     
     // create components
@@ -208,6 +210,17 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
 }
 
 #pragma mark - class methods
++ (NSString *)hostAndPortFromURL:(NSURL *)url {
+    // include port unless it is 80 or 443:
+    // http://oauth.net/core/1.0a/#rfc.section.9.1.2
+   
+    if ([url port] != nil && [[url port] intValue] != 80 && [[url port] intValue] != 443) {
+        return [NSString stringWithFormat:@"%@:%@", [url host], [url port]];
+    } else {
+        return [url host];
+    }
+}
+
 + (void)setUserAgent:(NSString *)agent {
     [GCOAuthUserAgent release];
     GCOAuthUserAgent = [agent copy];

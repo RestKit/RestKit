@@ -318,12 +318,14 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
         else 
             parameters = [_URL queryParameters];
-            
+        
+        NSString *hostAndPort = [GCOAuth hostAndPortFromURL:_URL];
+        
         if (self.method == RKRequestMethodPUT)
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                 PUTParameters:parameters
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:hostAndPort
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
@@ -332,7 +334,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                POSTParameters:parameters
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:hostAndPort
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
@@ -341,7 +343,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                 GETParameters:[_URL queryParameters]
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:hostAndPort
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
