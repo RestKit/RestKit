@@ -31,6 +31,19 @@
 
 #import <Foundation/Foundation.h>
 
+@interface  NSURL  (GCOAuthURL)
+
+/*
+ Get host:port from URL unless port is 80 or 443 (http://tools.ietf.org/html/rfc5849#section-3.4.1.2). Otherwis reurn only host.
+ */
+- (NSString *)hostAndPort;
+
+/*
+ Get unmodified path component. [URL path] decodes % symbols and strips trailing slash.
+ */
+- (NSString *)originalPath;
+@end
+
 /*
  This OAuth implementation doesn't cover the whole spec (eg. it’s HMAC only).
  But you'll find it works with almost all the OAuth implementations you need
