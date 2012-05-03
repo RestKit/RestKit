@@ -33,6 +33,14 @@ typedef enum {
     RKSyncStatusDelete
 } RKSyncStatus;
 
+/**
+ Sync strategy sets the behavior of the RKSyncManager queue for this mapping.
+ */
+typedef enum {
+  RKSyncStrategyBatch,        /** RKSyncManager will try to reduce network requests by batching similar requests (where possible) & locally removing any objects that never were persisted remotely in the first place. */
+  RKSyncStrategyProxyOnly,    /** RKSyncManager will not perform any batching; when network access is available, it will send all queued requests in the order it received them. */
+} RKSyncStrategy;
+
 @class RKSyncManager;
 
 /**
@@ -87,6 +95,7 @@ typedef enum {
  */
 @interface RKSyncManager : NSObject <RKObjectLoaderDelegate> {
     NSMutableArray *_queue;
+    NSMutableDictionary *_strategies;
 }
 
 /**
@@ -122,19 +131,42 @@ typedef enum {
  */
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
+/**
+ Sets the default RKSyncStrategy to be used with all objects, unless they have been specifically
+ registered with `setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass`.
+ */
+- (void)setDefaultSyncStrategy:(RKSyncStrategy)syncStrategy;
 
 /**
- Conveniance method for syncing objects with `syncMode = RKSyncModeManual`
+ Returns the current default RKSyncStrategy.  This strategy will be applied to any class that has not
+ been registered with `setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass`.
+ */
+@property (readonly) RKSyncStrategy defaultSyncStrategy;
+
+/**
+ Sets the RKSyncStrategy for a Class.  If Class is nil, this changes the default value RKSyncManager
+ will use for all classes (same effect as `setDefaultSyncStrategy:`).
+ */
+- (void)setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass;
+
+/**
+ Returns the current RKSyncStrategy for a Class.  If no strategy has been set for this class, the 
+ default value of RKSyncStrategyOptimize will be returned.
+ */
+- (RKSyncStrategy) syncStrategyForClass:(Class)objectClass;
+
+/**
+ Convenience method for syncing objects with `syncMode = RKSyncModeManual`
  */
 - (void)sync;
 
 /**
- Conveniance method for pushing objects with `syncMode = RKSyncModeManual`
+ Convenience method for pushing objects with `syncMode = RKSyncModeManual`
  */
 - (void)push;
 
 /**
- Conveniance method for pulling objects with `syncMode = RKSyncModeManual`
+ Convenience method for pulling objects with `syncMode = RKSyncModeManual`
  */
 - (void)pull;
 

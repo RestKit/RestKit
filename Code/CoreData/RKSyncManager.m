@@ -26,15 +26,29 @@
 
 //Shortcut for transparent syncing; used for notification call
 - (void)transparentSync;
+
+// Helper method for getting the unique ID of a managed object as a string
+- (NSString *)IDStringForObject:(NSManagedObject *)object;
+
+- (BOOL)addQueueItemForObject:(NSManagedObject *)object syncStatus:(RKSyncStatus)syncStatus syncMode:(RKSyncMode)syncMode;
+- (NSArray *)queueItemsForObject:(NSManagedObject *)object;
+// Returns YES if we should create a queue object for this object on update
+- (BOOL)shouldUpdateObject:(NSManagedObject *)object;
 @end
 
 @implementation RKSyncManager
 
-@synthesize objectManager = _objectManager, delegate = _delegate;
+@synthesize objectManager = _objectManager, delegate = _delegate, defaultSyncStrategy = _defaultSyncStrategy;
+
+#pragma mark - Init & Dealloc
 
 - (id)initWithObjectManager:(RKObjectManager*)objectManager {
     self = [super init];
-	if (self) {
+    if (self) {
+        // By default this class will batch similar objects together & reduce network calls if possible.
+        _defaultSyncStrategy = RKSyncStrategyBatch;
+        _strategies = [[NSMutableDictionary alloc] init];
+    
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
 
@@ -62,16 +76,53 @@
     [_queue release];
     _queue = nil;
     
+    [_strategies release];
+    _strategies = nil;
+  
     _delegate = nil;
     
     [super dealloc];
 }
 
-- (NSString *)IDStringForObject:(NSManagedObject *)object {
-    return [[[object objectID] URIRepresentation] absoluteString];
+#pragma - Queue Strategies
+
+- (void)setDefaultSyncStrategy:(RKSyncStrategy)syncStrategy {
+    return [self setSyncStrategy:syncStrategy forClass:nil];
+}
+
+- (void)setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass {
+    NSString *className = NSStringFromClass(objectClass);
+    if (className) {
+        // Check that we don't have any queue items with this object type -- that really could cause problems
+        for (RKManagedObjectSyncQueue *queueItem in _queue) {
+            NSAssert(([queueItem.className isEqualToString:className] == NO),@"Cannot set RKSyncStrategy on a class that already has items in the queue.");
+        }
+      
+        [_strategies setObject:[NSNumber numberWithInt:syncStrategy] forKey:className];
+    }
+    else {
+        // Just set the default; they passed a nil class reference
+        _defaultSyncStrategy = syncStrategy;
+    }
+}
+
+- (RKSyncStrategy) syncStrategyForClass:(Class)objectClass {
+    RKSyncStrategy strategy = _defaultSyncStrategy;
+    NSString *className = NSStringFromClass(objectClass);
+    if (className) {
+        NSNumber *value = [_strategies objectForKey:className];
+        if (value) {
+            strategy = (RKSyncStrategy)[value integerValue];
+        }
+    }
+    return strategy;
 }
 
 #pragma mark - Queue Management
+
+- (NSString *)IDStringForObject:(NSManagedObject *)object {
+  return [[[object objectID] URIRepresentation] absoluteString];
+}
 
 - (BOOL)addQueueItemForObject:(NSManagedObject *)object syncStatus:(RKSyncStatus)syncStatus syncMode:(RKSyncMode)syncMode {
     RKManagedObjectSyncQueue *newQueueItem = [RKManagedObjectSyncQueue object];
@@ -100,68 +151,77 @@
     return [RKManagedObjectSyncQueue findAllWithPredicate:objIdPredicate];
 }
 
+// updated objects should be put, unless there's already a post or a delete
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object {
     BOOL shouldUpdate = YES;
-    // Find any existing records on the queue
-    NSArray *queueItems = [self queueItemsForObject:object];
-    for (RKManagedObjectSyncQueue *queuedRequest in queueItems) {
-      // Quick return if we already have an update request in the sync queue
-      if ([queuedRequest.syncStatus intValue] == RKSyncStatusPut) {
-        RKLogTrace(@"'Update' item exists in sync queue for object: %@", object);
-        shouldUpdate = NO;
+    RKSyncStrategy strategy = [self syncStrategyForClass:[object class]];
+    if (strategy == RKSyncStrategyBatch) {
+      // Find records on the queue - if an update already exists, there's no need to store another.
+      NSArray *queueItems = [self queueItemsForObject:object];
+      for (RKManagedObjectSyncQueue *queuedRequest in queueItems) {
+        if ([queuedRequest.syncStatus intValue] == RKSyncStatusPut) {
+          RKLogTrace(@"'Update' item exists in sync queue for object: %@", object);
+          shouldUpdate = NO;
+        }
       }
     }
     return shouldUpdate;
 }
 
-- (BOOL) deleteQueueItemsForObject:(NSManagedObject *)object
-{
-  // Check if there is something on the queue
-  NSArray *queueItems = [self queueItemsForObject:object];
-
-  // Assume that it exists on the server until we find out otherwise
-  BOOL existsOnServer = YES;
-
-  // Remove any preceding queue items for this object, since we're just going to delete it anyway with this request.
-  for (RKManagedObjectSyncQueue *queuedRequest in queueItems)
-  {
-    if ([queuedRequest.syncStatus intValue] == RKSyncStatusPost)
-    {
-      RKLogTrace(@"Object's lifecycle exists solely in sync queue, deleting w/o sync: %@", object);
-      existsOnServer = NO;
+// Check the sync strategy for this object - if it's batch, we may not send this.
+- (BOOL)shouldDeleteObject:(NSManagedObject *)object {
+    BOOL shouldDelete = YES;
+    RKSyncStrategy strategy = [self syncStrategyForClass:[object class]];
+    if (strategy == RKSyncStrategyBatch) {
+        //deleted objects should remove other entries
+        //if a post record exists, we can just delete locally
+        //otherwise we need to send the delete to the server
+        shouldDelete = [self deleteQueueItemsForObject:object];
     }
-    [queuedRequest deleteEntity];
-  }
-  
-  // Return YES if there is a need to create a DELETE queue item
-  return existsOnServer;
+    return shouldDelete;
 }
 
+- (BOOL) deleteQueueItemsForObject:(NSManagedObject *)object
+{
+    // Check if there is something on the queue
+    NSArray *queueItems = [self queueItemsForObject:object];
+
+    // Assume that it exists on the server until we find out otherwise
+    BOOL existsOnServer = YES;
+
+    // Remove any preceding queue items for this object, since we're just going to delete it anyway with this request.
+    for (RKManagedObjectSyncQueue *queuedRequest in queueItems)
+    {
+        if ([queuedRequest.syncStatus intValue] == RKSyncStatusPost)
+        {
+            RKLogTrace(@"Object's lifecycle exists solely in sync queue, deleting w/o sync: %@", object);
+            existsOnServer = NO;
+        }
+        [queuedRequest deleteEntity];
+    }
+    
+    // Return YES if there is a need to create a DELETE queue item
+    return existsOnServer;
+}
+
+// Helper method that translates a "changeType" into the proper logic for that type of change.
 - (BOOL) syncObject:(NSManagedObject *)object syncMode:(RKSyncMode)mode changeType:(NSString *)changeType
 {
-  BOOL shouldSync = NO;
-  
-  if ([changeType isEqualToString:NSInsertedObjectsKey])
-  {
-    shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusPost syncMode:mode];
-  }
-  else if ([changeType isEqualToString:NSDeletedObjectsKey])
-  {
-    //deleted objects should remove other entries
-    //if a post record exists, we can just delete locally
-    //otherwise we need to send the delete to the server
-    BOOL existsOnServer = [self deleteQueueItemsForObject:object];
-    if (existsOnServer)
+    BOOL shouldSync = NO;
+    
+    if ([changeType isEqualToString:NSInsertedObjectsKey])
     {
-      shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusDelete syncMode:mode];
+        shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusPost syncMode:mode];
     }
-  }
-  //updated objects should be put, unless there's already a post or a delete
-  else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
-  {
-      shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusPut syncMode:mode];
-  }
-  return shouldSync;
+    else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object])
+    {
+        shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusDelete syncMode:mode];
+    }
+    else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
+    {
+        shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusPut syncMode:mode];
+    }
+    return shouldSync;
 }
 
 #pragma mark - NSManagedObjectContextDidSaveNotification Observer
