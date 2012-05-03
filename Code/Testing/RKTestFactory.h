@@ -9,6 +9,13 @@
 #import <RestKit/RestKit.h>
 
 /**
+ The default filename used for managed object stores created via the factory.
+ 
+ @see [RKTestFactory setManagedObjectStoreFilename:]
+ */
+extern NSString * const RKTestFactoryDefaultStoreFilename;
+
+/**
  Defines optional callback methods for extending the functionality of the
  factory. Implementation can be provided via a category.
 
@@ -100,9 +107,25 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
  Sets the base URL for the factory to a new value by constructing an RKURL
  from the given string.
  
- @param A string containing the URL to set as the base URL for the factory.
+ @param baseURLString A string containing the URL to set as the base URL for the factory.
  */
 + (void)setBaseURLString:(NSString *)baseURLString;
+
+/**
+ Returns the filename used when constructing instances of RKManagedObjectStore
+ via the factory.
+ 
+ @return A string containing the filename to use when creating a managed object store.
+ */
++ (NSString *)managedObjectStoreFilename;
+
+/**
+ Sets the filename to use when the factory constructs an instance of RKManagedObjectStore.
+ 
+ @param managedObjectStoreFilename A string containing the filename to use when creating managed object 
+ store instances.
+ */
++ (void)setManagedObjectStoreFilename:(NSString *)managedObjectStoreFilename;
 
 ///-----------------------------------------------------------------------------
 /// @name Defining & Instantiating Objects from Factories
