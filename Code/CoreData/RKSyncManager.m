@@ -176,12 +176,13 @@
         //deleted objects should remove other entries
         //if a post record exists, we can just delete locally
         //otherwise we need to send the delete to the server
-        shouldDelete = [self deleteQueueItemsForObject:object];
+        shouldDelete = [self removeExistingQueueItemsForObject:object];
     }
     return shouldDelete;
 }
 
-- (BOOL) deleteQueueItemsForObject:(NSManagedObject *)object
+// Removes all existing queue items for an object.  Return YES if there was a POST request in the queue.
+- (BOOL) removeExistingQueueItemsForObject:(NSManagedObject *)object
 {
     // Check if there is something on the queue
     NSArray *queueItems = [self queueItemsForObject:object];
@@ -190,10 +191,8 @@
     BOOL existsOnServer = YES;
 
     // Remove any preceding queue items for this object, since we're just going to delete it anyway with this request.
-    for (RKManagedObjectSyncQueue *queuedRequest in queueItems)
-    {
-        if ([queuedRequest.syncStatus intValue] == RKSyncStatusPost)
-        {
+    for (RKManagedObjectSyncQueue *queuedRequest in queueItems) {
+        if ([queuedRequest.syncStatus intValue] == RKSyncStatusPost) {
             RKLogTrace(@"Object's lifecycle exists solely in sync queue, deleting w/o sync: %@", object);
             existsOnServer = NO;
         }
