@@ -8,12 +8,6 @@
 
 #import "RKTestFactory.h"
 
-NSString * const RKTestFactoryDefaultNamesClient = @"client";
-NSString * const RKTestFactoryDefaultNamesObjectManager = @"objectManager";
-NSString * const RKTestFactoryDefaultNamesMappingProvider = @"mappingProvider";
-NSString * const RKTestFactoryDefaultNamesManagedObjectStore = @"managedObjectStore";
-NSString * const RKTestFactoryDefaultStoreFilename = @"RKTests.sqlite";
-
 @interface RKTestFactory ()
 
 @property (nonatomic, strong) RKURL *baseURL;
