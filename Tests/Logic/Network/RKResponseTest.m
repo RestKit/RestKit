@@ -295,4 +295,17 @@
     assertThat([loader.response.allHeaderFields objectForKey:@"Location"], is(equalTo(@"/redirection/target")));
 }
 
+- (void)testThatLoadingInvalidURLDoesNotCrashApp {
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://biz.gg"];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKClient clientWithBaseURL:URL];
+    
+    RKRequest *request = [client requestWithResourcePath:@"/invalid"];
+    request.method = RKRequestMethodGET;
+    request.delegate = loader;
+    
+    [request sendAsynchronously];
+    [loader waitForResponse];
+}
+
 @end

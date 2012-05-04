@@ -256,4 +256,18 @@
     assertThatUnsignedInteger(queue.loadingCount, is(equalToInt(0)));
 }
 
+- (void)testThatSendingRequestToInvalidURLDoesNotGetSentTwice {
+    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
+    RKRequestQueue *queue = [RKRequestQueue requestQueue];
+    NSURL *URL = [NSURL URLWithString:@"http://bix.gg/RKRequestQueueExample"];
+    RKRequest *request = [RKRequest requestWithURL:URL];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    id mockResponseLoader = [OCMockObject partialMockForObject:responseLoader];
+    [[[mockResponseLoader expect] andForwardToRealObject] request:request didFailLoadWithError:OCMOCK_ANY];
+    request.delegate = responseLoader;
+    [queue addRequest:request];
+    [queue start];
+    [mockResponseLoader waitForResponse];
+}
+
 @end

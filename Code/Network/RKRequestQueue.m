@@ -499,8 +499,8 @@ static const NSTimeInterval kFlushDelay = 0.3;
     if ([_delegate respondsToSelector:@selector(requestQueue:didFailRequest:withError:)]) {
         [_delegate requestQueue:self didFailRequest:request withError:error];
     }
-
-    [self removeLoadingRequest:request];
+    
+    [self removeRequest:request];
     [self loadNextInQueue];
 }
 
