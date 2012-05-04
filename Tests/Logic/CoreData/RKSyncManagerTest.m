@@ -11,6 +11,7 @@
 
 // For model testing
 #import "RKHuman.h"
+#import "RKCat.h"
 
 @interface RKSyncManagerTest : RKTestCase
 @property (strong) RKManagedObjectStore *store;
@@ -263,22 +264,6 @@
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
-#pragma mark - Network
-
-- (void)testStartsSyncAfterReachabilityIsEstablished {
-  
-}
-
-- (void)testRequestQueueExecutesSerially {
-    // TODO:
-    // In proxy strategy, we just want to send the requests one by one, just as they would have happened otherwise.
-    // In batch strategy, we may want to do some clever batching, etc., but that doesn't change the fact that there
-    // may be some really nasty issues if 2 related are changed simultaneously (at the moment we have no way of
-    // understanding the relationships between Core Data objects)
-    // To avoid all hell breaking loose, it's probably better to limit to 1 request a time (whether that request is a
-    // single object or a complex collection, though, is up to the Sync Manager).
-}
-
 #pragma mark - Sync Direction
 
 - (void) testBothRequestsWhenSyncDirectionIsBoth {
@@ -327,20 +312,59 @@
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
+-(void)testDifferentObjectsShouldNotInterfereWithSyncDirections {
+    [self.manager.syncManager setSyncDirection:RKSyncDirectionPush forClass:[RKHuman class]];
+    [self.manager.syncManager setSyncDirection:RKSyncDirectionPull forClass:[RKCat class]];
+  
+    // Make a new cat & update a human
+    RKCat *newCat = [RKCat object];
+    newCat.name = @"Nyan";
+    self.seededHuman.name = @"Blake Watters";
+    [self.manager.objectStore save:nil];
+
+    // 1 items in the queue -- we are pushing the human.
+    NSArray *queueItems = [RKManagedObjectSyncQueue findAll];
+    assertThat(queueItems,hasCountOf(1));
+    RKManagedObjectSyncQueue *item = [queueItems objectAtIndex:0];
+    assertThat(item.className,equalTo(@"RKHuman"));
+  
+    // And there should be 2 requests - a pull AND a push.
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(2));
+}
+
 #pragma mark - Delegate Testing
 
 - (void)test {
   
 }
 /*
+ 
+ - (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
+ - (void)syncManager:(RKSyncManager *)syncManager willSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+ - (void)syncManager:(RKSyncManager *)syncManager didSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+ - (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
+ - (void)syncManager:(RKSyncManager *)syncManager willPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+ - (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
+ - (void)syncManager:(RKSyncManager *)syncManager didPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+ */
 
-- (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
-- (void)syncManager:(RKSyncManager *)syncManager willSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
-- (void)syncManager:(RKSyncManager *)syncManager didSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
-- (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
-- (void)syncManager:(RKSyncManager *)syncManager willPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
-- (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
-- (void)syncManager:(RKSyncManager *)syncManager didPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
-*/
+
+
+#pragma mark - Network
+
+- (void)testStartsSyncAfterReachabilityIsEstablished {
+  
+}
+
+- (void)testRequestQueueExecutesSerially {
+  // TODO:
+  // In proxy strategy, we just want to send the requests one by one, just as they would have happened otherwise.
+  // In batch strategy, we may want to do some clever batching, etc., but that doesn't change the fact that there
+  // may be some really nasty issues if 2 related are changed simultaneously (at the moment we have no way of
+  // understanding the relationships between Core Data objects)
+  // To avoid all hell breaking loose, it's probably better to limit to 1 request a time (whether that request is a
+  // single object or a complex collection, though, is up to the Sync Manager).
+}
 
 @end
