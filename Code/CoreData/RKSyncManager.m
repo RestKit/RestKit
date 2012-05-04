@@ -75,6 +75,9 @@
                                                  selector:@selector(transparentSync) 
                                                      name:RKReachabilityDidChangeNotification 
                                                    object:self.objectManager.client.reachabilityObserver];
+      
+        // While the above observer handles syncing from now on, we also need to run transparentSync once
+        [self transparentSync];
 	}
 	return self;
 }
