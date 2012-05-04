@@ -10,11 +10,9 @@
 		2080057C14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; };
 		2080057D14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
 		2080057F14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
-		2080058014ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
 		2080058514ED8C240052EB8C /* RKSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080058214ED8C240052EB8C /* RKSyncManager.h */; };
 		2080058614ED8C240052EB8C /* RKSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080058314ED8C240052EB8C /* RKSyncManager.m */; };
 		2080058814ED8C240052EB8C /* RKSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080058314ED8C240052EB8C /* RKSyncManager.m */; };
-		2080058914ED8C240052EB8C /* RKSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080058314ED8C240052EB8C /* RKSyncManager.m */; };
 		2501405315366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		25055B8414EEF32A00B9C4DD /* RKMappingTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8014EEF32A00B9C4DD /* RKMappingTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25055B8614EEF32A00B9C4DD /* RKMappingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25055B8114EEF32A00B9C4DD /* RKMappingTest.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -2991,8 +2989,6 @@
 				252EFB0914D98F4D004863C8 /* RKSearchableManagedObjectTest.m in Sources */,
 				252EFB0B14D98F4D004863C8 /* RKSearchWordObserverTest.m in Sources */,
 				252EFB0E14D98F76004863C8 /* RKMutableBlockDictionaryTest.m in Sources */,
-				2080058014ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */,
-				2080058914ED8C240052EB8C /* RKSyncManager.m in Sources */,
 				49A9D52715537B3600C4005B /* RKSyncManagerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
