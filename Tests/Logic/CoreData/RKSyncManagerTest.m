@@ -17,12 +17,14 @@
 @property (strong) RKObjectManager *manager;
 @property (strong) RKHuman *seededHuman;
 @property (strong) RKManagedObjectMapping *transparentSyncMapping;
+@property (strong) RKManagedObjectMapping *manualSyncMapping;
 @property (strong) RKManagedObjectMapping *noSyncMapping;
+@property (strong) RKManagedObjectMapping *intervalSyncMapping;
 @end
 
 @implementation RKSyncManagerTest
 @synthesize store, manager, seededHuman;
-@synthesize noSyncMapping, transparentSyncMapping;
+@synthesize noSyncMapping, manualSyncMapping, transparentSyncMapping, intervalSyncMapping;
 
 - (void)setUp {
     [RKTestFactory setUp];
@@ -38,14 +40,33 @@
     self.seededHuman = human;
   
     // Transparent sync mapping for RKHuman
-    self.transparentSyncMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    self.transparentSyncMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:self.store];
     self.transparentSyncMapping.syncMode = RKSyncModeTransparent;
   
     // Regular mapping w/ no sync
-    self.noSyncMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    self.noSyncMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:self.store];
+  
+    // Manual sync
+    self.manualSyncMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:self.store];
+    self.manualSyncMapping.syncMode = RKSyncModeManual;
+  
+    // Interval sync
+    self.intervalSyncMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:self.store];
+    self.intervalSyncMapping.syncMode = RKSyncModeInterval;
+  
+    // Set up the routing
+    [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodGET];
+    [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodPUT];
+    [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodPOST];
+    [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodDELETE];
+  
+    // Get a serialization mapping - we're going to need this to get the requests out the door
+    RKManagedObjectMapping *serializationMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]
+                                                                      inManagedObjectStore:self.store];
   
     // Most of these test methods use this mapping - the test will need to switch explicitly otherwise
     [self.manager.mappingProvider setMapping:self.transparentSyncMapping forKeyPath:@"/human"];
+    [self.manager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKHuman class]];
 }
 
 - (void)tearDown {
@@ -177,6 +198,68 @@
     [human deleteEntity];
     [self.manager.objectStore save:nil];
     assertThat([RKManagedObjectSyncQueue findAll],hasCountOf(2));
+}
+
+#pragma mark - Sync Mode Tests
+
+- (void)testTransparentSyncModeDoesStartAutomatically {
+  // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
+  RKHuman *human = [RKHuman object];
+  human.name = @"Eric Cordell";
+  human.railsID = [NSNumber numberWithInt:2];
+  [self.manager.objectStore save:nil];
+  
+  // There should already be a request in the queue w/o us doing anything.
+  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  assertThat(numRequests,equalToUnsignedInt(1));
+}
+
+- (void)testManualSyncModeDoesNotStartUntilPushIsCalled {
+  [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/human"];
+  
+  // Create a new human
+  RKHuman *human = [RKHuman object];
+  human.name = @"Eric Cordell";
+  human.railsID = [NSNumber numberWithInt:2];
+  [self.manager.objectStore save:nil];
+  
+  // We are in manual sync mode, so no requests should happen automatically.
+  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  assertThat(numRequests,equalToUnsignedInt(0));
+  
+  // Now after a manual "push" call it should have 1
+  [self.manager.syncManager push];
+  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  assertThat(numRequests,equalToUnsignedInt(1));
+}
+
+- (void)testIntervalSyncModeStartsAfterInterval {
+  [self.manager.mappingProvider setMapping:self.intervalSyncMapping forKeyPath:@"/human"];
+
+  // Create a new human
+  RKHuman *human = [RKHuman object];
+  human.name = @"Eric Cordell";
+  human.railsID = [NSNumber numberWithInt:2];
+  [self.manager.objectStore save:nil];
+  
+  // We are in interval sync mode, so no requests should happen automatically -- should wait for the interval
+  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  assertThat(numRequests,equalToUnsignedInt(0));
+  
+  // Change the timer to be quite quick - 0.5 seconds
+  [self.manager.syncManager setSyncInterval:0.5];
+
+  // Go back to the run loop for 1.5 seconds - should be plenty.
+  [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
+  
+  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  assertThat(numRequests,equalToUnsignedInt(1));
+}
+
+#pragma mark - Network
+
+- (void)testRequestQueueIsSerial {
+  
 }
 
 @end
