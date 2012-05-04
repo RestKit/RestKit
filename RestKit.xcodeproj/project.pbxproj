@@ -677,7 +677,6 @@
 		25FABED214E3796B00E609E7 /* RKTestNotificationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 252EFAFC14D8EB30004863C8 /* RKTestNotificationObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FABED614E37A2B00E609E7 /* RKTestResponseLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25FABED714E37A2B00E609E7 /* RKTestResponseLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FABED814E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */; };
 		25FABED914E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */; };
 		49A66B0C14CEFB0400A6F062 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B0914CEFB0400A6F062 /* XMLReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -690,6 +689,7 @@
 		49A66B1514CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B1114CF03CA00A6F062 /* RKXMLParserXMLReader.m */; };
 		49A9D52615537B3600C4005B /* RKSyncManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A9D52515537B3600C4005B /* RKSyncManagerTest.m */; };
 		49A9D52715537B3600C4005B /* RKSyncManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A9D52515537B3600C4005B /* RKSyncManagerTest.m */; };
+		49A9D538155384B000C4005B /* RKTestResponseLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */; };
 		49D2759D14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49D2759914C9EF1E0090845D /* ISO8601DateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49D2759E14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49D2759914C9EF1E0090845D /* ISO8601DateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49D2759F14C9EF1E0090845D /* ISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D2759A14C9EF1E0090845D /* ISO8601DateFormatter.m */; };
@@ -2318,10 +2318,9 @@
 				25B6EA0214CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
 				252EFB1C14D9A7CB004863C8 /* NSBundle+RKAdditions.h in Headers */,
 				252EFB2614D9B6F2004863C8 /* Testing.h in Headers */,
-				25FABED714E37A2B00E609E7 /* RKTestResponseLoader.h in Headers */,
+				49A9D538155384B000C4005B /* RKTestResponseLoader.h in Headers */,
 				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
 				25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */,
-				25FABED714E37A2B00E609E7 /* RKTestResponseLoader.h in Headers */,
 				2080057C14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */,
 				2080058514ED8C240052EB8C /* RKSyncManager.h in Headers */,
 			);
