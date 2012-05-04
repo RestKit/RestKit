@@ -236,6 +236,26 @@
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
+- (void)testManualSyncModeOnlyPushesWhatItIsTold {
+    [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/human"];
+    
+    // Create a new human
+    RKHuman *human = [RKHuman object];
+    human.name = @"Eric Cordell";
+    human.railsID = [NSNumber numberWithInt:2];
+    [self.manager.objectStore save:nil];
+
+    // Here we're syncing cats, not humans
+    [self.manager.syncManager syncObjectsOfClass:[RKCat class]];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(0));
+
+    // Let's try that again with humans - push & pull request expected
+    [self.manager.syncManager syncObjectsOfClass:[RKHuman class]];
+    numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(2));
+}
+
 - (void)testIntervalSyncModeStartsAfterInterval {
     [self.manager.mappingProvider setMapping:self.intervalSyncMapping forKeyPath:@"/human"];
     [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPush];
@@ -339,22 +359,51 @@
   
 }
 /*
- 
- - (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
  - (void)syncManager:(RKSyncManager *)syncManager willSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
  - (void)syncManager:(RKSyncManager *)syncManager didSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
  - (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
  - (void)syncManager:(RKSyncManager *)syncManager willPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
  - (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
  - (void)syncManager:(RKSyncManager *)syncManager didPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+ - (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
  */
-
-
 
 #pragma mark - Network
 
 - (void)testStartsSyncAfterReachabilityIsEstablished {
+  RKURL *bogusUrl = [RKURL URLWithBaseURL:[NSURL URLWithString:@"http://10.1.1.1/"]];
+  [RKTestFactory setBaseURL:bogusUrl];
   
+  self.manager = [RKTestFactory objectManager];
+  self.manager.objectStore = self.store;
+  
+  // Now try to create a human & confirm he's added to the queue, but not yet running.
+  RKHuman *human = [RKHuman object]; 
+  human.name = @"Foo Bar";
+  [self.manager.objectStore save:nil];
+  NSArray *queueItems = [RKManagedObjectSyncQueue findAll];
+  assertThat(queueItems,hasCountOf(1));
+  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  assertThat(numRequests,equalToUnsignedInt(0));
+  
+  // Now go ahead and change to a legitimate base URL -- this alone should trigger the notification
+  RKURL *goodUrl = [RKURL URLWithBaseURLString:@"http://127.0.0.1:4567/"];
+  [RKTestFactory setBaseURL:goodUrl];
+  self.manager = [RKTestFactory objectManager];
+  [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodGET];
+  [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodPOST];
+  // Get a serialization mapping - we're going to need this to get the requests out the door
+  RKManagedObjectMapping *serializationMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]
+                                                                    inManagedObjectStore:self.store];
+  
+  // Most of these test methods use this mapping - the test will need to switch explicitly otherwise
+  [self.manager.mappingProvider setMapping:self.transparentSyncMapping forKeyPath:@"/human"];
+  [self.manager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKHuman class]];
+  self.manager.objectStore = self.store;
+  
+  // Wow, look at that - we have 2 requests (a pull & a push)
+  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  assertThat(numRequests,equalToUnsignedInt(2));
 }
 
 - (void)testRequestQueueExecutesSerially {
