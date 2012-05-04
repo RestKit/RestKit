@@ -203,66 +203,70 @@
 #pragma mark - Sync Mode Tests
 
 - (void)testTransparentSyncModeDoesStartAutomatically {
-  // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
-  RKHuman *human = [RKHuman object];
-  human.name = @"Eric Cordell";
-  human.railsID = [NSNumber numberWithInt:2];
-  [self.manager.objectStore save:nil];
-  
-  // There should already be a request in the queue w/o us doing anything.
-  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
-  assertThat(numRequests,equalToUnsignedInt(1));
+    // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
+    RKHuman *human = [RKHuman object];
+    human.name = @"Eric Cordell";
+    human.railsID = [NSNumber numberWithInt:2];
+    [self.manager.objectStore save:nil];
+    
+    // There should already be a request in the queue w/o us doing anything.
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(1));
 }
 
 - (void)testManualSyncModeDoesNotStartUntilPushIsCalled {
-  [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/human"];
-  
-  // Create a new human
-  RKHuman *human = [RKHuman object];
-  human.name = @"Eric Cordell";
-  human.railsID = [NSNumber numberWithInt:2];
-  [self.manager.objectStore save:nil];
-  
-  // We are in manual sync mode, so no requests should happen automatically.
-  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
-  assertThat(numRequests,equalToUnsignedInt(0));
-  
-  // Now after a manual "push" call it should have 1
-  [self.manager.syncManager push];
-  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
-  assertThat(numRequests,equalToUnsignedInt(1));
+    [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/human"];
+    
+    // Create a new human
+    RKHuman *human = [RKHuman object];
+    human.name = @"Eric Cordell";
+    human.railsID = [NSNumber numberWithInt:2];
+    [self.manager.objectStore save:nil];
+    
+    // We are in manual sync mode, so no requests should happen automatically.
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(0));
+    
+    // Now after a manual "push" call it should have 1
+    [self.manager.syncManager push];
+    numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(1));
 }
 
 - (void)testIntervalSyncModeStartsAfterInterval {
-  [self.manager.mappingProvider setMapping:self.intervalSyncMapping forKeyPath:@"/human"];
+    [self.manager.mappingProvider setMapping:self.intervalSyncMapping forKeyPath:@"/human"];
 
-  // Create a new human
-  RKHuman *human = [RKHuman object];
-  human.name = @"Eric Cordell";
-  human.railsID = [NSNumber numberWithInt:2];
-  [self.manager.objectStore save:nil];
-  
-  // We are in interval sync mode, so no requests should happen automatically -- should wait for the interval
-  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
-  assertThat(numRequests,equalToUnsignedInt(0));
-  
-  // Suspend the request queue just in case the request happens fast (e.g. fully completes w/in the 1.5 seconds)
-  self.manager.requestQueue.suspended = YES;
-  
-  // Change the timer to be quite quick - 0.5 seconds, then let it run for 1.5 seconds
-  [self.manager.syncManager setSyncInterval:0.5];
-  [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
-  
-  // Now unleash any queued requests from suspension and confirm that we have 1
-  self.manager.requestQueue.suspended = NO;
-  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
-  assertThat(numRequests,equalToUnsignedInt(1));
+    // Create a new human
+    RKHuman *human = [RKHuman object];
+    human.name = @"Eric Cordell";
+    human.railsID = [NSNumber numberWithInt:2];
+    [self.manager.objectStore save:nil];
+    
+    // The default interval is 1 minute, so a 1.5 second delay here should have no impact.
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(0));
+    
+    // Suspend the request queue just in case the request happens fast (e.g. fully completes w/in the 1.5 seconds)
+    self.manager.requestQueue.suspended = YES;
+    
+    // Change the timer to be quite quick - 0.5 seconds, then let it run for 1.5 seconds
+    [self.manager.syncManager setSyncInterval:0.5];
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
+    
+    // Now unleash any queued requests from suspension and confirm that we have 1
+    self.manager.requestQueue.suspended = NO;
+    numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(1));
 }
 
 #pragma mark - Network
 
 - (void)testRequestQueueIsSerial {
-  
+  // 
 }
+
+
+
 
 @end
