@@ -510,25 +510,24 @@
     // A request finished, decrement the counter
     _requestCounter--;
     NSAssert((_requestCounter >= 0),@"Request counter can never go negative.");
-  
-    // If the response is a failure, do not pass go, do not collect $200, and do not remove from the queue.
-    if ([objectLoader.response isSuccessful] == NO) {
-        return;
-    }
-  
-    // Get the NSManagedObject we were sending
-    NSManagedObject *object = (NSManagedObject *)objectLoader.sourceObject;
-    NSAssert([object isKindOfClass:[NSManagedObject class]],@"Should be impossible for this to be called with other than NSManagedObject subclasses.");
-  
-    // Get the first matching object from the queue & remove it
-    NSString *IDString = [self IDStringForObject:object];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",IDString];
-    RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstWithPredicate:predicate sortedBy:@"queuePosition" ascending:NO];
-    NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
-    [queueItem deleteEntity];
-    NSError *error = nil;
-    if ([_objectManager.objectStore save:&error] == NO) {
-        RKLogError(@"Error removing queue item: %@", error);
+    
+    // Only remove from the queue if we've just pushed (sourceObject exists) and the response is successful.
+    if (objectLoader.sourceObject && [objectLoader.response isSuccessful]) {
+        
+        // Get the NSManagedObject we were sending
+        NSManagedObject *object = (NSManagedObject *)objectLoader.sourceObject;
+        NSAssert([object isKindOfClass:[NSManagedObject class]],@"Should be impossible for this to be called with other than NSManagedObject subclasses.");
+        
+        // Get the first matching object from the queue & remove it
+        NSString *IDString = [self IDStringForObject:object];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",IDString];
+        RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstWithPredicate:predicate sortedBy:@"queuePosition" ascending:NO];
+        NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
+        [queueItem deleteEntity];
+        NSError *error = nil;
+        if ([_objectManager.objectStore save:&error] == NO) {
+            RKLogError(@"Error removing queue item: %@", error);
+        }
     }
 }
 
