@@ -327,11 +327,6 @@
 
 - (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
-    if (_requestCounter > 0)
-    {
-        // Don't let this method be called repetitively if we're already running a queue.
-        return;
-    }
     
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
