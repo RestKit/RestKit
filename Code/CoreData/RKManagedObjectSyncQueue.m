@@ -23,7 +23,7 @@
 @implementation RKManagedObjectSyncQueue
 
 @dynamic queuePosition;
-@dynamic syncStatus;
+@dynamic syncMethod;
 @dynamic syncMode;
 @dynamic objectIDString;
 @dynamic className;

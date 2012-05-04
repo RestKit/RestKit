@@ -25,7 +25,7 @@
 
 @property (nonatomic, retain) NSNumber * queuePosition;
 @property (nonatomic, retain) NSNumber * syncStatus;
-@property (nonatomic, retain) NSNumber * syncMode;
+@property (nonatomic, retain) NSNumber * syncMethod;
 @property (nonatomic, retain) NSString * objectIDString;
 @property (nonatomic, retain) NSString * className;
 @property (nonatomic, retain) NSString * objectRoute;

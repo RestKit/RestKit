@@ -24,16 +24,6 @@
 #import "RKLog.h"
 
 /**
- Sync status types indicating HTTP method
- */
-typedef enum {
-    RKSyncStatusNone,
-    RKSyncStatusPost,
-    RKSyncStatusPut,
-    RKSyncStatusDelete
-} RKSyncStatus;
-
-/**
  Sync strategy sets the behavior of the RKSyncManager queue for this mapping.
  */
 typedef enum {

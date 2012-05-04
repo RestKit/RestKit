@@ -30,7 +30,7 @@
 // Helper method for getting the unique ID of a managed object as a string
 - (NSString *)IDStringForObject:(NSManagedObject *)object;
 
-- (BOOL)addQueueItemForObject:(NSManagedObject *)object syncStatus:(RKSyncStatus)syncStatus syncMode:(RKSyncMode)syncMode;
+- (BOOL)addQueueItemForObject:(NSManagedObject *)object syncMethod:(RKRequestMethod)syncMethod syncMode:(RKSyncMode)syncMode;
 - (NSArray *)queueItemsForObject:(NSManagedObject *)object;
 // Returns YES if we should create a queue object for this object on update
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object;
@@ -131,9 +131,9 @@
 
 #pragma mark - Queue Management
 
-- (BOOL)addQueueItemForObject:(NSManagedObject *)object syncStatus:(RKSyncStatus)syncStatus syncMode:(RKSyncMode)syncMode {
+- (BOOL)addQueueItemForObject:(NSManagedObject *)object syncMethod:(RKRequestMethod)syncMethod syncMode:(RKSyncMode)syncMode {
     RKManagedObjectSyncQueue *newQueueItem = [RKManagedObjectSyncQueue object];
-    newQueueItem.syncStatus = [NSNumber numberWithInt:syncStatus];
+    newQueueItem.syncStatus = [NSNumber numberWithInt:syncMethod];
     newQueueItem.queuePosition = [NSNumber numberWithInt: [[RKManagedObjectSyncQueue maxValueFor:@"queuePosition"] intValue] + 1];
     newQueueItem.objectIDString = [self IDStringForObject:object];
     newQueueItem.className = NSStringFromClass([object class]);
@@ -163,7 +163,7 @@
       // Find records on the queue - if an update already exists, there's no need to store another.
       NSArray *queueItems = [self queueItemsForObject:object];
       for (RKManagedObjectSyncQueue *queuedRequest in queueItems) {
-        if ([queuedRequest.syncStatus intValue] == RKSyncStatusPut) {
+        if ([queuedRequest.syncStatus intValue] == RKRequestMethodPUT) {
           RKLogTrace(@"'Update' item exists in sync queue for object: %@", object);
           shouldUpdate = NO;
         }
@@ -196,7 +196,7 @@
 
     // Remove any preceding queue items for this object, since we're just going to delete it anyway with this request.
     for (RKManagedObjectSyncQueue *queuedRequest in queueItems) {
-        if ([queuedRequest.syncStatus intValue] == RKSyncStatusPost) {
+        if ([queuedRequest.syncStatus intValue] == RKRequestMethodPOST) {
             RKLogTrace(@"Object's lifecycle exists solely in sync queue, deleting w/o sync: %@", object);
             existsOnServer = NO;
         }
@@ -214,15 +214,15 @@
     
     if ([changeType isEqualToString:NSInsertedObjectsKey])
     {
-        shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusPost syncMode:mode];
+        shouldSync = [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
     }
     else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object])
     {
-        shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusDelete syncMode:mode];
+        shouldSync = [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode];
     }
     else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
     {
-        shouldSync = [self addQueueItemForObject:object syncStatus:RKSyncStatusPut syncMode:mode];
+        shouldSync = [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode];
     }
     return shouldSync;
 }
@@ -311,12 +311,12 @@
         NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
         
         // Depending on what type of item this is, make the appropriate RestKit call to send it up
-        RKSyncStatus status = [item.syncStatus integerValue];
-        if (status == RKSyncStatusPost) {
+        RKRequestMethod method = [item.syncStatus integerValue];
+        if (method == RKRequestMethodPOST) {
             [_objectManager postObject:object delegate:self];
-        } else if (status == RKSyncStatusPut) {
+        } else if (method == RKRequestMethodPUT) {
             [_objectManager putObject:object delegate:self];
-        } else if (status == RKSyncStatusDelete) {
+        } else if (method == RKRequestMethodDELETE) {
             [_objectManager deleteObject:object delegate:self];
         }
         

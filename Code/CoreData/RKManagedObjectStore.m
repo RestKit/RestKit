@@ -146,11 +146,11 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         [queuePositionAttribute setOptional:NO];
         [queuePositionAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
         
-        NSAttributeDescription *syncStatusAttribute = [[NSAttributeDescription alloc] init];
-        [syncStatusAttribute setName:@"syncStatus"];
-        [syncStatusAttribute setAttributeType:NSInteger16AttributeType];
-        [syncStatusAttribute setOptional:NO];
-        [syncStatusAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
+        NSAttributeDescription *syncMethodAttribute = [[NSAttributeDescription alloc] init];
+        [syncMethodAttribute setName:@"syncMethod"];
+        [syncMethodAttribute setAttributeType:NSInteger16AttributeType];
+        [syncMethodAttribute setOptional:NO];
+        [syncMethodAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
         
         NSAttributeDescription *syncModeAttribute = [[NSAttributeDescription alloc] init];
         [syncModeAttribute setName:@"syncMode"];
@@ -176,10 +176,10 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         [objectRouteAttribute setOptional:YES];
         [objectRouteAttribute setDefaultValue:@""];
         
-        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, syncModeAttribute, objectIDStringAttribute, classNameStringAttribute, objectRouteAttribute, nil]];
+        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncMethodAttribute, syncModeAttribute, objectIDStringAttribute, classNameStringAttribute, objectRouteAttribute, nil]];
         
         [queuePositionAttribute release];
-        [syncStatusAttribute release];
+        [syncMethodAttribute release];
         [syncModeAttribute release];
         [objectIDStringAttribute release];
         [classNameStringAttribute release];
