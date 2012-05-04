@@ -53,16 +53,17 @@
         _queue = [[NSMutableArray alloc] init];
 
         //Register for notifications from the managed object context associated with the object manager
-        [[NSNotificationCenter defaultCenter] addObserver: self 
-                                                 selector: @selector(contextDidSave:) 
-                                                     name: NSManagedObjectContextDidSaveNotification
-                                                   object: self.objectManager.objectStore.managedObjectContextForCurrentThread];
+        NSManagedObjectContext *moc = self.objectManager.objectStore.managedObjectContextForCurrentThread;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(contextDidSave:) 
+                                                     name:NSManagedObjectContextDidSaveNotification
+                                                   object:moc];
         
         //Register for reachability changes for transparent syncing
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(transparentSync) 
                                                      name:RKReachabilityDidChangeNotification 
-                                                   object: self.objectManager.client.reachabilityObserver];
+                                                   object:self.objectManager.client.reachabilityObserver];
 	}
 	return self;
 }
@@ -118,11 +119,17 @@
     return strategy;
 }
 
-#pragma mark - Queue Management
+#pragma mark - Object ID String Helpers
 
 - (NSString *)IDStringForObject:(NSManagedObject *)object {
-  return [[[object objectID] URIRepresentation] absoluteString];
+    return [[[object objectID] URIRepresentation] absoluteString];
 }
+
+- (NSManagedObjectID *)objectIDWithString:(NSString *)objIDString {
+    return [_objectManager.objectStore.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:objIDString]];
+}
+
+#pragma mark - Queue Management
 
 - (BOOL)addQueueItemForObject:(NSManagedObject *)object syncStatus:(RKSyncStatus)syncStatus syncMode:(RKSyncMode)syncMode {
     RKManagedObjectSyncQueue *newQueueItem = [RKManagedObjectSyncQueue object];
@@ -131,9 +138,6 @@
     newQueueItem.objectIDString = [self IDStringForObject:object];
     newQueueItem.className = NSStringFromClass([object class]);
     newQueueItem.syncMode = [NSNumber numberWithInt:syncMode];
-    if (syncStatus == RKSyncStatusDelete) {
-        newQueueItem.objectRoute = [_objectManager.router resourcePathForObject:object method:RKRequestMethodDELETE];
-    }
   
     RKLogTrace(@"Adding item to queue: %@", newQueueItem);
     BOOL success = YES;
@@ -274,6 +278,8 @@
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
+  
+    // Empty the queue, we are going to re-build it based on what is in Core Data.
     [_queue removeAllObjects];
     
     //Build predicate for fetching the right records
@@ -299,31 +305,23 @@
         [_delegate syncManager:self willPushObjectsInQueue:_queue withSyncMode:syncMode andClass:objectClass];
     }
     
-    while ([_queue lastObject]) {
-        RKManagedObjectSyncQueue *item = (RKManagedObjectSyncQueue*)[_queue lastObject];
-        NSManagedObjectID *itemID = [_objectManager.objectStore.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:item.objectIDString]];
+    RKManagedObjectSyncQueue *item = nil;
+    while ((item = [_queue lastObject])) {
+        NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
+        NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
         
-        switch ([item.syncStatus intValue]) {
-            case RKSyncStatusPost:
-                [_objectManager postObject:[context objectWithID:itemID] delegate:self];
-                break;
-            case RKSyncStatusPut:
-                [_objectManager putObject:[context objectWithID:itemID] delegate:self];
-                break;
-            case RKSyncStatusDelete:
-                [[_objectManager client] delete:item.objectRoute delegate:self];
-                break;
-            default:
-                break;
+        // Depending on what type of item this is, make the appropriate RestKit call to send it up
+        RKSyncStatus status = [item.syncStatus integerValue];
+        if (status == RKSyncStatusPost) {
+            [_objectManager postObject:object delegate:self];
+        } else if (status == RKSyncStatusPut) {
+            [_objectManager putObject:object delegate:self];
+        } else if (status == RKSyncStatusDelete) {
+            [_objectManager deleteObject:object delegate:self];
         }
         
+        // Remove this item from the in-memory queue; note this doesn't touch Core Data yet.
         [_queue removeObject:item];
-        [item deleteInContext:context];
-        NSError *error = nil;
-        [context save:&error];
-        if (error) {
-            RKLogError(@"Error removing queue item: %@", error);
-        }
     }
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjectsWithSyncMode:andClass:)]) {
         [_delegate syncManager:self didPushObjectsWithSyncMode:syncMode andClass:objectClass];
@@ -375,14 +373,16 @@
 
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
     if ([objectLoader.response isSuccessful]) {
-        if ([objectLoader isPOST] || [objectLoader isPUT] || [objectLoader isDELETE]) {
-            NSError *error = nil;
-            [_objectManager.objectStore save:&error];
-            if (error) {
-                RKLogError(@"Error saving store: %@", error);
-            }
-            RKLogTrace(@"Total unsynced objects: %i", [objectLoader.queue loadingCount]);
-            
+        NSManagedObject *object = (NSManagedObject *)objectLoader.sourceObject;
+        NSAssert([object isKindOfClass:[NSManagedObject class]],@"Should be impossible for this to be called with other than NSManagedObject subclasses.");
+      
+        NSString *IDString = [self IDStringForObject:object];
+        RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstByAttribute:@"objectIDString" withValue:IDString];
+        NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
+        [queueItem deleteEntity];
+        NSError *error = nil;
+        if ([_objectManager.objectStore save:&error] == NO) {
+            RKLogError(@"Error removing queue item: %@", error);
         }
     }
 }
