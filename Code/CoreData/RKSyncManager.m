@@ -36,7 +36,6 @@
 - (NSArray *)queueItemsForObject:(NSManagedObject *)object;
 // Returns YES if we should create a queue object for this object on update
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object;
-- (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 @end
 
 @implementation RKSyncManager
@@ -295,7 +294,7 @@
         }
     }
   
-    //transparent sync needs to be called on every nontrivial save and every network change - but only if something was added,
+    // transparent sync needs to be called on every nontrivial save and every network change - but only if something was added,
     // otherwise we will end up in an infinite loop, as the other parts of RestKit also save the MOC when this is called.
     if (somethingAdded || shouldPull)
     {

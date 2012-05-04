@@ -143,6 +143,24 @@ typedef enum {
  */
 - (void)pull;
 
+/**
+ Syncs (push followed by pull) all objects with a given syncMode and class. If syncMode is nil, it syncs all objects of type `objectClass`. If `objectClass` is nil, it syncs all objects with the specified `syncMode` regardless of the class. Both values cannot be nil.
+ */
+
+- (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
+/**
+ Pushes all objects with a given syncMode and class to a remote server. If syncMode is nil, it pushes all objects of type `objectClass`. If `objectClass` is nil, it pushes all objects with the specified `syncMode` regardless of the class. Both values cannot be nil.
+ */
+
+- (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
+/**
+ Pulls all objects with a given syncMode and class. If syncMode is nil, it pulls all objects of type `objectClass`. If `objectClass` is nil, it pulls all objects with the specified `syncMode` regardless of the class. Both values cannot be nil.
+ */
+
+- (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
 #pragma mark - Sync Direction
 
 /**
