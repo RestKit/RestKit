@@ -246,12 +246,15 @@
   NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
   assertThat(numRequests,equalToUnsignedInt(0));
   
-  // Change the timer to be quite quick - 0.5 seconds
+  // Suspend the request queue just in case the request happens fast (e.g. fully completes w/in the 1.5 seconds)
+  self.manager.requestQueue.suspended = YES;
+  
+  // Change the timer to be quite quick - 0.5 seconds, then let it run for 1.5 seconds
   [self.manager.syncManager setSyncInterval:0.5];
-
-  // Go back to the run loop for 1.5 seconds - should be plenty.
   [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
   
+  // Now unleash any queued requests from suspension and confirm that we have 1
+  self.manager.requestQueue.suspended = NO;
   numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
   assertThat(numRequests,equalToUnsignedInt(1));
 }

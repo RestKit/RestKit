@@ -444,10 +444,6 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-    // A request finished, decrement the counter
-    _requestCounter--;
-    NSAssert((_requestCounter >= 0),@"Request counter can never go negative.");
-  
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
         [_delegate syncManager:self didFailSyncingWithError:error];
     }
