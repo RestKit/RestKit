@@ -86,6 +86,8 @@ typedef enum {
 @interface RKSyncManager : NSObject <RKObjectLoaderDelegate> {
     NSMutableArray *_queue;
     NSMutableDictionary *_strategies;
+    NSTimer *_intervalTimer;
+    NSInteger _requestCounter;
 }
 
 /**
@@ -144,6 +146,12 @@ typedef enum {
  default value of RKSyncStrategyOptimize will be returned.
  */
 - (RKSyncStrategy) syncStrategyForClass:(Class)objectClass;
+
+/**
+ Sets the interval that `RKSyncManager` will try to synchronize items that are queued with
+ synchronization mode `RKSyncModeInterval`.
+ */
+- (void)setSyncInterval:(NSTimeInterval)interval;
 
 /**
  Convenience method for syncing objects with `syncMode = RKSyncModeManual`

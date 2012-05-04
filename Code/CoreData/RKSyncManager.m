@@ -20,6 +20,7 @@
 
 #import "RKSyncManager.h"
 
+#define RK_SYNC_TIMER_DEFAULT 60
 
 @interface RKSyncManager (Private)
 - (void)contextDidSave:(NSNotification*)notification;
@@ -34,6 +35,7 @@
 - (NSArray *)queueItemsForObject:(NSManagedObject *)object;
 // Returns YES if we should create a queue object for this object on update
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object;
+
 @end
 
 @implementation RKSyncManager
@@ -48,6 +50,9 @@
         // By default this class will batch similar objects together & reduce network calls if possible.
         _defaultSyncStrategy = RKSyncStrategyBatch;
         _strategies = [[NSMutableDictionary alloc] init];
+        
+        // This timer controls when items with RKSyncModeInterval will be synced.
+        [self setSyncInterval:RK_SYNC_TIMER_DEFAULT];
     
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
@@ -69,8 +74,12 @@
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver: self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    [_intervalTimer invalidate];
+    [_intervalTimer release];
+    _intervalTimer = nil;
+  
     [_objectManager release];
     _objectManager = nil;
     
@@ -80,8 +89,6 @@
     [_strategies release];
     _strategies = nil;
   
-    _delegate = nil;
-    
     [super dealloc];
 }
 
@@ -207,35 +214,14 @@
     return existsOnServer;
 }
 
-// Helper method that translates a "changeType" into the proper logic for that type of change.
-- (BOOL) syncObject:(NSManagedObject *)object syncMode:(RKSyncMode)mode changeType:(NSString *)changeType
-{
-    BOOL shouldSync = NO;
-    
-    if ([changeType isEqualToString:NSInsertedObjectsKey])
-    {
-        shouldSync = [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
-    }
-    else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object])
-    {
-        shouldSync = [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode];
-    }
-    else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
-    {
-        shouldSync = [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode];
-    }
-    return shouldSync;
-}
-
 #pragma mark - NSManagedObjectContextDidSaveNotification Observer
 
 - (void)contextDidSave:(NSNotification *)notification {
     // Notification keys of the object sets we care about
     NSArray *objectKeys = [NSArray arrayWithObjects:NSInsertedObjectsKey, NSUpdatedObjectsKey, NSDeletedObjectsKey, nil];
   
-    // By default, there's nothing to transparently sync
-    BOOL shouldTransparentSync = NO;
-
+    BOOL somethingAdded = NO;
+  
     // Iterate through each type of object change, and then iterate the objects for each type.
     for (NSString *changeType in objectKeys)
     {
@@ -244,26 +230,68 @@
         {
             // Ignore objects that are non-syncing, or are internal storage for this class.
             RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:[object class]];
-            if (mapping.syncMode == RKSyncModeNone ||
-                [object isKindOfClass:[RKManagedObjectSyncQueue class]]) {
+            RKSyncMode mode = mapping.syncMode;
+            if (mode == RKSyncModeNone || [object isKindOfClass:[RKManagedObjectSyncQueue class]]) {
                 continue;
             }
-            
-            // If something says we should sync (regardless of the type of change),
-            // we have work to do at the end of the method, so hold the state
-            shouldTransparentSync = shouldTransparentSync || [self syncObject:object syncMode:mapping.syncMode changeType:changeType];
+          
+            // Depending on the change type, enqueue an object with a different method.  In Delete & Update cases,
+            // first call -shouldDelete/-shouldUpdate to determine whether we should even bother (depends on strategy)
+            if ([changeType isEqualToString:NSInsertedObjectsKey])
+            {
+              somethingAdded = somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
+            }
+            else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object])
+            {
+              somethingAdded = somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode];
+            }
+            else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
+            {
+              somethingAdded = somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode];
+            }
         }
     }
   
-    //transparent sync needs to be called on every nontrivial save and every network change
-    if (shouldTransparentSync) {
-        [self transparentSync];
+    //transparent sync needs to be called on every nontrivial save and every network change - but only if something was added,
+    // otherwise we will end up in an infinite loop, as the other parts of RestKit also save the MOC when this is called.
+    if (somethingAdded)
+    {
+      [self transparentSync];
     }
+}
+
+#pragma mark - Interval Sync Timer
+
+- (void)intervalTimerFired:(NSTimer *)intervalTimer {
+  // TODO: Quick return if we are already sync'ing an interval timer
+  [self pushObjectsWithSyncMode:RKSyncModeInterval andClass:nil];
+  [self pullObjectsWithSyncMode:RKSyncModeInterval andClass:nil];
+}
+
+- (void)setSyncInterval:(NSTimeInterval)interval {
+  NSAssert((interval > 0),@"Time interval must be greater than zero.");
+  
+  // Stop the timer first, then re-create it.
+  [_intervalTimer invalidate];
+  [_intervalTimer release];
+  
+  _intervalTimer = [NSTimer scheduledTimerWithTimeInterval:interval
+                                                    target:self
+                                                  selector:@selector(intervalTimerFired:)
+                                                  userInfo:nil
+                                                   repeats:YES];
+  [_intervalTimer retain];
 }
 
 #pragma mark - Sync Methods
 
 - (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    // Don't let this method be called repetitively if we're already running a queue.
+    if (_requestCounter > 0)
+    {
+      return;
+    }
+    
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
@@ -276,6 +304,12 @@
 }
 
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    // Don't let this method be called repetitively if we're already running a queue.
+    if (_requestCounter > 0)
+    {
+      return;
+    }
+  
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
   
@@ -315,10 +349,13 @@
         RKRequestMethod method = [item.syncMethod integerValue];
         if (method == RKRequestMethodPOST) {
             [_objectManager postObject:object delegate:self];
+            _requestCounter++;
         } else if (method == RKRequestMethodPUT) {
             [_objectManager putObject:object delegate:self];
+            _requestCounter++;
         } else if (method == RKRequestMethodDELETE) {
             [_objectManager deleteObject:object delegate:self];
+            _requestCounter++;
         }
         
         // Remove this item from the in-memory queue; note this doesn't touch Core Data yet.
@@ -331,6 +368,13 @@
 
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
+
+    // Don't let this method be called repetitively if we're already running a queue.
+    if (_requestCounter > 0)
+    {
+      return;
+    }
+    
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willPullWithSyncMode:syncMode andClass:objectClass];
     }
@@ -343,6 +387,7 @@
             NSString *resourcePath = [_objectManager.router resourcePathForObject:object method:RKRequestMethodGET]; 
             [object release];
             [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
+            _requestCounter++;
         }
     }
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullWithSyncMode:andClass:)]) {
@@ -373,6 +418,10 @@
 #pragma mark - RKObjectLoaderDelegate (RKRequestDelegate) methods
 
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
+    // A request finished, decrement the counter
+    _requestCounter--;
+    NSAssert((_requestCounter >= 0),@"Request counter can never go negative.");
+  
     // If the response is a failure, do not pass go, do not collect $200, and do not remove from the queue.
     if ([objectLoader.response isSuccessful] == NO) {
         return;
@@ -395,6 +444,10 @@
 }
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
+    // A request finished, decrement the counter
+    _requestCounter--;
+    NSAssert((_requestCounter >= 0),@"Request counter can never go negative.");
+  
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
         [_delegate syncManager:self didFailSyncingWithError:error];
     }
