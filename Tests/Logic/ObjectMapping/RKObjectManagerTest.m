@@ -37,6 +37,8 @@
 @implementation RKObjectManagerTest
 
 - (void)setUp {
+    [RKTestFactory setUp];
+
     _objectManager = [RKTestFactory objectManager];
 	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
@@ -78,6 +80,10 @@
     RKObjectRouter* router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKHuman class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
     _objectManager.router = router;
+}
+
+- (void)tearDown {
+    [RKTestFactory tearDown];
 }
 
 - (void)testShouldSetTheAcceptHeaderAppropriatelyForTheFormat {

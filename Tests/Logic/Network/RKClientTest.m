@@ -146,4 +146,15 @@
     assertThatFloat(request.cacheTimeoutInterval, is(equalToFloat(20.0)));
 }
 
+- (void)testThatRunLoopModePropertyRespected {
+    NSString * const dummyRunLoopMode = @"dummyRunLoopMode";
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
+    client.runLoopMode = dummyRunLoopMode;
+    [client get:[[RKTestFactory baseURL] absoluteString] delegate:loader];
+    while ([[NSRunLoop currentRunLoop] runMode:dummyRunLoopMode beforeDate:[[NSRunLoop currentRunLoop] limitDateForMode:dummyRunLoopMode]])
+        ;
+    assertThatBool([loader wasSuccessful], is(equalToBool(YES)));
+}
+
 @end

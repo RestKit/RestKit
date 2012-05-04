@@ -268,4 +268,44 @@
     assertThatInteger([loader.response bodyEncoding], is(equalToInteger(NSASCIIStringEncoding)));
 }
 
+- (void)testFollowRedirect {
+    RKClient* client = [RKTestFactory client];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    [client get:@"/redirection" delegate:loader];
+    [loader waitForResponse];
+    assertThatInteger(loader.response.statusCode, is(equalToInteger(200)));
+
+    id body = [loader.response parsedBody:NULL];
+    assertThat([body objectForKey:@"redirected"], is(equalTo([NSNumber numberWithBool:YES])));
+}
+
+- (void)testNoFollowRedirect {
+    RKClient* client = [RKTestFactory client];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    
+    RKRequest* request = [client requestWithResourcePath:@"/redirection"];
+    request.method = RKRequestMethodGET;
+    request.followRedirect = NO;
+    request.delegate = loader;
+    
+    [request send];
+    [loader waitForResponse];
+    
+    assertThatInteger(loader.response.statusCode, is(equalToInteger(302)));
+    assertThat([loader.response.allHeaderFields objectForKey:@"Location"], is(equalTo(@"/redirection/target")));
+}
+
+- (void)testThatLoadingInvalidURLDoesNotCrashApp {
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://biz.gg"];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKClient clientWithBaseURL:URL];
+    
+    RKRequest *request = [client requestWithResourcePath:@"/invalid"];
+    request.method = RKRequestMethodGET;
+    request.delegate = loader;
+    
+    [request sendAsynchronously];
+    [loader waitForResponse];
+}
+
 @end

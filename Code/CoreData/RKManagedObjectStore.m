@@ -127,6 +127,8 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 		NSMutableArray* allManagedObjectModels = [NSMutableArray arrayWithObject:nilOrManagedObjectModel];
 		_managedObjectModel = [[NSManagedObjectModel modelByMergingModels:allManagedObjectModels] retain];
 
+	_delegate = delegate;
+
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
@@ -408,13 +410,13 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
 
 	[self createPersistentStoreCoordinator];
-}
-
-- (void)deletePersistentStore {
-	[self deletePersistentStoreUsingSeedDatabaseName:nil];
     
     // Recreate the MOC
     self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
+}
+
+- (void)deletePersistentStore {
+	[self deletePersistentStoreUsingSeedDatabaseName:nil];        
 }
 
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread {

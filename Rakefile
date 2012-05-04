@@ -130,9 +130,11 @@ namespace :docs do
     run(command, 1)
   end
   
-  desc "Build and upload the documentation set to the remote server"
-  task :upload do
-    version = ENV['VERSION'] || File.read("VERSION").chomp
+  desc "Build and publish the documentation set to the remote server (using rsync over SSH)"
+  task :publish, :version, :destination do |t, args|
+    args.with_defaults(:version => File.read("VERSION").chomp, :destination => "restkit.org:/var/www/public/restkit.org/public/api/")
+    version = args[:version]
+    destination = args[:destination]    
     puts "Generating RestKit docset for version #{version}..."
     command = apple_doc_command <<
             " --keep-intermediate-files" <<
@@ -140,12 +142,13 @@ namespace :docs do
             " --docset-feed-url http://restkit.org/api/%DOCSETATOMFILENAME" <<
             " --docset-package-url http://restkit.org/api/%DOCSETPACKAGEFILENAME --publish-docset --verbose 3 Code/"
     run(command, 1)
-    puts "Uploading docset to restkit.org..."
-    command = "rsync -rvpPe ssh --delete Docs/API/html/ restkit.org:/var/www/public/restkit.org/public/api/#{version}"
+    puts "Uploading docset to #{destination}..."
+    versioned_destination = File.join(destination, version)
+    command = "rsync -rvpPe ssh --delete Docs/API/html/ #{versioned_destination}"
     run(command)
     
     if $?.exitstatus == 0
-      command = "rsync -rvpPe ssh Docs/API/publish/ restkit.org:/var/www/public/restkit.org/public/api/"
+      command = "rsync -rvpPe ssh Docs/API/publish/ #{destination}"
       run(command)
     end
   end

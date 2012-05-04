@@ -289,7 +289,7 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 
 /** Sent to the delegate when the controller is really and truly finished loading/updating, whether from the network or from Core Data, or from static data, ... this happens in didFinishLoading
  **/
-- (void)tableControllerDidFinishFinalLoad:(RKAbstractTableController *)tableController;
+- (void)tableControllerDidFinalizeLoad:(RKAbstractTableController *)tableController;
 
 /**
  Sent to the delegate when the content of the table view has become empty

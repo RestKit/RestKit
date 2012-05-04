@@ -90,6 +90,14 @@
 
 @implementation RKObjectLoaderTest
 
+- (void)setUp {
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown {
+    [RKTestFactory tearDown];
+}
+
 - (RKObjectMappingProvider*)providerForComplexUser {
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider new] autorelease];
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
@@ -109,18 +117,16 @@
 
 - (void)testShouldHandleTheErrorCaseAppropriately {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
+    objectManager.mappingProvider = [self errorMappingProvider];
+
     RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
     RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/errors.json"];
     objectLoader.delegate = responseLoader;
     objectLoader.method = RKRequestMethodGET;
-
-    [objectManager setMappingProvider:[self errorMappingProvider]];
-
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
 
     assertThat(responseLoader.error, isNot(nilValue()));
-
     assertThat([responseLoader.error localizedDescription], is(equalTo(@"error1, error2")));
 
     NSArray* objects = [[responseLoader.error userInfo] objectForKey:RKObjectMapperErrorObjectsKey];
