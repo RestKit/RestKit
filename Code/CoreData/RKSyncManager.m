@@ -133,7 +133,7 @@
 
 - (BOOL)addQueueItemForObject:(NSManagedObject *)object syncMethod:(RKRequestMethod)syncMethod syncMode:(RKSyncMode)syncMode {
     RKManagedObjectSyncQueue *newQueueItem = [RKManagedObjectSyncQueue object];
-    newQueueItem.syncStatus = [NSNumber numberWithInt:syncMethod];
+    newQueueItem.syncMethod = [NSNumber numberWithInt:syncMethod];
     newQueueItem.queuePosition = [NSNumber numberWithInt: [[RKManagedObjectSyncQueue maxValueFor:@"queuePosition"] intValue] + 1];
     newQueueItem.objectIDString = [self IDStringForObject:object];
     newQueueItem.className = NSStringFromClass([object class]);
@@ -163,7 +163,7 @@
       // Find records on the queue - if an update already exists, there's no need to store another.
       NSArray *queueItems = [self queueItemsForObject:object];
       for (RKManagedObjectSyncQueue *queuedRequest in queueItems) {
-        if ([queuedRequest.syncStatus intValue] == RKRequestMethodPUT) {
+        if ([queuedRequest.syncMethod intValue] == RKRequestMethodPUT) {
           RKLogTrace(@"'Update' item exists in sync queue for object: %@", object);
           shouldUpdate = NO;
         }
@@ -196,7 +196,7 @@
 
     // Remove any preceding queue items for this object, since we're just going to delete it anyway with this request.
     for (RKManagedObjectSyncQueue *queuedRequest in queueItems) {
-        if ([queuedRequest.syncStatus intValue] == RKRequestMethodPOST) {
+        if ([queuedRequest.syncMethod intValue] == RKRequestMethodPOST) {
             RKLogTrace(@"Object's lifecycle exists solely in sync queue, deleting w/o sync: %@", object);
             existsOnServer = NO;
         }
@@ -312,7 +312,7 @@
         NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
         
         // Depending on what type of item this is, make the appropriate RestKit call to send it up
-        RKRequestMethod method = [item.syncStatus integerValue];
+        RKRequestMethod method = [item.syncMethod integerValue];
         if (method == RKRequestMethodPOST) {
             [_objectManager postObject:object delegate:self];
         } else if (method == RKRequestMethodPUT) {
