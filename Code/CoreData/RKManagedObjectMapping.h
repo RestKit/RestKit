@@ -22,11 +22,17 @@
 #import "RKObjectMapping.h"
 //#import "RKManagedObjectStore.h"
 
+/**
+ Mode that specifies how the object should be synchronized with the server.
+ To use transparent syncing (i.e. calls are sent when network access is available
+ and queued otherwise), set the mode to `RKSyncModeTransparent` on each object
+ mapping for which you would like this behavior.
+ */
 typedef enum {
-    RKSyncModeNone,
-    RKSyncModeTransparent,
-    RKSyncModeInterval,
-    RKSyncModeManual
+    RKSyncModeNone,           /** RKSyncManager will ignore objects with this mode */
+    RKSyncModeTransparent,    /** RKSyncManager will transparently sync objects with this mode */
+    RKSyncModeInterval,       /** RKSyncManager will sync objects with this mode at an interval */
+    RKSyncModeManual          /** RKSyncManager will queue requests until `[syncManager push]` is called */
 } RKSyncMode;
 
 @class RKManagedObjectStore;
@@ -92,12 +98,14 @@ typedef enum {
 @property (nonatomic, readonly) RKManagedObjectStore *objectStore;
 
 /**
- The RKSyncMode specifying the way in which objects should be synced, if at all. 
+ The RKSyncMode specifies how objects should be synced, if at all. 
  
- If set to RKSyncModeNone, the objects will not be managed by the syncManager. 
- If set to RKSyncTransparent, the objects will be synced immediately if a connection is available, or saved for later and synced as soon as a connection is available. 
- If set to RKSyncManual, the objects will be synced only when a call is made directly on the syncManager to do so.
+ If set to RKSyncModeNone, the objects will not be managed by `RKSyncManager`. 
+ If set to RKSyncModeTransparent, the objects will be synced immediately if a connection is available, or saved for later and synced as soon as a connection is available. 
+ If set to RKSyncModeInterval, the objects will be synced at a regular interval set by the syncManager.
+ If set to RKSyncModeManual, the objects will be synced only when a call is made directly on the syncManager to do so.
  RKSyncInterval is for convenience - to sync with a set interval, create a timer that calls `[syncManager syncObjectsWithSyncMode:RKSyncModeInterval andClass:nil];` This could be done with any of the other types of syncMode, but setting to RKSyncInterval prevents those objects from being synced manually or transparently as well.
+ @see RKSyncManager
  */
 @property (nonatomic, assign) RKSyncMode syncMode;
 

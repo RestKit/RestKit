@@ -24,10 +24,17 @@
 @interface RKManagedObjectSyncQueue : NSManagedObject
 
 @property (nonatomic, retain) NSNumber * queuePosition;
-@property (nonatomic, retain) NSNumber * syncStatus;
+@property (nonatomic, retain) NSNumber * syncMethod;
 @property (nonatomic, retain) NSNumber * syncMode;
 @property (nonatomic, retain) NSString * objectIDString;
 @property (nonatomic, retain) NSString * className;
 @property (nonatomic, retain) NSString * objectRoute;
+
+/**
+ The queue for `RKSyncManager` is created dynamically right before the Persistent Store is created.
+ This method returns the proper NSEntityDescription for `RKManagedObjectSyncQueue` so that it can be
+ inserted.
+ */
++ (NSEntityDescription *)entityDescription;
 
 @end

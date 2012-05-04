@@ -30,6 +30,7 @@
 #import "RKFetchRequestManagedObjectCache.h"
 #import "NSBundle+RKAdditions.h"
 #import "NSManagedObjectContext+RKAdditions.h"
+#import "RKManagedObjectSyncQueue.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -133,61 +134,9 @@ static RKManagedObjectStore *defaultObjectStore = nil;
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
         
-        //Add queue to core data model before persistant store is created
-        //TODO: Check if exists before creating new entity. This doesn't seem necessary (Core Data handles internally?)
-        NSEntityDescription *syncQueue = [[NSEntityDescription alloc] init];
-        [syncQueue setName: @"RKManagedObjectSyncQueue"];
-        [syncQueue setManagedObjectClassName: @"RKManagedObjectSyncQueue"];
-        [syncQueue setAbstract:NO];
-        
-        NSAttributeDescription *queuePositionAttribute = [[NSAttributeDescription alloc] init];
-        [queuePositionAttribute setName:@"queuePosition"];
-        [queuePositionAttribute setAttributeType:NSInteger32AttributeType];
-        [queuePositionAttribute setOptional:NO];
-        [queuePositionAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
-        
-        NSAttributeDescription *syncStatusAttribute = [[NSAttributeDescription alloc] init];
-        [syncStatusAttribute setName:@"syncStatus"];
-        [syncStatusAttribute setAttributeType:NSInteger16AttributeType];
-        [syncStatusAttribute setOptional:NO];
-        [syncStatusAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
-        
-        NSAttributeDescription *syncModeAttribute = [[NSAttributeDescription alloc] init];
-        [syncModeAttribute setName:@"syncMode"];
-        [syncModeAttribute setAttributeType:NSInteger16AttributeType];
-        [syncModeAttribute setOptional:NO];
-        [syncModeAttribute setDefaultValue:[NSNumber numberWithInteger:0]];
-        
-        NSAttributeDescription *objectIDStringAttribute = [[NSAttributeDescription alloc] init];
-        [objectIDStringAttribute setName:@"objectIDString"];
-        [objectIDStringAttribute setAttributeType:NSStringAttributeType];
-        [objectIDStringAttribute setOptional:NO];
-        [objectIDStringAttribute setDefaultValue:@""];
-        
-        NSAttributeDescription *classNameStringAttribute = [[NSAttributeDescription alloc] init];
-        [classNameStringAttribute setName:@"className"];
-        [classNameStringAttribute setAttributeType:NSStringAttributeType];
-        [classNameStringAttribute setOptional:NO];
-        [classNameStringAttribute setDefaultValue:@""];
-        
-        NSAttributeDescription *objectRouteAttribute = [[NSAttributeDescription alloc] init];
-        [objectRouteAttribute setName:@"objectRoute"];
-        [objectRouteAttribute setAttributeType:NSStringAttributeType];
-        [objectRouteAttribute setOptional:YES];
-        [objectRouteAttribute setDefaultValue:@""];
-        
-        [syncQueue setProperties:[NSArray arrayWithObjects:queuePositionAttribute, syncStatusAttribute, syncModeAttribute, objectIDStringAttribute, classNameStringAttribute, objectRouteAttribute, nil]];
-        
-        [queuePositionAttribute release];
-        [syncStatusAttribute release];
-        [syncModeAttribute release];
-        [objectIDStringAttribute release];
-        [classNameStringAttribute release];
-        [objectRouteAttribute release];
-        
-        [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObject: syncQueue]];
-        
-        [syncQueue release];
+        // Append the RKSyncManager's queue entity to the model
+        NSEntityDescription *syncQueueEntity = [RKManagedObjectSyncQueue entityDescription];       
+        [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObject:syncQueueEntity]];
         
         _delegate = delegate;
 
