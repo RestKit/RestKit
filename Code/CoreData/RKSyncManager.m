@@ -298,6 +298,7 @@
         predicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:syncModePredicate, objectClassPredicate, nil]];
     }
     if (predicate) {
+        // Note that NSMutableArray doesn't have -firstObject, so instead we retrieved the array with descending order and peel off using -lastObject
         [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO withPredicate:predicate inContext:context]];
     }
     
