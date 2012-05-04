@@ -66,26 +66,24 @@ typedef enum {
 - (void)syncManager:(RKSyncManager *)syncManager didSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
 /**
- * When implemented, sent before objects are pushed to the server. Objects in queue are of type RKManagedObjectSyncQueue. 
- @see RKManagedObjectSyncQueue
+ * When implemented, sent before objects are pushed to the server.
  */
-- (void)syncManager:(RKSyncManager *)syncManager willPushObjectsInQueue:(NSArray *)queue withSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
-
-
-/**
- * When implemented, sent before updates are pulled from ther server.
- */
-- (void)syncManager:(RKSyncManager *)syncManager willPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
 
 /**
  * When implemented, sent when all push requests have been added to the request queue.
  */
-- (void)syncManager:(RKSyncManager *)syncManager didPushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
+
+/**
+ * When implemented, sent before updates are pulled from ther server.
+ */
+- (void)syncManager:(RKSyncManager *)syncManager willPullObjectsOfClass:(Class)objectClass withSyncMode:(RKSyncMode)syncMode;
 
 /**
  * When implemented, sent when all pull requests have been added to the request queue.
  */
-- (void)syncManager:(RKSyncManager *)syncManager didPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)syncManager:(RKSyncManager *)syncManager didPullObjectsOfClass:(Class)objectClass withSyncMode:(RKSyncMode)syncMode;
 
 @end
 
@@ -121,10 +119,17 @@ typedef enum {
 #pragma mark - Manual Syncing Methods
 
 /**
- Convenience method for syncing objects with `syncMode = RKSyncModeManual`
+ Convenience method for syncing all pending objects with `syncMode = RKSyncModeManual`
  @see RKSyncMode
  */
 - (void)sync;
+
+/**
+ Convenience method for syncing all pending objects with `syncMode = RKSyncModeManual` of
+ a certain class.  If `nil` is passed as the parameter, all objects will be synchronized.
+ @see RKSyncMode
+ */
+- (void)syncObjectsOfClass:(Class)objectClass;
 
 /**
  Convenience method for pushing objects with `syncMode = RKSyncModeManual`

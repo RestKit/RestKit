@@ -114,7 +114,7 @@
     }
     else {
       // Just set the default; they passed a nil class reference
-      _defaultSyncStrategy = syncDirection;
+      _defaultSyncDirection = syncDirection;
     }
 }
 
@@ -306,13 +306,7 @@
 #pragma mark - Interval Sync Timer
 
 - (void)intervalTimerFired:(NSTimer *)intervalTimer {
-  // Don't make the calls if we're already busy.
-  if (_requestCounter > 0) {
-      return;
-  }
-  
-  [self pushObjectsWithSyncMode:RKSyncModeInterval andClass:nil];
-  [self pullObjectsWithSyncMode:RKSyncModeInterval andClass:nil];
+    [self syncObjectsWithSyncMode:RKSyncModeInterval andClass:nil];
 }
 
 - (void)setSyncInterval:(NSTimeInterval)interval {
@@ -333,18 +327,20 @@
 #pragma mark - Sync Methods
 
 - (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
-    // Don't let this method be called repetitively if we're already running a queue.
+    NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     if (_requestCounter > 0)
     {
+        // Don't let this method be called repetitively if we're already running a queue.
         return;
     }
     
-    NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
     }
+  
     [self pushObjectsWithSyncMode:syncMode andClass:objectClass];
     [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
+  
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self didSyncWithSyncMode:syncMode andClass:objectClass];
     }
@@ -352,12 +348,6 @@
 
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
-  
-    // Don't let this method be called repetitively if we're already running a queue.
-    if (_requestCounter > 0)
-    {
-        return;
-    }
   
     // We can save ourselves a lot of processing if we were provided a class & we have a direction for it.
     if (objectClass) {
@@ -393,15 +383,30 @@
         [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO withPredicate:predicate inContext:context]];
     }
     
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjectsInQueue:withSyncMode:andClass:)]) {
-        [_delegate syncManager:self willPushObjectsInQueue:_queue withSyncMode:syncMode andClass:objectClass];
+    // Put the objects all back together now so we can send them to the delegate
+    NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[_queue count]];
+    NSMutableArray *tmpQueue = [[NSMutableArray alloc] initWithCapacity:[_queue count]];
+    for (RKManagedObjectSyncQueue *item in _queue) {
+        NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
+        NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
+      
+        RKSyncDirection direction = [self syncDirectionForClass:NSClassFromString(item.className)];
+        if (direction & RKSyncDirectionPush) {
+            [tmpQueue addObject:item];
+            [objects addObject:object];
+        }
     }
-    
+    // Now reset our queue to the new one
+    [_queue release];
+    _queue = tmpQueue;
+  
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjectsInQueue:withSyncMode:andClass:)]) {
+        [_delegate syncManager:self willPushObjects:(NSArray *)objects withSyncMode:syncMode];
+    }
+  
     RKManagedObjectSyncQueue *item = nil;
     while ((item = [_queue lastObject])) {
         NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
-        NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
-        
         // Depending on what type of item this is, make the appropriate RestKit call to send it up
         RKRequestMethod method = [item.syncMethod integerValue];
         if (method == RKRequestMethodPOST) {
@@ -418,19 +423,14 @@
         // Remove this item from the in-memory queue; note this doesn't touch Core Data yet.
         [_queue removeObject:item];
     }
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjectsWithSyncMode:andClass:)]) {
-        [_delegate syncManager:self didPushObjectsWithSyncMode:syncMode andClass:objectClass];
+  
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
+        [_delegate syncManager:self didPushObjects:objects withSyncMode:syncMode];
     }
 }
 
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
-
-    // Don't let this method be called repetitively if we're already running a queue.
-    if (_requestCounter > 0)
-    {
-        return;
-    }
 
     // We can save ourselves a lot of processing if we were provided a class & we have a direction for it.
     if (objectClass) {
@@ -441,37 +441,31 @@
       }
     }
   
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullWithSyncMode:andClass:)]) {
-        [_delegate syncManager:self willPullWithSyncMode:syncMode andClass:objectClass];
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullObjectsOfClass:withSyncMode:)]) {
+        [_delegate syncManager:self willPullObjectsOfClass:objectClass withSyncMode:syncMode];
     }
     
     NSDictionary *mappings = _objectManager.mappingProvider.mappingsByKeyPath;
     for (id key in mappings) {
         RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[mappings objectForKey:key];
-        if (mapping.syncMode == syncMode && 
-            (!objectClass  || mapping.objectClass == objectClass)) {
+        BOOL classMatches = (objectClass == nil || mapping.objectClass == objectClass);
+        if (mapping.syncMode == syncMode && classMatches) {
             NSManagedObject *object = [[NSManagedObject alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil]; 
             NSString *resourcePath = [_objectManager.router resourcePathForObject:object method:RKRequestMethodGET]; 
             [object release];
-            [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
-            _requestCounter++;
+            
+            RKSyncDirection direction = [self syncDirectionForClass:[object class]];
+            if ((direction & RKSyncDirectionPull)) {
+              [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
+              _requestCounter++;
+            }
+          
         }
     }
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullWithSyncMode:andClass:)]) {
-        [_delegate syncManager:self didPullWithSyncMode:syncMode andClass:objectClass];
+  
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullObjectsOfClass:withSyncMode:)]) {
+        [_delegate syncManager:self didPullObjectsOfClass:objectClass withSyncMode:syncMode];
     }
-}
-
-- (void)sync {
-    [self syncObjectsWithSyncMode:RKSyncModeManual andClass:nil];
-}
-
-- (void)push {
-    [self pushObjectsWithSyncMode:RKSyncModeManual andClass:nil];
-}
-
-- (void)pull {
-    [self pullObjectsWithSyncMode:RKSyncModeManual andClass:nil];
 }
 
 - (void)transparentSync {
@@ -480,6 +474,34 @@
         [self pushObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
         [self pullObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
     }
+}
+
+#pragma mark - Public Syncing Methods
+
+- (void)sync {
+    [self syncObjectsOfClass:nil];
+}
+
+- (void)syncObjectsOfClass:(Class)objectClass {
+    [self syncObjectsWithSyncMode:RKSyncModeManual andClass:objectClass];
+}
+
+- (void)push {
+    if (_requestCounter > 0)
+    {
+        // Don't let this method be called repetitively if we're already running a queue.
+        return;
+    }
+    [self pushObjectsWithSyncMode:RKSyncModeManual andClass:nil];
+}
+
+- (void)pull {
+    if (_requestCounter > 0)
+    {
+        // Don't let this method be called repetitively if we're already running a queue.
+        return;
+    }
+    [self pullObjectsWithSyncMode:RKSyncModeManual andClass:nil];
 }
 
 #pragma mark - RKObjectLoaderDelegate (RKRequestDelegate) methods

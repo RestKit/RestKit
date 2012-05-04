@@ -203,6 +203,8 @@
 #pragma mark - Sync Mode Tests
 
 - (void)testTransparentSyncModeDoesStartAutomatically {
+    [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPush];
+  
     // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
     RKHuman *human = [RKHuman object];
     human.name = @"Eric Cordell";
@@ -235,6 +237,7 @@
 
 - (void)testIntervalSyncModeStartsAfterInterval {
     [self.manager.mappingProvider setMapping:self.intervalSyncMapping forKeyPath:@"/human"];
+    [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPush];
 
     // Create a new human
     RKHuman *human = [RKHuman object];
@@ -262,11 +265,82 @@
 
 #pragma mark - Network
 
-- (void)testRequestQueueIsSerial {
-  // 
+- (void)testStartsSyncAfterReachabilityIsEstablished {
+  
 }
 
+- (void)testRequestQueueExecutesSerially {
+    // TODO:
+    // In proxy strategy, we just want to send the requests one by one, just as they would have happened otherwise.
+    // In batch strategy, we may want to do some clever batching, etc., but that doesn't change the fact that there
+    // may be some really nasty issues if 2 related are changed simultaneously (at the moment we have no way of
+    // understanding the relationships between Core Data objects)
+    // To avoid all hell breaking loose, it's probably better to limit to 1 request a time (whether that request is a
+    // single object or a complex collection, though, is up to the Sync Manager).
+}
 
+#pragma mark - Sync Direction
 
+- (void) testBothRequestsWhenSyncDirectionIsBoth {
+    // (The default behavior is both so we don't need to explicitly set it here)
+    self.seededHuman.name = @"Blake Watters";
+    [self.manager.objectStore save:nil];
+    
+    // Only 1 item in the queue -- a push (the queue only ever holds pushes)
+    NSArray *queueItems = [RKManagedObjectSyncQueue findAll];
+    assertThat(queueItems,hasCountOf(1));
+    
+    // But there should be 2 requests - a push and a pull
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(2));
+}
+
+- (void)testPushRequestsOnlyWhenSyncDirectionIsPush {
+    // We only want to sync pushes by default
+    [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPush];
+  
+    self.seededHuman.name = @"Blake Watters";
+    [self.manager.objectStore save:nil];
+    
+    // Only 1 item in the queue -- a push (the queue only ever holds pushes)
+    NSArray *queueItems = [RKManagedObjectSyncQueue findAll];
+    assertThat(queueItems,hasCountOf(1));
+    
+    // And there should be 1 requests - a push.
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(1));
+}
+
+- (void)testPullRequestsOnlyWhenSyncDirectionIsPull {
+    // We only want to sync pulls by default
+    [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPull];
+    
+    self.seededHuman.name = @"Blake Watters";
+    [self.manager.objectStore save:nil];
+    
+    // No items in the queue -- we aren't pushing up any changes.
+    NSArray *queueItems = [RKManagedObjectSyncQueue findAll];
+    assertThat(queueItems,hasCountOf(0));
+    
+    // And there should be 1 requests - a pull.
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    assertThat(numRequests,equalToUnsignedInt(1));
+}
+
+#pragma mark - Delegate Testing
+
+- (void)test {
+  
+}
+/*
+
+- (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
+- (void)syncManager:(RKSyncManager *)syncManager willSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)syncManager:(RKSyncManager *)syncManager didSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
+- (void)syncManager:(RKSyncManager *)syncManager willPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
+- (void)syncManager:(RKSyncManager *)syncManager didPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+*/
 
 @end
