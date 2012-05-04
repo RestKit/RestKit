@@ -372,18 +372,24 @@
 #pragma mark - RKObjectLoaderDelegate (RKRequestDelegate) methods
 
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
-    if ([objectLoader.response isSuccessful]) {
-        NSManagedObject *object = (NSManagedObject *)objectLoader.sourceObject;
-        NSAssert([object isKindOfClass:[NSManagedObject class]],@"Should be impossible for this to be called with other than NSManagedObject subclasses.");
-      
-        NSString *IDString = [self IDStringForObject:object];
-        RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstByAttribute:@"objectIDString" withValue:IDString];
-        NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
-        [queueItem deleteEntity];
-        NSError *error = nil;
-        if ([_objectManager.objectStore save:&error] == NO) {
-            RKLogError(@"Error removing queue item: %@", error);
-        }
+    // If the response is a failure, do not pass go, do not collect $200, and do not remove from the queue.
+    if ([objectLoader.response isSuccessful] == NO) {
+        return;
+    }
+  
+    // Get the NSManagedObject we were sending
+    NSManagedObject *object = (NSManagedObject *)objectLoader.sourceObject;
+    NSAssert([object isKindOfClass:[NSManagedObject class]],@"Should be impossible for this to be called with other than NSManagedObject subclasses.");
+  
+    // Get the first matching object from the queue & remove it
+    NSString *IDString = [self IDStringForObject:object];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",IDString];
+    RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstWithPredicate:predicate sortedBy:@"queuePosition" ascending:NO];
+    NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
+    [queueItem deleteEntity];
+    NSError *error = nil;
+    if ([_objectManager.objectStore save:&error] == NO) {
+        RKLogError(@"Error removing queue item: %@", error);
     }
 }
 
