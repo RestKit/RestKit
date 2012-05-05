@@ -456,6 +456,7 @@
 }
 
 - (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache {
+    RKLogConfigureByName("RestKit/CoreData/Cache", RKLogLevelTrace);
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];    
     

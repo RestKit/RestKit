@@ -39,10 +39,30 @@
         }
     }
     
+    static NSPredicate *predicate = nil;
+//    if (! predicate) {
+    predicate = [NSComparisonPredicate 
+                              predicateWithLeftExpression:[NSExpression expressionForKeyPath:primaryKeyAttribute] 
+                              rightExpression:[NSExpression expressionForConstantValue:searchValue] 
+                              modifier:NSDirectPredicateModifier     
+                              type:NSEqualToPredicateOperatorType        
+                              options:0];
+//    }
+//    [NSComparisonPredicate
+//     predicateWithLeftExpression:
+//     [NSExpression expressionForEvaluatedObject]
+//     rightExpression:
+//     [NSExpression expressionForConstantValue:objectForID]
+//     modifier:NSDirectPredicateModifier
+//     type:NSEqualToPredicateOperatorType
+//     options:0];
+//    [request setPredicate:predicate];
+    
     NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:entity];
     [fetchRequest setFetchLimit:1];
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, searchValue]];
+    [fetchRequest setPredicate:predicate];
+//    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, searchValue]];
     NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:managedObjectContext];
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
     [fetchRequest release];

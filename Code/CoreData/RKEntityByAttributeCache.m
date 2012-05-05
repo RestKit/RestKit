@@ -17,7 +17,7 @@
 
 // Set Logging Component
 #undef RKLogComponent
-#define RKLogComponent lcl_cRestKitCoreData
+#define RKLogComponent lcl_cRestKitCoreDataCache
 
 @interface RKEntityByAttributeCache ()
 @property (nonatomic, retain) NSMutableDictionary *attributeValuesToObjectIDs;
@@ -68,6 +68,7 @@
     [_attribute release];
     [_managedObjectContext release];
     [_attributeValuesToObjectIDs release];
+    
     [super dealloc];
 }
 
@@ -83,6 +84,8 @@
 
 - (BOOL)shouldCoerceAttributeToString:(NSString *)attributeValue
 {
+    return NO;
+    
     if ([attributeValue isKindOfClass:[NSString class]] || [attributeValue isEqual:[NSNull null]]) {
         return NO;
     }
@@ -93,6 +96,7 @@
 
 - (void)load
 {
+    RKLogInfo(@"Loading entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);    
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:self.entity];
     [fetchRequest setResultType:NSManagedObjectIDResultType];
@@ -106,7 +110,7 @@
     [fetchRequest release];
     
     self.attributeValuesToObjectIDs = [NSMutableDictionary dictionaryWithCapacity:[objectIDs count]];
-    for (NSManagedObjectID* objectID in objectIDs) {
+    for (NSManagedObjectID *objectID in objectIDs) {
         NSError *error = nil;
         NSManagedObject *object = [self.managedObjectContext existingObjectWithID:objectID error:&error];
         if (! object && error) {
@@ -119,6 +123,7 @@
 
 - (void)flush
 {
+    RKLogInfo(@"Flushing entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);
     self.attributeValuesToObjectIDs = nil;
 }
 
@@ -158,7 +163,7 @@
 - (NSSet *)objectsWithAttributeValue:(id)attributeValue
 {
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
-    NSMutableSet *set = [self.attributeValuesToObjectIDs valueForKey:attributeValue];
+    NSMutableSet *set = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
     if (set) {
         NSSet *objectIDs = [NSSet setWithSet:set];
         NSMutableSet *objects = [NSMutableSet setWithCapacity:[objectIDs count]];
@@ -181,8 +186,7 @@
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
     if (attributeValue) {
         NSManagedObjectID *objectID = [object objectID];
-        BOOL isTemporary = [objectID isTemporaryID];
-        NSMutableSet *set = [self.attributeValuesToObjectIDs valueForKey:attributeValue];
+        NSMutableSet *set = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
         if (set) {
             [set addObject:objectID];
         } else {
@@ -204,7 +208,7 @@
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
     if (attributeValue) {
         NSManagedObjectID *objectID = [object objectID];
-        NSMutableSet *set = [self.attributeValuesToObjectIDs valueForKey:attributeValue];
+        NSMutableSet *set = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
         if (set) {
             [set removeObject:objectID];
         }
