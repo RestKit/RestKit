@@ -32,6 +32,16 @@
 
 @implementation RKManagedObjectMappingTest
 
+- (void)setUp
+{
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
+}
+
 - (void)testShouldReturnTheDefaultValueForACoreDataAttribute {
     // Load Core Data
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
@@ -220,13 +230,14 @@
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
     
-    RKHuman* human = [RKHuman object];
+    RKHuman* human = [RKHuman createInContext:store.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:123];
     [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
     
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
-    id object = [mapping mappableObjectForData:data];
+    NSManagedObject *object = [mapping mappableObjectForData:data];
+    assertThat([object managedObjectContext], is(equalTo(store.primaryManagedObjectContext)));
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
 }

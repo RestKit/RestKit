@@ -167,7 +167,7 @@
     }
     
     // If we have found the primary key attribute & value, try to find an existing instance to update
-    if (primaryKeyAttribute && primaryKeyValue) {
+    if (primaryKeyAttribute && primaryKeyValue && NO == [primaryKeyValue isEqual:[NSNull null]]) {
         object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
                                               withPrimaryKeyAttribute:self.primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
     }

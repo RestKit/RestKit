@@ -7,6 +7,7 @@
 //
 
 #import "RKInMemoryManagedObjectCache.h"
+#import "RKEntityCache.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -30,14 +31,23 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
         contextDictionary = [NSMutableDictionary dictionaryWithCapacity:1];
         [[[NSThread currentThread] threadDictionary] setObject:contextDictionary forKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
     }
-    NSNumber *hashNumber = [NSNumber numberWithUnsignedInteger:[managedObjectContext hash]];
-    RKInMemoryEntityCache *cache = [contextDictionary objectForKey:hashNumber];
-    if (! cache) {
-        cache = [[RKInMemoryEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
-        [contextDictionary setObject:cache forKey:hashNumber];
-        [cache release];
+    NSNumber *hashNumber = [NSNumber numberWithUnsignedInteger:[managedObjectContext hash]];    
+    RKEntityCache *entityCache = [contextDictionary objectForKey:hashNumber];
+    if (! entityCache) {
+        RKLogInfo(@"Creating thread-local entity cache for managed object context: %@", managedObjectContext);
+        entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
+        [contextDictionary setObject:entityCache forKey:hashNumber];
+        [entityCache release];
     }
-    return [cache cachedObjectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue inContext:managedObjectContext];
+    
+    if (! [entityCache isEntity:entity cachedByAttribute:primaryKeyAttribute]) {
+        RKLogInfo(@"Cacheing instances of Entity '%@' by attribute '%@'", entity.name, primaryKeyAttribute);
+        [entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];
+        RKEntityByAttributeCache *attributeCache = [entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
+        RKLogTrace(@"Cached %d objects", [attributeCache count]);
+    }
+    
+    return [entityCache objectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue];
 }
 
 @end

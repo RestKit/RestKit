@@ -181,3 +181,25 @@ desc "Validate a branch is ready for merging by checking for common issues"
 task :validate => [:build, 'docs:check', 'uispec:all'] do  
   puts "Project state validated successfully. Proceed with merge."
 end
+
+namespace :payload do
+  task :generate do
+    require 'json'
+    require 'faker'
+    
+    ids = (1..25).to_a
+    child_ids = (50..100).to_a
+    child_counts = (10..25).to_a
+    hash = ids.inject({'parents' => []}) do |hash, parent_id|
+      child_count = child_counts.sample
+      children = (0..child_count).collect do
+        {'name' => Faker::Name.name, 'childID' => child_ids.sample}
+      end
+      parent = {'parentID' => parent_id, 'name' => Faker::Name.name, 'children' => children}
+      hash['parents'] << parent
+      hash
+    end
+    File.open('payload.json', 'w+') { |f| f << hash.to_json }
+    puts "Generated payload at: payload.json"
+  end
+end

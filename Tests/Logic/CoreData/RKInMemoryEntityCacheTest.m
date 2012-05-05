@@ -19,6 +19,7 @@
 //
 
 #import "RKTestEnvironment.h"
+#import "RKInMemoryEntityCache.h"
 #import "RKHuman.h"
 
 @interface RKInMemoryEntityCache ()
@@ -262,6 +263,7 @@
 }
 
 - (void)testThatRepeatedInvocationsOfLoadObjectDoesNotDuplicateObjects {
+    RKLogConfigureByName("RestKit/CoreData", RKLogLevelTrace);
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     objectStore.cacheStrategy = [RKInMemoryManagedObjectCache new];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
@@ -274,12 +276,12 @@
     
     for (NSUInteger i = 0; i < 5; i++) {
         RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+        responseLoader.timeout = 1000;
         [objectManager loadObjectsAtResourcePath:@"/JSON/ArrayOfHumans.json" delegate:responseLoader];
         [responseLoader waitForResponse];
         for (RKHuman *object in [RKHuman allObjects]) {
             if ([object.railsID intValue] == 201) {
                 [objectStore.managedObjectContextForCurrentThread deleteObject:object];
-                [objectStore.managedObjectContextForCurrentThread save:nil];
             }
         }
         

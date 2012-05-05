@@ -32,6 +32,9 @@ GEM
     columnize (0.3.6)
     daemons (1.1.4)
     eventmachine (0.12.10)
+    faker (1.0.1)
+      i18n (~> 0.4)
+    i18n (0.6.0)
     json (1.6.6)
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
@@ -65,6 +68,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.1.0)
+  faker (= 1.0.1)
   rake (~> 0.9.0)
   restkit!
   ruby-debug19

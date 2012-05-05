@@ -16,6 +16,8 @@
  */
 @protocol RKManagedObjectCaching
 
+@required
+
 /**
  Retrieves a model object from the object store given a Core Data entity and
  the primary key attribute and value for the desired object.
@@ -31,5 +33,11 @@
                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                                     value:(id)primaryKeyValue
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+@optional
+
+- (void)didFetchObject:(NSManagedObject *)object;
+- (void)didCreateObject:(NSManagedObject *)object;
+- (void)didDeleteObject:(NSManagedObject *)object;
 
 @end

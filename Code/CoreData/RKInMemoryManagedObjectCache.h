@@ -7,7 +7,6 @@
 //
 
 #import "RKManagedObjectCaching.h"
-#import "RKInMemoryEntityCache.h"
 
 /**
  Provides a fast managed object cache where-in object instances are retained in

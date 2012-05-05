@@ -7,3 +7,4 @@ gem "thin", "~> 1.3.1"
 gem 'xcoder', :git => "git://github.com/rayh/xcoder.git"
 gem 'restkit', :git => 'git://github.com/RestKit/RestKit-Gem.git'
 gem 'ruby-debug19'
+gem 'faker', '1.0.1'
