@@ -85,71 +85,6 @@
 @property (nonatomic, readonly) RKManagedObjectStore *objectStore;
 
 /**
- Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
- the related object by primary key.
- 
- For example, given a Project object associated with a User, where the 'user' relationship is
- specified by a userID property on the managed object:
- 
- [mapping connectRelationship:@"user" withObjectForPrimaryKeyAttribute:@"userID"];
- 
- Will hydrate the 'user' association on the managed object with the object
- in the local object graph having the primary key specified in the managed object's
- userID property.
-  
- In effect, this approach allows foreign key relationships between managed objects
- to be automatically maintained from the server to the underlying Core Data object graph.
- */
-- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute;
-
-/**
- Connects relationships using the primary key values contained in the specified attribute. This method is
- a short-cut for repeated invocation of `connectRelationship:withObjectForPrimaryKeyAttribute:`.
- 
- @see connectRelationship:withObjectForPrimaryKeyAttribute:
- */
-- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION;
-
-/**
- Conditionally connect a relationship of the object being mapped when the object being mapped has
- keyPath equal to a specified value.
-
- For example, given a Project object associated with a User, where the 'admin' relationship is
- specified by a adminID property on the managed object:
-
- [mapping connectRelationship:@"admin" withObjectForPrimaryKeyAttribute:@"adminID" whenValueOfKeyPath:@"userType" isEqualTo:@"Admin"];
-
- Will hydrate the 'admin' association on the managed object with the object
- in the local object graph having the primary key specified in the managed object's
- userID property.  Note that this connection will only occur when the Product's 'userType'
- property equals 'Admin'. In cases where no match occurs, the relationship connection is skipped.
-
- @see connectRelationship:withObjectForPrimaryKeyAttribute:
- */
-- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
-
-/**
- Conditionally connect a relationship of the object being mapped when the object being mapped has
- block evaluate to YES. This variant is useful in cases where you want to execute an arbitrary
- block to determine whether or not to connect a relationship.
-
- For example, given a Project object associated with a User, where the 'admin' relationship is
- specified by a adminID property on the managed object:
-
- [mapping connectRelationship:@"admin" withObjectForPrimaryKeyAttribute:@"adminID" usingEvaluationBlock:^(id data) {
-    return [User isAuthenticated];
- }];
-
- Will hydrate the 'admin' association on the managed object with the object
- in the local object graph having the primary key specified in the managed object's
- userID property.  Note that this connection will only occur when the provided block evalutes to YES.
- In cases where no match occurs, the relationship connection is skipped.
-
- @see connectRelationship:withObjectForPrimaryKeyAttribute:
- */
-- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block;
-
-/**
  Initialize a managed object mapping with a Core Data entity description and a RestKit managed object store
  */
 - (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore;
@@ -159,5 +94,93 @@
  be assigned if the object mapping is applied and a value for a missing attribute is not present in the payload.
  */
 - (id)defaultValueForMissingAttribute:(NSString *)attributeName;
+
+
+
+/**
+ Instructs RestKit to automatically connect a relationship of the object being mapped (A) by looking up 
+ the related object (B) where A.foreignKeyAttribute == B.primaryKeyAttribute
+ 
+ For example, given a Project object associated with a User, where the 'user' relationship is
+ specified by a userID foreign key property on the managed object:
+ 
+ [mapping connectRelationship:@"user" usingForeignKeyAttribute:@"userID" mapping:userMapping];
+ 
+ Will hydrate the 'user' relationship of the Project by locating the User who's
+ primary key value (specified on the userMapping) matches the Project's 'userID' attribute.
+ 
+ In effect, this approach allows foreign key relationships between managed objects
+ to be automatically maintained from the server to the underlying Core Data object graph.
+ */
+- (void)connectRelationship:(NSString *)relationshipName usingForeignKeyAttribute:(NSString *)keyAttribute mapping:(RKManagedObjectMapping *)mapping;
+
+/**
+ Conditionally connect a relationship of the object being mapped when the object being mapped has
+ keyPath equal to a specified value.
+ 
+ For example, given a Project object associated with a User, where the 'admin' relationship is
+ specified by a adminID property on the managed object:
+ 
+ [mapping connectRelationship:@"admin" usingForeignKeyAttribute:@"adminID" mapping:userMapping whenValueOfKeyPath:@"userType" isEqualTo:@"Admin"];
+ 
+ Will hydrate the 'admin' association on the managed object with the object
+ in the local object graph having the primary key specified in the managed object's
+ userID property.  Note that this connection will only occur when the Product's 'userType'
+ property equals 'Admin'. In cases where no match occurs, the relationship connection is skipped.
+ 
+ @see connectRelationship:usingForeignKeyAttribute:mapping
+ */
+- (void)connectRelationship:(NSString *)relationshipName usingForeignKeyAttribute:(NSString *)keyAttribute mapping:(RKManagedObjectMapping *)mapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
+
+/**
+ Conditionally connect a relationship of the object being mapped when the object being mapped has
+ block evaluate to YES. This variant is useful in cases where you want to execute an arbitrary
+ block to determine whether or not to connect a relationship.
+ 
+ For example, given a Project object associated with a User, where the 'admin' relationship is
+ specified by a adminID property on the managed object:
+ 
+ [mapping connectRelationship:@"admin" usingForeignKeyAttribute:@"adminID" mapping:userMapping usingEvaluationBlock:^(id data) {
+ return [User isAuthenticated];
+ }];
+ 
+ Will hydrate the 'admin' association on the managed object with the object
+ in the local object graph having the primary key specified in the managed object's
+ userID property.  Note that this connection will only occur when the provided block evalutes to YES.
+ In cases where no match occurs, the relationship connection is skipped.
+ 
+ @see connectRelationship:usingForeignKeyAttribute:mapping
+ */
+- (void)connectRelationship:(NSString *)relationshipName usingForeignKeyAttribute:(NSString *)keyAttribute mapping:(RKManagedObjectMapping *)mapping usingEvaluationBlock:(BOOL (^)(id data))block;
+
+
+
+
+// Deprecated
+/**
+ Deprecated
+ @see connectRelationship:usingForeignKeyAttribute:mapping
+ */
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute DEPRECATED_ATTRIBUTE;
+
+/**
+ Deprecated
+ @see connectRelationship:usingForeignKeyAttribute:mapping
+ */
+- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE; 
+
+/**
+ Deprecated
+ @see connectRelationship:usingForeignKeyAttribute:mapping
+ */
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value DEPRECATED_ATTRIBUTE;
+
+/**
+ Deprecated
+ @see connectRelationship:usingForeignKeyAttribute:mapping
+ */
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block DEPRECATED_ATTRIBUTE;
+
+
 
 @end
