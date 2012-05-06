@@ -159,9 +159,44 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 
 /**
  Retrieves the Managed Object Context for the main thread that was initialized when
- the object store was created.
+ the object store was created. 
+ 
+ This context uses the NSMainQueueConcurrencyType to allow
+ you to create child contexts for passing between UIViewControllers, allowing 
+ the view to save its changes (which are passed back to the parent context) or 
+ discard them. 
+ 
+ Warning: Do not attempt to use the primary context or any child contexts on
+ other threads, unless done via performBlock: or performBlockAndWait: 
+ You should ask for a context for the current thread @see managedObjectContextForCurrentThread
  */
 @property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
+
+/**
+ Creates a new child Managed Object Context suitable for use on the main UI thread.
+ This context can handle object insertions or modifications without making those changes
+ visible anywhere else in the application. In this example a controller that creates
+ a new object is initialized with a child context so the new object it creates is 
+ not made visible (no need to delete it should the user cancel the operation, nor will
+ it show up as a result of an NSFetchedResultsController's change notifications)
+ 
+ NewItemViewController *controller = [NewItemViewController controllerWithContext:[store newChildManagedObjectContext]];
+ [self.navigationController pushViewController:controller animated:YES];
+ 
+ 
+ Although you can make calls without using performBlock: (since the concurrency type is MainQueue),
+ it is still considered best practice by Apple to do so. This call to save: will
+ propagate the pending changes up to the parent context (the primary in this case). 
+ To persist those changes to the persistent store you must call save: on it as well.
+ 
+ [childContext performBlockAndWait:^{
+    [childContext save:nil];
+    [childContext.parentContext performBlockAndWait:^{
+        childContext.parentContext save:nil];
+    }];
+ }];
+ */
+- (NSManagedObjectContext *)newChildManagedObjectContext;
 
 /**
  Instantiates a new managed object context
