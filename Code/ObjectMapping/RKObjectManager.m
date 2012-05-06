@@ -84,6 +84,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
         [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
         _mappingProvider.errorMapping = errorMapping;
 
+        [self addObserver:self forKeyPath:@"client.reachabilityObserver" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(reachabilityChanged:)
                                                      name:RKReachabilityDidChangeNotification
@@ -140,6 +141,33 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (BOOL)isOffline {
 	return (_networkStatus == RKObjectManagerNetworkStatusOffline);
+}
+
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"client.reachabilityObserver"])
+        [self reachabilityObserverDidChange:change];
+}
+
+- (void)reachabilityObserverDidChange:(NSDictionary *)change {
+    RKReachabilityObserver *oldReachabilityObserver = [change objectForKey:NSKeyValueChangeOldKey];
+    RKReachabilityObserver *newReachabilityObserver = [change objectForKey:NSKeyValueChangeNewKey];
+
+    if (! [oldReachabilityObserver isEqual:[NSNull null]]) {
+        RKLogDebug(@"Reachability observer changed for RKClient %@ of RKObjectManager %@, stopping observing reachability changes", self.client, self);
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityDidChangeNotification object:oldReachabilityObserver];
+        _networkStatus = RKObjectManagerNetworkStatusUnknown;
+    }
+
+    if (! [newReachabilityObserver isEqual:[NSNull null]]) {
+        _networkStatus = RKObjectManagerNetworkStatusUnknown;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(reachabilityChanged:)
+                                                     name:RKReachabilityDidChangeNotification
+                                                   object:newReachabilityObserver];
+
+        RKLogDebug(@"Reachability observer changed for client %@ of object manager %@, starting observing reachability changes", self.client, self);
+    }
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification {
