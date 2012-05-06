@@ -36,6 +36,10 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 ///////////////////////////////////
 
+@interface RKObjectManager ()
+@property (nonatomic, assign, readwrite) RKObjectManagerNetworkStatus networkStatus;
+@end
+
 @implementation RKObjectManager
 
 @synthesize client = _client;
@@ -66,15 +70,13 @@ static dispatch_queue_t defaultMappingQueue = nil;
     }
 }
 
-- (id)initWithBaseURL:(RKURL *)baseURL {
+- (id)init {
     self = [super init];
-	if (self) {
+    if (self) {
         _mappingProvider = [RKObjectMappingProvider new];
         _router = [RKObjectRouter new];
-        _client = [[RKClient alloc] initWithBaseURL:baseURL];
         _networkStatus = RKObjectManagerNetworkStatusUnknown;
-        
-        self.acceptMIMEType = RKMIMETypeJSON;
+                
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
         self.mappingQueue = [RKObjectManager defaultMappingQueue];
         
@@ -83,17 +85,28 @@ static dispatch_queue_t defaultMappingQueue = nil;
         errorMapping.rootKeyPath = @"errors";
         [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
         _mappingProvider.errorMapping = errorMapping;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(reachabilityChanged:)
-                                                     name:RKReachabilityDidChangeNotification
-                                                   object:_client.reachabilityObserver];
+        
+        [self addObserver:self 
+               forKeyPath:@"client.reachabilityObserver" 
+                  options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial 
+                  context:nil];
         
         // Set shared manager if nil
         if (nil == sharedManager) {
             [RKObjectManager setSharedManager:self];
         }
-	}
+    }
+    
+    return self;
+}
+
+- (id)initWithBaseURL:(RKURL *)baseURL {
+    self = [self init];
+    if (self) {
+        self.client = [[RKClient alloc] initWithBaseURL:baseURL];
+        [self.client release];
+        self.acceptMIMEType = RKMIMETypeJSON;
+    }
     
 	return self;
 }
@@ -118,12 +131,12 @@ static dispatch_queue_t defaultMappingQueue = nil;
 }
 
 - (void)dealloc {
+    [self removeObserver:self forKeyPath:@"client.reachabilityObserver"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [_router release];
     _router = nil;
-    [_client release];
-    _client = nil;
+    self.client = nil;
     [_objectStore release];
     _objectStore = nil;
     [_serializationMIMEType release];
@@ -140,6 +153,40 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (BOOL)isOffline {
 	return (_networkStatus == RKObjectManagerNetworkStatusOffline);
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"client.reachabilityObserver"]) {
+        [self reachabilityObserverDidChange:change];
+    }
+}
+
+- (void)reachabilityObserverDidChange:(NSDictionary *)change {
+    RKReachabilityObserver *oldReachabilityObserver = [change objectForKey:NSKeyValueChangeOldKey];
+    RKReachabilityObserver *newReachabilityObserver = [change objectForKey:NSKeyValueChangeNewKey];
+
+    if (! [oldReachabilityObserver isEqual:[NSNull null]]) {
+        RKLogDebug(@"Reachability observer changed for RKClient %@ of RKObjectManager %@, stopping observing reachability changes", self.client, self);
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityDidChangeNotification object:oldReachabilityObserver];
+    }
+
+    if (! [newReachabilityObserver isEqual:[NSNull null]]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(reachabilityChanged:)
+                                                     name:RKReachabilityDidChangeNotification
+                                                   object:newReachabilityObserver];
+
+        RKLogDebug(@"Reachability observer changed for client %@ of object manager %@, starting observing reachability changes", self.client, self);
+    }
+    
+    // Initialize current Network Status
+    if ([self.client.reachabilityObserver isReachabilityDetermined]) {
+        BOOL isNetworkReachable = [self.client.reachabilityObserver isNetworkReachable];        
+        self.networkStatus = isNetworkReachable ? RKObjectManagerNetworkStatusOnline : RKObjectManagerNetworkStatusOffline;
+    } else {
+        self.networkStatus = RKObjectManagerNetworkStatusUnknown;
+    }
 }
 
 - (void)reachabilityChanged:(NSNotification *)notification {

@@ -209,7 +209,7 @@
 /**
  A dictionary of headers to be sent with each request
  */
-@property (nonatomic, readonly) NSMutableDictionary *HTTPHeaders;
+@property (nonatomic, retain, readonly) NSMutableDictionary *HTTPHeaders;
 
 /**
  An optional timeout interval within which the request should be cancelled.
@@ -271,7 +271,7 @@
  A set of additional certificates to be used in evaluating server SSL
  certificates.
  */
-@property (nonatomic, readonly) NSSet *additionalRootCertificates;
+@property (nonatomic, retain, readonly) NSSet *additionalRootCertificates;
 
 /**
  Adds an additional certificate that will be used to evaluate server SSL certs.

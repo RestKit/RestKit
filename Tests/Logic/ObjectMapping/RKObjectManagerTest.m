@@ -87,6 +87,7 @@
 }
 
 - (void)testShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
+    
 	assertThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"], is(equalTo(@"application/json")));
 }
 
@@ -374,6 +375,37 @@
         loader.delegate = responseLoader;
     }];
     [responseLoader waitForResponse];
+}
+
+- (void)testThatInitializationOfObjectManagerInitializesNetworkStatusFromClient {
+    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
+    id mockObserver = [OCMockObject partialMockForObject:observer];
+    BOOL yes = YES;
+    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isReachabilityDetermined];
+    [[[mockObserver stub] andReturnValue:OCMOCK_VALUE(yes)] isNetworkReachable];
+    RKClient *client = [RKTestFactory client];
+    client.reachabilityObserver = mockObserver;
+    RKObjectManager *manager = [[RKObjectManager alloc] init];
+    manager.client = client;
+    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
+}
+
+- (void)testThatMutationOfUnderlyingClientReachabilityObserverUpdatesManager {
+    RKObjectManager *manager = [RKTestFactory objectManager];
+    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
+    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
+    manager.client.reachabilityObserver = observer;
+    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
+}
+
+- (void)testThatReplacementOfUnderlyingClientUpdatesManagerReachabilityObserver {
+    RKObjectManager *manager = [RKTestFactory objectManager];
+    RKReachabilityObserver *observer = [[RKReachabilityObserver alloc] initWithHost:@"google.com"];
+    RKClient *client = [RKTestFactory client];
+    client.reachabilityObserver = observer;
+    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusOnline)));
+    manager.client = client;
+    assertThatInteger(manager.networkStatus, is(equalToInteger(RKObjectManagerNetworkStatusUnknown)));
 }
 
 @end

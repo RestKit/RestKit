@@ -65,6 +65,11 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+@interface RKClient ()
+@property (nonatomic, retain, readwrite) NSMutableDictionary *HTTPHeaders;
+@property (nonatomic, retain, readwrite) NSSet *additionalRootCertificates;
+@end
+
 @implementation RKClient
 
 @synthesize baseURL = _baseURL;
@@ -121,25 +126,24 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 - (id)init {
     self = [super init];
 	if (self) {
-		_HTTPHeaders = [[NSMutableDictionary alloc] init];
-        _additionalRootCertificates = [[NSMutableSet alloc] init];
-        _defaultHTTPEncoding = NSUTF8StringEncoding;
+        self.HTTPHeaders = [[NSMutableDictionary alloc] init];
+        self.additionalRootCertificates = [[NSMutableSet alloc] init];
+        self.defaultHTTPEncoding = NSUTF8StringEncoding;
         self.cacheTimeoutInterval = 0;
         self.runLoopMode = NSRunLoopCommonModes;
-		self.serviceUnavailableAlertEnabled = NO;
-		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
-		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
+        self.requestQueue = [RKRequestQueue requestQueue];
+        self.serviceUnavailableAlertEnabled = NO;
+        self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
+        self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(serviceDidBecomeUnavailableNotification:)
                                                      name:RKServiceDidBecomeUnavailableNotification
                                                    object:nil];
 
-        // Configure reachability and queue
-        [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-        self.requestQueue = [RKRequestQueue requestQueue];
-
+        // Configure observers
+        [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];        
         [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
-        [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
+        [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial context:nil];
 	}
 
 	return self;

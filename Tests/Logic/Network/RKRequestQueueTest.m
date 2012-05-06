@@ -257,7 +257,6 @@
 }
 
 - (void)testThatSendingRequestToInvalidURLDoesNotGetSentTwice {
-    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
     RKRequestQueue *queue = [RKRequestQueue requestQueue];
     NSURL *URL = [NSURL URLWithString:@"http://bix.gg/RKRequestQueueExample"];
     RKRequest *request = [RKRequest requestWithURL:URL];

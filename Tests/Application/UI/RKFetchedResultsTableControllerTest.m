@@ -81,7 +81,6 @@
 }
 
 - (void)bootstrapNakedObjectStoreAndCache {
-//    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping *eventMapping = [RKManagedObjectMapping mappingForClass:[RKEvent class] inManagedObjectStore:store];
     [eventMapping mapKeyPath:@"event_id" toAttribute:@"eventID"];
@@ -1380,7 +1379,6 @@
     tableController.autoRefreshFromNetwork = YES;
     [tableController.cache invalidateAll];
 
-//    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
         [tableController loadTable];
     }];
