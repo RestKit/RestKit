@@ -153,8 +153,22 @@
  */
 - (void)connectRelationship:(NSString *)relationshipName usingForeignKeyAttribute:(NSString *)keyAttribute mapping:(RKManagedObjectMapping *)mapping usingEvaluationBlock:(BOOL (^)(id data))block;
 
-
-
+/**
+ Connect a relationship of the object being mapped by using a predicate to lookup the related object.
+ The predicate is created by a createPredicateBlock supplied, allowing the predicate to vary depending
+ on other values of the object being mapped.
+ 
+ ^NSPredicate*(NSString* relationshipName, id keyValue, id object, RKObjectMapping* mapping) = ...;
+ 
+ The block can return nil to cancel connection of the relationship, otherwise it should return a 
+ predicate that looks up an entity/entities depending on whether this is a one-to-many or one-to-one relationship.
+ The keyValue will be the value of the foreignKeyAttribute on object that should correspond
+ to the primaryKey value of the related object the predicate will locate.
+ The object will typically be an NSManagedObject subclass and the mapping an RKManagedObjectMapping.
+ 
+ @see connectRelationship:usingForeignKeyAttribute:mapping
+ */
+- (void)connectRelationship:(NSString *)relationshipName usingForeignKeyAttribute:(NSString *)keyAttribute mapping:(RKManagedObjectMapping *)mapping usingCreatePredicateBlock:(NSPredicate*(^)(NSString*,id,id,RKObjectMapping*))block;
 
 // Deprecated
 /**

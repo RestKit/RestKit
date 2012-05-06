@@ -35,10 +35,15 @@
     NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     id primaryKeyObject = [relationshipsAndPrimaryKeyAttributes objectForKey:relationshipName];
     NSString* primaryKeyAttribute = nil;
+    RKDynamicObjectCreatePredicateBlock createPredicate = NULL;
     if ([primaryKeyObject isKindOfClass:[RKDynamicObjectMappingMatcher class]]) {
         RKLogTrace(@"Found a dynamic matcher attempting to connect relationshipName: %@", relationshipName);
         RKDynamicObjectMappingMatcher* matcher = (RKDynamicObjectMappingMatcher*)primaryKeyObject;
-        if ([matcher isMatchForData:self.destinationObject]) {
+        if([matcher usePredicate]) {
+            primaryKeyAttribute = matcher.primaryKeyAttribute;
+            createPredicate = matcher.createPredicateBlock; //block is alive so long as matcher lives
+            RKLogTrace(@"Dynamic match will use predicate creation block to connect relationshipName '%@' using primaryKeyAttribute '%@'", relationshipName, primaryKeyAttribute);
+        } else if ([matcher isMatchForData:self.destinationObject]) {
             primaryKeyAttribute = matcher.primaryKeyAttribute;
             RKLogTrace(@"Dynamic matched succeeded. Proceeding to connect relationshipName '%@' using primaryKeyAttribute '%@'", relationshipName, primaryKeyAttribute);
         } else {
@@ -64,11 +69,21 @@
     NSString* primaryKeyAttributeOfRelatedObject = [(RKManagedObjectMapping*)objectMapping primaryKeyAttribute];
     NSAssert(primaryKeyAttributeOfRelatedObject, @"Cannot connect relationship: mapping for %@ has no primary key attribute specified", NSStringFromClass(objectMapping.objectClass));
     id valueOfLocalPrimaryKeyAttribute = [self.destinationObject valueForKey:primaryKeyAttribute];
+    NSPredicate *predicate = NULL;
+    
     if (valueOfLocalPrimaryKeyAttribute) {
         id relatedObject = nil;
         if ([valueOfLocalPrimaryKeyAttribute conformsToProtocol:@protocol(NSFastEnumeration)]) {
             RKLogTrace(@"Connecting has-many relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", primaryKeyAttributeOfRelatedObject, valueOfLocalPrimaryKeyAttribute];
+            if(createPredicate) {
+                predicate = createPredicate(relationshipName, valueOfLocalPrimaryKeyAttribute, self.destinationObject, objectMapping);
+                if(!predicate) {
+                    RKLogTrace(@"Dynamic mapping createPredicate did not return a predicate, skipping relationship connection");
+                    return;
+                }
+            } else {
+                predicate = [NSPredicate predicateWithFormat:@"%K IN %@", primaryKeyAttributeOfRelatedObject, valueOfLocalPrimaryKeyAttribute];
+            }
             NSFetchRequest *fetchRequest = [NSManagedObject requestAllInContext:[self.destinationObject managedObjectContext]];
             fetchRequest.predicate = predicate;
             fetchRequest.entity = objectMapping.entity;
@@ -76,7 +91,17 @@
             relatedObject = [NSSet setWithArray:objects];
         } else {
             RKLogTrace(@"Connecting has-one relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            NSFetchRequest *fetchRequest = [NSManagedObject requestFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute inContext:[self.destinationObject managedObjectContext]];
+            NSFetchRequest *fetchRequest;
+            if(createPredicate) {
+                fetchRequest = [NSManagedObject createFetchRequestInContext:[self.destinationObject managedObjectContext]];
+                fetchRequest.predicate = createPredicate(relationshipName, valueOfLocalPrimaryKeyAttribute, self.destinationObject, objectMapping);
+                if(!fetchRequest.predicate) {
+                    RKLogTrace(@"Dynamic mapping createPredicate did not return a predicate, skipping relationship connection");
+                    return;
+                }
+            } else {
+                fetchRequest = [NSManagedObject requestFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute inContext:[self.destinationObject managedObjectContext]];
+            }
             fetchRequest.entity = objectMapping.entity;
             NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:[self.destinationObject managedObjectContext]];
             relatedObject = [objects lastObject];
