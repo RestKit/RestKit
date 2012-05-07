@@ -328,7 +328,7 @@
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
-- (void)testShoulPullRequestsOnlyWhenSyncDirectionIsPull {
+- (void)testShouldPullRequestsOnlyWhenSyncDirectionIsPull {
     // We only want to sync pulls by default
     [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPull];
     
@@ -435,11 +435,13 @@
 }
 
 - (void)testShouldCallPullDelegateMethods {
+    [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/humans"];
+
     id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
     self.manager.syncManager.delegate = syncDelegate;
     
-    [[syncDelegate expect] syncManager:self.manager.syncManager willPullObjectsOfClass:nil withSyncMode:RKSyncModeManual];
-    [[syncDelegate expect] syncManager:self.manager.syncManager didPullObjectsOfClass:nil withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager willPullObjectsOfClass:[OCMArg any] withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didPullObjectsOfClass:[OCMArg any] withSyncMode:RKSyncModeManual];
 
     // Because this is testing pull only, we should not see push methods
     [[syncDelegate reject] syncManager:self.manager.syncManager willPushObjects:[OCMArg any] withSyncMode:RKSyncModeManual];
@@ -456,13 +458,15 @@
 }
 
 - (void)testShouldCallPullDelegateMethodsWithClass {
+    [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/humans"];
+
     id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
     self.manager.syncManager.delegate = syncDelegate;
     
     // Only manually pull humans
     Class aClass = [RKHuman class];
-    [[syncDelegate expect] syncManager:self.manager.syncManager willPullObjectsOfClass:aClass withSyncMode:RKSyncModeManual];
-    [[syncDelegate expect] syncManager:self.manager.syncManager didPullObjectsOfClass:aClass withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager willPullObjectsOfClass:[OCMArg any] withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didPullObjectsOfClass:[OCMArg any] withSyncMode:RKSyncModeManual];
   
     // Because this is testing pull only, we should not see push methods
     [[syncDelegate reject] syncManager:self.manager.syncManager willPushObjects:[OCMArg any] withSyncMode:RKSyncModeManual];

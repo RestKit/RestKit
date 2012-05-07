@@ -55,7 +55,7 @@
         _directions = [[NSMutableDictionary alloc] init];
         
         _objectManager = [objectManager retain];
-        _queue = [[NSMutableArray alloc] init];
+        _queues = [[NSMutableArray alloc] init];
 
         //Register for notifications from the managed object context associated with the object manager
         NSManagedObjectContext *moc = self.objectManager.objectStore.managedObjectContextForCurrentThread;
@@ -76,11 +76,11 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
+    [_queues release];
+    _queues = nil;
+  
     [_objectManager release];
     _objectManager = nil;
-    
-    [_queue release];
-    _queue = nil;
     
     [_strategies release];
     _strategies = nil;
@@ -129,11 +129,6 @@
 - (void)setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass {
     NSString *className = NSStringFromClass(objectClass);
     if (className) {
-        // Check that we don't have any queue items with this object type -- that really could cause problems
-        for (RKManagedObjectSyncQueue *queueItem in _queue) {
-            NSAssert(([queueItem.className isEqualToString:className] == NO),@"Cannot set RKSyncStrategy on a class that already has items in the queue.");
-        }
-      
         [_strategies setObject:[NSNumber numberWithInt:syncStrategy] forKey:className];
     }
     else {
@@ -189,6 +184,32 @@
     NSPredicate *objIdPredicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",objectId, nil];
     return [RKManagedObjectSyncQueue findAllWithPredicate:objIdPredicate];
 }
+
+
+- (NSArray *) queueItemsForSyncMode:(RKSyncMode)syncMode class:(Class)objectClass {
+  NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
+  
+  //Build predicate for fetching the right records
+  NSPredicate *syncModePredicate = nil;
+  NSPredicate *objectClassPredicate = nil;
+  NSPredicate *predicate = nil;
+  if (syncMode) {
+    syncModePredicate = [NSPredicate predicateWithFormat:@"syncMode == %@", [NSNumber numberWithInt:syncMode], nil];
+    predicate = syncModePredicate;
+  }
+  if (objectClass) {
+    objectClassPredicate = [NSPredicate predicateWithFormat:@"className == %@", NSStringFromClass(objectClass), nil];
+    predicate = objectClassPredicate;
+  }
+  if (objectClass && syncMode) {
+    predicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:syncModePredicate, objectClassPredicate, nil]];
+  }
+  if (predicate) {
+    return [RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:YES withPredicate:predicate inContext:context];
+  }
+  return [NSArray array];
+}
+
 
 // updated objects should be put, unless there's already a post or a delete
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object {
@@ -325,80 +346,61 @@
         }
     }
   
-    NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
+    // Get the queue of items for this 
+    NSArray *queue = [self queueItemsForSyncMode:syncMode class:objectClass];
   
-    // Empty the queue, we are going to re-build it based on what is in Core Data.
-    [_queue removeAllObjects];
-    
-    //Build predicate for fetching the right records
-    NSPredicate *syncModePredicate = nil;
-    NSPredicate *objectClassPredicate = nil;
-    NSPredicate *predicate = nil;
-    if (syncMode) {
-        syncModePredicate = [NSPredicate predicateWithFormat:@"syncMode == %@", [NSNumber numberWithInt:syncMode], nil];
-        predicate = syncModePredicate;
-    }
-    if (objectClass) {
-        objectClassPredicate = [NSPredicate predicateWithFormat:@"className == %@", NSStringFromClass(objectClass), nil];
-        predicate = objectClassPredicate;
-    }
-    if (objectClass && syncMode) {
-        predicate = [NSCompoundPredicate andPredicateWithSubpredicates:[NSArray arrayWithObjects:syncModePredicate, objectClassPredicate, nil]];
-    }
-    if (predicate) {
-        // Note that NSMutableArray doesn't have -firstObject, so instead we retrieved the array with descending order and peel off using -lastObject
-        [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO withPredicate:predicate inContext:context]];
-    }
-    
-    // If the queue is empty, quick return here.
-    if ([_queue count] == 0)
+    // If the queue is empty, quick return here -- no work to do.
+    if ([queue count] == 0)
     {
       return;
     }
   
-    // Put the objects all back together now so we can send them to the delegate
-    NSMutableSet *objects = [NSMutableSet setWithCapacity:[_queue count]];
-    NSMutableArray *tmpQueue = [[NSMutableArray alloc] initWithCapacity:[_queue count]];
-    for (RKManagedObjectSyncQueue *item in _queue) {
+    // Prune out any items that are "pull only" & reconstitute our NSManagedObject instances so we can send to delegate
+    NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
+    NSMutableSet *objectSet = [NSMutableSet setWithCapacity:[queue count]];
+    NSMutableArray *objectArray = [NSMutableArray arrayWithCapacity:[queue count]];
+    NSMutableArray *newQueue = [[NSMutableArray alloc] initWithCapacity:[queue count]];
+    for (RKManagedObjectSyncQueue *item in queue) {
         NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
         NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
       
         RKSyncDirection direction = [self syncDirectionForClass:NSClassFromString(item.className)];
         if (direction & RKSyncDirectionPush) {
-            [tmpQueue addObject:item];
-            [objects addObject:object];
+            [newQueue addObject:item];
+            [objectSet addObject:object];
+            [objectArray addObject:object];
         }
     }
-    // Now reset our queue to the new one
-    [_queue release];
-    _queue = tmpQueue;
   
+    // Notify the delegate of what is about to happen
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjects:withSyncMode:)]) {
-        [_delegate syncManager:self willPushObjects:(NSSet *)objects withSyncMode:syncMode];
+        [_delegate syncManager:self willPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
     }
   
-    RKManagedObjectSyncQueue *item = nil;
-    while ((item = [_queue lastObject])) {
-        NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
-        // Depending on what type of item this is, make the appropriate RestKit call to send it up
-        RKRequestMethod method = [item.syncMethod integerValue];
-        if (method == RKRequestMethodPOST) {
-            [_objectManager postObject:object delegate:self];
-            _requestCounter++;
-        } else if (method == RKRequestMethodPUT) {
-            [_objectManager putObject:object delegate:self];
-            _requestCounter++;
-        } else if (method == RKRequestMethodDELETE) {
-            [_objectManager deleteObject:object delegate:self];
-            _requestCounter++;
-        }
-        
-        // Remove this item from the in-memory queue; note this doesn't touch Core Data yet.
-        [_queue removeObject:item];
+    for (NSInteger i = 0; i < [newQueue count]; i++)
+    {
+      RKManagedObjectSyncQueue *item = [newQueue objectAtIndex:i];
+      NSManagedObject *object = [objectArray objectAtIndex:i];
+      
+      // Depending on what type of item this is, make the appropriate RestKit call to send it up
+      RKRequestMethod method = [item.syncMethod integerValue];
+      if (method == RKRequestMethodPOST) {
+        [_objectManager postObject:object delegate:self];
+        _requestCounter++;
+      } else if (method == RKRequestMethodPUT) {
+        [_objectManager putObject:object delegate:self];
+        _requestCounter++;
+      } else if (method == RKRequestMethodDELETE) {
+        [_objectManager deleteObject:object delegate:self];
+        _requestCounter++;
+      }
     }
+  
+    // Add all these objects to the queues so we know how to handle them on the way out.
+    [_queues addObject:objectArray];
   
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
-        [_delegate syncManager:self didPushObjects:(NSSet *)objects withSyncMode:syncMode];
+        [_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
     }
 }
 
@@ -413,10 +415,6 @@
         return;
       }
     }
-  
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullObjectsOfClass:withSyncMode:)]) {
-        [_delegate syncManager:self willPullObjectsOfClass:objectClass withSyncMode:syncMode];
-    }
     
     NSDictionary *mappings = _objectManager.mappingProvider.mappingsByKeyPath;
     for (id key in mappings) {
@@ -429,15 +427,18 @@
             
             RKSyncDirection direction = [self syncDirectionForClass:[object class]];
             if ((direction & RKSyncDirectionPull)) {
+              if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullObjectsOfClass:withSyncMode:)]) {
+                [_delegate syncManager:self willPullObjectsOfClass:objectClass withSyncMode:syncMode];
+              }
+
               [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
               _requestCounter++;
+              
+              if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullObjectsOfClass:withSyncMode:)]) {
+                [_delegate syncManager:self didPullObjectsOfClass:objectClass withSyncMode:syncMode];
+              }
             }
-          
         }
-    }
-  
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullObjectsOfClass:withSyncMode:)]) {
-        [_delegate syncManager:self didPullObjectsOfClass:objectClass withSyncMode:syncMode];
     }
 }
 
@@ -457,7 +458,7 @@
   }
 }
 
-#pragma mark - Public Syncing Methods
+#pragma mark - Convenience Syncing Methods
 
 - (void)sync {
     [self syncObjectsOfClass:nil];
@@ -508,7 +509,6 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",IDString];
         RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstWithPredicate:predicate sortedBy:@"queuePosition" ascending:NO];
         NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
-        NSLog(@"Deleted entity with ID: %@",IDString);
         [queueItem deleteEntity];
         NSError *error = nil;
         if ([_objectManager.objectStore save:&error] == NO) {
