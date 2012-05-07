@@ -815,6 +815,8 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     NSNumber *requestedValue = nil;
     NSArray *objects = [context executeFetchRequest:request error:&error];
     if (objects == nil) {
+        [request release];
+        [expressionDescription release];
         return nil;
     }
     else {
