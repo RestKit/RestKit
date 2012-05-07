@@ -237,7 +237,7 @@ typedef enum {
 /**
  An object that handles the syncronization of objects with the server.
  */
-@property (nonatomic, readonly) RKSyncManager *syncManager;
+@property (nonatomic, retain, readonly) RKSyncManager *syncManager;
 
 /**
  The Grand Dispatch Queue to use when performing expensive object mapping operations

@@ -120,7 +120,8 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+    [_syncManager release];
+    _syncManager = nil;
     [_router release];
     _router = nil;
     [_client release];
