@@ -36,6 +36,7 @@
 - (NSArray *)queueItemsForObject:(NSManagedObject *)object;
 // Returns YES if we should create a queue object for this object on update
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object;
+- (void)_reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification;
 @end
 
 @implementation RKSyncManager
@@ -71,7 +72,7 @@
         
         //Register for reachability changes for transparent syncing
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(transparentSync) 
+                                                 selector:@selector(_reachabilityChangedNotificationReceived:) 
                                                      name:RKReachabilityDidChangeNotification 
                                                    object:self.objectManager.client.reachabilityObserver];
 	}
@@ -280,15 +281,15 @@
                 // first call -shouldDelete/-shouldUpdate to determine whether we should even bother (depends on strategy)
                 if ([changeType isEqualToString:NSInsertedObjectsKey])
                 {
-                  somethingAdded = somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
+                  somethingAdded = (somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode]);
                 }
                 else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object])
                 {
-                  somethingAdded = somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode];
+                  somethingAdded = (somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode]);
                 }
                 else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
                 {
-                  somethingAdded = somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode];
+                  somethingAdded = (somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode]);
                 }
             }
         }
@@ -474,6 +475,11 @@
         [self pushObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
         [self pullObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
     }
+}
+
+- (void) _reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification
+{
+  [self transparentSync];
 }
 
 #pragma mark - Public Syncing Methods
