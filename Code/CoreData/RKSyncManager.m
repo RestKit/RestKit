@@ -519,7 +519,7 @@
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-      [_delegate syncManager:self didFailSyncingWithError:error];
+        [_delegate syncManager:self didFailSyncingWithError:error];
     }
 }
 
