@@ -171,6 +171,13 @@
             [invocation setSelector:@selector(informDelegateOfError:)];
             [invocation setArgument:&error atIndex:2];
             [invocation invokeOnMainThread];
+
+            signature = [(NSObject *)self methodSignatureForSelector:@selector(finalizeLoad:)];
+            invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+            [invocation setTarget:self];
+            [invocation setSelector:@selector(finalizeLoad:)];
+            [invocation setArgument:&success atIndex:2];
+            [invocation invokeOnMainThread];
             return;
         }
     }
