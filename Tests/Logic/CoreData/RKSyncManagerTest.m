@@ -300,7 +300,7 @@
     assertThat(numRequests,equalToUnsignedInt(2));
 }
 
-- (void)testPushRequestsOnlyWhenSyncDirectionIsPush {
+- (void)testShouldPushRequestsOnlyWhenSyncDirectionIsPush {
     // We only want to sync pushes by default
     [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPush];
   
@@ -316,7 +316,7 @@
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
-- (void)testPullRequestsOnlyWhenSyncDirectionIsPull {
+- (void)testShoulPullRequestsOnlyWhenSyncDirectionIsPull {
     // We only want to sync pulls by default
     [self.manager.syncManager setDefaultSyncDirection:RKSyncDirectionPull];
     
@@ -355,7 +355,21 @@
 
 #pragma mark - Delegate Testing
 
-- (void)test {
+- (void)testShouldCallToDelegateMethods {
+  id syncDelegate = [OCMockObject mockForProtocol:@protocol(RKSyncManagerDelegate)];
+  self.manager.syncManager.delegate = syncDelegate;
+  
+  [syncDelegate expect];
+/*
+  id mockProvider = [OCMockObject niceMockForClass:[RKObjectMappingProvider class]];
+  id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
+  
+  id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
+  RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:mockProvider];
+  [[mockDelegate expect] objectMapper:mapper didAddError:[OCMArg isNotNil]];
+  mapper.delegate = mockDelegate;
+  [mapper performMapping];
+  [mockDelegate verify];*/
   
 }
 /*
@@ -370,7 +384,7 @@
 
 #pragma mark - Network
 
-- (void)testStartsSyncAfterReachabilityIsEstablished {
+- (void)testShouldStartSyncAfterReachabilityIsEstablished {
   RKURL *bogusUrl = [RKURL URLWithBaseURL:[NSURL URLWithString:@"http://10.1.1.1/"]];
   [RKTestFactory setBaseURL:bogusUrl];
   
