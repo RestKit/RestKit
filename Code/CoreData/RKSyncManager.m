@@ -377,8 +377,14 @@
         [_queue addObjectsFromArray:[RKManagedObjectSyncQueue findAllSortedBy:@"queuePosition" ascending:NO withPredicate:predicate inContext:context]];
     }
     
+    // If the queue is empty, quick return here.
+    if ([_queue count] == 0)
+    {
+      return;
+    }
+  
     // Put the objects all back together now so we can send them to the delegate
-    NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[_queue count]];
+    NSMutableSet *objects = [NSMutableSet setWithCapacity:[_queue count]];
     NSMutableArray *tmpQueue = [[NSMutableArray alloc] initWithCapacity:[_queue count]];
     for (RKManagedObjectSyncQueue *item in _queue) {
         NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
@@ -394,8 +400,8 @@
     [_queue release];
     _queue = tmpQueue;
   
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjectsInQueue:withSyncMode:andClass:)]) {
-        [_delegate syncManager:self willPushObjects:(NSArray *)objects withSyncMode:syncMode];
+    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjects:withSyncMode:)]) {
+        [_delegate syncManager:self willPushObjects:(NSSet *)objects withSyncMode:syncMode];
     }
   
     RKManagedObjectSyncQueue *item = nil;
@@ -419,7 +425,7 @@
     }
   
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
-        [_delegate syncManager:self didPushObjects:objects withSyncMode:syncMode];
+        [_delegate syncManager:self didPushObjects:(NSSet *)objects withSyncMode:syncMode];
     }
 }
 

@@ -55,11 +55,15 @@
     self.intervalSyncMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:self.store];
     self.intervalSyncMapping.syncMode = RKSyncModeInterval;
   
-    // Set up the routing
+    // Set up the routing for humans & cats
     [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodGET];
     [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodPUT];
     [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodPOST];
     [self.manager.router routeClass:[RKHuman class] toResourcePath:@"/human" forMethod:RKRequestMethodDELETE];
+    [self.manager.router routeClass:[RKCat class] toResourcePath:@"/cat" forMethod:RKRequestMethodGET];
+    [self.manager.router routeClass:[RKCat class] toResourcePath:@"/cat" forMethod:RKRequestMethodPUT];
+    [self.manager.router routeClass:[RKCat class] toResourcePath:@"/cat" forMethod:RKRequestMethodPOST];
+    [self.manager.router routeClass:[RKCat class] toResourcePath:@"/cat" forMethod:RKRequestMethodDELETE];
   
     // Get a serialization mapping - we're going to need this to get the requests out the door
     RKManagedObjectMapping *serializationMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class]
@@ -355,32 +359,108 @@
 
 #pragma mark - Delegate Testing
 
-- (void)testShouldCallToDelegateMethods {
-  id syncDelegate = [OCMockObject mockForProtocol:@protocol(RKSyncManagerDelegate)];
-  self.manager.syncManager.delegate = syncDelegate;
+- (void)testShouldCallAllDelegateMethodsWhenSyncing {
+    id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
+    self.manager.syncManager.delegate = syncDelegate;
+    
+    // We are syncing everything, so the delegate won't have any specific class type
+    [[syncDelegate expect] syncManager:self.manager.syncManager willSyncWithSyncMode:RKSyncModeManual andClass:nil];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didSyncWithSyncMode:RKSyncModeManual andClass:nil];
+
+    // Configure RestKit to handle cat objects
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:self.store];
+    catMapping.syncMode = RKSyncModeManual;
+    [self.manager.mappingProvider setSerializationMapping:catMapping forClass:[RKCat class]];
+    [self.manager.mappingProvider setMapping:catMapping forKeyPath:@"/cat"];
+
+    // Now create a human and see that the delegates are called when we manually sync
+    [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/human"];
+    RKHuman *human = [RKHuman object];
+    human.name = @"Eric Cordell";
+    human.railsID = [NSNumber numberWithInt:2];
   
-  [syncDelegate expect];
-/*
-  id mockProvider = [OCMockObject niceMockForClass:[RKObjectMappingProvider class]];
-  id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMapperDelegate)];
+    // Create the cat & save both
+    RKCat *cat = [RKCat object];
+    cat.name = @"Nyanko";
+    [self.manager.objectStore save:nil];
+
+    // Also, we'll end up pushing 1 human.
+    NSSet *objs = [NSSet setWithObjects:cat,human,nil];
+    [[syncDelegate expect] syncManager:self.manager.syncManager willPushObjects:objs withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didPushObjects:objs withSyncMode:RKSyncModeManual];
   
-  id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"users.json"];
-  RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:mockProvider];
-  [[mockDelegate expect] objectMapper:mapper didAddError:[OCMArg isNotNil]];
-  mapper.delegate = mockDelegate;
-  [mapper performMapping];
-  [mockDelegate verify];*/
+    // And pulling all humans.
+    [[syncDelegate expect] syncManager:self.manager.syncManager willPullObjectsOfClass:nil withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didPullObjectsOfClass:nil withSyncMode:RKSyncModeManual];
+
+    [self.manager.syncManager sync];
+    
+    [syncDelegate verify];
+}
+
+- (void)testShouldCallPushDelegateMethods {
+    id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
+    self.manager.syncManager.delegate = syncDelegate;
+    
+    // Now create a human (with manual syncing) and see that the delegates are called
+    [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/human"];
+    RKHuman *human = [RKHuman object];
+    human.name = @"Eric Cordell";
+    human.railsID = [NSNumber numberWithInt:2];
+
+    NSSet *objs = [NSSet setWithObject:human];
+    [[syncDelegate expect] syncManager:self.manager.syncManager willPushObjects:objs withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didPushObjects:objs withSyncMode:RKSyncModeManual];
+
+    [self.manager.objectStore save:nil];
+    [self.manager.syncManager push];
+    
+    [syncDelegate verify];
+}
+
+- (void)testShouldCallPullDelegateMethods {
+    id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
+    self.manager.syncManager.delegate = syncDelegate;
+    
+    [[syncDelegate expect] syncManager:self.manager.syncManager willPullObjectsOfClass:nil withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didPullObjectsOfClass:nil withSyncMode:RKSyncModeManual];
+
+    // Now call the pull to make the delegate call back
+    [self.manager.syncManager pull];
+    
+    [syncDelegate verify];
+}
+
+- (void)testShouldCallPullDelegateMethodsWithClass {
+    id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
+    self.manager.syncManager.delegate = syncDelegate;
+    
+    // Only manually pull humans
+    Class aClass = [RKHuman class];
+    [[syncDelegate expect] syncManager:self.manager.syncManager willPullObjectsOfClass:aClass withSyncMode:RKSyncModeManual];
+    [[syncDelegate expect] syncManager:self.manager.syncManager didPullObjectsOfClass:aClass withSyncMode:RKSyncModeManual];
+    
+    // Now call the pull to make the delegate call back
+    [self.manager.syncManager pullObjectsWithSyncMode:RKSyncModeManual andClass:aClass];
+    
+    [syncDelegate verify];
   
 }
-/*
- - (void)syncManager:(RKSyncManager *)syncManager willSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
- - (void)syncManager:(RKSyncManager *)syncManager didSyncWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
- - (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
- - (void)syncManager:(RKSyncManager *)syncManager willPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
- - (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
- - (void)syncManager:(RKSyncManager *)syncManager didPullWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
- - (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
- */
+
+- (void)testShouldCallErrorDelegateMethod {
+  id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
+  self.manager.syncManager.delegate = syncDelegate;
+  
+  NSError *error = nil;
+  [[syncDelegate expect] syncManager:self.manager.syncManager didFailSyncingWithError:error];
+
+  [self.manager.syncManager pullObjectsWithSyncMode:RKSyncModeManual andClass:[RKHuman class]];
+  
+  // Let it run long enough for the server to fail because we don't know this route.
+  [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:3]];
+  
+  [syncDelegate verify];
+}
 
 #pragma mark - Network
 

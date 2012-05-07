@@ -68,12 +68,12 @@ typedef enum {
 /**
  * When implemented, sent before objects are pushed to the server.
  */
-- (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
+- (void)syncManager:(RKSyncManager *)syncManager willPushObjects:(NSSet *)objects withSyncMode:(RKSyncMode)syncMode;
 
 /**
  * When implemented, sent when all push requests have been added to the request queue.
  */
-- (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSArray *)objects withSyncMode:(RKSyncMode)syncMode;
+- (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSSet *)objects withSyncMode:(RKSyncMode)syncMode;
 
 /**
  * When implemented, sent before updates are pulled from ther server.
