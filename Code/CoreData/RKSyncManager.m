@@ -20,9 +20,6 @@
 
 #import "RKSyncManager.h"
 
-// The default time that the interval timer should wait before sending new sync requests.
-#define RK_SYNC_TIMER_DEFAULT 60
-
 @interface RKSyncManager (Private)
 - (void)contextDidSave:(NSNotification*)notification;
 
@@ -57,9 +54,6 @@
         _strategies = [[NSMutableDictionary alloc] init];
         _directions = [[NSMutableDictionary alloc] init];
         
-        // This timer controls when items with RKSyncModeInterval will be synced.
-        [self setSyncInterval:RK_SYNC_TIMER_DEFAULT];
-    
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
 
@@ -82,10 +76,6 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    [_intervalTimer invalidate];
-    [_intervalTimer release];
-    _intervalTimer = nil;
-  
     [_objectManager release];
     _objectManager = nil;
     
@@ -281,15 +271,18 @@
                 // first call -shouldDelete/-shouldUpdate to determine whether we should even bother (depends on strategy)
                 if ([changeType isEqualToString:NSInsertedObjectsKey])
                 {
-                  somethingAdded = (somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode]);
+                  BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
+                  somethingAdded = (somethingAdded || added);
                 }
                 else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object])
                 {
-                  somethingAdded = (somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode]);
+                  BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode];
+                  somethingAdded = (somethingAdded || added);
                 }
                 else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
                 {
-                  somethingAdded = (somethingAdded || [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode]);
+                  BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode];
+                  somethingAdded = (somethingAdded || added);
                 }
             }
         }
@@ -301,27 +294,6 @@
     {
       [self transparentSync];
     }
-}
-
-#pragma mark - Interval Sync Timer
-
-- (void)intervalTimerFired:(NSTimer *)intervalTimer {
-    [self syncObjectsWithSyncMode:RKSyncModeInterval andClass:nil];
-}
-
-- (void)setSyncInterval:(NSTimeInterval)interval {
-  NSAssert((interval > 0),@"Time interval must be greater than zero.");
-  
-  // Stop the timer first, then re-create it.
-  [_intervalTimer invalidate];
-  [_intervalTimer release];
-  
-  _intervalTimer = [NSTimer scheduledTimerWithTimeInterval:interval
-                                                    target:self
-                                                  selector:@selector(intervalTimerFired:)
-                                                  userInfo:nil
-                                                   repeats:YES];
-  [_intervalTimer retain];
 }
 
 #pragma mark - Sync Methods
@@ -479,13 +451,20 @@
 
 - (void) _reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification
 {
-  [self transparentSync];
+  if (_requestCounter == 0)
+  {
+    //    [self transparentSync];
+  }
 }
 
 #pragma mark - Public Syncing Methods
 
 - (void)sync {
     [self syncObjectsOfClass:nil];
+}
+
+- (void)intervalSyncForClass:(Class)objectClass {
+    [self syncObjectsWithSyncMode:RKSyncModeInterval andClass:objectClass];
 }
 
 - (void)syncObjectsOfClass:(Class)objectClass {
@@ -529,6 +508,7 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",IDString];
         RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstWithPredicate:predicate sortedBy:@"queuePosition" ascending:NO];
         NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
+        NSLog(@"Deleted entity with ID: %@",IDString);
         [queueItem deleteEntity];
         NSError *error = nil;
         if ([_objectManager.objectStore save:&error] == NO) {
@@ -539,7 +519,7 @@
 
 - (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-        [_delegate syncManager:self didFailSyncingWithError:error];
+      [_delegate syncManager:self didFailSyncingWithError:error];
     }
 }
 

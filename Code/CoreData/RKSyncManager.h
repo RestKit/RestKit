@@ -94,7 +94,6 @@ typedef enum {
     NSMutableArray *_queue;
     NSMutableDictionary *_strategies;
     NSMutableDictionary *_directions;
-    NSTimer *_intervalTimer;
     NSInteger _requestCounter;
 }
 
@@ -123,6 +122,14 @@ typedef enum {
  @see RKSyncMode
  */
 - (void)sync;
+
+/**
+ Convenience method for syncing all pending objects with `syncMode = RKSyncModeInterval`.
+ It is your responsibility to manage an NSTimer instance to automatically call this method.
+ @param objectClass The Class pointer of the class you wish to sync.  To sync all classes, pass nil.
+ @see RKSyncMode
+ */
+- (void)intervalSyncForClass:(Class)objectClass;
 
 /**
  Convenience method for syncing all pending objects with `syncMode = RKSyncModeManual` of
@@ -222,14 +229,5 @@ typedef enum {
  @see RKSyncStrategy
  */
 - (RKSyncStrategy) syncStrategyForClass:(Class)objectClass;
-
-#pragma mark - Sync Interval
-
-/**
- Sets the interval that `RKSyncManager` will try to synchronize items that are queued with
- synchronization mode `RKSyncModeInterval`.
- */
-- (void)setSyncInterval:(NSTimeInterval)interval;
-
 
 @end
