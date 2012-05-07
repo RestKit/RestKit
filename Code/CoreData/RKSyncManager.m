@@ -453,7 +453,7 @@
 {
   if (_requestCounter == 0)
   {
-    //    [self transparentSync];
+      [self transparentSync];
   }
 }
 
