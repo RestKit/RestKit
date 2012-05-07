@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2080057C14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; };
+		2080057C14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2080057D14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
 		2080057F14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080057A14ED82A30052EB8C /* RKManagedObjectSyncQueue.m */; };
-		2080058514ED8C240052EB8C /* RKSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080058214ED8C240052EB8C /* RKSyncManager.h */; };
+		2080058514ED8C240052EB8C /* RKSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080058214ED8C240052EB8C /* RKSyncManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2080058614ED8C240052EB8C /* RKSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080058314ED8C240052EB8C /* RKSyncManager.m */; };
 		2080058814ED8C240052EB8C /* RKSyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 2080058314ED8C240052EB8C /* RKSyncManager.m */; };
 		2501405315366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
@@ -679,6 +679,8 @@
 		25FABED614E37A2B00E609E7 /* RKTestResponseLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25FABED814E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */; };
 		25FABED914E37A2B00E609E7 /* RKTestResponseLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 25FABED514E37A2B00E609E7 /* RKTestResponseLoader.m */; };
+		490D546B1557E9D600610278 /* RKSyncManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080058214ED8C240052EB8C /* RKSyncManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		490D546D1557EA2200610278 /* RKManagedObjectSyncQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 2080057914ED82A30052EB8C /* RKManagedObjectSyncQueue.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49A66B0C14CEFB0400A6F062 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B0914CEFB0400A6F062 /* XMLReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 49A66B0914CEFB0400A6F062 /* XMLReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49A66B0E14CEFB0400A6F062 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B0A14CEFB0400A6F062 /* XMLReader.m */; };
@@ -689,7 +691,6 @@
 		49A66B1514CF03CA00A6F062 /* RKXMLParserXMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A66B1114CF03CA00A6F062 /* RKXMLParserXMLReader.m */; };
 		49A9D52615537B3600C4005B /* RKSyncManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A9D52515537B3600C4005B /* RKSyncManagerTest.m */; };
 		49A9D52715537B3600C4005B /* RKSyncManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 49A9D52515537B3600C4005B /* RKSyncManagerTest.m */; };
-		49A9D538155384B000C4005B /* RKTestResponseLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25FABED414E37A2B00E609E7 /* RKTestResponseLoader.h */; };
 		49D2759D14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49D2759914C9EF1E0090845D /* ISO8601DateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49D2759E14C9EF1E0090845D /* ISO8601DateFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49D2759914C9EF1E0090845D /* ISO8601DateFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		49D2759F14C9EF1E0090845D /* ISO8601DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49D2759A14C9EF1E0090845D /* ISO8601DateFormatter.m */; };
@@ -2195,8 +2196,6 @@
 				25B6E9ED14CF940700B1E881 /* RKSearchableManagedObject.h in Headers */,
 				25B6E9F114CF940700B1E881 /* RKSearchWord.h in Headers */,
 				25B6E9F514CF940700B1E881 /* RKSearchWordObserver.h in Headers */,
-				2080057B14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */,
-				2080058414ED8C240052EB8C /* RKSyncManager.h in Headers */,
 				25B6E9FD14CF943E00B1E881 /* RKCache.h in Headers */,
 				25B6EA0114CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
 				49A66B1214CF03CA00A6F062 /* RKXMLParserXMLReader.h in Headers */,
@@ -2218,6 +2217,8 @@
 				25EC1AC014F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */,
 				25EC1B3914F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */,
 				257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */,
+				490D546D1557EA2200610278 /* RKManagedObjectSyncQueue.h in Headers */,
+				490D546B1557E9D600610278 /* RKSyncManager.h in Headers */,
 				257ABAB61511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				25079C6F151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h in Headers */,
 				252A202D153471380078F8AD /* NSArray+RKAdditions.h in Headers */,
@@ -2321,12 +2322,11 @@
 				25B6E9FE14CF943E00B1E881 /* RKCache.h in Headers */,
 				25B6EA0214CF943E00B1E881 /* RKMutableBlockDictionary.h in Headers */,
 				252EFB1C14D9A7CB004863C8 /* NSBundle+RKAdditions.h in Headers */,
-				252EFB2614D9B6F2004863C8 /* Testing.h in Headers */,
-				49A9D538155384B000C4005B /* RKTestResponseLoader.h in Headers */,
-				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
-				25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */,
 				2080057C14ED82A30052EB8C /* RKManagedObjectSyncQueue.h in Headers */,
 				2080058514ED8C240052EB8C /* RKSyncManager.h in Headers */,
+				252EFB2614D9B6F2004863C8 /* Testing.h in Headers */,
+				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
+				25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2809,8 +2809,6 @@
 				252EFB0814D98F4D004863C8 /* RKSearchableManagedObjectTest.m in Sources */,
 				252EFB0A14D98F4D004863C8 /* RKSearchWordObserverTest.m in Sources */,
 				252EFB0D14D98F76004863C8 /* RKMutableBlockDictionaryTest.m in Sources */,
-				2080057E14ED82A30052EB8C /* RKManagedObjectSyncQueue.m in Sources */,
-				2080058714ED8C240052EB8C /* RKSyncManager.m in Sources */,
 				25EC1A4A14F73CA200C3CF3F /* RKInMemoryEntityCacheTest.m in Sources */,
 				25E36E0215195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */,
 				25079C76151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */,
