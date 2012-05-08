@@ -109,6 +109,13 @@ typedef enum {
  */
 @property (nonatomic, assign) id<RKSyncManagerDelegate> delegate;
 
+/**
+ If NO, the sync manager will take no actions for any inserted, updated, or deleted 
+ objects (i.e. do nothing).  This is useful if you need to do some
+ local Core Data management without affecting the status of those records on the server,
+ such as logging a user out and deleting their associated data.
+ */
+@property (nonatomic) BOOL syncEnabled;
 
 /**
  Creates an RKSyncManager and associates it with an RKObjectManager. This happens automatically on objectStore initialization, or one can be created seperately to handle different syncing tasks. Once initialized the `objectManager` is `readonly`.

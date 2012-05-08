@@ -40,6 +40,7 @@
 
 @synthesize objectManager = _objectManager, delegate = _delegate;
 @synthesize defaultSyncStrategy = _defaultSyncStrategy, defaultSyncDirection = _defaultSyncDirection;
+@synthesize syncEnabled;
 
 #pragma mark - Init & Dealloc
 
@@ -56,6 +57,9 @@
         
         _objectManager = [objectManager retain];
         _queues = [[NSMutableArray alloc] init];
+      
+        // Turn us on by default - this can be disabled by the client code if necessary
+        self.syncEnabled = YES;
 
         //Register for notifications from the managed object context associated with the object manager
         NSManagedObjectContext *moc = self.objectManager.objectStore.managedObjectContextForCurrentThread;
@@ -266,6 +270,11 @@
 #pragma mark - NSManagedObjectContextDidSaveNotification Observer
 
 - (void)contextDidSave:(NSNotification *)notification {
+    // If the Sync Manager is currently turned off, just quick return
+    if (self.syncEnabled == NO) {
+        return;
+    }
+  
     // Notification keys of the object sets we care about
     NSArray *objectKeys = [NSArray arrayWithObjects:NSInsertedObjectsKey, NSUpdatedObjectsKey, NSDeletedObjectsKey, nil];
   
