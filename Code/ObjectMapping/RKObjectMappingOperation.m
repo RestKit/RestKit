@@ -61,6 +61,11 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return ComparisonSender(sourceValue, comparisonSelector, destinationValue);
 }
 
+@interface RKObjectMappingOperation ()
+@property (nonatomic, retain) NSDictionary *nestedAttributeSubstitution;
+@property (nonatomic, retain) NSError *validationError;
+@end
+
 @implementation RKObjectMappingOperation
 
 @synthesize sourceObject = _sourceObject;
@@ -68,6 +73,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 @synthesize objectMapping = _objectMapping;
 @synthesize delegate = _delegate;
 @synthesize queue = _queue;
+@synthesize nestedAttributeSubstitution = _nestedAttributeSubstitution;
+@synthesize validationError = _validationError;
 
 + (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectMappingDefinition *)objectMapping {
     // Check for availability of ManagedObjectMappingOperation. Better approach for handling?
@@ -337,6 +344,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         }
     } else {
         RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
+        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+            [self.delegate objectMappingOperation:self didNotSetUnchangedValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+        }
     }
 }
 
@@ -558,6 +568,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                     RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                     [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
                 }
+            } else {
+                if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+                    [self.delegate objectMappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+                }
             }
         } else {
             // One to one relationship
@@ -581,6 +595,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 appliedMappings = YES;
                 RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                 [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
+            } else {
+                if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+                    [self.delegate objectMappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+                }
             }
         }
         

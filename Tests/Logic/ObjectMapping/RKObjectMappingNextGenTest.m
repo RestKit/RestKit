@@ -1131,6 +1131,44 @@
     [mockUser verify];
 }
 
+- (void)testDelegateIsInformedWhenANilValueIsMappedForNSNullWithExistingValue {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
+
+    NSDictionary* dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    [dictionary setValue:[NSNull null] forKey:@"name"];
+    RKTestUser* user = [RKTestUser user];
+    user.name = @"Blake Watters";
+    id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    operation.delegate = mockDelegate;
+    NSError* error = nil;
+    [[mockDelegate expect] objectMappingOperation:operation didFindMapping:nameMapping forKeyPath:@"name"];
+    [[mockDelegate expect] objectMappingOperation:operation didSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
+    [operation performMapping:&error];
+    [mockDelegate verify];
+}
+
+- (void)testDelegateIsInformedWhenUnchangedValueIsSkipped {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
+
+    NSDictionary* dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    [dictionary setValue:@"Blake Watters" forKey:@"name"];
+    RKTestUser* user = [RKTestUser user];
+    user.name = @"Blake Watters";
+    id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    operation.delegate = mockDelegate;
+    NSError* error = nil;
+    [[mockDelegate expect] objectMappingOperation:operation didFindMapping:nameMapping forKeyPath:@"name"];
+    [[mockDelegate expect] objectMappingOperation:operation didNotSetUnchangedValue:@"Blake Watters" forKeyPath:@"name" usingMapping:nameMapping];
+    [operation performMapping:&error];
+    [mockDelegate verify];
+}
+
 - (void)testShouldOptionallySetDefaultValueForAMissingKeyPath {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
@@ -1325,6 +1363,33 @@
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     [mapper release];
+}
+
+- (void)testSkippingOfIdenticalObjectsInformsDelegate {
+    RKTestUser* user = [RKTestUser user];
+    RKTestAddress* address = [RKTestAddress address];
+    address.addressID = [NSNumber numberWithInt:1234];
+    user.address = address;
+    id mockUser = [OCMockObject partialMockForObject:user];
+    [[mockUser reject] setAddress:OCMOCK_ANY];
+
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"addressID"];
+    [addressMapping addAttributeMapping:idMapping];
+
+    RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"address" withMapping:addressMapping];
+    [userMapping addRelationshipMapping:hasOneMapping];
+
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    RKObjectMappingOperation *operation = [RKObjectMappingOperation mappingOperationFromObject:userInfo toObject:user withMapping:userMapping];
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
+    [[mockDelegate expect] objectMappingOperation:operation didNotSetUnchangedValue:address forKeyPath:@"address" usingMapping:hasOneMapping];
+    operation.delegate = mockDelegate;
+    [operation performMapping:nil];
+    [mockDelegate verify];
 }
 
 - (void)testShouldNotSetThePropertyWhenTheNestedObjectCollectionIsIdentical {

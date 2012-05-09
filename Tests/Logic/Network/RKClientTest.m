@@ -28,6 +28,14 @@
 
 @implementation RKClientTest
 
+- (void)setUp {
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown {
+    [RKTestFactory tearDown];
+}
+
 - (void)testShouldDetectNetworkStatusWithAHostname {
 	RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
 	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle

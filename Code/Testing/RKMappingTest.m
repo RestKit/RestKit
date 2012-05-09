@@ -222,4 +222,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }
 
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
+    [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
+}
+
 @end
