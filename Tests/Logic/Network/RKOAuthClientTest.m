@@ -29,7 +29,7 @@
 - (void)testShouldGetAccessToken{
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);
-    client.authorizationCode = @"1234";
+    client.authorizationCode = @"4fa8182d7184797dd5000002";
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
     [loader waitForResponse];
@@ -45,13 +45,13 @@
     [loader waitForResponse];
 
     assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
-
 }
+
 - (void)testShouldGetProtectedResource{
     //TODO: Encapsulate this code in a correct manner
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);
-    client.authorizationCode = @"1234";
+    client.authorizationCode = @"4fa8182d7184797dd5000002";
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
 
@@ -59,7 +59,7 @@
     RKClient *requestClient = [RKClient clientWithBaseURLString:[client authorizationURL]];
     requestClient.OAuth2AccessToken = client.accessToken;
     requestClient.authenticationType = RKRequestAuthenticationTypeOAuth2;
-    RKRequest *request = [requestClient requestWithResourcePath:@"/me"];
+    RKRequest *request = [requestClient requestWithResourcePath:@"/oauth2/pregen/me"];
     request.delegate = resourceLoader;
     [request send];
     [resourceLoader waitForResponse];
