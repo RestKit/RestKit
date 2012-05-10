@@ -94,7 +94,6 @@ typedef enum {
     NSMutableDictionary *_strategies;
     NSMutableDictionary *_directions;
     NSInteger _requestCounter;
-    NSMutableArray *_queues;
 }
 
 /**

@@ -56,7 +56,6 @@
         _directions = [[NSMutableDictionary alloc] init];
         
         _objectManager = [objectManager retain];
-        _queues = [[NSMutableArray alloc] init];
       
         // Turn us on by default - this can be disabled by the client code if necessary
         self.syncEnabled = YES;
@@ -79,9 +78,6 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [_queues release];
-    _queues = nil;
   
     [_objectManager release];
     _objectManager = nil;
@@ -408,9 +404,6 @@
         _requestCounter++;
       }
     }
-  
-    // Add all these objects to the queues so we know how to handle them on the way out.
-    [_queues addObject:objectArray];
   
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
         [_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
