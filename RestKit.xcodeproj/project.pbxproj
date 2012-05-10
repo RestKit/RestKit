@@ -504,6 +504,10 @@
 		254A62BC14AD544200939BEE /* RKObjectPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62B814AD544200939BEE /* RKObjectPaginator.m */; };
 		254A62C014AD591C00939BEE /* RKObjectPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */; };
 		254A62C114AD591C00939BEE /* RKObjectPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */; };
+		2572538D155C543000CB05ED /* RKPortCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 2572538B155C543000CB05ED /* RKPortCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2572538E155C543000CB05ED /* RKPortCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 2572538B155C543000CB05ED /* RKPortCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2572538F155C543000CB05ED /* RKPortCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 2572538C155C543000CB05ED /* RKPortCheck.m */; };
+		25725390155C543000CB05ED /* RKPortCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 2572538C155C543000CB05ED /* RKPortCheck.m */; };
 		257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257ABAB115112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257ABAB215112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */; };
@@ -1039,6 +1043,8 @@
 		254A62B714AD544200939BEE /* RKObjectPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectPaginator.h; sourceTree = "<group>"; };
 		254A62B814AD544200939BEE /* RKObjectPaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginator.m; sourceTree = "<group>"; };
 		254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginatorTest.m; sourceTree = "<group>"; };
+		2572538B155C543000CB05ED /* RKPortCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPortCheck.h; sourceTree = "<group>"; };
+		2572538C155C543000CB05ED /* RKPortCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPortCheck.m; sourceTree = "<group>"; };
 		257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+RKAdditions.h"; sourceTree = "<group>"; };
 		257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RKAdditions.m"; sourceTree = "<group>"; };
 		257ABAB41511371C00CCAA76 /* NSManagedObject+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+RKAdditions.h"; sourceTree = "<group>"; };
@@ -1516,6 +1522,8 @@
 				252EFB1A14D9A7CB004863C8 /* NSBundle+RKAdditions.m */,
 				252A202B153471380078F8AD /* NSArray+RKAdditions.h */,
 				252A202C153471380078F8AD /* NSArray+RKAdditions.m */,
+				2572538B155C543000CB05ED /* RKPortCheck.h */,
+				2572538C155C543000CB05ED /* RKPortCheck.m */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -2225,6 +2233,7 @@
 				257ABAB61511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				25079C6F151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h in Headers */,
 				252A202D153471380078F8AD /* NSArray+RKAdditions.h in Headers */,
+				2572538D155C543000CB05ED /* RKPortCheck.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2346,6 +2355,7 @@
 				257ABAB71511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
 				25079C70151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h in Headers */,
 				252A20311534714D0078F8AD /* NSArray+RKAdditions.h in Headers */,
+				2572538E155C543000CB05ED /* RKPortCheck.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2747,6 +2757,7 @@
 				25079C71151B93DB00266AE7 /* NSEntityDescription+RKAdditions.m in Sources */,
 				252A202E153471380078F8AD /* NSArray+RKAdditions.m in Sources */,
 				25C954A715542A47005C9E08 /* RKTestConstants.m in Sources */,
+				2572538F155C543000CB05ED /* RKPortCheck.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2932,6 +2943,7 @@
 				250B849E152B6F63002581F9 /* RKObjectMappingProvider+CoreData.m in Sources */,
 				252A2030153471470078F8AD /* NSArray+RKAdditions.m in Sources */,
 				25C954A815542A47005C9E08 /* RKTestConstants.m in Sources */,
+				25725390155C543000CB05ED /* RKPortCheck.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
