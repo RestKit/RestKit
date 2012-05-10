@@ -33,6 +33,7 @@
 - (NSArray *)queueItemsForObject:(NSManagedObject *)object;
 // Returns YES if we should create a queue object for this object on update
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object;
+- (BOOL) removeExistingQueueItemsForObject:(NSManagedObject *)object;
 - (void)_reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification;
 @end
 
@@ -56,7 +57,6 @@
         _directions = [[NSMutableDictionary alloc] init];
         
         _objectManager = [objectManager retain];
-        _queue = [[NSMutableArray alloc] init];
       
         // Turn us on by default - this can be disabled by the client code if necessary
         self.syncEnabled = YES;
@@ -88,9 +88,6 @@
   
     [_directions release];
     _directions = nil;
-    
-    [_queue release];
-    _queue = nil;
     
     [super dealloc];
 }
@@ -351,54 +348,79 @@
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
   
     // Get the queue of items for this 
-    [_queue removeAllObjects];
-    NSArray *queue = [self queueItemsForSyncMode:syncMode class:objectClass];
-  
-    if ([queue count] > 0)
+    NSMutableArray *queue = [[NSMutableArray alloc] init];
+    [queue addObjectsFromArray:[self queueItemsForSyncMode:syncMode class:objectClass]];
+    NSUInteger queueCount = [queue count];
+    
+    __block NSMutableArray *completedRequests = [[NSMutableArray alloc] init];
+    if (queueCount > 0)
     {
-        // Prune out any items that are "pull only" & reconstitute our NSManagedObject instances so we can send to delegate
-        NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
-        NSMutableSet *objectSet = [NSMutableSet setWithCapacity:[queue count]];
-        NSMutableArray *objectArray = [NSMutableArray arrayWithCapacity:[queue count]];
-        NSMutableArray *newQueue = [[NSMutableArray alloc] initWithCapacity:[queue count]];
-        for (RKManagedObjectSyncQueue *item in queue) {
-            NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
-            NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
-
-                [newQueue addObject:item];
-                [objectSet addObject:object];
-                [objectArray addObject:object];
-        }
         
         // Notify the delegate of what is about to happen
-        if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjects:withSyncMode:)]) {
+        /*if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjects:withSyncMode:)]) {
             [_delegate syncManager:self willPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
-        }
+        }*/
         
-        for (NSInteger i = 0; i < [newQueue count]; i++)
-        {
-            RKManagedObjectSyncQueue *item = [newQueue objectAtIndex:i];
-            NSManagedObject *object = [objectArray objectAtIndex:i];
+        NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
+        NSMutableSet *objectSet = [[[NSMutableSet alloc] init] autorelease];
+        for (__block RKManagedObjectSyncQueue *item in queue) {
+            NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
             
-            // Depending on what type of item this is, make the appropriate RestKit call to send it up
+            //TODO: this should change. We want to send the objects to be synced and only report that ones
+            // that did actually sync to the didpush delegate.
+            if (object) {
+                // it's possible that the object doesn't exist, i.e. a delete request.
+                [objectSet addObject:object];
+            }
+            
+            // Depending on what type of item this is, make the appropriate RestKit call 
             RKRequestMethod method = [item.syncMethod integerValue];
             if (method == RKRequestMethodPOST) {
-                [_objectManager postObject:object delegate:self];
-                _requestCounter++;
+                [_objectManager postObject:object usingBlock:^(RKObjectLoader *loader){
+                    loader.onDidLoadObject = ^ (id object){
+                        [completedRequests addObject:item];
+                    };
+                }];
             } else if (method == RKRequestMethodPUT) {
-                [_objectManager putObject:object delegate:self];
-                _requestCounter++;
+                [_objectManager putObject:object usingBlock:^(RKObjectLoader *loader){
+                    loader.onDidLoadObject = ^ (id object){
+                        [completedRequests addObject:item];
+                    };
+                }];
             } else if (method == RKRequestMethodDELETE) {
-                [[_objectManager client] delete:item.objectRoute delegate:self];
-                _requestCounter++;
+                //The object doesn't necessarily exist if the context has been saved since it was deleted, so we send using the stored route
+                [[_objectManager client] delete:item.objectRoute usingBlock: ^(RKRequest *request ){
+                    request.onDidLoadResponse = ^ (RKResponse *response){
+                        if ([response isSuccessful]) {
+                            [completedRequests addObject:item];
+                        }
+                    };
+                }];
             }
+        }
+        
+        // If some of the requests failed, report an error
+        if ([queue count] > [completedRequests  count]) {
+            [queue removeObjectsInArray:completedRequests];
+            RKLogError(@"There was an error sending some items in the queue: %@", queue);
+        }
+        
+        // We've been working with a transient queue: delete the items from the core data queue now.
+        for (RKManagedObjectSyncQueue *item in completedRequests) {
+            [item deleteEntity];
+        }
+        
+        NSError *error = nil;
+        if ([_objectManager.objectStore save:&error] == NO) {
+            RKLogError(@"Error removing items from queue: %@", error);
         }
         
         if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
             [_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
         }
-
     }
+    //[queue release];
+    //[completedRequests release];
 }
 
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
@@ -429,7 +451,6 @@
               }
 
               [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
-              _requestCounter++;
               
               if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullObjectsOfClass:withSyncMode:)]) {
                 [_delegate syncManager:self didPullObjectsOfClass:objectClass withSyncMode:syncMode];
@@ -449,10 +470,7 @@
 
 - (void) _reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification
 {
-  if (_requestCounter == 0)
-  {
-      [self transparentSync];
-  }
+    [self transparentSync];
 }
 
 #pragma mark - Convenience Syncing Methods
@@ -470,32 +488,20 @@
 }
 
 - (void)push {
-    if (_requestCounter > 0)
-    {
-        // Don't let this method be called repetitively if we're already running a queue.
-        return;
-    }
     [self pushObjectsWithSyncMode:RKSyncModeManual andClass:nil];
 }
 
 - (void)pull {
-    if (_requestCounter > 0)
-    {
-        // Don't let this method be called repetitively if we're already running a queue.
-        return;
-    }
     [self pullObjectsWithSyncMode:RKSyncModeManual andClass:nil];
 }
 
 #pragma mark - RKObjectLoaderDelegate (RKRequestDelegate) methods
 
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
-    // A request finished, decrement the counter
-    _requestCounter--;
-    NSAssert((_requestCounter >= 0),@"Request counter can never go negative.");
     
     // Only remove from the queue if we've just pushed (sourceObject exists) and the response is successful.
     if (objectLoader.sourceObject && [objectLoader.response isSuccessful]) {
+
         
         // Get the NSManagedObject we were sending
         NSManagedObject *object = (NSManagedObject *)objectLoader.sourceObject;
