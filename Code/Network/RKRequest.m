@@ -328,28 +328,28 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             parameters = [_URL queryParameters];
 
         if (self.method == RKRequestMethodPUT)
-            echo = [GCOAuth URLRequestForPath:[_URL path]
+            echo = [GCOAuth URLRequestForPath:[_URL originalPath]
                                 PUTParameters:parameters
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:[_URL hostAndPort]
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
                                   tokenSecret:self.OAuth1AccessTokenSecret];
         else if (self.method == RKRequestMethodPOST)
-            echo = [GCOAuth URLRequestForPath:[_URL path]
+            echo = [GCOAuth URLRequestForPath:[_URL originalPath]
                                POSTParameters:parameters
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:[_URL hostAndPort]
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
                                   tokenSecret:self.OAuth1AccessTokenSecret];
         else
-            echo = [GCOAuth URLRequestForPath:[_URL path]
+            echo = [GCOAuth URLRequestForPath:[_URL originalPath]
                                 GETParameters:[_URL queryParameters]
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:[_URL hostAndPort]
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
