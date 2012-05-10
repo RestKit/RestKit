@@ -832,6 +832,42 @@ request.timeoutInterval = 1.0;
     assertThat(authorization, isNot(nilValue()));
 }
 
+- (void)testShouldBuildAProperAuthorizationHeaderForOAuth1ThatIsAcceptedByServer {
+    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:[NSString stringWithFormat:@"%@/oauth1/me", [RKTestFactory baseURLString]]]];
+    request.authenticationType = RKRequestAuthenticationTypeOAuth1;
+    request.OAuth1AccessToken = @"12345";
+    request.OAuth1AccessTokenSecret = @"monkey";
+    request.OAuth1ConsumerKey = @"restkit_key";
+    request.OAuth1ConsumerSecret = @"restkit_secret";
+    [request prepareURLRequest];
+    NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
+    assertThat(authorization, isNot(nilValue()));
+    
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    request.delegate = responseLoader;
+    [request sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.successful, is(equalToBool(YES)));
+}
+
+- (void)testImproperOAuth1CredentialsShouldFall {
+    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:[NSString stringWithFormat:@"%@/oauth1/me", [RKTestFactory baseURLString]]]];
+    request.authenticationType = RKRequestAuthenticationTypeOAuth1;
+    request.OAuth1AccessToken = @"12345";
+    request.OAuth1AccessTokenSecret = @"monkey";
+    request.OAuth1ConsumerKey = @"restkit_key";
+    request.OAuth1ConsumerSecret = @"restkit_incorrect_secret";
+    [request prepareURLRequest];
+    NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
+    assertThat(authorization, isNot(nilValue()));
+    
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    request.delegate = responseLoader;
+    [request sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.successful, is(equalToBool(YES)));
+}
+
 - (void)testOnDidLoadResponseBlockInvocation {
     RKURL *URL = [[RKTestFactory baseURL] URLByAppendingResourcePath:@"/200"];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];

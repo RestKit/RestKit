@@ -331,7 +331,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                 PUTParameters:parameters
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:[_URL hostAndPort]
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
@@ -340,7 +340,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                POSTParameters:parameters
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:[_URL hostAndPort]
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken
@@ -349,7 +349,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             echo = [GCOAuth URLRequestForPath:[_URL path]
                                 GETParameters:[_URL queryParameters]
                                        scheme:[_URL scheme]
-                                         host:[_URL host]
+                                         host:[_URL hostAndPort]
                                   consumerKey:self.OAuth1ConsumerKey
                                consumerSecret:self.OAuth1ConsumerSecret
                                   accessToken:self.OAuth1AccessToken

@@ -25,9 +25,9 @@
 RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader)
 {
     [loader setTimeout:10];
-    RKOAuthClient *client = [RKOAuthClient clientWithClientID:@"appID" secret:@"appSecret"];
+    RKOAuthClient *client = [RKOAuthClient clientWithClientID:@"4fa42a4a7184796662000001" secret:@"restkit_secret"];
     client.delegate = loader;
-    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth/authorize", [RKTestFactory baseURLString]];
+    client.authorizationURL = [NSString stringWithFormat:@"%@/oauth2/pregen/token", [RKTestFactory baseURLString]];
     return client;
 }
 
