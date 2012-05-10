@@ -359,54 +359,53 @@
     NSArray *queue = [self queueItemsForSyncMode:syncMode class:objectClass];
   
     // If the queue is empty, quick return here -- no work to do.
-    if ([queue count] == 0)
+    if ([queue count] > 0)
     {
-      return;
-    }
-  
-    // Prune out any items that are "pull only" & reconstitute our NSManagedObject instances so we can send to delegate
-    NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
-    NSMutableSet *objectSet = [NSMutableSet setWithCapacity:[queue count]];
-    NSMutableArray *objectArray = [NSMutableArray arrayWithCapacity:[queue count]];
-    NSMutableArray *newQueue = [[NSMutableArray alloc] initWithCapacity:[queue count]];
-    for (RKManagedObjectSyncQueue *item in queue) {
-        NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
-        NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
-      
-        RKSyncDirection direction = [self syncDirectionForClass:NSClassFromString(item.className)];
-        if (direction & RKSyncDirectionPush) {
-            [newQueue addObject:item];
-            [objectSet addObject:object];
-            [objectArray addObject:object];
+        // Prune out any items that are "pull only" & reconstitute our NSManagedObject instances so we can send to delegate
+        NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
+        NSMutableSet *objectSet = [NSMutableSet setWithCapacity:[queue count]];
+        NSMutableArray *objectArray = [NSMutableArray arrayWithCapacity:[queue count]];
+        NSMutableArray *newQueue = [[NSMutableArray alloc] initWithCapacity:[queue count]];
+        for (RKManagedObjectSyncQueue *item in queue) {
+            NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
+            NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
+            
+            RKSyncDirection direction = [self syncDirectionForClass:NSClassFromString(item.className)];
+            if (direction & RKSyncDirectionPush) {
+                [newQueue addObject:item];
+                [objectSet addObject:object];
+                [objectArray addObject:object];
+            }
         }
-    }
-  
-    // Notify the delegate of what is about to happen
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjects:withSyncMode:)]) {
-        [_delegate syncManager:self willPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
-    }
-  
-    for (NSInteger i = 0; i < [newQueue count]; i++)
-    {
-      RKManagedObjectSyncQueue *item = [newQueue objectAtIndex:i];
-      NSManagedObject *object = [objectArray objectAtIndex:i];
-      
-      // Depending on what type of item this is, make the appropriate RestKit call to send it up
-      RKRequestMethod method = [item.syncMethod integerValue];
-      if (method == RKRequestMethodPOST) {
-        [_objectManager postObject:object delegate:self];
-        _requestCounter++;
-      } else if (method == RKRequestMethodPUT) {
-        [_objectManager putObject:object delegate:self];
-        _requestCounter++;
-      } else if (method == RKRequestMethodDELETE) {
-        [[_objectManager client] delete:item.objectRoute delegate:self];
-        _requestCounter++;
-      }
-    }
-  
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
-        [_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
+        
+        // Notify the delegate of what is about to happen
+        if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjects:withSyncMode:)]) {
+            [_delegate syncManager:self willPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
+        }
+        
+        for (NSInteger i = 0; i < [newQueue count]; i++)
+        {
+            RKManagedObjectSyncQueue *item = [newQueue objectAtIndex:i];
+            NSManagedObject *object = [objectArray objectAtIndex:i];
+            
+            // Depending on what type of item this is, make the appropriate RestKit call to send it up
+            RKRequestMethod method = [item.syncMethod integerValue];
+            if (method == RKRequestMethodPOST) {
+                [_objectManager postObject:object delegate:self];
+                _requestCounter++;
+            } else if (method == RKRequestMethodPUT) {
+                [_objectManager putObject:object delegate:self];
+                _requestCounter++;
+            } else if (method == RKRequestMethodDELETE) {
+                [[_objectManager client] delete:item.objectRoute delegate:self];
+                _requestCounter++;
+            }
+        }
+        
+        if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
+            [_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
+        }
+
     }
 }
 
