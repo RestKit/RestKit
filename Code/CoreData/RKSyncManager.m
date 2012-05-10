@@ -172,6 +172,10 @@
     newQueueItem.objectIDString = [self IDStringForObject:object];
     newQueueItem.className = NSStringFromClass([object class]);
     newQueueItem.syncMode = [NSNumber numberWithInt:syncMode];
+    
+    if (syncMethod == RKRequestMethodDELETE) {
+        newQueueItem.objectRoute = [_objectManager.router resourcePathForObject:object method:RKRequestMethodDELETE];
+    }
   
     RKLogTrace(@"Adding item to queue: %@", newQueueItem);
     BOOL success = YES;
@@ -400,7 +404,7 @@
         [_objectManager putObject:object delegate:self];
         _requestCounter++;
       } else if (method == RKRequestMethodDELETE) {
-        [_objectManager deleteObject:object delegate:self];
+        [[_objectManager client] delete:item.objectRoute delegate:self];
         _requestCounter++;
       }
     }
