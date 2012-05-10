@@ -56,6 +56,7 @@
         _directions = [[NSMutableDictionary alloc] init];
         
         _objectManager = [objectManager retain];
+        _queue = [[NSMutableArray alloc] init];
       
         // Turn us on by default - this can be disabled by the client code if necessary
         self.syncEnabled = YES;
@@ -87,6 +88,9 @@
   
     [_directions release];
     _directions = nil;
+    
+    [_queue release];
+    _queue = nil;
     
     [super dealloc];
 }
@@ -346,19 +350,10 @@
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
   
-    // We can save ourselves a lot of processing if we were provided a class & we have a direction for it.
-    if (objectClass) {
-        RKSyncDirection direction = [self syncDirectionForClass:objectClass];
-        if ((direction & RKSyncDirectionPush) == NO) {
-            // They don't need us to sync pushes, so we are fine to return.
-            return;
-        }
-    }
-  
     // Get the queue of items for this 
+    [_queue removeAllObjects];
     NSArray *queue = [self queueItemsForSyncMode:syncMode class:objectClass];
   
-    // If the queue is empty, quick return here -- no work to do.
     if ([queue count] > 0)
     {
         // Prune out any items that are "pull only" & reconstitute our NSManagedObject instances so we can send to delegate
@@ -369,13 +364,10 @@
         for (RKManagedObjectSyncQueue *item in queue) {
             NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
             NSAssert(object,@"Sync queue became out of date with Core Data store; referring to object: %@ that no longer exists.",item.objectIDString);
-            
-            RKSyncDirection direction = [self syncDirectionForClass:NSClassFromString(item.className)];
-            if (direction & RKSyncDirectionPush) {
+
                 [newQueue addObject:item];
                 [objectSet addObject:object];
                 [objectArray addObject:object];
-            }
         }
         
         // Notify the delegate of what is about to happen
