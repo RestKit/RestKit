@@ -90,9 +90,13 @@ typedef enum {
 /**
  `RKSyncManager` handles the observation of Core Data changes and the syncronization of a local store with a remote server. This object is created automatically when an RKManagedObjectStore is initialized, and is associated with the objectStore's related `objectManager`.  
  */
-@interface RKSyncManager : NSObject <RKObjectLoaderDelegate> {
+@interface RKSyncManager : NSObject {
     NSMutableDictionary *_strategies;
     NSMutableDictionary *_directions;
+    NSMutableArray *_queue;
+    NSMutableArray *_completedQueueItems;
+    NSMutableArray *_failedQueueItems;
+    BOOL _shouldPullAfterPush;
 }
 
 /**

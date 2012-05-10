@@ -20,6 +20,11 @@
 
 #import "RKSyncManager.h"
 
+#define EXIT_IF_SYNCING if ([_queue count] > 0) {\
+    RKLogWarning(@"Sync manager is currently in a syncing state.");\
+    return;\
+}\
+
 @interface RKSyncManager (Private)
 - (void)contextDidSave:(NSNotification*)notification;
 
@@ -35,6 +40,13 @@
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object;
 - (BOOL) removeExistingQueueItemsForObject:(NSManagedObject *)object;
 - (void)_reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification;
+
+- (void)addCompletedQueueItem:(RKManagedObjectSyncQueue *) item;
+- (void)addFailedQueueItem:(RKManagedObjectSyncQueue *) item;
+- (void)checkIfQueueFinishedWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+
+//For internal use only
+- (void)_pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 @end
 
 @implementation RKSyncManager
@@ -57,9 +69,13 @@
         _directions = [[NSMutableDictionary alloc] init];
         
         _objectManager = [objectManager retain];
+        _queue = [[NSMutableArray alloc] init];
+        _completedQueueItems = [[NSMutableArray alloc] init];
       
         // Turn us on by default - this can be disabled by the client code if necessary
         self.syncEnabled = YES;
+        
+        _shouldPullAfterPush = NO;
 
         //Register for notifications from the managed object context associated with the object manager
         NSManagedObjectContext *moc = self.objectManager.objectStore.managedObjectContextForCurrentThread;
@@ -88,6 +104,12 @@
   
     [_directions release];
     _directions = nil;
+    
+    [_queue release];
+    _queue = nil;
+    
+    [_completedQueueItems release];
+    _queue = nil;
     
     [super dealloc];
 }
@@ -332,29 +354,36 @@
 - (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     
+    EXIT_IF_SYNCING
+    
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
     }
-  
+    
+    _shouldPullAfterPush = YES;
     [self pushObjectsWithSyncMode:syncMode andClass:objectClass];
-    [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
   
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self didSyncWithSyncMode:syncMode andClass:objectClass];
     }
 }
 
-- (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
-    NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
-  
-    // Get the queue of items for this 
-    NSMutableArray *queue = [[NSMutableArray alloc] init];
-    [queue addObjectsFromArray:[self queueItemsForSyncMode:syncMode class:objectClass]];
-    NSUInteger queueCount = [queue count];
+- (void)_pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    //This is internal, it pushes but if it's called from a "sync" method it will pull afterwards, otherwise it won't
+    //This is necessary because we need to pull after all of the objects have successfully been pushed
+    // i.e. it's not enough to just call push followed by pull.
+    //Note that this still respects "syncDirection", because that's handled in the queue adding
     
-    __block NSMutableArray *completedRequests = [[NSMutableArray alloc] init];
+    NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
+    
+    // Get the queue of items for this 
+    [_queue addObjectsFromArray:[self queueItemsForSyncMode:syncMode class:objectClass]];
+    NSUInteger queueCount = [_queue count];
+    
     if (queueCount > 0)
     {
+        // weak reference
+        __block RKSyncManager *blocksafeSelf = self;
         
         // Notify the delegate of what is about to happen
         /*if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPushObjects:withSyncMode:)]) {
@@ -363,7 +392,7 @@
         
         NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
         NSMutableSet *objectSet = [[[NSMutableSet alloc] init] autorelease];
-        for (__block RKManagedObjectSyncQueue *item in queue) {
+        for (__block RKManagedObjectSyncQueue *item in _queue) {
             NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
             
             //TODO: this should change. We want to send the objects to be synced and only report that ones
@@ -378,13 +407,23 @@
             if (method == RKRequestMethodPOST) {
                 [_objectManager postObject:object usingBlock:^(RKObjectLoader *loader){
                     loader.onDidLoadObject = ^ (id object){
-                        [completedRequests addObject:item];
+                        [blocksafeSelf addCompletedQueueItem: item];
+                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                    };
+                    loader.onDidFailWithError = ^ (id object){
+                        [blocksafeSelf addFailedQueueItem: item];
+                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                     };
                 }];
             } else if (method == RKRequestMethodPUT) {
                 [_objectManager putObject:object usingBlock:^(RKObjectLoader *loader){
                     loader.onDidLoadObject = ^ (id object){
-                        [completedRequests addObject:item];
+                        [blocksafeSelf addCompletedQueueItem: item];
+                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                    };
+                    loader.onDidFailWithError = ^ (id object){
+                        [blocksafeSelf addFailedQueueItem: item];
+                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                     };
                 }];
             } else if (method == RKRequestMethodDELETE) {
@@ -392,21 +431,48 @@
                 [[_objectManager client] delete:item.objectRoute usingBlock: ^(RKRequest *request ){
                     request.onDidLoadResponse = ^ (RKResponse *response){
                         if ([response isSuccessful]) {
-                            [completedRequests addObject:item];
+                            [blocksafeSelf addCompletedQueueItem: item];
+                            [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                        } else {
+                            [blocksafeSelf addFailedQueueItem: item];
+                            [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                         }
                     };
                 }];
             }
         }
-        
+    } else {
+        if (_shouldPullAfterPush) {
+            [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
+        }
+    }
+}
+
+- (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    //This is the front-facing method, it should only be called when you don't want to pull after pushing (sync)
+    EXIT_IF_SYNCING
+    _shouldPullAfterPush = NO;
+    [self _pushObjectsWithSyncMode:syncMode andClass:objectClass];
+}
+
+- (void)addCompletedQueueItem:(RKManagedObjectSyncQueue *)item {
+    [_completedQueueItems addObject:item];
+}
+
+- (void)addFailedQueueItem:(RKManagedObjectSyncQueue *)item {
+    [_failedQueueItems addObject:item];
+}
+                 
+- (void)checkIfQueueFinishedWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
+    //If every queue item has been processed, clean up the queue
+    if ([_completedQueueItems count] + [_failedQueueItems count] == [_queue count]) {
         // If some of the requests failed, report an error
-        if ([queue count] > [completedRequests  count]) {
-            [queue removeObjectsInArray:completedRequests];
-            RKLogError(@"There was an error sending some items in the queue: %@", queue);
+        if ([_failedQueueItems count] > 0) {
+            RKLogError(@"There was an error sending some items in the queue: %@", _failedQueueItems);
         }
         
         // We've been working with a transient queue: delete the items from the core data queue now.
-        for (RKManagedObjectSyncQueue *item in completedRequests) {
+        for (RKManagedObjectSyncQueue *item in _completedQueueItems) {
             [item deleteEntity];
         }
         
@@ -415,17 +481,25 @@
             RKLogError(@"Error removing items from queue: %@", error);
         }
         
+        [_queue removeAllObjects];
+        [_completedQueueItems removeAllObjects];
+        [_failedQueueItems removeAllObjects];
+         
         if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
-            [_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
+            //[_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
+        }
+        
+        if (_shouldPullAfterPush) {
+            [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
         }
     }
-    //[queue release];
-    //[completedRequests release];
 }
 
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
-
+    
+    EXIT_IF_SYNCING
+    
     // We can save ourselves a lot of processing if we were provided a class & we have a direction for it.
     if (objectClass) {
       RKSyncDirection direction = [self syncDirectionForClass:objectClass];
@@ -450,7 +524,7 @@
                 [_delegate syncManager:self willPullObjectsOfClass:objectClass withSyncMode:syncMode];
               }
 
-              [_objectManager loadObjectsAtResourcePath:resourcePath delegate:self];
+              [_objectManager loadObjectsAtResourcePath:resourcePath delegate:nil];
               
               if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullObjectsOfClass:withSyncMode:)]) {
                 [_delegate syncManager:self didPullObjectsOfClass:objectClass withSyncMode:syncMode];
@@ -461,10 +535,10 @@
 }
 
 - (void)transparentSync {
+    EXIT_IF_SYNCING
     //Syncs objects set to RKSyncModeTransparent. Called on reachability notification
     if ([_objectManager.client.reachabilityObserver isNetworkReachable]) {
-        [self pushObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
-        [self pullObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
+        [self syncObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];
     }
 }
 
@@ -493,37 +567,6 @@
 
 - (void)pull {
     [self pullObjectsWithSyncMode:RKSyncModeManual andClass:nil];
-}
-
-#pragma mark - RKObjectLoaderDelegate (RKRequestDelegate) methods
-
-- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
-    
-    // Only remove from the queue if we've just pushed (sourceObject exists) and the response is successful.
-    if (objectLoader.sourceObject && [objectLoader.response isSuccessful]) {
-
-        
-        // Get the NSManagedObject we were sending
-        NSManagedObject *object = (NSManagedObject *)objectLoader.sourceObject;
-        NSAssert([object isKindOfClass:[NSManagedObject class]],@"Should be impossible for this to be called with other than NSManagedObject subclasses.");
-        
-        // Get the first matching object from the queue & remove it
-        NSString *IDString = [self IDStringForObject:object];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"objectIDString == %@",IDString];
-        RKManagedObjectSyncQueue *queueItem = (RKManagedObjectSyncQueue *)[RKManagedObjectSyncQueue findFirstWithPredicate:predicate sortedBy:@"queuePosition" ascending:NO];
-        NSAssert(queueItem,@"Should be able to find queue item with ID: %@",IDString);
-        [queueItem deleteEntity];
-        NSError *error = nil;
-        if ([_objectManager.objectStore save:&error] == NO) {
-            RKLogError(@"Error removing queue item: %@", error);
-        }
-    }
-}
-
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-    if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-        [_delegate syncManager:self didFailSyncingWithError:error];
-    }
 }
 
 @end
