@@ -46,7 +46,7 @@
 - (void)addFailedQueueItem:(RKManagedObjectSyncQueue *) item;
 - (void)checkIfQueueFinishedWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
-- (void)snedObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)sendObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 @end
 
 @implementation RKSyncManager
