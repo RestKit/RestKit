@@ -39,6 +39,7 @@
 
 // Returns YES if we should create a queue object for this object on update
 - (BOOL)shouldUpdateObject:(NSManagedObject *)object;
+- (BOOL)shouldDeleteObject:(NSManagedObject *)object;
 - (BOOL) removeExistingQueueItemsForObject:(NSManagedObject *)object;
 - (void)_reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification;
 
@@ -71,6 +72,7 @@
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
         _completedQueueItems = [[NSMutableArray alloc] init];
+        _failedQueueItems = [[NSMutableArray alloc] init];
       
         // Turn us on by default - this can be disabled by the client code if necessary
         self.syncEnabled = YES;
@@ -109,7 +111,10 @@
     _queue = nil;
     
     [_completedQueueItems release];
-    _queue = nil;
+    _completedQueueItems = nil;
+    
+    [_failedQueueItems release];
+    _failedQueueItems = nil;
     
     [super dealloc];
 }
