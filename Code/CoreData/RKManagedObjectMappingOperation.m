@@ -88,7 +88,7 @@
         [self.destinationObject setValue:newValue forKey:relationshipName];
     }
     else if (valueOfLocalPrimaryKeyAttribute) {
-        RKLogDebug(@"Connecting one to one relationship");
+        RKLogDebug(@"Connecting one to one/many relationship");
         id relatedObject = [objectStore findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject andValue:valueOfLocalPrimaryKeyAttribute create:NO];
         if (relatedObject) {                
             RKLogTrace(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
