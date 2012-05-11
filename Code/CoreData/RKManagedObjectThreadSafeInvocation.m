@@ -37,11 +37,26 @@
     [_argumentKeyPaths setObject:keyPaths forKey:argumentIndex];
 }
 
+- (void)setValue:(id)value forKeyPathOrKey:(NSString *)keyPath object:(id)object {
+    [object setValue:value forKeyPath:keyPath];
+    
+    id testValue = [object valueForKeyPath:keyPath];
+    
+    if (![value isEqual:testValue]) {
+        [object setValue:value forKey:keyPath];
+        
+        testValue = [object valueForKeyPath:keyPath];
+        
+        NSAssert([value isEqual:testValue], @"Could not set value");
+    }
+}
+
 - (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths {
     for (NSString* keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObject class]]) {
-            [argument setValue:[(NSManagedObject*)value objectID] forKeyPath:keyPath];
+            NSManagedObjectID *objectID = [(NSManagedObject*)value objectID];
+            [self setValue:objectID forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
             for (id subObject in value) {
@@ -52,7 +67,7 @@
                 }
             }
             
-            [argument setValue:collection forKeyPath:keyPath];
+            [self setValue:collection forKeyPathOrKey:keyPath object:argument];
             [collection release];
         }
     }
@@ -65,7 +80,7 @@
             NSAssert(self.objectStore, @"Object store cannot be nil");
             NSManagedObject* managedObject = [self.objectStore objectWithID:(NSManagedObjectID*)value];
             NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
-            [argument setValue:managedObject forKeyPath:keyPath];
+            [self setValue:managedObject forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
             for (id subObject in value) {
@@ -78,12 +93,11 @@
                 }
             }
             
-            [argument setValue:collection forKeyPath:keyPath];
+            [self setValue:collection forKeyPathOrKey:keyPath object:argument];
             [collection release];
         }
     }
 }
-
 - (void)serializeManagedObjects {
     for (NSNumber* argumentIndex in _argumentKeyPaths) {        
         NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
