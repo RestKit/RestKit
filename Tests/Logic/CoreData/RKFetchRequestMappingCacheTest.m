@@ -31,8 +31,7 @@
     [objectStore.primaryManagedObjectContext save:nil];
     
     NSManagedObject *cachedObject = [cache findInstanceOfEntity:entity 
-                                        withPrimaryKeyAttribute:mapping.primaryKeyAttribute
-                                             value:[NSNumber numberWithInt:123456]
+                                        withPrimaryKeyValue:[NSNumber numberWithInt:123456]
                                          inManagedObjectContext:objectStore.primaryManagedObjectContext];
     assertThat(cachedObject, is(equalTo(reginald)));
 }
@@ -51,8 +50,7 @@
     [objectStore.primaryManagedObjectContext save:nil];
 
     NSManagedObject *cachedObject = [cache findInstanceOfEntity:entity
-                                                    withPrimaryKeyAttribute:mapping.primaryKeyAttribute
-                                             value:@"e-1234-a8-b12"
+                                                    withPrimaryKeyValue:@"e-1234-a8-b12"
                                          inManagedObjectContext:objectStore.primaryManagedObjectContext];
     assertThat(cachedObject, is(equalTo(birthday)));
 }

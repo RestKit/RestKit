@@ -47,14 +47,12 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
     return entityCache;
 }
 
-// TODO: This method signature needs to be cleaned up... Remove the primaryKeyAttribute being passed around.
 - (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                    value:(id)primaryKeyValue
+                      withPrimaryKeyValue:(id)primaryKeyValue
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     RKEntityCache *entityCache = [self cacheForEntity:entity inManagedObjectContext:managedObjectContext];    
-    return [entityCache objectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue];
+    return [entityCache objectForEntity:entity withAttribute:entity.primaryKeyAttribute value:primaryKeyValue];
 }
 
 - (void)didFetchObject:(NSManagedObject *)object
@@ -65,12 +63,16 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
 
 - (void)didCreateObject:(NSManagedObject *)object
 {
+    if (! object.entity.primaryKeyAttribute) return;
+    
     RKEntityCache *entityCache = [self cacheForEntity:object.entity inManagedObjectContext:object.managedObjectContext];
     [entityCache addObject:object];
 }
 
 - (void)didDeleteObject:(NSManagedObject *)object
 {
+    if (! object.entity.primaryKeyAttribute) return;
+    
     RKEntityCache *entityCache = [self cacheForEntity:object.entity inManagedObjectContext:object.managedObjectContext];
     [entityCache removeObject:object];
 }

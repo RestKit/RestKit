@@ -17,6 +17,14 @@
 extern NSString * const RKEntityDescriptionPrimaryKeyAttributeUserInfoKey;
 
 /**
+ The substitution variable used in predicateForPrimaryKeyAttribute.
+ 
+ **Value**: @"PRIMARY_KEY_VALUE"
+ @see predicateForPrimaryKeyAttribute
+ */
+extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubstitutionVariable;
+
+/**
  Provides extensions to NSEntityDescription for various common tasks.
  */
 @interface NSEntityDescription (RKAdditions)
@@ -34,6 +42,28 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeUserInfoKey;
  Programmatically configured values take precedence over the user info
  dictionary.
  */
-@property(nonatomic, retain) NSString *primaryKeyAttribute;
+@property (nonatomic, retain) NSString *primaryKeyAttribute;
+
+/**
+ Returns a cached predicate specifying that the primary key attribute is equal to the $PRIMARY_KEY_VALUE
+ substitution variable.
+ 
+ This predicate is cached to avoid parsing overhead during object mapping operations
+ and must be evaluated using [NSPredicate predicateWithSubstitutionVariables:]
+ 
+ @return A cached predicate specifying the value of the primary key attribute is equal to the $PRIMARY_KEY_VALUE 
+ substitution variable.
+ */
+- (NSPredicate *)predicateForPrimaryKeyAttribute;
+
+/**
+ Returns a predicate specifying that the value of the primary key attribute is equal to a given
+ value. This predicate is constructed by evaluating the cached predicate returned by the 
+ predicateForPrimaryKeyAttribute with a dictionary of substitution variables specifying that
+ $PRIMARY_KEY_VALUE is equal to the given value.
+ 
+ @return A predicate speciying that the value of the primary key attribute is equal to a given value.
+ */
+- (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value;
 
 @end

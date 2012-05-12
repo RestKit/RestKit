@@ -46,4 +46,22 @@
     assertThat(entity.primaryKeyAttribute, is(equalTo(@"catID")));
 }
 
+- (void)testSettingPrimaryKeyAttributeCreatesCachedPredicate
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:objectStore.primaryManagedObjectContext];
+    assertThat(entity.primaryKeyAttribute, is(equalTo(@"railsID")));
+    assertThat([entity.predicateForPrimaryKeyAttribute predicateFormat], is(equalTo(@"railsID == $PRIMARY_KEY_VALUE")));
+}
+
+- (void)testThatPredicateForPrimaryKeyAttributeWithValueReturnsUsablePredicate
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:objectStore.primaryManagedObjectContext];
+    assertThat(entity.primaryKeyAttribute, is(equalTo(@"railsID")));
+    NSNumber *primaryKeyValue = [NSNumber numberWithInt:12345];
+    NSPredicate *predicate = [entity predicateForPrimaryKeyAttributeWithValue:primaryKeyValue];
+    assertThat([predicate predicateFormat], is(equalTo(@"railsID == 12345")));
+}
+
 @end
