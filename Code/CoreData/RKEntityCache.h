@@ -33,7 +33,7 @@
 
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 
-/// @name Cacheing Objects by Attribute
+/// @name Caching Objects by Attribute
 
 /**
  Caches all instances of an entity using the value for an attribute as the cache key.
