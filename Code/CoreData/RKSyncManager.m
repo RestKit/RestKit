@@ -393,11 +393,6 @@
             RKLogError(@"There was an error sending some items in the queue: %@", _failedQueueItems);
         }
         
-        // We've been working with a transient queue: delete the items from the core data queue now.
-        for (RKManagedObjectSyncQueue *item in _completedQueueItems) {
-            [item deleteEntity];
-        }
-        
         NSError *error = nil;
         if ([_objectManager.objectStore save:&error] == NO) {
             RKLogError(@"Error removing items from queue: %@", error);
@@ -410,6 +405,11 @@
                 [objectSet addObject:[_objectManager.objectStore.managedObjectContextForCurrentThread objectWithID:
                                       [self objectIDWithString:item.objectIDString]]];
             }
+        }
+        
+        // We've been working with a transient queue: delete the items from the core data queue now.
+        for (RKManagedObjectSyncQueue *item in _completedQueueItems) {
+            [item deleteEntity];
         }
         
         [_queue removeAllObjects];
