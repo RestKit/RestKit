@@ -20,7 +20,7 @@
 
 #import "RKSyncManager.h"
 
-#define EXIT_IF_SYNCING if ([_queue count] > 0) {\
+#define EXIT_IF_SYNCING if ([_queue count] > 0 || _isPulling) {\
     RKLogWarning(@"Sync manager is currently in a syncing state.");\
     return;\
 }\
@@ -48,6 +48,8 @@
 - (void)checkIfQueueFinishedWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
 - (void)sendObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
+- (void)setIsPulling:(BOOL)value;
+
 @end
 
 @implementation RKSyncManager
@@ -78,6 +80,7 @@
         self.syncEnabled = YES;
         
         _shouldPullAfterPush = NO;
+        self.isPulling = NO;
 
         //Register for notifications from the managed object context associated with the object manager
         NSManagedObjectContext *moc = self.objectManager.objectStore.managedObjectContextForCurrentThread;
@@ -311,6 +314,8 @@
     {
         // weak reference
         __block RKSyncManager *blocksafeSelf = self;
+        __block NSObject<RKSyncManagerDelegate> *blocksafeDelegate = _delegate;
+        
         NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
         
         //Build set of objects that will be synced (deleted objects not garaunteed to exist
@@ -339,9 +344,12 @@
                         [blocksafeSelf addCompletedQueueItem: item];
                         [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                     };
-                    loader.onDidFailWithError = ^ (id object){
+                    loader.onDidFailWithError = ^ (NSError *error){
                         [blocksafeSelf addFailedQueueItem: item];
                         [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                        if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
+                            [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                        }
                     };
                 }];
             } else if (method == RKRequestMethodPUT) {
@@ -350,9 +358,12 @@
                         [blocksafeSelf addCompletedQueueItem: item];
                         [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                     };
-                    loader.onDidFailWithError = ^ (id object){
+                    loader.onDidFailWithError = ^ (NSError *error){
                         [blocksafeSelf addFailedQueueItem: item];
                         [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                        if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
+                            [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                        }
                     };
                 }];
             } else if (method == RKRequestMethodDELETE) {
@@ -487,6 +498,10 @@
 
 #pragma mark - Sync Methods
 
+- (void)setIsPulling:(BOOL)value {
+    _isPulling = value;
+}
+
 - (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     
@@ -516,6 +531,11 @@
     
     EXIT_IF_SYNCING
     
+    [self setIsPulling: YES];
+    
+    __block RKSyncManager *blocksafeSelf = self;
+    __block NSObject<RKSyncManagerDelegate> *blocksafeDelegate = _delegate;
+    
     // We can save ourselves a lot of processing if we were provided a class & we have a direction for it.
     if (objectClass) {
       RKSyncDirection direction = [self syncDirectionForClass:objectClass];
@@ -540,7 +560,17 @@
                 [_delegate syncManager:self willPullObjectsOfClass:objectClass withSyncMode:syncMode];
               }
 
-              [_objectManager loadObjectsAtResourcePath:resourcePath delegate:nil];
+                [_objectManager loadObjectsAtResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
+                    loader.onDidLoadObjects = ^(NSArray *objects){
+                        [blocksafeSelf setIsPulling: NO];
+                    };
+                    loader.onDidFailWithError = ^(NSError *error){
+                        [blocksafeSelf setIsPulling: NO];
+                        if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
+                            [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                        }
+                    };
+                }];
               
               if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullObjectsOfClass:withSyncMode:)]) {
                 [_delegate syncManager:self didPullObjectsOfClass:objectClass withSyncMode:syncMode];
@@ -551,7 +581,6 @@
 }
 
 - (void)transparentSync {
-    EXIT_IF_SYNCING
     //Syncs objects set to RKSyncModeTransparent. Called on reachability notification
     if ([_objectManager.client.reachabilityObserver isNetworkReachable]) {
         [self syncObjectsWithSyncMode:RKSyncModeTransparent andClass:nil];

@@ -97,6 +97,7 @@ typedef enum {
     NSMutableArray *_completedQueueItems;
     NSMutableArray *_failedQueueItems;
     BOOL _shouldPullAfterPush;
+    BOOL _isPulling;
 }
 
 /**
