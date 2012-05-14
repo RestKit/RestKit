@@ -18,6 +18,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @synthesize objectMapping = _objectMapping;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
+@synthesize createPredicateBlock = _createPredicateBlock;
 
 - (id)initWithKey:(NSString*)key value:(id)value objectMapping:(RKObjectMapping*)objectMapping {
     self = [super init];
@@ -25,6 +26,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         _keyPath = [key retain];
         _value = [value retain];
         _objectMapping = [objectMapping retain];
+        _createPredicateBlock = NULL;
     }
 
     return self;
@@ -36,6 +38,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         _keyPath = [key retain];
         _value = [value retain];
         _primaryKeyAttribute = [primaryKeyAttribute retain];
+        _createPredicateBlock = NULL;
     }
 
     return self;
@@ -46,6 +49,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     if (self) {
         _primaryKeyAttribute = [primaryKeyAttribute retain];
         _isMatchForDataBlock = Block_copy(block);
+        _createPredicateBlock = NULL;
+    }
+    return self;
+}
+
+- (id)initWithPrimaryKeyAttribute:(NSString*)primaryKeyAttribute createPredicateBlock:(RKDynamicObjectCreatePredicateBlock)block {
+    if((self = [super init]))
+    {
+        _primaryKeyAttribute = [primaryKeyAttribute retain];
+        _createPredicateBlock = Block_copy(block);
     }
     return self;
 }
@@ -58,10 +71,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     if (_isMatchForDataBlock) {
         Block_release(_isMatchForDataBlock);
     }
+    if(_createPredicateBlock) {
+        Block_release(_createPredicateBlock);
+    }
     [super dealloc];
 }
 
 - (BOOL)isMatchForData:(id)data {
+    NSAssert(!self.usePredicate, @"Cannot call isMatchForData on a predicate-yielding dynamic matcher - call predicateForRelationship instead");
     if (_isMatchForDataBlock) {
         return _isMatchForDataBlock(data);
     }
@@ -74,5 +91,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     }
     return [NSString stringWithFormat:@"%@ == %@", _keyPath, _value];
 }
+
+- (BOOL)usePredicate {
+    return _createPredicateBlock != NULL;
+}
+
 
 @end
