@@ -37,22 +37,23 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
         [entityCache release];
     }
     
-    if (! [entityCache isEntity:entity cachedByAttribute:entity.primaryKeyAttribute]) {
-        RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, entity.primaryKeyAttribute);
-        [entityCache cacheObjectsForEntity:entity byAttribute:entity.primaryKeyAttribute];
-        RKEntityByAttributeCache *attributeCache = [entityCache attributeCacheForEntity:entity attribute:entity.primaryKeyAttribute];
-        RKLogTrace(@"Cached %d objects", [attributeCache count]);
-    }
-    
     return entityCache;
 }
 
 - (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-                      withPrimaryKeyValue:(id)primaryKeyValue
+                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                                    value:(id)primaryKeyValue
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    RKEntityCache *entityCache = [self cacheForEntity:entity inManagedObjectContext:managedObjectContext];    
-    return [entityCache objectForEntity:entity withAttribute:entity.primaryKeyAttribute value:primaryKeyValue];
+    RKEntityCache *entityCache = [self cacheForEntity:entity inManagedObjectContext:managedObjectContext];
+    if (! [entityCache isEntity:entity cachedByAttribute:primaryKeyAttribute]) {
+        RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, primaryKeyAttribute);
+        [entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];
+        RKEntityByAttributeCache *attributeCache = [entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
+        RKLogTrace(@"Cached %d objects", [attributeCache count]);
+    }
+    
+    return [entityCache objectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue];
 }
 
 - (void)didFetchObject:(NSManagedObject *)object
@@ -63,16 +64,12 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
 
 - (void)didCreateObject:(NSManagedObject *)object
 {
-    if (! object.entity.primaryKeyAttribute) return;
-    
     RKEntityCache *entityCache = [self cacheForEntity:object.entity inManagedObjectContext:object.managedObjectContext];
     [entityCache addObject:object];
 }
 
 - (void)didDeleteObject:(NSManagedObject *)object
 {
-    if (! object.entity.primaryKeyAttribute) return;
-    
     RKEntityCache *entityCache = [self cacheForEntity:object.entity inManagedObjectContext:object.managedObjectContext];
     [entityCache removeObject:object];
 }

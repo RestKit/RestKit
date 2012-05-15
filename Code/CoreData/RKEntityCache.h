@@ -21,7 +21,9 @@
  */
 @interface RKEntityCache : NSObject
 
+///-----------------------------------------------------------------------------
 /// @name Initializing the Cache
+///-----------------------------------------------------------------------------
 
 /**
  Initializes the receiver with a managed object context containing the entity instances to be cached.
@@ -31,9 +33,14 @@
  */
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)context;
 
+/**
+ The managed object context with which the receiver is associated.
+ */
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 
+///-----------------------------------------------------------------------------
 /// @name Caching Objects by Attribute
+///-----------------------------------------------------------------------------
 
 /**
  Caches all instances of an entity using the value for an attribute as the cache key.
@@ -64,7 +71,7 @@
 - (NSManagedObject *)objectForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue;
 
 /**
- Retrieves the all cached instances of a given entity where the specified attribute matches the given value.
+ Retrieves all cached instances of a given entity where the specified attribute matches the given value.
  
  @param entity The entity to search the cache for instances of.
  @param attributeName The attribute to search the cache for matches with.
@@ -72,20 +79,55 @@
  @return All matching managed object instances or nil.
  @raise NSInvalidArgumentException Raised if instances of the entity and attribute have not been cached.
  */
-- (NSSet *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue;
+- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue;
 
+///-----------------------------------------------------------------------------
 // @name Accessing Underlying Caches
-- (RKEntityByAttributeCache *)attributeCacheForEntity:(NSEntityDescription *)entity attribute:(NSString *)attributeName;
-- (NSSet *)attributeCachesForEntity:(NSEntityDescription *)entity;                                        
-
-// @name Managing the Cache
+///-----------------------------------------------------------------------------
 
 /**
- Empties the cache by releasing all cached objects.
+ Retrieves the underlying entity attribute cache for a given entity and attribute.
+ 
+ @param entity The entity to retrieve the entity attribute cache object for.
+ @param attributeName  The attribute to retrieve the entity attribute cache object for.
+ @return The entity attribute cache for the given entity and attribute, or nil if none was found.
+ */
+- (RKEntityByAttributeCache *)attributeCacheForEntity:(NSEntityDescription *)entity attribute:(NSString *)attributeName;
+
+/**
+ Retrieves all entity attributes caches for a given entity.
+ 
+ @param entity The entity to retrieve the collection of entity attribute caches for.
+ @return An array of entity attribute cache objects for the given entity or an empty array if none were found.
+ */
+- (NSArray *)attributeCachesForEntity:(NSEntityDescription *)entity;                                        
+
+///-----------------------------------------------------------------------------
+// @name Managing the Cache
+///-----------------------------------------------------------------------------
+
+/**
+ Flushes the entity cache by sending a flush message to each entity attribute cache
+ contained within the receiver.
+ 
+ @see [RKEntityByAttributeCache flush]
  */
 - (void)flush;
 
+/**
+ Adds a given object to all entity attribute caches for the object's entity contained
+ within the receiver.
+ 
+ @param object The object to add to the appropriate entity attribute caches.
+ */
 - (void)addObject:(NSManagedObject *)object;
+
+/**
+ Removed a given object from all entity attribute caches for the object's entity contained
+ within the receiver.
+ 
+ @param object The object to remove from the appropriate entity attribute caches.
+ */
 - (void)removeObject:(NSManagedObject *)object;
 
 @end

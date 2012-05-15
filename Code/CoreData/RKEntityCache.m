@@ -77,7 +77,7 @@
     return nil;
 }
 
-- (NSSet *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue
+- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue
 {
     NSAssert(entity, @"Cannot retrieve cached objects with a nil entity");
     NSAssert(attributeName, @"Cannot retrieve cached objects by a nil entity");
@@ -123,7 +123,7 @@
 - (void)addObject:(NSManagedObject *)object
 {
     NSAssert(object, @"Cannot add a nil object to the cache");
-    NSSet *attributeCaches = [self attributeCachesForEntity:object.entity];
+    NSArray *attributeCaches = [self attributeCachesForEntity:object.entity];
     for (RKEntityByAttributeCache *cache in attributeCaches) {
         [cache addObject:object];
     }
@@ -132,7 +132,7 @@
 - (void)removeObject:(NSManagedObject *)object
 {
     NSAssert(object, @"Cannot remove a nil object from the cache");
-    NSSet *attributeCaches = [self attributeCachesForEntity:object.entity];
+    NSArray *attributeCaches = [self attributeCachesForEntity:object.entity];
     for (RKEntityByAttributeCache *cache in attributeCaches) {
         [cache removeObject:object];
     }

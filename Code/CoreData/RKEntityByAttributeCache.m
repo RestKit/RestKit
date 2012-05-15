@@ -74,6 +74,11 @@
 
 - (NSUInteger)count
 {
+    return [[[self.attributeValuesToObjectIDs allValues] valueForKeyPath:@"@sum.@count"] integerValue];
+}
+
+- (NSUInteger)countOfAttributeValues
+{
     return [self.attributeValuesToObjectIDs count];
 }
 
@@ -84,8 +89,6 @@
 
 - (BOOL)shouldCoerceAttributeToString:(NSString *)attributeValue
 {
-    return NO;
-    
     if ([attributeValue isKindOfClass:[NSString class]] || [attributeValue isEqual:[NSNull null]]) {
         return NO;
     }
@@ -140,7 +143,8 @@
 
 - (NSManagedObject *)objectWithAttributeValue:(id)attributeValue
 {
-    return [[self objectsWithAttributeValue:attributeValue] anyObject];
+    NSArray *objects = [self objectsWithAttributeValue:attributeValue];
+    return ([objects count] > 0) ? [objects objectAtIndex:0] : nil;
 }
 
 - (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID {
@@ -160,13 +164,12 @@
     return object;
 }
 
-- (NSSet *)objectsWithAttributeValue:(id)attributeValue
+- (NSArray *)objectsWithAttributeValue:(id)attributeValue
 {
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
-    NSMutableSet *set = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
-    if (set) {
-        NSSet *objectIDs = [NSSet setWithSet:set];
-        NSMutableSet *objects = [NSMutableSet setWithCapacity:[objectIDs count]];
+    NSMutableArray *objectIDs = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
+    if (objectIDs) {
+        NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[objectIDs count]];
         for (NSManagedObjectID *objectID in objectIDs) {
             NSManagedObject *object = [self objectWithID:objectID];
             if (object) [objects addObject:object];
@@ -175,7 +178,7 @@
         return objects;
     }
     
-    return [NSSet set];
+    return [NSArray array];
 }
 
 - (void)addObject:(NSManagedObject *)object
@@ -186,15 +189,17 @@
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
     if (attributeValue) {
         NSManagedObjectID *objectID = [object objectID];
-        NSMutableSet *set = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
-        if (set) {
-            [set addObject:objectID];
+        NSMutableArray *objectIDs = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
+        if (objectIDs) {
+            if (! [objectIDs containsObject:objectID]) {
+                [objectIDs addObject:objectID];
+            }
         } else {
-            set = [NSMutableSet setWithObject:objectID];
+            objectIDs = [NSMutableArray arrayWithObject:objectID];
         }
         
         if (nil == self.attributeValuesToObjectIDs) self.attributeValuesToObjectIDs = [NSMutableDictionary dictionary];
-        [self.attributeValuesToObjectIDs setValue:set forKey:attributeValue];
+        [self.attributeValuesToObjectIDs setValue:objectIDs forKey:attributeValue];
     } else {
         RKLogWarning(@"Unable to add object with nil value for attribute '%@': %@", self.attribute, object);
     }
@@ -208,9 +213,9 @@
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
     if (attributeValue) {
         NSManagedObjectID *objectID = [object objectID];
-        NSMutableSet *set = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
-        if (set) {
-            [set removeObject:objectID];
+        NSMutableArray *objectIDs = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
+        if (objectIDs && [objectIDs containsObject:objectID]) {
+            [objectIDs removeObject:objectID];
         }
     } else {
         RKLogWarning(@"Unable to remove object with nil value for attribute '%@': %@", self.attribute, object);

@@ -113,10 +113,12 @@
 
     id mockCacheStrategy = [OCMockObject partialMockForObject:objectStore.cacheStrategy];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:OCMOCK_ANY
-                                                                  withPrimaryKeyValue:@"blake"
+                                                      withPrimaryKeyAttribute:mapping.primaryKeyAttribute
+                                                                        value:@"blake"
                                                        inManagedObjectContext:objectStore.primaryManagedObjectContext];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:mapping.entity
-                                                                  withPrimaryKeyValue:@"rachit"
+                                                      withPrimaryKeyAttribute:mapping.primaryKeyAttribute
+                                                                        value:@"rachit"
                                                        inManagedObjectContext:objectStore.primaryManagedObjectContext];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
     RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
@@ -260,6 +262,58 @@
     id object = [mapping mappableObjectForData:nestedDictionary];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
+}
+
+- (void)testMappingWithFetchRequestCacheWherePrimaryKeyAttributeOfMappingDisagreesWithEntity
+{
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
+    store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
+    [RKHuman truncateAll];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    mapping.primaryKeyAttribute = @"name";
+    [RKHuman entity].primaryKeyAttribute = @"railsID";
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];
+    
+    [RKHuman truncateAll];
+    RKHuman* human = [RKHuman object];
+    human.name = @"Testing";
+    [store save:nil];
+    assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
+    
+    NSDictionary* data = [NSDictionary dictionaryWithObject:@"Testing" forKey:@"name"];
+    NSDictionary* nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
+    id object = [mapping mappableObjectForData:nestedDictionary];
+    assertThat(object, isNot(nilValue()));
+    assertThat(object, is(equalTo(human)));
+    
+    id cachedObject = [store.cacheStrategy findInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"name" value:@"Testing" inManagedObjectContext:store.primaryManagedObjectContext];
+    assertThat(cachedObject, is(equalTo(human)));
+}
+
+- (void)testMappingWithInMemoryCacheWherePrimaryKeyAttributeOfMappingDisagreesWithEntity
+{
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
+    store.cacheStrategy = [RKInMemoryManagedObjectCache new];
+    [RKHuman truncateAll];
+    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    mapping.primaryKeyAttribute = @"name";
+    [RKHuman entity].primaryKeyAttribute = @"railsID";
+    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];
+    
+    [RKHuman truncateAll];
+    RKHuman* human = [RKHuman object];
+    human.name = @"Testing";
+    [store save:nil];
+    assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
+    
+    NSDictionary* data = [NSDictionary dictionaryWithObject:@"Testing" forKey:@"name"];
+    NSDictionary* nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
+    id object = [mapping mappableObjectForData:nestedDictionary];
+    assertThat(object, isNot(nilValue()));
+    assertThat(object, is(equalTo(human)));
+    
+    id cachedObject = [store.cacheStrategy findInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"name" value:@"Testing" inManagedObjectContext:store.primaryManagedObjectContext];
+    assertThat(cachedObject, is(equalTo(human)));
 }
 
 @end

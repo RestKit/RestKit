@@ -63,7 +63,7 @@
 - (void)testRetrievalOfUnderlyingEntityAttributeCaches
 {
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    NSSet *caches = [_cache attributeCachesForEntity:self.entity];
+    NSArray *caches = [_cache attributeCachesForEntity:self.entity];
     assertThat(caches, is(notNilValue()));
     assertThatInteger([caches count], is(equalToInteger(1)));
 }
@@ -90,7 +90,7 @@
     [self.objectStore save:&error];
     
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
-    NSSet *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345]];
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345]];
     assertThat(objects, hasCountOf(2));
     assertThat(objects, containsInAnyOrder(human1, human2, nil));
 }
@@ -108,7 +108,7 @@
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
     
-    NSSet *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345]];
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345]];
     assertThat(objects, hasCountOf(2));
     assertThat(objects, containsInAnyOrder(human1, human2, nil));
     
@@ -138,7 +138,7 @@
     [_cache addObject:human1];
     [_cache addObject:human2];
     
-    NSSet *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345]];
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345]];
     assertThat(objects, hasCountOf(2));
     assertThat(objects, containsInAnyOrder(human1, human2, nil));
     
@@ -149,7 +149,27 @@
 
 - (void)testRemovingObjectRemovesFromUnderlyingEntityAttributeCaches
 {
+    [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
+    [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
     
+    RKHuman *human1 = [RKHuman createInContext:self.objectStore.primaryManagedObjectContext];
+    human1.railsID = [NSNumber numberWithInteger:12345];
+    human1.name = @"Blake";
+    RKHuman *human2 = [RKHuman createInContext:self.objectStore.primaryManagedObjectContext];
+    human2.railsID = [NSNumber numberWithInteger:12345];
+    human2.name = @"Sarah";
+    
+    [_cache addObject:human1];
+    [_cache addObject:human2];
+    
+    NSArray *objects = [self.cache objectsForEntity:self.entity withAttribute:@"railsID" value:[NSNumber numberWithInteger:12345]];
+    assertThat(objects, hasCountOf(2));
+    assertThat(objects, containsInAnyOrder(human1, human2, nil));
+    
+    RKEntityByAttributeCache *entityAttributeCache = [self.cache attributeCacheForEntity:[RKHuman entity] attribute:@"railsID"];
+    assertThatBool([entityAttributeCache containsObject:human1], is(equalToBool(YES)));
+    [self.cache removeObject:human1];
+    assertThatBool([entityAttributeCache containsObject:human1], is(equalToBool(NO)));
 }
 
 @end

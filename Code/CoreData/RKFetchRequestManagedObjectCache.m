@@ -19,14 +19,18 @@
 
 @implementation RKFetchRequestManagedObjectCache
 
-- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity 
-                      withPrimaryKeyValue:(id)primaryKeyValue inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
+                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                                    value:(id)primaryKeyValue
+                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
     NSAssert(entity, @"Cannot find existing managed object without a target class");
+    NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping that defines a primaryKeyAttribute");
     NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
     
     id searchValue = primaryKeyValue;
-    Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:entity.primaryKeyAttribute ofEntity:entity];
+    Class type = [[RKObjectPropertyInspector sharedInspector] typeForProperty:primaryKeyAttribute ofEntity:entity];
     if (type && ([type isSubclassOfClass:[NSString class]] && NO == [primaryKeyValue isKindOfClass:[NSString class]])) {
         searchValue = [NSString stringWithFormat:@"%@", primaryKeyValue];
     } else if (type && ([type isSubclassOfClass:[NSNumber class]] && NO == [primaryKeyValue isKindOfClass:[NSNumber class]])) {
@@ -35,7 +39,14 @@
         }
     }
     
-    NSPredicate *predicate = [entity predicateForPrimaryKeyAttributeWithValue:searchValue];
+    // Use cached predicate if primary key matches
+    NSPredicate *predicate = nil;
+    if ([entity.primaryKeyAttribute isEqualToString:primaryKeyAttribute]) {
+        predicate = [entity predicateForPrimaryKeyAttributeWithValue:searchValue];
+    } else {
+        // Parse a predicate
+        predicate = [NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, searchValue];
+    }
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     fetchRequest.entity = entity;
     fetchRequest.fetchLimit = 1;
