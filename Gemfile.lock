@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: git://github.com/sinatra/sinatra.git
-  revision: 5a8080a077c298efc9917f7126503e99b9adb60b
+  revision: cab56ed7d64b9ffb6d4df48cb8d7d3153890f3ee
   specs:
     sinatra (1.4.0)
       rack (~> 1.3, >= 1.3.6)
@@ -38,9 +38,9 @@ GIT
 
 GIT
   remote: https://github.com/laserlemon/simple_oauth.git
-  revision: f7124aba147418ea198c88b6a7c4e3cd0c3fe4a9
+  revision: e1146b615df769bfe7824a337122069cc2d5476d
   specs:
-    simple_oauth (0.1.7)
+    simple_oauth (0.1.8)
 
 GEM
   remote: http://rubygems.org/
@@ -54,7 +54,10 @@ GEM
     daemons (1.1.8)
     diff-lcs (1.1.3)
     eventmachine (0.12.10)
-    json (1.7.1)
+    faker (1.0.1)
+      i18n (~> 0.4)
+    i18n (0.6.0)
+    json (1.7.3)
     jwt (0.1.4)
       json (>= 1.2.4)
     linecache19 (0.5.12)
@@ -101,6 +104,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.1.0)
+  faker (= 1.0.1)
   mongo
   rack-oauth2-server!
   rack-test

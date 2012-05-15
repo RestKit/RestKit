@@ -56,6 +56,7 @@ _lcl_component(RestKitNetworkQueue,         "restkit.network.queue",            
 _lcl_component(RestKitNetworkReachability,  "restkit.network.reachability",     "RestKit/Network/Reachability")
 _lcl_component(RestKitObjectMapping,        "restkit.object_mapping",           "RestKit/ObjectMapping")
 _lcl_component(RestKitCoreData,             "restkit.core_data",                "RestKit/CoreData")
+_lcl_component(RestKitCoreDataCache,        "restkit.core_data.cache",          "RestKit/CoreData/Cache")
 _lcl_component(RestKitCoreDataSearchEngine, "restkit.core_data.search_engine",  "RestKit/CoreData/SearchEngine")
 _lcl_component(RestKitSupport,              "restkit.support",                  "RestKit/Support")
 _lcl_component(RestKitSupportParsers,       "restkit.support.parsers",          "RestKit/Support/Parsers")

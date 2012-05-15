@@ -39,10 +39,18 @@
         }
     }
     
-    NSFetchRequest* fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setFetchLimit:1];
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, searchValue]];
+    // Use cached predicate if primary key matches
+    NSPredicate *predicate = nil;
+    if ([entity.primaryKeyAttribute isEqualToString:primaryKeyAttribute]) {
+        predicate = [entity predicateForPrimaryKeyAttributeWithValue:searchValue];
+    } else {
+        // Parse a predicate
+        predicate = [NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, searchValue];
+    }
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    fetchRequest.entity = entity;
+    fetchRequest.fetchLimit = 1;
+    fetchRequest.predicate = predicate;
     NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:managedObjectContext];
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
     [fetchRequest release];

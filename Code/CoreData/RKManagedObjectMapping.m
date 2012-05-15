@@ -160,19 +160,34 @@
             NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
             if (keyPathForPrimaryKeyElement) {
                 primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
+            } else {
+                RKLogWarning(@"Unable to find source attribute for primaryKeyAttribute '%@': unable to find existing object instances by primary key.", primaryKeyAttribute);
             }
         }        
     }
     
     // If we have found the primary key attribute & value, try to find an existing instance to update
-    if (primaryKeyAttribute && primaryKeyValue) {
-        object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
-                                              withPrimaryKeyAttribute:self.primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
+    if (primaryKeyAttribute && primaryKeyValue && NO == [primaryKeyValue isEqual:[NSNull null]]) {
+        object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity                  
+                                              withPrimaryKeyAttribute:primaryKeyAttribute 
+                                                                value:primaryKeyValue 
+                                               inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
+        
+        if (object && [self.objectStore.cacheStrategy respondsToSelector:@selector(didFetchObject:)]) {
+            [self.objectStore.cacheStrategy didFetchObject:object];
+        }
     }
 
     if (object == nil) {
         object = [[[NSManagedObject alloc] initWithEntity:entity
                            insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
+        if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
+            [object setValue:primaryKeyValue forKey:primaryKeyAttribute];
+        }
+        
+        if ([self.objectStore.cacheStrategy respondsToSelector:@selector(didCreateObject:)]) {
+            [self.objectStore.cacheStrategy didCreateObject:object];
+        }
     }
     return object;
 }

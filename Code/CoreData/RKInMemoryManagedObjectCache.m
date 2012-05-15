@@ -7,6 +7,8 @@
 //
 
 #import "RKInMemoryManagedObjectCache.h"
+#import "NSEntityDescription+RKAdditions.h"
+#import "RKEntityCache.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -17,27 +19,59 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
 
 @implementation RKInMemoryManagedObjectCache
 
-- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                    value:(id)primaryKeyValue
-                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+- (RKEntityCache *)cacheForEntity:(NSEntityDescription *)entity inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
     NSAssert(entity, @"Cannot find existing managed object without a target class");
-    NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping");
-    NSAssert(primaryKeyValue, @"Cannot find existing managed object by primary key without a value");
     NSAssert(managedObjectContext, @"Cannot find existing managed object with a context");
     NSMutableDictionary *contextDictionary = [[[NSThread currentThread] threadDictionary] objectForKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
     if (! contextDictionary) {
         contextDictionary = [NSMutableDictionary dictionaryWithCapacity:1];
         [[[NSThread currentThread] threadDictionary] setObject:contextDictionary forKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
     }
-    NSNumber *hashNumber = [NSNumber numberWithUnsignedInteger:[managedObjectContext hash]];
-    RKInMemoryEntityCache *cache = [contextDictionary objectForKey:hashNumber];
-    if (! cache) {
-        cache = [[RKInMemoryEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
-        [contextDictionary setObject:cache forKey:hashNumber];
-        [cache release];
+    NSNumber *hashNumber = [NSNumber numberWithUnsignedInteger:[managedObjectContext hash]];    
+    RKEntityCache *entityCache = [contextDictionary objectForKey:hashNumber];
+    if (! entityCache) {
+        RKLogInfo(@"Creating thread-local entity cache for managed object context: %@", managedObjectContext);
+        entityCache = [[RKEntityCache alloc] initWithManagedObjectContext:managedObjectContext];
+        [contextDictionary setObject:entityCache forKey:hashNumber];
+        [entityCache release];
     }
-    return [cache cachedObjectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue inContext:managedObjectContext];
+    
+    return entityCache;
+}
+
+- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
+                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                                    value:(id)primaryKeyValue
+                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
+    RKEntityCache *entityCache = [self cacheForEntity:entity inManagedObjectContext:managedObjectContext];
+    if (! [entityCache isEntity:entity cachedByAttribute:primaryKeyAttribute]) {
+        RKLogInfo(@"Caching instances of Entity '%@' by primary key attribute '%@'", entity.name, primaryKeyAttribute);
+        [entityCache cacheObjectsForEntity:entity byAttribute:primaryKeyAttribute];
+        RKEntityByAttributeCache *attributeCache = [entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
+        RKLogTrace(@"Cached %ld objects", (long) [attributeCache count]);
+    }
+    
+    return [entityCache objectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue];
+}
+
+- (void)didFetchObject:(NSManagedObject *)object
+{
+    RKEntityCache *entityCache = [self cacheForEntity:object.entity inManagedObjectContext:object.managedObjectContext];
+    [entityCache addObject:object];
+}
+
+- (void)didCreateObject:(NSManagedObject *)object
+{
+    RKEntityCache *entityCache = [self cacheForEntity:object.entity inManagedObjectContext:object.managedObjectContext];
+    [entityCache addObject:object];
+}
+
+- (void)didDeleteObject:(NSManagedObject *)object
+{
+    RKEntityCache *entityCache = [self cacheForEntity:object.entity inManagedObjectContext:object.managedObjectContext];
+    [entityCache removeObject:object];
 }
 
 @end

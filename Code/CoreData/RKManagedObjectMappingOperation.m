@@ -119,7 +119,7 @@
          manually invoke processPendingChanges to prevent recreating objects with the same primary key.
          See https://github.com/RestKit/RestKit/issues/661
          */
-        [[[(RKManagedObjectMapping *)self.objectMapping objectStore] managedObjectContextForCurrentThread] processPendingChanges];
+//        [[[(RKManagedObjectMapping *)self.objectMapping objectStore] managedObjectContextForCurrentThread] processPendingChanges];
         [self connectRelationships];
     }
     return success;
