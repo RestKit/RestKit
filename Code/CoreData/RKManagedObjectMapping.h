@@ -20,7 +20,7 @@
 
 #import <CoreData/CoreData.h>
 #import "RKObjectMapping.h"
-//#import "RKManagedObjectStore.h"
+#import "RKObjectConnectionMapping.h"
 
 @class RKManagedObjectStore;
 
@@ -31,7 +31,7 @@
 @interface RKManagedObjectMapping : RKObjectMapping {
     NSEntityDescription *_entity;
     NSString *_primaryKeyAttribute;
-    NSMutableDictionary *_relationshipToPrimaryKeyMappings;
+    NSMutableDictionary *_connections;
 }
 
 /**
@@ -74,10 +74,9 @@
 @property (nonatomic, retain) NSString *primaryKeyAttribute;
 
 /**
- Returns a dictionary containing Core Data relationships and attribute pairs containing
- the primary key for
+ Returns a dictionary containing Core Data connections 
  */
-@property (nonatomic, readonly) NSDictionary *relationshipsAndPrimaryKeyAttributes;
+@property (nonatomic, readonly) NSDictionary *connections;
 
 /**
  The RKManagedObjectStore containing the Core Data entity being mapped
@@ -85,30 +84,34 @@
 @property (nonatomic, readonly) RKManagedObjectStore *objectStore;
 
 /**
+ Returns the RKObjectRelationshipMapping connection for the specified relationship.
+ */
+- (RKObjectConnectionMapping*)mappingForConnection:(NSString*)relationshipName;
+ 
+/**
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up
  the related object by primary key.
 
  For example, given a Project object associated with a User, where the 'user' relationship is
  specified by a userID property on the managed object:
 
- [mapping connectRelationship:@"user" withObjectForPrimaryKeyAttribute:@"userID"];
+ [mapping connectRelationship:@"user" withMapping:userMapping fromKeyPath:@"userId" toKeyPath:@"id"];
 
  Will hydrate the 'user' association on the managed object with the object
  in the local object graph having the primary key specified in the managed object's
  userID property.
 
+ You can also do the reverse. Given a User object associated with a Project, with a 
+ 'project' relationship:
+ 
+ [mapping connectRelationship:@"project" withMapping:projectMapping fromKeyPath:@"id" toKeyPath:@"userId"];
+ 
  In effect, this approach allows foreign key relationships between managed objects
  to be automatically maintained from the server to the underlying Core Data object graph.
  */
-- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute;
+- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
 
-/**
- Connects relationships using the primary key values contained in the specified attribute. This method is
- a short-cut for repeated invocation of `connectRelationship:withObjectForPrimaryKeyAttribute:`.
 
- @see connectRelationship:withObjectForPrimaryKeyAttribute:
- */
-- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -117,7 +120,7 @@
  For example, given a Project object associated with a User, where the 'admin' relationship is
  specified by a adminID property on the managed object:
 
- [mapping connectRelationship:@"admin" withObjectForPrimaryKeyAttribute:@"adminID" whenValueOfKeyPath:@"userType" isEqualTo:@"Admin"];
+ [mapping connectRelationship:@"admin" withMapping:userMapping fromKeyPath:@"adminId" toKeyPath:@"id" whenValueOfKeyPath:@"userType" isEqualTo:@"Admin"];
 
  Will hydrate the 'admin' association on the managed object with the object
  in the local object graph having the primary key specified in the managed object's
@@ -126,7 +129,8 @@
 
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
+- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
+
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -136,7 +140,7 @@
  For example, given a Project object associated with a User, where the 'admin' relationship is
  specified by a adminID property on the managed object:
 
- [mapping connectRelationship:@"admin" withObjectForPrimaryKeyAttribute:@"adminID" usingEvaluationBlock:^(id data) {
+ [mapping connectRelationship:@"admin" withMapping:userMapping fromKeyPath:@"adminId" toKeyPath:@"adminID" usingEvaluationBlock:^(id data) {
     return [User isAuthenticated];
  }];
 
@@ -147,7 +151,8 @@
 
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block;
+- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block;
+
 
 /**
  Initialize a managed object mapping with a Core Data entity description and a RestKit managed object store
@@ -160,4 +165,9 @@
  */
 - (id)defaultValueForMissingAttribute:(NSString *)attributeName;
 
+/* Deprecated */
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute DEPRECATED_ATTRIBUTE;
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value DEPRECATED_ATTRIBUTE;
+- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE;
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block DEPRECATED_ATTRIBUTE;
 @end
