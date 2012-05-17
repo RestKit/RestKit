@@ -39,13 +39,13 @@
         portCheck = [[RKPortCheck alloc] initWithHost:@"localhost" port:27017];
         [portCheck run];
     }
-    
+
     return [portCheck isOpen];
 }
 
 - (void)testShouldGetAccessToken{
     RKOAuthClientTestSkipWithoutMongoDB();
-    
+
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);
     client.authorizationCode = @"4fa8182d7184797dd5000002";
@@ -57,7 +57,7 @@
 
 - (void)testShouldNotGetAccessToken {
     RKOAuthClientTestSkipWithoutMongoDB();
-    
+
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);
     client.authorizationCode = @"someInvalidAuthorizationCode";
@@ -70,7 +70,7 @@
 
 - (void)testShouldGetProtectedResource{
     RKOAuthClientTestSkipWithoutMongoDB();
-    
+
     //TODO: Encapsulate this code in a correct manner
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);

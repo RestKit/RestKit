@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 12/1/10.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -72,25 +72,25 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 + (id)newRequestQueueWithName:(NSString*)name {
     if (RKRequestQueueInstances == nil) {
-        RKRequestQueueInstances = [NSMutableArray new];        
+        RKRequestQueueInstances = [NSMutableArray new];
     }
-    
+
     if ([self requestQueueExistsWithName:name]) {
         return nil;
     }
-    
+
     RKRequestQueue* queue = [self new];
     queue.name = name;
     [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:queue]];
-    
+
     return queue;
 }
 
 + (id)requestQueueWithName:(NSString *)name {
     if (RKRequestQueueInstances == nil) {
-        RKRequestQueueInstances = [NSMutableArray new];        
+        RKRequestQueueInstances = [NSMutableArray new];
     }
-    
+
     // Find existing reference
     NSArray *requestQueueInstances = [RKRequestQueueInstances copy];
     RKRequestQueue *namedQueue = nil;
@@ -102,13 +102,13 @@ static const NSTimeInterval kFlushDelay = 0.3;
         }
     }
     [requestQueueInstances release];
-    
+
     if (namedQueue == nil) {
         namedQueue = [self requestQueue];
         namedQueue.name = name;
         [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:namedQueue]];
     }
-    
+
     return namedQueue;
 }
 
@@ -125,10 +125,10 @@ static const NSTimeInterval kFlushDelay = 0.3;
         }
         [requestQueueInstances release];
     }
-    
+
     return queueExists;
 }
-            
+
 - (id)init {
 	if ((self = [super init])) {
 		_requests = [[NSMutableArray alloc] init];
@@ -170,7 +170,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 - (void)dealloc {
     RKLogDebug(@"Queue instance is being deallocated: %@", self);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [self removeFromNamedQueues];
 
     [_queueTimer invalidate];
@@ -187,8 +187,8 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"<%@: %p name=%@ suspended=%@ requestCount=%d loadingCount=%d/%d>", 
-            NSStringFromClass([self class]), self, self.name, self.suspended ? @"YES" : @"NO", 
+    return [NSString stringWithFormat:@"<%@: %p name=%@ suspended=%@ requestCount=%d loadingCount=%d/%d>",
+            NSStringFromClass([self class]), self, self.name, self.suspended ? @"YES" : @"NO",
             self.count, self.loadingCount, self.concurrentRequestsLimit];
 }
 
@@ -267,7 +267,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
         [self performSelectorOnMainThread:@selector(loadNextInQueue) withObject:nil waitUntilDone:NO];
         return;
     }
-    
+
 	// Make sure that the Request Queue does not fire off any requests until the Reachability state has been determined.
 	if (self.suspended) {
 		_queueTimer = nil;
@@ -279,7 +279,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 	_queueTimer = nil;
-    
+
     @synchronized(self) {
         RKRequest* request = [self nextRequest];
         while (request && self.loadingCount < _concurrentRequestsLimit) {
@@ -501,7 +501,7 @@ static const NSTimeInterval kFlushDelay = 0.3;
     if ([_delegate respondsToSelector:@selector(requestQueue:didFailRequest:withError:)]) {
         [_delegate requestQueue:self didFailRequest:request withError:error];
     }
-    
+
     [self removeLoadingRequest:request];
     [self loadNextInQueue];
 }

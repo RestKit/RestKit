@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 /**
- iOS and OS X agnostic accessors for safely returning directory paths for use 
+ iOS and OS X agnostic accessors for safely returning directory paths for use
  by the framework and applications.
  */
 @interface RKDirectory : NSObject
@@ -27,7 +27,7 @@
  Returns a path to the root caches directory used by RestKit for storage. On iOS, this is
  a sanboxed path specific for the executing application. On OS X, this is an application
  specific path under NSCachesDirectory (i.e. ~/Library/Caches).
- 
+
  @return The full path to the Caches directory.
  */
 + (NSString *)cachesDirectory;

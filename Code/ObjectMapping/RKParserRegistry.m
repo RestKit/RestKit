@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 5/18/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ RKParserRegistry *gSharedRegistry;
         gSharedRegistry = [RKParserRegistry new];
         [gSharedRegistry autoconfigure];
     }
-    
+
     return gSharedRegistry;
 }
 
@@ -45,7 +45,7 @@ RKParserRegistry *gSharedRegistry;
         _MIMETypeToParserClasses = [[NSMutableDictionary alloc] init];
         _MIMETypeToParserClassesRegularExpressions = [[NSMutableArray alloc] init];
     }
-    
+
     return self;
 }
 
@@ -91,15 +91,15 @@ RKParserRegistry *gSharedRegistry;
     if (parserClass) {
         return [[[parserClass alloc] init] autorelease];
     }
-    
+
     return nil;
 }
 
 - (void)autoconfigure {
     Class parserClass = nil;
-    
+
     // JSON
-    NSSet *JSONParserClassNames = [NSSet setWithObjects:@"RKJSONParserJSONKit", @"RKJSONParserYAJL", @"RKJSONParserSBJSON", @"RKJSONParserNXJSON", nil];    
+    NSSet *JSONParserClassNames = [NSSet setWithObjects:@"RKJSONParserJSONKit", @"RKJSONParserYAJL", @"RKJSONParserSBJSON", @"RKJSONParserNXJSON", nil];
     for (NSString *parserClassName in JSONParserClassNames) {
         parserClass = NSClassFromString(parserClassName);
         if (parserClass) {
@@ -107,7 +107,7 @@ RKParserRegistry *gSharedRegistry;
             break;
         }
     }
-    
+
     // XML
     parserClass = NSClassFromString(@"RKXMLParserXMLReader");
     if (parserClass) {

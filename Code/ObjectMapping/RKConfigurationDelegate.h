@@ -14,7 +14,7 @@
  RKObjectLoader configuration. An object conforming to
  the protocol can be used to set headers, authentication
  credentials, etc.
- 
+
  RKClient and RKObjectManager conform to RKConfigurationDelegate
  to configure request and object loader instances they build.
  */
@@ -24,14 +24,14 @@
 
 /**
  Configure a request before it is utilized
- 
+
  @param request A request object being configured for dispatch
  */
 - (void)configureRequest:(RKRequest *)request;
 
 /**
  Configure an object loader before it is utilized
- 
+
  @param request An object loader being configured for dispatch
  */
 - (void)configureObjectLoader:(RKObjectLoader *)objectLoader;

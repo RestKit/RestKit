@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 6/15/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -85,7 +85,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
         [scanner scanUpToCharactersFromSet:delimiterSet intoString:&pairString];
         [scanner scanCharactersFromSet:delimiterSet intoString:NULL];
         NSArray* kvPair = [pairString componentsSeparatedByString:@"="];
-        
+
         if (!shouldUseArrays) {
             if (kvPair.count == 2) {
                 NSString* key = [[kvPair objectAtIndex:0]
@@ -106,7 +106,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
                 }
                 if (kvPair.count == 1) {
                     [values addObject:[NSNull null]];
-                    
+
                 } else if (kvPair.count == 2) {
                     NSString* value = [[kvPair objectAtIndex:1]
                                        stringByReplacingPercentEscapesUsingEncoding:encoding];
@@ -123,13 +123,13 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     CFStringRef legalURLCharactersToBeEscaped = CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`\n\r");
     CFStringRef encodedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
                                                                         (CFStringRef)self,
-                                                                        NULL, 
+                                                                        NULL,
                                                                         legalURLCharactersToBeEscaped,
                                                                         kCFStringEncodingUTF8);
 	if (encodedString) {
         return [(NSString *)encodedString autorelease];
     }
-    
+
     // TODO: Log a warning?
     return @"";
 }
@@ -162,7 +162,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 - (BOOL)isIPAddress {
     struct sockaddr_in sa;
     char *hostNameOrIPAddressCString = (char *) [self UTF8String];
-    int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));    
+    int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));
     return (result != 0);
 }
 

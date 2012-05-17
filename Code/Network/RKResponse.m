@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 7/28/09.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -104,21 +104,21 @@ return __VA_ARGS__;                                                             
 
 - (BOOL)isServerTrusted:(SecTrustRef)trust {
     BOOL proceed = NO;
-    
+
     if (_request.disableCertificateValidation) {
         proceed = YES;
     } else if ([_request.additionalRootCertificates count] > 0 ) {
         CFArrayRef rootCerts = (CFArrayRef)[_request.additionalRootCertificates allObjects];
         SecTrustResultType result;
         OSStatus returnCode;
-        
+
         if (rootCerts && CFArrayGetCount(rootCerts)) {
             // this could fail, but the trust evaluation will proceed (it's likely to fail, of course)
             SecTrustSetAnchorCertificates(trust, rootCerts);
         }
-        
+
         returnCode = SecTrustEvaluate(trust, &result);
-        
+
         if (returnCode == errSecSuccess) {
             proceed = (result == kSecTrustResultProceed || result == kSecTrustResultConfirm || result == kSecTrustResultUnspecified);
             if (result == kSecTrustResultRecoverableTrustFailure) {
@@ -127,7 +127,7 @@ return __VA_ARGS__;                                                             
             }
         }
     }
-    
+
     return proceed;
 }
 
@@ -135,7 +135,7 @@ return __VA_ARGS__;                                                             
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     RKResponseIgnoreDelegateIfCancelled();
     RKLogDebug(@"Received authentication challenge");
-    
+
 	if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
 		SecTrustRef trust = [[challenge protectionSpace] serverTrust];
 		if ([self isServerTrusted:trust]) {
@@ -145,7 +145,7 @@ return __VA_ARGS__;                                                             
 		}
 		return;
 	}
-	
+
 	if ([challenge previousFailureCount] == 0) {
 		NSURLCredential *newCredential;
 		newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
@@ -167,17 +167,17 @@ return __VA_ARGS__;                                                             
 		// see whether the client settings allow validation here
 		if (_request.disableCertificateValidation || [_request.additionalRootCertificates count] > 0) {
 			return YES;
-		} else { 
+		} else {
 			return NO;
-		} 
+		}
 	}
-	
+
     // Handle non-SSL challenges
     BOOL hasCredentials = [self hasCredentials];
     if (! hasCredentials) {
         RKLogWarning(@"Received an authentication challenge without any credentials to satisfy the request.");
     }
-    
+
     return hasCredentials;
 }
 
@@ -239,7 +239,7 @@ return __VA_ARGS__;                                                             
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
     RKResponseIgnoreDelegateIfCancelled();
     [_request invalidateTimeoutTimer];
-    
+
 	if ([[_request delegate] respondsToSelector:@selector(request:didSendBodyData:totalBytesWritten:totalBytesExpectedToWrite:)]) {
 		[[_request delegate] request:_request didSendBodyData:bytesWritten totalBytesWritten:totalBytesWritten totalBytesExpectedToWrite:totalBytesExpectedToWrite];
 	}
@@ -254,11 +254,11 @@ return __VA_ARGS__;                                                             
 }
 
 - (NSString *)bodyEncodingName {
-    return [_httpURLResponse textEncodingName];    
+    return [_httpURLResponse textEncodingName];
 }
 
 - (NSStringEncoding)bodyEncoding {
-    CFStringEncoding cfEncoding = kCFStringEncodingInvalidId;    
+    CFStringEncoding cfEncoding = kCFStringEncodingInvalidId;
     NSString *textEncodingName = [self bodyEncodingName];
     if (textEncodingName) {
         cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef) textEncodingName);

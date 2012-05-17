@@ -282,15 +282,15 @@
 - (void)testNoFollowRedirect {
     RKClient* client = [RKTestFactory client];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    
+
     RKRequest* request = [client requestWithResourcePath:@"/redirection"];
     request.method = RKRequestMethodGET;
     request.followRedirect = NO;
     request.delegate = loader;
-    
+
     [request send];
     [loader waitForResponse];
-    
+
     assertThatInteger(loader.response.statusCode, is(equalToInteger(302)));
     assertThat([loader.response.allHeaderFields objectForKey:@"Location"], is(equalTo(@"/redirection/target")));
 }
@@ -299,11 +299,11 @@
     NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:5629"];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     RKClient *client = [RKClient clientWithBaseURL:URL];
-    
+
     RKRequest *request = [client requestWithResourcePath:@"/invalid"];
     request.method = RKRequestMethodGET;
     request.delegate = loader;
-    
+
     [request sendAsynchronously];
     [loader waitForResponse];
 }

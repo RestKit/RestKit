@@ -31,7 +31,7 @@
 
 RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader);
 
-/* 
+/*
  Base class for RestKit test cases. Provides initialization of testing
  infrastructure.
  */

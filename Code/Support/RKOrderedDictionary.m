@@ -134,7 +134,7 @@ NSString *RKDescriptionForObject(NSObject *object, id locale, NSUInteger indent)
 	{
 		[indentString appendFormat:@"    "];
 	}
-	
+
 	NSMutableString *description = [NSMutableString string];
 	[description appendFormat:@"%@{\n", indentString];
 	for (NSObject *key in self)

@@ -80,11 +80,11 @@
 - (void)testShouldCreateADateWithGetObjectValueForString {
     RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
     NSString *dotNetString = @"/Date(1000212360000-0400)/";
-    
+
     NSDate *date = nil;
-    NSString *errorDescription = nil;    
+    NSString *errorDescription = nil;
     BOOL success = [formatter getObjectValue:&date forString:dotNetString errorDescription:&errorDescription];
-    
+
     assertThatBool(success, is(equalToBool(YES)));
     assertThat([date description], is(equalTo(@"2001-09-11 12:46:00 +0000")));
 }

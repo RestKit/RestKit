@@ -17,7 +17,7 @@
  Evaluates a given key path against the receiving array, divides the array entries into
  sections grouped by the value for the key path, and returns an aggregate array of arrays
  containing the sections. The receiving array is assumed to be sorted.
- 
+
  @param keyPath The key path of the value to group the entries by.
  @returns An array of section arrays, with each section containing a group of objects sharing
  the same value for the given key path.

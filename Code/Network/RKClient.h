@@ -230,7 +230,7 @@
 
 /**
  The run loop mode under which the underlying NSURLConnection is performed
- 
+
  *Default*: NSRunLoopCommonModes
  */
 @property (nonatomic, copy) NSString *runLoopMode;

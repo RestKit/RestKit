@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 8/26/09.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@
 		stripsWhitespace = YES;
 		caseSensitive = NO;
 	}
-	
+
 	return self;
 }
 
@@ -69,7 +69,7 @@
 - (NSArray *)searchWithTerms:(NSArray*)searchTerms onProperties:(NSArray *)properties inCollection:(NSArray *)collection compoundSelector:(SEL)selector
 {
 	NSPredicate *searchPredicate = nil;
-	
+
 	// do any of these properties contain all of these terms
 	NSMutableArray *propertyPredicates = [NSMutableArray array];
 	for (NSString *property in properties) {
@@ -83,12 +83,12 @@
 			}
 			[termPredicates addObject:predicate];
 		}
-		
+
 		// build a predicate for all of the search terms
 		NSPredicate *termsPredicate = [NSCompoundPredicate performSelector:selector withObject:termPredicates];
 		[propertyPredicates addObject:termsPredicate];
 	}
-	
+
 	searchPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:propertyPredicates];
 	return [collection filteredArrayUsingPredicate:searchPredicate];
 }
@@ -107,7 +107,7 @@
 	NSString *searchQuery = [[searchText copy] autorelease];
 	searchQuery = [self stripWhitespaceIfNecessary:searchQuery];
 	NSArray *searchTerms = [self tokenizeOrCollect:searchQuery];
-	
+
 	if (mode == RKSearchModeOr) {
 		return [self searchWithTerms:searchTerms onProperties:properties inCollection:collection compoundSelector:@selector(orPredicateWithSubpredicates:)];
 	} else if (mode == RKSearchModeAnd) {

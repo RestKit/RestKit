@@ -21,7 +21,7 @@
     NSString *subPath = [cachePath stringByAppendingPathComponent:@"TestPath"];
     NSError *error = nil;
     [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
-    
+
     [[RKCache alloc] initWithPath:subPath subDirectories:nil];
     BOOL isDirectory;
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:subPath isDirectory:&isDirectory];

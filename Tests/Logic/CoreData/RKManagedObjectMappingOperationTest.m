@@ -83,52 +83,52 @@
 
 - (void)testConnectRelationshipsDoesNotLeakMemory {
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
-    
+
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
-    
+
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
-    
+
     // Create a cat to connect
     RKCat* cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
     [objectStore save:nil];
-    
+
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman* human = [RKHuman object];
     RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
     operation.queue = [RKMappingOperationQueue new];
     NSError* error = nil;
     [operation performMapping:&error];
-    
+
     assertThatInteger([operation retainCount], is(equalToInteger(1)));
 }
 
 - (void)testConnectionOfHasManyRelationshipsByPrimaryKey {
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
-    
+
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
-    
+
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping hasOne:@"favoriteCat" withMapping:catMapping];
     [humanMapping connectRelationship:@"favoriteCat" withObjectForPrimaryKeyAttribute:@"favoriteCatID"];
-    
+
     // Create a cat to connect
     RKCat* cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
     [objectStore save:nil];
-    
+
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman* human = [RKHuman object];
     RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
@@ -156,17 +156,17 @@
     RKCat* asia = [RKCat object];
     asia.name = @"Asia";
     asia.railsID = [NSNumber numberWithInt:31337];
-    
+
     RKCat* roy = [RKCat object];
     roy.name = @"Reginald Royford Williams III";
     roy.railsID = [NSNumber numberWithInt:31338];
-    
+
     [objectStore save:nil];
 
     NSArray *catIDs = [NSArray arrayWithObjects:[NSNumber numberWithInt:31337], [NSNumber numberWithInt:31338], nil];
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"catIDs", catIDs, nil];
     RKHuman* human = [RKHuman object];
-    
+
     RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
     NSError* error = nil;
     BOOL success = [operation performMapping:&error];
@@ -200,12 +200,12 @@
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
-    
+
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping mapKeyPath:@"cats" toRelationship:@"catsInOrderByAge" withMapping:catMapping];
-    
+
     NSArray* catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
     NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], @"cats", catsData, nil];
     RKHuman* human = [RKHuman object];
@@ -366,26 +366,26 @@
 
 - (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithFetchRequestMappingCache {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    store.cacheStrategy = [RKFetchRequestManagedObjectCache new];    
-    
+    store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
+
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
-    
+
     RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
-    
+
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
     // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
     // keys are not guaranteed to return in any particular order
     [mappingProvider setObjectMapping:parentMapping forKeyPath:@"parents"];
-    
+
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"parents_and_children.json"];
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
     [mapper performMapping];
-    
+
     NSUInteger parentCount = [RKParent count:nil];
     NSUInteger childrenCount = [RKChild count:nil];
     assertThatInteger(parentCount, is(equalToInteger(2)));
@@ -394,26 +394,26 @@
 
 - (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithInMemoryMappingCache {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    store.cacheStrategy = [RKInMemoryManagedObjectCache new];    
-    
+    store.cacheStrategy = [RKInMemoryManagedObjectCache new];
+
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
-    
+
     RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
-    
+
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
     // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
     // keys are not guaranteed to return in any particular order
     [mappingProvider setObjectMapping:parentMapping forKeyPath:@"parents"];
-    
+
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"parents_and_children.json"];
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
     [mapper performMapping];
-    
+
     NSUInteger parentCount = [RKParent count:nil];
     NSUInteger childrenCount = [RKChild count:nil];
     assertThatInteger(parentCount, is(equalToInteger(2)));
@@ -422,28 +422,28 @@
 
 - (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    store.cacheStrategy = [RKFetchRequestManagedObjectCache new];    
-    
+    store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
+
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
-    
+
     RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
-    
+
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
     // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
     // keys are not guaranteed to return in any particular order
     [mappingProvider setObjectMapping:parentMapping forKeyPath:@"parents"];
-    
+
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
-    
+
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
-    
+
     [RKBenchmark report:@"Mapping with Fetch Request Cache" executionBlock:^{
         for (NSUInteger i=0; i<50; i++) {
             [mapper performMapping];
@@ -457,28 +457,28 @@
 
 - (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    store.cacheStrategy = [RKInMemoryManagedObjectCache new];    
-    
+    store.cacheStrategy = [RKInMemoryManagedObjectCache new];
+
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
-    
+
     RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
-    
+
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider new];
     // NOTE: This may be fragile. Reverse order seems to trigger them to be mapped parent first. NSDictionary
     // keys are not guaranteed to return in any particular order
     [mappingProvider setObjectMapping:parentMapping forKeyPath:@"parents"];
-    
+
     NSDictionary *JSON = [RKTestFixture parsedObjectWithContentsOfFixture:@"benchmark_parents_and_children.json"];
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
-    
+
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelOff);
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
-    
+
     [RKBenchmark report:@"Mapping with In Memory Cache" executionBlock:^{
         for (NSUInteger i=0; i<50; i++) {
             [mapper performMapping];

@@ -102,7 +102,7 @@
 /// @name Managing Sections
 /////////////////////////////////////////////////////////////////////////
 
-/** 
+/**
  The key path on the loaded objects used to determine the section they belong to.
  */
 @property(nonatomic, copy) NSString *sectionNameKeyPath;

@@ -40,7 +40,7 @@
 
 - (void)setUp {
     [RKTestFactory setUp];
-    
+
     // Clear the cache directory
     [RKTestFactory clearCacheDirectory];
     _methodInvocationCounter = 0;
@@ -842,7 +842,7 @@ request.timeoutInterval = 1.0;
     [request prepareURLRequest];
     NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
     assertThat(authorization, isNot(nilValue()));
-    
+
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     request.delegate = responseLoader;
     [request sendAsynchronously];
@@ -860,7 +860,7 @@ request.timeoutInterval = 1.0;
     [request prepareURLRequest];
     NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
     assertThat(authorization, isNot(nilValue()));
-    
+
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     request.delegate = responseLoader;
     [request sendAsynchronously];
@@ -942,7 +942,7 @@ request.timeoutInterval = 1.0;
     request.delegate = loaderMock;
     [[loaderMock expect] request:request didReceiveResponse:OCMOCK_ANY];
     [request sendAsynchronously];
-    [loaderMock waitForResponse];    
+    [loaderMock waitForResponse];
     [request release];
     [loaderMock verify];
 }

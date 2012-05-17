@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 8/6/09.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ extern NSString* const kRKStringBoundary;
         self.name = name;
         self.fileName = name;
 	}
-	
+
 	return self;
 }
 
@@ -57,13 +57,13 @@ extern NSString* const kRKStringBoundary;
             _body = [[(NSString*)value dataUsingEncoding:NSUTF8StringEncoding] retain];
 		} else {
 			_body = [[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding] retain];
-		}        
-        
+		}
+
 		_bodyStream    = [[NSInputStream alloc] initWithData:_body];
 		_bodyLength    = [_body length];
         _value         = [value retain];
 	}
-	
+
 	return self;
 }
 
@@ -74,7 +74,7 @@ extern NSString* const kRKStringBoundary;
 		_bodyStream    = [[NSInputStream alloc] initWithData:data];
 		_bodyLength    = [data length];
 	}
-	
+
 	return self;
 }
 
@@ -85,10 +85,10 @@ extern NSString* const kRKStringBoundary;
         _filePath = [filePath retain];
         _fileName = [[filePath lastPathComponent] retain];
         NSString *MIMEType = [filePath MIMETypeForPathExtension];
-        if (! MIMEType) MIMEType = @"application/octet-stream";        
+        if (! MIMEType) MIMEType = @"application/octet-stream";
 		_MIMEType = [MIMEType retain];
 		_bodyStream = [[NSInputStream alloc] initWithFileAtPath:filePath];
-		
+
 		NSError* error;
 		NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 		if (attributes) {
@@ -98,13 +98,13 @@ extern NSString* const kRKStringBoundary;
 			RKLogError(@"Encountered an error while determining file size: %@", error);
 		}
 	}
-	
+
 	return self;
 }
 
 - (void)dealloc {
     [_value release];
-    [_name release];    
+    [_name release];
     [_body release];
     [_filePath release];
     [_fileName release];
@@ -131,24 +131,24 @@ extern NSString* const kRKStringBoundary;
 	if (self.fileName && self.MIMEType) {
 		// Typical for file attachments
 		_MIMEHeader = [[[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"; "
-												   @"filename=\"%@\"\r\nContent-Type: %@\r\n\r\n", 
+												   @"filename=\"%@\"\r\nContent-Type: %@\r\n\r\n",
 						 [self MIMEBoundary], self.name, self.fileName, self.MIMEType] dataUsingEncoding:NSUTF8StringEncoding] retain];
 	} else if (self.MIMEType) {
 		// Typical for data values
 		_MIMEHeader = [[[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"\r\n"
-												   @"Content-Type: %@\r\n\r\n", 
+												   @"Content-Type: %@\r\n\r\n",
 						 [self MIMEBoundary], self.name, self.MIMEType] dataUsingEncoding:NSUTF8StringEncoding] retain];
 	} else {
 		// Typical for raw values
-		_MIMEHeader = [[[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"\r\n\r\n", 
-						 [self MIMEBoundary], self.name] 
+		_MIMEHeader = [[[NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"\r\n\r\n",
+						 [self MIMEBoundary], self.name]
 						dataUsingEncoding:NSUTF8StringEncoding] retain];
 	}
-	
+
 	// Calculate lengths
 	_MIMEHeaderLength = [_MIMEHeader length];
 	_length = _MIMEHeaderLength + _bodyLength + 2; // \r\n is the + 2
-	
+
 	// Open the stream
     [_bodyStream open];
 }
@@ -159,50 +159,50 @@ extern NSString* const kRKStringBoundary;
 
 - (NSUInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLength {
     NSUInteger sent = 0, read;
-	
+
 	// We are done with the read
     if (_delivered >= _length) {
         return 0;
     }
-	
+
 	// First we send back the MIME headers
     if (_delivered < _MIMEHeaderLength && sent < maxLength) {
 		NSUInteger headerBytesRemaining, bytesRemainingInBuffer;
-		
+
 		headerBytesRemaining = _MIMEHeaderLength - _delivered;
 		bytesRemainingInBuffer = maxLength;
-		
+
 		// Send the entire header if there is room
         read       = (headerBytesRemaining < bytesRemainingInBuffer) ? headerBytesRemaining : bytesRemainingInBuffer;
         [_MIMEHeader getBytes:buffer range:NSMakeRange(_delivered, read)];
-		
+
         sent += read;
         _delivered += sent;
     }
-	
+
 	// Read the attachment body out of our underlying stream
     while (_delivered >= _MIMEHeaderLength && _delivered < (_length - 2) && sent < maxLength) {
         if ((read = [_bodyStream read:(buffer + sent) maxLength:(maxLength - sent)]) == 0) {
             break;
         }
-		
+
         sent += read;
         _delivered += read;
     }
-	
-	// Append the \r\n 
+
+	// Append the \r\n
     if (_delivered >= (_length - 2) && sent < maxLength) {
         if (_delivered == (_length - 2)) {
             *(buffer + sent) = '\r';
             sent ++;
 			_delivered ++;
         }
-		
+
         *(buffer + sent) = '\n';
         sent ++;
 		_delivered ++;
     }
-	
+
     return sent;
 }
 
@@ -210,7 +210,7 @@ extern NSString* const kRKStringBoundary;
     if (_body) {
         return [_body MD5];
     } else if (_filePath) {
-        CFStringRef fileAttachmentMD5 = FileMD5HashCreateWithPath((CFStringRef)_filePath, 
+        CFStringRef fileAttachmentMD5 = FileMD5HashCreateWithPath((CFStringRef)_filePath,
                                                                   FileHashDefaultChunkSizeForReadingData);
         return [(NSString *)fileAttachmentMD5 autorelease];
     } else {

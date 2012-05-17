@@ -55,7 +55,7 @@
 /**
  Performs a benchmark and returns a time interval measurement of the
  total time elapsed during the execution of the blocl.
- 
+
  @param block A block to execute and measure the elapsed time during execution.
  @return A time interval equal to the total time elapsed during execution.
  */
@@ -67,7 +67,7 @@
 
 /**
  Retrieves or creates a benchmark object instance with a given name.
- 
+
  @param name A name for the benchmark.
  @return A new or existing benchmark object with the given name.
  */
@@ -75,7 +75,7 @@
 
 /**
  Creates and returns a benchmark object with a name.
- 
+
  @param name A name for the benchmark.
  @return A new benchmark object with the given name.
  */
@@ -83,7 +83,7 @@
 
 /**
  Initializes a new benchmark object with a name.
- 
+
  @param name The name to initialize the receiver with.
  @return The receiver, initialized with the given name.
  */
@@ -96,7 +96,7 @@
 /**
  Runs a benchmark by starting the receiver, executing the block, and then stopping
  the benchmark object.
- 
+
  @param executionBlock A block to execute as the body of the benchmark.
  */
 - (void)run:(void (^)(void))executionBlock;

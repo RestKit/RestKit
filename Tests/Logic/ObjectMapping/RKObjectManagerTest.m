@@ -87,7 +87,7 @@
 }
 
 - (void)testShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
-    
+
 	assertThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"], is(equalTo(@"application/json")));
 }
 
@@ -369,7 +369,7 @@
     [objectManager.router routeClass:[RKObjectMapperTestModel class] toResourcePath:@"/human/1"];
     objectManager.serializationMIMEType = RKMIMETypeJSON;
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
-    
+
     RKObjectMapperTestModel *object = [RKObjectMapperTestModel new];
     [objectManager putObject:object usingBlock:^(RKObjectLoader *loader) {
         loader.delegate = responseLoader;

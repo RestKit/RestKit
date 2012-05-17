@@ -552,13 +552,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             [self didFinishLoad:[self loadResponseFromCache]];
 		} else {
             self.loading = YES;
-            
+
             RKLogError(@"Failed to send request to %@ due to unreachable network. Reachability observer = %@", [[self URL] absoluteString], self.reachabilityObserver);
             NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
     		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
     								  errorMessage, NSLocalizedDescriptionKey,
     								  nil];
-            NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];            
+            NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
             [self performSelector:@selector(didFailLoadWithError:) withObject:error afterDelay:0];
         }
 	}

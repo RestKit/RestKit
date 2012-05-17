@@ -74,7 +74,7 @@
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
-    
+
     [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/all\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
         return [RKHuman requestAllSortedBy:@"name" ascending:YES];
     }];

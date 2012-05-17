@@ -26,7 +26,7 @@
         _managedObjectContext = [context retain];
         _attributeCaches = [[NSMutableSet alloc] init];
     }
-    
+
     return self;
 }
 
@@ -73,7 +73,7 @@
     if (attributeCache) {
         return [attributeCache objectWithAttributeValue:attributeValue];
     }
-    
+
     return nil;
 }
 
@@ -85,7 +85,7 @@
     if (attributeCache) {
         return [attributeCache objectsWithAttributeValue:attributeValue];
     }
-    
+
     return [NSSet set];
 }
 
@@ -98,7 +98,7 @@
             return cache;
         }
     }
-    
+
     return nil;
 }
 
@@ -111,7 +111,7 @@
             [set addObject:cache];
         }
     }
-    
+
     return [NSSet setWithSet:set];
 }
 

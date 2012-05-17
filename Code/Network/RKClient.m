@@ -141,7 +141,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
                                                    object:nil];
 
         // Configure observers
-        [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];        
+        [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
         [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
         [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial context:nil];
 	}

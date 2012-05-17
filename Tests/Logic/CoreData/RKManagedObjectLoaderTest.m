@@ -90,7 +90,7 @@
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
     humanMapping.rootKeyPath = @"human";
-    
+
     // Create 3 objects, we will expect 2 after the load
     [RKHuman truncateAll];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
@@ -221,15 +221,15 @@
     id mockStore = [OCMockObject partialMockForObject:store];
     BOOL success = NO;
     [[[mockStore stub] andReturnValue:OCMOCK_VALUE(success)] save:[OCMArg anyPointer]];
-    
+
     RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
-        
+
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     id mockResponseLoader = [OCMockObject partialMockForObject:responseLoader];
     [[mockResponseLoader expect] objectLoaderDidFinishLoading:objectLoader];
-    objectLoader.delegate = responseLoader;    
+    objectLoader.delegate = responseLoader;
     [objectLoader sendAsynchronously];
     [responseLoader waitForResponse];
     [mockResponseLoader verify];

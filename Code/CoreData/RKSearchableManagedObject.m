@@ -35,7 +35,7 @@
 	return [NSArray array];
 }
 
-+ (NSPredicate *)predicateForSearchWithText:(NSString *)searchText searchMode:(RKSearchMode)mode 
++ (NSPredicate *)predicateForSearchWithText:(NSString *)searchText searchMode:(RKSearchMode)mode
 {
 	if (searchText == nil) {
 		return nil;
@@ -58,9 +58,9 @@
             RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
             NSArray *attributeValueWords = [RKManagedObjectSearchEngine tokenizedNormalizedString:attributeValue];
             for (NSString *word in attributeValueWords) {
-                if (word && [word length] > 0) {                    
-                    RKSearchWord *searchWord = [RKSearchWord findFirstByAttribute:RKSearchWordPrimaryKeyAttribute 
-                                                                        withValue:word 
+                if (word && [word length] > 0) {
+                    RKSearchWord *searchWord = [RKSearchWord findFirstByAttribute:RKSearchWordPrimaryKeyAttribute
+                                                                        withValue:word
                                                                         inContext:self.managedObjectContext];
                     if (! searchWord) {
                         searchWord = [RKSearchWord createInContext:self.managedObjectContext];

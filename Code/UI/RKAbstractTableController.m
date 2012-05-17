@@ -655,9 +655,9 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 - (NSDate*)lastUpdatedDate {
     if (! self.objectLoader) {
-        return nil;        
+        return nil;
     }
-    
+
     if (_autoRefreshFromNetwork) {
         NSAssert(_cache, @"Found a nil cache when trying to read our last loaded time");
         NSDictionary* lastUpdatedDates = [_cache dictionaryForCacheKey:lastUpdatedDateDictionaryKey];

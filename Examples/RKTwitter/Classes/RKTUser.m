@@ -18,7 +18,7 @@
     [_userID release];
 	[_name release];
 	[_screenName release];
-    
+
     [super dealloc];
 }
 

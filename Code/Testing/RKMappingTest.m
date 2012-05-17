@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 2/17/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     RKMappingTestEvent *event = [RKMappingTestEvent new];
     event.value = value;
     event.mapping = mapping;
-    
+
     return event;
 }
 
@@ -108,9 +108,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 - (id)initWithMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(mapping != nil, @"Cannot perform a mapping operation without a mapping");
- 
+
     self = [super init];
-    if (self) {        
+    if (self) {
         _sourceObject = sourceObject;
         _destinationObject = destinationObject;
         _mapping = mapping;
@@ -125,7 +125,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (void)addExpectation:(RKMappingTestExpectation *)expectation {
     [self.expectations addObject:expectation];
-    
+
     if (self.verifiesOnExpect) {
         [self performMapping];
         [self verifyExpectation:expectation];
@@ -150,7 +150,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
             return event;
         }
     }
-    
+
     return nil;
 }
 
@@ -169,7 +169,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (void)performMapping {
     NSAssert(self.mapping.objectClass, @"Cannot test a mapping that does not have a destination objectClass");
-    
+
     // Ensure repeated invocations of verify only result in a single mapping operation
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
@@ -184,7 +184,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
             [NSException raise:NSInternalInconsistencyException format:@"%@: failure when mapping from %@ to %@ with mapping %@",
              [self description], self.sourceObject, self.destinationObject, self.mapping];
         }
-        
+
         self.performedMapping = YES;
     }
 }
@@ -206,7 +206,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (void)verify {
     [self performMapping];
-    
+
     for (RKMappingTestExpectation *expectation in self.expectations) {
         [self verifyExpectation:expectation];
     }

@@ -10,7 +10,7 @@
 
 /**
  The default filename used for managed object stores created via the factory.
- 
+
  @see [RKTestFactory setManagedObjectStoreFilename:]
  */
 extern NSString * const RKTestFactoryDefaultStoreFilename;
@@ -84,21 +84,21 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Returns the base URL with which to initialize RKClient and RKObjectManager
  instances created via the factory.
- 
+
  @return The base URL for the factory.
  */
 + (RKURL *)baseURL;
 
 /**
  Sets the base URL for the factory.
- 
+
  @param URL The new base URL.
  */
 + (void)setBaseURL:(RKURL *)URL;
 
 /**
  Returns the base URL as a string value.
- 
+
  @return The base URL for the factory, as a string.
  */
 + (NSString *)baseURLString;
@@ -106,7 +106,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Sets the base URL for the factory to a new value by constructing an RKURL
  from the given string.
- 
+
  @param baseURLString A string containing the URL to set as the base URL for the factory.
  */
 + (void)setBaseURLString:(NSString *)baseURLString;
@@ -114,15 +114,15 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Returns the filename used when constructing instances of RKManagedObjectStore
  via the factory.
- 
+
  @return A string containing the filename to use when creating a managed object store.
  */
 + (NSString *)managedObjectStoreFilename;
 
 /**
  Sets the filename to use when the factory constructs an instance of RKManagedObjectStore.
- 
- @param managedObjectStoreFilename A string containing the filename to use when creating managed object 
+
+ @param managedObjectStoreFilename A string containing the filename to use when creating managed object
  store instances.
  */
 + (void)setManagedObjectStoreFilename:(NSString *)managedObjectStoreFilename;
@@ -177,7 +177,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Creates and returns an RKObjectManager instance using the factory defined
  for the name RKTestFactoryDefaultNamesObjectManager.
- 
+
  @return A new object manager instance.
  */
 + (id)objectManager;
@@ -185,7 +185,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Creates and returns an RKObjectMappingProvider instance using the factory defined
  for the name RKTestFactoryDefaultNamesMappingProvider.
- 
+
  @return A new object mapping provider instance.
  */
 + (id)mappingProvider;
@@ -193,11 +193,11 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Creates and returns a RKManagedObjectStore instance using the factory defined
  for the name RKTestFactoryDefaultNamesManagedObjectStore.
- 
+
  A new managed object store will be configured and returned. If there is an existing
  persistent store (i.e. from a previous test invocation), then the persistent store
  is deleted.
- 
+
  @return A new managed object store instance.
  */
 + (id)managedObjectStore;
@@ -207,7 +207,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 ///-----------------------------------------------------------------------------
 
 /**
- Sets up the RestKit testing environment. Invokes the didSetUp callback for application 
+ Sets up the RestKit testing environment. Invokes the didSetUp callback for application
  specific setup.
  */
 + (void)setUp;
@@ -226,7 +226,7 @@ extern NSString * const RKTestFactoryDefaultNamesManagedObjectStore;
 /**
  Clears the contents of the cache directory by removing the directory and
  recreating it.
- 
+
  @see [RKDirectory cachesDirectory]
  */
 + (void)clearCacheDirectory;

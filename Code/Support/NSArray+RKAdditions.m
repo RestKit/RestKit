@@ -23,7 +23,7 @@
 	// Create the first section and establish the first section's grouping value.
 	NSMutableArray *sectionItems = [NSMutableArray array];
 	id currentGroup = [[self objectAtIndex:0] valueForKeyPath:keyPath];
-    
+
 	// Iterate over our items, placing them in the appropriate section and
 	// creating new sections when necessary.
 	for (id item in self) {
@@ -50,7 +50,7 @@
 	if ([sectionItems count] > 0) {
 		[sections addObject:sectionItems];
     }
-    
+
 	return sections;
 }
 

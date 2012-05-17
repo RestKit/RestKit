@@ -4,13 +4,13 @@
 //
 //  Created by Jeremy Ellison on 5/6/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -189,7 +189,7 @@
     id contextValue = [self valueForContext:context];
     if (contextValue == nil) return [NSArray array];
     [self assertStorageForContext:context isKindOfClass:[NSArray class]];
-    
+
     return [NSArray arrayWithArray:contextValue];
 }
 
@@ -222,12 +222,12 @@
     NSMutableDictionary *contextValue = [self valueForContext:context];
     if (contextValue == nil) {
         contextValue = [NSMutableDictionary dictionary];
-        [self setValue:contextValue forContext:context];      
+        [self setValue:contextValue forContext:context];
     }
     [self assertStorageForContext:context isKindOfClass:[NSDictionary class]];
     [contextValue setValue:mapping forKey:keyPath];
 }
-              
+
 - (void)removeMappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context {
     NSMutableDictionary *contextValue = [self valueForContext:context];
     [self assertStorageForContext:context isKindOfClass:[NSDictionary class]];
@@ -238,7 +238,7 @@
     RKOrderedDictionary *contextValue = [self valueForContext:context];
     if (contextValue == nil) {
         contextValue = [RKOrderedDictionary dictionary];
-        [self setValue:contextValue forContext:context];      
+        [self setValue:contextValue forContext:context];
     }
     [self assertStorageForContext:context isKindOfClass:[RKOrderedDictionary class]];
     [contextValue insertObject:[RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping]
@@ -250,7 +250,7 @@
     RKOrderedDictionary *contextValue = [self valueForContext:context];
     if (contextValue == nil) {
         contextValue = [RKOrderedDictionary dictionary];
-        [self setValue:contextValue forContext:context];      
+        [self setValue:contextValue forContext:context];
     }
     [self assertStorageForContext:context isKindOfClass:[RKOrderedDictionary class]];
     [contextValue setObject:[RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping]
@@ -292,7 +292,7 @@
             return [contextValue objectForKey:pattern];
         }
     }
-    
+
     return nil;
 }
 

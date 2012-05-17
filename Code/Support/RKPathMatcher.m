@@ -4,13 +4,13 @@
 //
 //  Created by Greg Combs on 9/2/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,7 +73,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     copy.sourcePath = self.sourcePath;
     copy.rootPath = self.rootPath;
     copy.queryParameters = self.queryParameters;
-    
+
     return copy;
 }
 
@@ -109,7 +109,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     NSArray *components = [self.sourcePath componentsSeparatedByString:@"?"];
     if ([components count] > 1) {
         self.rootPath = [components objectAtIndex:0];
-        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSUTF8StringEncoding]; 
+        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSUTF8StringEncoding];
         return YES;
     }
     return NO;

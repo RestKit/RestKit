@@ -15,7 +15,7 @@
 @synthesize text = _text;
 @synthesize urlString = _urlString;
 @synthesize inReplyToScreenName = _inReplyToScreenName;
-@synthesize isFavorited = _isFavorited;	
+@synthesize isFavorited = _isFavorited;
 @synthesize user = _user;
 
 - (NSString*)description {
@@ -29,7 +29,7 @@
     [_urlString release];
     [_inReplyToScreenName release];
     [_user release];
-    
+
     [super dealloc];
 }
 

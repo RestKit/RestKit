@@ -361,8 +361,8 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 
 	NSUInteger count = [context countForFetchRequest:request error:&error];
 	[self handleErrors:error];
-	
-	return [NSNumber numberWithUnsignedInteger:count];	
+
+	return [NSNumber numberWithUnsignedInteger:count];
 }
 
 + (NSNumber *)numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm;

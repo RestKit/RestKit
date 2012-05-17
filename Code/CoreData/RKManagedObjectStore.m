@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 9/22/09.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,7 +68,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     [objectStore retain];
     [defaultObjectStore release];
     defaultObjectStore = objectStore;
-    
+
     [NSManagedObjectContext setDefaultContext:objectStore.primaryManagedObjectContext];
 }
 
@@ -134,12 +134,12 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
 		[self createPersistentStoreCoordinator];
         self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
-        
+
         _cacheStrategy = [RKInMemoryManagedObjectCache new];
 
         // Ensure there is a search word observer
         [RKSearchWordObserver sharedObserver];
-        
+
         // Hydrate the defaultObjectStore
         if (! defaultObjectStore) {
             [RKManagedObjectStore setDefaultObjectStore:self];
@@ -207,7 +207,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     _cacheStrategy = nil;
     [primaryManagedObjectContext release];
     primaryManagedObjectContext = nil;
-    
+
 	[super dealloc];
 }
 
@@ -218,7 +218,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 - (BOOL)save:(NSError **)error {
 	NSManagedObjectContext* moc = [self managedObjectContextForCurrentThread];
     NSError *localError = nil;
-    
+
 	@try {
 		if (![moc save:&localError]) {
 			if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
@@ -239,9 +239,9 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 							  NSValidationErrorKey:\t\t\t%@\n \
 							  NSValidationErrorPredicate:\t%@\n \
 							  NSValidationErrorObject:\n%@\n",
-							  [subUserInfo valueForKey:@"NSLocalizedDescription"], 
-							  [subUserInfo valueForKey:@"NSValidationErrorKey"], 
-							  [subUserInfo valueForKey:@"NSValidationErrorPredicate"], 
+							  [subUserInfo valueForKey:@"NSLocalizedDescription"],
+							  [subUserInfo valueForKey:@"NSValidationErrorKey"],
+							  [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
 							  [subUserInfo valueForKey:@"NSValidationErrorObject"]);
 					}
 				}
@@ -250,18 +250,18 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 							   NSLocalizedDescription:\t\t%@\n \
 							   NSValidationErrorKey:\t\t\t%@\n \
 							   NSValidationErrorPredicate:\t%@\n \
-							   NSValidationErrorObject:\n%@\n", 
+							   NSValidationErrorObject:\n%@\n",
 							   [userInfo valueForKey:@"NSLocalizedDescription"],
-							   [userInfo valueForKey:@"NSValidationErrorKey"], 
-							   [userInfo valueForKey:@"NSValidationErrorPredicate"], 
+							   [userInfo valueForKey:@"NSValidationErrorKey"],
+							   [userInfo valueForKey:@"NSValidationErrorPredicate"],
 							   [userInfo valueForKey:@"NSValidationErrorObject"]);
 				}
 			}
-            
+
             if (error) {
                 *error = localError;
             }
-            
+
 			return NO;
 		}
 	}
@@ -273,7 +273,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 			@throw;
 		}
 	}
-    
+
 	return YES;
 }
 
@@ -283,7 +283,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 	[managedObjectContext setUndoManager:nil];
 	[managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
     managedObjectContext.managedObjectStore = self;
-    
+
 	return managedObjectContext;
 }
 
@@ -351,20 +351,20 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
 
 	[self createPersistentStoreCoordinator];
-    
+
     // Recreate the MOC
     self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
 }
 
 - (void)deletePersistentStore {
-	[self deletePersistentStoreUsingSeedDatabaseName:nil];        
+	[self deletePersistentStoreUsingSeedDatabaseName:nil];
 }
 
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread {
     if ([NSThread isMainThread]) {
         return self.primaryManagedObjectContext;
     }
-    
+
     // Background threads leverage thread-local storage
 	NSManagedObjectContext* managedObjectContext = [self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
 	if (!managedObjectContext) {
@@ -380,7 +380,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
                                                      name:NSManagedObjectContextDidSaveNotification
                                                    object:managedObjectContext];
 	}
-    
+
 	return managedObjectContext;
 }
 

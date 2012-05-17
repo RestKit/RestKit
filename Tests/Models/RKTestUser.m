@@ -43,7 +43,7 @@
             return [[(RKTestUser*)object userID] isEqualToNumber:self.userID];
         }
     }
-    
+
     return NO;
 }
 

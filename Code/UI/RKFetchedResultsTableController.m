@@ -324,7 +324,7 @@
     NSError* error = nil;
     BOOL success = [mappingOperation performMapping:&error];
     [mappingOperation release];
-    
+
     // NOTE: If there is no mapping work performed, but no error is generated then
     // we consider the operation a success. It is common for table cells to not contain
     // any dynamically mappable content (i.e. header/footer rows, banners, etc.)

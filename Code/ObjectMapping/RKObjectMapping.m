@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 4/30/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -191,7 +191,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
             return mapping;
         }
     }
-    
+
     return nil;
 }
 
@@ -364,16 +364,16 @@ static NSDateFormatter *preferredDateFormatter = nil;
 + (NSArray *)defaultDateFormatters {
     if (!defaultDateFormatters) {
         defaultDateFormatters = [[NSMutableArray alloc] initWithCapacity:2];
-        
+
         // Setup the default formatters
         RKISO8601DateFormatter *isoFormatter = [[RKISO8601DateFormatter alloc] init];
         [self addDefaultDateFormatter:isoFormatter];
         [isoFormatter release];
-        
+
         [self addDefaultDateFormatterForString:@"MM/dd/yyyy" inTimeZone:nil];
         [self addDefaultDateFormatterForString:@"yyyy-MM-dd'T'HH:mm:ss'Z'" inTimeZone:nil];
     }
-    
+
     return defaultDateFormatters;
 }
 
@@ -400,7 +400,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
     } else {
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     }
-    
+
     [self addDefaultDateFormatter:dateFormatter];
     [dateFormatter release];
 
@@ -414,7 +414,7 @@ static NSDateFormatter *preferredDateFormatter = nil;
         preferredDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         preferredDateFormatter.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
     }
-    
+
     return preferredDateFormatter;
 }
 

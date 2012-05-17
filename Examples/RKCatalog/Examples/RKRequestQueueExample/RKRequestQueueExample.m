@@ -19,12 +19,12 @@
     if (self) {
         RKClient* client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
         [RKClient setSharedClient:client];
-        
+
         // Ask RestKit to spin the network activity indicator for us
         client.requestQueue.delegate = self;
         client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
     }
-    
+
     return self;
 }
 
@@ -34,7 +34,7 @@
     [requestQueue cancelAllRequests];
     [requestQueue release];
     requestQueue = nil;
-    
+
     [super dealloc];
 }
 
@@ -56,31 +56,31 @@
     queue.delegate = self;
     queue.concurrentRequestsLimit = 1;
     queue.showsNetworkActivityIndicatorWhenBusy = YES;
-    
+
     // Queue up 4 requests
     RKRequest *request = [[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample"];
     request.delegate = self;
     [queue addRequest:request];
-    
+
     request = [[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample"];
     request.delegate = self;
     [queue addRequest:request];
-    
+
     request = [[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample"];
     request.delegate = self;
     [queue addRequest:request];
-    
+
     request = [[RKClient sharedClient] requestWithResourcePath:@"/RKRequestQueueExample"];
     request.delegate = self;
     [queue addRequest:request];
-    
+
     // Start processing!
     [queue start];
     self.requestQueue = queue;
 }
 
 - (void)requestQueue:(RKRequestQueue *)queue didSendRequest:(RKRequest *)request {
-    statusLabel.text = [NSString stringWithFormat:@"RKRequestQueue %@ is current loading %d of %d requests", 
+    statusLabel.text = [NSString stringWithFormat:@"RKRequestQueue %@ is current loading %d of %d requests",
                          queue, [queue loadingCount], [queue count]];
 }
 

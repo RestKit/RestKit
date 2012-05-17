@@ -167,7 +167,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 
     RKRequestDidLoadResponseBlock _onDidLoadResponse;
     RKRequestDidFailLoadWithErrorBlock _onDidFailLoadWithError;
-    
+
 #if TARGET_OS_IPHONE
     RKRequestBackgroundPolicy _backgroundPolicy;
     UIBackgroundTaskIdentifier _backgroundTaskIdentifier;

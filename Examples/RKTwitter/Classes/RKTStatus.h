@@ -14,7 +14,7 @@
 	NSString* _text;
 	NSString* _urlString;
 	NSString* _inReplyToScreenName;
-	NSNumber* _isFavorited;	
+	NSNumber* _isFavorited;
 	RKTUser* _user;
 }
 

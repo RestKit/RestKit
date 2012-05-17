@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 12/1/10.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,7 +46,7 @@
 
 /**
  Creates and returns a new request queue.
- 
+
  @return An autoreleased RKRequestQueue object.
  */
 + (id)requestQueue;
@@ -54,7 +54,7 @@
 /**
  Returns a new retained request queue with the given name. If there is already
  an existing queue with the given name, nil will be returned.
- 
+
  @param name A symbolic name for the queue.
  @return A new retained RKRequestQueue with the given name or nil if one already
  exists with the given name.
@@ -69,7 +69,7 @@
 /**
  Returns queue with the specified name. If no queue is found with the name
  provided, a new queue will be initialized and returned.
- 
+
  @param name A symbolic name for the queue.
  @return An existing RKRequestQueue with the given name or a new queue if none
  currently exist.
@@ -82,7 +82,7 @@
 
 /**
  A symbolic name for the queue.
- 
+
  Used to return existing queue references via
  [RKRequestQueue requestQueueWithName:]
  */
@@ -90,7 +90,7 @@
 
 /**
  Determine if a queue exists with a given name.
- 
+
  @param name The queue name to search against.
  @return YES when there is a queue with the given name.
  */
@@ -103,7 +103,7 @@
 
 /**
  The delegate to inform when the request queue state machine changes.
- 
+
  If the object implements the RKRequestQueueDelegate protocol, it will receive
  request lifecycle event messages.
  */
@@ -116,14 +116,14 @@
 
 /**
  The number of concurrent requests supported by this queue.
- 
+
  **Default**: 5 concurrent requests
  */
 @property (nonatomic) NSUInteger concurrentRequestsLimit;
 
 /**
  Request timeout value used by the queue.
- 
+
  **Default**: 5 minutes (300 seconds)
  */
 @property (nonatomic, assign) NSUInteger requestTimeout;
@@ -135,21 +135,21 @@
 
 /**
  Add an asynchronous request to the queue and send it as as soon as possible.
- 
+
  @param request The request to be added to the queue.
  */
 - (void)addRequest:(RKRequest *)request;
 
 /**
  Cancel a request that is in progress.
- 
+
  @param request The request to be cancelled.
  */
 - (void)cancelRequest:(RKRequest *)request;
 
 /**
  Cancel all requests with a given delegate.
- 
+
  @param delegate The delegate assigned to the requests to be cancelled.
  */
 - (void)cancelRequestsWithDelegate:(id<RKRequestDelegate>)delegate;
@@ -173,7 +173,7 @@
 
 /**
  Determine if a given request is currently in this queue.
- 
+
  @param request The request to check the queue for.
  @return YES if the specified request is in this queue.
  */
@@ -192,7 +192,7 @@
 /**
  Sets the flag that determines if new load requests are allowed to reach the
  network.
- 
+
  Because network requests tend to slow down performance, this property can be
  used to temporarily delay them.  All requests made while suspended are queued,
  and when suspended becomes false again they are executed.
@@ -207,10 +207,10 @@
 #if TARGET_OS_IPHONE
 /**
  Sets the flag for showing the network activity indicatory.
- 
+
  When YES, this queue will spin the network activity in the menu bar when it is
  processing requests.
- 
+
  **Default**: NO
  */
 @property (nonatomic) BOOL showsNetworkActivityIndicatorWhenBusy;
@@ -223,10 +223,10 @@
 
 /**
  Returns the global queue
- 
+
  @bug **DEPRECATED** in v0.9.4: All RKClient instances now own their own
  individual request queues.
- 
+
  @see [RKClient requestQueue]
  @return Global request queue.
  */
@@ -234,10 +234,10 @@
 
 /**
  Sets the global queue
- 
+
  @bug **DEPRECATED** in v0.9.4: All RKClient instances now own their own
  individual request queues.
- 
+
  @see [RKClient requestQueue]
  @param requestQueue The request queue to assign as the global queue.
  */
@@ -258,28 +258,28 @@
 
 /**
  Sent when the queue transitions from an empty state to processing requests.
- 
- @param queue The queue that began processing requests. 
+
+ @param queue The queue that began processing requests.
  */
 - (void)requestQueueDidBeginLoading:(RKRequestQueue *)queue;
 
 /**
  Sent when queue transitions from a processing state to an empty start.
- 
+
  @param queue The queue that finished processing requests.
  */
 - (void)requestQueueDidFinishLoading:(RKRequestQueue *)queue;
 
 /**
  Sent when the queue has been suspended and request processing has been halted.
- 
+
  @param queue The request queue that has been suspended.
  */
 - (void)requestQueueWasSuspended:(RKRequestQueue *)queue;
 
 /**
  Sent when the queue has been unsuspended and request processing has resumed.
- 
+
  @param queue The request queue that has resumed processing.
  */
 - (void)requestQueueWasUnsuspended:(RKRequestQueue *)queue;
@@ -291,7 +291,7 @@
 
 /**
  Sent before queue sends a request.
- 
+
  @param queue The queue that will process the request.
  @param request The request to be processed.
  */
@@ -299,7 +299,7 @@
 
 /**
  Sent after queue has sent a request.
- 
+
  @param queue The queue that processed the request.
  @param request The processed request.
  */
@@ -307,7 +307,7 @@
 
 /**
  Sent when queue received a response for a request.
- 
+
  @param queue The queue that received the response.
  @param response The response that was received.
  */
@@ -315,7 +315,7 @@
 
 /**
  Sent when queue has canceled a request.
- 
+
  @param queue The queue that cancelled the request.
  @param request The cancelled request.
  */
@@ -323,7 +323,7 @@
 
 /**
  Sent when an attempted request fails.
- 
+
  @param queue The queue in which the request failed from.
  @param request The failed request.
  @param error An NSError object containing the RKRestKitError that caused the
@@ -337,7 +337,7 @@
 /**
  A category on UIApplication to allow for jointly managing the network activity
  indicator.
- 
+
  Adopted from 'iOS Recipes' book: http://pragprog.com/book/cdirec/ios-recipes
  */
 @interface UIApplication (RKNetworkActivity)
