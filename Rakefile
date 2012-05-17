@@ -61,7 +61,15 @@ namespace :test do
   task :application => 'application:ios'
   
   desc "Run all tests for iOS and OS X"
-  task :all => ['test:logic', 'test:application']
+  task :all do
+    Rake.application.invoke_task("test:logic")
+    unit_status = $?.exitstatus
+    Rake.application.invoke_task("test:application")
+    integration_status = $?.exitstatus
+    puts "\033[0;31m!! Unit Tests failed with exit status of #{unit_status}" if unit_status != 0
+    puts "\033[0;31m!! Integration Tests failed with exit status of #{integration_status}" if integration_status != 0
+    puts "\033[0;32m** All Tests executed successfully" if unit_status == 0 && integration_status == 0
+  end
   
   task :check_mongodb do
     port_check = RestKit::Server::PortCheck.new('127.0.0.1', 27017)
