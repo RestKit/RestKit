@@ -506,14 +506,14 @@
 		254A62BC14AD544200939BEE /* RKObjectPaginator.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62B814AD544200939BEE /* RKObjectPaginator.m */; };
 		254A62C014AD591C00939BEE /* RKObjectPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */; };
 		254A62C114AD591C00939BEE /* RKObjectPaginatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */; };
-		2572538D155C543000CB05ED /* RKPortCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 2572538B155C543000CB05ED /* RKPortCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2572538E155C543000CB05ED /* RKPortCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 2572538B155C543000CB05ED /* RKPortCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2572538F155C543000CB05ED /* RKPortCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 2572538C155C543000CB05ED /* RKPortCheck.m */; };
-		25725390155C543000CB05ED /* RKPortCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 2572538C155C543000CB05ED /* RKPortCheck.m */; };
 		25545959155F0527007D7625 /* RKBenchmark.h in Headers */ = {isa = PBXBuildFile; fileRef = 25545957155F0527007D7625 /* RKBenchmark.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2554595A155F0527007D7625 /* RKBenchmark.h in Headers */ = {isa = PBXBuildFile; fileRef = 25545957155F0527007D7625 /* RKBenchmark.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2554595B155F0527007D7625 /* RKBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 25545958155F0527007D7625 /* RKBenchmark.m */; };
 		2554595C155F0527007D7625 /* RKBenchmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 25545958155F0527007D7625 /* RKBenchmark.m */; };
+		2572538D155C543000CB05ED /* RKPortCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 2572538B155C543000CB05ED /* RKPortCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2572538E155C543000CB05ED /* RKPortCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 2572538B155C543000CB05ED /* RKPortCheck.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2572538F155C543000CB05ED /* RKPortCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 2572538C155C543000CB05ED /* RKPortCheck.m */; };
+		25725390155C543000CB05ED /* RKPortCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 2572538C155C543000CB05ED /* RKPortCheck.m */; };
 		257ABAB015112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257ABAB115112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		257ABAB215112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */; };
@@ -1058,10 +1058,10 @@
 		254A62B714AD544200939BEE /* RKObjectPaginator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectPaginator.h; sourceTree = "<group>"; };
 		254A62B814AD544200939BEE /* RKObjectPaginator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginator.m; sourceTree = "<group>"; };
 		254A62BF14AD591C00939BEE /* RKObjectPaginatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectPaginatorTest.m; sourceTree = "<group>"; };
-		2572538B155C543000CB05ED /* RKPortCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPortCheck.h; sourceTree = "<group>"; };
-		2572538C155C543000CB05ED /* RKPortCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPortCheck.m; sourceTree = "<group>"; };
 		25545957155F0527007D7625 /* RKBenchmark.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKBenchmark.h; sourceTree = "<group>"; };
 		25545958155F0527007D7625 /* RKBenchmark.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKBenchmark.m; sourceTree = "<group>"; };
+		2572538B155C543000CB05ED /* RKPortCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKPortCheck.h; sourceTree = "<group>"; };
+		2572538C155C543000CB05ED /* RKPortCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKPortCheck.m; sourceTree = "<group>"; };
 		257ABAAE15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+RKAdditions.h"; sourceTree = "<group>"; };
 		257ABAAF15112DD400CCAA76 /* NSManagedObjectContext+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RKAdditions.m"; sourceTree = "<group>"; };
 		257ABAB41511371C00CCAA76 /* NSManagedObject+RKAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+RKAdditions.h"; sourceTree = "<group>"; };
@@ -3257,6 +3257,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = RestKit;
 				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -3283,6 +3284,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = RestKit;
 				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;
