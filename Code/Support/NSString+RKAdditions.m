@@ -126,7 +126,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
                                                                         NULL,
                                                                         legalURLCharactersToBeEscaped,
                                                                         kCFStringEncodingUTF8);
-	if (encodedString) {
+    if (encodedString) {
         return [(NSString *)encodedString autorelease];
     }
 

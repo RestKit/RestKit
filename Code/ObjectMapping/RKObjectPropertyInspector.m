@@ -39,73 +39,73 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 }
 
 - (id)init {
-	if ((self = [super init])) {
-		_cachedPropertyNamesAndTypes = [[NSMutableDictionary alloc] init];
-	}
+    if ((self = [super init])) {
+        _cachedPropertyNamesAndTypes = [[NSMutableDictionary alloc] init];
+    }
 
-	return self;
+    return self;
 }
 
 - (void)dealloc {
-	[_cachedPropertyNamesAndTypes release];
-	[super dealloc];
+    [_cachedPropertyNamesAndTypes release];
+    [super dealloc];
 }
 
 + (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
-	NSString *type = [NSString string];
-	NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
-	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
+    NSString *type = [NSString string];
+    NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
+    [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
 
-	// we are not dealing with an object
-	if([typeScanner isAtEnd]) {
-		return @"NULL";
-	}
-	[typeScanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\"@"] intoString:NULL];
-	// this gets the actual object type
-	[typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\""] intoString:&type];
-	return type;
+    // we are not dealing with an object
+    if([typeScanner isAtEnd]) {
+        return @"NULL";
+    }
+    [typeScanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\"@"] intoString:NULL];
+    // this gets the actual object type
+    [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\""] intoString:&type];
+    return type;
 }
 
 - (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass {
-	NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:theClass];
-	if (propertyNames) {
-		return propertyNames;
-	}
-	propertyNames = [NSMutableDictionary dictionary];
+    NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:theClass];
+    if (propertyNames) {
+        return propertyNames;
+    }
+    propertyNames = [NSMutableDictionary dictionary];
 
-	//include superclass properties
-	Class currentClass = theClass;
-	while (currentClass != nil) {
-		// Get the raw list of properties
-		unsigned int outCount;
-		objc_property_t *propList = class_copyPropertyList(currentClass, &outCount);
+    //include superclass properties
+    Class currentClass = theClass;
+    while (currentClass != nil) {
+        // Get the raw list of properties
+        unsigned int outCount;
+        objc_property_t *propList = class_copyPropertyList(currentClass, &outCount);
 
-		// Collect the property names
-		int i;
-		NSString *propName;
-		for (i = 0; i < outCount; i++) {
-			// property_getAttributes() returns everything we need to implement this...
-			// See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
-			objc_property_t* prop = propList + i;
-			NSString* attributeString = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
-			propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
+        // Collect the property names
+        int i;
+        NSString *propName;
+        for (i = 0; i < outCount; i++) {
+            // property_getAttributes() returns everything we need to implement this...
+            // See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
+            objc_property_t* prop = propList + i;
+            NSString* attributeString = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
+            propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
 
-			if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-				const char* className = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
-				Class aClass = objc_getClass(className);
-				if (aClass) {
-					[propertyNames setObject:aClass forKey:propName];
-				}
-			}
-		}
+            if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
+                const char* className = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
+                Class aClass = objc_getClass(className);
+                if (aClass) {
+                    [propertyNames setObject:aClass forKey:propName];
+                }
+            }
+        }
 
-		free(propList);
-		currentClass = [currentClass superclass];
-	}
+        free(propList);
+        currentClass = [currentClass superclass];
+    }
 
-	[_cachedPropertyNamesAndTypes setObject:propertyNames forKey:theClass];
+    [_cachedPropertyNamesAndTypes setObject:propertyNames forKey:theClass];
     RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(theClass), propertyNames);
-	return propertyNames;
+    return propertyNames;
 }
 
 - (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass {

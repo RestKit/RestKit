@@ -25,12 +25,12 @@
  Models the response portion of an HTTP request/response cycle
  */
 @interface RKResponse : NSObject {
-	RKRequest *_request;
-	NSHTTPURLResponse *_httpURLResponse;
-	NSMutableData *_body;
-	NSError *_failureError;
-	BOOL _loading;
-	NSDictionary *_responseHeaders;
+    RKRequest *_request;
+    NSHTTPURLResponse *_httpURLResponse;
+    NSMutableData *_body;
+    NSError *_failureError;
+    BOOL _loading;
+    NSDictionary *_responseHeaders;
 }
 
 

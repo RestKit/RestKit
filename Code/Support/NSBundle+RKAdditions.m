@@ -68,12 +68,12 @@
         return nil;
     }
 
-	NSString* fixtureData = [NSString stringWithContentsOfFile:resourcePath encoding:encoding error:&error];
+    NSString* fixtureData = [NSString stringWithContentsOfFile:resourcePath encoding:encoding error:&error];
     if (fixtureData == nil && error) {
         RKLogWarning(@"Failed to read ");
     }
 
-	return fixtureData;
+    return fixtureData;
 }
 
 #if TARGET_OS_IPHONE

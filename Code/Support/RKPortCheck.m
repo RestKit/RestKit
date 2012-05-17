@@ -72,13 +72,13 @@
     _run = YES;
 
     // Create Internet domain socket
-	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         _open = NO;
         return;
-	}
+    }
 
-	// Try to connect to the port
-	_open = (connect(sd,(struct sockaddr *) &_remote_saddr, sizeof(_remote_saddr)) == 0);
+    // Try to connect to the port
+    _open = (connect(sd,(struct sockaddr *) &_remote_saddr, sizeof(_remote_saddr)) == 0);
 
     if (_open) {
         close(sd);

@@ -37,17 +37,17 @@
 }
 
 - (void)testShouldDetectNetworkStatusWithAHostname {
-	RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
-	assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
+    RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
+    assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));
 }
 
 - (void)testShouldDetectNetworkStatusWithAnIPAddressBaseName {
-	RKClient* client = [RKClient clientWithBaseURLString:@"http://173.45.234.197"];
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
-	assertThatInt(status, isNot(equalToInt(RKReachabilityIndeterminate)));
+    RKClient* client = [RKClient clientWithBaseURLString:@"http://173.45.234.197"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
+    RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
+    assertThatInt(status, isNot(equalToInt(RKReachabilityIndeterminate)));
 }
 - (void)testShouldSetTheCachePolicyOfTheRequest {
     RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
@@ -60,7 +60,7 @@
     RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.requestCache = [[[RKRequestCache alloc] init] autorelease];
     RKRequest* request = [client requestWithResourcePath:@""];
-	assertThat(request.cache, is(equalTo(client.requestCache)));
+    assertThat(request.cache, is(equalTo(client.requestCache)));
 }
 
 - (void)testShouldLoadPageWithNoContentTypeInformation {

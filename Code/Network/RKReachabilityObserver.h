@@ -45,20 +45,20 @@ typedef enum {
     /**
      Network reachability not yet known
      */
-	RKReachabilityIndeterminate,
+    RKReachabilityIndeterminate,
     /**
      Network is not reachable
      */
-	RKReachabilityNotReachable,
+    RKReachabilityNotReachable,
     /**
      Network is reachable via a WiFi connection
      */
-	RKReachabilityReachableViaWiFi,
+    RKReachabilityReachableViaWiFi,
     /**
      Network is reachable via a "wireless wide area network" (WWAN). i.e. GPRS,
      Edge, 3G, etc.
      */
-	RKReachabilityReachableViaWWAN
+    RKReachabilityReachableViaWWAN
 } RKReachabilityNetworkStatus;
 
 /**
@@ -76,8 +76,8 @@ typedef enum {
  */
 @interface RKReachabilityObserver : NSObject {
     NSString *_host;
-	SCNetworkReachabilityRef _reachabilityRef;
-	BOOL _reachabilityDetermined;
+    SCNetworkReachabilityRef _reachabilityRef;
+    BOOL _reachabilityDetermined;
     BOOL _monitoringLocalWiFi;
     SCNetworkReachabilityFlags _reachabilityFlags;
 }

@@ -94,12 +94,12 @@
 }
 
 - (void)dealloc {
-	[baseURL release];
-	baseURL = nil;
-	[resourcePath release];
-	resourcePath = nil;
+    [baseURL release];
+    baseURL = nil;
+    [resourcePath release];
+    resourcePath = nil;
 
-	[super dealloc];
+    [super dealloc];
 }
 
 - (NSDictionary *)queryParameters {

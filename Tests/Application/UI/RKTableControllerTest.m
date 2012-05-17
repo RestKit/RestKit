@@ -40,28 +40,28 @@
 
 - (id)init {
     self = [super init];
-	if (self) {
-		_timeout = 3;
-		_awaitingResponse = NO;
+    if (self) {
+        _timeout = 3;
+        _awaitingResponse = NO;
         _cancelled = NO;
-	}
+    }
 
-	return self;
+    return self;
 }
 
 - (void)waitForLoad {
     _awaitingResponse = YES;
-	NSDate* startDate = [NSDate date];
+    NSDate* startDate = [NSDate date];
 
-	while (_awaitingResponse) {
+    while (_awaitingResponse) {
         NSLog(@"Awaiting response = %d", _awaitingResponse);
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+        if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
             NSLog(@"%@: Timed out!!!", self);
             _awaitingResponse = NO;
-			[NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
-		}
-	}
+            [NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
+        }
+    }
 }
 
 #pragma RKTableControllerDelegate methods

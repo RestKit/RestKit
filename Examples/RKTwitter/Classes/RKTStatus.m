@@ -19,13 +19,13 @@
 @synthesize user = _user;
 
 - (NSString*)description {
-	return [NSString stringWithFormat:@"%@ (ID: %@)", self.text, self.statusID];
+    return [NSString stringWithFormat:@"%@ (ID: %@)", self.text, self.statusID];
 }
 
 - (void)dealloc {
     [_statusID release];
-	[_createdAt release];
-	[_text release];
+    [_createdAt release];
+    [_text release];
     [_urlString release];
     [_inReplyToScreenName release];
     [_user release];

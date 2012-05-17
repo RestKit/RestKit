@@ -31,7 +31,7 @@
  * the resourcePath using a single colon delimiter, such as /users/:userID
  */
 @interface RKObjectRouter : NSObject <RKRouter> {
-	NSMutableDictionary* _routes;
+    NSMutableDictionary* _routes;
 }
 
 /**

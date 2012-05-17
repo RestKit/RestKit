@@ -106,8 +106,8 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     copy.setNilForMissingRelationships = self.setNilForMissingRelationships;
     copy.forceCollectionMapping = self.forceCollectionMapping;
     copy.performKeyValueValidation = self.performKeyValueValidation;
-	copy.dateFormatters = self.dateFormatters;
-	copy.preferredDateFormatter = self.preferredDateFormatter;
+    copy.dateFormatters = self.dateFormatters;
+    copy.preferredDateFormatter = self.preferredDateFormatter;
 
     for (RKObjectAttributeMapping *mapping in self.mappings) {
         [copy addAttributeMapping:mapping];
@@ -204,7 +204,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
 - (void)mapAttributes:(NSString*)attributeKeyPath, ... {
     va_list args;
     va_start(args, attributeKeyPath);
-	NSMutableSet* attributeKeyPaths = [NSMutableSet set];
+    NSMutableSet* attributeKeyPaths = [NSMutableSet set];
 
     for (NSString* keyPath = attributeKeyPath; keyPath != nil; keyPath = va_arg(args, NSString*)) {
         [attributeKeyPaths addObject:keyPath];
@@ -294,7 +294,7 @@ NSString* const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE
     va_list args;
     va_start(args, firstKeyPath);
     for (NSString* keyPath = firstKeyPath; keyPath != nil; keyPath = va_arg(args, NSString*)) {
-		NSString* attributeKeyPath = va_arg(args, NSString*);
+        NSString* attributeKeyPath = va_arg(args, NSString*);
         NSAssert(attributeKeyPath != nil, @"Cannot map a keyPath without a destination attribute keyPath");
         [self mapKeyPath:keyPath toAttribute:attributeKeyPath];
         // TODO: Raise proper exception here, argument error...

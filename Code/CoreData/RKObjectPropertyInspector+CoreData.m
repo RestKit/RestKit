@@ -35,9 +35,9 @@ RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
 
 - (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription*)entity {
     NSMutableDictionary* propertyNamesAndTypes = [_cachedPropertyNamesAndTypes objectForKey:[entity name]];
-	if (propertyNamesAndTypes) {
-		return propertyNamesAndTypes;
-	}
+    if (propertyNamesAndTypes) {
+        return propertyNamesAndTypes;
+    }
 
     propertyNamesAndTypes = [NSMutableDictionary dictionary];
     for (NSString* name in [entity attributesByName]) {

@@ -34,7 +34,7 @@
     NSString *_fileName;
     NSString *_MIMEType;
 
-	@private
+    @private
     NSString *_filePath;
     NSData *_body;
     NSInputStream *_bodyStream;

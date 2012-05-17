@@ -23,7 +23,7 @@
 @class NSEntityDescription;
 
 @interface RKObjectPropertyInspector : NSObject {
-	NSMutableDictionary* _cachedPropertyNamesAndTypes;
+    NSMutableDictionary* _cachedPropertyNamesAndTypes;
 }
 
 + (RKObjectPropertyInspector*)sharedInspector;

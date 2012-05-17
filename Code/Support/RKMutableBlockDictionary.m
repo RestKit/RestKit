@@ -64,7 +64,7 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
 @implementation RKMutableBlockDictionary
 
 - (id)init {
-	return [self initWithCapacity:0];
+    return [self initWithCapacity:0];
 }
 
 - (id)initWithCapacity:(NSUInteger)capacity {
@@ -82,7 +82,7 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
 }
 
 - (id)copy {
-	return [self mutableCopy];
+    return [self mutableCopy];
 }
 
 - (void)setObject:(id)anObject forKey:(id)aKey {

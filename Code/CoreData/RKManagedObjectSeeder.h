@@ -39,7 +39,7 @@ extern NSString* const RKDefaultSeedDatabaseFileName;
  * data immediately available for use within Core Data.
  */
 @interface RKManagedObjectSeeder : NSObject {
-	RKObjectManager* _manager;
+    RKObjectManager* _manager;
     NSObject<RKManagedObjectSeederDelegate>* _delegate;
 }
 

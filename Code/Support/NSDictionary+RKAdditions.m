@@ -27,14 +27,14 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 @implementation NSDictionary (RKAdditions)
 
 + (id)dictionaryWithKeysAndObjects:(id)firstKey, ... {
-	va_list args;
+    va_list args;
     va_start(args, firstKey);
-	NSMutableArray* keys = [NSMutableArray array];
-	NSMutableArray* values = [NSMutableArray array];
+    NSMutableArray* keys = [NSMutableArray array];
+    NSMutableArray* values = [NSMutableArray array];
     for (id key = firstKey; key != nil; key = va_arg(args, id)) {
-		id value = va_arg(args, id);
+        id value = va_arg(args, id);
         [keys addObject:key];
-		[values addObject:value];
+        [values addObject:value];
     }
     va_end(args);
 
@@ -92,7 +92,7 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
         NSString *path = inPath ? [inPath stringByAppendingFormat:@"[%@]", encodedKey] : encodedKey;
 
         if ([value isKindOfClass:[NSArray class]]) {
-			for (id item in value) {
+            for (id item in value) {
                 if ([item isKindOfClass:[NSDictionary class]] || [item isKindOfClass:[NSMutableDictionary class]]) {
                     [item URLEncodeParts:parts path:[path stringByAppendingString:@"[]"]];
                 } else {

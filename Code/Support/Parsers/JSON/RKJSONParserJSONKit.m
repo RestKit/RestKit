@@ -32,12 +32,12 @@
 @implementation RKJSONParserJSONKit
 
 - (NSDictionary*)objectFromString:(NSString*)string error:(NSError**)error {
-	RKLogTrace(@"string='%@'", string);
+    RKLogTrace(@"string='%@'", string);
     return [string objectFromJSONStringWithParseOptions:JKParseOptionStrict error:error];
 }
 
 - (NSString*)stringFromObject:(id)object error:(NSError**)error {
-	return [object JSONStringWithOptions:JKSerializeOptionNone error:error];
+    return [object JSONStringWithOptions:JKSerializeOptionNone error:error];
 }
 
 @end

@@ -104,7 +104,7 @@
     va_list args;
     va_start(args, firstRelationshipName);
     for (NSString* relationshipName = firstRelationshipName; relationshipName != nil; relationshipName = va_arg(args, NSString*)) {
-		NSString* primaryKeyAttribute = va_arg(args, NSString*);
+        NSString* primaryKeyAttribute = va_arg(args, NSString*);
         NSAssert(primaryKeyAttribute != nil, @"Cannot connect a relationship without an attribute containing the primary key");
         [self connectRelationship:relationshipName withObjectForPrimaryKeyAttribute:primaryKeyAttribute];
         // TODO: Raise proper exception here, argument error...

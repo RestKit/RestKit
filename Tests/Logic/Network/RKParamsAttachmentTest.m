@@ -30,14 +30,14 @@
 @implementation RKParamsAttachmentTest
 
 - (void)testShouldRaiseAnExceptionWhenTheAttachedFileDoesNotExist {
-	NSException* exception = nil;
-	@try {
-		[[RKParamsAttachment alloc] initWithName:@"woot" file:@"/this/is/an/invalid/path"];
-	}
-	@catch (NSException* e) {
-		exception = e;
-	}
-	assertThat(exception, isNot(nilValue()));
+    NSException* exception = nil;
+    @try {
+        [[RKParamsAttachment alloc] initWithName:@"woot" file:@"/this/is/an/invalid/path"];
+    }
+    @catch (NSException* e) {
+        exception = e;
+    }
+    assertThat(exception, isNot(nilValue()));
 }
 
 - (void)testShouldReturnAnMD5ForSimpleValues {

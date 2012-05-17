@@ -19,7 +19,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Initialize RestKit
-	RKObjectManager* objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
+    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
 
     // Enable automatic network activity indicator management
     objectManager.client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
@@ -64,7 +64,7 @@
     [statusMapping mapRelationship:@"user" withMapping:userMapping];
 
     // Update date format so that we can parse Twitter dates properly
-	// Wed Sep 29 15:31:08 +0000 2010
+    // Wed Sep 29 15:31:08 +0000 2010
     [RKObjectMapping addDefaultDateFormatterForString:@"E MMM d HH:mm:ss Z y" inTimeZone:nil];
 
     // Register our mappings with the provider
@@ -99,9 +99,9 @@
 #endif
 
     // Create Window and View Controllers
-	RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-	UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
-	UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+    RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+    UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
+    UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     [window addSubview:controller.view];
     [window makeKeyAndVisible];
 

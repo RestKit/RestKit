@@ -40,9 +40,9 @@ extern NSString* const RKObjectManagerDidBecomeOfflineNotification;
 extern NSString* const RKObjectManagerDidBecomeOnlineNotification;
 
 typedef enum {
-	RKObjectManagerNetworkStatusUnknown,
-	RKObjectManagerNetworkStatusOffline,
-	RKObjectManagerNetworkStatusOnline
+    RKObjectManagerNetworkStatusUnknown,
+    RKObjectManagerNetworkStatusOffline,
+    RKObjectManagerNetworkStatusOnline
 } RKObjectManagerNetworkStatus;
 
 @class RKManagedObjectStore;

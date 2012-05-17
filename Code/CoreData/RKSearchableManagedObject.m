@@ -32,18 +32,18 @@
 
 + (NSArray *)searchableAttributes
 {
-	return [NSArray array];
+    return [NSArray array];
 }
 
 + (NSPredicate *)predicateForSearchWithText:(NSString *)searchText searchMode:(RKSearchMode)mode
 {
-	if (searchText == nil) {
-		return nil;
-	} else {
+    if (searchText == nil) {
+        return nil;
+    } else {
         RKManagedObjectSearchEngine *searchEngine = [RKManagedObjectSearchEngine searchEngine];
         searchEngine.mode = mode;
-		return [searchEngine predicateForSearch:searchText];
-	}
+        return [searchEngine predicateForSearch:searchText];
+    }
 }
 
 - (void)refreshSearchWords
@@ -75,7 +75,7 @@
     self.searchWords = searchWords;
     RKLogTrace(@"Generating searchWords: %@", [searchWords valueForKey:RKSearchWordPrimaryKeyAttribute]);
 
-	[pool drain];
+    [pool drain];
 }
 
 @end

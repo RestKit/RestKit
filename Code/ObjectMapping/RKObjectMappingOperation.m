@@ -133,24 +133,24 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     } else if(![string isEqualToString:@""]) {
         for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
             BOOL success;
-		@synchronized(dateFormatter) {
+        @synchronized(dateFormatter) {
                 if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
                     RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
                 }
                 NSString *errorDescription = nil;
                 success = [dateFormatter getObjectValue:&date forString:string errorDescription:&errorDescription];
-		}
+        }
 
-		if (success && date) {
+        if (success && date) {
                 if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
                     RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
                                 string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
                 }
 
                 break;
-			}
-	}
-	}
+            }
+    }
+    }
 
     return date;
 }
@@ -280,13 +280,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         *value = nil;
     }
 
-	if (nil == currentValue && nil == *value) {
-		// Both are nil
+    if (nil == currentValue && nil == *value) {
+        // Both are nil
         return NO;
-	} else if (nil == *value || nil == currentValue) {
-		// One is nil and the other is not
+    } else if (nil == *value || nil == currentValue) {
+        // One is nil and the other is not
         return [self validateValue:value atKeyPath:keyPath];
-	}
+    }
 
     if (! [self isValue:*value equalToValue:currentValue]) {
         // Validate value for key

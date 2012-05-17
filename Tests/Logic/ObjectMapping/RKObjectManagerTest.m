@@ -29,7 +29,7 @@
 #import "RKObjectMapperTestModel.h"
 
 @interface RKObjectManagerTest : RKTestCase {
-	RKObjectManager* _objectManager;
+    RKObjectManager* _objectManager;
 }
 
 @end
@@ -40,7 +40,7 @@
     [RKTestFactory setUp];
 
     _objectManager = [RKTestFactory objectManager];
-	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
+    _objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
     [_objectManager.objectStore deletePersistentStore];
 
@@ -88,7 +88,7 @@
 
 - (void)testShouldSetTheAcceptHeaderAppropriatelyForTheFormat {
 
-	assertThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"], is(equalTo(@"application/json")));
+    assertThat([_objectManager.client.HTTPHeaders valueForKey:@"Accept"], is(equalTo(@"application/json")));
 }
 
 // TODO: Move to Core Data specific spec file...
@@ -124,7 +124,7 @@
     objectLoader.method = RKRequestMethodPOST;
     objectLoader.targetObject = temporaryHuman;
     objectLoader.serializationMapping = mapping;
-	[objectLoader send];
+    [objectLoader send];
     [loader waitForResponse];
 
     assertThat(temporaryHuman.managedObjectContext, is(equalTo(nil)));
@@ -146,7 +146,7 @@
     objectLoader.method = RKRequestMethodPOST;
     objectLoader.targetObject = temporaryHuman;
     objectLoader.serializationMapping = mapping;
-	[objectLoader send];
+    [objectLoader send];
     [loader waitForResponse];
 
     assertThat(temporaryHuman.managedObjectContext, is(equalTo(_objectManager.objectStore.primaryManagedObjectContext)));
@@ -156,31 +156,31 @@
 - (void)testShouldLoadAHuman {
     assertThatBool([RKClient sharedClient].isNetworkReachable, is(equalToBool(YES)));
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
-	[loader waitForResponse];
+    [_objectManager loadObjectsAtResourcePath:@"/JSON/humans/1.json" delegate:loader];
+    [loader waitForResponse];
     assertThat(loader.error, is(nilValue()));
     assertThat(loader.objects, isNot(empty()));
-	RKHuman* blake = (RKHuman*)[loader.objects objectAtIndex:0];
-	assertThat(blake.name, is(equalTo(@"Blake Watters")));
+    RKHuman* blake = (RKHuman*)[loader.objects objectAtIndex:0];
+    assertThat(blake.name, is(equalTo(@"Blake Watters")));
 }
 
 - (void)testShouldLoadAllHumans {
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-	[_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
-	[loader waitForResponse];
-	NSArray* humans = (NSArray*) loader.objects;
-	assertThatUnsignedInteger([humans count], is(equalToInt(2)));
-	assertThat([humans objectAtIndex:0], is(instanceOf([RKHuman class])));
+    [_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
+    [loader waitForResponse];
+    NSArray* humans = (NSArray*) loader.objects;
+    assertThatUnsignedInteger([humans count], is(equalToInt(2)));
+    assertThat([humans objectAtIndex:0], is(instanceOf([RKHuman class])));
 }
 
 - (void)testShouldHandleConnectionFailures {
-	NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
-	RKObjectManager* modelManager = [RKObjectManager managerWithBaseURLString:localBaseURL];
+    NSString* localBaseURL = [NSString stringWithFormat:@"http://127.0.0.1:3001"];
+    RKObjectManager* modelManager = [RKObjectManager managerWithBaseURLString:localBaseURL];
     modelManager.client.requestQueue.suspended = NO;
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-	[modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];
-	[loader waitForResponse];
-	assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
+    [modelManager loadObjectsAtResourcePath:@"/JSON/humans/1" delegate:loader];
+    [loader waitForResponse];
+    assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
 }
 
 - (void)testShouldPOSTAnObject {

@@ -47,11 +47,11 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 ///////////////////////////////////////////////////////////////////
 
 @interface RKManagedObjectStore : NSObject {
-	NSObject<RKManagedObjectStoreDelegate>* _delegate;
-	NSString* _storeFilename;
-	NSString* _pathToStoreFile;
+    NSObject<RKManagedObjectStoreDelegate>* _delegate;
+    NSString* _storeFilename;
+    NSString* _pathToStoreFile;
     NSManagedObjectModel* _managedObjectModel;
-	NSPersistentStoreCoordinator* _persistentStoreCoordinator;
+    NSPersistentStoreCoordinator* _persistentStoreCoordinator;
 }
 
 // The delegate for this object store
@@ -143,13 +143,13 @@ extern NSString* const RKManagedObjectStoreDidFailSaveNotification;
 - (void)deletePersistentStore;
 
 /**
- *	Retrieves a model object from the appropriate context using the objectId
+ * Retrieves a model object from the appropriate context using the objectId
  */
 - (NSManagedObject*)objectWithID:(NSManagedObjectID*)objectID;
 
 /**
- *	Retrieves a array of model objects from the appropriate context using
- *	an array of NSManagedObjectIDs
+ * Retrieves a array of model objects from the appropriate context using
+ * an array of NSManagedObjectIDs
  */
 - (NSArray*)objectsWithIDs:(NSArray*)objectIDs;
 

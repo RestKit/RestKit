@@ -33,68 +33,68 @@ static NSMutableCharacterSet* __removeSet;
 @synthesize mode = _mode;
 
 + (id)searchEngine {
-	RKManagedObjectSearchEngine* searchEngine = [[[RKManagedObjectSearchEngine alloc] init] autorelease];
-	return searchEngine;
+    RKManagedObjectSearchEngine* searchEngine = [[[RKManagedObjectSearchEngine alloc] init] autorelease];
+    return searchEngine;
 }
 
 - (id)init {
-	if (self = [super init]) {
-		_mode = RKSearchModeOr;
-	}
+    if (self = [super init]) {
+        _mode = RKSearchModeOr;
+    }
 
-	return self;
+    return self;
 }
 
 #pragma mark -
 #pragma mark Private
 
 - (NSPredicate*)predicateForSearch:(NSArray*)searchTerms compoundSelector:(SEL)selector {
-	NSMutableArray* termPredicates = [NSMutableArray array];
-	for (NSString* searchTerm in searchTerms) {
-		[termPredicates addObject:
-		 [NSPredicate predicateWithFormat:@"(ANY searchWords.word beginswith %@)", searchTerm]];
-	}
-	return [NSCompoundPredicate performSelector:selector withObject:termPredicates];
+    NSMutableArray* termPredicates = [NSMutableArray array];
+    for (NSString* searchTerm in searchTerms) {
+        [termPredicates addObject:
+         [NSPredicate predicateWithFormat:@"(ANY searchWords.word beginswith %@)", searchTerm]];
+    }
+    return [NSCompoundPredicate performSelector:selector withObject:termPredicates];
 }
 
 #pragma mark -
 #pragma mark Public
 
 + (NSArray*)tokenizedNormalizedString:(NSString*)string {
-	if (__removeSet == nil) {
-		NSMutableCharacterSet* removeSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
-		[removeSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
-		[removeSet invert];
-		__removeSet = removeSet;
-	}
+    if (__removeSet == nil) {
+        NSMutableCharacterSet* removeSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
+        [removeSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
+        [removeSet invert];
+        __removeSet = removeSet;
+    }
 
-	NSString* scannerString = [[[[string lowercaseString] decomposedStringWithCanonicalMapping]
-							   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
-								stringByReplacingOccurrencesOfString:@"-" withString:@" "];
+    NSString* scannerString = [[[[string lowercaseString] decomposedStringWithCanonicalMapping]
+                               stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
+                                stringByReplacingOccurrencesOfString:@"-" withString:@" "];
 
-	NSArray* tokens = [[[scannerString componentsSeparatedByCharactersInSet:__removeSet]
-						componentsJoinedByString:@""] componentsSeparatedByString:@" "];
-	return tokens;
+    NSArray* tokens = [[[scannerString componentsSeparatedByCharactersInSet:__removeSet]
+                        componentsJoinedByString:@""] componentsSeparatedByString:@" "];
+    return tokens;
 }
 
 - (NSPredicate*)predicateForSearch:(NSString*)searchText {
-	NSString* searchQuery = [searchText copy];
-	NSArray* searchTerms = [RKManagedObjectSearchEngine tokenizedNormalizedString:searchQuery];
-	[searchQuery release];
+    NSString* searchQuery = [searchText copy];
+    NSArray* searchTerms = [RKManagedObjectSearchEngine tokenizedNormalizedString:searchQuery];
+    [searchQuery release];
 
-	if ([searchTerms count] == 0) {
-		return nil;
-	}
+    if ([searchTerms count] == 0) {
+        return nil;
+    }
 
-	if (_mode == RKSearchModeOr) {
-		return [self predicateForSearch:searchTerms
-					   compoundSelector:@selector(orPredicateWithSubpredicates:)];
-	} else if (_mode == RKSearchModeAnd) {
-		return [self predicateForSearch:searchTerms
-					   compoundSelector:@selector(andPredicateWithSubpredicates:)];
-	} else {
-		return nil;
-	}
+    if (_mode == RKSearchModeOr) {
+        return [self predicateForSearch:searchTerms
+                       compoundSelector:@selector(orPredicateWithSubpredicates:)];
+    } else if (_mode == RKSearchModeAnd) {
+        return [self predicateForSearch:searchTerms
+                       compoundSelector:@selector(andPredicateWithSubpredicates:)];
+    } else {
+        return nil;
+    }
 }
 
 @end

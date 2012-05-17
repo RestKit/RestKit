@@ -1079,8 +1079,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 }
 
 - (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer*)gesture {
-	// If we have already been loaded and we are loading again, a refresh is taking place...
-	return [self isLoaded] && [self isLoading] && [self isOnline];
+    // If we have already been loaded and we are loading again, a refresh is taking place...
+    return [self isLoaded] && [self isLoading] && [self isOnline];
 }
 
 - (NSDate*)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer*)gesture {

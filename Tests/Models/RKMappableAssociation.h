@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 
 @interface RKMappableAssociation : NSObject {
-	NSString* _testString;
+    NSString* _testString;
     NSDate* _date;
 }
 

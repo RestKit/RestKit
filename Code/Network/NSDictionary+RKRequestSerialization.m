@@ -29,12 +29,12 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKRequestSerialization)
 
 - (NSString *)HTTPHeaderValueForContentType
 {
-	return RKMIMETypeFormURLEncoded;
+    return RKMIMETypeFormURLEncoded;
 }
 
 - (NSData *)HTTPBody
 {
-	return [[self URLEncodedString] dataUsingEncoding:NSUTF8StringEncoding];
+    return [[self URLEncodedString] dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 @end

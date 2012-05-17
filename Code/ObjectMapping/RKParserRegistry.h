@@ -29,7 +29,7 @@
 */
 @interface RKParserRegistry : NSObject {
     NSMutableDictionary *_MIMETypeToParserClasses;
-	NSMutableArray *_MIMETypeToParserClassesRegularExpressions;
+    NSMutableArray *_MIMETypeToParserClassesRegularExpressions;
 }
 
 /**

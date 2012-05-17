@@ -113,21 +113,21 @@
 - (void)updateTableViewUsingBlock:(void (^)())block;
 
 /** Adds a new section to the model.
- *	@param section Must be a valid non nil RKTableViewSection. */
+ * @param section Must be a valid non nil RKTableViewSection. */
 // NOTE: connects cellMappings if section.cellMappings is nil...
 - (void)addSection:(RKTableSection *)section;
 
 /** Inserts a new section at the specified index.
- *	@param section Must be a valid non nil RKTableViewSection.
- *	@param index Must be less than the total number of sections. */
+ * @param section Must be a valid non nil RKTableViewSection.
+ * @param index Must be less than the total number of sections. */
 - (void)insertSection:(RKTableSection *)section atIndex:(NSUInteger)index;
 
 /** Removes the specified section from the model.
- *	@param section The section to remove. */
+ * @param section The section to remove. */
 - (void)removeSection:(RKTableSection *)section;
 
 /** Removes the section at the specified index from the model.
- *	@param index Must be less than the total number of section. */
+ * @param index Must be less than the total number of section. */
 - (void)removeSectionAtIndex:(NSUInteger)index;
 
 /** Removes all sections from the model. */

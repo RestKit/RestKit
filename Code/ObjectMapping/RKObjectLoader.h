@@ -143,7 +143,7 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
     RKObjectMapping* _serializationMapping;
     NSString* _serializationMIMEType;
     NSObject* _sourceObject;
-	NSObject* _targetObject;
+    NSObject* _targetObject;
     dispatch_queue_t _mappingQueue;
 }
 

@@ -226,11 +226,11 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, readonly) NSUInteger rowCount;
 
 /** Returns the section at the specified index.
- *	@param index Must be less than the total number of sections. */
+ * @param index Must be less than the total number of sections. */
 - (RKTableSection *)sectionAtIndex:(NSUInteger)index;
 
 /** Returns the first section with the specified header title.
- *	@param title The header title. */
+ * @param title The header title. */
 - (RKTableSection *)sectionWithHeaderTitle:(NSString *)title;
 
 /**
@@ -244,8 +244,8 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 - (NSUInteger)numberOfRowsInSectionAtIndex:(NSUInteger)index;
 
 /** Returns the index of the specified section.
- *	@param section Must be a valid non nil RKTableViewSection.
- *	@return If section is not found, method returns NSNotFound. */
+ * @param section Must be a valid non nil RKTableViewSection.
+ * @return If section is not found, method returns NSNotFound. */
 - (NSUInteger)indexForSection:(RKTableSection *)section;
 
 /** Returns the UITableViewCell created by applying the specified

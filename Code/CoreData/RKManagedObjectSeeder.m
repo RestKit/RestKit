@@ -47,7 +47,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 
     va_list args;
     va_start(args, firstFileName);
-	NSMutableArray* fileNames = [NSMutableArray array];
+    NSMutableArray* fileNames = [NSMutableArray array];
     for (NSString* fileName = firstFileName; fileName != nil; fileName = va_arg(args, id)) {
         [fileNames addObject:fileName];
     }
@@ -67,8 +67,8 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 
 - (id)initWithObjectManager:(RKObjectManager*)manager {
     self = [self init];
-	if (self) {
-		_manager = [manager retain];
+    if (self) {
+        _manager = [manager retain];
 
         // If the user hasn't configured an object store, set one up for them
         if (nil == _manager.objectStore) {
@@ -77,14 +77,14 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 
         // Delete any existing persistent store
         [_manager.objectStore deletePersistentStore];
-	}
+    }
 
-	return self;
+    return self;
 }
 
 - (void)dealloc {
-	[_manager release];
-	[super dealloc];
+    [_manager release];
+    [super dealloc];
 }
 
 - (NSString*)pathToSeedDatabase {
@@ -94,7 +94,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 - (void)seedObjectsFromFiles:(NSString*)firstFileName, ... {
     va_list args;
     va_start(args, firstFileName);
-	NSMutableArray* fileNames = [NSMutableArray array];
+    NSMutableArray* fileNames = [NSMutableArray array];
     for (NSString* fileName = firstFileName; fileName != nil; fileName = va_arg(args, id)) {
         [fileNames addObject:fileName];
     }
@@ -111,16 +111,16 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 
 - (void)seedObjectsFromFile:(NSString *)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping bundle:(NSBundle *)nilOrBundle
 {
-	NSError* error = nil;
+    NSError* error = nil;
 
-	if (nilOrBundle == nil) {
-	    nilOrBundle = [NSBundle mainBundle];
-	}
+    if (nilOrBundle == nil) {
+        nilOrBundle = [NSBundle mainBundle];
+    }
 
-	NSString* filePath = [nilOrBundle pathForResource:fileName ofType:nil];
-	NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+    NSString* filePath = [nilOrBundle pathForResource:fileName ofType:nil];
+    NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
 
-	if (payload) {
+    if (payload) {
         NSString* MIMEType = [fileName MIMETypeForPathExtension];
         if (MIMEType == nil) {
             // Default the MIME type to the value of the Accept header if we couldn't detect it...
@@ -147,7 +147,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
         }
 
         NSArray* mappedObjects = [result asCollection];
-		NSAssert1([mappedObjects isKindOfClass:[NSArray class]], @"Expected an NSArray of objects, got %@", mappedObjects);
+        NSAssert1([mappedObjects isKindOfClass:[NSArray class]], @"Expected an NSArray of objects, got %@", mappedObjects);
 
         // Inform the delegate
         if (self.delegate) {
@@ -156,28 +156,28 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
             }
         }
 
-		RKLogInfo(@"Seeded %lu objects from %@...", (unsigned long) [mappedObjects count], [NSString stringWithFormat:@"%@", fileName]);
-	} else {
-		RKLogError(@"Unable to read file %@: %@", fileName, [error localizedDescription]);
-	}
+        RKLogInfo(@"Seeded %lu objects from %@...", (unsigned long) [mappedObjects count], [NSString stringWithFormat:@"%@", fileName]);
+    } else {
+        RKLogError(@"Unable to read file %@: %@", fileName, [error localizedDescription]);
+    }
 }
 
 - (void)finalizeSeedingAndExit {
-	NSError *error = nil;
+    NSError *error = nil;
     BOOL success = [[_manager objectStore] save:&error];
-	if (! success) {
-		RKLogError(@"[RestKit] RKManagedObjectSeeder: Error saving object context: %@", [error localizedDescription]);
-	}
+    if (! success) {
+        RKLogError(@"[RestKit] RKManagedObjectSeeder: Error saving object context: %@", [error localizedDescription]);
+    }
 
-	NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-	NSString* basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-	NSString* storeFileName = [[_manager objectStore] storeFilename];
-	NSString* destinationPath = [basePath stringByAppendingPathComponent:storeFileName];
-	RKLogInfo(@"A seeded database has been generated at '%@'. "
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString* basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    NSString* storeFileName = [[_manager objectStore] storeFilename];
+    NSString* destinationPath = [basePath stringByAppendingPathComponent:storeFileName];
+    RKLogInfo(@"A seeded database has been generated at '%@'. "
           @"Please execute `open \"%@\"` in your Terminal and copy %@ to your app. Be sure to add the seed database to your \"Copy Resources\" build phase.",
           destinationPath, basePath, storeFileName);
 
-	exit(1);
+    exit(1);
 }
 
 @end

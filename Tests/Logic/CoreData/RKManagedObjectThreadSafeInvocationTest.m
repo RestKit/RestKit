@@ -128,8 +128,8 @@
     [self performSelectorInBackground:@selector(createBackgroundObjects) withObject:nil];
 
     while (_waiting) {
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-	}
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    }
 }
 
 @end

@@ -46,13 +46,13 @@ typedef enum {
      The search text should be matched inclusively using AND.
      Matches will include all search terms.
      */
-	RKSearchModeAnd,
+    RKSearchModeAnd,
 
     /**
      The search text should be matched exclusively using OR.
      Matches will include any search terms.
      */
-	RKSearchModeOr
+    RKSearchModeOr
 } RKSearchMode;
 
 /**

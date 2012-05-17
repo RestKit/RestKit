@@ -59,17 +59,17 @@
  * `ruby Tests/server.rb`
  */
 - (void)testShouldSendMultiPartRequests {
-	NSString* URLString = [NSString stringWithFormat:@"http://127.0.0.1:4567/photo"];
-	NSURL* URL = [NSURL URLWithString:URLString];
-	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
-	RKParams* params = [[RKParams params] retain];
-	NSString* filePath = [RKTestFixture pathForFixture:@"blake.png"];
-	[params setFile:filePath forParam:@"file"];
-	[params setValue:@"this is the value" forParam:@"test"];
-	request.method = RKRequestMethodPOST;
-	request.params = params;
-	RKResponse* response = [request sendSynchronously];
-	assertThatInteger(response.statusCode, is(equalToInt(200)));
+    NSString* URLString = [NSString stringWithFormat:@"http://127.0.0.1:4567/photo"];
+    NSURL* URL = [NSURL URLWithString:URLString];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    RKParams* params = [[RKParams params] retain];
+    NSString* filePath = [RKTestFixture pathForFixture:@"blake.png"];
+    [params setFile:filePath forParam:@"file"];
+    [params setValue:@"this is the value" forParam:@"test"];
+    request.method = RKRequestMethodPOST;
+    request.params = params;
+    RKResponse* response = [request sendSynchronously];
+    assertThatInteger(response.statusCode, is(equalToInt(200)));
 }
 
 #pragma mark - Basics
@@ -168,8 +168,8 @@ request.timeoutInterval = 1.0;
 #if TARGET_OS_IPHONE
 
 - (void)testShouldSendTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyNone {
-	NSURL* URL = [RKTestFactory baseURL];
-	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    NSURL* URL = [RKTestFactory baseURL];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyNone;
     id requestMock = [OCMockObject partialMockForObject:request];
     [[requestMock expect] fireAsynchronousRequest]; // Not sure what else to test on this case
@@ -320,9 +320,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldCacheTheRequestHeadersAndBodyIncludingOurOwnCustomTimestampHeader {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -346,9 +346,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldGenerateAUniqueCacheKeyBasedOnTheUrlTheMethodAndTheHTTPBody {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -371,9 +371,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromCacheWhenWeRecieveA304 {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                 storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -411,9 +411,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldUpdateTheInternalCacheDateWhenWeRecieveA304 {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -458,9 +458,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromTheCacheIfThereIsAnError {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -496,9 +496,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromTheCacheIfWeAreWithinTheTimeout {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -560,9 +560,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromTheCacheIfWeAreOffline {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -603,9 +603,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldCacheTheStatusCodeMIMETypeAndURL {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
 
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -794,9 +794,9 @@ request.timeoutInterval = 1.0;
     request.params = params;
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
+                                   [[NSURL URLWithString:baseURL] host]];
     NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache *requestCache = [[RKRequestCache alloc] initWithPath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
     NSString *requestCachePath = [requestCache pathForRequest:request];
     NSArray *pathComponents = [requestCachePath pathComponents];
@@ -812,9 +812,9 @@ request.timeoutInterval = 1.0;
     request.method = RKRequestMethodDELETE;
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
+                                   [[NSURL URLWithString:baseURL] host]];
     NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache *requestCache = [[RKRequestCache alloc] initWithPath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
     NSString *requestCachePath = [requestCache pathForRequest:request];
     assertThat(requestCachePath, is(nilValue()));
