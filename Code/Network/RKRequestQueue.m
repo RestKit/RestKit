@@ -382,7 +382,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 - (BOOL)containsRequest:(RKRequest*)request {
-    return [_requests containsObject:request];
+    @synchronized(self) {
+        return [_requests containsObject:request];
+    }
 }
 
 - (void)cancelRequest:(RKRequest*)request loadNext:(BOOL)loadNext {
