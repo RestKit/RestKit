@@ -296,7 +296,7 @@
 }
 
 - (void)testThatLoadingInvalidURLDoesNotCrashApp {
-    NSURL *URL = [[NSURL alloc] initWithString:@"http://biz.gg"];
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:5629"];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     RKClient *client = [RKClient clientWithBaseURL:URL];
     
