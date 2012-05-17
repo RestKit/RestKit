@@ -649,8 +649,6 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 		[self didFinishLoad:[self loadResponseFromCache]];
 	} else {
-		_isLoading = NO;
-
 		if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 			[_delegate request:self didFailLoadWithError:error];
 		}
@@ -664,6 +662,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFailWithErrorNotification
                                                             object:self
                                                           userInfo:userInfo];
+		_isLoading = NO;
 	}
 
     // NOTE: This notification must be posted last as the request queue releases the request when it
