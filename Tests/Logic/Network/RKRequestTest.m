@@ -721,13 +721,10 @@ request.timeoutInterval = 1.0;
 
 - (void)testShouldOptionallySkipSSLValidation {
     NSURL *URL = [NSURL URLWithString:@"https://blakewatters.com/"];
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKRequest *request = [RKRequest requestWithURL:URL];
-    request.delegate = loader;
     request.disableCertificateValidation = YES;
-    [request sendAsynchronously];
-    [loader waitForResponse];
-    assertThatBool([loader.response isOK], is(equalToBool(YES)));
+    RKResponse *response = [request sendSynchronously];
+    assertThatBool([response isOK], is(equalToBool(YES)));
 }
 
 - (void)testShouldNotAddANonZeroContentLengthHeaderIfParamsIsSetAndThisIsAGETRequest {
