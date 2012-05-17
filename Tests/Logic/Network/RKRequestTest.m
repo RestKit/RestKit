@@ -947,4 +947,34 @@ request.timeoutInterval = 1.0;
     [loaderMock verify];
 }
 
+- (void)testThatIsLoadingIsNoDuringDidFailWithErrorCallback {
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:8765"];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+
+    RKClient *client = [RKClient clientWithBaseURL:URL];
+    RKRequest *request = [client requestWithResourcePath:@"/invalid"];
+    request.method = RKRequestMethodGET;
+    request.delegate = loader;
+    request.onDidFailLoadWithError = ^(NSError *error) {
+        assertThatBool([request isLoading], is(equalToBool(NO)));
+    };
+    [request sendAsynchronously];
+    [loader waitForResponse];
+}
+
+- (void)testThatIsLoadedIsYesDuringDidFailWithErrorCallback {
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:8765"];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+
+    RKClient *client = [RKClient clientWithBaseURL:URL];
+    RKRequest *request = [client requestWithResourcePath:@"/invalid"];
+    request.method = RKRequestMethodGET;
+    request.delegate = loader;
+    request.onDidFailLoadWithError = ^(NSError *error) {
+        assertThatBool([request isLoaded], is(equalToBool(YES)));
+    };
+    [request sendAsynchronously];
+    [loader waitForResponse];
+}
+
 @end

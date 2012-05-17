@@ -37,19 +37,28 @@
 - (void)postRequestDidFailWithErrorNotification:(NSError *)error;
 @end
 
+@interface RKObjectLoader ()
+@property (nonatomic, assign, readwrite, getter = isLoaded) BOOL loaded;
+@property (nonatomic, assign, readwrite, getter = isLoading) BOOL loading;
+@end
+
 @implementation RKObjectLoader
 
-@synthesize mappingProvider = _mappingProvider, response = _response;
-@synthesize targetObject = _targetObject, objectMapping = _objectMapping;
+@synthesize mappingProvider = _mappingProvider;
+@synthesize response = _response;
+@synthesize targetObject = _targetObject;
+@synthesize objectMapping = _objectMapping;
 @synthesize result = _result;
 @synthesize serializationMapping = _serializationMapping;
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize sourceObject = _sourceObject;
 @synthesize mappingQueue = _mappingQueue;
-@synthesize onDidFailWithError;
-@synthesize onDidLoadObject;
-@synthesize onDidLoadObjects;
-@synthesize onDidLoadObjectsDictionary;
+@synthesize onDidFailWithError = _onDidFailWithError;
+@synthesize onDidLoadObject = _onDidLoadObject;
+@synthesize onDidLoadObjects = _onDidLoadObjects;
+@synthesize onDidLoadObjectsDictionary = _onDidLoadObjectsDictionary;
+@dynamic loaded;
+@dynamic loading;
 
 + (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
     return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider] autorelease];
@@ -82,14 +91,14 @@
     _serializationMIMEType = nil;
     [_serializationMapping release];
     _serializationMapping = nil;    
-    [onDidFailWithError release];
-    onDidFailWithError = nil;
-    [onDidLoadObject release];
-    onDidLoadObject = nil;
-    [onDidLoadObjects release];
-    onDidLoadObjects = nil;
-    [onDidLoadObjectsDictionary release];
-    onDidLoadObjectsDictionary = nil;
+    [_onDidFailWithError release];
+    _onDidFailWithError = nil;
+    [_onDidLoadObject release];
+    _onDidLoadObject = nil;
+    [_onDidLoadObjects release];
+    _onDidLoadObjects = nil;
+    [_onDidLoadObjectsDictionary release];
+    _onDidLoadObjectsDictionary = nil;
     
 	[super dealloc];
 }
@@ -115,8 +124,8 @@
 // NOTE: This method is significant because the notifications posted are used by
 // RKRequestQueue to remove requests from the queue. All requests need to be finalized.
 - (void)finalizeLoad:(BOOL)successful {
-	_isLoading = NO;
-    _isLoaded = successful;
+	self.loading = NO;
+    self.loaded = successful;
     
     if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate performSelectorOnMainThread:@selector(objectLoaderDidFinishLoading:)

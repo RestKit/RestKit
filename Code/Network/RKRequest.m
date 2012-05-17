@@ -85,6 +85,12 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitNetwork
 
+@interface RKRequest ()
+@property (nonatomic, assign, readwrite, getter = isLoaded) BOOL loaded;
+@property (nonatomic, assign, readwrite, getter = isLoading) BOOL loading;
+@property (nonatomic, assign, readwrite) BOOL canceled;
+@end
+
 @implementation RKRequest
 @class GCOAuth;
 
@@ -119,9 +125,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize cancelled = _cancelled;
 @synthesize followRedirect = _followRedirect;
 @synthesize runLoopMode = _runLoopMode;
+@synthesize loaded = _loaded;
+@synthesize loading = _loading;
+@synthesize canceled = _canceled;
 
 #if TARGET_OS_IPHONE
-@synthesize backgroundPolicy = _backgroundPolicy, backgroundTaskIdentifier = _backgroundTaskIdentifier;
+@synthesize backgroundPolicy = _backgroundPolicy;
+@synthesize backgroundTaskIdentifier = _backgroundTaskIdentifier;
 #endif
 
 + (RKRequest*)requestWithURL:(NSURL*)URL {
@@ -161,7 +171,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (void)reset {
-    if (_isLoading) {
+    if (self.isLoading) {
         RKLogWarning(@"Request was reset while loading: %@. Canceling.", self);
         [self cancel];
     }
@@ -170,9 +180,9 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [_URLRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
     [_connection release];
     _connection = nil;
-    _isLoading = NO;
-    _isLoaded = NO;
-    _cancelled = NO;
+    self.loading = NO;
+    self.loaded = NO;
+    self.canceled = NO;
 }
 
 - (void)cleanupBackgroundTask {
@@ -398,7 +408,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 	[_connection release];
 	_connection = nil;
     [self invalidateTimeoutTimer];
-	_isLoading = NO;
+	self.loading = NO;
 
 	if (informDelegate && [_delegate respondsToSelector:@selector(requestDidCancelLoad:)]) {
 		[_delegate requestDidCancelLoad:self];
@@ -428,10 +438,9 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 	}
 }
 
-// TODO: We may want to eliminate the coupling between the request queue and individual request instances.
-// We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
+// NOTE: We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
 - (void)send {
-    NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
+    NSAssert(NO == self.isLoading || NO == self.isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     if (self.queue) {
         [self.queue addRequest:self];
     } else {
@@ -446,7 +455,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         return;
     }
 
-    _isLoading = YES;
+    self.loading = YES;
 
     if ([self.delegate respondsToSelector:@selector(requestDidStartLoad:)]) {
         [self.delegate requestDidStartLoad:self];
@@ -489,11 +498,11 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (void)sendAsynchronously {
-    NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
+    NSAssert(NO == self.loading || NO == self.loaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     _sentSynchronously = NO;
     if ([self shouldLoadFromCache]) {
         RKResponse* response = [self loadResponseFromCache];
-        _isLoading = YES;
+        self.loading = YES;
         [self performSelector:@selector(didFinishLoad:) withObject:response afterDelay:0];
     } else if ([self shouldDispatchRequest]) {
         [self createTimeoutTimer];
@@ -539,26 +548,24 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 	    if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
 			[self.cache hasResponseForRequest:self]) {
-
-			_isLoading = YES;
-
+			self.loading = YES;
             [self didFinishLoad:[self loadResponseFromCache]];
-
 		} else {
+            self.loading = YES;
+            
             RKLogError(@"Failed to send request to %@ due to unreachable network. Reachability observer = %@", [[self URL] absoluteString], self.reachabilityObserver);
             NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
     		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
     								  errorMessage, NSLocalizedDescriptionKey,
     								  nil];
-            NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
-            _isLoading = YES;
+            NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];            
             [self performSelector:@selector(didFailLoadWithError:) withObject:error afterDelay:0];
         }
 	}
 }
 
 - (RKResponse*)sendSynchronously {
-    NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
+    NSAssert(NO == self.loading || NO == self.loaded, @"Cannot send a request that is loading or loaded without resetting it first.");
 	NSHTTPURLResponse* URLResponse = nil;
 	NSError* error;
 	NSData* payload = nil;
@@ -567,7 +574,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 	if ([self shouldLoadFromCache]) {
         response = [self loadResponseFromCache];
-        _isLoading = YES;
+        self.loading = YES;
         [self didFinishLoad:response];
     } else if ([self shouldDispatchRequest]) {
         RKLogDebug(@"Sending synchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
@@ -579,7 +586,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 
-		_isLoading = YES;
+		self.loading = YES;
         if ([self.delegate respondsToSelector:@selector(requestDidStartLoad:)]) {
             [self.delegate requestDidStartLoad:self];
         }
@@ -649,7 +656,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 		[self didFinishLoad:[self loadResponseFromCache]];
 	} else {
-		_isLoading = NO;
+        self.loaded = YES;
+        self.loading = NO;
 
 		if ([_delegate respondsToSelector:@selector(request:didFailLoadWithError:)]) {
 			[_delegate request:self didFailLoadWithError:error];
@@ -678,8 +686,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (void)didFinishLoad:(RKResponse*)response {
-  	_isLoading = NO;
-  	_isLoaded = YES;
+  	self.loading = NO;
+  	self.loaded = YES;
 
     RKLogInfo(@"Status Code: %ld", (long) [response statusCode]);
     RKLogDebug(@"Body: %@", [response bodyAsString]);
@@ -739,16 +747,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 	return _method == RKRequestMethodHEAD;
 }
 
-- (BOOL)isLoading {
-	return _isLoading;
-}
-
-- (BOOL)isLoaded {
-	return _isLoaded;
-}
-
 - (BOOL)isUnsent {
-    return _isLoading == NO && _isLoaded == NO;
+    return self.loading == NO && self.loaded == NO;
 }
 
 - (NSString*)resourcePath {
