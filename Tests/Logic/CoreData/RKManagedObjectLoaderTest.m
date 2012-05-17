@@ -214,4 +214,25 @@
     assertThatBool(invoked, is(equalToBool(YES)));
 }
 
+- (void)testThatObjectLoadedDidFinishLoadingIsCalledOnStoreSaveFailure {
+    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    objectManager.objectStore = store;
+    id mockStore = [OCMockObject partialMockForObject:store];
+    BOOL success = NO;
+    [[[mockStore stub] andReturnValue:OCMOCK_VALUE(success)] save:[OCMArg anyPointer]];
+    
+    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
+    objectLoader.objectMapping = mapping;
+        
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    id mockResponseLoader = [OCMockObject partialMockForObject:responseLoader];
+    [[mockResponseLoader expect] objectLoaderDidFinishLoading:objectLoader];
+    objectLoader.delegate = responseLoader;    
+    [objectLoader sendAsynchronously];
+    [responseLoader waitForResponse];
+    [mockResponseLoader verify];
+}
+
 @end

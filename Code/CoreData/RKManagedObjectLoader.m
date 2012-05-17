@@ -171,6 +171,10 @@
             [invocation setSelector:@selector(informDelegateOfError:)];
             [invocation setArgument:&error atIndex:2];
             [invocation invokeOnMainThread];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self finalizeLoad:success];
+            });
             return;
         }
     }

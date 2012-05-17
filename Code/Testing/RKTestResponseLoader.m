@@ -151,6 +151,10 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     unexpectedResponse = YES;
 }
 
+- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
+    // Implemented for expectations
+}
+
 #pragma mark - OAuth delegates
 
 - (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token {
