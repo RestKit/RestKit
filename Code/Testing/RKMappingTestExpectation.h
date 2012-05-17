@@ -11,7 +11,7 @@
 /**
  An RKMappingTestExpectation defines an expected mapping event that should
  occur during the execution of a RKMappingTest.
- 
+
  @see RKMappingTest
  */
 @interface RKMappingTestExpectation : NSObject
@@ -23,7 +23,7 @@
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be
  mapped to another key path on a destination object. The value mapped is not evaluated.
- 
+
  @param sourceKeyPath A key path on the source object that should be mapped.
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
  @return An expectation specifying that sourceKeyPath should be mapped to destionationKeyPath.
@@ -33,7 +33,7 @@
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be
  mapped to another key path on a destination object with a given value.
- 
+
  @param sourceKeyPath A key path on the source object that should be mapped.
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
  @param value The value that is expected to be assigned to the destination object at destinationKeyPath.
@@ -45,7 +45,7 @@
  Creates and returns a new expectation specifying that a key path in a source object should be
  mapped to another key path on a destinaton object and that the attribute mapping and value should
  evaluate to true with a given block.
- 
+
  @param sourceKeyPath A key path on the source object that should be mapped.
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
  @param evaluationBlock A block with which to evaluate the success of the mapping.

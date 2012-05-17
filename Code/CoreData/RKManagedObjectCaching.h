@@ -38,21 +38,21 @@
 
 /**
  Tells the receiver that an object was fetched and should be added to the cache.
- 
+
  @param object The object that was fetched from a managed object context.
  */
 - (void)didFetchObject:(NSManagedObject *)object;
 
 /**
  Tells the receiver that an object was created and should be added to the cache.
- 
+
  @param object The object that was created in a managed object context.
  */
 - (void)didCreateObject:(NSManagedObject *)object;
 
 /**
  Tells the receiver that an object was deleted and should be removed to the cache.
- 
+
  @param object The object that was deleted from a managed object context.
  */
 - (void)didDeleteObject:(NSManagedObject *)object;

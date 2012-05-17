@@ -22,12 +22,12 @@
 #import "RKMappableAssociation.h"
 
 @interface RKMappableObject : NSObject {
-	NSDate* _dateTest;
-	NSNumber* _numberTest;
-	NSString* _stringTest;
+    NSDate* _dateTest;
+    NSNumber* _numberTest;
+    NSString* _stringTest;
     NSURL* _urlTest;
-	RKMappableAssociation* _hasOne;
-	NSSet* _hasMany;
+    RKMappableAssociation* _hasOne;
+    NSSet* _hasMany;
 }
 
 @property (nonatomic, retain) NSDate* dateTest;

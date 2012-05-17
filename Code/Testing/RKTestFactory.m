@@ -33,7 +33,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     // Ensure the shared factory is initialized
     [self sharedFactory];
-    
+
     if ([RKTestFactory respondsToSelector:@selector(didInitialize)]) {
         [RKTestFactory didInitialize];
     }
@@ -44,7 +44,7 @@ static RKTestFactory *sharedFactory = nil;
     if (! sharedFactory) {
         sharedFactory = [RKTestFactory new];
     }
-    
+
     return sharedFactory;
 }
 
@@ -57,7 +57,7 @@ static RKTestFactory *sharedFactory = nil;
         self.factoryBlocks = [NSMutableDictionary new];
         [self defineDefaultFactories];
     }
-    
+
     return self;
 }
 
@@ -70,7 +70,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     id (^block)() = [self.factoryBlocks objectForKey:factoryName];
     NSAssert(block, @"No factory is defined with the name '%@'", factoryName);
-    
+
     return block();
 }
 
@@ -80,33 +80,33 @@ static RKTestFactory *sharedFactory = nil;
         RKClient *client = [RKClient clientWithBaseURL:self.baseURL];
         client.requestQueue.suspended = NO;
         [client.reachabilityObserver getFlags];
-        
+
         return client;
     }];
-    
+
     [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
         RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
         RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
         objectManager.mappingProvider = mappingProvider;
-        
+
         // Force reachability determination
         [objectManager.client.reachabilityObserver getFlags];
-        
+
         return objectManager;
     }];
-    
+
     [self defineFactory:RKTestFactoryDefaultNamesMappingProvider withBlock:^id {
         RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
         return mappingProvider;
     }];
-    
+
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
         NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
         if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) {
             [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
         }
         RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
-        
+
         return store;
     }];
 }
@@ -186,7 +186,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     RKManagedObjectStore *objectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
     [RKManagedObjectStore setDefaultObjectStore:objectStore];
-    
+
     return objectStore;
 }
 
@@ -206,7 +206,7 @@ static RKTestFactory *sharedFactory = nil;
     [RKObjectManager setSharedManager:nil];
     [RKClient setSharedClient:nil];
     [RKManagedObjectStore setDefaultObjectStore:nil];
-    
+
     if ([self respondsToSelector:@selector(didTearDown)]) {
         [self didTearDown];
     }

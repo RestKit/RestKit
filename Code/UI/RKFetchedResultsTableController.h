@@ -23,7 +23,7 @@
 typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteger sectionIndex, NSString *sectionTitle);
 
 /**
- Instances of RKFetchedResultsTableController provide an interface for driving a UITableView 
+ Instances of RKFetchedResultsTableController provide an interface for driving a UITableView
  */
 @interface RKFetchedResultsTableController : RKAbstractTableController <NSFetchedResultsControllerDelegate> {
 @private

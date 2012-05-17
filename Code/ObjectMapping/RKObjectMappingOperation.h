@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 4/30/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -117,7 +117,7 @@
 
 /**
  An operation queue for deferring portions of the mapping process until later
- 
+
  Defaults to nil. If this mapping operation was configured by an instance of RKObjectMapper, then
  an instance of the operation queue will be configured and assigned for use. If the queue is nil,
  the mapping operation will perform all its operations within the body of performMapping. If a queue
@@ -128,9 +128,9 @@
 /**
  Creates and returns a new mapping operation configured to transform the object representation
  in a source object to a new destination object according to an object mapping definition.
- 
+
  Note that if Core Data support is available, an instance of RKManagedObjectMappingOperation may be returned.
- 
+
  @param sourceObject The source object to be mapped. Cannot be nil.
  @param destinationObject The destination object the results are to be mapped onto. May be nil,
  in which case a new object will be constructed during the mapping.

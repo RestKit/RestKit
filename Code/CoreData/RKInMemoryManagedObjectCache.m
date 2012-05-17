@@ -28,7 +28,7 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
         contextDictionary = [NSMutableDictionary dictionaryWithCapacity:1];
         [[[NSThread currentThread] threadDictionary] setObject:contextDictionary forKey:RKInMemoryObjectManagedObjectCacheThreadDictionaryKey];
     }
-    NSNumber *hashNumber = [NSNumber numberWithUnsignedInteger:[managedObjectContext hash]];    
+    NSNumber *hashNumber = [NSNumber numberWithUnsignedInteger:[managedObjectContext hash]];
     RKEntityCache *entityCache = [contextDictionary objectForKey:hashNumber];
     if (! entityCache) {
         RKLogInfo(@"Creating thread-local entity cache for managed object context: %@", managedObjectContext);
@@ -36,7 +36,7 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
         [contextDictionary setObject:entityCache forKey:hashNumber];
         [entityCache release];
     }
-    
+
     return entityCache;
 }
 
@@ -52,7 +52,7 @@ static NSString * const RKInMemoryObjectManagedObjectCacheThreadDictionaryKey = 
         RKEntityByAttributeCache *attributeCache = [entityCache attributeCacheForEntity:entity attribute:primaryKeyAttribute];
         RKLogTrace(@"Cached %ld objects", (long) [attributeCache count]);
     }
-    
+
     return [entityCache objectForEntity:entity withAttribute:primaryKeyAttribute value:primaryKeyValue];
 }
 

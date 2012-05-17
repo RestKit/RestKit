@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 5/31/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,7 +50,7 @@
         primaryKeyAttribute = (NSString*)primaryKeyObject;
     }
     NSAssert(primaryKeyAttribute, @"Cannot connect relationship without primaryKeyAttribute");
-    
+
     RKObjectRelationshipMapping* relationshipMapping = [self.objectMapping mappingForRelationship:relationshipName];
     RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
     NSAssert(mapping, @"Attempted to connect relationship for keyPath '%@' without a relationship mapping defined.");
@@ -69,7 +69,7 @@
         id relatedObject = nil;
         if ([valueOfLocalPrimaryKeyAttribute conformsToProtocol:@protocol(NSFastEnumeration)]) {
             RKLogTrace(@"Connecting has-many relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            
+
             // Implemented for issue 284 - https://github.com/RestKit/RestKit/issues/284
             relatedObject = [NSMutableSet set];
             NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
@@ -81,12 +81,12 @@
             }
         } else {
             RKLogTrace(@"Connecting has-one relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            
+
             // Normal foreign key
             NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
             relatedObject = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:valueOfLocalPrimaryKeyAttribute inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
         }
-        if (relatedObject) {                
+        if (relatedObject) {
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {
             RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with primary key value '%@'", [[objectMapping entity] name], relationshipName, valueOfLocalPrimaryKeyAttribute);
@@ -115,7 +115,7 @@
 }
 
 - (BOOL)performMapping:(NSError **)error {
-    BOOL success = [super performMapping:error];    
+    BOOL success = [super performMapping:error];
     if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
         /**
          NOTE: Processing the pending changes here ensures that the managed object context generates observable

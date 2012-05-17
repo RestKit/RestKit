@@ -45,7 +45,7 @@ typedef NSFetchRequest *(^RKObjectMappingProviderFetchRequestBlock)(NSString *re
 
 /**
  Retrieves the NSFetchRequest object that will retrieve cached objects for a given resourcePath.
- 
+
  @param resourcePath A resourcePath to retrieve the fetch request for.
  @return An NSFetchRequest object for fetching objects for the given resource path or nil.
  */

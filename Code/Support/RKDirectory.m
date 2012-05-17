@@ -19,43 +19,43 @@
         RKLogWarning(@"Unable to determine CFBundleExecutable: storing data under RestKit directory name.");
         executableName = @"RestKit";
     }
-    
+
     return executableName;
 }
 
 + (NSString *)applicationDataDirectory
 {
 #if TARGET_OS_IPHONE
-    
+
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     return ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    
+
 #else
-    
+
     NSFileManager *sharedFM = [NSFileManager defaultManager];
-    
+
     NSArray *possibleURLs = [sharedFM URLsForDirectory:NSApplicationSupportDirectory
                                              inDomains:NSUserDomainMask];
     NSURL *appSupportDir = nil;
     NSURL *appDirectory = nil;
-    
+
     if ([possibleURLs count] >= 1) {
         appSupportDir = [possibleURLs objectAtIndex:0];
     }
-    
+
     if (appSupportDir) {
         NSString *executableName = [RKDirectory executableName];
         appDirectory = [appSupportDir URLByAppendingPathComponent:executableName];
         return [appDirectory path];
     }
-    
+
     return nil;
 #endif
 }
 
 + (NSString *)cachesDirectory
 {
-#if TARGET_OS_IPHONE    
+#if TARGET_OS_IPHONE
     return [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 #else
     NSString *path = nil;
@@ -63,7 +63,7 @@
     if ([paths count]) {
         path = [[paths objectAtIndex:0] stringByAppendingPathComponent:[RKDirectory executableName]];
     }
-            
+
     return path;
 #endif
 }

@@ -655,9 +655,9 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 - (NSDate*)lastUpdatedDate {
     if (! self.objectLoader) {
-        return nil;        
+        return nil;
     }
-    
+
     if (_autoRefreshFromNetwork) {
         NSAssert(_cache, @"Found a nil cache when trying to read our last loaded time");
         NSDictionary* lastUpdatedDates = [_cache dictionaryForCacheKey:lastUpdatedDateDictionaryKey];
@@ -1079,8 +1079,8 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 }
 
 - (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer*)gesture {
-	// If we have already been loaded and we are loading again, a refresh is taking place...
-	return [self isLoaded] && [self isLoading] && [self isOnline];
+    // If we have already been loaded and we are loading again, a refresh is taking place...
+    return [self isLoaded] && [self isLoading] && [self isOnline];
 }
 
 - (NSDate*)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer*)gesture {

@@ -54,7 +54,7 @@
     [self removeObserver:self forKeyPath:@"sections"];
     [_form release];
     [_sectionNameKeyPath release];
-    
+
     [super dealloc];
 }
 
@@ -194,12 +194,12 @@
     }
 
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:self.defaultRowAnimation];
-    
-    // The load is finalized via network callbacks for 
+
+    // The load is finalized via network callbacks for
     // dynamic table controllers
     if (nil == self.objectLoader) {
         [self didFinishLoad];
-    }    
+    }
 }
 
 - (void)loadObjects:(NSArray *)objects {
@@ -322,7 +322,7 @@
 - (void)objectLoader:(RKObjectLoader *)loader didLoadObjects:(NSArray *)objects {
     // TODO: Could not get the KVO to work without a boolean property...
     // TODO: Apply any sorting...
-    
+
     if (self.sectionNameKeyPath) {
         NSArray *sectionedObjects = [objects sectionsGroupedByKeyPath:self.sectionNameKeyPath];
         for (NSArray *sectionOfObjects in sectionedObjects) {

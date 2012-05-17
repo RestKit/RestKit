@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 12/29/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -62,14 +62,14 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
         perPage = RKObjectPaginatorDefaultPerPage;
         loaded = NO;
     }
-    
+
     return self;
 }
 
 - (void)dealloc {
     delegate = nil;
     configurationDelegate = nil;
-    objectLoader.delegate = nil;    
+    objectLoader.delegate = nil;
     [patternURL release];
     patternURL = nil;
     [mappingProvider release];
@@ -83,8 +83,8 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     [onDidLoadObjectsForPage release];
     onDidLoadObjectsForPage = nil;
     [onDidFailWithError release];
-    onDidFailWithError = nil;    
-    
+    onDidFailWithError = nil;
+
     [super dealloc];
 }
 
@@ -123,7 +123,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 - (BOOL)hasNextPage {
     NSAssert(self.isLoaded, @"Cannot determine hasNextPage: paginator is not loaded.");
     NSAssert([self hasPageCount], @"Cannot determine hasNextPage: page count is not known.");
-    
+
     return self.currentPage < self.pageCount;
 }
 
@@ -139,17 +139,17 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     loaded = YES;
     RKLogInfo(@"Loaded objects: %@", objects);
     [self.delegate paginator:self didLoadObjects:objects forPage:self.currentPage];
-    
+
     if (self.onDidLoadObjectsForPage) {
         self.onDidLoadObjectsForPage(objects, self.currentPage);
     }
-    
+
     if ([self hasPageCount] && self.currentPage == 1) {
         if ([self.delegate respondsToSelector:@selector(paginatorDidLoadFirstPage:)]) {
             [self.delegate paginatorDidLoadFirstPage:self];
         }
     }
-    
+
     if ([self hasPageCount] && self.currentPage == self.pageCount) {
         if ([self.delegate respondsToSelector:@selector(paginatorDidLoadLastPage:)]) {
             [self.delegate paginatorDidLoadLastPage:self];
@@ -176,7 +176,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     } else if (self.perPage && [self hasObjectCount]) {
       float objectCountFloat = self.objectCount;
       pageCount = ceilf(objectCountFloat / self.perPage);
-      RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long) self.objectCount, (long) self.pageCount); 
+      RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long) self.objectCount, (long) self.pageCount);
     } else {
       NSAssert(NO, @"Paginator perPage set is 0.");
       RKLogError(@"Paginator perPage set is 0.");
@@ -197,23 +197,23 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     NSAssert(self.mappingProvider, @"Cannot perform a load with a nil mappingProvider.");
     NSAssert(! objectLoader, @"Cannot perform a load while one is already in progress.");
     currentPage = pageNumber;
-    
+
     if (self.objectStore) {
         self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
     } else {
         self.objectLoader = [[[RKObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider] autorelease];
     }
-  
+
     if ([self.configurationDelegate respondsToSelector:@selector(configureObjectLoader:)]) {
         [self.configurationDelegate configureObjectLoader:objectLoader];
     }
     self.objectLoader.method = RKRequestMethodGET;
     self.objectLoader.delegate = self;
-    
+
     if ([self.delegate respondsToSelector:@selector(paginator:willLoadPage:objectLoader:)]) {
         [self.delegate paginator:self willLoadPage:pageNumber objectLoader:self.objectLoader];
     }
-    
+
     [self.objectLoader send];
 }
 

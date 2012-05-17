@@ -58,7 +58,7 @@
     } else if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"MODIFY"]) {
         *ioValue = @"modified value";
         return YES;
-    }        
+    }
 
     return YES;
 }

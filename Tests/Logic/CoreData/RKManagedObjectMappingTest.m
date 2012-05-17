@@ -187,12 +187,12 @@
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
-    
+
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
     [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
-    
+
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
     id object = [mapping mappableObjectForData:data];
     assertThat(object, isNot(nilValue()));
@@ -206,13 +206,13 @@
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
-    
+
     [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
     [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
-    
+
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
     NSDictionary* nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
     id object = [mapping mappableObjectForData:nestedDictionary];
@@ -229,12 +229,12 @@
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
-    
+
     RKHuman* human = [RKHuman createInContext:store.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:123];
     [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
-    
+
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
     NSManagedObject *object = [mapping mappableObjectForData:data];
     assertThat([object managedObjectContext], is(equalTo(store.primaryManagedObjectContext)));
@@ -250,13 +250,13 @@
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
-    
+
     [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.railsID = [NSNumber numberWithInt:123];
     [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
-    
+
     NSDictionary* data = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:123] forKey:@"id"];
     NSDictionary* nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
     id object = [mapping mappableObjectForData:nestedDictionary];
@@ -273,19 +273,19 @@
     mapping.primaryKeyAttribute = @"name";
     [RKHuman entity].primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];
-    
+
     [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.name = @"Testing";
     [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
-    
+
     NSDictionary* data = [NSDictionary dictionaryWithObject:@"Testing" forKey:@"name"];
     NSDictionary* nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
     id object = [mapping mappableObjectForData:nestedDictionary];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
-    
+
     id cachedObject = [store.cacheStrategy findInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"name" value:@"Testing" inManagedObjectContext:store.primaryManagedObjectContext];
     assertThat(cachedObject, is(equalTo(human)));
 }
@@ -299,19 +299,19 @@
     mapping.primaryKeyAttribute = @"name";
     [RKHuman entity].primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];
-    
+
     [RKHuman truncateAll];
     RKHuman* human = [RKHuman object];
     human.name = @"Testing";
     [store save:nil];
     assertThatBool([RKHuman hasAtLeastOneEntity], is(equalToBool(YES)));
-    
+
     NSDictionary* data = [NSDictionary dictionaryWithObject:@"Testing" forKey:@"name"];
     NSDictionary* nestedDictionary = [NSDictionary dictionaryWithObject:data forKey:@"monkey"];
     id object = [mapping mappableObjectForData:nestedDictionary];
     assertThat(object, isNot(nilValue()));
     assertThat(object, is(equalTo(human)));
-    
+
     id cachedObject = [store.cacheStrategy findInstanceOfEntity:[RKHuman entity] withPrimaryKeyAttribute:@"name" value:@"Testing" inManagedObjectContext:store.primaryManagedObjectContext];
     assertThat(cachedObject, is(equalTo(human)));
 }

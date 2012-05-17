@@ -39,15 +39,15 @@
         _attribute = [attributeName retain];
         _managedObjectContext = [context retain];
         _monitorsContextForChanges = YES;
-        
+
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(managedObjectContextDidChange:)
                                                      name:NSManagedObjectContextObjectsDidChangeNotification
                                                    object:context];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(managedObjectContextDidSave:) 
-                                                     name:NSManagedObjectContextDidSaveNotification 
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(managedObjectContextDidSave:)
+                                                     name:NSManagedObjectContextDidSaveNotification
                                                    object:context];
 #if TARGET_OS_IPHONE
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -56,19 +56,19 @@
                                                    object:nil];
 #endif
     }
-    
+
     return self;
 }
 
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
+
     [_entity release];
     [_attribute release];
     [_managedObjectContext release];
     [_attributeValuesToObjectIDs release];
-    
+
     [super dealloc];
 }
 
@@ -92,18 +92,18 @@
     if ([attributeValue isKindOfClass:[NSString class]] || [attributeValue isEqual:[NSNull null]]) {
         return NO;
     }
-    
+
     Class attributeType = [[RKObjectPropertyInspector sharedInspector] typeForProperty:self.attribute ofEntity:self.entity];
     return [attributeType instancesRespondToSelector:@selector(stringValue)];
 }
 
 - (void)load
 {
-    RKLogInfo(@"Loading entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);    
+    RKLogInfo(@"Loading entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:self.entity];
     [fetchRequest setResultType:NSManagedObjectIDResultType];
-    
+
     NSError *error = nil;
     NSArray *objectIDs = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     if (error) {
@@ -111,7 +111,7 @@
         return;
     }
     [fetchRequest release];
-    
+
     self.attributeValuesToObjectIDs = [NSMutableDictionary dictionaryWithCapacity:[objectIDs count]];
     for (NSManagedObjectID *objectID in objectIDs) {
         NSError *error = nil;
@@ -119,7 +119,7 @@
         if (! object && error) {
             RKLogError(@"Failed to retrieve managed object with ID %@: %@", objectID, error);
         }
-        
+
         [self addObject:object];
     }
 }
@@ -160,7 +160,7 @@
         RKLogError(@"Failed to retrieve managed object with ID %@. Error %@\n%@", objectID, [error localizedDescription], [error userInfo]);
         return nil;
     }
-    
+
     return object;
 }
 
@@ -174,10 +174,10 @@
             NSManagedObject *object = [self objectWithID:objectID];
             if (object) [objects addObject:object];
         }
-        
+
         return objects;
     }
-    
+
     return [NSArray array];
 }
 
@@ -197,7 +197,7 @@
         } else {
             objectIDs = [NSMutableArray arrayWithObject:objectID];
         }
-        
+
         if (nil == self.attributeValuesToObjectIDs) self.attributeValuesToObjectIDs = [NSMutableDictionary dictionary];
         [self.attributeValuesToObjectIDs setValue:objectIDs forKey:attributeValue];
     } else {
@@ -241,22 +241,22 @@
 - (void)managedObjectContextDidChange:(NSNotification *)notification
 {
     if (self.monitorsContextForChanges == NO) return;
-    
+
     NSDictionary *userInfo = notification.userInfo;
     NSSet *insertedObjects = [userInfo objectForKey:NSInsertedObjectsKey];
     NSSet *updatedObjects = [userInfo objectForKey:NSUpdatedObjectsKey];
     NSSet *deletedObjects = [userInfo objectForKey:NSDeletedObjectsKey];
     RKLogTrace(@"insertedObjects=%@, updatedObjects=%@, deletedObjects=%@", insertedObjects, updatedObjects, deletedObjects);
-    
+
     NSMutableSet *objectsToAdd = [NSMutableSet setWithSet:insertedObjects];
     [objectsToAdd unionSet:updatedObjects];
-    
+
     for (NSManagedObject *object in objectsToAdd) {
         if ([object.entity isEqual:self.entity]) {
             [self addObject:object];
         }
     }
-    
+
     for (NSManagedObject *object in deletedObjects) {
         if ([object.entity isEqual:self.entity]) {
             [self removeObject:object];

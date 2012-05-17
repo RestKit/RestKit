@@ -27,15 +27,15 @@
 
 - (id)initWithHost:(NSString *)hostNameOrIPAddress port:(NSUInteger)port
 {
-    self = [self init];        
+    self = [self init];
     if (self) {
         _run = NO;
         _host = [hostNameOrIPAddress retain];
         _port = port;
-        
+
         struct sockaddr_in sa;
         char *hostNameOrIPAddressCString = (char *) [hostNameOrIPAddress UTF8String];
-        int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));    
+        int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));
         if (result != 0) {
             // IP Address
             bzero(&_remote_saddr, sizeof(struct sockaddr_in));
@@ -49,14 +49,14 @@
             if ((hp = gethostbyname(hostNameOrIPAddressCString)) == 0) {
                 return nil;
             }
-            
+
             bzero(&_remote_saddr, sizeof(struct sockaddr_in));
             _remote_saddr.sin_family = AF_INET;
             _remote_saddr.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
             _remote_saddr.sin_port = htons(port);
         }
     }
-    
+
     return self;
 }
 
@@ -67,22 +67,22 @@
 }
 
 - (void)run
-{    
+{
     int sd;
     _run = YES;
-    
+
     // Create Internet domain socket
-	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         _open = NO;
         return;
-	}
-    
-	// Try to connect to the port
-	_open = (connect(sd,(struct sockaddr *) &_remote_saddr, sizeof(_remote_saddr)) == 0);
-    
+    }
+
+    // Try to connect to the port
+    _open = (connect(sd,(struct sockaddr *) &_remote_saddr, sizeof(_remote_saddr)) == 0);
+
     if (_open) {
         close(sd);
-    }        
+    }
 }
 
 - (BOOL)isOpen

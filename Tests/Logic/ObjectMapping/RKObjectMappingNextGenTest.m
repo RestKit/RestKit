@@ -1261,10 +1261,10 @@
     RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
     RKObjectAttributeMapping* cityMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"city" toKeyPath:@"city"];
     [addressMapping addAttributeMapping:cityMapping];
-    
+
     RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"friendsOrderedSet" withMapping:addressMapping];
     [userMapping addRelationshipMapping:hasOneMapping];
-    
+
     RKObjectMapper* mapper = [RKObjectMapper new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser* user = [RKTestUser user];
@@ -1323,10 +1323,10 @@
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [userMapping addAttributeMapping:nameMapping];
-    
+
     RKObjectRelationshipMapping* hasManyMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friends" toKeyPath:@"friendsOrderedSet" withMapping:userMapping];
     [userMapping addRelationshipMapping:hasManyMapping];
-    
+
     RKObjectMapper* mapper = [RKObjectMapper new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser* user = [RKTestUser user];
@@ -1832,16 +1832,16 @@
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
 }
 
-- (void)testShouldAllowNewlyAddedDateFormatterToRunFirst {    
+- (void)testShouldAllowNewlyAddedDateFormatterToRunFirst {
     [RKObjectMapping setDefaultDateFormatters:nil];
     NSDateFormatter *newDateFormatter = [[NSDateFormatter new] autorelease];
     [newDateFormatter setDateFormat:@"dd/MM/yyyy"];
     [RKObjectMapping addDefaultDateFormatter:newDateFormatter];
-    
+
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping *birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"favorite_date" toKeyPath:@"favoriteDate"];
     [mapping addAttributeMapping:birthDateMapping];
-    
+
     NSDictionary *dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
@@ -1873,7 +1873,7 @@
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addAttributeMapping:birthDateMapping];
-    
+
     NSDictionary* dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
     [mutableDictionary setValue:@"" forKey:@"birthdate"];
@@ -1882,7 +1882,7 @@
     [mutableDictionary release];
     NSError* error = nil;
     [operation performMapping:&error];
-    
+
     assertThat(user.birthDate, is(equalTo(nil)));
 }
 
@@ -1979,20 +1979,20 @@
     humanMapping.primaryKeyAttribute = @"railsID";
     RKObjectMappingProvider *provider = [RKObjectMappingProvider mappingProvider];
     [provider setObjectMapping:humanMapping forKeyPath:@"human"];
-    
+
     // Create instances that should match the fixture
     RKHuman *human1 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
     human1.railsID = [NSNumber numberWithInt:201];
     RKHuman *human2 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInt:202];
     [objectStore save:nil];
-    
+
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:array mappingProvider:provider];
     RKObjectMappingResult *result = [mapper performMapping];
     assertThat(result, is(notNilValue()));
-    
+
     NSArray *humans = [result asCollection];
-    assertThat(humans, hasCountOf(2));    
+    assertThat(humans, hasCountOf(2));
     assertThat([humans objectAtIndex:0], is(equalTo(human1)));
     assertThat([humans objectAtIndex:1], is(equalTo(human2)));
 }

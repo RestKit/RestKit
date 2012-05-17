@@ -31,8 +31,8 @@
 // Borrowed from Matt Gallagher - http://cocoawithlove.com/2008/12/ordereddictionary-subclassing-cocoa.html
 @interface RKOrderedDictionary : NSMutableDictionary
 {
-	NSMutableDictionary *dictionary;
-	NSMutableArray *array;
+    NSMutableDictionary *dictionary;
+    NSMutableArray *array;
 }
 
 /**

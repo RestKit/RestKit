@@ -92,7 +92,7 @@ static NSMutableDictionary * __sharedBenchmarks = nil;
 - (void)stop {
     self.endTime = CFAbsoluteTimeGetCurrent();
     self.stopped = YES;
-    
+
     // Calculate elapsed time
     CFDateRef startDate = CFDateCreate(NULL, self.startTime);
     CFDateRef endDate = CFDateCreate(NULL, self.endTime);
@@ -102,15 +102,15 @@ static NSMutableDictionary * __sharedBenchmarks = nil;
 }
 
 - (void)log {
-    CFTimeInterval timeElapsed;    
+    CFTimeInterval timeElapsed;
     if (self.isStopped) {
         timeElapsed = self.elapsedTime;
     } else {
         CFDateRef startDate = CFDateCreate(NULL, self.startTime);
         timeElapsed = CFDateGetTimeIntervalSinceDate(startDate, (CFDateRef)[NSDate date]);
         CFRelease(startDate);
-    }    
-    
+    }
+
     // log elapsed time
     if (_name)   NSLog(@"Benchmark '%@' took %f seconds.", _name, timeElapsed);
     else         NSLog(@"Benchmark took %f seconds.", timeElapsed);

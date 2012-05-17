@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 4/30/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSCAssert(sourceValue, @"Expected sourceValue not to be nil");
     NSCAssert(destinationValue, @"Expected destinationValue not to be nil");
-    
+
     SEL comparisonSelector;
     if ([sourceValue isKindOfClass:[NSString class]] && [destinationValue isKindOfClass:[NSString class]]) {
         comparisonSelector = @selector(isEqualToString:);
@@ -53,7 +53,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     } else {
         comparisonSelector = @selector(isEqual:);
     }
-    
+
     // Comparison magic using function pointers. See this page for details: http://www.red-sweater.com/blog/320/abusing-objective-c-with-class
     // Original code courtesy of Greg Parker
     // This is necessary because isEqualToNumber will return negative integer values that aren't coercable directly to BOOL's without help [sbw]
@@ -80,7 +80,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     // Check for availability of ManagedObjectMappingOperation. Better approach for handling?
     Class targetClass = NSClassFromString(@"RKManagedObjectMappingOperation");
     if (targetClass == nil) targetClass = [RKObjectMappingOperation class];
-    
+
     return [[[targetClass alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectMapping] autorelease];
 }
 
@@ -88,12 +88,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
     NSAssert(objectMapping != nil, @"Cannot perform a mapping operation without a mapping");
-    
+
     self = [super init];
     if (self) {
-        _sourceObject = [sourceObject retain];        
+        _sourceObject = [sourceObject retain];
         _destinationObject = [destinationObject retain];
-        
+
         if ([objectMapping isKindOfClass:[RKDynamicObjectMapping class]]) {
             _objectMapping = [[(RKDynamicObjectMapping*)objectMapping objectMappingForDictionary:_sourceObject] retain];
             RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", _objectMapping);
@@ -101,8 +101,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             _objectMapping = (RKObjectMapping*)[objectMapping retain];
         }
         NSAssert(_objectMapping, @"Cannot perform a mapping operation with an object mapping");
-    }    
-    
+    }
+
     return self;
 }
 
@@ -112,7 +112,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     [_objectMapping release];
     [_nestedAttributeSubstitution release];
     [_queue release];
-    
+
     [super dealloc];
 }
 
@@ -120,38 +120,38 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
 
     NSDate* date = nil;
-    
+
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
 
     NSNumber *numeric = [numberFormatter numberFromString:string];
 
     [numberFormatter release];
-    
+
     if (numeric) {
         date = [NSDate dateWithTimeIntervalSince1970:[numeric doubleValue]];
     } else if(![string isEqualToString:@""]) {
         for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
             BOOL success;
-		@synchronized(dateFormatter) {
+        @synchronized(dateFormatter) {
                 if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
                     RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
                 }
                 NSString *errorDescription = nil;
                 success = [dateFormatter getObjectValue:&date forString:string errorDescription:&errorDescription];
-		}
-            
-		if (success && date) {
+        }
+
+        if (success && date) {
                 if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
                     RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
                                 string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
                 }
 
                 break;
-			}
-	}
-	}
-    
+            }
+    }
+    }
+
     return date;
 }
 
@@ -159,7 +159,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     RKLogTrace(@"Found transformable value at keyPath '%@'. Transforming from type '%@' to '%@'", keyPath, NSStringFromClass([value class]), NSStringFromClass(destinationType));
     Class sourceType = [value class];
     Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
-    
+
     if ([sourceType isSubclassOfClass:[NSString class]]) {
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
             // String -> Date
@@ -241,13 +241,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return nil;
 }
 
-- (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue {    
+- (BOOL)isValue:(id)sourceValue equalToValue:(id)destinationValue {
     return RKObjectIsValueEqualToValue(sourceValue, destinationValue);
 }
 
 - (BOOL)validateValue:(id *)value atKeyPath:(NSString*)keyPath {
-    BOOL success = YES;        
-    
+    BOOL success = YES;
+
     if (self.objectMapping.performKeyValueValidation && [self.destinationObject respondsToSelector:@selector(validateValue:forKeyPath:error:)]) {
         success = [self.destinationObject validateValue:value forKeyPath:keyPath error:&_validationError];
         if (!success) {
@@ -267,26 +267,26 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if (currentValue == [NSNull null] || [currentValue isEqual:[NSNull null]]) {
         currentValue = nil;
     }
-    
+
     /*
      WTF - This workaround should not be necessary, but I have been unable to replicate
      the circumstances that trigger it in a unit test to fix elsewhere. The proper place
      to handle it is in transformValue:atKeyPath:toType:
-     
+
      See issue & pull request: https://github.com/RestKit/RestKit/pull/436
      */
     if (*value == [NSNull null] || [*value isEqual:[NSNull null]]) {
         RKLogWarning(@"Coercing NSNull value to nil in shouldSetValue:atKeyPath: -- should be fixed.");
         *value = nil;
     }
-    
-	if (nil == currentValue && nil == *value) {
-		// Both are nil
+
+    if (nil == currentValue && nil == *value) {
+        // Both are nil
         return NO;
-	} else if (nil == *value || nil == currentValue) {
-		// One is nil and the other is not
+    } else if (nil == *value || nil == currentValue) {
+        // One is nil and the other is not
         return [self validateValue:value atKeyPath:keyPath];
-	}
+    }
 
     if (! [self isValue:*value equalToValue:currentValue]) {
         // Validate value for key
@@ -337,7 +337,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     // Ensure that the value is different
     if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
-        
+
         [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
         if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
@@ -354,17 +354,17 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 - (BOOL)applyAttributeMappings {
     // If we have a nesting substitution value, we have alread
     BOOL appliedMappings = (_nestedAttributeSubstitution != nil);
-    
+
     if (!self.objectMapping.performKeyValueValidation) {
         RKLogDebug(@"Key-value validation is disabled for mapping, skipping...");
     }
-    
+
     for (RKObjectAttributeMapping* attributeMapping in [self attributeMappings]) {
         if ([attributeMapping isMappingForKeyOfNestedDictionary]) {
             RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", attributeMapping.sourceKeyPath);
             continue;
         }
-        
+
         if (self.objectMapping.ignoreUnknownKeyPaths && ![self.sourceObject respondsToSelector:NSSelectorFromString(attributeMapping.sourceKeyPath)]) {
             RKLogDebug(@"Source object is not key-value coding compliant for the keyPath '%@', skipping...", attributeMapping.sourceKeyPath);
             continue;
@@ -416,7 +416,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 - (BOOL)isTypeACollection:(Class)type {
     Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
-    return (type && ([type isSubclassOfClass:[NSSet class]] || 
+    return (type && ([type isSubclassOfClass:[NSSet class]] ||
                      [type isSubclassOfClass:[NSArray class]] ||
                      (orderedSetClass && [type isSubclassOfClass:orderedSetClass])));
 }
@@ -430,7 +430,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSAssert(anotherObject, @"Cannot map nested object without a destination object");
     NSAssert(relationshipMapping, @"Cannot map a nested object relationship without a relationship mapping");
     NSError* error = nil;
-    
+
     RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
     RKObjectMappingOperation* subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
     subOperation.delegate = self.delegate;
@@ -445,7 +445,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 - (BOOL)applyRelationshipMappings {
     BOOL appliedMappings = NO;
     id destinationObject = nil;
-    
+
     for (RKObjectRelationshipMapping* relationshipMapping in [self relationshipMappings]) {
         id value = nil;
         @try {
@@ -463,7 +463,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
         if (value == nil || value == [NSNull null] || [value isEqual:[NSNull null]]) {
             RKLogDebug(@"Did not find mappable relationship value keyPath '%@'", relationshipMapping.sourceKeyPath);
-            
+
             // Optionally nil out the property
             id nilReference = nil;
             if ([self.objectMapping setNilForMissingRelationships] && [self shouldSetValue:&nilReference atKeyPath:relationshipMapping.destinationKeyPath]) {
@@ -473,8 +473,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
             continue;
         }
-        
-        // Handle case where incoming content is collection represented by a dictionary 
+
+        // Handle case where incoming content is collection represented by a dictionary
         if (relationshipMapping.mapping.forceCollectionMapping) {
             // If we have forced mapping of a dictionary, map each subdictionary
             if ([value isKindOfClass:[NSDictionary class]]) {
@@ -489,9 +489,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 RKLogWarning(@"Collection mapping forced but mappable objects is of type '%@' rather than NSDictionary", NSStringFromClass([value class]));
             }
         }
-        
+
         // Handle case where incoming content is a single object, but we want a collection
-        Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];        
+        Class relationshipType = [self.objectMapping classForProperty:relationshipMapping.destinationKeyPath];
         BOOL mappingToCollection = [self isTypeACollection:relationshipType];
         if (mappingToCollection && ![self isValueACollection:value]) {
             Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
@@ -506,8 +506,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 RKLogWarning(@"Failed to transform single object");
             }
         }
-        
-        if ([self isValueACollection:value]) {        
+
+        if ([self isValueACollection:value]) {
             // One to many relationship
             RKLogDebug(@"Mapping one to many relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
             appliedMappings = YES;
@@ -520,7 +520,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 RKLogWarning(@"WARNING: Detected a relationship mapping for a collection containing another collection. This is probably not what you want. Consider using a KVC collection operator (such as @unionOfArrays) to flatten your mappable collection.");
                 RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
             }
-            for (id nestedObject in value) {                
+            for (id nestedObject in value) {
                 RKObjectMappingDefinition * mapping = relationshipMapping.mapping;
                 RKObjectMapping* objectMapping = nil;
                 if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
@@ -575,8 +575,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             }
         } else {
             // One to one relationship
-            RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);            
-            
+            RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
+
             RKObjectMappingDefinition * mapping = relationshipMapping.mapping;
             RKObjectMapping* objectMapping = nil;
             if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
@@ -601,12 +601,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 }
             }
         }
-        
+
         // Notify the delegate
         if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
             [self.delegate objectMappingOperation:self didSetValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
         }
-        
+
         // Fail out if a validation error has occurred
         if (_validationError) {
             return NO;
@@ -634,7 +634,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 - (BOOL)performMapping:(NSError**)error {
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
-    
+
     [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];
     BOOL mappedRelationships = [self applyRelationshipMappings];

@@ -35,7 +35,7 @@ static char primaryKeyAttributeKey, primaryKeyPredicateKey;
     // Fall back to the userInfo dictionary
     if (! primaryKeyAttribute) {
         primaryKeyAttribute = [self.userInfo valueForKey:RKEntityDescriptionPrimaryKeyAttributeUserInfoKey];
-        
+
         // If we have loaded from the user info, ensure we have a predicate
         if (! [self predicateForPrimaryKeyAttribute]) {
             [self setPredicateForPrimaryKeyAttribute:primaryKeyAttribute];
@@ -50,7 +50,7 @@ static char primaryKeyAttributeKey, primaryKeyPredicateKey;
     objc_setAssociatedObject(self,
                              &primaryKeyAttributeKey,
                              primaryKeyAttribute,
-                             OBJC_ASSOCIATION_RETAIN);    
+                             OBJC_ASSOCIATION_RETAIN);
     [self setPredicateForPrimaryKeyAttribute:primaryKeyAttribute];
 }
 

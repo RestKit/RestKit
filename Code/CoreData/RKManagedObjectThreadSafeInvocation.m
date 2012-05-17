@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 5/12/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,10 +29,10 @@
 }
 
 - (void)setManagedObjectKeyPaths:(NSSet*)keyPaths forArgument:(NSInteger)index {
-    if (nil == _argumentKeyPaths) {        
+    if (nil == _argumentKeyPaths) {
         _argumentKeyPaths = [[NSMutableDictionary alloc] init];
     }
-    
+
     NSNumber* argumentIndex = [NSNumber numberWithInteger:index];
     [_argumentKeyPaths setObject:keyPaths forKey:argumentIndex];
 }
@@ -51,14 +51,14 @@
                     [collection addObject:subObject];
                 }
             }
-            
+
             [argument setValue:collection forKeyPath:keyPath];
             [collection release];
         }
     }
 }
 
-- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths {   
+- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths {
     for (NSString* keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObjectID class]]) {
@@ -77,7 +77,7 @@
                     [collection addObject:subObject];
                 }
             }
-            
+
             [argument setValue:collection forKeyPath:keyPath];
             [collection release];
         }
@@ -85,7 +85,7 @@
 }
 
 - (void)serializeManagedObjects {
-    for (NSNumber* argumentIndex in _argumentKeyPaths) {        
+    for (NSNumber* argumentIndex in _argumentKeyPaths) {
         NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
         [self getArgument:&argument atIndex:[argumentIndex intValue]];
@@ -96,7 +96,7 @@
 }
 
 - (void)deserializeManagedObjects {
-    for (NSNumber* argumentIndex in _argumentKeyPaths) {        
+    for (NSNumber* argumentIndex in _argumentKeyPaths) {
         NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
         [self getArgument:&argument atIndex:[argumentIndex intValue]];

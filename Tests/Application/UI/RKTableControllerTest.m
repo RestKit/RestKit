@@ -40,28 +40,28 @@
 
 - (id)init {
     self = [super init];
-	if (self) {
-		_timeout = 3;
-		_awaitingResponse = NO;
+    if (self) {
+        _timeout = 3;
+        _awaitingResponse = NO;
         _cancelled = NO;
-	}
+    }
 
-	return self;
+    return self;
 }
 
 - (void)waitForLoad {
     _awaitingResponse = YES;
-	NSDate* startDate = [NSDate date];
+    NSDate* startDate = [NSDate date];
 
-	while (_awaitingResponse) {
+    while (_awaitingResponse) {
         NSLog(@"Awaiting response = %d", _awaitingResponse);
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+        if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
             NSLog(@"%@: Timed out!!!", self);
             _awaitingResponse = NO;
-			[NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];			
-		}
-	}
+            [NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
+        }
+    }
 }
 
 #pragma RKTableControllerDelegate methods
@@ -1663,7 +1663,7 @@
         cellMapping.titleForDeleteButtonForObjectAtIndexPath = ^ NSString*(UITableViewCell* cell, id object, NSIndexPath* indexPath) {
             return deleteTitle;
         };
-    }];    
+    }];
     [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:mapping];
     NSString* delegateTitle = [tableController tableView:tableController.tableView
       titleForDeleteConfirmationButtonForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
@@ -1679,7 +1679,7 @@
         cellMapping.editingStyleForObjectAtIndexPath = ^ UITableViewCellEditingStyle(UITableViewCell* cell, id object, NSIndexPath* indexPath) {
             return UITableViewCellEditingStyleInsert;
         };
-    }];    
+    }];
     [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:mapping];
     UITableViewCellEditingStyle delegateStyle = [tableController tableView:tableController.tableView
                                             editingStyleForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
@@ -1724,7 +1724,7 @@
     tableController.tableView.rowHeight = 55;
     RKTableItem* tableItem = [RKTableItem tableItem];
     [tableController loadTableItems:[NSArray arrayWithObject:tableItem] withMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
-        cellMapping.rowHeight = 200;        
+        cellMapping.rowHeight = 200;
     }]];
     CGFloat height = [tableController tableView:tableController.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThatFloat(height, is(equalToFloat(200)));

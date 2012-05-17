@@ -4,13 +4,13 @@
 //
 //  Created by Rodrigo Garcia on 7/20/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@
         _clientID = [clientID copy];
         _clientSecret = [secret copy];
     }
-    
+
     return self;
 }
 
@@ -53,7 +53,7 @@
     [_clientID release];
     [_clientSecret release];
     [_accessToken release];
-    
+
     [super dealloc];
 }
 
@@ -71,28 +71,28 @@
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     NSError *error = nil;
     NSString *errorResponse = nil;
-    
+
     //Use the parsedBody answer in NSDictionary
-    
+
     NSDictionary* oauthResponse = (NSDictionary *) [response parsedBody:&error];
     if ([oauthResponse isKindOfClass:[NSDictionary class]]) {
-        
+
         //Check the if an access token comes in the response
         _accessToken = [[oauthResponse objectForKey:@"access_token"] copy];
         errorResponse = [oauthResponse objectForKey:@"error"];
-        
-        if (_accessToken) {           
-            // W00T We got an accessToken            
+
+        if (_accessToken) {
+            // W00T We got an accessToken
             [self.delegate OAuthClient:self didAcquireAccessToken:_accessToken];
-            
+
             return;
         } else if (errorResponse) {
             // Heads-up! There is an error in the response
             // The possible errors are defined in the OAuth2 Protocol
-            
+
             RKOAuthClientErrorCode errorCode = RKOAuthClientErrorUnknown;
             NSString *errorDescription = [oauthResponse objectForKey:@"error_description"];
-            
+
             if ([errorResponse isEqualToString:@"invalid_grant"]) {
                 errorCode = RKOAuthClientErrorInvalidGrant;
             }
@@ -111,42 +111,42 @@
             else if([errorResponse isEqualToString:@"invalid_scope"]){
                 errorCode = RKOAuthClientErrorInvalidScope;
             }
-            
+
             NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                       errorDescription, NSLocalizedDescriptionKey, nil];
             NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
-            
-            
+
+
             // Inform the delegate of what happened
             if ([self.delegate respondsToSelector:@selector(OAuthClient:didFailWithError:)]) {
                 [self.delegate OAuthClient:self didFailWithError:error];
             }
-            
+
             // Invalid grant
             if (errorCode == RKOAuthClientErrorInvalidGrant && [self.delegate respondsToSelector:@selector(OAuthClient:didFailWithInvalidGrantError:)]) {
                 [self.delegate OAuthClient:self didFailWithInvalidGrantError:error];
             }
-            
+
             // Unauthorized client
             if (errorCode == RKOAuthClientErrorUnauthorizedClient && [self.delegate respondsToSelector:@selector(OAuthClient:didFailWithUnauthorizedClientError:)]) {
                 [self.delegate OAuthClient:self didFailWithUnauthorizedClientError:error];
             }
-            
+
             // Invalid client
             if (errorCode == RKOAuthClientErrorInvalidClient && [self.delegate respondsToSelector:@selector(OAuthClient:didFailWithInvalidClientError:)]) {
                 [self.delegate OAuthClient:self didFailWithInvalidClientError:error];
             }
-            
+
             // Invalid request
             if (errorCode == RKOAuthClientErrorInvalidRequest && [self.delegate respondsToSelector:@selector(OAuthClient:didFailWithInvalidRequestError:)]) {
                 [self.delegate OAuthClient:self didFailWithInvalidRequestError:error];
             }
-            
+
             // Unsupported grant type
             if (errorCode == RKOAuthClientErrorUnsupportedGrantType && [self.delegate respondsToSelector:@selector(OAuthClient:didFailWithUnsupportedGrantTypeError:)]) {
                 [self.delegate OAuthClient:self didFailWithUnsupportedGrantTypeError:error];
             }
-            
+
             // Invalid scope
             if (errorCode == RKOAuthClientErrorInvalidScope && [self.delegate respondsToSelector:@selector(OAuthClient:didFailWithInvalidScopeError:)]) {
                 [self.delegate OAuthClient:self didFailWithInvalidScopeError:error];
@@ -169,7 +169,7 @@
     if ([self.delegate respondsToSelector:@selector(OAuthClient:didFailLoadingRequest:withError:)]) {
         [self.delegate OAuthClient:self didFailLoadingRequest:request withError:clientError];
     }
-    
+
     if ([self.delegate respondsToSelector:@selector(OAuthClient:didFailWithError:)]) {
         [self.delegate OAuthClient:self didFailWithError:clientError];
     }
