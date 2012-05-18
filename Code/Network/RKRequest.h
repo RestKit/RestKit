@@ -199,7 +199,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  Creates and returns a RKRequest object initialized to load content from a
  provided URL with a specified delegate.
 
- @bug **DEPRECATED** in v0.9.4: Use [RKRequest requestWithURL:] instead
+ @bug **DEPRECATED** in v0.10.0: Use [RKRequest requestWithURL:] instead
  @param URL The remote URL to load
  @param delegate The delegate that will handle the response callbacks.
  @return An autoreleased RKRequest object initialized with URL.
@@ -209,7 +209,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 /**
  Initializes a RKRequest object to load from a provided URL
 
- @bug **DEPRECATED** in v0.9.4: Use [RKRequest initWithURL:] instead
+ @bug **DEPRECATED** in v0.10.0: Use [RKRequest initWithURL:] instead
  @param URL The remote URL to load
  @param delegate The delegate that will handle the response callbacks.
  @return An RKRequest object initialized with URL.

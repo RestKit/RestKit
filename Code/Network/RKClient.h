@@ -466,7 +466,7 @@
  Convenience method for returning the current reachability status from the
  reachabilityObserver.
 
- @bug **DEPRECATED** in v0.9.4: Use [RKClient isNetworkReachable]
+ @bug **DEPRECATED** in v0.10.0: Use [RKClient isNetworkReachable]
  @see RKReachabilityObserver
  @return YES if the remote host is accessible
  */
@@ -481,7 +481,7 @@
  An instance of the request cache used to store/load cacheable responses for
  requests sent through this client
 
- @bug **DEPRECATED** in v0.9.4: Use requestCache instead.
+ @bug **DEPRECATED** in v0.10.0: Use requestCache instead.
  */
 @property (nonatomic, retain) RKRequestCache *cache DEPRECATED_ATTRIBUTE;
 
@@ -555,7 +555,7 @@
  By default the method is set to GET.  All headers set on the client will
  automatically be applied to the request as well.
 
- @bug **DEPRECATED** in v0.9.4: Use [RKClient requestWithResourcePath:] instead.
+ @bug **DEPRECATED** in v0.10.0: Use [RKClient requestWithResourcePath:] instead.
  @param resourcePath The resource path to configure the request for.
  @param delegate A delegate to inform of events in the request lifecycle.
  @return A fully configured RKRequest instance ready for sending.
@@ -684,7 +684,7 @@
 /**
  Returns a NSURL by adding a resource path to the base URL
 
- @bug **DEPRECATED** in v0.9.4: Use [RKURL URLByAppendingResourcePath:]
+ @bug **DEPRECATED** in v0.10.0: Use [RKURL URLByAppendingResourcePath:]
 
  @param resourcePath The resource path to build a URL against
  @return An NSURL constructed by concatenating the baseURL and the resourcePath
@@ -758,7 +758,7 @@
 
  Shortcut for calling `[[RKClient sharedClient] URLForResourcePath:@"/some/path"]`
 
- @bug **DEPRECATED** in v0.9.4: Use [[RKClient sharedClient].baseURL
+ @bug **DEPRECATED** in v0.10.0: Use [[RKClient sharedClient].baseURL
  URLByAppendingResourcePath:]
  @param resourcePath The resource path to append to the baseURL of the
  `[RKClient sharedClient]`
@@ -774,7 +774,7 @@ NSURL *RKMakeURL(NSString *resourcePath) DEPRECATED_ATTRIBUTE;
  Shortcut for calling
  `[[RKClient sharedClient] URLPathForResourcePath:@"/some/path"]`
 
- @bug **DEPRECATED** in v0.9.4: Use
+ @bug **DEPRECATED** in v0.10.0: Use
  [[[RKClient sharedClient].baseURL URLByAppendingResourcePath:] absoluteString]
  @param resourcePath The resource path to append to the baseURL of the
  `[RKClient sharedClient]`
@@ -796,7 +796,7 @@ NSString *RKMakeURLPath(NSString *resourcePath) DEPRECATED_ATTRIBUTE;
 
  This functionality is the basis for resource path generation in the Router.
 
- @bug **DEPRECATED** in v0.9.4: Use [NSString interpolateWithObject:]
+ @bug **DEPRECATED** in v0.10.0: Use [NSString interpolateWithObject:]
 
  @param path The colon encoded path pattern string to use for interpolation.
  @param object The object containing the properties needed for interpolation.
@@ -817,7 +817,7 @@ NSString *RKMakePathWithObject(NSString *path, id object) DEPRECATED_ATTRIBUTE;
 
  This functionality is the basis for resource path generation in the Router.
 
- @bug **DEPRECATED** in v0.9.4: Use [NSString interpolateWithObject:addingEscapes:]
+ @bug **DEPRECATED** in v0.10.0: Use [NSString interpolateWithObject:addingEscapes:]
  @param path The colon encoded path pattern string to use for interpolation.
  @param object The object containing the properties needed for interpolation.
  @param addEscapes Conditionally add percent escapes to the interpolated
@@ -839,7 +839,7 @@ NSString *RKMakePathWithObjectAddingEscapes(NSString *pattern, id object, BOOL a
  @warning This assumes that the resource path does not already contain any query
  parameters.
 
- @bug **DEPRECATED** in v0.9.4: Use [NSString stringByAppendingQueryParameters:]
+ @bug **DEPRECATED** in v0.10.0: Use [NSString stringByAppendingQueryParameters:]
  instead
 
  @param resourcePath The resource path to append the query parameters onto

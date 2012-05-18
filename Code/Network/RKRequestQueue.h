@@ -224,7 +224,7 @@
 /**
  Returns the global queue
 
- @bug **DEPRECATED** in v0.9.4: All RKClient instances now own their own
+ @bug **DEPRECATED** in v0.10.0: All RKClient instances now own their own
  individual request queues.
 
  @see [RKClient requestQueue]
@@ -235,7 +235,7 @@
 /**
  Sets the global queue
 
- @bug **DEPRECATED** in v0.9.4: All RKClient instances now own their own
+ @bug **DEPRECATED** in v0.10.0: All RKClient instances now own their own
  individual request queues.
 
  @see [RKClient requestQueue]

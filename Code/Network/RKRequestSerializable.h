@@ -84,7 +84,7 @@
  The value of the Content-Type header for the HTTP Body representation of the
  serialization.
 
- @bug **DEPRECATED** in v0.9.4: Implement [RKRequestSerializable HTTPHeaderValueForContentType]
+ @bug **DEPRECATED** in v0.10.0: Implement [RKRequestSerializable HTTPHeaderValueForContentType]
  instead.
  @return A string value of the Content-Type header for the HTTP body.
  */

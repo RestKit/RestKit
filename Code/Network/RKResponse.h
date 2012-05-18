@@ -147,7 +147,7 @@
 
 /**
  Returns the response body parsed as JSON into an object
- @bug **DEPRECATED** in v0.9.4
+ @bug **DEPRECATED** in v0.10.0
  */
 - (id)bodyAsJSON DEPRECATED_ATTRIBUTE;
 
