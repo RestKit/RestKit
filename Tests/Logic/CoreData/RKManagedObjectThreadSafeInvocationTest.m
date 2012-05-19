@@ -45,6 +45,20 @@
     assertThat([dictionary valueForKeyPath:@"human"], is(instanceOf([NSManagedObjectID class])));
 }
 
+- (void)testShouldSerializeOneManagedObjectWithKeyPathToManagedObjectID {
+    NSString *testKey = @"data.human";
+    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.objectStore = objectStore;
+    RKHuman* human = [RKHuman object];
+    NSMutableDictionary* dictionary = [NSMutableDictionary dictionaryWithObject:human forKey:testKey];
+    NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
+    RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+    [invocation serializeManagedObjectsForArgument:dictionary withKeyPaths:[NSSet setWithObject:testKey]];
+    assertThat([dictionary valueForKeyPath:testKey], is(instanceOf([NSManagedObjectID class])));
+}
+
+
 - (void)testShouldSerializeCollectionOfManagedObjectsToManagedObjectIDs {
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
