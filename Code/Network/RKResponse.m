@@ -36,7 +36,9 @@ return __VA_ARGS__;                                                             
 
 @implementation RKResponse
 
-@synthesize body = _body, request = _request, failureError = _failureError;
+@synthesize body = _body;
+@synthesize request = _request;
+@synthesize failureError = _failureError;
 
 - (id)init {
     self = [super init];
@@ -50,7 +52,7 @@ return __VA_ARGS__;                                                             
     return self;
 }
 
-- (id)initWithRequest:(RKRequest*)request {
+- (id)initWithRequest:(RKRequest *)request {
     self = [self init];
     if (self) {
         // We don't retain here as we're letting RKRequestQueue manage

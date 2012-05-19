@@ -77,7 +77,7 @@
 /**
  The request that generated this response.
  */
-@property (nonatomic, readonly) RKRequest *request;
+@property (nonatomic, assign, readonly) RKRequest *request;
 
 /**
  The URL the response was loaded from.

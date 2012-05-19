@@ -136,14 +136,8 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * includes Core Data specific mapping logic.
  */
 @interface RKObjectLoader : RKRequest {
-    RKObjectMappingProvider *_mappingProvider;
-    RKResponse* _response;
-    RKObjectMapping* _objectMapping;
-    RKObjectMappingResult* _result;
-    RKObjectMapping* _serializationMapping;
-    NSString* _serializationMIMEType;
-    NSObject* _sourceObject;
-    NSObject* _targetObject;
+    id _sourceObject;
+    id _targetObject;
     dispatch_queue_t _mappingQueue;
 }
 
@@ -213,7 +207,7 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
 /**
  * The underlying response object for this loader
  */
-@property (nonatomic, readonly) RKResponse *response;
+@property (nonatomic, retain, readonly) RKResponse *response;
 
 /**
  * The mapping result that was produced after the request finished loading and

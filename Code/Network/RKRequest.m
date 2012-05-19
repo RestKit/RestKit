@@ -89,6 +89,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @property (nonatomic, assign, readwrite, getter = isLoaded) BOOL loaded;
 @property (nonatomic, assign, readwrite, getter = isLoading) BOOL loading;
 @property (nonatomic, assign, readwrite) BOOL canceled;
+@property (nonatomic, retain, readwrite) RKResponse *response;
 @end
 
 @implementation RKRequest
@@ -128,6 +129,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize loaded = _loaded;
 @synthesize loading = _loading;
 @synthesize canceled = _canceled;
+@synthesize response = _response;
 
 #if TARGET_OS_IPHONE
 @synthesize backgroundPolicy = _backgroundPolicy;
@@ -207,27 +209,29 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     if (_onDidLoadResponse) Block_release(_onDidLoadResponse);
     if (_onDidFailLoadWithError) Block_release(_onDidFailLoadWithError);
 
-      _delegate = nil;
+    _delegate = nil;
     _configurationDelegate = nil;
     [_reachabilityObserver release];
     _reachabilityObserver = nil;
-      [_connection cancel];
-      [_connection release];
-      _connection = nil;
-      [_userData release];
-      _userData = nil;
-      [_URL release];
-      _URL = nil;
-      [_URLRequest release];
-      _URLRequest = nil;
-      [_params release];
+    [_connection cancel];
+    [_connection release];
+    _connection = nil;
+    [_response release];
+    _response = nil;
+    [_userData release];
+    _userData = nil;
+    [_URL release];
+    _URL = nil;
+    [_URLRequest release];
+    _URLRequest = nil;
+    [_params release];
     _params = nil;
-      [_additionalHTTPHeaders release];
-      _additionalHTTPHeaders = nil;
-      [_username release];
-      _username = nil;
-      [_password release];
-      _password = nil;
+    [_additionalHTTPHeaders release];
+    _additionalHTTPHeaders = nil;
+    [_username release];
+    _username = nil;
+    [_password release];
+    _password = nil;
     [_cache release];
     _cache = nil;
     [_OAuth1ConsumerKey release];
@@ -325,7 +329,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         }
     }
 
-    // Add OAuth headers if is need it
+    // Add OAuth headers if necessary
     // OAuth 1
     if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){
         NSURLRequest *echo = nil;
@@ -685,17 +689,17 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [self.cache setCacheDate:date forRequest:self];
 }
 
-- (void)didFinishLoad:(RKResponse*)response {
-      self.loading = NO;
-      self.loaded = YES;
+- (void)didFinishLoad:(RKResponse *)response {
+    self.loading = NO;
+    self.loaded = YES;
 
     RKLogInfo(@"Status Code: %ld", (long) [response statusCode]);
     RKLogDebug(@"Body: %@", [response bodyAsString]);
 
-    RKResponse* finalResponse = response;
+    self.response = response;
 
     if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
-        finalResponse = [self loadResponseFromCache];
+        self.response = [self loadResponseFromCache];
         [self updateInternalCacheDate];
     }
 
@@ -704,19 +708,18 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 
     if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
-        [_delegate request:self didLoadResponse:finalResponse];
+        [_delegate request:self didLoadResponse:self.response];
     }
 
     if (self.onDidLoadResponse) {
-        self.onDidLoadResponse(finalResponse);
+        self.onDidLoadResponse(self.response);
     }
-
 
     if ([response isServiceUnavailable]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
     }
 
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:finalResponse
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:self.response
                                                          forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification
                                                         object:self

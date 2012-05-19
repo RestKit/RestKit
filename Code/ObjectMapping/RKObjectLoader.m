@@ -40,12 +40,12 @@
 @interface RKObjectLoader ()
 @property (nonatomic, assign, readwrite, getter = isLoaded) BOOL loaded;
 @property (nonatomic, assign, readwrite, getter = isLoading) BOOL loading;
+@property (nonatomic, retain, readwrite) RKResponse *response;
 @end
 
 @implementation RKObjectLoader
 
 @synthesize mappingProvider = _mappingProvider;
-@synthesize response = _response;
 @synthesize targetObject = _targetObject;
 @synthesize objectMapping = _objectMapping;
 @synthesize result = _result;
@@ -59,6 +59,7 @@
 @synthesize onDidLoadObjectsDictionary = _onDidLoadObjectsDictionary;
 @dynamic loaded;
 @dynamic loading;
+@dynamic response;
 
 + (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
     return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider] autorelease];
@@ -80,9 +81,7 @@
     [_sourceObject release];
     _sourceObject = nil;
     [_targetObject release];
-    _targetObject = nil;
-    [_response release];
-    _response = nil;
+    _targetObject = nil;    
     [_objectMapping release];
     _objectMapping = nil;
     [_result release];
@@ -105,8 +104,6 @@
 
 - (void)reset {
     [super reset];
-    [_response release];
-    _response = nil;
     [_result release];
     _result = nil;
 }
@@ -421,30 +418,28 @@
 // NOTE: We do NOT call super here. We are overloading the default behavior from RKRequest
 - (void)didFinishLoad:(RKResponse*)response {
     NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
-    _response = [response retain];
+    self.response = response;
 
     if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
-        [_response release];
-        _response = nil;
-        _response = [[self.cache responseForRequest:self] retain];
-        NSAssert(_response, @"Unexpectedly loaded nil response from cache");
+        self.response = [self.cache responseForRequest:self];
+        NSAssert(self.response, @"Unexpectedly loaded nil response from cache");
         [self updateInternalCacheDate];
     }
 
-    if (![_response wasLoadedFromCache] && [_response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
-        [self.cache storeResponse:_response forRequest:self];
+    if (![self.response wasLoadedFromCache] && [self.response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
+        [self.cache storeResponse:self.response forRequest:self];
     }
 
     if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
-        [_delegate request:self didLoadResponse:_response];
+        [_delegate request:self didLoadResponse:self.response];
     }
 
     if (self.onDidLoadResponse) {
-        self.onDidLoadResponse(_response);
+        self.onDidLoadResponse(self.response);
     }
 
     // Post the notification
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:_response
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObject:self.response
                                                          forKey:RKRequestDidLoadResponseNotificationUserInfoResponseKey];
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidLoadResponseNotification
                                                         object:self

@@ -248,6 +248,11 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 @property (nonatomic, readonly) NSString *HTTPMethod;
 
 /**
+ The response returned when the receiver was sent.
+ */
+@property (nonatomic, retain, readonly) RKResponse *response;
+
+/**
  A serializable collection of parameters sent as the HTTP body of the request
  */
 @property (nonatomic, retain) NSObject<RKRequestSerializable> *params;
