@@ -52,7 +52,7 @@
 }
 
 + (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKObjectMappingDefinition *)mapping userData:(id)userData {
-    RKObjectMappingProviderContextEntry * contextEntry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
+    RKObjectMappingProviderContextEntry *contextEntry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
     contextEntry.userData = userData;
     return contextEntry;
 }

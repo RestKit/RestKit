@@ -103,8 +103,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 - (id)initWithBaseURL:(RKURL *)baseURL {
     self = [self init];
     if (self) {
-        self.client = [[RKClient alloc] initWithBaseURL:baseURL];
-        [self.client release];
+        self.client = [RKClient clientWithBaseURL:baseURL];
         self.acceptMIMEType = RKMIMETypeJSON;
     }
 

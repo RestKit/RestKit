@@ -66,7 +66,7 @@ static NSMutableDictionary * __sharedBenchmarks = nil;
 # pragma mark Initializers
 
 + (id)benchmarkWithName:(NSString *)name {
-    return [[self alloc] initWithName:name];
+    return [[[self alloc] initWithName:name] autorelease];
 }
 
 - (id)initWithName:(NSString *)name {

@@ -106,11 +106,11 @@
 
     NSError *error = nil;
     NSArray *objectIDs = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    [fetchRequest release];
     if (error) {
         RKLogError(@"Failed to load entity cache: %@", error);
         return;
     }
-    [fetchRequest release];
 
     self.attributeValuesToObjectIDs = [NSMutableDictionary dictionaryWithCapacity:[objectIDs count]];
     for (NSManagedObjectID *objectID in objectIDs) {

@@ -126,8 +126,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 - (id)init {
     self = [super init];
     if (self) {
-        self.HTTPHeaders = [[NSMutableDictionary alloc] init];
-        self.additionalRootCertificates = [[NSMutableSet alloc] init];
+        self.HTTPHeaders = [NSMutableDictionary dictionary];
+        self.additionalRootCertificates = [NSMutableSet set];
         self.defaultHTTPEncoding = NSUTF8StringEncoding;
         self.cacheTimeoutInterval = 0;
         self.runLoopMode = NSRunLoopCommonModes;
