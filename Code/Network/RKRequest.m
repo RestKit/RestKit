@@ -419,27 +419,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 }
 
-- (NSString*)HTTPMethod {
-    switch (_method) {
-        case RKRequestMethodGET:
-            return @"GET";
-            break;
-        case RKRequestMethodPOST:
-            return @"POST";
-            break;
-        case RKRequestMethodPUT:
-            return @"PUT";
-            break;
-        case RKRequestMethodDELETE:
-            return @"DELETE";
-            break;
-        case RKRequestMethodHEAD:
-            return @"HEAD";
-            break;
-        default:
-            return nil;
-            break;
-    }
+- (NSString *)HTTPMethod {
+    return RKRequestMethodNameFromType(self.method);
 }
 
 // NOTE: We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
