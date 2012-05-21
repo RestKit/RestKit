@@ -84,12 +84,16 @@
 
             // Normal foreign key
             NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
-            relatedObject = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:valueOfLocalPrimaryKeyAttribute inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
+            relatedObject = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:valueOfLocalPrimaryKeyAttribute inManagedObjectContext:[self.destinationObject managedObjectContext]];
         }
         if (relatedObject) {
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {
             RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with primary key value '%@'", [[objectMapping entity] name], relationshipName, valueOfLocalPrimaryKeyAttribute);
+        }
+        if ([relatedObject isKindOfClass:[NSManagedObject class]]) {
+            // Sanity check the managed object contexts
+            NSAssert([[(NSManagedObject *)self.destinationObject managedObjectContext] isEqual:[(NSManagedObject *)relatedObject managedObjectContext]], nil);
         }
         RKLogTrace(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
         [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
@@ -99,7 +103,7 @@
 }
 
 - (void)connectRelationships {
-    NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
+    NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping *)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", relationshipsAndPrimaryKeyAttributes);
     for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
         if (self.queue) {
@@ -124,7 +128,6 @@
          manually invoke processPendingChanges to prevent recreating objects with the same primary key.
          See https://github.com/RestKit/RestKit/issues/661
          */
-//        [[[(RKManagedObjectMapping *)self.objectMapping objectStore] managedObjectContextForCurrentThread] processPendingChanges];
         [self connectRelationships];
     }
     return success;
