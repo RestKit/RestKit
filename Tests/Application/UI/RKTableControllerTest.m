@@ -764,7 +764,7 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     assertThatBool([tableController isLoading], is(equalToBool(NO)));
-    id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
+    id mockLoader = [OCMockObject niceMockForClass:[RKObjectLoader class]];
     [tableController requestDidStartLoad:mockLoader];
     assertThatBool([tableController isLoading], is(equalToBool(YES)));
     [tableController objectLoaderDidFinishLoading:mockLoader];

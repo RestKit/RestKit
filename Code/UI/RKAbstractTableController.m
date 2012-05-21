@@ -197,6 +197,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     // TODO: WTF? Get UI crashes when enabled...
 //    [_objectManager.requestQueue abortRequestsWithDelegate:self];
     _objectLoader.delegate = nil;
+    [_objectLoader release];
     _objectLoader = nil;
 
     [_sections release];
@@ -741,7 +742,7 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         [self.delegate tableController:self didLoadTableWithObjectLoader:objectLoader];
     }
 
-    [self.objectLoader reset];
+    [objectLoader reset];
     [self didFinishLoad];
 }
 
@@ -1347,6 +1348,11 @@ static NSString* lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 - (void)loadTableWithObjectLoader:(RKObjectLoader*)theObjectLoader {
     NSAssert(theObjectLoader, @"Cannot perform a network load without an object loader");
     if (! [self.objectLoader isEqual:theObjectLoader]) {
+        if (self.objectLoader) {
+            RKLogDebug(@"Cancelling in progress table load: asked to load with a new object loader.");
+            [self.objectLoader.queue cancelRequest:self.objectLoader];
+        }
+        
         theObjectLoader.delegate = self;
         self.objectLoader = theObjectLoader;
     }

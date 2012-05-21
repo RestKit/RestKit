@@ -541,13 +541,11 @@
                                canEditRowAtIndexPath:deleteIndexPath];
     assertThatBool(delegateCanEdit, is(equalToBool(YES)));
 
-//    RKTestNotificationObserver* observer = [RKTestNotificationObserver notificationObserverForNotificationName:RKRequestDidLoadResponseNotification];
     [RKTestNotificationObserver waitForNotificationWithName:RKRequestDidLoadResponseNotification usingBlock:^{
         [tableController tableView:tableController.tableView
                commitEditingStyle:UITableViewCellEditingStyleDelete
                 forRowAtIndexPath:deleteIndexPath];
     }];
-//    observer.timeout = 30;
 
     assertThatInt([tableController rowCount], is(equalToInt(1)));
     assertThat([tableController objectForRowAtIndexPath:deleteIndexPath], is(equalTo(other)));
