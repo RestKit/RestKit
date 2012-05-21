@@ -32,39 +32,32 @@
 
 @implementation RKManagedObjectMappingOperation
 
-- (void)connectRelationship:(NSString *)relationshipName {
-    RKObjectConnectionMapping* connectionMapping = [(RKManagedObjectMapping*)self.objectMapping mappingForConnection:relationshipName];
-    NSAssert(connectionMapping, @"Unable to find relationship mapping '%@' to connect by primaryKey", relationshipName);
-    RKLogTrace(@"Connecting relationship '%@'", relationshipName);
+- (void)connectRelationship:(RKObjectConnectionMapping *)connectionMapping {
+    RKLogTrace(@"Connecting relationship '%@'", connectionMapping.relationshipName);
 
+    id relatedObject = [connectionMapping findConnected:self.destinationObject];
 
-    id relatedObject = [connectionMapping findConnected:relationshipName source:self.destinationObject];
-
-        if (relatedObject) {
-        if ([relatedObject isKindOfClass:[NSManagedObject class]]) {
-            // Sanity check the managed object contexts
-            NSAssert([[(NSManagedObject *)self.destinationObject managedObjectContext] isEqual:[(NSManagedObject *)relatedObject managedObjectContext]], nil);
-        }
-        [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
-        RKLogDebug(@"Connected relationship '%@' to object '%@'", relationshipName, relatedObject);
+    if (relatedObject) {
+        [self.destinationObject setValue:relatedObject forKeyPath:connectionMapping.relationshipName];
+        RKLogDebug(@"Connected relationship '%@' to object '%@'", connectionMapping.relationshipName, relatedObject);
     } else {
         RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *) connectionMapping.mapping;
-        RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@'", [[objectMapping entity] name], relationshipName);
+        RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@'", [[objectMapping entity] name], connectionMapping.relationshipName);
     }
 }
 
 - (void)connectRelationships {
     RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)self.objectMapping;
     RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", mapping.connections);
-    for (NSString* relationshipName in mapping.connections) {
+    for (RKObjectConnectionMapping* connectionMapping in mapping.connections) {
         if (self.queue) {
             RKLogTrace(@"Enqueueing relationship connection using operation queue");
             __block RKManagedObjectMappingOperation *selfRef = self;
             [self.queue addOperationWithBlock:^{
-                [selfRef connectRelationship:relationshipName];
+                [selfRef connectRelationship:connectionMapping];
             }];
         } else {
-            [self connectRelationship:relationshipName];
+            [self connectRelationship:connectionMapping];
         }
     }
 }
