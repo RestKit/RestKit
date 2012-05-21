@@ -199,3 +199,9 @@ void RKLogInitialize(void);
     Trace    or 6
  */
 void RKLogConfigureFromEnvironment(void);
+
+/**
+ Logs extensive information about an NSError generated as the results
+ of a failed key-value validation error.
+ */
+void RKLogValidationError(NSError *);

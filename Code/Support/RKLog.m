@@ -127,3 +127,35 @@ int RKLogLevelForString(NSString *logLevel, NSString *envVarName)
         return -1;
     }
 }
+
+void RKLogValidationError(NSError *validationError) {
+    if ([[validationError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+        NSDictionary *userInfo = [validationError userInfo];
+        NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
+        if (errors) {
+            for (NSError *detailedError in errors) {
+                NSDictionary *subUserInfo = [detailedError userInfo];
+                RKLogError(@"Core Data Save Error\n \
+                           NSLocalizedDescription:\t\t%@\n \
+                           NSValidationErrorKey:\t\t\t%@\n \
+                           NSValidationErrorPredicate:\t%@\n \
+                           NSValidationErrorObject:\n%@\n",
+                           [subUserInfo valueForKey:@"NSLocalizedDescription"],
+                           [subUserInfo valueForKey:@"NSValidationErrorKey"],
+                           [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
+                           [subUserInfo valueForKey:@"NSValidationErrorObject"]);
+            }
+        }
+        else {
+            RKLogError(@"Core Data Save Error\n \
+                       NSLocalizedDescription:\t\t%@\n \
+                       NSValidationErrorKey:\t\t\t%@\n \
+                       NSValidationErrorPredicate:\t%@\n \
+                       NSValidationErrorObject:\n%@\n",
+                       [userInfo valueForKey:@"NSLocalizedDescription"],
+                       [userInfo valueForKey:@"NSValidationErrorKey"],
+                       [userInfo valueForKey:@"NSValidationErrorPredicate"],
+                       [userInfo valueForKey:@"NSValidationErrorObject"]);
+        }
+    }
+}
