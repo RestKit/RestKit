@@ -104,8 +104,6 @@
 }
 
 - (BOOL)prepareURLRequest {
-    // TODO: Can we just do this if the object hasn't been saved already???
-
     // NOTE: There is an important sequencing issue here. You MUST save the
     // managed object context before retaining the objectID or you will run
     // into an error where the object context cannot be saved. We do this

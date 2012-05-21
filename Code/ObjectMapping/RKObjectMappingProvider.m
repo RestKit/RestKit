@@ -23,6 +23,7 @@
 #import "RKOrderedDictionary.h"
 #import "RKPathMatcher.h"
 #import "RKObjectMappingProviderContextEntry.h"
+#import "RKErrorMessage.h"
 
 @implementation RKObjectMappingProvider
 
@@ -45,6 +46,12 @@
         [self initializeContext:RKObjectMappingProviderContextObjectsByResourcePathPattern withValue:[RKOrderedDictionary dictionary]];
         [self initializeContext:RKObjectMappingProviderContextSerialization withValue:[NSMutableDictionary dictionary]];
         [self initializeContext:RKObjectMappingProviderContextErrors withValue:[NSNull null]];
+
+        // Setup default error message mappings
+        RKObjectMapping *errorMapping = [RKObjectMapping mappingForClass:[RKErrorMessage class]];
+        errorMapping.rootKeyPath = @"errors";
+        [errorMapping mapKeyPath:@"" toAttribute:@"errorMessage"];
+        self.errorMapping = errorMapping;
     }
     return self;
 }
