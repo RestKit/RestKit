@@ -34,6 +34,7 @@
 @dynamic updatedAt;
 @dynamic favoriteColors;
 
+@dynamic favoriteCatID;
 @dynamic favoriteCat;
 @dynamic cats;
 @dynamic catIDs;

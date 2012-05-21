@@ -27,16 +27,47 @@
 
 typedef id(^RKObjectConnectionBlock)(RKObjectConnectionMapping * mapping, id source);
 
+// Defines the rules for connecting relationsips
 @interface RKObjectConnectionMapping : NSObject
 
+@property (nonatomic, retain, readonly) NSString * relationshipName;
 @property (nonatomic, retain, readonly) NSString * sourceKeyPath;
 @property (nonatomic, retain, readonly) NSString * destinationKeyPath;
 @property (nonatomic, retain, readonly) RKObjectMappingDefinition * mapping;
 @property (nonatomic, retain, readonly) RKDynamicObjectMappingMatcher* matcher;
 
-+ (RKObjectConnectionMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
-+ (RKObjectConnectionMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
-- (id)initFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+/**
+ Defines a mapping that is used to connect a source object relationship to
+ the appropriate target object(s).
 
-- (id)findConnected:(NSString *)relationshipName source:(NSManagedObject *)source;
+ @param relationshipName The name of the relationship on the source object.
+ @param sourceKeyPath Specifies the path to an attribute on the source object that
+ contains the value that should be used to connect the relationship.  This will generally
+ be a primary key or a foreign key value.
+ @param targetKeyPath Specifies the path to an attribute on the target object(s) that
+ must match the value of the sourceKeyPath attribute.
+ @param withMapping The mapping for the target object.
+
+ @return A new instance of a RKObjectConnectionMapping.
+ */
++ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+
+/**
+ Defines a mapping that is used to connect a source object relationship to
+ the appropriate target object(s).  This is similar to mapping:fromKeyPath:toKeyPath:withMapping:
+ (@see mapping:fromKeyPath:toKeyPath:withMapping:) but adds in an additional matcher parameter
+ that can be used to filter source objects.
+
+ @return A new instance of a RKObjectConnectionMapping.
+ */
++ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+
+- (id)init:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+
+/**
+ Finds the connected objects for this relationship mapping.
+
+ @return A single object, a set of 0 or more objects or nil.
+ */
+- (id)findConnected:(NSManagedObject *)source;
 @end
