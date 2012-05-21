@@ -28,6 +28,7 @@
 @dynamic birthYear;
 @dynamic color;
 @dynamic createdAt;
+@dynamic favoriteOfHumans;
 @dynamic humanId;
 @dynamic name;
 @dynamic nickName;

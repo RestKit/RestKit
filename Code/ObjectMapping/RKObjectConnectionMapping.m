@@ -26,31 +26,34 @@
 #import "RKDynamicObjectMappingMatcher.h"
 
 @interface RKObjectConnectionMapping()
-@property (nonatomic, retain) NSString * sourceKeyPath;
+@property (nonatomic, retain) NSString * relationshipName;
 @property (nonatomic, retain) NSString * destinationKeyPath;
 @property (nonatomic, retain) RKObjectMappingDefinition * mapping;
 @property (nonatomic, retain) RKDynamicObjectMappingMatcher* matcher;
+@property (nonatomic, retain) NSString * sourceKeyPath;
 @end
 
 @implementation RKObjectConnectionMapping
 
-@synthesize sourceKeyPath;
+@synthesize relationshipName;
 @synthesize destinationKeyPath;
 @synthesize mapping;
 @synthesize matcher;
+@synthesize sourceKeyPath;
 
-+ (RKObjectConnectionMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
-    RKObjectConnectionMapping *mapping = [[self alloc] initFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath matcher:nil withMapping:objectOrDynamicMapping];
++ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
+    RKObjectConnectionMapping *mapping = [[self alloc] init:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath matcher:nil withMapping:objectOrDynamicMapping];
     return [mapping autorelease];
 }
 
-+ (RKObjectConnectionMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
-    RKObjectConnectionMapping *mapping = [[self alloc] initFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath matcher:matcher withMapping:objectOrDynamicMapping];
++ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
+    RKObjectConnectionMapping *mapping = [[self alloc] init:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath matcher:matcher withMapping:objectOrDynamicMapping];
     return [mapping autorelease];
 }
 
-- (id)initFromKeyPath:(NSString*)aSourceKeyPath toKeyPath:(NSString*)aDestinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)aMatcher withMapping:(RKObjectMappingDefinition *)aObjectOrDynamicMapping {
+- (id)init:(NSString *)aRelationshipName fromKeyPath:(NSString*)aSourceKeyPath toKeyPath:(NSString*)aDestinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)aMatcher withMapping:(RKObjectMappingDefinition *)aObjectOrDynamicMapping {
     self = [super init];
+    self.relationshipName = aRelationshipName;
     self.sourceKeyPath = aSourceKeyPath;
     self.destinationKeyPath = aDestinationKeyPath;
     self.mapping = aObjectOrDynamicMapping;
@@ -59,21 +62,22 @@
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    return [[[self class] allocWithZone:zone] initFromKeyPath:self.sourceKeyPath toKeyPath:self.destinationKeyPath matcher:self.matcher withMapping:mapping];
+    return [[[self class] allocWithZone:zone] init:self.relationshipName fromKeyPath:self.sourceKeyPath toKeyPath:self.destinationKeyPath matcher:self.matcher withMapping:mapping];
 }
 
 - (void)dealloc {
-    self.sourceKeyPath = nil;
+    self.relationshipName = nil;
     self.destinationKeyPath = nil;
     self.mapping = nil;
     self.matcher = nil;
+    self.sourceKeyPath = nil;
     [super dealloc];
 }
 
-- (BOOL)isToMany:(NSString *)relationshipName source:(NSManagedObject *)source {
+- (BOOL)isToMany:(NSManagedObject *)source {
     NSEntityDescription *entity = [source entity];
     NSDictionary *relationships = [entity relationshipsByName];
-    NSRelationshipDescription *relationship = [relationships objectForKey:relationshipName];
+    NSRelationshipDescription *relationship = [relationships objectForKey:self.relationshipName];
     return relationship.isToMany;
 }
 
@@ -113,10 +117,10 @@
     }
 }
 
-- (id)findConnected:(NSString *)relationshipName source:(NSManagedObject *)source {
+- (id)findConnected:(NSManagedObject *)source {
     if ([self checkMatcher:source])
     {
-        BOOL isToMany = [self isToMany:relationshipName source:source];
+        BOOL isToMany = [self isToMany:source];
         id sourceValue = [source valueForKey:self.sourceKeyPath];
         if (isToMany) {
             return [self findAllConnected:source sourceValue:sourceValue];

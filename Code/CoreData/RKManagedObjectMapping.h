@@ -29,7 +29,7 @@
  entity.
  */
 @interface RKManagedObjectMapping : RKObjectMapping {
-    NSMutableDictionary *_connections;
+    NSMutableArray *_connections;
 }
 
 /**
@@ -74,7 +74,7 @@
 /**
  Returns a dictionary containing Core Data connections
  */
-@property (nonatomic, readonly) NSDictionary *connections;
+@property (nonatomic, readonly) NSArray *connections;
 
 /**
  The RKManagedObjectStore containing the Core Data entity being mapped
@@ -87,8 +87,16 @@
 - (RKObjectConnectionMapping*)mappingForConnection:(NSString*)relationshipName;
 
 /**
- Instructs RestKit to automatically connect a relationship of the object being mapped by looking up
- the related object by primary key.
+ Instructs RestKit to connect a relationship of the object being mapped to the
+ appropriate target object(s).  It does this by using the value of the object's
+ fromKeyPath attribute to query instances of the target entity that have the
+ same value in their toKeyPath attribute.
+
+ Note that connectRelationship runs *after* an object's attributes have been
+ mapped and is dependent upon the results of those mappings.  Also, connectRelationship
+ will never create a new object - it simply looks up existing objects.   In effect,
+ connectRelationship allows foreign key relationships between managed objects
+ to be automatically maintained from the server to the underlying Core Data object graph.
 
  For example, given a Project object associated with a User, where the 'user' relationship is
  specified by a userID property on the managed object:
@@ -109,8 +117,6 @@
  */
 - (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
 
-
-
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
  keyPath equal to a specified value.
@@ -128,7 +134,6 @@
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
 - (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
-
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -150,7 +155,6 @@
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
 - (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block;
-
 
 /**
  Initialize a managed object mapping with a Core Data entity description and a RestKit managed object store
