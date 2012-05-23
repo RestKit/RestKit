@@ -205,3 +205,9 @@ void RKLogConfigureFromEnvironment(void);
  of a failed key-value validation error.
  */
 void RKLogValidationError(NSError *);
+
+/**
+ Logs the value of an NSUInteger as a binary string. Useful when
+ examining integers containing bitmasked values.
+ */
+void RKLogIntegerAsBinary(NSUInteger);

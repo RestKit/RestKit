@@ -119,7 +119,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface RKTableControllerTest : SenTestCase
+@interface RKTableControllerTest : RKTestCase
 
 @end
 
@@ -149,6 +149,12 @@
     RKTableController* tableController = [RKTableController tableControllerWithTableView:tableView forViewController:viewController];
     assertThat(tableController.viewController, is(equalTo(viewController)));
     assertThat(tableController.tableView, is(equalTo(tableView)));
+}
+
+- (void)testInitializesToUnloadedState {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    assertThatBool([tableController isLoaded], is(equalToBool(NO)));
 }
 
 - (void)testAlwaysHaveAtLeastOneSection {
@@ -671,8 +677,10 @@
 - (void)testAllowYouToTriggerAnEmptyLoad {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    RKLogIntegerAsBinary(tableController.state);
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     [tableController loadEmpty];
+    RKLogIntegerAsBinary(tableController.state);
     assertThatBool([tableController isLoaded], is(equalToBool(YES)));
     assertThatBool([tableController isEmpty], is(equalToBool(YES)));
 }
@@ -724,6 +732,71 @@
     assertThatBool([tableController isLoaded], is(equalToBool(YES)));
     assertThatBool([tableController isError], is(equalToBool(YES)));
     assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+}
+
+- (void)testErrorIsClearedAfterSubsequentLoad {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    id mockObjectLoader = [OCMockObject niceMockForClass:[RKObjectLoader class]];
+    NSError* error = [NSError errorWithDomain:@"Test" code:0 userInfo:nil];
+    [tableController objectLoader:mockObjectLoader didFailWithError:error];
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatBool([tableController isError], is(equalToBool(YES)));
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+    
+    [tableController objectLoader:mockObjectLoader didLoadObjects:[NSArray array]];
+    assertThatBool([tableController isError], is(equalToBool(NO)));
+    assertThat(tableController.error, is(nilValue()));
+}
+
+- (void)testDisplayOfErrorImageTakesPresendenceOverEmpty {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    UIImage *imageForEmpty = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
+    UIImage *imageForError = [imageForEmpty copy];
+    tableController.imageForEmpty = imageForEmpty;
+    tableController.imageForError = imageForError;        
+    
+    id mockObjectLoader = [OCMockObject niceMockForClass:[RKObjectLoader class]];
+    NSError* error = [NSError errorWithDomain:@"Test" code:0 userInfo:nil];
+    [tableController objectLoader:mockObjectLoader didFailWithError:error];
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatBool([tableController isError], is(equalToBool(YES)));
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+
+    UIImage *overlayImage = [tableController overlayImage];
+    assertThat(overlayImage, isNot(nilValue()));
+    assertThat(overlayImage, is(equalTo(imageForError)));
+}
+
+- (void)testBitwiseLoadingTransition {
+    RKTableControllerState oldState = RKTableControllerStateNotYetLoaded;
+    RKTableControllerState newState = RKTableControllerStateLoading;
+    
+    BOOL loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
+    assertThatBool(loadingTransitioned, is(equalToBool(YES)));
+    
+    oldState = RKTableControllerStateOffline | RKTableControllerStateEmpty;
+    newState = RKTableControllerStateOffline | RKTableControllerStateEmpty | RKTableControllerStateLoading;
+    loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
+    assertThatBool(loadingTransitioned, is(equalToBool(YES)));
+    
+    oldState = RKTableControllerStateNormal;
+    newState = RKTableControllerStateLoading;
+    loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
+    assertThatBool(loadingTransitioned, is(equalToBool(YES)));
+    
+    oldState = RKTableControllerStateOffline | RKTableControllerStateEmpty | RKTableControllerStateLoading;
+    newState = RKTableControllerStateOffline | RKTableControllerStateLoading;
+    loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
+    assertThatBool(loadingTransitioned, is(equalToBool(NO)));
+    
+    oldState = RKTableControllerStateNotYetLoaded;
+    newState = RKTableControllerStateOffline;
+    loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
+    assertThatBool(loadingTransitioned, is(equalToBool(NO)));
 }
 
 - (void)testSetTheModelToAnEmptyStateIfTheObjectLoaderReturnsAnEmptyCollection {
@@ -1164,6 +1237,32 @@
     [observerMock verify];
 }
 
+- (void)testPostANotificationWhenObjectsAreLoaded {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = objectManager;
+    [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
+        mapping.cellClass = [RKTestUserTableViewCell class];
+        [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+        [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
+    }]];
+    
+    id observerMock = [OCMockObject observerMock];
+    [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadObjectsNotification object:tableController];
+    [[observerMock expect] notificationWithName:RKTableControllerDidLoadObjectsNotification object:tableController];
+    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    tableController.delegate = delegate;
+    
+    [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [delegate waitForLoad];
+    [observerMock verify];
+}
+
 - (void)testPostANotificationWhenAnErrorOccurs {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
@@ -1214,6 +1313,110 @@
     }];
     [delegate waitForLoad];
     [observerMock verify];
+}
+
+#pragma mark - State Transitions
+
+- (void)testInitializesToNotYetLoadedState {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    assertThatBool(tableController.state == RKTableControllerStateNotYetLoaded, is(equalToBool(YES)));
+}
+
+- (void)testInitialLoadSetsStateToLoading {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    assertThatBool([tableController isLoaded], is(equalToBool(NO)));
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
+    [tableController requestDidStartLoad:mockLoader];
+    assertThatBool([tableController isLoading], is(equalToBool(YES)));
+    assertThatBool([tableController isLoaded], is(equalToBool(NO)));
+}
+
+- (void)testSuccessfulLoadSetsStateToNormal {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    assertThatBool([tableController isLoaded], is(equalToBool(NO)));
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
+    [tableController objectLoader:mockLoader didLoadObjects:[NSArray arrayWithObject:@"test"]];
+    RKLogIntegerAsBinary(tableController.state);
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatInteger(tableController.state, is(equalToInteger(RKTableControllerStateNormal)));
+}
+
+- (void)testErrorLoadsSetsStateToError {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    assertThatBool([tableController isLoaded], is(equalToBool(NO)));
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
+    NSError *error = [NSError errorWithDomain:@"Test" code:1234 userInfo:nil];
+    [tableController objectLoader:mockLoader didFailWithError:error];
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatBool([tableController isError], is(equalToBool(YES)));
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+}
+
+- (void)testSecondaryLoadAfterErrorSetsStateToErrorAndLoading {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    assertThatBool([tableController isLoaded], is(equalToBool(NO)));
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
+    NSError *error = [NSError errorWithDomain:@"Test" code:1234 userInfo:nil];
+    [tableController objectLoader:mockLoader didFailWithError:error];
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatBool([tableController isError], is(equalToBool(YES)));
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+    [tableController requestDidStartLoad:mockLoader];
+    assertThatBool([tableController isLoading], is(equalToBool(YES)));
+    assertThatBool([tableController isError], is(equalToBool(YES)));
+}
+
+- (void)testEmptyLoadSetsStateToEmpty {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    [tableController loadEmpty];
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+}
+
+- (void)testSecondaryLoadAfterEmptySetsStateToEmptyAndLoading {
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    [tableController loadEmpty];
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
+    [tableController requestDidStartLoad:mockLoader];
+    assertThatBool([tableController isLoading], is(equalToBool(YES)));
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+}
+
+- (void)testTransitionToOfflineAfterLoadSetsStateToOfflineAndLoaded {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    id mockManager = [OCMockObject partialMockForObject:objectManager];
+    BOOL isOnline = YES;
+    [[[mockManager stub] andReturnValue:OCMOCK_VALUE(isOnline)] isOnline];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = mockManager;
+    [tableController loadEmpty];
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+    assertThatBool([tableController isLoading], is(equalToBool(NO)));
+    assertThatBool([tableController isOffline], is(equalToBool(NO)));
+    id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
+    [tableController requestDidStartLoad:mockLoader];
+    assertThatBool([tableController isLoading], is(equalToBool(YES)));
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+    isOnline = NO;
+    id mockManager2 = [OCMockObject partialMockForObject:objectManager];
+    [[[mockManager2 stub] andReturnValue:OCMOCK_VALUE(isOnline)] isOnline];
+    tableController.objectManager = mockManager2;
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKObjectManagerDidBecomeOfflineNotification object:tableController.objectManager];
+    assertThatBool(tableController.isOffline, is(equalToBool(YES)));
 }
 
 #pragma mark - State Views
@@ -2019,6 +2222,7 @@
     [[[mockManager expect] andReturnValue:OCMOCK_VALUE(online)] isOnline];
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    [tableController loadEmpty]; // Load to change the isLoaded state
     UIImage* image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     tableController.imageForOffline = image;
 
@@ -2096,7 +2300,6 @@
 }
 
 - (void)testCallTheDelegateBeforeHidingTheSwipeView {
-//    RKLogConfigureByName("RestKit/UI", RKLogLevelTrace);
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;

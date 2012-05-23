@@ -33,7 +33,7 @@ typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteg
     BOOL _isEmptyBeforeAnimation;
 }
 
-@property (nonatomic, readonly) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, retain, readonly) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, copy) NSString *resourcePath;
 @property (nonatomic, retain) NSFetchRequest *fetchRequest;
 @property (nonatomic, assign) CGFloat heightForHeaderInSection;

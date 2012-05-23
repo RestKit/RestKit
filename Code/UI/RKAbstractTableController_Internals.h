@@ -18,25 +18,25 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import "RKRefreshGestureRecognizer.h"
 
+/*
+ A private continuation class for subclass implementations of RKAbstractTableController
+ */
 @interface RKAbstractTableController () <RKObjectLoaderDelegate, RKRefreshTriggerProtocol>
 
-@property (nonatomic, readwrite, assign) UITableView* tableView;
-@property (nonatomic, readwrite, assign) UIViewController* viewController;
-@property (nonatomic, readwrite, retain) RKObjectLoader* objectLoader;
-@property (nonatomic, readwrite, assign) BOOL loading;
-@property (nonatomic, readwrite, assign) BOOL loaded;
-@property (nonatomic, readwrite, assign) BOOL empty;
-@property (nonatomic, readwrite, assign) BOOL online;
-@property (nonatomic, readwrite, retain) NSError* error;
-@property (nonatomic, readwrite, retain) NSMutableArray* headerItems;
-@property (nonatomic, readwrite, retain) NSMutableArray* footerItems;
-
+@property (nonatomic, readwrite, assign) UITableView *tableView;
+@property (nonatomic, readwrite, assign) UIViewController *viewController;
+@property (nonatomic, assign, readwrite) RKTableControllerState state;
+@property (nonatomic, readwrite, retain) RKObjectLoader *objectLoader;
+@property (nonatomic, readwrite, retain) NSError *error;
+@property (nonatomic, readwrite, retain) NSMutableArray *headerItems;
+@property (nonatomic, readwrite, retain) NSMutableArray *footerItems;
 @property (nonatomic, readonly) UIView *tableOverlayView;
 @property (nonatomic, readonly) UIImageView *stateOverlayImageView;
 @property (nonatomic, readonly) RKCache *cache;
+@property (nonatomic, retain) UIView *pullToRefreshHeaderView;
 
 /**
  Must be invoked when the table controller has finished loading.
@@ -45,7 +45,6 @@
  and cleaning up the table overlay view.
  */
 - (void)didFinishLoad;
-- (void)updateOfflineImageForOnlineState:(BOOL)isOnline;
 
 #pragma mark - Table View Overlay
 
@@ -61,5 +60,22 @@
 - (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture;
 - (void)resetPullToRefreshRecognizer;
 
+#pragma mark - State Mutators
+
+- (void)setLoading:(BOOL)loading;
+- (void)setLoaded:(BOOL)loaded;
+- (void)setEmpty:(BOOL)empty;
+- (void)setOffline:(BOOL)offline;
+- (void)setErrorState:(BOOL)error;
+
+/**
+ Returns a Boolean value indicating if the table controller
+ should be considered empty and transitioned into the empty state.
+ Used by the abstract table controller to trigger state transitions.
+ 
+ **NOTE**: This is an abstract method that MUST be implemented with
+ a subclass.
+ */
+- (BOOL)isConsideredEmpty;
 
 @end

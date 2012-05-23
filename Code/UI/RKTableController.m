@@ -23,27 +23,35 @@
 #import "RKLog.h"
 #import "RKFormSection.h"
 #import "NSArray+RKAdditions.h"
+#import "RKObjectMappingOperation.h"
 
 // Define logging component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitUI
 
+@interface RKTableController ()
+@property (nonatomic, readwrite) NSMutableArray *sections;
+@end
+
 @implementation RKTableController
 
+@dynamic delegate;
 @synthesize form = _form;
 @synthesize sectionNameKeyPath = _sectionNameKeyPath;
+@synthesize sections = _sections;
 
 #pragma mark - Instantiation
 
 - (id)init {
     self = [super init];
     if (self) {
+        _sections = [NSMutableArray new];
         [self addObserver:self
                forKeyPath:@"sections"
                   options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                   context:nil];
 
-        RKTableSection* section = [RKTableSection section];
+        RKTableSection *section = [RKTableSection section];
         [self addSection:section];
     }
 
@@ -54,7 +62,8 @@
     [self removeObserver:self forKeyPath:@"sections"];
     [_form release];
     [_sectionNameKeyPath release];
-
+    [_sections release];
+    
     [super dealloc];
 }
 
@@ -194,7 +203,9 @@
     }
 
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:self.defaultRowAnimation];
-
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
+    
     // The load is finalized via network callbacks for
     // dynamic table controllers
     if (nil == self.objectLoader) {
@@ -374,6 +385,155 @@
     }
 
     // TODO: KVO should be used for managing the row level manipulations on the table view as well...
+}
+
+#pragma mark - Managing Sections
+
+- (NSUInteger)sectionCount {
+    return [_sections count];
+}
+
+- (NSUInteger)rowCount {
+    return [[_sections valueForKeyPath:@"@sum.rowCount"] intValue];
+}
+
+- (RKTableSection *)sectionAtIndex:(NSUInteger)index {
+    return [_sections objectAtIndex:index];
+}
+
+- (NSUInteger)indexForSection:(RKTableSection *)section {
+    NSAssert(section, @"Cannot return index for a nil section");
+    return [_sections indexOfObject:section];
+}
+
+- (RKTableSection *)sectionWithHeaderTitle:(NSString *)title {
+    for (RKTableSection* section in _sections) {
+        if ([section.headerTitle isEqualToString:title]) {
+            return section;
+        }
+    }
+    
+    return nil;
+}
+
+- (NSUInteger)numberOfRowsInSection:(NSUInteger)index {
+    return [self sectionAtIndex:index].rowCount;
+}
+
+- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath {
+    RKTableSection* section = [self sectionAtIndex:indexPath.section];
+    id mappableObject = [section objectAtIndex:indexPath.row];
+    RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
+    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
+    
+    UITableViewCell* cell = [cellMapping mappableObjectForData:self.tableView];
+    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
+    
+    // Map the object state into the cell
+    RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
+    NSError* error = nil;
+    BOOL success = [mappingOperation performMapping:&error];
+    [mappingOperation release];
+    // NOTE: If there is no mapping work performed, but no error is generated then
+    // we consider the operation a success. It is common for table cells to not contain
+    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
+    if (success == NO && error != nil) {
+        RKLogError(@"Failed to generate table cell for object: %@", error);
+        return nil;
+    }
+    
+    return cell;
+}
+
+#pragma mark - Cell Mappings
+
+- (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(indexPath, @"Cannot lookup object with a nil indexPath");
+    RKTableSection* section = [self sectionAtIndex:indexPath.section];
+    return [section objectAtIndex:indexPath.row];
+}
+
+#pragma mark - UITableViewDataSource methods
+
+- (NSString*)tableView:(UITableView*)theTableView titleForHeaderInSection:(NSInteger)section {
+    NSAssert(theTableView == self.tableView, @"tableView:titleForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
+    return [[_sections objectAtIndex:section] headerTitle];
+}
+
+- (NSString*)tableView:(UITableView*)theTableView titleForFooterInSection:(NSInteger)section {
+    NSAssert(theTableView == self.tableView, @"tableView:titleForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
+    return [[_sections objectAtIndex:section] footerTitle];
+}
+
+- (BOOL)tableView:(UITableView*)theTableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(theTableView == self.tableView, @"tableView:canEditRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
+    return self.canEditRows;
+}
+
+- (BOOL)tableView:(UITableView*)theTableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(theTableView == self.tableView, @"tableView:canMoveRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
+    return self.canMoveRows;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView {
+    NSAssert(theTableView == self.tableView, @"numberOfSectionsInTableView: invoked with inappropriate tableView: %@", theTableView);
+    RKLogTrace(@"%@ numberOfSectionsInTableView = %d", self, self.sectionCount);
+    return self.sectionCount;
+}
+
+- (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section {
+    NSAssert(theTableView == self.tableView, @"tableView:numberOfRowsInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKLogTrace(@"%@ numberOfRowsInSection:%d = %d", self, section, self.sectionCount);
+    return [[_sections objectAtIndex:section] rowCount];
+}
+
+- (NSIndexPath *)indexPathForObject:(id)object {
+    NSUInteger sectionIndex = 0;
+    for (RKTableSection *section in self.sections) {
+        NSUInteger rowIndex = 0;
+        for (id rowObject in section.objects) {
+            if ([rowObject isEqual:object]) {
+                return [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+            }
+            
+            rowIndex++;
+        }
+        sectionIndex++;
+    }
+    
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)theTableView heightForHeaderInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"heightForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.headerHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)theTableView heightForFooterInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"heightForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.footerHeight;
+}
+
+- (UIView *)tableView:(UITableView *)theTableView viewForHeaderInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"viewForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.headerView;
+}
+
+- (UIView *)tableView:(UITableView *)theTableView viewForFooterInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"viewForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.footerView;
+}
+
+- (BOOL)isConsideredEmpty {
+    NSUInteger nonRowItemsCount = [self.headerItems count] + [self.footerItems count];
+    nonRowItemsCount += self.emptyItem ? 1 : 0;
+    BOOL isEmpty = (self.rowCount - nonRowItemsCount) == 0;
+    RKLogTrace(@"Determined isConsideredEmpty = %@. self.rowCount = %d with %d nonRowItems in the table", isEmpty ? @"YES" : @"NO", self.rowCount, nonRowItemsCount);
+    return isEmpty;
 }
 
 @end

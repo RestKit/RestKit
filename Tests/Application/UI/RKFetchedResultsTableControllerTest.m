@@ -1386,4 +1386,21 @@
     assertThat(tableController.stateOverlayImageView.image, is(notNilValue()));
 }
 
+- (void)testPostANotificationWhenObjectsAreLoaded {
+    [self bootstrapNakedObjectStoreAndCache];
+    UITableView* tableView = [UITableView new];
+    RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
+    RKFetchedResultsTableController* tableController =
+    [[RKFetchedResultsTableController alloc] initWithTableView:tableView
+                                                viewController:viewController];
+    tableController.resourcePath = @"/JSON/NakedEvents.json";
+    [tableController setObjectMappingForClass:[RKEvent class]];    
+    
+    id observerMock = [OCMockObject observerMock];
+    [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadObjectsNotification object:tableController];
+    [[observerMock expect] notificationWithName:RKTableControllerDidLoadObjectsNotification object:tableController];
+    [tableController loadTable];
+    [observerMock verify];
+}
+
 @end

@@ -31,6 +31,8 @@
 #define RKLogComponent lcl_cRestKitUI
 
 @interface RKFetchedResultsTableController ()
+@property (nonatomic, retain, readwrite) NSFetchedResultsController *fetchedResultsController;
+
 - (void)performFetch;
 - (void)updateSortedArray;
 @end
@@ -86,6 +88,7 @@
         RKLogError(@"performFetch failed with error: %@", [error localizedDescription]);
     } else {
         RKLogTrace(@"performFetch completed successfully");
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
     }
 }
 
@@ -226,17 +229,15 @@
     if (_sortDescriptors) {
         [fetchRequest setSortDescriptors:_sortDescriptors];
     }
-
-    [_fetchedResultsController setDelegate:nil];
-    [_fetchedResultsController release];
-    _fetchedResultsController = nil;
-
-    _fetchedResultsController =
+    
+    self.fetchedResultsController =
     [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                         managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
                                           sectionNameKeyPath:_sectionNameKeyPath
                                                    cacheName:_cacheName];
+    [_fetchedResultsController release];
     _fetchedResultsController.delegate = self;
+    
 
     [self performFetch];
     [self updateSortedArray];
@@ -470,7 +471,7 @@
         return self.emptyItem;
 
     } else if ([self isHeaderIndexPath:indexPath]) {
-        NSUInteger row = (self.empty && self.emptyItem) ? (indexPath.row - 1) : indexPath.row;
+        NSUInteger row = ([self isEmpty] && self.emptyItem) ? (indexPath.row - 1) : indexPath.row;
         return [self.headerItems objectAtIndex:row];
 
     } else if ([self isFooterIndexPath:indexPath]) {
@@ -499,7 +500,7 @@
 
 #pragma mark - KVO & Model States
 
-- (BOOL)isEmpty {
+- (BOOL)isConsideredEmpty {
     NSUInteger fetchedObjectsCount = [[_fetchedResultsController fetchedObjects] count];
     BOOL isEmpty = (fetchedObjectsCount == 0);
     RKLogTrace(@"Determined isEmpty = %@. fetchedObjects count = %d", isEmpty ? @"YES" : @"NO", fetchedObjectsCount);
@@ -599,8 +600,23 @@
     } else {
         [self.tableView endUpdates];
     }
-
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
     [self didFinishLoad];
+}
+
+#pragma mark - UITableViewDataSource methods
+
+- (UITableViewCell *)tableView:(UITableView*)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
+    UITableViewCell* cell = [self cellForObjectAtIndexPath:indexPath];
+
+    RKLogTrace(@"%@ cellForRowAtIndexPath:%@ = %@", self, indexPath, cell);
+    return cell;
+}
+
+- (NSUInteger)numberOfRowsInSection:(NSUInteger)index {
+    return [self tableView:self.tableView numberOfRowsInSection:index];
 }
 
 @end
