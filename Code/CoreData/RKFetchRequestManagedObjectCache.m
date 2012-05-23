@@ -41,7 +41,7 @@
 
     // Use cached predicate if primary key matches
     NSPredicate *predicate = nil;
-    if ([entity.primaryKeyAttribute isEqualToString:primaryKeyAttribute]) {
+    if ([entity.primaryKeyAttributeName isEqualToString:primaryKeyAttribute]) {
         predicate = [entity predicateForPrimaryKeyAttributeWithValue:searchValue];
     } else {
         // Parse a predicate

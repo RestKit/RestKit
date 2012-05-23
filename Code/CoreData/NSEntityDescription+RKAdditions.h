@@ -42,7 +42,17 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  Programmatically configured values take precedence over the user info
  dictionary.
  */
-@property (nonatomic, retain) NSString *primaryKeyAttribute;
+@property (nonatomic, retain) NSString *primaryKeyAttributeName;
+
+/**
+ The attribute description object for the attribute designated as the primary key for the receiver.
+ */
+@property (nonatomic, readonly) NSAttributeDescription *primaryKeyAttribute;
+
+/**
+ The class representing the value of the attribute designated as the primary key for the receiver.
+ */
+@property (nonatomic, readonly) Class primaryKeyAttributeClass;
 
 /**
  Returns a cached predicate specifying that the primary key attribute is equal to the $PRIMARY_KEY_VALUE
@@ -61,7 +71,12 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  value. This predicate is constructed by evaluating the cached predicate returned by the
  predicateForPrimaryKeyAttribute with a dictionary of substitution variables specifying that
  $PRIMARY_KEY_VALUE is equal to the given value.
-
+ 
+ **NOTE**: This method considers the type of the receiver's primary key attribute when constructing
+ the predicate. It will coerce the given value into either an NSString or an NSNumber as 
+ appropriate. This behavior is a convenience to avoid annoying issues related to Core Data's
+ handling of predicates for NSString and NSNumber types that were not appropriately casted.
+ 
  @return A predicate speciying that the value of the primary key attribute is equal to a given value.
  */
 - (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value;
