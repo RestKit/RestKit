@@ -117,9 +117,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 + (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password {
     RKClient *client = [RKClient clientWithBaseURLString:baseURL];
-    client.authenticationType = RKRequestAuthenticationTypeHTTPBasic;
-    client.username = username;
-    client.password = password;
+    [client authenticatedByUsername:username password:password];    
+
     return client;
 }
 
@@ -169,6 +168,23 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 - (id)initWithBaseURLString:(NSString *)baseURLString {
     return [self initWithBaseURL:[RKURL URLWithString:baseURLString]];
 }
+
+- (void) clearCookies
+{
+    NSHTTPCookieStorage* cookies = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    NSArray* httpCookies = [cookies cookiesForURL:self.baseURL];
+    for (NSHTTPCookie* cookie in httpCookies) {
+        [cookies deleteCookie:cookie];
+    }
+}
+
+- (void) authenticatedByUsername:(NSString*)newUsername password:(NSString*)newPassword {    
+    self.username=newUsername;
+    self.password=newPassword;
+    [self clearCookies];
+    self.authenticationType = RKRequestAuthenticationTypeHTTPBasic;
+}
+
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

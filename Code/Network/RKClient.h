@@ -329,6 +329,23 @@
  */
 @property (nonatomic, retain) NSString *password;
 
+/**
+ Clear cookies used by some servers and clients to maintain history of authentication
+ credentials especially basic auth. Clears only cookies relevant to the base url of this
+ client.
+ */
+- (void) clearCookies ;
+
+/**
+ Convenience method for configuring basic authentication with a username and password.
+ Also has the side effect of clearing the cookies from the shared cookie store relevant to
+ the base url of this client.
+ 
+ Note: If you use http basic authentication, you must also use https on your server to 
+ protect the credentials.
+ */
+- (void) authenticatedByUsername:(NSString*)newUsername password:(NSString*)newPassword ;    
+
 
 ///-----------------------------------------------------------------------------
 /// @name OAuth1 Secrets
@@ -848,3 +865,6 @@ NSString *RKMakePathWithObjectAddingEscapes(NSString *pattern, id object, BOOL a
  @return A new resource path with the query parameters appended.
  */
 NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) DEPRECATED_ATTRIBUTE;
+
+
+
