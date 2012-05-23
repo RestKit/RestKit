@@ -183,15 +183,15 @@
 #pragma mark - Response Object Mapping
 
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject inContext:(RKObjectMappingProviderContext)context error:(NSError**)error {
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
-    NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
 
     // Check that there is actually content in the response body for mapping. It is possible to get back a 200 response
     // with the appropriate MIME Type with no content (such as for a successful PUT or DELETE). Make sure we don't generate an error
     // in these cases
-    id bodyAsString = [self.response bodyAsString];
-    RKLogTrace(@"bodyAsString: %@", bodyAsString);
-    if (bodyAsString == nil || [[bodyAsString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
+    id body = self.response.body;
+    if ([body length] > 0) {
+        body = [[self.response bodyAsString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    }
+    if ([body length] == 0) {
         RKLogDebug(@"Mapping attempted on empty response body...");
         if (self.targetObject) {
             return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
@@ -200,10 +200,15 @@
         return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     }
 
-    id parsedData = [parser objectFromString:bodyAsString error:error];
-    if (parsedData == nil && error) {
+    id parsedData = [[RKParserRegistry sharedRegistry] parseData:self.response.body
+                                                    withMIMEType:self.response.MIMEType
+                                                        encoding:[self.response bodyEncoding]
+                                                           error:error];
+    if (parsedData == nil && error && *error) {
+        RKLogError(@"%@", [*error localizedDescription]);
         return nil;
     }
+    RKLogTrace(@"parsed data: %@", parsedData);
 
     // Allow the delegate to manipulate the data
     if ([self.delegate respondsToSelector:@selector(objectLoader:willMapData:)]) {

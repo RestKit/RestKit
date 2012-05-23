@@ -222,7 +222,7 @@
 - (void)testShouldReturnParseErrorsWhenParsedBodyFails {
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
-    [[[mock stub] andReturn:@"sad;sdvjnk;"] bodyAsString];
+    [[[mock stub] andReturn:[@"sad;sdvjnk;" dataUsingEncoding:NSUTF8StringEncoding]] body];
     [[[mock stub] andReturn:@"application/json"] MIMEType];
     NSError* error = nil;
     id object = [mock parsedBody:&error];
@@ -235,7 +235,7 @@
     RKResponse *response = [[RKResponse new] autorelease];
     id mockResponse = [OCMockObject partialMockForObject:response];
     [[[mockResponse stub] andReturn:@"test/fake"] MIMEType];
-    [[[mockResponse stub] andReturn:@"whatever"] bodyAsString];
+    [[[mockResponse stub] andReturn:[@"whatever" dataUsingEncoding:NSUTF8StringEncoding]] body];
     NSError *error = nil;
     id parsedResponse = [mockResponse parsedBody:&error];
     assertThat(parsedResponse, is(nilValue()));
@@ -244,13 +244,14 @@
 - (void)testShouldNotCrashWhenParserReturnsNilWithoutAnError {
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mockResponse = [OCMockObject partialMockForObject:response];
-    [[[mockResponse stub] andReturn:@""] bodyAsString];
+    NSString *body = @"body";
+    [[[mockResponse stub] andReturn:[body dataUsingEncoding:NSUTF8StringEncoding]] body];
     [[[mockResponse stub] andReturn:RKMIMETypeJSON] MIMEType];
-    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParserString)];
     id mockRegistry = [OCMockObject partialMockForObject:[RKParserRegistry sharedRegistry]];
     [[[mockRegistry expect] andReturn:mockParser] parserForMIMEType:RKMIMETypeJSON];
     NSError* error = nil;
-    [[[mockParser expect] andReturn:nil] objectFromString:@"" error:[OCMArg setTo:error]];
+    [[[mockParser expect] andReturn:nil] objectFromString:body error:[OCMArg setTo:error]];
     id object = [mockResponse parsedBody:&error];
     [mockRegistry verify];
     [mockParser verify];

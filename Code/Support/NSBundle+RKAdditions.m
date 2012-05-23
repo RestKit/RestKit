@@ -90,15 +90,10 @@
 
 - (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
     NSError* error = nil;
-    NSString* resourceContents = [self stringWithContentsOfResource:name withExtension:extension encoding:NSUTF8StringEncoding];
+    NSData* resourceContents = [self dataWithContentsOfResource:name withExtension:extension];
     NSString* MIMEType = [self MIMETypeForResource:name withExtension:extension];
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-    if (! parser) {
-        RKLogError(@"%@ Unable to parse Resource with name '%@' and extension '%@': failed to find parser registered to handle MIME Type '%@'", self, name, extension, MIMEType);
-        return nil;
-    }
 
-    id object = [parser objectFromString:resourceContents error:&error];
+    id object = [[RKParserRegistry sharedRegistry] parseData:resourceContents withMIMEType:MIMEType error:&error];
     if (object == nil) {
         RKLogCritical(@"%@ Failed to parse resource with name '%@' and extension '%@'. Error: %@", self, name, extension, [error localizedDescription]);
         return nil;

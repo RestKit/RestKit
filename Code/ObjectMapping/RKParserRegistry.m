@@ -19,6 +19,7 @@
 //
 
 #import "RKParserRegistry.h"
+#import "RKErrors.h"
 
 RKParserRegistry *gSharedRegistry;
 
@@ -53,6 +54,29 @@ RKParserRegistry *gSharedRegistry;
     [_MIMETypeToParserClasses release];
     [_MIMETypeToParserClassesRegularExpressions release];
     [super dealloc];
+}
+
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType encoding:(NSStringEncoding)encoding error:(NSError **)error {
+    id<RKParser> parser = [self parserForMIMEType:MIMEType];
+    if (!parser) {
+        if (error) {
+            NSString* errorMessage = [NSString stringWithFormat:@"Cannot parse data without a parser for MIME Type '%@'", MIMEType];
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMessage, NSLocalizedDescriptionKey, nil];
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKParserRegistryMissingParserError userInfo:userInfo];
+        }
+        return nil;
+    }
+
+    if ([parser respondsToSelector:@selector(objectFromData:error:)]) {
+        return [parser objectFromData:data error:error];
+    } else {
+        NSString *dataAsString = [[NSString alloc] initWithData:data encoding:encoding];
+        return [parser objectFromString:dataAsString error:error];
+    }
+}
+
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType error:(NSError **)error {
+    return [self parseData:data withMIMEType:MIMEType encoding:NSUTF8StringEncoding error:error];
 }
 
 - (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType {

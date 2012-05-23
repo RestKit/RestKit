@@ -278,12 +278,10 @@ return __VA_ARGS__;                                                             
 }
 
 - (id)parsedBody:(NSError**)error {
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:[self MIMEType]];
-    if (! parser) {
-        RKLogWarning(@"Unable to parse response body: no parser registered for MIME Type '%@'", [self MIMEType]);
-        return nil;
-    }
-    id object = [parser objectFromString:[self bodyAsString] error:error];
+    id object = [[RKParserRegistry sharedRegistry] parseData:self.body
+                                                withMIMEType:self.MIMEType
+                                                    encoding:[self bodyEncoding]
+                                                       error:error];
     if (object == nil) {
         if (error && *error) {
             RKLogError(@"Unable to parse response body: %@", [*error localizedDescription]);

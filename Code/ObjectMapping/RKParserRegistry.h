@@ -47,6 +47,34 @@
 + (void)setSharedRegistry:(RKParserRegistry *)registry;
 
 /**
+ Returns the parsed data by delegating to a registered parser for the specified
+ MIME type.
+
+ If the data cannot be handled directly by the parser, it is first converted to
+ a string and subsequently passed to the parser.
+
+ @param data The data to be parsed.
+ @param MIMEType The MIME Type of the content to be parsed.
+ @param encoding The NSStringEncoding to use when converting the data to string.
+ @param error A pointer to an NSError object.
+ @return The parsed object or nil if an error occurred during parsing.
+ */
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType encoding:(NSStringEncoding)encoding error:(NSError **)error;
+
+/**
+ Returns the parsed data by delegating to a registered parser for the specified
+ MIME type.
+
+ This simply invokes parseData:withMIMEType:encoding:error: with a NSUTF8StringEncoding.
+
+ @param data The data to be parsed.
+ @param MIMEType The MIME Type of the content to be parsed.
+ @param error A pointer to an NSError object.
+ @return The parsed object or nil if an error occurred during parsing.
+ */
+- (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType error:(NSError **)error;
+
+/**
  Returns an instance of the RKParser conformant class registered to handle content
  with the given MIME Type.
 
