@@ -119,6 +119,10 @@ RKParserRegistry *gSharedRegistry;
     return nil;
 }
 
+- (BOOL)canParseMIMEType:(NSString*)MIMEType {
+    return [self parserClassForMIMEType:MIMEType] != nil;
+}
+
 - (void)autoconfigure {
     Class parserClass = nil;
 

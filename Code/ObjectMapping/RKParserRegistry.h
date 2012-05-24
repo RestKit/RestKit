@@ -121,6 +121,14 @@
 #endif
 
 /**
+ Returns wether the registry has a registered parser for that MIME type.
+
+ @param MIMEType The MIME type to test if it is parsable.
+ @return YES if a registered parser for that MIME type is registered, NO otherwise.
+ */
+- (BOOL)canParseMIMEType:(NSString*)MIMEType;
+
+/**
  Automatically configure the registry via run-time reflection of the RKParser classes
  available that ship with RestKit. This happens automatically when the shared registry
  singleton is initialized and makes configuration transparent to users.

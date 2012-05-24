@@ -146,4 +146,30 @@
     assertThat(regexParser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
+- (void)testShoulBeAbleToParseForRegisteredMIMEType {
+    RKParserRegistry *registry = [RKParserRegistry new];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParserData)];
+    [registry setParserClass:mockParser forMIMEType:@"application/foobar"];
+    assertThatBool([registry canParseMIMEType:@"application/foobar"], is(equalToBool(YES)));
+}
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
+
+- (void)testShoulBeAbleToParseForRegisteredMIMETypeRegularExpression {
+    RKParserRegistry *registry = [RKParserRegistry new];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParserData)];
+    NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:@"(text|application)\\/json"
+                                                                                options:NSRegularExpressionSearch
+                                                                                  error:NULL];
+    [registry setParserClass:mockParser forMIMETypeRegularExpression:expression];
+    assertThatBool([registry canParseMIMEType:@"text/json"], is(equalToBool(YES)));
+}
+
+#endif
+
+- (void)testShoulNotBeAbleToParseForNotRegisteredMIMEType {
+    RKParserRegistry *registry = [RKParserRegistry new];
+    assertThatBool([registry canParseMIMEType:@"application/foobar"], is(equalToBool(NO)));
+}
+
 @end

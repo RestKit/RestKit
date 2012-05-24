@@ -284,15 +284,6 @@
     });
 }
 
-- (BOOL)canParseMIMEType:(NSString*)MIMEType {
-    if ([[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType]) {
-        return YES;
-    }
-
-    RKLogWarning(@"Unable to find parser for MIME Type '%@'", MIMEType);
-    return NO;
-}
-
 - (BOOL)isResponseMappable {
     if ([self.response isServiceUnavailable]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
@@ -315,7 +306,8 @@
         }
         [self informDelegateOfObjectLoadWithResultDictionary:resultDictionary];
         return NO;
-    } else if (NO == [self canParseMIMEType:[self.response MIMEType]]) {
+    } else if (NO == [[RKParserRegistry sharedRegistry] canParseMIMEType:[self.response MIMEType]]) {
+        RKLogWarning(@"Unable to find parser for MIME Type '%@'", [self.response MIMEType]);
         // We can't parse the response, it's unmappable regardless of the status code
         RKLogWarning(@"Encountered unexpected response with status code: %ld (MIME Type: %@ -> URL: %@)", (long) self.response.statusCode, self.response.MIMEType, self.URL);
         NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];
