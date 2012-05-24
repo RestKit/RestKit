@@ -99,7 +99,7 @@
 
 - (void)load
 {
-    RKLogInfo(@"Loading entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);
+    RKLogDebug(@"Loading entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:self.entity];
     [fetchRequest setResultType:NSManagedObjectIDResultType];
@@ -126,7 +126,7 @@
 
 - (void)flush
 {
-    RKLogInfo(@"Flushing entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);
+    RKLogDebug(@"Flushing entity cache for Entity '%@' by attribute '%@'", self.entity.name, self.attribute);
     self.attributeValuesToObjectIDs = nil;
 }
 
