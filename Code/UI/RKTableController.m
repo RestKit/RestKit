@@ -86,7 +86,7 @@
     [self.sections removeObjectsAtIndexes:indexes];
 }
 
-- (void)replaceObjectsAtIndexes:(NSIndexSet *)indexes withObjects:(NSArray *)objects {
+- (void)replaceSectionsAtIndexes:(NSIndexSet *)indexes withObjects:(NSArray *)objects {
     [self.sections replaceObjectsAtIndexes:indexes withObjects:objects];
 }
 
@@ -98,11 +98,6 @@
     }
 
     [[self sectionsProxy] addObject:section];
-
-    // TODO: move into KVO?
-    if ([self.delegate respondsToSelector:@selector(tableController:didInsertSection:atIndex:)]) {
-        [self.delegate tableController:self didInsertSection:section atIndex:[self.sections indexOfObject:section]];
-    }
 }
 
 - (void)removeSection:(RKTableSection *)section {
@@ -112,10 +107,6 @@
                                        reason:@"Tables must always have at least one section"
                                      userInfo:nil];
     }
-    NSUInteger index = [self.sections indexOfObject:section];
-    if ([self.delegate respondsToSelector:@selector(tableController:didRemoveSection:atIndex:)]) {
-        [self.delegate tableController:self didRemoveSection:section atIndex:index];
-    }
     [[self sectionsProxy] removeObject:section];
 }
 
@@ -123,10 +114,6 @@
     NSAssert(section, @"Cannot insert a nil section");
     section.tableController = self;
     [[self sectionsProxy] insertObject:section atIndex:index];
-
-    if ([self.delegate respondsToSelector:@selector(tableController:didInsertSection:atIndex:)]) {
-        [self.delegate tableController:self didInsertSection:section atIndex:index];
-    }
 }
 
 - (void)removeSectionAtIndex:(NSUInteger)index {
@@ -135,21 +122,10 @@
                                        reason:@"Tables must always have at least one section"
                                      userInfo:nil];
     }
-    RKTableSection* section = [self.sections objectAtIndex:index];
-    if ([self.delegate respondsToSelector:@selector(tableController:didRemoveSection:atIndex:)]) {
-        [self.delegate tableController:self didRemoveSection:section atIndex:index];
-    }
     [[self sectionsProxy] removeObjectAtIndex:index];
 }
 
 - (void)removeAllSections:(BOOL)recreateFirstSection {
-    NSUInteger sectionCount = [self.sections count];
-    for (NSUInteger index = 0; index < sectionCount; index++) {
-        RKTableSection* section = [self.sections objectAtIndex:index];
-        if ([self.delegate respondsToSelector:@selector(tableController:didRemoveSection:atIndex:)]) {
-            [self.delegate tableController:self didRemoveSection:section atIndex:index];
-        }
-    }
     [[self sectionsProxy] removeAllObjects];
 
     if (recreateFirstSection) {
@@ -204,7 +180,9 @@
 
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:self.defaultRowAnimation];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
+    if ([self.delegate respondsToSelector:@selector(tableController:didLoadObjects:inSection:)]) {
+        [self.delegate tableController:self didLoadObjects:objects inSection:section];
+    }
     
     // The load is finalized via network callbacks for
     // dynamic table controllers
@@ -345,13 +323,6 @@
         }
     } else {
         [self loadObjects:objects inSection:0];
-    }
-}
-
-- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation {
-    NSIndexPath *indexPath = [self indexPathForObject:object];
-    if (indexPath) {
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:rowAnimation];
     }
 }
 

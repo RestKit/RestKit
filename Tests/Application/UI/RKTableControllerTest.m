@@ -12,91 +12,11 @@
 #import "RKTestUser.h"
 #import "RKMappableObject.h"
 #import "RKAbstractTableController_Internals.h"
+#import "RKTableControllerTestDelegate.h"
 
 // Expose the object loader delegate for testing purposes...
 @interface RKTableController () <RKObjectLoaderDelegate>
 - (void)animationDidStopAddingSwipeView:(NSString*)animationID finished:(NSNumber*)finished context:(void*)context;
-@end
-
-@interface RKTestTableControllerDelegate : NSObject <RKTableControllerDelegate>
-
-@property(nonatomic, readonly, getter = isCancelled) BOOL cancelled;
-@property(nonatomic, assign) NSTimeInterval timeout;
-@property(nonatomic, assign) BOOL awaitingResponse;
-
-+ (id)tableControllerDelegate;
-- (void)waitForLoad;
-@end
-
-@implementation RKTestTableControllerDelegate
-
-@synthesize timeout = _timeout;
-@synthesize awaitingResponse = _awaitingResponse;
-@synthesize cancelled = _cancelled;
-
-+ (id)tableControllerDelegate {
-    return [[self new] autorelease];
-}
-
-- (id)init {
-    self = [super init];
-    if (self) {
-        _timeout = 3;
-        _awaitingResponse = NO;
-        _cancelled = NO;
-    }
-
-    return self;
-}
-
-- (void)waitForLoad {
-    _awaitingResponse = YES;
-    NSDate* startDate = [NSDate date];
-
-    while (_awaitingResponse) {
-        NSLog(@"Awaiting response = %d", _awaitingResponse);
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-        if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
-            NSLog(@"%@: Timed out!!!", self);
-            _awaitingResponse = NO;
-            [NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
-        }
-    }
-}
-
-#pragma RKTableControllerDelegate methods
-
-- (void)tableControllerDidFinishLoad:(RKAbstractTableController*)tableController {
-    _awaitingResponse = NO;
-}
-
-- (void)tableController:(RKAbstractTableController*)tableController didFailLoadWithError:(NSError *)error {
-    _awaitingResponse = NO;
-}
-
-- (void)tableControllerDidCancelLoad:(RKAbstractTableController*)tableController {
-    _awaitingResponse = NO;
-    _cancelled = YES;
-}
-
-// NOTE - Delegate methods below are implemented to allow trampoline through
-// OCMock expectations
-
-- (void)tableControllerDidStartLoad:(RKAbstractTableController*)tableController {}
-- (void)tableControllerDidBecomeEmpty:(RKAbstractTableController*)tableController {}
-- (void)tableController:(RKAbstractTableController*)tableController willLoadTableWithObjectLoader:(RKObjectLoader*)objectLoader {}
-- (void)tableController:(RKAbstractTableController*)tableController didLoadTableWithObjectLoader:(RKObjectLoader*)objectLoader {}
-- (void)tableController:(RKAbstractTableController*)tableController willBeginEditing:(id)object atIndexPath:(NSIndexPath*)indexPath {}
-- (void)tableController:(RKAbstractTableController*)tableController didEndEditing:(id)object atIndexPath:(NSIndexPath*)indexPath {}
-- (void)tableController:(RKAbstractTableController*)tableController didInsertSection:(RKTableSection*)section atIndex:(NSUInteger)sectionIndex {}
-- (void)tableController:(RKAbstractTableController*)tableController didRemoveSection:(RKTableSection*)section atIndex:(NSUInteger)sectionIndex {}
-- (void)tableController:(RKAbstractTableController*)tableController didInsertObject:(id)object atIndexPath:(NSIndexPath*)indexPath {}
-- (void)tableController:(RKAbstractTableController*)tableController didUpdateObject:(id)object atIndexPath:(NSIndexPath*)indexPath {}
-- (void)tableController:(RKAbstractTableController*)tableController didDeleteObject:(id)object atIndexPath:(NSIndexPath*)indexPath {}
-- (void)tableController:(RKAbstractTableController*)tableController willAddSwipeView:(UIView*)swipeView toCell:(UITableViewCell*)cell forObject:(id)object {}
-- (void)tableController:(RKAbstractTableController*)tableController willRemoveSwipeView:(UIView*)swipeView fromCell:(UITableViewCell*)cell forObject:(id)object {}
-- (void)tableControllerDidFinalizeLoad:(RKAbstractTableController *)tableController {}
-
 @end
 
 @interface RKTableControllerTestTableViewController : UITableViewController
@@ -105,10 +25,10 @@
 @implementation RKTableControllerTestTableViewController
 @end
 
-@interface RKTableControllerSpecViewController : UIViewController
+@interface RKTableControllerTestViewController : UIViewController
 @end
 
-@implementation RKTableControllerSpecViewController
+@implementation RKTableControllerTestViewController
 @end
 
 @interface RKTestUserTableViewCell : UITableViewCell
@@ -145,7 +65,7 @@
 
 - (void)testInitializeWithATableViewAndViewController {
     UITableView* tableView = [UITableView new];
-    RKTableControllerSpecViewController* viewController = [RKTableControllerSpecViewController new];
+    RKTableControllerTestViewController* viewController = [RKTableControllerTestViewController new];
     RKTableController* tableController = [RKTableController tableControllerWithTableView:tableView forViewController:viewController];
     assertThat(tableController.viewController, is(equalTo(viewController)));
     assertThat(tableController.tableView, is(equalTo(tableView)));
@@ -192,153 +112,84 @@
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThatInt([tableController.sections count], is(equalToInt(2)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testConnectTheSectionToTheTableModelOnAdd {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThat(section.tableController, is(equalTo(tableController)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testConnectTheSectionToTheCellMappingsOfTheTableModelWhenNil {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     assertThat(section.cellMappings, is(nilValue()));
     [tableController addSection:section];
     assertThat(section.cellMappings, is(equalTo(tableController.cellMappings)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotConnectTheSectionToTheCellMappingsOfTheTableModelWhenNonNil {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     section.cellMappings = [NSMutableDictionary dictionary];
     [tableController addSection:section];
     assertThatBool(section.cellMappings == tableController.cellMappings, is(equalToBool(NO)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testCountTheSections {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRemoveASection {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didRemoveSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
     [tableController removeSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testNotLetRemoveTheLastSection {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
     [tableController removeSection:section];
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
-- (void)testInsertASectionAtASpecificIndex {
+- (void)testInsertASectionAtATestificIndex {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* referenceSection = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:referenceSection
-                                                           atIndex:2];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
-    tableController.delegate = mockDelegate;
     [tableController insertSection:referenceSection atIndex:2];
     assertThatInt(tableController.sectionCount, is(equalToInt(6)));
     assertThat([tableController.sections objectAtIndex:2], is(equalTo(referenceSection)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRemoveASectionByIndex {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* section = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:section
-                                                           atIndex:1];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didRemoveSection:section
-                                                           atIndex:1];
-    tableController.delegate = mockDelegate;
     [tableController addSection:section];
     assertThatInt(tableController.sectionCount, is(equalToInt(2)));
     [tableController removeSectionAtIndex:1];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRaiseAnExceptionWhenAttemptingToRemoveTheLastSection {
@@ -360,58 +211,18 @@
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableSection* referenceSection = [RKTableSection section];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:referenceSection
-                                                           atIndex:2];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
-    tableController.delegate = mockDelegate;
     [tableController insertSection:referenceSection atIndex:2];
     assertThatInt(tableController.sectionCount, is(equalToInt(6)));
     assertThat([tableController sectionAtIndex:2], is(equalTo(referenceSection)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testRemoveAllSections {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
-    id mockDelegate = [OCMockObject partialMockForObject:delegate];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:OCMOCK_ANY
-                                                           atIndex:0];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:OCMOCK_ANY
-                                                           atIndex:1];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:OCMOCK_ANY
-                                                           atIndex:2];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:OCMOCK_ANY
-                                                           atIndex:3];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didInsertSection:OCMOCK_ANY
-                                                           atIndex:4];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didRemoveSection:OCMOCK_ANY
-                                                           atIndex:0];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didRemoveSection:OCMOCK_ANY
-                                                           atIndex:1];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didRemoveSection:OCMOCK_ANY
-                                                           atIndex:2];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didRemoveSection:OCMOCK_ANY
-                                                           atIndex:3];
-    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
-                                                  didRemoveSection:OCMOCK_ANY
-                                                           atIndex:4];
-    tableController.delegate = mockDelegate;
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
     [tableController addSection:[RKTableSection section]];
@@ -419,7 +230,6 @@
     assertThatInt(tableController.sectionCount, is(equalToInt(5)));
     [tableController removeAllSections];
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
-    STAssertNoThrow([mockDelegate verify], nil);
 }
 
 - (void)testReturnASectionByHeaderTitle {
@@ -435,7 +245,7 @@
 }
 
 - (void)testNotifyTheTableViewOnSectionInsertion {
-    RKTableControllerSpecViewController *viewController = [RKTableControllerSpecViewController new];
+    RKTableControllerTestViewController *viewController = [RKTableControllerTestViewController new];
     id mockTableView = [OCMockObject niceMockForClass:[UITableView class]];
     RKTableController *tableController = [RKTableController tableControllerWithTableView:mockTableView forViewController:viewController];
     [[mockTableView expect] insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:tableController.defaultRowAnimation];
@@ -444,7 +254,7 @@
 }
 
 - (void)testNotifyTheTableViewOnSectionRemoval {
-    RKTableControllerSpecViewController *viewController = [RKTableControllerSpecViewController new];
+    RKTableControllerTestViewController *viewController = [RKTableControllerTestViewController new];
     id mockTableView = [OCMockObject niceMockForClass:[UITableView class]];
     RKTableController *tableController = [RKTableController tableControllerWithTableView:mockTableView forViewController:viewController];
     [[mockTableView expect] insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:tableController.defaultRowAnimation];
@@ -456,7 +266,7 @@
 }
 
 - (void)testNotifyTheTableOfSectionRemovalAndReaddWhenRemovingAllSections {
-    RKTableControllerSpecViewController *viewController = [RKTableControllerSpecViewController new];
+    RKTableControllerTestViewController *viewController = [RKTableControllerTestViewController new];
     id mockTableView = [OCMockObject niceMockForClass:[UITableView class]];
     RKTableController *tableController = [RKTableController tableControllerWithTableView:mockTableView forViewController:viewController];
     [[mockTableView expect] deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:tableController.defaultRowAnimation];
@@ -468,7 +278,7 @@
     [mockTableView verify];
 }
 
-#pragma mark - UITableViewDataSource specs
+#pragma mark - UITableViewDataSource Tests
 
 - (void)testRaiseAnExceptionIfSentAMessageWithATableViewItIsNotBoundTo {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
@@ -649,7 +459,7 @@
     assertThat([tableController sectionAtIndex:0].objects, is(equalTo(objects)));
 }
 
-- (void)testLoadAnArrayOfObjectsToTheSpecifiedSection {
+- (void)testLoadAnArrayOfObjectsToTheTestifiedSection {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     [tableController addSection:[RKTableSection section]];
@@ -677,10 +487,8 @@
 - (void)testAllowYouToTriggerAnEmptyLoad {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKLogIntegerAsBinary(tableController.state);
     assertThatBool([tableController isLoaded], is(equalToBool(NO)));
     [tableController loadEmpty];
-    RKLogIntegerAsBinary(tableController.state);
     assertThatBool([tableController isLoaded], is(equalToBool(YES)));
     assertThatBool([tableController isEmpty], is(equalToBool(YES)));
 }
@@ -698,7 +506,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate tableControllerDelegate];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate tableControllerDelegate];
     delegate.timeout = 10;
     tableController.delegate = delegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -884,7 +692,7 @@
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
     tableController.sectionNameKeyPath = @"name";
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate tableControllerDelegate];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate tableControllerDelegate];
     delegate.timeout = 10;
     tableController.delegate = delegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -898,7 +706,7 @@
     assertThatInt(tableController.rowCount, is(equalToInt(3)));
 }
 
-#pragma mark - RKTableViewDelegate specs
+#pragma mark - RKTableViewDelegate Tests
 
 - (void)testNotifyTheDelegateWhenLoadingStarts {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
@@ -910,7 +718,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    id mockDelegate = [OCMockObject partialMockForObject:[RKTestTableControllerDelegate new]];
+    id mockDelegate = [OCMockObject partialMockForObject:[RKTableControllerTestDelegate new]];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidStartLoad:tableController];
     tableController.delegate = mockDelegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -932,7 +740,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidFinishLoad:tableController];
     tableController.delegate = mockDelegate;
@@ -955,7 +763,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[mockDelegate expect] tableControllerDidFinalizeLoad:tableController];
     tableController.delegate = mockDelegate;
@@ -978,7 +786,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController didFailLoadWithError:OCMOCK_ANY];
     tableController.delegate = mockDelegate;
@@ -1002,7 +810,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     delegate.timeout = 5;
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidBecomeEmpty:tableController];
@@ -1026,7 +834,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController willLoadTableWithObjectLoader:OCMOCK_ANY];
     tableController.delegate = mockDelegate;
@@ -1049,7 +857,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController didLoadTableWithObjectLoader:OCMOCK_ANY];
     tableController.delegate = mockDelegate;
@@ -1072,7 +880,7 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableControllerDidCancelLoad:tableController];
     tableController.delegate = mockDelegate;
@@ -1089,7 +897,7 @@
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                      didEndEditing:OCMOCK_ANY
@@ -1104,7 +912,7 @@
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   willBeginEditing:OCMOCK_ANY
@@ -1119,7 +927,7 @@
     NSArray* objects = [NSArray arrayWithObject:@"first object"];
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                    didInsertObject:@"first object"
@@ -1141,7 +949,7 @@
     NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                    didInsertObject:@"first object"
@@ -1165,7 +973,7 @@
     NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                    didInsertObject:@"first object"
@@ -1185,6 +993,82 @@
     STAssertNoThrow([mockDelegate verify], nil);
 }
 
+- (void)testNotifyTheDelegateWhenObjectsAreLoadedInASection {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = objectManager;
+    [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
+        mapping.cellClass = [RKTestUserTableViewCell class];
+        [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+        [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
+    }]];
+    
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
+    id mockDelegate = [OCMockObject partialMockForObject:delegate];
+    [[mockDelegate expect] tableController:tableController didLoadObjects:OCMOCK_ANY inSection:OCMOCK_ANY];
+    tableController.delegate = mockDelegate;
+    
+    [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [mockDelegate waitForLoad];
+    STAssertNoThrow([mockDelegate verify], nil);
+}
+
+- (void)testDelegateIsNotifiedOfWillDisplayCellForObjectAtIndexPath {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = objectManager;
+    [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
+        mapping.cellClass = [RKTestUserTableViewCell class];
+        [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    }]];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
+    id mockDelegate = [OCMockObject partialMockForObject:delegate];
+    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController willLoadTableWithObjectLoader:OCMOCK_ANY];
+    tableController.delegate = mockDelegate;
+    [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [[mockDelegate expect] tableController:tableController willDisplayCell:OCMOCK_ANY forObject:OCMOCK_ANY atIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    [[mockDelegate expect] tableController:tableController willDisplayCell:OCMOCK_ANY forObject:OCMOCK_ANY atIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+    [[mockDelegate expect] tableController:tableController willDisplayCell:OCMOCK_ANY forObject:OCMOCK_ANY atIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+    [[[UIApplication sharedApplication].windows objectAtIndex:0] setRootViewController:viewController];
+    [mockDelegate waitForLoad];
+    STAssertNoThrow([mockDelegate verify], nil);
+}
+
+- (void)testDelegateIsNotifiedOfDidSelectRowForObjectAtIndexPath {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = objectManager;
+    [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
+        mapping.cellClass = [RKTestUserTableViewCell class];
+        [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    }]];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
+    id mockDelegate = [OCMockObject partialMockForObject:delegate];
+    [[[mockDelegate expect] andForwardToRealObject] tableController:tableController willLoadTableWithObjectLoader:OCMOCK_ANY];
+    tableController.delegate = mockDelegate;
+    [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [[mockDelegate expect] tableController:tableController didSelectCell:OCMOCK_ANY forObject:OCMOCK_ANY atIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    [[[UIApplication sharedApplication].windows objectAtIndex:0] setRootViewController:viewController];
+    [mockDelegate waitForLoad];
+    [tableController tableView:tableController.tableView didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    STAssertNoThrow([mockDelegate verify], nil);
+}
+
 #pragma mark - Notifications
 
 - (void)testPostANotificationWhenLoadingStarts {
@@ -1200,7 +1084,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidStartLoadNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidStartLoadNotification object:tableController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     tableController.delegate = delegate;
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
         objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
@@ -1225,7 +1109,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidFinishLoadNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidFinishLoadNotification object:tableController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     tableController.delegate = delegate;
 
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -1251,7 +1135,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadObjectsNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidLoadObjectsNotification object:tableController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     tableController.delegate = delegate;
     
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -1277,7 +1161,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadErrorNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidLoadErrorNotification object:tableController userInfo:OCMOCK_ANY];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     tableController.delegate = delegate;
 
     [tableController loadTableFromResourcePath:@"/fail" usingBlock:^(RKObjectLoader* objectLoader) {
@@ -1304,7 +1188,7 @@
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadEmptyNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidLoadEmptyNotification object:tableController];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     tableController.delegate = delegate;
     [tableController loadTableFromResourcePath:@"/empty/array" usingBlock:^(RKObjectLoader* objectLoader) {
         objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
@@ -1341,7 +1225,6 @@
     assertThatBool([tableController isLoading], is(equalToBool(NO)));
     id mockLoader = [OCMockObject mockForClass:[RKObjectLoader class]];
     [tableController objectLoader:mockLoader didLoadObjects:[NSArray arrayWithObject:@"test"]];
-    RKLogIntegerAsBinary(tableController.state);
     assertThatBool([tableController isLoading], is(equalToBool(NO)));
     assertThatBool([tableController isLoaded], is(equalToBool(YES)));
     assertThatInteger(tableController.state, is(equalToInteger(RKTableControllerStateNormal)));
@@ -1785,7 +1668,7 @@
     assertThatBool(cellThree.hidden, is(equalToBool(NO)));
 }
 
-#pragma mark - UITableViewDelegate specs
+#pragma mark - UITableViewDelegate Tests
 
 - (void)testInvokeTheOnSelectCellForObjectAtIndexPathBlockHandler {
     RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
@@ -2285,7 +2168,7 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   willAddSwipeView:OCMOCK_ANY
@@ -2304,7 +2187,7 @@
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
     tableController.cellSwipeViewsEnabled = YES;
     RKTableItem* tableItem = [RKTableItem tableItem];
-    RKTestTableControllerDelegate* delegate = [RKTestTableControllerDelegate new];
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[[mockDelegate expect] andForwardToRealObject] tableController:tableController
                                                   willAddSwipeView:OCMOCK_ANY

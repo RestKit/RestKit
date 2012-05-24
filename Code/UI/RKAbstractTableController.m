@@ -112,7 +112,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     self = [self init];
     if (self) {
         self.tableView = theTableView;
-        self.viewController = theViewController;
+        _viewController = theViewController; // Assign directly to avoid side-effect of overloaded accessor method
         self.variableHeightRows = NO;
         self.defaultRowAnimation = UITableViewRowAnimationFade;
         self.overlayFrame = CGRectZero;
@@ -201,8 +201,6 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 }
 
 - (void)setViewController:(UIViewController *)viewController {
-    _viewController = viewController;
-
     if ([viewController isKindOfClass:[UITableViewController class]]) {
         self.tableView = [(UITableViewController*)viewController tableView];
     }
@@ -466,6 +464,10 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
         cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
     }
+    
+    if ([self.delegate respondsToSelector:@selector(tableController:didSelectCell:forObject:atIndexPath:)]) {
+        [self.delegate tableController:self didSelectCell:cell forObject:object atIndexPath:indexPath];
+    }
 }
 
 - (void)tableView:(UITableView *)theTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -475,6 +477,10 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     if (cellMapping.onCellWillAppearForObjectAtIndexPath) {
         cellMapping.onCellWillAppearForObjectAtIndexPath(cell, mappableObject, indexPath);
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(tableController:willDisplayCell:forObject:atIndexPath:)]) {
+        [self.delegate tableController:self willDisplayCell:cell forObject:mappableObject atIndexPath:indexPath];
     }
 
     // Informal protocol
@@ -633,7 +639,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 - (void)requestDidStartLoad:(RKRequest *)request {
     RKLogTrace(@"tableController %@ started loading.", self);
-    self.loading = YES;
+    [self didStartLoad];
 }
 
 - (void)requestDidCancelLoad:(RKRequest *)request {
@@ -673,8 +679,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
     RKLogError(@"tableController %@ failed network load with error: %@", self, error);
-    self.error = error;
-    [self didFinishLoad];
+    [self didFailLoadWithError:error];
 }
 
 - (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
@@ -686,13 +691,26 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [self didFinishLoad];
 }
 
+- (void)didStartLoad {
+    self.loading = YES;
+}
+
+- (void)didFailLoadWithError:(NSError *)error {
+    self.error = error;
+    [self didFinishLoad];
+}
+
 - (void)didFinishLoad {
     self.empty = [self isConsideredEmpty];
     self.loading = [self.objectLoader isLoading]; // Mutate loading state after we have adjusted empty
     self.loaded = YES;
-
-    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinalizeLoad:)]) {
-        [_delegate performSelector:@selector(tableControllerDidFinalizeLoad:) withObject:self];
+    
+    if (![self isEmpty] && ![self isLoading]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
+    }
+    
+    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinalizeLoad:)]) {        
+        [self.delegate performSelector:@selector(tableControllerDidFinalizeLoad:) withObject:self];      
     }
 }
 
@@ -1316,6 +1334,13 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
     if (self.objectLoader.queue && ![self.objectLoader.queue containsRequest:self.objectLoader]) {
         [self.objectLoader.queue addRequest:self.objectLoader];
+    }
+}
+
+- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation {
+    NSIndexPath *indexPath = [self indexPathForObject:object];
+    if (indexPath) {
+        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:rowAnimation];
     }
 }
 

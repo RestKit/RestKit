@@ -17,6 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 #import "RKFetchedResultsTableController.h"
 #import "RKAbstractTableController_Internals.h"
 #import "RKManagedObjectStore.h"
@@ -33,12 +34,13 @@
 @interface RKFetchedResultsTableController ()
 @property (nonatomic, retain, readwrite) NSFetchedResultsController *fetchedResultsController;
 
-- (void)performFetch;
+- (BOOL)performFetch:(NSError **)error;
 - (void)updateSortedArray;
 @end
 
 @implementation RKFetchedResultsTableController
 
+@dynamic delegate;
 @synthesize fetchedResultsController = _fetchedResultsController;
 @synthesize resourcePath = _resourcePath;
 @synthesize heightForHeaderInSection = _heightForHeaderInSection;
@@ -77,19 +79,31 @@
 
 #pragma mark - Helpers
 
-- (void)performFetch {
+- (BOOL)performFetch:(NSError **)error {
     // TODO: We could be doing a KVO on the predicate/sortDescriptors/sectionKeyPath and intelligently deleting the cache
     [NSFetchedResultsController deleteCacheWithName:_fetchedResultsController.cacheName];
-
-    NSError* error;
-    BOOL success = [_fetchedResultsController performFetch:&error];
+    BOOL success = [_fetchedResultsController performFetch:error];
     if (!success) {
-        self.error = error;
-        RKLogError(@"performFetch failed with error: %@", [error localizedDescription]);
+        RKLogError(@"performFetch failed with error: %@", [*error localizedDescription]);
+        return NO;
     } else {
         RKLogTrace(@"performFetch completed successfully");
-        [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
+        for (NSUInteger index = 0; index < [self sectionCount]; index++) {
+            if ([self.delegate respondsToSelector:@selector(tableController:didInsertSectionAtIndex:)]) {
+                [self.delegate tableController:self didInsertSectionAtIndex:index];
+            }
+            
+            if ([self.delegate respondsToSelector:@selector(tableController:didInsertObject:atIndexPath:)]) {
+                for (NSUInteger row = 0; row < [self numberOfRowsInSection:index]; row++) {
+                    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:index];
+                    id object = [self objectForRowAtIndexPath:indexPath];
+                    [self.delegate tableController:self didInsertObject:object atIndexPath:indexPath];
+                }
+            }
+        }
     }
+    
+    return YES;
 }
 
 - (void)updateSortedArray {
@@ -238,10 +252,14 @@
     [_fetchedResultsController release];
     _fetchedResultsController.delegate = self;
     
-
-    [self performFetch];
+    // Perform the load
+    NSError *error;
+    [self didStartLoad];
+    BOOL success = [self performFetch:&error];
+    if (! success) {
+        [self didFailLoadWithError:error];
+    }
     [self updateSortedArray];
-
     [self.tableView reloadData];
     [self didFinishLoad];
 
@@ -512,7 +530,7 @@
 - (void)controllerWillChangeContent:(NSFetchedResultsController*)controller {
     RKLogTrace(@"Beginning updates for fetchedResultsController (%@). Current section count = %d (resource path: %@)", controller, [[controller sections] count], _resourcePath);
 
-    if(_sortSelector) return;
+    if (_sortSelector) return;
 
     [self.tableView beginUpdates];
     _isEmptyBeforeAnimation = [self isEmpty];
@@ -523,17 +541,25 @@
            atIndex:(NSUInteger)sectionIndex
      forChangeType:(NSFetchedResultsChangeType)type {
 
-    if(_sortSelector) return;
+    if (_sortSelector) return;
 
     switch (type) {
         case NSFetchedResultsChangeInsert:
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                           withRowAnimation:UITableViewRowAnimationFade];
+            
+            if ([self.delegate respondsToSelector:@selector(tableController:didInsertSectionAtIndex:)]) {
+                [self.delegate tableController:self didInsertSectionAtIndex:sectionIndex];
+            }
             break;
 
         case NSFetchedResultsChangeDelete:
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                           withRowAnimation:UITableViewRowAnimationFade];
+            
+            if ([self.delegate respondsToSelector:@selector(tableController:didDeleteSectionAtIndex:)]) {
+                [self.delegate tableController:self didDeleteSectionAtIndex:sectionIndex];
+            }
             break;
 
         default:
@@ -548,7 +574,7 @@
      forChangeType:(NSFetchedResultsChangeType)type
       newIndexPath:(NSIndexPath *)newIndexPath {
 
-    if(_sortSelector) return;
+    if (_sortSelector) return;
 
     NSIndexPath* adjIndexPath = [self indexPathForFetchedResultsIndexPath:indexPath];
     NSIndexPath* adjNewIndexPath = [self indexPathForFetchedResultsIndexPath:newIndexPath];
@@ -595,13 +621,12 @@
 
     [self updateSortedArray];
 
-    if(_sortSelector) {
+    if (_sortSelector) {
         [self.tableView reloadData];
     } else {
         [self.tableView endUpdates];
     }
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
     [self didFinishLoad];
 }
 

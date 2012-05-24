@@ -22,6 +22,17 @@
 
 typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteger sectionIndex, NSString *sectionTitle);
 
+@class RKFetchedResultsTableController;
+@protocol RKFetchedResultsTableControllerDelegate <RKAbstractTableControllerDelegate>
+
+@optional
+
+// Sections
+- (void)tableController:(RKFetchedResultsTableController *)tableController didInsertSectionAtIndex:(NSUInteger)sectionIndex;
+- (void)tableController:(RKFetchedResultsTableController *)tableController didDeleteSectionAtIndex:(NSUInteger)sectionIndex;
+
+@end
+
 /**
  Instances of RKFetchedResultsTableController provide an interface for driving a UITableView
  */
@@ -33,6 +44,7 @@ typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteg
     BOOL _isEmptyBeforeAnimation;
 }
 
+@property (nonatomic, assign) id<RKFetchedResultsTableControllerDelegate> delegate;
 @property (nonatomic, retain, readonly) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, copy) NSString *resourcePath;
 @property (nonatomic, retain) NSFetchRequest *fetchRequest;

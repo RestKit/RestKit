@@ -38,6 +38,10 @@
 @property (nonatomic, readonly) RKCache *cache;
 @property (nonatomic, retain) UIView *pullToRefreshHeaderView;
 
+#pragma mark - Subclass Load Event Hooks
+
+- (void)didStartLoad;
+
 /**
  Must be invoked when the table controller has finished loading.
 
@@ -45,6 +49,7 @@
  and cleaning up the table overlay view.
  */
 - (void)didFinishLoad;
+- (void)didFailLoadWithError:(NSError *)error;
 
 #pragma mark - Table View Overlay
 
@@ -59,14 +64,6 @@
 
 - (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture;
 - (void)resetPullToRefreshRecognizer;
-
-#pragma mark - State Mutators
-
-- (void)setLoading:(BOOL)loading;
-- (void)setLoaded:(BOOL)loaded;
-- (void)setEmpty:(BOOL)empty;
-- (void)setOffline:(BOOL)offline;
-- (void)setErrorState:(BOOL)error;
 
 /**
  Returns a Boolean value indicating if the table controller

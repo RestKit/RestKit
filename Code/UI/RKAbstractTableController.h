@@ -152,6 +152,7 @@ typedef NSUInteger RKTableControllerState;
  */
 - (NSIndexPath *)indexPathForObject:(id)object;
 - (UITableViewCell *)cellForObject:(id)object;
+- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 
 ///-----------------------------------------------------------------------------
 /// @name Header and Footer Rows
@@ -399,7 +400,6 @@ typedef NSUInteger RKTableControllerState;
 - (void)tableControllerDidFinishLoad:(RKAbstractTableController *)tableController;
 - (void)tableController:(RKAbstractTableController *)tableController didFailLoadWithError:(NSError *)error;
 - (void)tableControllerDidCancelLoad:(RKAbstractTableController *)tableController;
-- (void)tableController:(RKAbstractTableController *)tableController didLoadObjects:(NSArray *)objects inSection:(NSUInteger)sectionIndex; // NOT IMPLEMENTED
 
 /**
  Sent to the delegate when the controller is really and truly finished loading/updating, whether from the network or from Core Data, 
@@ -422,11 +422,6 @@ typedef NSUInteger RKTableControllerState;
  */
 - (void)tableControllerDidBecomeOffline:(RKAbstractTableController *)tableController;
 
-// Sections
-// TODO: Can these even be implemented???
-- (void)tableController:(RKAbstractTableController *)tableController didInsertSectionAtIndex:(NSUInteger)sectionIndex;
-- (void)tableController:(RKAbstractTableController *)tableController didRemoveSectionAtIndex:(NSUInteger)sectionIndex;
-
 // Objects
 - (void)tableController:(RKAbstractTableController *)tableController didInsertObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
 - (void)tableController:(RKAbstractTableController *)tableController didUpdateObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
@@ -440,15 +435,9 @@ typedef NSUInteger RKTableControllerState;
 - (void)tableController:(RKAbstractTableController *)tableController willAddSwipeView:(UIView *)swipeView toCell:(UITableViewCell *)cell forObject:(id)object;
 - (void)tableController:(RKAbstractTableController *)tableController willRemoveSwipeView:(UIView *)swipeView fromCell:(UITableViewCell *)cell forObject:(id)object;
 
-// BELOW NOT YET IMPLEMENTED
-
 // Cells
 - (void)tableController:(RKAbstractTableController *)tableController willDisplayCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
 - (void)tableController:(RKAbstractTableController *)tableController didSelectCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
-
-// Objects
-- (void)tableControllerDidBeginUpdates:(RKAbstractTableController *)tableController;
-- (void)tableControllerDidEndUpdates:(RKAbstractTableController *)tableController;
 
 @end
 

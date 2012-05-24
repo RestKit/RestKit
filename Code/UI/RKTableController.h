@@ -33,8 +33,7 @@
 
 @optional
 
-- (void)tableController:(RKAbstractTableController *)tableController didInsertSection:(RKTableSection *)section atIndex:(NSUInteger)sectionIndex;
-- (void)tableController:(RKAbstractTableController *)tableController didRemoveSection:(RKTableSection *)section atIndex:(NSUInteger)sectionIndex;
+- (void)tableController:(RKTableController *)tableController didLoadObjects:(NSArray *)objects inSection:(RKTableSection *)section;
 
 @end
 
@@ -49,9 +48,6 @@
 - (void)loadObjects:(NSArray *)objects;
 - (void)loadObjects:(NSArray *)objects inSection:(NSUInteger)sectionIndex;
 - (void)loadEmpty;
-
-// Move to superclass???
-- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 
 /**
  Load an array of RKTableItems into table cells of the specified class. A table cell
@@ -134,7 +130,6 @@
  Returns the first section with the specified header title.
  @param title The header title.
  */
-// MOVED
 - (RKTableSection *)sectionWithHeaderTitle:(NSString *)title;
 
 /**
@@ -143,7 +138,6 @@
  @param section Must be a valid non nil RKTableViewSection.
  @return The index of the given section if contained within the receiver, otherwise NSNotFound.
  */
-// MOVED
 - (NSUInteger)indexForSection:(RKTableSection *)section;
 
 // Coalesces a series of table view updates performed within the block into
