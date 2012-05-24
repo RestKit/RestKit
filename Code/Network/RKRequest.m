@@ -451,6 +451,18 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
 
+
+- (void)shouldLoadFromCacheYes:(void(^)(void))yesCompletion no:(void(^)(void))noCompletion {
+    // if RKRequestCachePolicyEnabled or if RKRequestCachePolicyTimeout and we are in the timeout
+    dispatch_queue_t background = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_queue_t current = dispatch_get_current_queue();
+    dispatch_async(background, ^{
+        BOOL loadFromCache = [self shouldLoadFromCache];
+        if (loadFromCache) dispatch_async(current, ^{ yesCompletion(); });
+        else               dispatch_async(current, ^{ noCompletion(); });
+    });
+}
+
 - (BOOL)shouldLoadFromCache {
     // if RKRequestCachePolicyEnabled or if RKRequestCachePolicyTimeout and we are in the timeout
     if ([self.cache hasResponseForRequest:self]) {
@@ -481,70 +493,74 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 - (void)sendAsynchronously {
     NSAssert(NO == _isLoading || NO == _isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     _sentSynchronously = NO;
-    if ([self shouldLoadFromCache]) {
-        RKResponse* response = [self loadResponseFromCache];
-        _isLoading = YES;
-        [self performSelector:@selector(didFinishLoad:) withObject:response afterDelay:0];
-    } else if ([self shouldDispatchRequest]) {
-        [self createTimeoutTimer];
+    _isLoading = YES;
+    [self shouldLoadFromCacheYes:^{
+        dispatch_queue_t background = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        dispatch_queue_t current = dispatch_get_current_queue();
+        dispatch_async(background, ^{
+            RKResponse* response = [self loadResponseFromCache];
+            dispatch_async(current, ^{
+                [self performSelector:@selector(didFinishLoad:) withObject:response afterDelay:0];
+            });
+        });
+    } no: ^{
+        if ([self shouldDispatchRequest]) {
+            [self createTimeoutTimer];
 #if TARGET_OS_IPHONE
-        // Background Request Policy support
-        UIApplication* app = [UIApplication sharedApplication];
-        if (self.backgroundPolicy == RKRequestBackgroundPolicyNone ||
-            NO == [app respondsToSelector:@selector(beginBackgroundTaskWithExpirationHandler:)]) {
-            // No support for background (iOS 3.x) or the policy is none -- just fire the request
-            [self fireAsynchronousRequest];
-        } else if (self.backgroundPolicy == RKRequestBackgroundPolicyCancel || self.backgroundPolicy == RKRequestBackgroundPolicyRequeue) {
-            // For cancel or requeue behaviors, we watch for background transition notifications
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(appDidEnterBackgroundNotification:)
-                                                         name:UIApplicationDidEnterBackgroundNotification
-                                                       object:nil];
-            [self fireAsynchronousRequest];
-        } else if (self.backgroundPolicy == RKRequestBackgroundPolicyContinue) {
-            RKLogInfo(@"Beginning background task to perform processing...");
+            // Background Request Policy support
+            UIApplication* app = [UIApplication sharedApplication];
+            if (self.backgroundPolicy == RKRequestBackgroundPolicyNone ||
+                NO == [app respondsToSelector:@selector(beginBackgroundTaskWithExpirationHandler:)]) {
+                // No support for background (iOS 3.x) or the policy is none -- just fire the request
+                [self fireAsynchronousRequest];
+            } else if (self.backgroundPolicy == RKRequestBackgroundPolicyCancel || self.backgroundPolicy == RKRequestBackgroundPolicyRequeue) {
+                // For cancel or requeue behaviors, we watch for background transition notifications
+                [[NSNotificationCenter defaultCenter] addObserver:self
+                                                         selector:@selector(appDidEnterBackgroundNotification:)
+                                                             name:UIApplicationDidEnterBackgroundNotification
+                                                           object:nil];
+                [self fireAsynchronousRequest];
+            } else if (self.backgroundPolicy == RKRequestBackgroundPolicyContinue) {
+                RKLogInfo(@"Beginning background task to perform processing...");
 
-            // Fork a background task for continueing a long-running request
-            __block RKRequest* weakSelf = self;
-            __block id<RKRequestDelegate> weakDelegate = _delegate;
-            _backgroundTaskIdentifier = [app beginBackgroundTaskWithExpirationHandler:^{
-                RKLogInfo(@"Background request time expired, canceling request.");
+                // Fork a background task for continueing a long-running request
+                __block RKRequest* weakSelf = self;
+                __block id<RKRequestDelegate> weakDelegate = _delegate;
+                _backgroundTaskIdentifier = [app beginBackgroundTaskWithExpirationHandler:^{
+                    RKLogInfo(@"Background request time expired, canceling request.");
 
-                [weakSelf cancelAndInformDelegate:NO];
-                [weakSelf cleanupBackgroundTask];
+                    [weakSelf cancelAndInformDelegate:NO];
+                    [weakSelf cleanupBackgroundTask];
 
-                if ([weakDelegate respondsToSelector:@selector(requestDidTimeout:)]) {
-                    [weakDelegate requestDidTimeout:weakSelf];
-                }
-            }];
+                    if ([weakDelegate respondsToSelector:@selector(requestDidTimeout:)]) {
+                        [weakDelegate requestDidTimeout:weakSelf];
+                    }
+                }];
 
-            // Start the potentially long-running request
-            [self fireAsynchronousRequest];
-        }
+                // Start the potentially long-running request
+                [self fireAsynchronousRequest];
+            }
 #else
-        [self fireAsynchronousRequest];
+            [self fireAsynchronousRequest];
 #endif
-	} else {
-        RKLogTrace(@"Declined to dispatch request %@: reachability observer reported the network is not available.", self);
+        } else {
+            RKLogTrace(@"Declined to dispatch request %@: reachability observer reported the network is not available.", self);
 
-	    if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
-			[self.cache hasResponseForRequest:self]) {
+            if (_cachePolicy & RKRequestCachePolicyLoadIfOffline &&
+                [self.cache hasResponseForRequest:self]) {
+                [self didFinishLoad:[self loadResponseFromCache]];
 
-			_isLoading = YES;
-
-            [self didFinishLoad:[self loadResponseFromCache]];
-
-		} else {
-            RKLogError(@"Failed to send request to %@ due to unreachable network. Reachability observer = %@", [[self URL] absoluteString], self.reachabilityObserver);
-            NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
-    		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-    								  errorMessage, NSLocalizedDescriptionKey,
-    								  nil];
-            NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
-            _isLoading = YES;
-            [self performSelector:@selector(didFailLoadWithError:) withObject:error afterDelay:0];
+            } else {
+                RKLogError(@"Failed to send request to %@ due to unreachable network. Reachability observer = %@", [[self URL] absoluteString], self.reachabilityObserver);
+                NSString* errorMessage = [NSString stringWithFormat:@"The client is unable to contact the resource at %@", [[self URL] absoluteString]];
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          errorMessage, NSLocalizedDescriptionKey,
+                                          nil];
+                NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
+                [self performSelector:@selector(didFailLoadWithError:) withObject:error afterDelay:0];
+            }
         }
-	}
+    }];
 }
 
 - (RKResponse*)sendSynchronously {
@@ -668,6 +684,25 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (void)didFinishLoad:(RKResponse*)response {
+    if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
+        if (_sentSynchronously) {
+            response = [self loadResponseFromCache];
+            [self updateInternalCacheDate];
+        } else {
+            dispatch_queue_t current = dispatch_get_current_queue();
+            dispatch_queue_t background = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+            dispatch_async(background, ^{
+                RKResponse* rsp = [self loadResponseFromCache];
+                [self updateInternalCacheDate];
+                dispatch_async(current, ^{ [self didFinishLoadFinalize:rsp]; });
+            });
+            return;
+        }
+    }
+    [self didFinishLoadFinalize:response];
+}
+
+- (void)didFinishLoadFinalize:(RKResponse*)response {
   	_isLoading = NO;
   	_isLoaded = YES;
 
@@ -676,13 +711,11 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 	RKResponse* finalResponse = response;
 
-	if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
-		finalResponse = [self loadResponseFromCache];
-        [self updateInternalCacheDate];
-	}
-
 	if (![response wasLoadedFromCache] && [response isSuccessful] && (_cachePolicy != RKRequestCachePolicyNone)) {
-		[self.cache storeResponse:response forRequest:self];
+        dispatch_queue_t background = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        dispatch_async(background, ^{
+            [self.cache storeResponse:response forRequest:self];
+        });
 	}
 
 	if ([_delegate respondsToSelector:@selector(request:didLoadResponse:)]) {
