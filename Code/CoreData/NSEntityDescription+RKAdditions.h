@@ -81,4 +81,13 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  */
 - (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value;
 
+/**
+ Coerces the given value into the class representing the primary key. Currently support NSString
+ and NSNumber coercsions.
+ 
+ @bug **NOTE** This API is temporary and will be deprecated and replaced.
+ @since 0.10.1 
+ */
+- (id)coerceValueForPrimaryKey:(id)primaryKeyValue;
+
 @end

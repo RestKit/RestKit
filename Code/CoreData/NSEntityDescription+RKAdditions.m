@@ -74,12 +74,12 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
     return (NSPredicate *) objc_getAssociatedObject(self, &primaryKeyPredicateKey);
 }
 
-- (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value
+- (id)coerceValueForPrimaryKey:(id)primaryKeyValue
 {
-    id searchValue = value;
+    id searchValue = primaryKeyValue;
     Class theClass = [self primaryKeyAttributeClass];
     if (theClass) {
-        // TODO: This coercsion behave should be pluggable and reused from the mapper
+        // TODO: This coercsion behavior should be pluggable and reused from the mapper
         if ([theClass isSubclassOfClass:[NSNumber class]] && ![searchValue isKindOfClass:[NSNumber class]]) {
             // Handle NSString -> NSNumber
             if ([searchValue isKindOfClass:[NSString class]]) {
@@ -92,7 +92,14 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
             }
         }
     }
-    NSDictionary *variables = [NSDictionary dictionaryWithObject:searchValue
+    
+    return searchValue;
+}
+
+- (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value
+{
+    id substitutionValue = [self coerceValueForPrimaryKey:value];
+    NSDictionary *variables = [NSDictionary dictionaryWithObject:substitutionValue
                                                           forKey:RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubstitutionVariable];
     return [[self predicateForPrimaryKeyAttribute] predicateWithSubstitutionVariables:variables];
 }

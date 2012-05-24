@@ -182,7 +182,8 @@
         object = [[[NSManagedObject alloc] initWithEntity:entity
                            insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
         if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
-            [object setValue:primaryKeyValue forKey:primaryKeyAttribute];
+            id coercedPrimaryKeyValue = [entity coerceValueForPrimaryKey:primaryKeyValue];
+            [object setValue:coercedPrimaryKeyValue forKey:primaryKeyAttribute];
         }
 
         if ([self.objectStore.cacheStrategy respondsToSelector:@selector(didCreateObject:)]) {
