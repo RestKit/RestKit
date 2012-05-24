@@ -1915,7 +1915,8 @@
     RKObjectMapping *serializationMapping = [userMapping inverseMapping];
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:user mapping:serializationMapping];
     NSError* error = nil;
-    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    NSData *data = [[serializer serializationForMIMEType:RKMIMETypeJSON error:&error] HTTPBody];
+    NSString *JSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
     assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"state\":\"North Carolina\"}}")));
 }
@@ -1939,7 +1940,8 @@
     RKObjectMapping *serializationMapping = [userMapping inverseMapping];
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:user mapping:serializationMapping];
     NSError* error = nil;
-    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    NSData *data = [[serializer serializationForMIMEType:RKMIMETypeJSON error:&error] HTTPBody];
+    NSString *JSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     assertThat(error, is(nilValue()));
     assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"friends\":[{\"city\":\"Carrboro\"},{\"city\":\"New York City\"}]}")));
 }
@@ -1963,7 +1965,8 @@
     RKObjectMapping *serializationMapping = [humanMapping inverseMapping];
     RKObjectSerializer* serializer = [RKObjectSerializer serializerWithObject:blake mapping:serializationMapping];
     NSError* error = nil;
-    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    NSData *data = [[serializer serializationForMIMEType:RKMIMETypeJSON error:&error] HTTPBody];
+    NSString *JSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     NSDictionary *parsedJSON = [JSON performSelector:@selector(objectFromJSONString)];
     assertThat(error, is(nilValue()));
     assertThat([parsedJSON valueForKey:@"name"], is(equalTo(@"Blake Watters")));

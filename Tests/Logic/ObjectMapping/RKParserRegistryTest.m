@@ -30,7 +30,7 @@
 
 @implementation RKParserRegistryTest
 
-- (void)testShouldReturnNilAndSetErrorIfNoParserRegistered {
+- (void)testShouldReturnNilAndSetErrorIfNoParserRegisteredWhenParsing {
     NSError *error = nil;
     id object = [[RKParserRegistry new] parseData:[NSData data]
                                      withMIMEType:@"application/json"
@@ -73,6 +73,47 @@
                            encoding:NSUTF8StringEncoding
                               error:&error];
     assertThat(object, is(parsedData));
+    assertThat(error, is(nilValue()));
+}
+
+- (void)testShouldReturnNilAndSetErrorIfNoParserRegisteredWhenSerializing {
+    NSError *error = nil;
+    NSObject *object = [NSObject new];
+    NSData *data = [[RKParserRegistry new] serializeObject:object
+                                               forMIMEType:@"application/json"
+                                                     error:&error];
+    assertThat(data, is(nilValue()));
+    assertThat(error, isNot(nilValue()));
+    assertThatInteger([error code], is(equalToInt(RKParserRegistryMissingParserError)));
+    assertThat([error domain], is(equalTo(RKErrorDomain)));
+}
+
+- (void)testShouldSerializeWithDataParser {
+    NSError *error = nil;
+    NSData *data = [NSData data];
+    NSObject *object = [NSObject new];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParserData)];
+    [[[mockParser expect] andReturn:data] dataFromObject:object error:[OCMArg setTo:error]];
+    RKParserRegistry *registry = [RKParserRegistry sharedRegistry];
+    id mockRegistry = [OCMockObject partialMockForObject:registry];
+    [[[mockRegistry stub] andReturn:mockParser] parserForMIMEType:@"application/bson"];
+    NSData *serializedData = [registry serializeObject:object forMIMEType:@"application/bson" error:&error];
+    assertThat(serializedData, is(equalTo(data)));
+    assertThat(error, is(nilValue()));
+}
+
+- (void)testShouldSerializeWithStringParser {
+    NSError *error = nil;
+    NSString *string = @"test";
+    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSObject *object = [NSObject new];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParserString)];
+    [[[mockParser expect] andReturn:string] stringFromObject:object error:[OCMArg setTo:error]];
+    RKParserRegistry *registry = [RKParserRegistry sharedRegistry];
+    id mockRegistry = [OCMockObject partialMockForObject:registry];
+    [[[mockRegistry stub] andReturn:mockParser] parserForMIMEType:@"application/json"];
+    NSData *serializedData = [registry serializeObject:object forMIMEType:@"application/json" error:&error];
+    assertThat(serializedData, is(equalTo(data)));
     assertThat(error, is(nilValue()));
 }
 

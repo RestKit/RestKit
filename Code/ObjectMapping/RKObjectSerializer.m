@@ -56,7 +56,7 @@
 }
 
 // Return it serialized into a dictionary
-- (id)serializedObject:(NSError**)error {
+- (NSMutableDictionary *)serializedAsDictionary:(NSError**)error {
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withMapping:_mapping];
     operation.delegate = self;
@@ -74,35 +74,17 @@
     return dictionary;
 }
 
-- (id)serializedObjectForMIMEType:(NSString*)MIMEType error:(NSError**)error {
-    // TODO: This will fail for form encoded...
-    id serializedObject = [self serializedObject:error];
-    if (serializedObject) {
-        id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-        NSString* string = [parser stringFromObject:serializedObject error:error];
-        if (string == nil) {
-            return nil;
-        }
-
-        return string;
-    }
-
-    return nil;
-}
-
 - (id<RKRequestSerializable>)serializationForMIMEType:(NSString *)MIMEType error:(NSError **)error {
-    if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
+    NSDictionary *dictionary = [self serializedAsDictionary:error];
+    if (!dictionary) {
+        return nil;
+    } else if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
         // Dictionaries are natively RKRequestSerializable as Form Encoded
-        return [self serializedObject:error];
+        return dictionary;
     } else {
-        NSString* string = [self serializedObjectForMIMEType:MIMEType error:error];
-        if (string) {
-            NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
-            return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
-        }
+        NSData* data = [[RKParserRegistry sharedRegistry] serializeObject:dictionary forMIMEType:MIMEType error:error];
+        return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
     }
-
-    return nil;
 }
 
 #pragma mark - RKObjectMappingOperationDelegate

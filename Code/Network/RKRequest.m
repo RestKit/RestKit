@@ -35,6 +35,7 @@
 #import "RKParams.h"
 #import "RKParserRegistry.h"
 #import "RKRequestSerialization.h"
+#import "RKObjectSerializer.h"
 
 NSString *RKRequestMethodNameFromType(RKRequestMethod method) {
     switch (method) {
@@ -805,16 +806,16 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 - (void)setBody:(NSDictionary *)body forMIMEType:(NSString *)MIMEType {
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-
-    NSError *error = nil;
-    NSString* parsedValue = [parser stringFromObject:body error:&error];
-
-    RKLogTrace(@"parser=%@, error=%@, parsedValue=%@", parser, error, parsedValue);
-
-    if (error == nil && parsedValue) {
-        self.params = [RKRequestSerialization serializationWithData:[parsedValue dataUsingEncoding:NSUTF8StringEncoding]
-                                                           MIMEType:MIMEType];
+    if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
+        self.params = body;
+    } else {
+        NSError *error = nil;
+        NSData* data = [[RKParserRegistry sharedRegistry] serializeObject:body
+                                                              forMIMEType:MIMEType
+                                                                    error:&error];
+        if (error == nil && data) {
+            self.params = [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
+        }
     }
 }
 

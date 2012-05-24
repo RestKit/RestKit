@@ -75,6 +75,20 @@
 - (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType error:(NSError **)error;
 
 /**
+ Returns the serialized data by delegating to a registered parser for the specified
+ MIME type.
+
+ If the parser is only able to serialize to string, the serialized string will
+ be converted to NSData.
+
+ @param object The object to be serialized.
+ @param MIMEType The desired MIME Type for the serialized output.
+ @param error A pointer to an NSError object.
+ @return The serialized object or nil if an error occurred during serialization.
+ */
+- (NSData *)serializeObject:(id)object forMIMEType:(NSString *)MIMEType error:(NSError **)error;
+
+/**
  Returns an instance of the RKParser conformant class registered to handle content
  with the given MIME Type.
 

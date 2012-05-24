@@ -79,6 +79,25 @@ RKParserRegistry *gSharedRegistry;
     return [self parseData:data withMIMEType:MIMEType encoding:NSUTF8StringEncoding error:error];
 }
 
+- (NSData *)serializeObject:(id)object forMIMEType:(NSString *)MIMEType error:(NSError **)error {
+    id<RKParser> parser = [self parserForMIMEType:MIMEType];
+    if (!parser) {
+        if (error) {
+            NSString* errorMessage = [NSString stringWithFormat:@"Cannot serialize object without a parser for MIME Type '%@'", MIMEType];
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMessage, NSLocalizedDescriptionKey, nil];
+            *error = [NSError errorWithDomain:RKErrorDomain code:RKParserRegistryMissingParserError userInfo:userInfo];
+        }
+        return nil;
+    }
+
+    if ([parser respondsToSelector:@selector(dataFromObject:error:)]) {
+        return [parser dataFromObject:object error:error];
+    } else {
+        NSString *dataAsString = [parser stringFromObject:object error:error];
+        return [dataAsString dataUsingEncoding:NSUTF8StringEncoding];
+    }
+}
+
 - (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType {
     id parserClass = [_MIMETypeToParserClasses objectForKey:MIMEType];
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
