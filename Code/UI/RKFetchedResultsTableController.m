@@ -234,8 +234,7 @@
     } else {
         fetchRequest = _fetchRequest;
     }
-    NSAssert(fetchRequest != nil, @"Attempted to load RKFetchedResultsTableController with nil fetchRequest for resourcePath %@, fetchRequest %@",
-             _resourcePath, _fetchRequest);
+    NSAssert(fetchRequest != nil, @"Attempted to load RKFetchedResultsTableController with nil fetchRequest for resourcePath %@, fetchRequest %@", _resourcePath, _fetchRequest);
 
     if (_predicate) {
         [fetchRequest setPredicate:_predicate];
@@ -244,12 +243,10 @@
         [fetchRequest setSortDescriptors:_sortDescriptors];
     }
     
-    self.fetchedResultsController =
-    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                        managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
-                                          sectionNameKeyPath:_sectionNameKeyPath
-                                                   cacheName:_cacheName];
-    [_fetchedResultsController release];
+    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                        managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
+                                                                          sectionNameKeyPath:_sectionNameKeyPath
+                                                                                   cacheName:_cacheName];
     _fetchedResultsController.delegate = self;
     
     // Perform the load
