@@ -706,6 +706,43 @@
     assertThatInt(tableController.rowCount, is(equalToInt(3)));
 }
 
+- (void)testLoadingACollectionOfObjectsIntoSectionsAndThenLoadingAnEmptyCollectionChangesTableToEmpty {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    objectManager.client.cachePolicy = RKRequestCachePolicyNone;
+    RKTableControllerTestTableViewController* viewController = [RKTableControllerTestTableViewController new];
+    RKTableController* tableController = [RKTableController tableControllerForTableViewController:viewController];
+    tableController.objectManager = objectManager;
+    [tableController mapObjectsWithClass:[RKTestUser class] toTableCellsWithMapping:[RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* mapping) {
+        mapping.cellClass = [RKTestUserTableViewCell class];
+        [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+        [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
+    }]];
+    tableController.sectionNameKeyPath = @"name";
+    RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate tableControllerDelegate];
+    delegate.timeout = 10;
+    tableController.delegate = delegate;
+    [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [delegate waitForLoad];
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatInt(tableController.sectionCount, is(equalToInt(3)));
+    assertThatInt(tableController.rowCount, is(equalToInt(3)));
+    delegate = [RKTableControllerTestDelegate tableControllerDelegate];
+    delegate.timeout = 10;
+    tableController.delegate = delegate;
+    [tableController loadTableFromResourcePath:@"/204" usingBlock:^(RKObjectLoader* objectLoader) {
+        objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
+            [mapping mapAttributes:@"name", nil];
+        }];
+    }];
+    [delegate waitForLoad];
+    assertThatBool([tableController isLoaded], is(equalToBool(YES)));
+    assertThatBool([tableController isEmpty], is(equalToBool(YES)));
+}
+
 #pragma mark - RKTableViewDelegate Tests
 
 - (void)testNotifyTheDelegateWhenLoadingStarts {

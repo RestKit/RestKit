@@ -314,6 +314,9 @@
 
     if (self.sectionNameKeyPath) {
         NSArray *sectionedObjects = [objects sectionsGroupedByKeyPath:self.sectionNameKeyPath];
+        if ([sectionedObjects count] == 0) {
+            [self removeAllSections];
+        }
         for (NSArray *sectionOfObjects in sectionedObjects) {
             NSUInteger sectionIndex = [sectionedObjects indexOfObject:sectionOfObjects];
             if (sectionIndex >= [self sectionCount]) {
