@@ -159,7 +159,7 @@
  reference and canceling the request.
 
  Useful when an object that acts as the delegate for one or more requests
- is being deallocated and all outstanding requests should be canceled
+ is being deallocated and all outstanding requests should be cancelled
  without generating any further delegate callbacks.
 
  @param delegate The object acting as the delegate for all enqueued requests that are to be aborted.
@@ -314,7 +314,7 @@
 - (void)requestQueue:(RKRequestQueue *)queue didLoadResponse:(RKResponse *)response;
 
 /**
- Sent when queue has canceled a request.
+ Sent when queue has cancelled a request.
 
  @param queue The queue that cancelled the request.
  @param request The cancelled request.

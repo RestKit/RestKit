@@ -138,14 +138,13 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 }
 
 + (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context {
-    NSEntityDescription *entity = [self entityDescriptionInContext:context];
-    NSString *primaryKeyAttribute = entity.primaryKeyAttribute;
-    if (! primaryKeyAttribute) {
-        RKLogWarning(@"Attempt to findByPrimaryKey for entity with nil primaryKeyAttribute. Set the primaryKeyAttribute and try again! %@", entity);
+    NSPredicate *predicate = [[self entityDescriptionInContext:context] predicateForPrimaryKeyAttributeWithValue:primaryKeyValue];
+    if (! predicate) {
+        RKLogWarning(@"Attempt to findByPrimaryKey for entity with nil primaryKeyAttribute. Set the primaryKeyAttributeName and try again! %@", self);
         return nil;
     }
-
-    return [self findFirstByAttribute:primaryKeyAttribute withValue:primaryKeyValue inContext:context];
+    
+    return [self findFirstWithPredicate:predicate inContext:context];
 }
 
 + (id)findByPrimaryKey:(id)primaryKeyValue {

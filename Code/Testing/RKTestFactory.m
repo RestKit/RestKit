@@ -77,20 +77,32 @@ static RKTestFactory *sharedFactory = nil;
 - (void)defineDefaultFactories
 {
     [self defineFactory:RKTestFactoryDefaultNamesClient withBlock:^id {
-        RKClient *client = [RKClient clientWithBaseURL:self.baseURL];
-        client.requestQueue.suspended = NO;
-        [client.reachabilityObserver getFlags];
+        __block RKClient *client;
+        
+        RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
+            RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
+                client = [RKClient clientWithBaseURL:self.baseURL];
+                client.requestQueue.suspended = NO;
+                [client.reachabilityObserver getFlags];
+            });
+        });
 
         return client;
     }];
 
     [self defineFactory:RKTestFactoryDefaultNamesObjectManager withBlock:^id {
-        RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
-        RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
-        objectManager.mappingProvider = mappingProvider;
-
-        // Force reachability determination
-        [objectManager.client.reachabilityObserver getFlags];
+        __block RKObjectManager *objectManager;
+        
+        RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitNetworkReachability, ^{
+            RKLogSilenceComponentWhileExecutingBlock(lcl_cRestKitSupport, ^{
+                objectManager = [RKObjectManager managerWithBaseURL:self.baseURL];
+                RKObjectMappingProvider *mappingProvider = [self objectFromFactory:RKTestFactoryDefaultNamesMappingProvider];
+                objectManager.mappingProvider = mappingProvider;
+                
+                // Force reachability determination
+                [objectManager.client.reachabilityObserver getFlags];
+            });
+        });
 
         return objectManager;
     }];
@@ -194,7 +206,12 @@ static RKTestFactory *sharedFactory = nil;
 {
     [RKObjectManager setDefaultMappingQueue:dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL)];
     [RKObjectMapping setDefaultDateFormatters:nil];
-    [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+    
+    // Delete the store if it exists
+    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+    }
 
     if ([self respondsToSelector:@selector(didSetUp)]) {
         [self didSetUp];
@@ -218,7 +235,7 @@ static RKTestFactory *sharedFactory = nil;
     NSString* cachePath = [RKDirectory cachesDirectory];
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
     if (success) {
-        RKLogInfo(@"Cleared cache directory...");
+        RKLogDebug(@"Cleared cache directory...");
         success = [[NSFileManager defaultManager] createDirectoryAtPath:cachePath withIntermediateDirectories:YES attributes:nil error:&error];
         if (!success) {
             RKLogError(@"Failed creation of cache path '%@': %@", cachePath, [error localizedDescription]);

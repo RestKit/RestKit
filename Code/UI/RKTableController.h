@@ -29,18 +29,25 @@
 #import "RKObjectMapping.h"
 #import "RKObjectLoader.h"
 
+@protocol RKTableControllerDelegate <RKAbstractTableControllerDelegate>
+
+@optional
+
+- (void)tableController:(RKTableController *)tableController didLoadObjects:(NSArray *)objects inSection:(RKTableSection *)section;
+
+@end
+
 @interface RKTableController : RKAbstractTableController
 
-/////////////////////////////////////////////////////////////////////////
+@property (nonatomic, assign) id<RKTableControllerDelegate> delegate;
+
+///-----------------------------------------------------------------------------
 /// @name Static Tables
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
 - (void)loadObjects:(NSArray *)objects;
 - (void)loadObjects:(NSArray *)objects inSection:(NSUInteger)sectionIndex;
 - (void)loadEmpty;
-
-// Move to superclass???
-- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 
 /**
  Load an array of RKTableItems into table cells of the specified class. A table cell
@@ -78,12 +85,16 @@
  */
 - (void)loadTableItems:(NSArray *)tableItems inSection:(NSUInteger)sectionIndex;
 
+///-----------------------------------------------------------------------------
 /** @name Network Tables */
+///-----------------------------------------------------------------------------
 
 - (void)loadTableFromResourcePath:(NSString *)resourcePath;
 - (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *objectLoader))block;
 
+///-----------------------------------------------------------------------------
 /** @name Forms */
+///-----------------------------------------------------------------------------
 
 /**
  The form that the table has been loaded with (if any)
@@ -98,14 +109,36 @@
  */
 - (void)loadForm:(RKForm *)form;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name Managing Sections
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
+
+@property (nonatomic, readonly) NSMutableArray *sections;
 
 /**
  The key path on the loaded objects used to determine the section they belong to.
  */
 @property(nonatomic, copy) NSString *sectionNameKeyPath;
+
+/**
+ Returns the section at the specified index.
+ @param index Must be less than the total number of sections.
+ */
+- (RKTableSection *)sectionAtIndex:(NSUInteger)index;
+
+/** 
+ Returns the first section with the specified header title.
+ @param title The header title.
+ */
+- (RKTableSection *)sectionWithHeaderTitle:(NSString *)title;
+
+/**
+ Returns the index of the specified section.
+ 
+ @param section Must be a valid non nil RKTableViewSection.
+ @return The index of the given section if contained within the receiver, otherwise NSNotFound.
+ */
+- (NSUInteger)indexForSection:(RKTableSection *)section;
 
 // Coalesces a series of table view updates performed within the block into
 // a single animation using beginUpdates: and endUpdates: on the table view

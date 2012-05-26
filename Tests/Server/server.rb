@@ -99,6 +99,12 @@ class RestKitTestServer < Sinatra::Base
     content_type 'application/json'
     "".to_json
   end
+  
+  get '/204' do
+    status 204
+    content_type 'application/json'
+    "".to_json
+  end
 
   get '/403' do
     status 403

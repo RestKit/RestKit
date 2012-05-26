@@ -182,7 +182,8 @@
         object = [[[NSManagedObject alloc] initWithEntity:entity
                            insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
         if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
-            [object setValue:primaryKeyValue forKey:primaryKeyAttribute];
+            id coercedPrimaryKeyValue = [entity coerceValueForPrimaryKey:primaryKeyValue];
+            [object setValue:coercedPrimaryKeyValue forKey:primaryKeyAttribute];
         }
 
         if ([self.objectStore.cacheStrategy respondsToSelector:@selector(didCreateObject:)]) {
@@ -202,17 +203,17 @@
 }
 
 /*
- Allows the primaryKeyAttribute property on the NSEntityDescription to configure the mapping and vice-versa
+ Allows the primaryKeyAttributeName property on the NSEntityDescription to configure the mapping and vice-versa
  */
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ([keyPath isEqualToString:@"entity"]) {
         if (! self.primaryKeyAttribute) {
-            self.primaryKeyAttribute = [self.entity primaryKeyAttribute];
+            self.primaryKeyAttribute = [self.entity primaryKeyAttributeName];
         }
     } else if ([keyPath isEqualToString:@"primaryKeyAttribute"]) {
         if (! self.entity.primaryKeyAttribute) {
-            self.entity.primaryKeyAttribute = self.primaryKeyAttribute;
+            self.entity.primaryKeyAttributeName = self.primaryKeyAttribute;
         }
     }
 }

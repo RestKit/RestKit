@@ -138,6 +138,12 @@ lcl_configure_by_name("App", level);
         }                                                                               \
     } while(false);
 
+/**
+ Temporarily turns off logging for the given logging component during execution of the block.
+ After the block has finished execution, the logging level is restored to its previous state.
+ */
+#define RKLogSilenceComponentWhileExecutingBlock(component, _block)                      \
+    RKLogToComponentWithLevelWhileExecutingBlock(component, RKLogLevelOff, _block)
 
 /**
  Temporarily changes the logging level for the configured RKLogComponent and executes the block. Any logging
@@ -149,7 +155,7 @@ lcl_configure_by_name("App", level);
 
 
 /**
- Temporarily turns off logging for the execution of the block.
+ Temporarily turns off logging for current logging component during execution of the block.
  After the block has finished execution, the logging level is restored to its previous state.
  */
 #define RKLogSilenceWhileExecutingBlock(_block)                                        \
@@ -205,3 +211,9 @@ void RKLogConfigureFromEnvironment(void);
  of a failed key-value validation error.
  */
 void RKLogValidationError(NSError *);
+
+/**
+ Logs the value of an NSUInteger as a binary string. Useful when
+ examining integers containing bitmasked values.
+ */
+void RKLogIntegerAsBinary(NSUInteger);
