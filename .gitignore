@@ -21,6 +21,4 @@ Docs/API
 
 Examples/RKDiscussionBoardExample/discussion_board_backend/public/system/attachments/*
 
-# Thin
-log
-tmp
+test-reports/

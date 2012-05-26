@@ -1,5 +1,5 @@
 //
-//  RKManagedObjectCacheing.h
+//  RKManagedObjectCaching.h
 //  RestKit
 //
 //  Created by Jeff Arena on 1/24/12.
@@ -9,12 +9,14 @@
 #import <CoreData/CoreData.h>
 
 /**
- Objects implementing the RKManagedObjectCacheing protocol can act as the cache
+ Objects implementing the RKManagedObjectCaching protocol can act as the cache
  strategy for RestKit managed object stores. The managed object cache is consulted
  when objects are retrieved from Core Data during object mapping operations and provide
  an opportunity to accelerate the mapping process by trading memory for speed.
  */
-@protocol RKManagedObjectCacheing
+@protocol RKManagedObjectCaching
+
+@required
 
 /**
  Retrieves a model object from the object store given a Core Data entity and
@@ -31,5 +33,28 @@
                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                                     value:(id)primaryKeyValue
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+@optional
+
+/**
+ Tells the receiver that an object was fetched and should be added to the cache.
+
+ @param object The object that was fetched from a managed object context.
+ */
+- (void)didFetchObject:(NSManagedObject *)object;
+
+/**
+ Tells the receiver that an object was created and should be added to the cache.
+
+ @param object The object that was created in a managed object context.
+ */
+- (void)didCreateObject:(NSManagedObject *)object;
+
+/**
+ Tells the receiver that an object was deleted and should be removed to the cache.
+
+ @param object The object that was deleted from a managed object context.
+ */
+- (void)didDeleteObject:(NSManagedObject *)object;
 
 @end

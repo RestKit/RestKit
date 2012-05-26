@@ -21,13 +21,13 @@
         RKClient* client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
         [RKClient setSharedClient:client];
     }
-    
+
     return self;
 }
 
 - (void)dealloc {
     [[RKClient sharedClient].requestQueue cancelRequestsWithDelegate:self];
-    
+
     [super dealloc];
 }
 
@@ -40,7 +40,7 @@
 }
 
 - (void)requestDidStartLoad:(RKRequest *)request {
-    _statusLabel.text = [NSString stringWithFormat:@"Sent request with background policy %d at %@", request.backgroundPolicy, [NSDate date]];    
+    _statusLabel.text = [NSString stringWithFormat:@"Sent request with background policy %d at %@", request.backgroundPolicy, [NSDate date]];
 }
 
 - (void)requestDidTimeout:(RKRequest *)request {

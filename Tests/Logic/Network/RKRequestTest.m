@@ -40,10 +40,14 @@
 
 - (void)setUp {
     [RKTestFactory setUp];
-    
+
     // Clear the cache directory
     [RKTestFactory clearCacheDirectory];
     _methodInvocationCounter = 0;
+}
+
+- (void)tearDown {
+    [RKTestFactory tearDown];
 }
 
 - (int)incrementMethodInvocationCounter {
@@ -55,18 +59,17 @@
  * `ruby Tests/server.rb`
  */
 - (void)testShouldSendMultiPartRequests {
-	NSString* URLString = [NSString stringWithFormat:@"http://127.0.0.1:4567/photo"];
-	NSURL* URL = [NSURL URLWithString:URLString];
-	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
-	RKParams* params = [[RKParams params] retain];
-    NSBundle *testBundle = [NSBundle bundleWithIdentifier:@"org.restkit.unit-tests"];
-	NSString* filePath = [testBundle pathForResource:@"blake" ofType:@"png"];
-	[params setFile:filePath forParam:@"file"];
-	[params setValue:@"this is the value" forParam:@"test"];
-	request.method = RKRequestMethodPOST;
-	request.params = params;
-	RKResponse* response = [request sendSynchronously];
-	assertThatInteger(response.statusCode, is(equalToInt(200)));
+    NSString* URLString = [NSString stringWithFormat:@"http://127.0.0.1:4567/photo"];
+    NSURL* URL = [NSURL URLWithString:URLString];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    RKParams* params = [[RKParams params] retain];
+    NSString* filePath = [RKTestFixture pathForFixture:@"blake.png"];
+    [params setFile:filePath forParam:@"file"];
+    [params setValue:@"this is the value" forParam:@"test"];
+    request.method = RKRequestMethodPOST;
+    request.params = params;
+    RKResponse* response = [request sendSynchronously];
+    assertThatInteger(response.statusCode, is(equalToInt(200)));
 }
 
 #pragma mark - Basics
@@ -147,13 +150,26 @@ request.timeoutInterval = 1.0;
     [request release];
 }
 
+- (void)testThatRunLoopModePropertyRespected {
+    NSString * const dummyRunLoopMode = @"dummyRunLoopMode";
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [[RKRequest alloc] initWithURL:[RKTestFactory baseURL]];
+    request.delegate = loader;
+    request.runLoopMode = dummyRunLoopMode;
+    [request sendAsynchronously];
+    while ([[NSRunLoop currentRunLoop] runMode:dummyRunLoopMode beforeDate:[[NSRunLoop currentRunLoop] limitDateForMode:dummyRunLoopMode]])
+        ;
+    assertThatBool([loader wasSuccessful], is(equalToBool(YES)));
+    [request release];
+}
+
 #pragma mark - Background Policies
 
 #if TARGET_OS_IPHONE
 
 - (void)testShouldSendTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyNone {
-	NSURL* URL = [RKTestFactory baseURL];
-	RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    NSURL* URL = [RKTestFactory baseURL];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     request.backgroundPolicy = RKRequestBackgroundPolicyNone;
     id requestMock = [OCMockObject partialMockForObject:request];
     [[requestMock expect] fireAsynchronousRequest]; // Not sure what else to test on this case
@@ -175,7 +191,6 @@ request.timeoutInterval = 1.0;
 }
 
 - (void)testShouldObserveForAppBackgroundTransitionsAndCancelTheRequestWhenBackgroundPolicyIsRKRequestBackgroundPolicyCancel {
-    [RKTestFactory client];
     [self stubSharedApplicationWhileExecutingBlock:^{
         NSURL* URL = [RKTestFactory baseURL];
         RKRequest* request = [[RKRequest alloc] initWithURL:URL];
@@ -185,7 +200,6 @@ request.timeoutInterval = 1.0;
         [requestMock sendAsynchronously];
         [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
         [requestMock verify];
-        [request release];
     }];
 }
 
@@ -306,9 +320,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldCacheTheRequestHeadersAndBodyIncludingOurOwnCustomTimestampHeader {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -332,9 +346,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldGenerateAUniqueCacheKeyBasedOnTheUrlTheMethodAndTheHTTPBody {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -357,9 +371,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromCacheWhenWeRecieveA304 {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                 storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -397,9 +411,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldUpdateTheInternalCacheDateWhenWeRecieveA304 {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -444,9 +458,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromTheCacheIfThereIsAnError {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -482,9 +496,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromTheCacheIfWeAreWithinTheTimeout {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -546,9 +560,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldLoadFromTheCacheIfWeAreOffline {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
     [cache invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -589,9 +603,9 @@ request.timeoutInterval = 1.0;
 - (void)testShouldCacheTheStatusCodeMIMETypeAndURL {
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
-	NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                                   [[NSURL URLWithString:baseURL] host]];
+    NSString* cachePath = [[RKDirectory cachesDirectory]
+                           stringByAppendingPathComponent:cacheDirForClient];
 
     RKRequestCache* cache = [[RKRequestCache alloc] initWithPath:cachePath
                                                         storagePolicy:RKRequestCacheStoragePolicyPermanently];
@@ -707,14 +721,10 @@ request.timeoutInterval = 1.0;
 
 - (void)testShouldOptionallySkipSSLValidation {
     NSURL *URL = [NSURL URLWithString:@"https://blakewatters.com/"];
-    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKRequest *request = [RKRequest requestWithURL:URL];
-    [[RKClient sharedClient] configureRequest:request];
-    request.delegate = loader;
     request.disableCertificateValidation = YES;
-    [request send];
-    [loader waitForResponse];
-    assertThatBool([loader.response isOK], is(equalToBool(YES)));
+    RKResponse *response = [request sendSynchronously];
+    assertThatBool([response isOK], is(equalToBool(YES)));
 }
 
 - (void)testShouldNotAddANonZeroContentLengthHeaderIfParamsIsSetAndThisIsAGETRequest {
@@ -781,9 +791,9 @@ request.timeoutInterval = 1.0;
     request.params = params;
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
+                                   [[NSURL URLWithString:baseURL] host]];
     NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache *requestCache = [[RKRequestCache alloc] initWithPath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
     NSString *requestCachePath = [requestCache pathForRequest:request];
     NSArray *pathComponents = [requestCachePath pathComponents];
@@ -799,9 +809,9 @@ request.timeoutInterval = 1.0;
     request.method = RKRequestMethodDELETE;
     NSString* baseURL = [RKTestFactory baseURLString];
     NSString* cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-								   [[NSURL URLWithString:baseURL] host]];
+                                   [[NSURL URLWithString:baseURL] host]];
     NSString* cachePath = [[RKDirectory cachesDirectory]
-						   stringByAppendingPathComponent:cacheDirForClient];
+                           stringByAppendingPathComponent:cacheDirForClient];
     RKRequestCache *requestCache = [[RKRequestCache alloc] initWithPath:cachePath storagePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
     NSString *requestCachePath = [requestCache pathForRequest:request];
     assertThat(requestCachePath, is(nilValue()));
@@ -817,6 +827,42 @@ request.timeoutInterval = 1.0;
     [request prepareURLRequest];
     NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
     assertThat(authorization, isNot(nilValue()));
+}
+
+- (void)testShouldBuildAProperAuthorizationHeaderForOAuth1ThatIsAcceptedByServer {
+    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:[NSString stringWithFormat:@"%@/oauth1/me", [RKTestFactory baseURLString]]]];
+    request.authenticationType = RKRequestAuthenticationTypeOAuth1;
+    request.OAuth1AccessToken = @"12345";
+    request.OAuth1AccessTokenSecret = @"monkey";
+    request.OAuth1ConsumerKey = @"restkit_key";
+    request.OAuth1ConsumerSecret = @"restkit_secret";
+    [request prepareURLRequest];
+    NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
+    assertThat(authorization, isNot(nilValue()));
+
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    request.delegate = responseLoader;
+    [request sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.successful, is(equalToBool(YES)));
+}
+
+- (void)testImproperOAuth1CredentialsShouldFall {
+    RKRequest *request = [RKRequest requestWithURL:[RKURL URLWithString:[NSString stringWithFormat:@"%@/oauth1/me", [RKTestFactory baseURLString]]]];
+    request.authenticationType = RKRequestAuthenticationTypeOAuth1;
+    request.OAuth1AccessToken = @"12345";
+    request.OAuth1AccessTokenSecret = @"monkey";
+    request.OAuth1ConsumerKey = @"restkit_key";
+    request.OAuth1ConsumerSecret = @"restkit_incorrect_secret";
+    [request prepareURLRequest];
+    NSString *authorization = [request.URLRequest valueForHTTPHeaderField:@"Authorization"];
+    assertThat(authorization, isNot(nilValue()));
+
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    request.delegate = responseLoader;
+    [request sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.successful, is(equalToBool(YES)));
 }
 
 - (void)testOnDidLoadResponseBlockInvocation {
@@ -883,6 +929,73 @@ request.timeoutInterval = 1.0;
     RKRequest *request = [RKRequest new];
     request.method = RKRequestMethodDELETE;
     assertThatBool([request isCacheable], is(equalToBool(NO)));
+}
+
+- (void)testInvocationOfDidReceiveResponse {
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    id loaderMock = [OCMockObject partialMockForObject:loader];
+    NSURL* URL = [[RKTestFactory baseURL] URLByAppendingResourcePath:@"/200"];
+    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    request.delegate = loaderMock;
+    [[loaderMock expect] request:request didReceiveResponse:OCMOCK_ANY];
+    [request sendAsynchronously];
+    [loaderMock waitForResponse];
+    [request release];
+    [loaderMock verify];
+}
+
+- (void)testThatIsLoadingIsNoDuringDidFailWithErrorCallback {
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:8765"];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+
+    RKClient *client = [RKClient clientWithBaseURL:URL];
+    RKRequest *request = [client requestWithResourcePath:@"/invalid"];
+    request.method = RKRequestMethodGET;
+    request.delegate = loader;
+    request.onDidFailLoadWithError = ^(NSError *error) {
+        assertThatBool([request isLoading], is(equalToBool(NO)));
+    };
+    [request sendAsynchronously];
+    [loader waitForResponse];
+}
+
+- (void)testThatIsLoadedIsYesDuringDidFailWithErrorCallback {
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:8765"];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+
+    RKClient *client = [RKClient clientWithBaseURL:URL];
+    RKRequest *request = [client requestWithResourcePath:@"/invalid"];
+    request.method = RKRequestMethodGET;
+    request.delegate = loader;
+    request.onDidFailLoadWithError = ^(NSError *error) {
+        assertThatBool([request isLoaded], is(equalToBool(YES)));
+    };
+    [request sendAsynchronously];
+    [loader waitForResponse];
+}
+
+- (void)testUnavailabilityOfResponseInDidFailWithErrorCallback {
+    NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:8765"];
+    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    
+    RKClient *client = [RKClient clientWithBaseURL:URL];
+    RKRequest *request = [client requestWithResourcePath:@"/invalid"];
+    request.method = RKRequestMethodGET;
+    request.delegate = loader;
+    [request sendAsynchronously];
+    [loader waitForResponse];
+    assertThat(request.response, is(nilValue()));
+}
+
+- (void)testAvailabilityOfResponseWhenFailedDueTo500Response {
+    RKURL *URL = [[RKTestFactory baseURL] URLByAppendingResourcePath:@"/fail"];
+    RKRequest *request = [RKRequest requestWithURL:URL];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    request.delegate = responseLoader;
+    [request sendAsynchronously];
+    [responseLoader waitForResponse];
+    assertThat(request.response, is(notNilValue()));
+    assertThatInteger(request.response.statusCode, is(equalToInteger(500)));
 }
 
 @end

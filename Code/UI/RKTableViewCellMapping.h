@@ -86,9 +86,9 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
  A Boolean value that determines whether the cell mapping manages basic cell
  attributes (accessoryType, selectionStyle, etc.) or defers to a Storyboard/XIB
  for defining basic cell attributes.
- 
+
  Setting the accessoryType or selectionStyle will set the value to YES.
- 
+
  **Default**: NO
  */
 @property (nonatomic, assign) BOOL managesCellAttributes;
@@ -203,7 +203,7 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 
 /**
  Creates and returns an RKTableCellMapping instance configured with the default cell mappings.
- 
+
  @return An RKTableCellMapping instance with default mappings applied.
  @see [RKTableCellMapping addDefaultMappings]
  */

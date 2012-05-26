@@ -21,60 +21,102 @@
 #if TARGET_OS_IPHONE
 
 #import <UIKit/UIKit.h>
-#import "RKTableSection.h"
 #import "RKTableViewCellMappings.h"
 #import "RKTableItem.h"
 #import "RKObjectManager.h"
 #import "RKObjectMapping.h"
 #import "RKObjectLoader.h"
 
-/** @name Constants */
-
-/** Posted when the table view model starts loading */
-extern NSString* const RKTableControllerDidStartLoadNotification;
-
-/** Posted when the table view model finishes loading */
-extern NSString* const RKTableControllerDidFinishLoadNotification;
-
-/** Posted when the table view model has loaded objects into the table view */
-extern NSString* const RKTableControllerDidLoadObjectsNotification;
-
-/** Posted when the table view model has loaded an empty collection of objects into the table view */
-extern NSString* const RKTableControllerDidLoadEmptyNotification;
-
-/** Posted when the table view model has loaded an error */
-extern NSString* const RKTableControllerDidLoadErrorNotification;
-
-/** Posted when the table view model has transitioned from offline to online */
-extern NSString* const RKTableControllerDidBecomeOnline;
-
-/** Posted when the table view model has transitioned from online to offline */
-extern NSString* const RKTableControllerDidBecomeOffline;
-
-@protocol RKTableControllerDelegate;
+///-----------------------------------------------------------------------------
+/// @name Constants
+///-----------------------------------------------------------------------------
 
 /**
- RestKit's table view abstraction leverages the object mapping engine to transform
- local objects into UITableViewCell representations. The table view model encapsulates
- the functionality of a UITableView dataSource and delegate into a single reusable
- component.
+ Posted when the table controller starts loading.
  */
-@interface RKAbstractTableController : NSObject <UITableViewDataSource, UITableViewDelegate> {
-  @protected
-    UIView *_tableOverlayView;
-    UIImageView *_stateOverlayImageView;
-    UIView *_pullToRefreshHeaderView;
-    RKCache *_cache;
-}
+extern NSString * const RKTableControllerDidStartLoadNotification;
 
-/////////////////////////////////////////////////////////////////////////
+/** 
+ Posted when the table controller finishes loading.
+ */
+extern NSString * const RKTableControllerDidFinishLoadNotification;
+
+/** 
+ Posted when the table controller has loaded objects into the table view.
+ */
+extern NSString * const RKTableControllerDidLoadObjectsNotification;
+
+/** 
+ Posted when the table controller has loaded an empty collection of objects into the table view.
+ */
+extern NSString * const RKTableControllerDidLoadEmptyNotification;
+
+/** 
+ Posted when the table controller has loaded an error.
+ */
+extern NSString * const RKTableControllerDidLoadErrorNotification;
+
+/** 
+ Posted when the table controller has transitioned from an offline to online state.
+ */
+extern NSString * const RKTableControllerDidBecomeOnline;
+
+/**
+ Posted when the table controller has transitioned from an online to an offline state.
+ */
+extern NSString * const RKTableControllerDidBecomeOffline;
+
+@protocol RKAbstractTableControllerDelegate;
+
+/**
+ @enum RKTableControllerState
+ 
+ @constant RKTableControllerStateNormal Indicates that the table has
+ loaded normally and is displaying cell content. It is not loading content,
+ is not empty, has not loaded an error, and is not offline.
+ 
+ @constant RKTableControllerStateLoading Indicates that the table controller
+ is loading content from a remote source.
+ 
+ @constant RKTableControllerStateEmpty Indicates that the table controller has
+ retrieved an empty collection of objects.
+ 
+ @constant RKTableControllerStateError Indicates that the table controller has
+ encountered an error while attempting to load.
+ 
+ @constant RKTableControllerStateOffline Indicates that the table controller is
+ offline and cannot perform network access.
+ 
+ @constant RKTableControllerStateNotYetLoaded Indicates that the table controller is
+ has not yet attempted a load and state is unknown.
+ */
+enum RKTableControllerState {    
+    RKTableControllerStateNormal        = 0,
+    RKTableControllerStateLoading       = 1 << 1,
+    RKTableControllerStateEmpty         = 1 << 2,
+    RKTableControllerStateError         = 1 << 3,
+    RKTableControllerStateOffline       = 1 << 4,    
+    RKTableControllerStateNotYetLoaded  = 0xFF000000
+};
+typedef NSUInteger RKTableControllerState;
+
+/**
+ RKAbstractTableController is an abstract base class for concrete table controller classes.
+ A table controller object acts as both the delegate and data source for a UITableView 
+ object and leverages the RestKit object mapping engine to transform local domain models
+ into UITableViewCell representations. Concrete implementations are provided for the 
+ display of static table views and Core Data backed fetched results controller basied
+ table views.
+ */
+@interface RKAbstractTableController : NSObject <UITableViewDataSource, UITableViewDelegate>
+
+///-----------------------------------------------------------------------------
 /// @name Configuring the Table Controller
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
-@property (nonatomic, assign)   id<RKTableControllerDelegate> delegate;
-@property (nonatomic, readonly) UIViewController* viewController;
-@property (nonatomic, readonly) UITableView* tableView;
-@property (nonatomic, readonly) NSMutableArray* sections;
+@property (nonatomic, assign)   id<RKAbstractTableControllerDelegate> delegate;
+@property (nonatomic, readonly) UIViewController *viewController;
+@property (nonatomic, readonly) UITableView *tableView;
 @property (nonatomic, assign)   UITableViewRowAnimation defaultRowAnimation;
 
 @property (nonatomic, assign)   BOOL pullToRefreshEnabled;
@@ -82,38 +124,39 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, assign)   BOOL canMoveRows;
 @property (nonatomic, assign)   BOOL autoResizesForKeyboard;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name Instantiation
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
-+ (id)tableControllerWithTableView:(UITableView*)tableView
-                forViewController:(UIViewController*)viewController;
++ (id)tableControllerWithTableView:(UITableView *)tableView
+                 forViewController:(UIViewController *)viewController;
 
-+ (id)tableControllerForTableViewController:(UITableViewController*)tableViewController;
++ (id)tableControllerForTableViewController:(UITableViewController *)tableViewController;
 
-- (id)initWithTableView:(UITableView*)tableView
-         viewController:(UIViewController*)viewController;
+- (id)initWithTableView:(UITableView *)tableView
+         viewController:(UIViewController *)viewController;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name Object to Table View Cell Mappings
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
-@property (nonatomic, retain) RKTableViewCellMappings* cellMappings;
+@property (nonatomic, retain) RKTableViewCellMappings *cellMappings;
 
-- (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
-- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping*)cellMapping;
+- (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping;
+- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping;
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath;
-- (RKTableViewCellMapping*)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath;
+- (RKTableViewCellMapping *)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath;
 
 /**
  Return the index path of the object within the table
  */
 - (NSIndexPath *)indexPathForObject:(id)object;
 - (UITableViewCell *)cellForObject:(id)object;
+- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name Header and Footer Rows
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
 - (void)addHeaderRowForItem:(RKTableItem *)tableItem;
 - (void)addFooterRowForItem:(RKTableItem *)tableItem;
@@ -122,12 +165,12 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 - (void)removeAllHeaderRows;
 - (void)removeAllFooterRows;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name RESTful Table Loading
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
 /**
- The object manager instance this table view model is associated with.
+ The object manager instance this table controller is associated with.
 
  This instance is used for creating object loaders when loading Network
  tables and provides the managed object store used for Core Data tables.
@@ -144,42 +187,102 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 - (void)cancelLoad;
 - (BOOL)isAutoRefreshNeeded;
 
-/////////////////////////////////////////////////////////////////////////
-/// @name Model State Views
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
+/// @name Inspecting Table State
+///-----------------------------------------------------------------------------
 
+/**
+ The current state of the table controller. Note that the controller may be in more
+ than one state (e.g. loading | empty).
+ */
+@property (nonatomic, readonly, assign) RKTableControllerState state;
+
+/**
+ An error object that was encountered as the result of an attempt to load
+ the table. Will return a value when the table is in the error state,
+ otherwise nil.
+ */
+@property (nonatomic, readonly, retain) NSError *error;
+
+/**
+ Returns a Boolean value indicating if the table controller is currently
+ loading content.
+ */
 - (BOOL)isLoading;
+
+/**
+ Returns a Boolean value indicating if the table controller has attempted
+ a load and transitioned into any state. 
+ */
 - (BOOL)isLoaded;
+
+/**
+ Returns a Boolean value indicating if the table controller has loaded an
+ empty set of content.
+ 
+ When YES and there is not an empty item configured, the table controller
+ will optionally display an empty image overlayed on top of the table view.
+ 
+ **NOTE**: It is possible for an empty table controller to display cells
+ witin the managed table view in the event an empty item or header/footer
+ rows are configured.
+ 
+ @see imageForEmpty
+ */
 - (BOOL)isEmpty;
+
+/**
+ Returns a Boolean value indicating if the table controller is online
+ and network operations may be performed.
+ */
 - (BOOL)isOnline;
 
-@property (nonatomic, readonly) BOOL isError;
-@property (nonatomic, readonly, retain) NSError* error;
+/**
+ Returns a Boolean value indicating if the table controller is offline.
+ 
+ When YES, the table controller will optionally display an offline image
+ overlayed on top of the table view.
+ 
+ @see imageForOffline
+ */
+- (BOOL)isOffline;
+
+/**
+ Returns a Boolean value indicating if the table controller encountered
+ an error while attempting to load.
+ 
+ When YES, the table controller will optionally display an error image
+ overlayed on top of the table view.
+ 
+ @see imageForError
+ */
+- (BOOL)isError;
+
+///-----------------------------------------------------------------------------
+/// @name Model State Views
+///-----------------------------------------------------------------------------
 
 /**
  An image to overlay onto the table when the table view
  does not have any row data to display. It will be centered
- within the table view
+ within the table view.
  */
-// TODO: Should be emptyImage
-@property (nonatomic, retain) UIImage* imageForEmpty;
+@property (nonatomic, retain) UIImage *imageForEmpty;
 
 /**
  An image to overlay onto the table when a load operation
  has encountered an error. It will be centered
  within the table view.
  */
-// TODO: Should be errorImage
-@property (nonatomic, retain) UIImage* imageForError;
+@property (nonatomic, retain) UIImage *imageForError;
 
 /**
  An image to overlay onto the table with when the user does
- not have connectivity to the Internet
+ not have connectivity to the Internet.
 
  @see RKReachabilityObserver
  */
-// TODO: Should be offlineImage
-@property (nonatomic, retain) UIImage* imageForOffline;
+@property (nonatomic, retain) UIImage *imageForOffline;
 
 /**
  A UIView to add to the table overlay during loading. It
@@ -187,7 +290,19 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 
  The loading view is always presented non-modally.
  */
-@property (nonatomic, retain) UIView*  loadingView;
+@property (nonatomic, retain) UIView *loadingView;
+
+/**
+ Returns the image, if any, configured for display when the table controller
+ is in the given state. 
+ 
+ **NOTE** This method accepts a single state value.
+ 
+ @param state The table controller state
+ @return The image for the specified state, else nil. Always returns nil for 
+ RKTableControllerStateNormal, RKTableControllerStateLoading and RKTableControllerStateLoading.
+ */
+- (UIImage *)imageForState:(RKTableControllerState)state;
 
 /**
  A rectangle configuring the dimensions for the overlay view that is
@@ -199,6 +314,11 @@ extern NSString* const RKTableControllerDidBecomeOffline;
  precisely by configuring the overlayFrame property.
  */
 @property (nonatomic, assign) CGRect overlayFrame;
+
+/**
+ The image currently displayed within the overlay view.
+ */
+@property (nonatomic, readonly) UIImage *overlayImage;
 
 /**
  When YES, the image view added to the table overlay for displaying table
@@ -213,44 +333,47 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 @property (nonatomic, assign) BOOL variableHeightRows;
 @property (nonatomic, assign) BOOL showsHeaderRowsWhenEmpty;
 @property (nonatomic, assign) BOOL showsFooterRowsWhenEmpty;
-@property (nonatomic, retain) RKTableItem* emptyItem;
+@property (nonatomic, retain) RKTableItem *emptyItem;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name Managing Sections
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
-/** The number of sections in the model. */
+/** 
+ The number of sections in the table.
+ */
 @property (nonatomic, readonly) NSUInteger sectionCount;
 
-/** The number of rows across all sections in the model. */
+/**
+ The number of rows across all sections in the model.
+ */
 @property (nonatomic, readonly) NSUInteger rowCount;
 
-/** Returns the section at the specified index.
- *	@param index Must be less than the total number of sections. */
-- (RKTableSection *)sectionAtIndex:(NSUInteger)index;
+/**
+ Returns the number of rows in the section at the given index.
 
-/** Returns the first section with the specified header title.
- *	@param title The header title. */
-- (RKTableSection *)sectionWithHeaderTitle:(NSString *)title;
+ @param index The index of the section to return the row count for.
+ @returns The number of rows contained within the section with the given index.
+ @raises NSInvalidArgumentException Raised if index is greater than or
+    equal to the total number of sections in the table.
+ */
+- (NSUInteger)numberOfRowsInSection:(NSUInteger)index;
 
-/** Returns the index of the specified section.
- *	@param section Must be a valid non nil RKTableViewSection.
- *	@return If section is not found, method returns NSNotFound. */
-- (NSUInteger)indexForSection:(RKTableSection *)section;
-
-/** Returns the UITableViewCell created by applying the specified
- *  mapping operation to the object identified by indexPath.
- *  @param indexPath The indexPath in the tableView for which a cell
- *  is needed. */
+/**
+ Returns the UITableViewCell created by applying the specified
+ mapping operation to the object identified by indexPath.
+ 
+ @param indexPath The indexPath in the tableView for which a cell is needed.
+ */
 - (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name Managing Swipe View
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
 @property (nonatomic, assign)   BOOL cellSwipeViewsEnabled;
-@property (nonatomic, retain)   UIView* cellSwipeView;
-@property (nonatomic, readonly) UITableViewCell* swipeCell;
+@property (nonatomic, retain)   UIView *cellSwipeView;
+@property (nonatomic, readonly) UITableViewCell *swipeCell;
 @property (nonatomic, readonly) id swipeObject;
 @property (nonatomic, readonly) BOOL animatingCellSwipe;
 @property (nonatomic, readonly) UISwipeGestureRecognizerDirection swipeDirection;
@@ -260,45 +383,44 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 
 @end
 
-@protocol RKTableControllerDelegate <NSObject>
+@protocol RKAbstractTableControllerDelegate <NSObject>
 
 @optional
 
 // Network
-- (void)tableController:(RKAbstractTableController *)tableController willLoadTableWithObjectLoader:(RKObjectLoader*)objectLoader;
-- (void)tableController:(RKAbstractTableController *)tableController didLoadTableWithObjectLoader:(RKObjectLoader*)objectLoader;
+- (void)tableController:(RKAbstractTableController *)tableController willLoadTableWithObjectLoader:(RKObjectLoader *)objectLoader;
+- (void)tableController:(RKAbstractTableController *)tableController didLoadTableWithObjectLoader:(RKObjectLoader *)objectLoader;
 
 // Basic States
 - (void)tableControllerDidStartLoad:(RKAbstractTableController *)tableController;
 
-/** Sent when the table view has transitioned out of the loading state regardless of outcome **/
+/**
+ Sent when the table view has transitioned out of the loading state regardless of outcome
+ */
 - (void)tableControllerDidFinishLoad:(RKAbstractTableController *)tableController;
-- (void)tableController:(RKAbstractTableController *)tableController didFailLoadWithError:(NSError*)error;
+- (void)tableController:(RKAbstractTableController *)tableController didFailLoadWithError:(NSError *)error;
 - (void)tableControllerDidCancelLoad:(RKAbstractTableController *)tableController;
-- (void)tableController:(RKAbstractTableController *)tableController didLoadObjects:(NSArray*)objects inSection:(NSUInteger)sectionIndex;
 
-/** Sent to the delegate when the controller is really and truly finished loading/updating, whether from the network or from Core Data, or from static data, ... this happens in didFinishLoading
- **/
-- (void)tableControllerDidFinishFinalLoad:(RKAbstractTableController *)tableController;
+/**
+ Sent to the delegate when the controller is really and truly finished loading/updating, whether from the network or from Core Data, 
+ or from static data, ... this happens in didFinishLoading
+ */
+- (void)tableControllerDidFinalizeLoad:(RKAbstractTableController *)tableController;
 
 /**
  Sent to the delegate when the content of the table view has become empty
  */
-- (void)tableControllerDidBecomeEmpty:(RKAbstractTableController *)tableController; // didLoadEmpty???
+- (void)tableControllerDidBecomeEmpty:(RKAbstractTableController *)tableController;
 
 /**
- Sent to the delegate when the table view model has transitioned from offline to online
+ Sent to the delegate when the table controller has transitioned from offline to online
  */
 - (void)tableControllerDidBecomeOnline:(RKAbstractTableController *)tableController;
 
 /**
- Sent to the delegate when the table view model has transitioned from online to offline
+ Sent to the delegate when the table controller has transitioned from online to offline
  */
 - (void)tableControllerDidBecomeOffline:(RKAbstractTableController *)tableController;
-
-// Sections
-- (void)tableController:(RKAbstractTableController *)tableController didInsertSection:(RKTableSection *)section atIndex:(NSUInteger)sectionIndex;
-- (void)tableController:(RKAbstractTableController *)tableController didRemoveSection:(RKTableSection *)section atIndex:(NSUInteger)sectionIndex;
 
 // Objects
 - (void)tableController:(RKAbstractTableController *)tableController didInsertObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
@@ -310,18 +432,12 @@ extern NSString* const RKTableControllerDidBecomeOffline;
 - (void)tableController:(RKAbstractTableController *)tableController didEndEditing:(id)object atIndexPath:(NSIndexPath *)indexPath;
 
 // Swipe Views
-- (void)tableController:(RKAbstractTableController *)tableController willAddSwipeView:(UIView*)swipeView toCell:(UITableViewCell *)cell forObject:(id)object;
-- (void)tableController:(RKAbstractTableController *)tableController willRemoveSwipeView:(UIView*)swipeView fromCell:(UITableViewCell *)cell forObject:(id)object;
-
-// BELOW NOT YET IMPLEMENTED
+- (void)tableController:(RKAbstractTableController *)tableController willAddSwipeView:(UIView *)swipeView toCell:(UITableViewCell *)cell forObject:(id)object;
+- (void)tableController:(RKAbstractTableController *)tableController willRemoveSwipeView:(UIView *)swipeView fromCell:(UITableViewCell *)cell forObject:(id)object;
 
 // Cells
 - (void)tableController:(RKAbstractTableController *)tableController willDisplayCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
 - (void)tableController:(RKAbstractTableController *)tableController didSelectCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
-
-// Objects
-- (void)tableControllerDidBeginUpdates:(RKAbstractTableController *)tableController;
-- (void)tableControllerDidEndUpdates:(RKAbstractTableController *)tableController;
 
 @end
 

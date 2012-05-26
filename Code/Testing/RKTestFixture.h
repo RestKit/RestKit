@@ -45,6 +45,14 @@
  */
 + (void)setFixtureBundle:(NSBundle *)bundle;
 
+/**
+ Returns the full path to the specified fixture file on within the fixture bundle.
+
+ @param fixtureName The name of the fixture file.
+ @return The full path to the specified fixture file or nil if it cannot be located.
+ */
++ (NSString *)pathForFixture:(NSString *)fixtureName;
+
 #if TARGET_OS_IPHONE
 /**
  Creates and returns an image object by loading the image data from the fixture identified by the specified file name.

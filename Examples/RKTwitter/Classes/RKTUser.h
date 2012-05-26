@@ -7,9 +7,9 @@
 //
 
 @interface RKTUser : NSObject {
-	NSNumber* _userID;
-	NSString* _name;
-	NSString* _screenName;
+    NSNumber* _userID;
+    NSString* _name;
+    NSString* _screenName;
 }
 
 @property (nonatomic, retain) NSNumber* userID;

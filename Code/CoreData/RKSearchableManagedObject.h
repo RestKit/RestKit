@@ -28,7 +28,7 @@
  that are searchable using the RKManagedObjectSearchEngine interface. The collection of
  search words is maintained by the RKSearchWordObserver singleton at managed object context
  save time.
- 
+
  @see RKSearchWord
  @see RKSearchWordObserver
  @see RKManagedObjectSearchEngine
@@ -44,9 +44,9 @@
  build the set of search words for entities with the type of the receiver. Subclasses must
  provide an implementation for indexing to occur as the base implementation returns an empty
  array.
- 
+
  @warning *NOTE*: May only include attributes property names, not key paths.
- 
+
  @return An array of attribute names containing searchable textual content for entities with the type of the receiver.
  @see RKSearchWordObserver
  @see searchWords
@@ -58,10 +58,10 @@
 ///-----------------------------------------------------------------------------
 
 /**
- A predicate that will search for the specified text with the specified mode. Mode can be 
+ A predicate that will search for the specified text with the specified mode. Mode can be
  configured to be RKSearchModeAnd or RKSearchModeOr.
-  
- @return A predicate that will search for the specified text with the specified mode. 
+
+ @return A predicate that will search for the specified text with the specified mode.
  @see RKSearchMode
  */
 
@@ -79,7 +79,7 @@
 /**
  Rebuilds the set of tokenized search words associated with the receiver by processing the
  searchable attributes and tokenizing the contents into RKSearchWord instances.
- 
+
  @see [RKSearchableManagedObject searchableAttributes]
  */
 - (void)refreshSearchWords;
@@ -90,28 +90,28 @@
 
 /**
  Adds a search word object to the receiver's set of search words.
- 
+
  @param searchWord The search word to be added to the set of search words.
  */
 - (void)addSearchWordsObject:(RKSearchWord *)searchWord;
 
 /**
  Removes a search word object from the receiver's set of search words.
- 
+
  @param searchWord The search word to be removed from the receiver's set of search words.
  */
 - (void)removeSearchWordsObject:(RKSearchWord *)searchWord;
 
 /**
  Adds a set of search word objects to the receiver's set of search words.
- 
+
  @param searchWords The set of search words to be added to receiver's the set of search words.
  */
 - (void)addSearchWords:(NSSet *)searchWords;
 
 /**
  Removes a set of search word objects from the receiver's set of search words.
- 
+
  @param searchWords The set of search words to be removed from receiver's the set of search words.
  */
 - (void)removeSearchWords:(NSSet *)searchWords;

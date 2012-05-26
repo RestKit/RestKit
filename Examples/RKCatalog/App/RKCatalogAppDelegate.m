@@ -21,10 +21,10 @@ NSURL *gRKCatalogBaseURL = nil;
     // Add the navigation controller's view to the window and display.
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
-    
-    
+
+
     gRKCatalogBaseURL = [[NSURL alloc] initWithString:@"http://rkcatalog.heroku.com"];
-    
+
     return YES;
 }
 

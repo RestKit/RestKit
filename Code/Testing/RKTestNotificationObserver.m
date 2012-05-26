@@ -46,16 +46,16 @@
 
 - (id)init {
     self = [super init];
-	if (self) {
+    if (self) {
         timeout = 5;
-		awaitingNotification = NO;
-	}
-	return self;
+        awaitingNotification = NO;
+    }
+    return self;
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-	[super dealloc];
+    [super dealloc];
 }
 
 - (void)waitForNotification {
@@ -66,16 +66,16 @@
                                                  name:self.name
                                                object:self.object];
 
-	awaitingNotification = YES;
-	NSDate *startDate = [NSDate date];
+    awaitingNotification = YES;
+    NSDate *startDate = [NSDate date];
 
-	while (self.isAwaitingNotification) {
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
-			[NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
-			awaitingNotification = NO;
-		}
-	}
+    while (self.isAwaitingNotification) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+        if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
+            [NSException raise:nil format:@"*** Operation timed out after %f seconds...", self.timeout];
+            awaitingNotification = NO;
+        }
+    }
 }
 
 - (void)processNotification:(NSNotification*)notification {

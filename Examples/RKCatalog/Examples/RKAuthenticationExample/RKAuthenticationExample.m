@@ -30,7 +30,7 @@
     [authenticatedRequest cancel];
     [authenticatedRequest release];
     authenticatedRequest = nil;
-    
+
     [super dealloc];
 }
 
@@ -46,7 +46,7 @@
     newRequest.authenticationType = RKRequestAuthenticationTypeHTTP;
     newRequest.username = [usernameTextField text];
     newRequest.password = [passwordTextField text];
-    
+
     self.authenticatedRequest = newRequest;
 }
 

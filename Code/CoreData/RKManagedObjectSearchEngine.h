@@ -21,7 +21,7 @@
 #import "RKSearchEngine.h"
 
 @interface RKManagedObjectSearchEngine : NSObject {
-	RKSearchMode _mode;
+    RKSearchMode _mode;
 }
 
 /**

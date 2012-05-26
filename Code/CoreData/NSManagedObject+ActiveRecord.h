@@ -28,13 +28,13 @@
 @interface NSManagedObject (ActiveRecord)
 
 /**
- *	The NSEntityDescription for the Subclass
- *	defaults to the subclass className, may be overridden
+ * The NSEntityDescription for the Subclass
+ * defaults to the subclass className, may be overridden
  */
 + (NSEntityDescription*)entity;
 
 /**
- *	Returns an initialized NSFetchRequest for the entity, with no predicate
+ * Returns an initialized NSFetchRequest for the entity, with no predicate
  */
 + (NSFetchRequest*)fetchRequest;
 
@@ -94,7 +94,7 @@
 + (NSUInteger)count DEPRECATED_ATTRIBUTE;
 
 /**
- *	Creates a new managed object and inserts it into the managedObjectContext.
+ * Creates a new managed object and inserts it into the managedObjectContext.
  */
 + (id)object;
 

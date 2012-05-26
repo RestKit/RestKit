@@ -27,7 +27,7 @@
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
-    
+
     return expectation;
 }
 
@@ -36,7 +36,7 @@
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
     expectation.value = value;
-    
+
     return expectation;
 }
 
@@ -45,7 +45,7 @@
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
     expectation.evaluationBlock = testBlock;
-    
+
     return expectation;
 }
 
@@ -62,7 +62,7 @@
         return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' satisfying evaluation block",
                 self.sourceKeyPath, self.destinationKeyPath];
     }
-    
+
     return [self mappingDescription];
 }
 

@@ -12,12 +12,17 @@ rescue LoadError
   # No debugging...
 end
 
+ENV["DB"] = "rack_oauth2_server"
+
 # Import the RestKit Test server
 $: << File.join(File.expand_path(File.dirname(__FILE__)), 'lib')
+require File.expand_path(File.dirname(__FILE__)) + '/fixtures'
 require 'restkit/network/authentication'
 require 'restkit/network/etags'
 require 'restkit/network/timeout'
+require 'restkit/network/oauth1'
 require 'restkit/network/oauth2'
+require 'restkit/network/redirection'
 
 class Person < Struct.new(:name, :age)
   def to_json(*args)
@@ -37,7 +42,7 @@ class RestKitTestServer < Sinatra::Base
   use RestKit::Network::Authentication
   use RestKit::Network::ETags
   use RestKit::Network::Timeout
-  use RestKit::Network::OAuth2
+  use RestKit::Network::Redirection
 
   def render_fixture(path, options = {})
     send_file File.join(settings.public_folder, path), options
@@ -90,6 +95,12 @@ class RestKitTestServer < Sinatra::Base
   end
 
   post '/204' do
+    status 204
+    content_type 'application/json'
+    "".to_json
+  end
+  
+  get '/204' do
     status 204
     content_type 'application/json'
     "".to_json

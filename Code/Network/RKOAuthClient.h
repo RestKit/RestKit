@@ -4,13 +4,13 @@
 //
 //  Created by Rodrigo Garcia on 7/20/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -52,7 +52,7 @@ typedef enum RKOAuthClientErrors {
      */
     RKOAuthClientErrorUnsupportedGrantType      = 3005,
     /**
-     The requested scope is invalid, unknown, malformed, or exceeds the scope 
+     The requested scope is invalid, unknown, malformed, or exceeds the scope
      granted by the resource owner.
      */
     RKOAuthClientErrorInvalidScope              = 3006,
@@ -73,13 +73,13 @@ typedef enum RKOAuthClientErrors {
 /**
  An OAuth client implementation that conforms to RKRequestDelegate to handle the
  authentication involved with the OAuth 2 authorization code flow.
- 
+
  RKOAuthClient sets up a pre-configured RKRequest and RKResponse handler to give
  easy access to retrieving an access token and handling errors through
  RKOAuthClientDelegate.
- 
+
  **Example**:
- 
+
     RKOAuthClient *oauthClient;
     oauthClient = [RKClientOAuth clientWithClientID:@"YOUR_CLIENT_ID"
                                              secret:@"YOUR_CLIENT_SECRET"
@@ -88,19 +88,19 @@ typedef enum RKOAuthClientErrors {
     oauthClient.authorizationURL = @"https://foursquare.com/oauth2/authenticate";
     oauthClient.callbackURL = @"https://example.com/callback";
     [oauthClient validateAuthorizationCode];
- 
+
  From here, errors and the access token are returned through the
  implementation of RKOAuthClientDelegate specified.
- 
+
  For more information on the OAuth 2 implementation, see
  http://tools.ietf.org/html/draft-ietf-oauth-v2-22
- 
+
  @see RKOAuthClientDelegate
  */
 @interface RKOAuthClient : NSObject {
-	NSString *_clientID;
+    NSString *_clientID;
     NSString *_clientSecret;
-	NSString *_authorizationCode;
+    NSString *_authorizationCode;
     NSString *_authorizationURL;
     NSString *_callbackURL;
     NSString *_accessToken;
@@ -114,7 +114,7 @@ typedef enum RKOAuthClientErrors {
 
 /**
  Initialize a new RKOAuthClient with OAuth client credentials.
- 
+
  @param clientID The ID of your application obtained from the OAuth provider.
  @param secret Confidential key obtained from the OAuth provider that is used to
  sign requests sent to the authentication server.
@@ -139,11 +139,11 @@ typedef enum RKOAuthClientErrors {
 
 /**
  A delegate that must conform to the RKOAuthClientDelegate protocol.
- 
+
  The delegate will get callbacks such as successful access token acquisitions as
  well as any errors that are encountered.  Reference the RKOAuthClientDelegate
  for more information.
- 
+
  @see RKOAuthClientDelegate.
  */
 @property (nonatomic, assign) id<RKOAuthClientDelegate> delegate;
@@ -199,7 +199,7 @@ typedef enum RKOAuthClientErrors {
  Fire a request to the authentication server to validate the authorization code
  that has been set on the authorizationCode property.  All responses are handled
  by the delegate.
- 
+
  @see RKOAuthClientDelegate
  */
 - (void)validateAuthorizationCode;
@@ -211,7 +211,7 @@ typedef enum RKOAuthClientErrors {
  The delegate of an RKOAuthClient object must adopt the RKOAuthClientDelegate
  protocol.  The protocol defines all methods relating to obtaining an
  accessToken and handling any errors along the way.  It optionally provides
- callbacks for many different OAuth2 exceptions that may occur during the 
+ callbacks for many different OAuth2 exceptions that may occur during the
  authorization code flow.
  */
 @protocol RKOAuthClientDelegate <NSObject>
@@ -223,7 +223,7 @@ typedef enum RKOAuthClientErrors {
 
 /**
  Sent when a new access token has been acquired
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param token A string of the access token acquired from the authentication
  server.
@@ -237,7 +237,7 @@ typedef enum RKOAuthClientErrors {
 
 /**
  Sent when an access token request has failed due an invalid authorization code
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param error An NSError object containing the RKOAuthClientError that triggered
  the callback
@@ -248,7 +248,7 @@ typedef enum RKOAuthClientErrors {
 
 /**
  Sent to the delegate when the OAuth client encounters any error.
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param error An NSError object containing the RKOAuthClientError that triggered
  the callback
@@ -257,7 +257,7 @@ typedef enum RKOAuthClientErrors {
 
 /**
  Sent when the client isn't authorized to perform the requested action
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param error An NSError object containing the RKOAuthClientError that triggered
  the callback
@@ -268,7 +268,7 @@ typedef enum RKOAuthClientErrors {
  Sent when an error is encountered with the OAuth client such as an unknown
  client, there is no client authentication included, or an unsupported
  authentication method was used.
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param error An NSError object containing the RKOAuthClientError that triggered
  the callback
@@ -277,7 +277,7 @@ typedef enum RKOAuthClientErrors {
 
 /**
  Sent when the request sent to the authentication server is invalid
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param error An NSError object containing the RKOAuthClientError that triggered
  the callback
@@ -286,7 +286,7 @@ typedef enum RKOAuthClientErrors {
 
 /**
  Sent when the grant type specified isn't supported by the authentication server
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param error An NSError object containing the RKOAuthClientError that triggered
  the callback
@@ -296,17 +296,17 @@ typedef enum RKOAuthClientErrors {
 /**
  Sent when the requested scope is invalid, unknown, malformed, or exceeds the
  scope granted by the resource owner.
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param error An NSError object containing the RKOAuthClientError that triggered
  the callback
  */
 - (void)OAuthClient:(RKOAuthClient *)client didFailWithInvalidScopeError:(NSError *)error;
 
-/** 
+/**
  Sent to the delegate when an authorization code flow request failed due to a
  loading error somewhere within the RKRequest call
- 
+
  @param client A reference to the RKOAuthClient that triggered the callback
  @param request A reference to the RKRequest that failed
  @param error An NSError object containing the RKOAuthClientError that triggered

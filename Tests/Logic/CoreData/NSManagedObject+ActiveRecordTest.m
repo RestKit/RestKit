@@ -20,7 +20,7 @@
 {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSEntityDescription *entity = [RKHuman entityDescription];
-    entity.primaryKeyAttribute = @"railsID";
+    entity.primaryKeyAttributeName = @"railsID";
 
     RKHuman *human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:12345];
@@ -35,7 +35,7 @@
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSManagedObjectContext *context = [[RKTestFactory managedObjectStore] newManagedObjectContext];
     NSEntityDescription *entity = [RKHuman entityDescription];
-    entity.primaryKeyAttribute = @"railsID";
+    entity.primaryKeyAttributeName = @"railsID";
 
     RKHuman *human = [RKHuman createInContext:context];
     human.railsID = [NSNumber numberWithInt:12345];
@@ -45,6 +45,20 @@
     assertThat(foundHuman, is(nilValue()));
 
     foundHuman = [RKHuman findByPrimaryKey:[NSNumber numberWithInt:12345] inContext:context];
+    assertThat(foundHuman, is(equalTo(human)));
+}
+
+- (void)testFindByPrimaryKeyWithStringValueForNumericProperty
+{
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    NSEntityDescription *entity = [RKHuman entityDescription];
+    entity.primaryKeyAttributeName = @"railsID";
+    
+    RKHuman *human = [RKHuman createEntity];
+    human.railsID = [NSNumber numberWithInt:12345];
+    [store save:nil];
+    
+    RKHuman *foundHuman = [RKHuman findByPrimaryKey:@"12345" inContext:store.primaryManagedObjectContext];
     assertThat(foundHuman, is(equalTo(human)));
 }
 

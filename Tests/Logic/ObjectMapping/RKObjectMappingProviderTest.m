@@ -31,7 +31,7 @@
 #import "RKOrderedDictionary.h"
 
 @interface RKObjectMappingProviderTest : RKTestCase {
-	RKObjectManager* _objectManager;
+    RKObjectManager* _objectManager;
 }
 
 @end
@@ -40,9 +40,9 @@
 
 - (void)setUp {
     _objectManager = [RKTestFactory objectManager];
-	_objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
+    _objectManager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKTests.sqlite"];
     [RKObjectManager setSharedManager:_objectManager];
-    [_objectManager.objectStore deletePersistantStore];
+    [_objectManager.objectStore deletePersistentStore];
 }
 
 - (void)testShouldFindAnExistingObjectMappingForAClass {

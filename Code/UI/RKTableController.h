@@ -29,18 +29,25 @@
 #import "RKObjectMapping.h"
 #import "RKObjectLoader.h"
 
+@protocol RKTableControllerDelegate <RKAbstractTableControllerDelegate>
+
+@optional
+
+- (void)tableController:(RKTableController *)tableController didLoadObjects:(NSArray *)objects inSection:(RKTableSection *)section;
+
+@end
+
 @interface RKTableController : RKAbstractTableController
 
-/////////////////////////////////////////////////////////////////////////
+@property (nonatomic, assign) id<RKTableControllerDelegate> delegate;
+
+///-----------------------------------------------------------------------------
 /// @name Static Tables
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 
 - (void)loadObjects:(NSArray *)objects;
 - (void)loadObjects:(NSArray *)objects inSection:(NSUInteger)sectionIndex;
 - (void)loadEmpty;
-
-// Move to superclass???
-- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation;
 
 /**
  Load an array of RKTableItems into table cells of the specified class. A table cell
@@ -48,7 +55,6 @@
  After the block is invoked, the objects will be loaded into the specified section.
  */
 // TODO: Update comments...
-- (void)loadTableItems:(NSArray *)tableItems withMappingBlock:(void (^)(RKTableViewCellMapping *))block; // TODO: Eliminate...
 - (void)loadTableItems:(NSArray *)tableItems withMapping:(RKTableViewCellMapping *)cellMapping;
 - (void)loadTableItems:(NSArray *)tableItems
              inSection:(NSUInteger)sectionIndex
@@ -79,12 +85,16 @@
  */
 - (void)loadTableItems:(NSArray *)tableItems inSection:(NSUInteger)sectionIndex;
 
+///-----------------------------------------------------------------------------
 /** @name Network Tables */
+///-----------------------------------------------------------------------------
 
 - (void)loadTableFromResourcePath:(NSString *)resourcePath;
 - (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *objectLoader))block;
 
+///-----------------------------------------------------------------------------
 /** @name Forms */
+///-----------------------------------------------------------------------------
 
 /**
  The form that the table has been loaded with (if any)
@@ -99,9 +109,36 @@
  */
 - (void)loadForm:(RKForm *)form;
 
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
 /// @name Managing Sections
-/////////////////////////////////////////////////////////////////////////
+///-----------------------------------------------------------------------------
+
+@property (nonatomic, readonly) NSMutableArray *sections;
+
+/**
+ The key path on the loaded objects used to determine the section they belong to.
+ */
+@property(nonatomic, copy) NSString *sectionNameKeyPath;
+
+/**
+ Returns the section at the specified index.
+ @param index Must be less than the total number of sections.
+ */
+- (RKTableSection *)sectionAtIndex:(NSUInteger)index;
+
+/** 
+ Returns the first section with the specified header title.
+ @param title The header title.
+ */
+- (RKTableSection *)sectionWithHeaderTitle:(NSString *)title;
+
+/**
+ Returns the index of the specified section.
+ 
+ @param section Must be a valid non nil RKTableViewSection.
+ @return The index of the given section if contained within the receiver, otherwise NSNotFound.
+ */
+- (NSUInteger)indexForSection:(RKTableSection *)section;
 
 // Coalesces a series of table view updates performed within the block into
 // a single animation using beginUpdates: and endUpdates: on the table view
@@ -109,27 +146,21 @@
 - (void)updateTableViewUsingBlock:(void (^)())block;
 
 /** Adds a new section to the model.
- *	@param section Must be a valid non nil RKTableViewSection. */
+ * @param section Must be a valid non nil RKTableViewSection. */
 // NOTE: connects cellMappings if section.cellMappings is nil...
 - (void)addSection:(RKTableSection *)section;
 
-/**
- Creates an section and yields it to the block for configuration. After the block
- is evaluated, the section is added to the table.
- */
-- (void)addSectionUsingBlock:(void (^)(RKTableSection *section))block;
-
 /** Inserts a new section at the specified index.
- *	@param section Must be a valid non nil RKTableViewSection.
- *	@param index Must be less than the total number of sections. */
+ * @param section Must be a valid non nil RKTableViewSection.
+ * @param index Must be less than the total number of sections. */
 - (void)insertSection:(RKTableSection *)section atIndex:(NSUInteger)index;
 
 /** Removes the specified section from the model.
- *	@param section The section to remove. */
+ * @param section The section to remove. */
 - (void)removeSection:(RKTableSection *)section;
 
 /** Removes the section at the specified index from the model.
- *	@param index Must be less than the total number of section. */
+ * @param index Must be less than the total number of section. */
 - (void)removeSectionAtIndex:(NSUInteger)index;
 
 /** Removes all sections from the model. */

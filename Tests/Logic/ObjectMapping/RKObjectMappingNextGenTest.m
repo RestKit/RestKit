@@ -1131,6 +1131,44 @@
     [mockUser verify];
 }
 
+- (void)testDelegateIsInformedWhenANilValueIsMappedForNSNullWithExistingValue {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
+
+    NSDictionary* dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    [dictionary setValue:[NSNull null] forKey:@"name"];
+    RKTestUser* user = [RKTestUser user];
+    user.name = @"Blake Watters";
+    id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    operation.delegate = mockDelegate;
+    NSError* error = nil;
+    [[mockDelegate expect] objectMappingOperation:operation didFindMapping:nameMapping forKeyPath:@"name"];
+    [[mockDelegate expect] objectMappingOperation:operation didSetValue:nil forKeyPath:@"name" usingMapping:nameMapping];
+    [operation performMapping:&error];
+    [mockDelegate verify];
+}
+
+- (void)testDelegateIsInformedWhenUnchangedValueIsSkipped {
+    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [mapping addAttributeMapping:nameMapping];
+
+    NSDictionary* dictionary = [[RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"] mutableCopy];
+    [dictionary setValue:@"Blake Watters" forKey:@"name"];
+    RKTestUser* user = [RKTestUser user];
+    user.name = @"Blake Watters";
+    id mockDelegate = [OCMockObject mockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
+    RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
+    operation.delegate = mockDelegate;
+    NSError* error = nil;
+    [[mockDelegate expect] objectMappingOperation:operation didFindMapping:nameMapping forKeyPath:@"name"];
+    [[mockDelegate expect] objectMappingOperation:operation didNotSetUnchangedValue:@"Blake Watters" forKeyPath:@"name" usingMapping:nameMapping];
+    [operation performMapping:&error];
+    [mockDelegate verify];
+}
+
 - (void)testShouldOptionallySetDefaultValueForAMissingKeyPath {
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
@@ -1223,10 +1261,10 @@
     RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
     RKObjectAttributeMapping* cityMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"city" toKeyPath:@"city"];
     [addressMapping addAttributeMapping:cityMapping];
-    
+
     RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"friendsOrderedSet" withMapping:addressMapping];
     [userMapping addRelationshipMapping:hasOneMapping];
-    
+
     RKObjectMapper* mapper = [RKObjectMapper new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser* user = [RKTestUser user];
@@ -1285,10 +1323,10 @@
     RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
     [userMapping addAttributeMapping:nameMapping];
-    
+
     RKObjectRelationshipMapping* hasManyMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"friends" toKeyPath:@"friendsOrderedSet" withMapping:userMapping];
     [userMapping addRelationshipMapping:hasManyMapping];
-    
+
     RKObjectMapper* mapper = [RKObjectMapper new];
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser* user = [RKTestUser user];
@@ -1325,6 +1363,33 @@
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     [mapper mapFromObject:userInfo toObject:user atKeyPath:@"" usingMapping:userMapping];
     [mapper release];
+}
+
+- (void)testSkippingOfIdenticalObjectsInformsDelegate {
+    RKTestUser* user = [RKTestUser user];
+    RKTestAddress* address = [RKTestAddress address];
+    address.addressID = [NSNumber numberWithInt:1234];
+    user.address = address;
+    id mockUser = [OCMockObject partialMockForObject:user];
+    [[mockUser reject] setAddress:OCMOCK_ANY];
+
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
+    RKObjectAttributeMapping* nameMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"];
+    [userMapping addAttributeMapping:nameMapping];
+    RKObjectMapping* addressMapping = [RKObjectMapping mappingForClass:[RKTestAddress class]];
+    RKObjectAttributeMapping* idMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"addressID"];
+    [addressMapping addAttributeMapping:idMapping];
+
+    RKObjectRelationshipMapping* hasOneMapping = [RKObjectRelationshipMapping mappingFromKeyPath:@"address" toKeyPath:@"address" withMapping:addressMapping];
+    [userMapping addRelationshipMapping:hasOneMapping];
+
+    id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
+    RKObjectMappingOperation *operation = [RKObjectMappingOperation mappingOperationFromObject:userInfo toObject:user withMapping:userMapping];
+    id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKObjectMappingOperationDelegate)];
+    [[mockDelegate expect] objectMappingOperation:operation didNotSetUnchangedValue:address forKeyPath:@"address" usingMapping:hasOneMapping];
+    operation.delegate = mockDelegate;
+    [operation performMapping:nil];
+    [mockDelegate verify];
 }
 
 - (void)testShouldNotSetThePropertyWhenTheNestedObjectCollectionIsIdentical {
@@ -1767,16 +1832,16 @@
     assertThat([RKObjectMapping defaultDateFormatters], hasCountOf(4));
 }
 
-- (void)testShouldAllowNewlyAddedDateFormatterToRunFirst {    
+- (void)testShouldAllowNewlyAddedDateFormatterToRunFirst {
     [RKObjectMapping setDefaultDateFormatters:nil];
     NSDateFormatter *newDateFormatter = [[NSDateFormatter new] autorelease];
     [newDateFormatter setDateFormat:@"dd/MM/yyyy"];
     [RKObjectMapping addDefaultDateFormatter:newDateFormatter];
-    
+
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping *birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"favorite_date" toKeyPath:@"favoriteDate"];
     [mapping addAttributeMapping:birthDateMapping];
-    
+
     NSDictionary *dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     RKTestUser *user = [RKTestUser user];
     RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:user mapping:mapping];
@@ -1808,7 +1873,7 @@
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestUser class]];
     RKObjectAttributeMapping* birthDateMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"birthdate" toKeyPath:@"birthDate"];
     [mapping addAttributeMapping:birthDateMapping];
-    
+
     NSDictionary* dictionary = [RKTestFixture parsedObjectWithContentsOfFixture:@"user.json"];
     NSMutableDictionary *mutableDictionary = [dictionary mutableCopy];
     [mutableDictionary setValue:@"" forKey:@"birthdate"];
@@ -1817,7 +1882,7 @@
     [mutableDictionary release];
     NSError* error = nil;
     [operation performMapping:&error];
-    
+
     assertThat(user.birthDate, is(equalTo(nil)));
 }
 
@@ -1914,20 +1979,20 @@
     humanMapping.primaryKeyAttribute = @"railsID";
     RKObjectMappingProvider *provider = [RKObjectMappingProvider mappingProvider];
     [provider setObjectMapping:humanMapping forKeyPath:@"human"];
-    
+
     // Create instances that should match the fixture
     RKHuman *human1 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
     human1.railsID = [NSNumber numberWithInt:201];
     RKHuman *human2 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInt:202];
     [objectStore save:nil];
-    
+
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:array mappingProvider:provider];
     RKObjectMappingResult *result = [mapper performMapping];
     assertThat(result, is(notNilValue()));
-    
+
     NSArray *humans = [result asCollection];
-    assertThat(humans, hasCountOf(2));    
+    assertThat(humans, hasCountOf(2));
     assertThat([humans objectAtIndex:0], is(equalTo(human1)));
     assertThat([humans objectAtIndex:1], is(equalTo(human2)));
 }

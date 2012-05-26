@@ -88,15 +88,15 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
     self.paginatedObjects = nil;
     self.paginationError = nil;
 
-	NSDate* startDate = [NSDate date];
+    NSDate* startDate = [NSDate date];
 
-	while (loading) {
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
-			[NSException raise:@"RKTestPaginatorDelegateTimeoutException" format:@"*** Operation timed out after %f seconds...", self.timeout];
-			loading = NO;
-		}
-	}
+    while (loading) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+        if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
+            [NSException raise:@"RKTestPaginatorDelegateTimeoutException" format:@"*** Operation timed out after %f seconds...", self.timeout];
+            loading = NO;
+        }
+    }
 }
 
 #pragma mark - RKObjectPaginatorDelegate
@@ -134,6 +134,14 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
 @implementation RKObjectPaginatorTest
 
 static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?per_page=:perPage&page=:currentPage";
+
+- (void)setUp {
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown {
+    [RKTestFactory tearDown];
+}
 
 - (RKObjectMappingProvider *)paginationMappingProvider {
     RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
