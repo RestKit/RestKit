@@ -28,12 +28,12 @@ li {
 	margin-bottom: 10px;
 }
 
-a {
+a, a code {
 	text-decoration: none;
 	color: #36C;
 }
 
-a:hover {
+a:hover, a:hover code {
 	text-decoration: underline;
 	color: #36C;
 }
@@ -45,6 +45,28 @@ h2 {
 	font-weight: normal;
 	margin-top: 1.75em;
 	padding-bottom: 2px;	
+}
+
+table {
+    margin-bottom: 4em;
+    border-collapse:collapse;
+    vertical-align: middle;
+}
+
+td {
+    border: 1px solid #9BB3CD;
+    padding: .667em;
+    font-size: 100%;
+}
+
+th {
+    border: 1px solid #9BB3CD;
+    padding: .3em .667em .3em .667em;
+    background: #93A5BB;
+    font-size: 103%;
+    font-weight: bold;
+    color: white;
+    text-align: left;
 }
 
 /* @group Common page elements */
@@ -66,6 +88,7 @@ h2 {
 }
 
 #contents, #overview_contents {
+	-webkit-overflow-scrolling: touch;
 	border-top: 1px solid #2B334F;
 	position: absolute;
 	top: 91px;
@@ -386,6 +409,13 @@ li#jumpto_button select {
 	height: 0.7em;
 }
 
+.note {
+	border: 1px solid #5088C5;
+	background-color: white;
+	margin: 1.667em 0 1.75em 0;
+	padding: 0 .667em .083em .750em;
+}
+
 .warning {
 	border: 1px solid #5088C5;
 	background-color: #F0F3F7;
@@ -423,12 +453,16 @@ li#jumpto_button select {
 }
 
 .section-specification table {
+    margin-bottom: 0em;
 	border-top: 1px solid #d6e0e5;
 }
 
 .section-specification td {
 	vertical-align: top;
 	border-bottom: 1px solid #d6e0e5;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-top-width: 0px;
 	padding: .6em;
 }
 
@@ -529,6 +563,21 @@ span.tooltip:hover span.tooltip {
 
 .declared-in-ref {
 	color: #666;
+}
+
+#tocContainer.hideInXcode {
+	display: none;
+	border: 0px solid black;
+}
+
+#top_header.hideInXcode {
+	display: none;
+}
+
+#contents.hideInXcode {
+	border: 0px solid black;
+	top: 0px;
+	left: 0px;
 }
 
 /* @end */

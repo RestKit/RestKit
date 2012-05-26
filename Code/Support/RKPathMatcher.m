@@ -3,14 +3,14 @@
 //  RestKit
 //
 //  Created by Greg Combs on 9/2/11.
-//  Copyright 2011 RestKit
-//  
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@
 
 #import "RKPathMatcher.h"
 #import "SOCKit.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "NSDictionary+RKAdditions.h"
 #import "RKLog.h"
 
@@ -58,7 +58,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 @property (nonatomic,retain) SOCPattern *socPattern;
 @property (nonatomic,copy) NSString *sourcePath;
 @property (nonatomic,copy) NSString *rootPath;
-@property (retain,readwrite) NSDictionary *queryParameters;
+@property (copy,readwrite) NSDictionary *queryParameters;
 @end
 
 @implementation RKPathMatcher
@@ -66,6 +66,16 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 @synthesize sourcePath=sourcePath_;
 @synthesize rootPath=rootPath_;
 @synthesize queryParameters=queryParameters_;
+
+- (id)copyWithZone:(NSZone *)zone {
+    RKPathMatcher* copy = [[[self class] allocWithZone:zone] init];
+    copy.socPattern = self.socPattern;
+    copy.sourcePath = self.sourcePath;
+    copy.rootPath = self.rootPath;
+    copy.queryParameters = self.queryParameters;
+
+    return copy;
+}
 
 - (void)dealloc {
     self.socPattern = nil;
@@ -99,7 +109,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     NSArray *components = [self.sourcePath componentsSeparatedByString:@"?"];
     if ([components count] > 1) {
         self.rootPath = [components objectAtIndex:0];
-        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSUTF8StringEncoding]; 
+        self.queryParameters = [[components objectAtIndex:1] queryParametersUsingEncoding:NSUTF8StringEncoding];
         return YES;
     }
     return NO;
@@ -116,12 +126,11 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     if (![self matches])
         return NO;
     if (!arguments) {
-        RKLogWarning(@"The parsed arguments dictionary reference is nil.");
         return YES;
     }
     NSDictionary *extracted = [self.socPattern parameterDictionaryFromSourceString:self.rootPath];
     if (extracted)
-        [argumentsCollection addEntriesFromDictionary:[extracted removePercentEscapesFromKeysAndObjects]];
+        [argumentsCollection addEntriesFromDictionary:[extracted dictionaryByReplacingPercentEscapesInEntries]];
     *arguments = argumentsCollection;
     return YES;
 }

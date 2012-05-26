@@ -3,14 +3,14 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/2/11.
-//  Copyright 2011 Two Toasters
-//  
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,7 +51,7 @@
 - (void)dealloc {
     [_object release];
     [_mapping release];
-    
+
     [super dealloc];
 }
 
@@ -64,13 +64,13 @@
     if (!success) {
         return nil;
     }
-    
+
     // Optionally enclose the serialized object within a container...
     if (_mapping.rootKeyPath) {
         // TODO: Should log this...
         dictionary = [NSMutableDictionary dictionaryWithObject:dictionary forKey:_mapping.rootKeyPath];
     }
-    
+
     return dictionary;
 }
 
@@ -83,14 +83,14 @@
         if (string == nil) {
             return nil;
         }
-        
+
         return string;
     }
-    
+
     return nil;
 }
 
-- (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)MIMEType error:(NSError**)error {    
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString *)MIMEType error:(NSError **)error {
     if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
         // Dictionaries are natively RKRequestSerializable as Form Encoded
         return [self serializedObject:error];
@@ -101,7 +101,7 @@
             return [RKRequestSerialization serializationWithData:data MIMEType:MIMEType];
         }
     }
-    
+
     return nil;
 }
 
@@ -109,17 +109,21 @@
 
 - (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
     id transformedValue = nil;
-    
+    Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
+
     if ([value isKindOfClass:[NSDate class]]) {
         // Date's are not natively serializable, must be encoded as a string
         @synchronized(self.mapping.preferredDateFormatter) {
-            transformedValue = [self.mapping.preferredDateFormatter stringFromDate:value];
+            transformedValue = [self.mapping.preferredDateFormatter stringForObjectValue:value];
         }
     } else if ([value isKindOfClass:[NSDecimalNumber class]]) {
         // Precision numbers are serialized as strings to work around Javascript notation limits
-        transformedValue = [(NSDecimalNumber*)value stringValue];        
+        transformedValue = [(NSDecimalNumber*)value stringValue];
+    } else if ([value isKindOfClass:orderedSetClass]) {
+        // NSOrderedSets are not natively serializable, so let's just turn it into an NSArray
+        transformedValue = [value array];
     }
-    
+
     if (transformedValue) {
         RKLogDebug(@"Serialized %@ value at keyPath to %@ (%@)", NSStringFromClass([value class]), NSStringFromClass([transformedValue class]), value);
         [operation.destinationObject setValue:transformedValue forKey:keyPath];

@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 9/27/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -11,6 +11,7 @@
 
 @interface RKAuthenticationExample : UIViewController <RKRequestDelegate, UIPickerViewDelegate, UIPickerViewDataSource>
 
+@property (nonatomic, retain) RKRequest *authenticatedRequest;
 @property (nonatomic, retain) IBOutlet UITextField  *URLTextField;
 @property (nonatomic, retain) IBOutlet UITextField  *usernameTextField;
 @property (nonatomic, retain) IBOutlet UITextField  *passwordTextField;

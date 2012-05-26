@@ -1,0 +1,38 @@
+[
+    {
+        "human": {
+            "id": 201,
+            "name": "Blake",
+            "human_id": 1,
+            "cats": [
+                {
+                    "cat": {
+                        "id": 254,
+                        "sku_id": 149
+                    }
+                },
+                {
+                    "order_component": {
+                        "id": 255,
+                        "sku_id": 145
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "human": {
+            "id": 202,
+            "name": "Sarah",
+            "human_id": 1,
+            "cats": [
+                {
+                    "order_component": {
+                        "id": 256,
+                        "sku_id": 144
+                    }
+                }
+            ]
+        }
+    }
+]
