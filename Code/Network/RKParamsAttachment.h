@@ -72,6 +72,17 @@
 
 /**
  Returns a newly initialized attachment with a given parameter name and the data
+ stored in an NSInputStream object.
+ 
+ @param name The parameter name of this attachment in the multi-part document.
+ @param stream The input stream that is used to create the attachment body.
+ @param size The size in bytes of the input stream data.
+ @return An initialized attachment with the given name and data.
+ */
+- (id)initWithName:(NSString*)name inputStream:(NSInputStream*)stream size:(NSUInteger)size;
+
+/**
+ Returns a newly initialized attachment with a given parameter name and the data
  stored on disk at the given file path.
 
  @param name The parameter name of this attachment in the multi-part document.
@@ -81,8 +92,6 @@
  the path given.
  */
 - (id)initWithName:(NSString *)name file:(NSString *)filePath;
-
-- (id)initWithName:(NSString*)name inputStream:(NSInputStream*)inputStream size:(NSUInteger)size;
 
 ///-----------------------------------------------------------------------------
 /// @name Working with the Attachment

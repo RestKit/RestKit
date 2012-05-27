@@ -64,6 +64,7 @@
     NSString* titulo = @"whatever";
     NSString* texto = @"more text";
     NSData *data = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
+    NSInputStream *stream = [NSInputStream inputStreamWithData:data];
     NSNumber* cel = [NSNumber numberWithFloat:1.232442];
     NSNumber* lon = [NSNumber numberWithFloat:18231.232442];;
     NSNumber* lat = [NSNumber numberWithFloat:13213123.232442];;
@@ -77,7 +78,7 @@
     [params setValue:titulo forParam:@"titulo"];
     [params setValue:texto forParam:@"texto"];
 
-    [params setData:data MIMEType:@"image/png" forParam:@"file"];
+    [params setInputStream:stream size:[data length] MIMEType: forParam:@"image/png" forParam:@"file"];
 
     [params setValue:cel forParam:@"cel"];
     [params setValue:lon forParam:@"lon"];
