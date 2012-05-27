@@ -102,6 +102,18 @@ extern NSString* const kRKStringBoundary;
     return self;
 }
 
+- (id)initWithName:(NSString*)name inputStream:(NSInputStream*)inputStream size:(NSUInteger)size {
+    self = [self initWithName:name];
+	if (self) {
+        NSString *MIMEType = @"application/octet-stream";        
+		_MIMEType = [MIMEType retain];
+		_bodyStream = [inputStream retain];
+		_bodyLength = size;
+	}
+	
+	return self;
+}
+
 - (void)dealloc {
     [_value release];
     [_name release];

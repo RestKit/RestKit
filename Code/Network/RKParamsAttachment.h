@@ -82,6 +82,7 @@
  */
 - (id)initWithName:(NSString *)name file:(NSString *)filePath;
 
+- (id)initWithName:(NSString*)name inputStream:(NSInputStream*)inputStream size:(NSUInteger)size;
 
 ///-----------------------------------------------------------------------------
 /// @name Working with the Attachment

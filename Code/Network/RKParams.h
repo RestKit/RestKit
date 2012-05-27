@@ -142,6 +142,8 @@
  */
 - (RKParamsAttachment *)setData:(NSData *)data MIMEType:(NSString *)MIMEType forParam:(NSString *)param;
 
+- (RKParamsAttachment *)setInputStream:(NSInputStream *)stream size:(NSUInteger)size forParam:(NSString *)param;
+
 /**
  Creates a new RKParamsAttachment and sets the value for a named parameter to a
  data object with the specified MIME Type and attachment file name.
