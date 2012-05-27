@@ -129,6 +129,28 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return attachment;
 }
 
+- (RKParamsAttachment *)setInputStream:(NSInputStream *)stream size:(NSUInteger)size forParam:(NSString *)param {
+    NSParameterAssert(stream);
+    NSParameterAssert(param);
+	RKParamsAttachment *attachment = [[RKParamsAttachment alloc] initWithName:param inputStream:stream size:size];
+	[_attachments addObject:attachment];
+	[attachment release];
+	
+	return attachment;
+}
+
+- (RKParamsAttachment *)setInputStream:(NSInputStream *)stream size:(NSUInteger)size MIMEType:(NSString *)MIMEType forParam:(NSString *)param {
+    NSParameterAssert(stream);
+    NSParameterAssert(MIMEType);
+    NSParameterAssert(param);
+    RKParamsAttachment *attachment = [self setInputStream:stream size:size forParam:param];
+    if (MIMEType != nil) {
+        attachment.MIMEType = MIMEType;
+    }
+	
+	return attachment;
+}
+
 - (RKParamsAttachment *)setData:(NSData *)data MIMEType:(NSString *)MIMEType fileName:(NSString *)fileName forParam:(NSString *)param {
     NSParameterAssert(data);
     NSParameterAssert(param);

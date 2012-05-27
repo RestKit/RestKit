@@ -143,6 +143,31 @@
 - (RKParamsAttachment *)setData:(NSData *)data MIMEType:(NSString *)MIMEType forParam:(NSString *)param;
 
 /**
+ Creates a new RKParamsAttachment for a named parameter with the input stream
+ given and adds it to the attachments array.
+ 
+ A default MIME type of application/octet-stream will be used.
+ 
+ @param stream NSInputStream object of the data to be attached
+ @param size The size in bytes of the data to be attached
+ @param param Key name of the attachment to add
+ @return the new RKParamsAttachment that was added to the attachments array
+ */
+- (RKParamsAttachment *)setInputStream:(NSInputStream *)stream size:(NSUInteger)size forParam:(NSString *)param;
+
+/**
+ Creates a new RKParamsAttachment for a named parameter with the input stream
+ given and adds it to the attachments array.
+ 
+ @param stream NSInputStream object of the data to be attached
+ @param size The size in bytes of the data to be attached
+ @param MIMEType String of the MIME type of the data
+ @param param Key name of the attachment to add
+ @return the new RKParamsAttachment that was added to the attachments array
+ */
+- (RKParamsAttachment *)setInputStream:(NSInputStream *)stream size:(NSUInteger)size MIMEType:(NSString *)MIMEType forParam:(NSString *)param;
+
+/**
  Creates a new RKParamsAttachment and sets the value for a named parameter to a
  data object with the specified MIME Type and attachment file name.
 
