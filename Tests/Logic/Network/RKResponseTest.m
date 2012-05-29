@@ -244,14 +244,14 @@
 - (void)testShouldNotCrashWhenParserReturnsNilWithoutAnError {
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mockResponse = [OCMockObject partialMockForObject:response];
-    NSString *body = @"body";
-    [[[mockResponse stub] andReturn:[body dataUsingEncoding:NSUTF8StringEncoding]] body];
+    NSData *body = [@"body" dataUsingEncoding:NSUTF8StringEncoding];
+    [[[mockResponse stub] andReturn:body] body];
     [[[mockResponse stub] andReturn:RKMIMETypeJSON] MIMEType];
-    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParserString)];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
     id mockRegistry = [OCMockObject partialMockForObject:[RKParserRegistry sharedRegistry]];
     [[[mockRegistry expect] andReturn:mockParser] parserForMIMEType:RKMIMETypeJSON];
     NSError* error = nil;
-    [[[mockParser expect] andReturn:nil] objectFromString:body error:[OCMArg setTo:error]];
+    [[[mockParser expect] andReturn:nil] objectFromData:body error:[OCMArg setTo:error]];
     id object = [mockResponse parsedBody:&error];
     [mockRegistry verify];
     [mockParser verify];

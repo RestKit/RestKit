@@ -67,12 +67,7 @@ RKParserRegistry *gSharedRegistry;
         return nil;
     }
 
-    if ([parser respondsToSelector:@selector(objectFromData:error:)]) {
-        return [parser objectFromData:data error:error];
-    } else {
-        NSString *dataAsString = [[NSString alloc] initWithData:data encoding:encoding];
-        return [parser objectFromString:dataAsString error:error];
-    }
+    return [parser objectFromData:data error:error];
 }
 
 - (id)parseData:(NSData *)data withMIMEType:(NSString *)MIMEType error:(NSError **)error {
@@ -90,12 +85,7 @@ RKParserRegistry *gSharedRegistry;
         return nil;
     }
 
-    if ([parser respondsToSelector:@selector(dataFromObject:error:)]) {
-        return [parser dataFromObject:object error:error];
-    } else {
-        NSString *dataAsString = [parser stringFromObject:object error:error];
-        return [dataAsString dataUsingEncoding:NSUTF8StringEncoding];
-    }
+    return [parser dataFromObject:object error:error];
 }
 
 - (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType {
