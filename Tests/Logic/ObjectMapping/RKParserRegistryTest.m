@@ -45,7 +45,7 @@
 - (void)testShouldPassDataToParser {
     NSArray *parsedData = [NSArray array];
     NSError *error = nil;
-    NSData *data = [NSData data];
+    NSData *data = [@"foobar" dataUsingEncoding:NSUTF8StringEncoding];
     id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
     [[[mockParser expect] andReturn:parsedData] objectFromData:data error:[OCMArg setTo:error]];
     RKParserRegistry *registry = [RKParserRegistry sharedRegistry];

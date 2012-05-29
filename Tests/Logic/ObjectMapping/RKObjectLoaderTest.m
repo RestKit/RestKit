@@ -538,6 +538,28 @@
     assertThatBool(responseLoader.wasSuccessful, is(equalToBool(YES)));
 }
 
+- (void)testShouldReturnSuccessWhenTheStatusCodeIs200AndTheResponseBodyOnlyContainsWhitespaceCharacters {
+    RKObjectManager* objectManager = [RKTestFactory objectManager];
+
+    RKTestComplexUser* user = [[RKTestComplexUser new] autorelease];
+    user.firstname = @"Blake";
+    user.lastname = @"Watters";
+    user.email = @"blake@restkit.org";
+
+    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTestComplexUser class]];
+    userMapping.rootKeyPath = @"data.STUser";
+    [userMapping mapAttributes:@"firstname", nil];
+    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
+    RKObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1234/whitespace"];
+    objectLoader.delegate = responseLoader;
+    objectLoader.method = RKRequestMethodDELETE;
+    objectLoader.objectMapping = userMapping;
+    objectLoader.targetObject = user;
+    [objectLoader send];
+    [responseLoader waitForResponse];
+    assertThatBool(responseLoader.wasSuccessful, is(equalToBool(YES)));
+}
+
 - (void)testShouldInvokeTheDelegateWithTheTargetObjectWhenTheStatusCodeIs200AndTheResponseBodyIsEmpty {
     RKObjectManager* objectManager = [RKTestFactory objectManager];
 

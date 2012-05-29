@@ -128,6 +128,12 @@ class RestKitTestServer < Sinatra::Base
     { 'email' => 'changed', 'ID' => 31337 }.to_json
   end
 
+  delete '/humans/1234/whitespace' do
+    content_type 'application/json'
+    status 200
+    "\n \r"
+  end
+
   delete '/humans/1234' do
     content_type 'application/json'
     status 200

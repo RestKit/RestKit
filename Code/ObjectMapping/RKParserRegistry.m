@@ -67,6 +67,24 @@ RKParserRegistry *gSharedRegistry;
         return nil;
     }
 
+    // Assume that a response with less than 5 bytes might be empty.
+    if ([data length] < 5) {
+        BOOL isEmpty = [data length] == 0;
+        if (!isEmpty) {
+            NSString *dataAsString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            isEmpty = [[dataAsString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""];
+            [dataAsString release];
+        }
+        if (isEmpty) {
+            if (error) {
+                NSString* errorMessage = [NSString stringWithFormat:@"Attemped to parse empty data for MIME Type '%@'", MIMEType];
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMessage, NSLocalizedDescriptionKey, nil];
+                *error = [NSError errorWithDomain:RKErrorDomain code:RKParserRegistryEmptyDataError userInfo:userInfo];
+            }
+            return nil;
+        }
+    }
+
     return [parser objectFromData:data error:error];
 }
 
