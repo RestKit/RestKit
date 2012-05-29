@@ -200,7 +200,7 @@
         return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     }
 
-    id parsedData = [[RKParserRegistry sharedRegistry] parseData:self.response.body
+    id parsedData = [[RKParserRegistry sharedRegistry] parseData:[self.response bodyForParsing]
                                                     withMIMEType:self.response.MIMEType
                                                         encoding:[self.response bodyEncoding]
                                                            error:error];

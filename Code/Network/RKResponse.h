@@ -146,6 +146,12 @@
 - (NSString *)bodyAsString;
 
 /**
+ Returns the response body. If the response specifies a content encoding which
+ is not UTF8, the body will be translated to UTF8.
+ */
+- (NSData *)bodyForParsing;
+
+/**
  Returns the response body parsed as JSON into an object
  @bug **DEPRECATED** in v0.10.0
  */

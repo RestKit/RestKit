@@ -272,6 +272,14 @@ return __VA_ARGS__;                                                             
     return [[[NSString alloc] initWithData:self.body encoding:[self bodyEncoding]] autorelease];
 }
 
+- (NSData *)bodyForParsing {
+    if ([self bodyEncodingName] == nil || [self bodyEncoding] == NSUTF8StringEncoding) {
+        return self.body;
+    } else {
+        return [[self bodyAsString] dataUsingEncoding:NSUTF8StringEncoding];
+    }
+}
+
 - (id)bodyAsJSON {
     [NSException raise:nil format:@"Reimplemented as parsedBody"];
     return nil;
