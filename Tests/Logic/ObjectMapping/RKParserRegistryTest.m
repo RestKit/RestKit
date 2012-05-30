@@ -32,7 +32,7 @@
 
 - (void)testShouldReturnNilAndSetErrorIfNoParserRegisteredWhenParsing {
     NSError *error = nil;
-    id object = [[RKParserRegistry new] parseData:[NSData data]
+    id object = [[RKParserRegistry new] parseData:[NSData dataWithBytes:"foobar" length:6]
                                      withMIMEType:@"application/json"
                                          encoding:NSUTF8StringEncoding
                                             error:&error];

@@ -131,7 +131,7 @@ class RestKitTestServer < Sinatra::Base
   delete '/humans/1234/whitespace' do
     content_type 'application/json'
     status 200
-    "\n \r"
+    ' '
   end
 
   delete '/humans/1234' do
