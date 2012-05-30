@@ -91,19 +91,20 @@
 - (NSMutableSet*)findAllConnected:(NSManagedObject *)source sourceValue:(id)sourceValue {
     NSMutableSet *result = [NSMutableSet set];
 
+    RKManagedObjectMapping* objectMapping = (RKManagedObjectMapping *)self.mapping;
+    NSObject<RKManagedObjectCaching> *cache = [[objectMapping objectStore] cacheStrategy];
+    NSManagedObjectContext *context = [[objectMapping objectStore] managedObjectContextForCurrentThread];
+
+    id values = nil;
     if ([sourceValue conformsToProtocol:@protocol(NSFastEnumeration)]) {
-        for (id value in sourceValue) {
-            id searchResult = [self findOneConnected:source sourceValue:value];
-            if (searchResult) {
-                [result addObject:searchResult];
-            }
-        }
+        values = sourceValue;
+    } else {
+        values = [NSArray arrayWithObject:sourceValue];
     }
-    else {
-        id searchResult = [self findOneConnected:source sourceValue:sourceValue];
-        if (searchResult) {
-            [result addObject:searchResult];
-        }
+
+    for (id value in values) {
+        NSArray *objects = [cache findInstancesOfEntity:objectMapping.entity withPrimaryKeyAttribute:self.destinationKeyPath value:value inManagedObjectContext:context];
+        [result addObjectsFromArray:objects];
     }
     return result;
 }
