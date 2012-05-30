@@ -19,10 +19,10 @@
 
 @implementation RKFetchRequestManagedObjectCache
 
-- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
-                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
-                                    value:(id)primaryKeyValue
-                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+- (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
+           withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                             value:(id)primaryKeyValue
+            inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSAssert(entity, @"Cannot find existing managed object without a target class");
     NSAssert(primaryKeyAttribute, @"Cannot find existing managed object instance without mapping that defines a primaryKeyAttribute");
@@ -54,7 +54,17 @@
     NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:managedObjectContext];
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
     [fetchRequest release];
+    
+    return objects;
+}
 
+- (NSManagedObject *)findInstanceOfEntity:(NSEntityDescription *)entity
+                  withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                                    value:(id)primaryKeyValue
+                   inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
+    NSArray *objects = [self findInstancesOfEntity:entity withPrimaryKeyAttribute:primaryKeyAttribute value:primaryKeyValue inManagedObjectContext:managedObjectContext];
+    
     NSManagedObject *object = nil;
     if ([objects count] > 0) {
         object = [objects objectAtIndex:0];
