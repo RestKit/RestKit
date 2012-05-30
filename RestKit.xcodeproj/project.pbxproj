@@ -742,6 +742,8 @@
 		73D3907714CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
 		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
+		8BC044CA1576CE72003DCDD6 /* RKObjectConnectionMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC044C81576CE72003DCDD6 /* RKObjectConnectionMapping.h */; };
+		8BC044CB1576CE72003DCDD6 /* RKObjectConnectionMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BC044C91576CE72003DCDD6 /* RKObjectConnectionMapping.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1228,6 +1230,8 @@
 		73DA8E1B14D1BA960054DD73 /* RKObjectMappingProvider+CoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKObjectMappingProvider+CoreData.m"; sourceTree = "<group>"; };
 		73DA8E2014D1C3870054DD73 /* RKObjectMappingProviderContextEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectMappingProviderContextEntry.h; sourceTree = "<group>"; };
 		73DA8E2114D1C3870054DD73 /* RKObjectMappingProviderContextEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingProviderContextEntry.m; sourceTree = "<group>"; };
+		8BC044C81576CE72003DCDD6 /* RKObjectConnectionMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKObjectConnectionMapping.h; sourceTree = "<group>"; };
+		8BC044C91576CE72003DCDD6 /* RKObjectConnectionMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectConnectionMapping.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1453,6 +1457,8 @@
 		25160D7A145650490060A5C5 /* ObjectMapping */ = {
 			isa = PBXGroup;
 			children = (
+				8BC044C81576CE72003DCDD6 /* RKObjectConnectionMapping.h */,
+				8BC044C91576CE72003DCDD6 /* RKObjectConnectionMapping.m */,
 				25B6E95A14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.h */,
 				25B6E95B14CF7E3C00B1E881 /* RKDynamicObjectMappingMatcher.m */,
 				25160D7B145650490060A5C5 /* ObjectMapping.h */,
@@ -2273,6 +2279,7 @@
 				259D985E155218E5008C90F5 /* RKEntityCache.h in Headers */,
 				25545959155F0527007D7625 /* RKBenchmark.h in Headers */,
 				25E4DAB4156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */,
+				8BC044CA1576CE72003DCDD6 /* RKObjectConnectionMapping.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2807,6 +2814,7 @@
 				259D9860155218E5008C90F5 /* RKEntityCache.m in Sources */,
 				2554595B155F0527007D7625 /* RKBenchmark.m in Sources */,
 				25E4DAB6156DA97F00A5C84B /* RKTableControllerTestDelegate.m in Sources */,
+				8BC044CB1576CE72003DCDD6 /* RKObjectConnectionMapping.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
