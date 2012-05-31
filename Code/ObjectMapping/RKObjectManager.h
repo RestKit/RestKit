@@ -20,7 +20,7 @@
 
 #import "Network.h"
 #import "RKObjectLoader.h"
-#import "RKObjectRouter.h"
+#import "RKRouter.h"
 #import "RKObjectMappingProvider.h"
 #import "RKConfigurationDelegate.h"
 #import "RKObjectPaginator.h"
@@ -225,7 +225,7 @@ typedef enum {
  Router object responsible for generating resource paths for
  HTTP requests
  */
-@property (nonatomic, retain) RKObjectRouter *router;
+@property (nonatomic, retain) RKRouter *router;
 
 /**
  A Core Data backed object store for persisting objects that have been fetched from the Web
@@ -298,9 +298,11 @@ typedef enum {
  @param object The object with which to initialize the object loader.
  @return The newly created object loader instance.
  @see RKObjectLoader
- @see RKObjectRouter
+ @see RKRouter
  */
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method;
+
+// TODO: loaderForRoute || loaderWithRoute: ???
 
 /**
  Creates and returns an RKObjectPaginator instance targeting the specified resource path pattern.

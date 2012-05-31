@@ -27,7 +27,7 @@
 #import "RKRequestCache.h"
 #import "RKRequestQueue.h"
 #import "RKConfigurationDelegate.h"
-
+#import "RKRouter.h"
 
 /**
  RKClient exposes the low level client interface for working with HTTP servers
@@ -184,6 +184,14 @@
  @see requestCache
  */
 @property (nonatomic, retain) RKURL *baseURL;
+
+/**
+ The router provides for the registration of resource path patterns keyed
+ by name or object type and HTTP verb.
+
+ @see RKRouter
+ */
+@property (nonatomic, retain) RKRouter *router;
 
 /**
  A dictionary of headers to be sent with each request
