@@ -73,6 +73,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @implementation RKClient
 
 @synthesize baseURL = _baseURL;
+@synthesize router = _router;
 @synthesize authenticationType = _authenticationType;
 @synthesize username = _username;
 @synthesize password = _password;
@@ -132,6 +133,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 {
     self = [super init];
     if (self) {
+        _router = [RKRouter new];
         self.HTTPHeaders = [NSMutableDictionary dictionary];
         self.additionalRootCertificates = [NSMutableSet set];
         self.defaultHTTPEncoding = NSUTF8StringEncoding;
@@ -186,6 +188,9 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     self.reachabilityObserver = nil;
     self.baseURL = nil;
     self.requestQueue = nil;
+
+    [_router release];
+    _router = nil;
 
     [self removeObserver:self forKeyPath:@"reachabilityObserver"];
     [self removeObserver:self forKeyPath:@"baseURL"];

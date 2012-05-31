@@ -43,7 +43,6 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 @synthesize client = _client;
 @synthesize objectStore = _objectStore;
-@synthesize router = _router;
 @synthesize mappingProvider = _mappingProvider;
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize networkStatus = _networkStatus;
@@ -76,7 +75,6 @@ static dispatch_queue_t defaultMappingQueue = nil;
     self = [super init];
     if (self) {
         _mappingProvider = [RKObjectMappingProvider new];
-        _router = [RKObjectRouter new];
         _networkStatus = RKObjectManagerNetworkStatusUnknown;
 
         self.serializationMIMEType = RKMIMETypeFormURLEncoded;
@@ -135,8 +133,6 @@ static dispatch_queue_t defaultMappingQueue = nil;
     [self removeObserver:self forKeyPath:@"client.reachabilityObserver"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    [_router release];
-    _router = nil;
     self.client = nil;
     [_objectStore release];
     _objectStore = nil;
@@ -418,6 +414,16 @@ static dispatch_queue_t defaultMappingQueue = nil;
 - (RKRequestQueue *)requestQueue
 {
     return self.client.requestQueue;
+}
+
+- (RKRouter *)router
+{
+    return self.client.router;
+}
+
+- (void)setRouter:(RKRouter *)router
+{
+    self.client.router = router;
 }
 
 - (void)setMappingQueue:(dispatch_queue_t)newMappingQueue
