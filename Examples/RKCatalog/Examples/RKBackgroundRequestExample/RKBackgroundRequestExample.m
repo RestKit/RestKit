@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -21,25 +21,26 @@
         RKClient* client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
         [RKClient setSharedClient:client];
     }
-    
+
     return self;
 }
 
 - (void)dealloc {
     [[RKClient sharedClient].requestQueue cancelRequestsWithDelegate:self];
-    
+
     [super dealloc];
 }
 
 - (IBAction)sendRequest {
-    RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample" delegate:self];
+    RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample"];
+    request.delegate = self;
     request.backgroundPolicy = _segmentedControl.selectedSegmentIndex;
     [request send];
     _sendButton.enabled = NO;
 }
 
 - (void)requestDidStartLoad:(RKRequest *)request {
-    _statusLabel.text = [NSString stringWithFormat:@"Sent request with background policy %d at %@", request.backgroundPolicy, [NSDate date]];    
+    _statusLabel.text = [NSString stringWithFormat:@"Sent request with background policy %d at %@", request.backgroundPolicy, [NSDate date]];
 }
 
 - (void)requestDidTimeout:(RKRequest *)request {

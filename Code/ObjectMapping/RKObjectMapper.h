@@ -3,14 +3,14 @@
 //  RestKit
 //
 //  Created by Blake Watters on 5/6/11.
-//  Copyright 2011 Two Toasters
-//  
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,10 +26,6 @@
 #import "RKMappingOperationQueue.h"
 #import "Support.h"
 
-/**
- Maps parsed primitive dictionary and arrays into objects. This is the primary entry point
- for an external object mapping operation.
- */
 @class RKObjectMapper;
 
 @protocol RKObjectMapperDelegate <NSObject>
@@ -39,26 +35,27 @@
 - (void)objectMapperWillBeginMapping:(RKObjectMapper*)objectMapper;
 - (void)objectMapperDidFinishMapping:(RKObjectMapper*)objectMapper;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didAddError:(NSError*)error;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString*)keyPath withMapping:(id<RKObjectMappingDefinition>)mapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)mapping;
 - (void)objectMapper:(RKObjectMapper*)objectMapper didNotFindMappableObjectAtKeyPath:(NSString*)keyPath;
 
-- (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(id<RKObjectMappingDefinition>)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(id<RKObjectMappingDefinition>)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(id<RKObjectMappingDefinition>)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
+- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
 @end
 
+/**
+
+ */
 @interface RKObjectMapper : NSObject {
-    id _sourceObject;
-    id _targetObject;
-    RKObjectMappingProvider* _mappingProvider;
-    id<RKObjectMapperDelegate> _delegate;
-    NSMutableArray* _errors;
-    RKMappingOperationQueue *_operationQueue;
+  @protected
+    RKMappingOperationQueue *operationQueue;
+    NSMutableArray* errors;
 }
 
 @property (nonatomic, readonly) id sourceObject;
 @property (nonatomic, assign) id targetObject;
 @property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
+@property (nonatomic, assign) RKObjectMappingProviderContext context;
 @property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
 @property (nonatomic, readonly) NSArray* errors;
 

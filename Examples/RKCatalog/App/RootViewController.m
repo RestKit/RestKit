@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <RestKit/RestKit.h>
@@ -13,7 +13,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     _exampleTableItems = [[NSArray alloc] initWithObjects:
                           @"RKAuthenticationExample",
                           @"RKParamsExample",
@@ -28,7 +28,7 @@
 
 - (void)dealloc {
     [_exampleTableItems release];
-    
+
     [super dealloc];
 }
 
@@ -42,7 +42,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"RKCatalogCellIdentifier";
-    
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier] autorelease];
@@ -51,8 +51,8 @@
     }
 
     NSString* exampleName = [_exampleTableItems objectAtIndex:indexPath.row];
-    cell.textLabel.text = exampleName;    
-    
+    cell.textLabel.text = exampleName;
+
     return cell;
 }
 
@@ -60,7 +60,7 @@
     // Clear the singleton instances to isolate the examples
     [RKClient setSharedClient:nil];
     [RKObjectManager setSharedManager:nil];
-    
+
     NSString* exampleName = [_exampleTableItems objectAtIndex:indexPath.row];
     Class exampleClass = NSClassFromString(exampleName);
     UIViewController* exampleController = [[exampleClass alloc] initWithNibName:exampleName bundle:nil];
@@ -71,7 +71,7 @@
         }
         [exampleController release];
     }
-    
+
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

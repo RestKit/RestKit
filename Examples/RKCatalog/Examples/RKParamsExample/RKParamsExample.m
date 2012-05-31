@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKParamsExample.h"
@@ -16,7 +16,7 @@
 @synthesize uploadButton = _uploadButton;
 @synthesize statusLabel = _statusLabel;
 
-- (void)dealloc {    
+- (void)dealloc {
     [RKClient setSharedClient:nil];
     [_client release];
     [super dealloc];
@@ -26,23 +26,23 @@
     _client = [[RKClient alloc] initWithBaseURL:gRKCatalogBaseURL];
 }
 
-- (IBAction)uploadButtonWasTouched:(id)sender {    
+- (IBAction)uploadButtonWasTouched:(id)sender {
     RKParams* params = [RKParams params];
-    
+
     // Attach the Image from Image View
     NSLog(@"Got image: %@", [_imageView image]);
     NSData* imageData = UIImagePNGRepresentation([_imageView image]);
     [params setData:imageData MIMEType:@"image/png" forParam:@"image1"];
-    
+
     // Attach an Image from the App Bundle
     UIImage* image = [UIImage imageNamed:@"RestKit.png"];
     imageData = UIImagePNGRepresentation(image);
     [params setData:imageData MIMEType:@"image/png" forParam:@"image2"];
-    
+
     // Log info about the serialization
     NSLog(@"RKParams HTTPHeaderValueForContentType = %@", [params HTTPHeaderValueForContentType]);
     NSLog(@"RKParams HTTPHeaderValueForContentLength = %d", [params HTTPHeaderValueForContentLength]);
-    
+
     // Send it for processing!
     [_client post:@"/RKParamsExample" params:params delegate:self];
 }
@@ -59,7 +59,7 @@
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     _uploadButton.enabled = YES;
     [_activityIndicatorView stopAnimating];
-    
+
     if ([response isOK]) {
         _statusLabel.text = @"Upload Successful!";
         _statusLabel.textColor = [UIColor greenColor];
@@ -73,7 +73,7 @@
     _uploadButton.enabled = YES;
     [_activityIndicatorView stopAnimating];
     _progressView.progress = 0.0;
-    
+
     _statusLabel.text = [NSString stringWithFormat:@"Upload failed with error: %@", [error localizedDescription]];
     _statusLabel.textColor = [UIColor redColor];
 }

@@ -288,7 +288,6 @@ RKObjectMapping* authorMapping = [RKObjectMapping mappingForClass:[Author class]
 RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
 [articleMapping mapKeyPath:@"title" toAttribute:@"title"];
 [articleMapping mapKeyPath:@"body" toAttribute:@"body"];
-[articleMapping mapKeyPath:@"author" toAttribute:@"author"];
 [articleMapping mapKeyPath:@"publication_date" toAttribute:@"publicationDate"];
 
 // Define the relationship mapping
@@ -485,7 +484,6 @@ take a look at how this works:
 
 ```objc
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
 
 RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
 RKManagedObjectStore* objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"MyApp.sqlite"];
@@ -739,7 +737,7 @@ Let's take a look at how you can leverage key-value validation to perform the ab
 @implementation Article
 - (BOOL)validateTitle:(id *)ioValue error:(NSError **)outError {
     // Force the title to uppercase
-    *iovalue = [(NSString*)iovalue uppercaseString];
+    *ioValue = [(NSString*)ioValue uppercaseString];
     return YES;
 }
 
@@ -860,7 +858,6 @@ RKObjectRelationshipMapping* articleCommentsMapping = [RKObjectRelationshipMappi
 ### Configuring a Core Data Object Mapping
 ```objc
 #import <RestKit/RestKit.h>
-#import <RestKit/CoreData/CoreData.h>
 
 RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:@"http://restkit.org"];
 RKManagedObjectStore* objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"MyApp.sqlite"];
