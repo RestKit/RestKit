@@ -232,15 +232,17 @@
 
 #pragma mark - Network Table Loading
 
-- (void)loadTableFromResourcePath:(NSString*)resourcePath {
-    NSAssert(self.objectManager, @"Cannot perform a network load without an object manager");
-    [self loadTableWithObjectLoader:[self.objectManager loaderWithResourcePath:resourcePath]];
+- (void)loadTableFromResourcePath:(NSString *)resourcePath
+{
+    [self loadTableFromResourcePath:resourcePath usingBlock:nil];
 }
 
-- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *loader))block {
-    RKObjectLoader* theObjectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
-    block(theObjectLoader);
-    [self loadTableWithObjectLoader:theObjectLoader];
+- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *loader))block
+{
+    NSAssert(self.objectManager, @"Cannot perform a network load without an object manager");
+    RKObjectLoader *objectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
+    if (block) block(objectLoader);
+    [self loadTableWithObjectLoader:objectLoader];
 }
 
 #pragma mark - Forms
