@@ -179,6 +179,23 @@
     return [self entryForPatternMatchingString:resourcePath context:RKObjectMappingProviderContextObjectsByResourcePathPattern];
 }
 
+- (RKObjectMappingProviderContextEntry *)entryForResourcePathPattern:(NSString *)resourcePathPattern {
+    RKOrderedDictionary *contextValue = [self valueForContext:RKObjectMappingProviderContextObjectsByResourcePathPattern];
+    for (NSString *pattern in contextValue) {
+        NSLog(@"Comparing pattern %@ to resourcePathPattern %@", pattern, resourcePathPattern);
+        if ([pattern isEqualToString:resourcePathPattern]) {
+            return [contextValue objectForKey:pattern];
+        }
+    }
+
+    return nil;
+}
+
+- (RKObjectMappingDefinition *)objectMappingForResourcePathPattern:(NSString *)resourcePathPattern {
+    RKObjectMappingProviderContextEntry *entry = [self entryForResourcePathPattern:resourcePathPattern];
+    return entry.mapping;
+}
+
 #pragma mark - Mapping Context Primitives
 
 - (void)initializeContext:(RKObjectMappingProviderContext)context withValue:(id)value

@@ -248,6 +248,8 @@ typedef enum {
 
 - (void)setEntry:(RKObjectMappingProviderContextEntry *)entry forResourcePathPattern:(NSString *)resourcePath;
 - (RKObjectMappingProviderContextEntry *)entryForResourcePath:(NSString *)resourcePath;
+- (RKObjectMappingProviderContextEntry *)entryForResourcePathPattern:(NSString *)resourcePathPattern;
+- (RKObjectMappingDefinition *)objectMappingForResourcePathPattern:(NSString *)resourcePathPattern;
 
 /**
  An object mapping used when the remote system returns an error status code
