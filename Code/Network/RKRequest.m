@@ -344,9 +344,6 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             // GCOAuth doesn't have support for duplicate parameters in query and entity-body.
             // For a duplicate parameter name example, see "a3" in http://tools.ietf.org/html/rfc5849#section-3.4.1.3.1
             // We arbitrarily choose entity-body to take precedence over query for duplicate keys.
-            NSLog(@"_URL: %@", _URL);
-            NSLog(@"[_URL queryParameters]: %@", [_URL queryParameters]);
-            NSLog(@"self.params: %@", self.params);
             if([_URL queryParameters]) {
                 NSMutableDictionary *paramMerge = [[_URL queryParameters] mutableCopy];
                 [paramMerge addEntriesFromDictionary:(NSDictionary*)self.params];
@@ -356,7 +353,6 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             else {
                 parameters = (NSDictionary*)self.params;
             }
-            NSLog(@"---> parameters: %@", parameters);
         }
         else {
             parameters = [_URL queryParameters];
