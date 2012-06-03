@@ -200,6 +200,11 @@
 @property (nonatomic) BOOL suspended;
 
 /**
+ Sets the flag that determines if subsequent requests added to the queue while already backgrounded may be processed.
+ */
+@property (nonatomic) BOOL suspendInBackground;
+
+/**
  Returns the total number of requests that are currently loading.
  */
 @property (nonatomic, readonly) NSUInteger loadingCount;
