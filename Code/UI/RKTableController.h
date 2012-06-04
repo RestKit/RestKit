@@ -118,7 +118,7 @@
 /**
  The key path on the loaded objects used to determine the section they belong to.
  */
-@property(nonatomic, copy) NSString *sectionNameKeyPath;
+@property (nonatomic, copy) NSString *sectionNameKeyPath;
 
 /**
  Returns the section at the specified index.
