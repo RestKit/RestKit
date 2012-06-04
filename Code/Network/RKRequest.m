@@ -318,7 +318,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     if (self.authenticationType == RKRequestAuthenticationTypeHTTPBasic && _username && _password) {
         CFHTTPMessageRef dummyRequest = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)[self HTTPMethod], (CFURLRef)[self URL], kCFHTTPVersion1_1);
         if (dummyRequest) {
-          CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password,kCFHTTPAuthenticationSchemeBasic, FALSE);
+          CFHTTPMessageAddAuthentication(dummyRequest, nil, (CFStringRef)_username, (CFStringRef)_password, kCFHTTPAuthenticationSchemeBasic, FALSE);
           CFStringRef authorizationString = CFHTTPMessageCopyHeaderFieldValue(dummyRequest, CFSTR("Authorization"));
           if (authorizationString) {
             [_URLRequest setValue:(NSString *)authorizationString forHTTPHeaderField:@"Authorization"];
@@ -374,7 +374,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
     // OAuth 2 valid request
     if (self.authenticationType == RKRequestAuthenticationTypeOAuth2) {
-        NSString *authorizationString = [NSString stringWithFormat:@"OAuth2 %@",self.OAuth2AccessToken];
+        NSString *authorizationString = [NSString stringWithFormat:@"OAuth2 %@", self.OAuth2AccessToken];
         [_URLRequest setValue:authorizationString forHTTPHeaderField:@"Authorization"];
     }
 

@@ -64,8 +64,8 @@
 }
 
 - (void)testShouldEncodeArrayOfDictionaries {
-    NSDictionary * dictA = [NSDictionary dictionaryWithKeysAndObjects:@"a",@"x",@"b",@"y", nil];
-    NSDictionary * dictB = [NSDictionary dictionaryWithKeysAndObjects:@"a",@"1",@"b",@"2", nil];
+    NSDictionary * dictA = [NSDictionary dictionaryWithKeysAndObjects:@"a", @"x", @"b", @"y", nil];
+    NSDictionary * dictB = [NSDictionary dictionaryWithKeysAndObjects:@"a", @"1", @"b", @"2", nil];
 
     NSArray * array = [NSArray arrayWithObjects: dictA, dictB, nil];
     NSDictionary * dictRoot = [NSDictionary dictionaryWithKeysAndObjects:@"root", array, nil];

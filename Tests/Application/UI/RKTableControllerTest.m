@@ -425,7 +425,7 @@
     [mappings setCellMapping:cellMapping forClass:[RKMappableObject class]];
     RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     UITableViewController* tableViewController = [UITableViewController new];
-    tableViewController.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0,0,0,0) style:UITableViewStylePlain];
+    tableViewController.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 0, 0) style:UITableViewStylePlain];
     RKTableController* tableController = [RKTableController tableControllerForTableViewController:tableViewController];
     [tableController insertSection:section atIndex:0];
     tableController.cellMappings = mappings;

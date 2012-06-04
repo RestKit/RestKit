@@ -1197,7 +1197,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         [UIView commitAnimations];
     } else {
         [_cellSwipeView removeFromSuperview];
-        _swipeCell.frame = CGRectMake(0,_swipeCell.frame.origin.y,_swipeCell.frame.size.width, _swipeCell.frame.size.height);
+        _swipeCell.frame = CGRectMake(0, _swipeCell.frame.origin.y, _swipeCell.frame.size.width, _swipeCell.frame.size.height);
         [_swipeCell release];
         _swipeCell = nil;
     }

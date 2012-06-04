@@ -55,10 +55,10 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 }
 
 @interface RKPathMatcher ()
-@property (nonatomic,retain) SOCPattern *socPattern;
-@property (nonatomic,copy) NSString *sourcePath;
-@property (nonatomic,copy) NSString *rootPath;
-@property (copy,readwrite) NSDictionary *queryParameters;
+@property (nonatomic, retain) SOCPattern *socPattern;
+@property (nonatomic, copy) NSString *sourcePath;
+@property (nonatomic, copy) NSString *rootPath;
+@property (copy, readwrite) NSDictionary *queryParameters;
 @end
 
 @implementation RKPathMatcher

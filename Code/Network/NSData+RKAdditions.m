@@ -36,7 +36,7 @@ RK_FIX_CATEGORY_BUG(NSData_RKAdditions)
     // Convert unsigned char buffer to NSString of hex values
     NSMutableString* output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
     for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
-        [output appendFormat:@"%02x",md5Buffer[i]];
+        [output appendFormat:@"%02x", md5Buffer[i]];
     }
 
     return output;
