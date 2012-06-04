@@ -101,7 +101,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 }
 
 - (BOOL)matches {
-    NSAssert( (self.socPattern != NULL && self.rootPath != NULL) , @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
+    NSAssert( (self.socPattern != NULL && self.rootPath != NULL), @"Matcher is insufficiently configured.  Before attempting pattern matching, you must provide a path string and a pattern to match it against.");
     return [self.socPattern stringMatches:self.rootPath];
 }
 
