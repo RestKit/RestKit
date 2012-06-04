@@ -555,7 +555,7 @@ static NSInteger networkActivityCount;
 }
 
 - (void)refreshActivityIndicator {
-    if(![NSThread isMainThread]) {
+    if (![NSThread isMainThread]) {
         SEL sel_refresh = @selector(refreshActivityIndicator);
         [self performSelectorOnMainThread:sel_refresh withObject:nil waitUntilDone:NO];
         return;

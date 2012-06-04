@@ -130,7 +130,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
     if (numeric) {
         date = [NSDate dateWithTimeIntervalSince1970:[numeric doubleValue]];
-    } else if(![string isEqualToString:@""]) {
+    } else if (![string isEqualToString:@""]) {
         for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
             BOOL success;
         @synchronized(dateFormatter) {

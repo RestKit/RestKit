@@ -57,7 +57,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
     [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
 
     // we are not dealing with an object
-    if([typeScanner isAtEnd]) {
+    if ([typeScanner isAtEnd]) {
         return @"NULL";
     }
     [typeScanner scanCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"\"@"] intoString:NULL];

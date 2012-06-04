@@ -57,7 +57,7 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 // TODO: Unit tests...
 + (NSDictionary *)dictionaryWithURLEncodedString:(NSString *)URLEncodedString {
     NSMutableDictionary *queryComponents = [NSMutableDictionary dictionary];
-    for(NSString *keyValuePairString in [URLEncodedString componentsSeparatedByString:@"&"]) {
+    for (NSString *keyValuePairString in [URLEncodedString componentsSeparatedByString:@"&"]) {
         NSArray *keyValuePairArray = [keyValuePairString componentsSeparatedByString:@"="];
         if ([keyValuePairArray count] < 2) continue; // Verify that there is at least one key, and at least one value.  Ignore extra = signs
         NSString *key = [[keyValuePairArray objectAtIndex:0] stringByReplacingURLEncoding];
@@ -65,7 +65,7 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 
         // URL spec says that multiple values are allowed per key
         id results = [queryComponents objectForKey:key];
-        if(results) {
+        if (results) {
             if ([results isKindOfClass:[NSMutableArray class]]) {
                 [(NSMutableArray *)results addObject:value];
             } else {
@@ -100,7 +100,7 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
                 }
 
             }
-        } else if([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]]) {
+        } else if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSMutableDictionary class]]) {
             [value URLEncodeParts:parts path:path];
         }
         else {
