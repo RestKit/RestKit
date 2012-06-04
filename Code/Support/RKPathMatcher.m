@@ -54,7 +54,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     return [encodedString autorelease];
 }
 
-@interface RKPathMatcher()
+@interface RKPathMatcher ()
 @property (nonatomic,retain) SOCPattern *socPattern;
 @property (nonatomic,copy) NSString *sourcePath;
 @property (nonatomic,copy) NSString *rootPath;

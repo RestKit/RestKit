@@ -80,7 +80,7 @@
     queue.suspended = NO;
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueWasSuspended:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    queue.delegate = (NSObject<RKRequestQueueDelegate>*)delegateMock;
     queue.suspended = YES;
     [delegateMock verify];
     [queue release];
@@ -91,7 +91,7 @@
     assertThatBool(queue.suspended, is(equalToBool(YES)));
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueWasUnsuspended:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    queue.delegate = (NSObject<RKRequestQueueDelegate>*)delegateMock;
     queue.suspended = NO;
     [delegateMock verify];
     [queue release];
@@ -101,7 +101,7 @@
     RKRequestQueue* queue = [RKRequestQueue new];
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidBeginLoading:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    queue.delegate = (NSObject<RKRequestQueueDelegate>*)delegateMock;
     NSURL* URL = [RKTestFactory baseURL];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     [queue addLoadingRequest:request];
@@ -113,7 +113,7 @@
     RKRequestQueue* queue = [RKRequestQueue new];
     OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidFinishLoading:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    queue.delegate = (NSObject<RKRequestQueueDelegate>*)delegateMock;
     NSURL* URL = [RKTestFactory baseURL];
     RKRequest* request = [[RKRequest alloc] initWithURL:URL];
     [queue addLoadingRequest:request];
@@ -132,7 +132,7 @@
     request.delegate = loader;
 
     RKRequestQueue* queue = [RKRequestQueue new];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    queue.delegate = (NSObject<RKRequestQueueDelegate>*)delegateMock;
     [[delegateMock expect] requestQueueDidFinishLoading:queue];
     [queue addRequest:request];
     [queue start];

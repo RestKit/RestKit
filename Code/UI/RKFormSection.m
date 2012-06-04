@@ -62,15 +62,15 @@
             break;
 
         case RKFormControlTypeSwitch:;
-            control = [(UIControl *) [UISwitch new] autorelease];
+            control = [(UIControl *)[UISwitch new] autorelease];
             break;
 
         case RKFormControlTypeSlider:;
-            control = [(UIControl *) [UISlider new] autorelease];
+            control = [(UIControl *)[UISlider new] autorelease];
             break;
 
         case RKFormControlTypeLabel:;
-            control = [(UIControl *) [UILabel new] autorelease];
+            control = [(UIControl *)[UILabel new] autorelease];
             break;
 
         case RKFormControlTypeUnknown:
@@ -87,9 +87,9 @@
         [control isKindOfClass:[UILabel class]]) {
         return @"text";
     } else if ([control isKindOfClass:[UISwitch class]]) {
-        return  @"on";
+        return @"on";
     } else if ([control isKindOfClass:[UISlider class]]) {
-        return  @"value";
+        return @"value";
     } else {
         [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: unable to define mapping for control type %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), NSStringFromClass([control class])];
     }

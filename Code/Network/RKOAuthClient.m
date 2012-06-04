@@ -96,19 +96,19 @@
             if ([errorResponse isEqualToString:@"invalid_grant"]) {
                 errorCode = RKOAuthClientErrorInvalidGrant;
             }
-            else if([errorResponse isEqualToString:@"unauthorized_client"]){
+            else if ([errorResponse isEqualToString:@"unauthorized_client"]) {
                 errorCode = RKOAuthClientErrorUnauthorizedClient;
             }
-            else if([errorResponse isEqualToString:@"invalid_client"]){
+            else if ([errorResponse isEqualToString:@"invalid_client"]) {
                 errorCode = RKOAuthClientErrorInvalidClient;
             }
-            else if([errorResponse isEqualToString:@"invalid_request"]){
+            else if ([errorResponse isEqualToString:@"invalid_request"]) {
                 errorCode = RKOAuthClientErrorInvalidRequest;
             }
-            else if([errorResponse isEqualToString:@"unsupported_grant_type"]){
+            else if ([errorResponse isEqualToString:@"unsupported_grant_type"]) {
                 errorCode = RKOAuthClientErrorUnsupportedGrantType;
             }
-            else if([errorResponse isEqualToString:@"invalid_scope"]){
+            else if ([errorResponse isEqualToString:@"invalid_scope"]) {
                 errorCode = RKOAuthClientErrorInvalidScope;
             }
 

@@ -43,7 +43,7 @@
     return [portCheck isOpen];
 }
 
-- (void)testShouldGetAccessToken{
+- (void)testShouldGetAccessToken {
     RKOAuthClientTestSkipWithoutMongoDB();
 
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
@@ -68,7 +68,7 @@
     assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
 }
 
-- (void)testShouldGetProtectedResource{
+- (void)testShouldGetProtectedResource {
     RKOAuthClientTestSkipWithoutMongoDB();
 
     //TODO: Encapsulate this code in a correct manner

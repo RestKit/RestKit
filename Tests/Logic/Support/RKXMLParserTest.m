@@ -71,7 +71,7 @@
     assertThatInt([[[result1 valueForKeyPath:@"number"] valueForKey:@"text"] intValue], is(equalToInt(1)));
     assertThat([result1 valueForKeyPath:@"string"], is(equalTo(@"string")));
     id result2 = [records objectAtIndex:1];
-    assertThatInt([[[result2 valueForKeyPath:@"another-number"] valueForKey:@"text"]intValue], is(equalToInt(1)));
+    assertThatInt([[[result2 valueForKeyPath:@"another-number"] valueForKey:@"text"] intValue], is(equalToInt(1)));
 }
 
 - (void)testShouldMapXML {

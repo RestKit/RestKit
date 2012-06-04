@@ -457,7 +457,7 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     [request setIncludesSubentities:NO];
     [request setFetchBatchSize:[self defaultBatchSize]];
 
-    if (sortTerm != nil){
+    if (sortTerm != nil) {
         NSSortDescriptor *sortBy = [[NSSortDescriptor alloc] initWithKey:sortTerm ascending:ascending];
         [request setSortDescriptors:[NSArray arrayWithObject:sortBy]];
         [sortBy release];

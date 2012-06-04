@@ -27,7 +27,7 @@ BOOL isValidRange(NSRange rangeOfMatch);
 NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs);
 NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 
-@interface RKDotNetDateFormatter()
+@interface RKDotNetDateFormatter ()
 - (NSString *)millisecondsFromString:(NSString *)string;
 @end
 

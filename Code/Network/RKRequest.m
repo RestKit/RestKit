@@ -330,7 +330,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
     // Add OAuth headers if necessary
     // OAuth 1
-    if(self.authenticationType == RKRequestAuthenticationTypeOAuth1){
+    if (self.authenticationType == RKRequestAuthenticationTypeOAuth1) {
         NSURLRequest *echo = nil;
 
         // use the suitable parameters dict

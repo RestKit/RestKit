@@ -1821,7 +1821,7 @@
         };
     }]];
     NSIndexPath* delegateIndexPath = [tableController tableView:tableController.tableView
-                      targetIndexPathForMoveFromRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]toProposedIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+                      targetIndexPathForMoveFromRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] toProposedIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
     assertThat(delegateIndexPath, is(equalTo(moveToIndexPath)));
 }
 
