@@ -28,14 +28,14 @@
         _awaitingResponse = NO;
         _cancelled = NO;
     }
-    
+
     return self;
 }
 
 - (void)waitForLoad {
     _awaitingResponse = YES;
     NSDate *startDate = [NSDate date];
-    
+
     while (_awaitingResponse) {
         RKLogTrace(@"Awaiting response = %d", _awaitingResponse);
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
@@ -114,7 +114,7 @@
 - (void)tableController:(RKAbstractTableController *)tableController willDisplayCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath
 {}
 
-- (void)tableController:(RKAbstractTableController *)tableController didSelectCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath 
+- (void)tableController:(RKAbstractTableController *)tableController didSelectCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath
 {}
 
 @end

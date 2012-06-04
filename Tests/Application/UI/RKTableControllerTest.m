@@ -552,7 +552,7 @@
     assertThatBool([tableController isLoaded], is(equalToBool(YES)));
     assertThatBool([tableController isError], is(equalToBool(YES)));
     assertThatBool([tableController isEmpty], is(equalToBool(YES)));
-    
+
     [tableController objectLoader:mockObjectLoader didLoadObjects:[NSArray array]];
     assertThatBool([tableController isError], is(equalToBool(NO)));
     assertThat(tableController.error, is(nilValue()));
@@ -564,8 +564,8 @@
     UIImage *imageForEmpty = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
     UIImage *imageForError = [imageForEmpty copy];
     tableController.imageForEmpty = imageForEmpty;
-    tableController.imageForError = imageForError;        
-    
+    tableController.imageForError = imageForError;
+
     id mockObjectLoader = [OCMockObject niceMockForClass:[RKObjectLoader class]];
     NSError* error = [NSError errorWithDomain:@"Test" code:0 userInfo:nil];
     [tableController objectLoader:mockObjectLoader didFailWithError:error];
@@ -582,25 +582,25 @@
 - (void)testBitwiseLoadingTransition {
     RKTableControllerState oldState = RKTableControllerStateNotYetLoaded;
     RKTableControllerState newState = RKTableControllerStateLoading;
-    
+
     BOOL loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
     assertThatBool(loadingTransitioned, is(equalToBool(YES)));
-    
+
     oldState = RKTableControllerStateOffline | RKTableControllerStateEmpty;
     newState = RKTableControllerStateOffline | RKTableControllerStateEmpty | RKTableControllerStateLoading;
     loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
     assertThatBool(loadingTransitioned, is(equalToBool(YES)));
-    
+
     oldState = RKTableControllerStateNormal;
     newState = RKTableControllerStateLoading;
     loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
     assertThatBool(loadingTransitioned, is(equalToBool(YES)));
-    
+
     oldState = RKTableControllerStateOffline | RKTableControllerStateEmpty | RKTableControllerStateLoading;
     newState = RKTableControllerStateOffline | RKTableControllerStateLoading;
     loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
     assertThatBool(loadingTransitioned, is(equalToBool(NO)));
-    
+
     oldState = RKTableControllerStateNotYetLoaded;
     newState = RKTableControllerStateOffline;
     loadingTransitioned = ((oldState ^ newState) & RKTableControllerStateLoading);
@@ -1040,12 +1040,12 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    
+
     RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[mockDelegate expect] tableController:tableController didLoadObjects:OCMOCK_ANY inSection:OCMOCK_ANY];
     tableController.delegate = mockDelegate;
-    
+
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
         objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
             [mapping mapAttributes:@"name", nil];
@@ -1168,13 +1168,13 @@
         [mapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
         [mapping mapKeyPath:@"nickName" toAttribute:@"detailTextLabel.text"];
     }]];
-    
+
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadObjectsNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidLoadObjectsNotification object:tableController];
     RKTableControllerTestDelegate* delegate = [RKTableControllerTestDelegate new];
     tableController.delegate = delegate;
-    
+
     [tableController loadTableFromResourcePath:@"/JSON/users.json" usingBlock:^(RKObjectLoader* objectLoader) {
         objectLoader.objectMapping = [RKObjectMapping mappingForClass:[RKTestUser class] usingBlock:^(RKObjectMapping* mapping) {
             [mapping mapAttributes:@"name", nil];

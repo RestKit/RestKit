@@ -81,7 +81,7 @@
     [_sourceObject release];
     _sourceObject = nil;
     [_targetObject release];
-    _targetObject = nil;    
+    _targetObject = nil;
     [_objectMapping release];
     _objectMapping = nil;
     [_result release];
@@ -123,7 +123,7 @@
 - (void)finalizeLoad:(BOOL)successful {
     self.loading = NO;
     self.loaded = successful;
-    
+
     if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate performSelectorOnMainThread:@selector(objectLoaderDidFinishLoading:)
                                                                            withObject:self waitUntilDone:YES];
@@ -407,7 +407,7 @@
                                                                 object:self
                                                               userInfo:userInfo];
         }
-        
+
         if (! self.isCancelled) {
             [self informDelegateOfError:error];
         }

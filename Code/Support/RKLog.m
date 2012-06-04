@@ -166,6 +166,6 @@ void RKLogIntegerAsBinary(NSUInteger bitMask) {
     do {
         [string appendString:(((NSUInteger)bitMask & bit) ? @"1" : @"0")];
     } while ( bit >>= 1 );
-    
+
     NSLog(@"Value of %ld in binary: %@", (long) bitMask, string);
 }

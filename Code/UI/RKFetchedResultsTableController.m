@@ -92,7 +92,7 @@
             if ([self.delegate respondsToSelector:@selector(tableController:didInsertSectionAtIndex:)]) {
                 [self.delegate tableController:self didInsertSectionAtIndex:index];
             }
-            
+
             if ([self.delegate respondsToSelector:@selector(tableController:didInsertObject:atIndexPath:)]) {
                 for (NSUInteger row = 0; row < [self numberOfRowsInSection:index]; row++) {
                     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:index];
@@ -102,7 +102,7 @@
             }
         }
     }
-    
+
     return YES;
 }
 
@@ -242,13 +242,13 @@
     if (_sortDescriptors) {
         [fetchRequest setSortDescriptors:_sortDescriptors];
     }
-    
+
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                         managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
                                                                           sectionNameKeyPath:_sectionNameKeyPath
                                                                                    cacheName:_cacheName];
     _fetchedResultsController.delegate = self;
-    
+
     // Perform the load
     NSError *error;
     [self didStartLoad];
@@ -544,7 +544,7 @@
         case NSFetchedResultsChangeInsert:
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                           withRowAnimation:UITableViewRowAnimationFade];
-            
+
             if ([self.delegate respondsToSelector:@selector(tableController:didInsertSectionAtIndex:)]) {
                 [self.delegate tableController:self didInsertSectionAtIndex:sectionIndex];
             }
@@ -553,7 +553,7 @@
         case NSFetchedResultsChangeDelete:
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                           withRowAnimation:UITableViewRowAnimationFade];
-            
+
             if ([self.delegate respondsToSelector:@selector(tableController:didDeleteSectionAtIndex:)]) {
                 [self.delegate tableController:self didDeleteSectionAtIndex:sectionIndex];
             }
@@ -623,7 +623,7 @@
     } else {
         [self.tableView endUpdates];
     }
-    
+
     [self didFinishLoad];
 }
 

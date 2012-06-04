@@ -45,7 +45,7 @@
 
 - (void)setUp {
     [RKTestFactory setUp];
-    
+
     [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:nil];
 }
 
@@ -59,7 +59,7 @@
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
-    
+
     [RKHuman truncateAll];
     assertThatInt([RKHuman count:nil], is(equalToInt(0)));
     RKHuman* blake = [RKHuman createEntity];
@@ -72,11 +72,11 @@
     [store save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([RKHuman count:nil], is(equalToInt(2)));
-    
+
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
-    
+
     [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/all\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
         return [RKHuman requestAllSortedBy:@"name" ascending:YES];
     }];
@@ -90,7 +90,7 @@
     [eventMapping mapAttributes:@"location", @"summary", nil];
     eventMapping.primaryKeyAttribute = @"eventID";
     [RKEvent truncateAll];
-    
+
     assertThatInt([RKEvent count:nil], is(equalToInt(0)));
     RKEvent *nakedEvent = [RKEvent createEntity];
     nakedEvent.eventID = @"RK4424";
@@ -101,11 +101,11 @@
     [store save:&error];
     assertThat(error, is(nilValue()));
     assertThatInt([RKEvent count:nil], is(equalToInt(1)));
-    
+
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider addObjectMapping:eventMapping];
     objectManager.objectStore = store;
-    
+
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
     [[[mockMappingProvider stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
 }
@@ -116,14 +116,14 @@
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
-    
+
     [RKHuman truncateAll];
     assertThatInt([RKHuman count:nil], is(equalToInt(0)));
-    
+
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.objectStore = store;
-    
+
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
     [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
     [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/empty/array"];
@@ -145,7 +145,7 @@
     RKFetchedResultsTableController* tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
-    
+
     assertThat(tableController.viewController, is(equalTo(viewController)));
     assertThat(tableController.tableView, is(equalTo(viewController.tableView)));
     assertThat(tableController.resourcePath, is(equalTo(@"/JSON/humans/all.json")));
@@ -158,17 +158,17 @@
     tableController.resourcePath = @"/JSON/NakedEvents.json";
     [tableController setObjectMappingForClass:[RKEvent class]];
     [tableController loadTable];
-    
+
     assertThat(tableController.viewController, is(equalTo(viewController)));
     assertThat(tableController.tableView, is(equalTo(viewController.tableView)));
     assertThat(tableController.resourcePath, is(equalTo(@"/JSON/NakedEvents.json")));
-    
+
     RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping mappingForClass:[UITableViewCell class]];
     [cellMapping mapKeyPath:@"summary" toAttribute:@"textLabel.text"];
     RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
     [mappings setCellMapping:cellMapping forClass:[RKEvent class]];
     tableController.cellMappings = mappings;
-    
+
     UITableViewCell* cell = [tableController tableView:tableController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThat(cell.textLabel.text, is(equalTo(@"Shindig")));
 }
@@ -185,7 +185,7 @@
     tableController.predicate = predicate;
     tableController.sortDescriptors = sortDescriptors;
     [tableController loadTable];
-    
+
     assertThat(tableController.viewController, is(equalTo(viewController)));
     assertThat(tableController.resourcePath, is(equalTo(@"/JSON/humans/all.json")));
     assertThat(tableController.fetchRequest, is(notNilValue()));
@@ -201,7 +201,7 @@
     tableController.sectionNameKeyPath = @"name";
     tableController.cacheName = @"allHumansCache";
     [tableController loadTable];
-    
+
     assertThat(tableController.viewController, is(equalTo(viewController)));
     assertThat(tableController.resourcePath, is(equalTo(@"/JSON/humans/all.json")));
     assertThat(tableController.fetchRequest, is(notNilValue()));
@@ -222,7 +222,7 @@
     tableController.sectionNameKeyPath = @"name";
     tableController.cacheName = @"allHumansCache";
     [tableController loadTable];
-    
+
     assertThat(tableController.viewController, is(equalTo(viewController)));
     assertThat(tableController.resourcePath, is(equalTo(@"/JSON/humans/all.json")));
     assertThat(tableController.fetchRequest, is(notNilValue()));
@@ -241,7 +241,7 @@
                                                 viewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
-    
+
     assertThatInt(tableController.sectionCount, is(equalToInt(1)));
 }
 
@@ -422,7 +422,7 @@
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController loadTable];
-    
+
     assertThatInt([tableController numberOfSectionsInTableView:tableView], is(equalToInt(2)));
 }
 
@@ -435,7 +435,7 @@
                                                 viewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
-    
+
     assertThatInt([tableController tableView:tableView numberOfRowsInSection:0], is(equalToInt(2)));
 }
 
@@ -449,7 +449,7 @@
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.sectionNameKeyPath = @"name";
     [tableController loadTable];
-    
+
     assertThat([tableController tableView:tableView titleForHeaderInSection:1], is(equalTo(@"other")));
 }
 
@@ -462,13 +462,13 @@
                                                 viewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
-    
+
     RKTableViewCellMapping* cellMapping = [RKTableViewCellMapping mappingForClass:[UITableViewCell class]];
     [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
     RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
     [mappings setCellMapping:cellMapping forClass:[RKHuman class]];
     tableController.cellMappings = mappings;
-    
+
     UITableViewCell* cell = [tableController tableView:tableController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     assertThat(cell.textLabel.text, is(equalTo(@"blake")));
 }
@@ -484,7 +484,7 @@
                                                 viewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
-    
+
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     assertThatBool(blake == [tableController objectForRowAtIndexPath:indexPath], is(equalToBool(YES)));
@@ -507,25 +507,25 @@
     [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
     [tableController loadTable];
-    
+
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
     NSIndexPath* deleteIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     assertThat([tableController objectForRowAtIndexPath:indexPath], is(equalTo(other)));
     assertThat([tableController objectForRowAtIndexPath:deleteIndexPath], is(equalTo(blake)));
     BOOL delegateCanEdit = [tableController tableView:tableController.tableView
                                 canEditRowAtIndexPath:deleteIndexPath];
     assertThatBool(delegateCanEdit, is(equalToBool(YES)));
-    
+
     [RKTestNotificationObserver waitForNotificationWithName:RKRequestDidLoadResponseNotification usingBlock:^{
         [tableController tableView:tableController.tableView
                 commitEditingStyle:UITableViewCellEditingStyleDelete
                  forRowAtIndexPath:deleteIndexPath];
     }];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(1)));
     assertThat([tableController objectForRowAtIndexPath:deleteIndexPath], is(equalTo(other)));
     assertThatBool([blake isDeleted], is(equalToBool(YES)));
@@ -534,7 +534,7 @@
 - (void)testLocallyCommitADeleteWhenTheCanEditRowsPropertyIsSet {
     [self bootstrapStoreAndCache];
     [self stubObjectManagerToOnline];
-    
+
     UITableView* tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController* tableController =
@@ -543,18 +543,18 @@
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.canEditRows = YES;
     [tableController loadTable];
-    
+
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     NSIndexPath* deleteIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
     blake.railsID = nil;
     other.railsID = nil;
-    
+
     NSError* error = nil;
     [blake.managedObjectContext save:&error];
     assertThat(error, is(nilValue()));
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     assertThat([tableController objectForRowAtIndexPath:indexPath], is(equalTo(blake)));
     assertThat([tableController objectForRowAtIndexPath:deleteIndexPath], is(equalTo(other)));
@@ -571,7 +571,7 @@
 - (void)testNotCommitADeletionWhenTheCanEditRowsPropertyIsNotSet {
     [self bootstrapStoreAndCache];
     [self stubObjectManagerToOnline];
-    
+
     UITableView* tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController* tableController =
@@ -579,11 +579,11 @@
                                                 viewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
     [tableController loadTable];
-    
+
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanEdit = [tableController tableView:tableController.tableView
                                 canEditRowAtIndexPath:indexPath];
@@ -600,7 +600,7 @@
 - (void)testDoNothingToCommitAnInsertionWhenTheCanEditRowsPropertyIsSet {
     [self bootstrapStoreAndCache];
     [self stubObjectManagerToOnline];
-    
+
     UITableView* tableView = [UITableView new];
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController* tableController =
@@ -609,11 +609,11 @@
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.canEditRows = YES;
     [tableController loadTable];
-    
+
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanEdit = [tableController tableView:tableController.tableView
                                 canEditRowAtIndexPath:indexPath];
@@ -637,11 +637,11 @@
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.canMoveRows = YES;
     [tableController loadTable];
-    
+
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanMove = [tableController tableView:tableController.tableView
                                 canMoveRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
@@ -1101,10 +1101,10 @@
     tableController.showsHeaderRowsWhenEmpty = NO;
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
-    
+
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(3)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(headerRow)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]], is(equalTo(blake)));
@@ -1130,10 +1130,10 @@
     tableController.showsHeaderRowsWhenEmpty = NO;
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
-    
+
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(3)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(blake)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]], is(equalTo(other)));
@@ -1158,7 +1158,7 @@
     tableController.showsHeaderRowsWhenEmpty = NO;
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
-    
+
     assertThatBool(tableController.isLoaded, is(equalToBool(YES)));
     assertThatInt([tableController rowCount], is(equalToInt(0)));
     assertThatBool(tableController.isEmpty, is(equalToBool(YES)));
@@ -1181,7 +1181,7 @@
     tableController.showsHeaderRowsWhenEmpty = NO;
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
-    
+
     assertThatBool(tableController.isLoaded, is(equalToBool(YES)));
     assertThatInt([tableController rowCount], is(equalToInt(0)));
     assertThatBool(tableController.isEmpty, is(equalToBool(YES)));
@@ -1216,7 +1216,7 @@
     tableController.showsHeaderRowsWhenEmpty = NO;
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
-    
+
     assertThatBool(tableController.isLoaded, is(equalToBool(YES)));
     assertThatInt([tableController rowCount], is(equalToInt(1)));
     assertThatBool(tableController.isEmpty, is(equalToBool(YES)));
@@ -1230,7 +1230,7 @@
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
-    
+
     RKTableItem* headerRow = [RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Header";
         tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
@@ -1238,7 +1238,7 @@
         }];
     }];
     [tableController addHeaderRowForItem:headerRow];
-    
+
     RKTableItem* footerRow = [RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Footer";
         tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
@@ -1246,7 +1246,7 @@
         }];
     }];
     [tableController addFooterRowForItem:footerRow];
-    
+
     RKTableItem* emptyItem = [RKTableItem tableItemUsingBlock:^(RKTableItem* tableItem) {
         tableItem.text = @"Empty";
         tableItem.cellMapping = [RKTableViewCellMapping cellMappingUsingBlock:^(RKTableViewCellMapping* cellMapping) {
@@ -1257,10 +1257,10 @@
     tableController.showsHeaderRowsWhenEmpty = NO;
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
-    
+
     RKHuman* blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
     RKHuman* other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
-    
+
     assertThatInt([tableController rowCount], is(equalToInt(4)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(headerRow)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]], is(equalTo(blake)));
@@ -1298,7 +1298,7 @@
     tableController.showsHeaderRowsWhenEmpty = NO;
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
-    
+
     assertThatBool(tableController.isLoaded, is(equalToBool(YES)));
     assertThatInt([tableController rowCount], is(equalToInt(1)));
     assertThatBool(tableController.isEmpty, is(equalToBool(YES)));
@@ -1333,7 +1333,7 @@
     tableController.showsHeaderRowsWhenEmpty = YES;
     tableController.showsFooterRowsWhenEmpty = YES;
     [tableController loadTable];
-    
+
     assertThatBool(tableController.isLoaded, is(equalToBool(YES)));
     assertThatInt([tableController rowCount], is(equalToInt(3)));
     assertThatBool(tableController.isEmpty, is(equalToBool(YES)));
@@ -1342,20 +1342,20 @@
 - (void)testShowTheEmptyImageAfterLoadingAnEmptyCollectionIntoAnEmptyFetch {
     [self bootstrapEmptyStoreAndCache];
     [self stubObjectManagerToOnline];
-    
+
     UITableView* tableView = [UITableView new];
-    
+
     RKFetchedResultsTableControllerSpecViewController* viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController* tableController = [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                                                                    viewController:viewController];
-    
+
     UIImage *image = [RKTestFixture imageWithContentsOfFixture:@"blake.png"];
-    
+
     tableController.imageForEmpty = image;
     tableController.resourcePath = @"/empty/array";
     tableController.autoRefreshFromNetwork = YES;
     [tableController.cache invalidateAll];
-    
+
     [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
         [tableController loadTable];
     }];
@@ -1373,8 +1373,8 @@
     [[RKFetchedResultsTableController alloc] initWithTableView:tableView
                                                 viewController:viewController];
     tableController.resourcePath = @"/JSON/NakedEvents.json";
-    [tableController setObjectMappingForClass:[RKEvent class]];    
-    
+    [tableController setObjectMappingForClass:[RKEvent class]];
+
     id observerMock = [OCMockObject observerMock];
     [[NSNotificationCenter defaultCenter] addMockObserver:observerMock name:RKTableControllerDidLoadObjectsNotification object:tableController];
     [[observerMock expect] notificationWithName:RKTableControllerDidLoadObjectsNotification object:tableController];
@@ -1394,7 +1394,7 @@
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
-    
+
     RKFetchedResultsTableControllerTestDelegate *delegate = [RKFetchedResultsTableControllerTestDelegate tableControllerDelegate];
     id mockDelegate = [OCMockObject partialMockForObject:delegate];
     [[mockDelegate expect] tableController:tableController didInsertSectionAtIndex:0];
@@ -1416,7 +1416,7 @@
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
-    
+
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKFetchedResultsTableControllerDelegate)];
     [[mockDelegate expect] tableControllerDidStartLoad:tableController];
     tableController.delegate = mockDelegate;
@@ -1435,7 +1435,7 @@
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
-    
+
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKFetchedResultsTableControllerDelegate)];
     [[mockDelegate expect] tableControllerDidFinishLoad:tableController];
     tableController.delegate = mockDelegate;
@@ -1454,7 +1454,7 @@
     [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
     tableController.resourcePath = @"/JSON/humans/all.json";
     tableController.cacheName = @"allHumansCache";
-    
+
     id mockDelegate = [OCMockObject niceMockForProtocol:@protocol(RKFetchedResultsTableControllerDelegate)];
     [[mockDelegate expect] tableController:tableController didInsertObject:OCMOCK_ANY atIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     [[mockDelegate expect] tableController:tableController didInsertObject:OCMOCK_ANY atIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];

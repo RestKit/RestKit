@@ -143,7 +143,7 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
         RKLogWarning(@"Attempt to findByPrimaryKey for entity with nil primaryKeyAttribute. Set the primaryKeyAttributeName and try again! %@", self);
         return nil;
     }
-    
+
     return [self findFirstWithPredicate:predicate inContext:context];
 }
 

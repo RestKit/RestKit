@@ -63,7 +63,7 @@
     [_form release];
     [_sectionNameKeyPath release];
     [_sections release];
-    
+
     [super dealloc];
 }
 
@@ -179,11 +179,11 @@
     }
 
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:self.defaultRowAnimation];
-    
+
     if ([self.delegate respondsToSelector:@selector(tableController:didLoadObjects:inSection:)]) {
         [self.delegate tableController:self didLoadObjects:objects inSection:section];
     }
-    
+
     // The load is finalized via network callbacks for
     // dynamic table controllers
     if (nil == self.objectLoader) {
@@ -388,7 +388,7 @@
             return section;
         }
     }
-    
+
     return nil;
 }
 
@@ -401,10 +401,10 @@
     id mappableObject = [section objectAtIndex:indexPath.row];
     RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
-    
+
     UITableViewCell* cell = [cellMapping mappableObjectForData:self.tableView];
     NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
-    
+
     // Map the object state into the cell
     RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
     NSError* error = nil;
@@ -417,7 +417,7 @@
         RKLogError(@"Failed to generate table cell for object: %@", error);
         return nil;
     }
-    
+
     return cell;
 }
 
@@ -471,12 +471,12 @@
             if ([rowObject isEqual:object]) {
                 return [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
             }
-            
+
             rowIndex++;
         }
         sectionIndex++;
     }
-    
+
     return nil;
 }
 

@@ -71,12 +71,12 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
  value. This predicate is constructed by evaluating the cached predicate returned by the
  predicateForPrimaryKeyAttribute with a dictionary of substitution variables specifying that
  $PRIMARY_KEY_VALUE is equal to the given value.
- 
+
  **NOTE**: This method considers the type of the receiver's primary key attribute when constructing
- the predicate. It will coerce the given value into either an NSString or an NSNumber as 
+ the predicate. It will coerce the given value into either an NSString or an NSNumber as
  appropriate. This behavior is a convenience to avoid annoying issues related to Core Data's
  handling of predicates for NSString and NSNumber types that were not appropriately casted.
- 
+
  @return A predicate speciying that the value of the primary key attribute is equal to a given value.
  */
 - (NSPredicate *)predicateForPrimaryKeyAttributeWithValue:(id)value;
@@ -84,9 +84,9 @@ extern NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubs
 /**
  Coerces the given value into the class representing the primary key. Currently support NSString
  and NSNumber coercsions.
- 
+
  @bug **NOTE** This API is temporary and will be deprecated and replaced.
- @since 0.10.1 
+ @since 0.10.1
  */
 - (id)coerceValueForPrimaryKey:(id)primaryKeyValue;
 

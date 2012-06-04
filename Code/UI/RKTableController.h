@@ -126,7 +126,7 @@
  */
 - (RKTableSection *)sectionAtIndex:(NSUInteger)index;
 
-/** 
+/**
  Returns the first section with the specified header title.
  @param title The header title.
  */
@@ -134,7 +134,7 @@
 
 /**
  Returns the index of the specified section.
- 
+
  @param section Must be a valid non nil RKTableViewSection.
  @return The index of the given section if contained within the receiver, otherwise NSNotFound.
  */

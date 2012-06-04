@@ -182,7 +182,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     _objectLoader.delegate = nil;
     [_objectLoader release];
     _objectLoader = nil;
-    
+
     [_cellMappings release];
     [_headerItems release];
     [_footerItems release];
@@ -283,7 +283,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (loading) {
         self.state |= RKTableControllerStateLoading;
     } else {
-        self.state &= ~RKTableControllerStateLoading;        
+        self.state &= ~RKTableControllerStateLoading;
     }
 }
 
@@ -293,7 +293,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (loaded) {
         self.state &= ~RKTableControllerStateNotYetLoaded;
     } else {
-        self.state = RKTableControllerStateNotYetLoaded;        
+        self.state = RKTableControllerStateNotYetLoaded;
     }
 }
 
@@ -301,7 +301,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (empty) {
         self.state |= RKTableControllerStateEmpty;
     } else {
-        self.state &= ~RKTableControllerStateEmpty;        
+        self.state &= ~RKTableControllerStateEmpty;
     }
 }
 
@@ -309,7 +309,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (offline) {
         self.state |= RKTableControllerStateOffline;
     } else {
-        self.state &= ~RKTableControllerStateOffline;        
+        self.state &= ~RKTableControllerStateOffline;
     }
 }
 
@@ -317,7 +317,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (error) {
         self.state |= RKTableControllerStateError;
     } else {
-        self.state &= ~RKTableControllerStateError;        
+        self.state &= ~RKTableControllerStateError;
     }
 }
 
@@ -428,7 +428,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 - (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     UITableViewCell *cell = [self cellForObjectAtIndexPath:indexPath];
-    
+
     RKLogTrace(@"%@ cellForRowAtIndexPath:%@ = %@", self, indexPath, cell);
     return cell;
 }
@@ -464,7 +464,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
         cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
     }
-    
+
     if ([self.delegate respondsToSelector:@selector(tableController:didSelectCell:forObject:atIndexPath:)]) {
         [self.delegate tableController:self didSelectCell:cell forObject:object atIndexPath:indexPath];
     }
@@ -478,7 +478,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (cellMapping.onCellWillAppearForObjectAtIndexPath) {
         cellMapping.onCellWillAppearForObjectAtIndexPath(cell, mappableObject, indexPath);
     }
-    
+
     if ([self.delegate respondsToSelector:@selector(tableController:willDisplayCell:forObject:atIndexPath:)]) {
         [self.delegate tableController:self willDisplayCell:cell forObject:mappableObject atIndexPath:indexPath];
     }
@@ -704,13 +704,13 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     self.empty = [self isConsideredEmpty];
     self.loading = [self.objectLoader isLoading]; // Mutate loading state after we have adjusted empty
     self.loaded = YES;
-    
+
     if (![self isEmpty] && ![self isLoading]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
     }
-    
-    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinalizeLoad:)]) {        
-        [self.delegate performSelector:@selector(tableControllerDidFinalizeLoad:) withObject:self];      
+
+    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinalizeLoad:)]) {
+        [self.delegate performSelector:@selector(tableControllerDidFinalizeLoad:) withObject:self];
     }
 }
 
@@ -722,23 +722,23 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         case RKTableControllerStateLoading:
         case RKTableControllerStateNotYetLoaded:
             break;
-            
+
         case RKTableControllerStateEmpty:
             return self.imageForEmpty;
             break;
-            
+
         case RKTableControllerStateError:
             return self.imageForError;
             break;
-            
+
         case RKTableControllerStateOffline:
             return self.imageForOffline;
             break;
-            
+
         default:
             break;
     }
-    
+
     return nil;
 }
 
@@ -952,29 +952,29 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         }
 
         [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidBecomeOffline object:self];
-    }    
+    }
 }
 
 - (void)updateTableViewForStateChange:(NSDictionary *)change {
     RKTableControllerState oldState = [[change valueForKey:NSKeyValueChangeOldKey] integerValue];
     RKTableControllerState newState = [[change valueForKey:NSKeyValueChangeNewKey] integerValue];
-    
+
     // Determine state transitions
     BOOL loadedChanged = ((oldState ^ newState) & RKTableControllerStateNotYetLoaded);
     BOOL emptyChanged = ((oldState ^ newState) & RKTableControllerStateEmpty);
     BOOL offlineChanged = ((oldState ^ newState) & RKTableControllerStateOffline);
     BOOL loadingChanged = ((oldState ^ newState) & RKTableControllerStateLoading);
     BOOL errorChanged = ((oldState ^ newState) & RKTableControllerStateError);
-    
+
     if (loadedChanged) [self isLoadedDidChange];
     if (emptyChanged) [self isEmptyDidChange];
     if (offlineChanged) [self isOnlineDidChange];
     if (errorChanged) [self isErrorDidChange];
     if (loadingChanged) [self isLoadingDidChange];
-    
+
     // Clear the image from the overlay
     _stateOverlayImageView.image = nil;
-    
+
     // Determine the appropriate overlay image to display (if any)
     if (self.state == RKTableControllerStateNormal) {
         [self removeImageOverlay];
@@ -983,7 +983,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
             // During a load we don't adjust the overlay
             return;
         }
-        
+
         // Though the table can be in more than one state, we only
         // want to display a single overlay image.
         if ([self isOffline] && self.imageForOffline) {
@@ -994,7 +994,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
             [self showImageInOverlay:self.imageForEmpty];
         }
     }
-    
+
     // Remove the overlay if no longer in use
     [self resetOverlayView];
 }
@@ -1325,7 +1325,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
             RKLogDebug(@"Cancelling in progress table load: asked to load with a new object loader.");
             [self.objectLoader.queue cancelRequest:self.objectLoader];
         }
-        
+
         theObjectLoader.delegate = self;
         self.objectLoader = theObjectLoader;
     }

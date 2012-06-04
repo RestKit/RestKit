@@ -53,11 +53,11 @@
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSEntityDescription *entity = [RKHuman entityDescription];
     entity.primaryKeyAttributeName = @"railsID";
-    
+
     RKHuman *human = [RKHuman createEntity];
     human.railsID = [NSNumber numberWithInt:12345];
     [store save:nil];
-    
+
     RKHuman *foundHuman = [RKHuman findByPrimaryKey:@"12345" inContext:store.primaryManagedObjectContext];
     assertThat(foundHuman, is(equalTo(human)));
 }
