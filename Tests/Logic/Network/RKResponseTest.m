@@ -29,11 +29,13 @@
 
 @implementation RKResponseTest
 
-- (void)setUp {
+- (void)setUp
+{
     _response = [[RKResponse alloc] init];
 }
 
-- (void)testShouldConsiderResponsesLessThanOneHudredOrGreaterThanSixHundredInvalid {
+- (void)testShouldConsiderResponsesLessThanOneHudredOrGreaterThanSixHundredInvalid
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 99;
@@ -44,7 +46,8 @@
     assertThatBool([mock isInvalid], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderResponsesInTheOneHudredsInformational {
+- (void)testShouldConsiderResponsesInTheOneHudredsInformational
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 100;
@@ -55,7 +58,8 @@
     assertThatBool([mock isInformational], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderResponsesInTheTwoHundredsSuccessful {
+- (void)testShouldConsiderResponsesInTheTwoHundredsSuccessful
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger twoHundred = 200;
@@ -66,7 +70,8 @@
     assertThatBool([mock isSuccessful], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderResponsesInTheThreeHundredsRedirects {
+- (void)testShouldConsiderResponsesInTheThreeHundredsRedirects
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 300;
@@ -77,7 +82,8 @@
     assertThatBool([mock isRedirection], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderResponsesInTheFourHundredsClientErrors {
+- (void)testShouldConsiderResponsesInTheFourHundredsClientErrors
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 400;
@@ -88,7 +94,8 @@
     assertThatBool([mock isClientError], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderResponsesInTheFiveHundredsServerErrors {
+- (void)testShouldConsiderResponsesInTheFiveHundredsServerErrors
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 500;
@@ -99,7 +106,8 @@
     assertThatBool([mock isServerError], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderATwoHundredResponseOK {
+- (void)testShouldConsiderATwoHundredResponseOK
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 200;
@@ -107,7 +115,8 @@
     assertThatBool([mock isOK], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderATwoHundredAndOneResponseCreated {
+- (void)testShouldConsiderATwoHundredAndOneResponseCreated
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 201;
@@ -115,7 +124,8 @@
     assertThatBool([mock isCreated], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderAFourOhThreeResponseForbidden {
+- (void)testShouldConsiderAFourOhThreeResponseForbidden
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 403;
@@ -123,7 +133,8 @@
     assertThatBool([mock isForbidden], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderAFourOhFourResponseNotFound {
+- (void)testShouldConsiderAFourOhFourResponseNotFound
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 404;
@@ -131,7 +142,8 @@
     assertThatBool([mock isNotFound], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderAFourOhNineResponseConflict {
+- (void)testShouldConsiderAFourOhNineResponseConflict
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 409;
@@ -139,7 +151,8 @@
     assertThatBool([mock isConflict], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderAFourHundredAndTenResponseConflict {
+- (void)testShouldConsiderAFourHundredAndTenResponseConflict
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 410;
@@ -147,7 +160,8 @@
     assertThatBool([mock isGone], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderVariousThreeHundredResponsesRedirect {
+- (void)testShouldConsiderVariousThreeHundredResponsesRedirect
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 301;
@@ -164,7 +178,8 @@
     assertThatBool([mock isRedirect], is(equalToBool(YES)));
 }
 
-- (void)testShouldConsiderVariousResponsesEmpty {
+- (void)testShouldConsiderVariousResponsesEmpty
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 201;
@@ -178,7 +193,8 @@
     assertThatBool([mock isEmpty], is(equalToBool(YES)));
 }
 
-- (void)testShouldMakeTheContentTypeHeaderAccessible {
+- (void)testShouldMakeTheContentTypeHeaderAccessible
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
@@ -187,7 +203,8 @@
 }
 
 // Should this return a string???
-- (void)testShouldMakeTheContentLengthHeaderAccessible {
+- (void)testShouldMakeTheContentLengthHeaderAccessible
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSDictionary* headers = [NSDictionary dictionaryWithObject:@"12345" forKey:@"Content-Length"];
@@ -195,7 +212,8 @@
     assertThat([mock contentLength], is(equalTo(@"12345")));
 }
 
-- (void)testShouldMakeTheLocationHeaderAccessible {
+- (void)testShouldMakeTheLocationHeaderAccessible
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSDictionary* headers = [NSDictionary dictionaryWithObject:@"/foo/bar" forKey:@"Location"];
@@ -203,7 +221,8 @@
     assertThat([mock location], is(equalTo(@"/foo/bar")));
 }
 
-- (void)testShouldKnowIfItIsAnXMLResponse {
+- (void)testShouldKnowIfItIsAnXMLResponse
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
@@ -211,7 +230,8 @@
     assertThatBool([mock isXML], is(equalToBool(YES)));
 }
 
-- (void)testShouldKnowIfItIsAnJSONResponse {
+- (void)testShouldKnowIfItIsAnJSONResponse
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
@@ -219,7 +239,8 @@
     assertThatBool([mock isJSON], is(equalToBool(YES)));
 }
 
-- (void)testShouldReturnParseErrorsWhenParsedBodyFails {
+- (void)testShouldReturnParseErrorsWhenParsedBodyFails
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     [[[mock stub] andReturn:@"sad;sdvjnk;"] bodyAsString];
@@ -231,7 +252,8 @@
     assertThat([error localizedDescription], is(equalTo(@"Unexpected token, wanted '{', '}', '[', ']', ',', ':', 'true', 'false', 'null', '\"STRING\"', 'NUMBER'.")));
 }
 
-- (void)testShouldNotCrashOnFailureToParseBody {
+- (void)testShouldNotCrashOnFailureToParseBody
+{
     RKResponse *response = [[RKResponse new] autorelease];
     id mockResponse = [OCMockObject partialMockForObject:response];
     [[[mockResponse stub] andReturn:@"test/fake"] MIMEType];
@@ -241,7 +263,8 @@
     assertThat(parsedResponse, is(nilValue()));
 }
 
-- (void)testShouldNotCrashWhenParserReturnsNilWithoutAnError {
+- (void)testShouldNotCrashWhenParserReturnsNilWithoutAnError
+{
     RKResponse* response = [[[RKResponse alloc] init] autorelease];
     id mockResponse = [OCMockObject partialMockForObject:response];
     [[[mockResponse stub] andReturn:@""] bodyAsString];
@@ -259,7 +282,8 @@
     assertThat(error, is(nilValue()));
 }
 
-- (void)testLoadingNonUTF8Charset {
+- (void)testLoadingNonUTF8Charset
+{
     RKClient* client = [RKTestFactory client];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     [client get:@"/encoding" delegate:loader];
@@ -268,7 +292,8 @@
     assertThatInteger([loader.response bodyEncoding], is(equalToInteger(NSASCIIStringEncoding)));
 }
 
-- (void)testFollowRedirect {
+- (void)testFollowRedirect
+{
     RKClient* client = [RKTestFactory client];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     [client get:@"/redirection" delegate:loader];
@@ -279,7 +304,8 @@
     assertThat([body objectForKey:@"redirected"], is(equalTo([NSNumber numberWithBool:YES])));
 }
 
-- (void)testNoFollowRedirect {
+- (void)testNoFollowRedirect
+{
     RKClient* client = [RKTestFactory client];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
 
@@ -295,7 +321,8 @@
     assertThat([loader.response.allHeaderFields objectForKey:@"Location"], is(equalTo(@"/redirection/target")));
 }
 
-- (void)testThatLoadingInvalidURLDoesNotCrashApp {
+- (void)testThatLoadingInvalidURLDoesNotCrashApp
+{
     NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:5629"];
     RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
     RKClient *client = [RKClient clientWithBaseURL:URL];

@@ -30,21 +30,24 @@
 
 @implementation RKParserRegistryTest
 
-- (void)testShouldEnableRegistrationFromMIMETypeToParserClasses {
+- (void)testShouldEnableRegistrationFromMIMETypeToParserClasses
+{
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
     Class parserClass = [registry parserClassForMIMEType:RKMIMETypeJSON];
     assertThat(NSStringFromClass(parserClass), is(equalTo(@"RKJSONParserJSONKit")));
 }
 
-- (void)testShouldInstantiateParserObjects {
+- (void)testShouldInstantiateParserObjects
+{
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
     id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
-- (void)testShouldAutoconfigureBasedOnReflection {
+- (void)testShouldAutoconfigureBasedOnReflection
+{
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry autoconfigure];
     id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
@@ -53,14 +56,16 @@
     assertThat(parser, is(instanceOf([RKXMLParserXMLReader class])));
 }
 
-- (void)testRetrievalOfExactStringMatchForMIMEType {
+- (void)testRetrievalOfExactStringMatchForMIMEType
+{
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
     id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
-- (void)testRetrievalOfRegularExpressionMatchForMIMEType {
+- (void)testRetrievalOfRegularExpressionMatchForMIMEType
+{
     RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];
@@ -69,7 +74,8 @@
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
 
-- (void)testRetrievalOfExactStringMatchIsFavoredOverRegularExpression {
+- (void)testRetrievalOfExactStringMatchIsFavoredOverRegularExpression
+{
     RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];

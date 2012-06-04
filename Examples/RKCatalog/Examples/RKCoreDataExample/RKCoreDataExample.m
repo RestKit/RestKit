@@ -31,7 +31,8 @@
 
 @implementation RKCoreDataExample
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         RKObjectManager* manager = [RKObjectManager managerWithBaseURLString:@"http://restkit.org"];
@@ -62,21 +63,25 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_articles release];
     [_segmentedControl release];
     [super dealloc];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
     return 35;
 }
 
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
     return _segmentedControl;
 }
 
-- (NSFetchRequest*)fetchRequestForSelectedSegment {
+- (NSFetchRequest*)fetchRequestForSelectedSegment
+{
     NSFetchRequest* fetchRequest = [Article fetchRequest];
     NSPredicate* predicate = nil;
 
@@ -114,22 +119,26 @@
     return fetchRequest;
 }
 
-- (void)updateTableView {
+- (void)updateTableView
+{
     [_articles release];
     NSFetchRequest* fetchRequest = [self fetchRequestForSelectedSegment];
     _articles = [[Article objectsWithFetchRequest:fetchRequest] retain];
     [self.tableView reloadData];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     return [_articles count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"ArticleCell"];
     if (nil == cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"ArticleCell"] autorelease];

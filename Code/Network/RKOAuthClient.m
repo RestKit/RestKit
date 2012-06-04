@@ -34,12 +34,14 @@
 @synthesize delegate = _delegate;
 @synthesize accessToken = _accessToken;
 
-+ (RKOAuthClient *)clientWithClientID:(NSString *)clientID secret:(NSString *)secret {
++ (RKOAuthClient *)clientWithClientID:(NSString *)clientID secret:(NSString *)secret
+{
     RKOAuthClient *client = [[[self alloc] initWithClientID:clientID secret:secret] autorelease];
     return client;
 }
 
-- (id)initWithClientID:(NSString *)clientID secret:(NSString *)secret {
+- (id)initWithClientID:(NSString *)clientID secret:(NSString *)secret
+{
     self = [super init];
     if (self) {
         _clientID = [clientID copy];
@@ -49,7 +51,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_clientID release];
     [_clientSecret release];
     [_accessToken release];
@@ -57,7 +60,8 @@
     [super dealloc];
 }
 
-- (void)validateAuthorizationCode {
+- (void)validateAuthorizationCode
+{
     NSString *httpBody = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@&redirect_uri=%@&grant_type=authorization_code",
                           _clientID, _clientSecret, _authorizationCode, _callbackURL];
     NSURL *URL = [NSURL URLWithString:_authorizationURL];
@@ -68,7 +72,8 @@
     [theRequest send];
 }
 
-- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response
+{
     NSError *error = nil;
     NSString *errorResponse = nil;
 
@@ -162,7 +167,8 @@
 }
 
 
-- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
+- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error
+{
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                               error, NSUnderlyingErrorKey, nil];
     NSError *clientError = [NSError errorWithDomain:RKErrorDomain code:RKOAuthClientErrorRequestFailure userInfo:userInfo];

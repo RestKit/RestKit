@@ -15,19 +15,22 @@
 
 @implementation RKMutableBlockDictionaryTest
 
-- (void)testLetYouAssignABlockToTheDictionary {
+- (void)testLetYouAssignABlockToTheDictionary
+{
     RKMutableBlockDictionary* blockDictionary = [[RKMutableBlockDictionary new] autorelease];
     [blockDictionary setValueWithBlock:^id{ return @"Value from the block!"; } forKey:@"theKey"];
     assertThat([blockDictionary valueForKey:@"theKey"], is(equalTo(@"Value from the block!")));
 }
 
-- (void)testLetYouUseKVC {
+- (void)testLetYouUseKVC
+{
     RKMutableBlockDictionary* blockDictionary = [[RKMutableBlockDictionary new] autorelease];
     [blockDictionary setValue:@"a value" forKey:@"a key"];
     assertThat([blockDictionary valueForKey:@"a key"], is(equalTo(@"a value")));
 }
 
-- (void)testLetYouAccessABlockValueUsingAKeyPath {
+- (void)testLetYouAccessABlockValueUsingAKeyPath
+{
     RKMutableBlockDictionary* blockDictionary = [[RKMutableBlockDictionary new] autorelease];
     [blockDictionary setValueWithBlock:^id{ return @"Value from the block!"; } forKey:@"theKey"];
     NSDictionary* otherDictionary = [NSDictionary dictionaryWithObject:blockDictionary forKey:@"dictionary"];

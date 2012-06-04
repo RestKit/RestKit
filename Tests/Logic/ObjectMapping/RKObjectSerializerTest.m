@@ -29,7 +29,8 @@
 
 @implementation RKObjectSerializerTest
 
-- (void)testShouldSerializeToFormEncodedData {
+- (void)testShouldSerializeToFormEncodedData
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
@@ -43,7 +44,8 @@
     assertThat(data, is(equalTo(@"key2-form-name=value2&key1-form-name=value1")));
 }
 
-- (void)testShouldSerializeADateToFormEncodedData {
+- (void)testShouldSerializeADateToFormEncodedData
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
@@ -59,7 +61,8 @@
     assertThat(data, is(equalTo(@"key1-form-name=value1&date-form-name=1970-01-01 00:00:00 +0000")));
 }
 
-- (void)testShouldSerializeADateToAStringUsingThePreferredDateFormatter {
+- (void)testShouldSerializeADateToAStringUsingThePreferredDateFormatter
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
@@ -79,7 +82,8 @@
     assertThat(data, is(equalTo(@"key1-form-name=value1&date-form-name=01/01/1970")));
 }
 
-- (void)testShouldSerializeADateToJSON {
+- (void)testShouldSerializeADateToJSON
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDate dateWithTimeIntervalSince1970:0], @"date", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
@@ -96,7 +100,8 @@
     assertThat(data, is(equalTo(@"{\"key1-form-name\":\"value1\",\"date-form-name\":\"1970-01-01 00:00:00 +0000\"}")));
 }
 
-- (void)testShouldSerializeNSDecimalNumberAttributesToJSON {
+- (void)testShouldSerializeNSDecimalNumberAttributesToJSON
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSDecimalNumber decimalNumberWithString:@"18274191731731.4557723623"], @"number", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
@@ -113,7 +118,8 @@
     assertThat(data, is(equalTo(@"{\"key1-form-name\":\"value1\",\"number-form-name\":\"18274191731731.4557723623\"}")));
 }
 
-- (void)testShouldSerializeRelationshipsToo {
+- (void)testShouldSerializeRelationshipsToo
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2",
                             [NSArray arrayWithObjects:
                              [NSDictionary dictionaryWithObjectsAndKeys:@"relationship1Value1", @"relatioship1Key1", nil],
@@ -141,7 +147,8 @@
     #endif
 }
 
-- (void)testShouldSerializeToJSON {
+- (void)testShouldSerializeToJSON
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key1" toKeyPath:@"key1-form-name"]];
@@ -156,7 +163,8 @@
     assertThat(data, is(equalTo(@"{\"key2-form-name\":\"value2\",\"key1-form-name\":\"value1\"}")));
 }
 
-- (void)testShouldSetReturnNilIfItDoesNotFindAnythingToSerialize {
+- (void)testShouldSetReturnNilIfItDoesNotFindAnythingToSerialize
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"key12123" toKeyPath:@"key1-form-name"]];
@@ -167,7 +175,8 @@
     assertThat(serialization, is(nilValue()));
 }
 
-- (void)testShouldSerializeNestedObjectsContainingDatesToJSON {
+- (void)testShouldSerializeNestedObjectsContainingDatesToJSON
+{
     RKMappableObject* object = [[RKMappableObject new] autorelease];
     object.stringTest = @"The string";
     RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
@@ -198,7 +207,8 @@
     #endif
 }
 
-- (void)testShouldEncloseTheSerializationInAContainerIfRequested {
+- (void)testShouldEncloseTheSerializationInAContainerIfRequested
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", @"value2", @"key2", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     mapping.rootKeyPath = @"stuff";
@@ -214,7 +224,8 @@
     assertThat(data, is(equalTo(@"stuff[key2-form-name]=value2&stuff[key1-form-name]=value1")));
 }
 
-- (void)testShouldSerializeToManyRelationships {
+- (void)testShouldSerializeToManyRelationships
+{
     RKMappableObject* object = [[RKMappableObject new] autorelease];
     object.stringTest = @"The string";
     RKMappableAssociation* association = [[RKMappableAssociation new] autorelease];
@@ -239,7 +250,8 @@
     assertThat(data, is(equalTo(@"{\"hasMany\":[{\"date\":\"1970-01-01 00:00:00 +0000\"}],\"stringTest\":\"The string\"}")));
 }
 
-- (void)testShouldSerializeAnNSNumberContainingABooleanToTrueFalseIfRequested {
+- (void)testShouldSerializeAnNSNumberContainingABooleanToTrueFalseIfRequested
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1", [NSNumber numberWithBool:YES], @"boolean", nil];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSDictionary class]];
     RKObjectAttributeMapping* attributeMapping = [RKObjectAttributeMapping mappingFromKeyPath:@"boolean" toKeyPath:@"boolean-value"];
@@ -256,7 +268,8 @@
     assertThat(data, is(equalTo(@"{\"boolean-value\":true}")));
 }
 
-- (void)testShouldSerializeANSOrderedSetToJSON {
+- (void)testShouldSerializeANSOrderedSetToJSON
+{
     NSDictionary* object = [NSDictionary dictionaryWithObjectsAndKeys:@"value1", @"key1",
                             [NSOrderedSet orderedSetWithObjects:@"setElementOne", @"setElementTwo", @"setElementThree", nil], @"set",
                             nil];

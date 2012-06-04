@@ -17,11 +17,13 @@
 @synthesize awaitingResponse = _awaitingResponse;
 @synthesize cancelled = _cancelled;
 
-+ (id)tableControllerDelegate {
++ (id)tableControllerDelegate
+{
     return [[self new] autorelease];
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _timeout = 1.0;
@@ -32,7 +34,8 @@
     return self;
 }
 
-- (void)waitForLoad {
+- (void)waitForLoad
+{
     _awaitingResponse = YES;
     NSDate *startDate = [NSDate date];
 
@@ -49,20 +52,24 @@
 
 #pragma RKTableControllerDelegate methods
 
-- (void)tableControllerDidFinishLoad:(RKAbstractTableController *)tableController {
+- (void)tableControllerDidFinishLoad:(RKAbstractTableController *)tableController
+{
     _awaitingResponse = NO;
 }
 
-- (void)tableController:(RKAbstractTableController*)tableController didFailLoadWithError:(NSError *)error {
+- (void)tableController:(RKAbstractTableController*)tableController didFailLoadWithError:(NSError *)error
+{
     _awaitingResponse = NO;
 }
 
-- (void)tableControllerDidCancelLoad:(RKAbstractTableController *)tableController {
+- (void)tableControllerDidCancelLoad:(RKAbstractTableController *)tableController
+{
     _awaitingResponse = NO;
     _cancelled = YES;
 }
 
-- (void)tableControllerDidFinalizeLoad:(RKAbstractTableController *)tableController {
+- (void)tableControllerDidFinalizeLoad:(RKAbstractTableController *)tableController
+{
     _awaitingResponse = NO;
 }
 

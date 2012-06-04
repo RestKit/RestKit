@@ -135,11 +135,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize backgroundTaskIdentifier = _backgroundTaskIdentifier;
 #endif
 
-+ (RKRequest*)requestWithURL:(NSURL*)URL {
++ (RKRequest*)requestWithURL:(NSURL*)URL
+{
     return [[[RKRequest alloc] initWithURL:URL] autorelease];
 }
 
-- (id)initWithURL:(NSURL*)URL {
+- (id)initWithURL:(NSURL*)URL
+{
     self = [self init];
     if (self) {
         _URL = [URL retain];
@@ -154,7 +156,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return self;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         self.runLoopMode = NSRunLoopCommonModes;
@@ -171,7 +174,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return self;
 }
 
-- (void)reset {
+- (void)reset
+{
     if (self.isLoading) {
         RKLogWarning(@"Request was reset while loading: %@. Canceling.", self);
         [self cancel];
@@ -186,7 +190,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     self.cancelled = NO;
 }
 
-- (void)cleanupBackgroundTask {
+- (void)cleanupBackgroundTask
+{
     #if TARGET_OS_IPHONE
     BOOL backgroundOK = &UIBackgroundTaskInvalid != NULL;
     if (backgroundOK && UIBackgroundTaskInvalid == self.backgroundTaskIdentifier) {
@@ -201,7 +206,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     #endif
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     self.delegate = nil;
@@ -261,11 +267,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [super dealloc];
 }
 
-- (BOOL)shouldSendParams {
+- (BOOL)shouldSendParams
+{
     return (_params && (_method != RKRequestMethodGET && _method != RKRequestMethodHEAD));
 }
 
-- (void)setRequestBody {
+- (void)setRequestBody
+{
     if ([self shouldSendParams]) {
         // Prefer the use of a stream over a raw body
         if ([_params respondsToSelector:@selector(HTTPBodyStream)]) {
@@ -278,23 +286,28 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 }
 
-- (NSData*)HTTPBody {
+- (NSData*)HTTPBody
+{
     return self.URLRequest.HTTPBody;
 }
 
-- (void)setHTTPBody:(NSData *)HTTPBody {
+- (void)setHTTPBody:(NSData *)HTTPBody
+{
     [self.URLRequest setHTTPBody:HTTPBody];
 }
 
-- (NSString*)HTTPBodyString {
+- (NSString*)HTTPBodyString
+{
     return [[[NSString alloc] initWithData:self.URLRequest.HTTPBody encoding:NSASCIIStringEncoding] autorelease];
 }
 
-- (void)setHTTPBodyString:(NSString *)HTTPBodyString {
+- (void)setHTTPBodyString:(NSString *)HTTPBodyString
+{
     [self.URLRequest setHTTPBody:[HTTPBodyString dataUsingEncoding:NSASCIIStringEncoding]];
 }
 
-- (void)addHeadersToRequest {
+- (void)addHeadersToRequest
+{
     NSString *header = nil;
     for (header in _additionalHTTPHeaders) {
         [_URLRequest setValue:[_additionalHTTPHeaders valueForKey:header] forHTTPHeaderField:header];
@@ -388,7 +401,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 // Setup the NSURLRequest. The request must be prepared right before dispatching
-- (BOOL)prepareURLRequest {
+- (BOOL)prepareURLRequest
+{
     [_URLRequest setHTTPMethod:[self HTTPMethod]];
 
     if ([self.delegate respondsToSelector:@selector(requestWillPrepareForSend:)]) {
@@ -405,7 +419,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return YES;
 }
 
-- (void)cancelAndInformDelegate:(BOOL)informDelegate {
+- (void)cancelAndInformDelegate:(BOOL)informDelegate
+{
     self.cancelled = YES;
     [_connection cancel];
     [_connection release];
@@ -418,12 +433,14 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 }
 
-- (NSString *)HTTPMethod {
+- (NSString *)HTTPMethod
+{
     return RKRequestMethodNameFromType(self.method);
 }
 
 // NOTE: We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
-- (void)send {
+- (void)send
+{
     NSAssert(NO == self.isLoading || NO == self.isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     if (self.queue) {
         [self.queue addRequest:self];
@@ -432,7 +449,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 }
 
-- (void)fireAsynchronousRequest {
+- (void)fireAsynchronousRequest
+{
     RKLogDebug(@"Sending asynchronous %@ request to URL %@.", [self HTTPMethod], [[self URL] absoluteString]);
     if (![self prepareURLRequest]) {
         RKLogWarning(@"Failed to send request asynchronously: prepareURLRequest returned NO.");
@@ -454,7 +472,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestSentNotification object:self userInfo:nil];
 }
 
-- (BOOL)shouldLoadFromCache {
+- (BOOL)shouldLoadFromCache
+{
     // if RKRequestCachePolicyEnabled or if RKRequestCachePolicyTimeout and we are in the timeout
     if ([self.cache hasResponseForRequest:self]) {
         if (self.cachePolicy & RKRequestCachePolicyEnabled) {
@@ -468,12 +487,14 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return NO;
 }
 
-- (RKResponse*)loadResponseFromCache {
+- (RKResponse*)loadResponseFromCache
+{
     RKLogDebug(@"Found cached content, loading...");
     return [self.cache responseForRequest:self];
 }
 
-- (BOOL)shouldDispatchRequest {
+- (BOOL)shouldDispatchRequest
+{
     if (nil == self.reachabilityObserver || NO == [self.reachabilityObserver isReachabilityDetermined]) {
         return YES;
     }
@@ -481,7 +502,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return [self.reachabilityObserver isNetworkReachable];
 }
 
-- (void)sendAsynchronously {
+- (void)sendAsynchronously
+{
     NSAssert(NO == self.loading || NO == self.loaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     _sentSynchronously = NO;
     if ([self shouldLoadFromCache]) {
@@ -548,7 +570,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 }
 
-- (RKResponse*)sendSynchronously {
+- (RKResponse*)sendSynchronously
+{
     NSAssert(NO == self.loading || NO == self.loaded, @"Cannot send a request that is loading or loaded without resetting it first.");
     NSHTTPURLResponse* URLResponse = nil;
     NSError* error;
@@ -610,15 +633,18 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return response;
 }
 
-- (void)cancel {
+- (void)cancel
+{
     [self cancelAndInformDelegate:YES];
 }
 
-- (void)createTimeoutTimer {
+- (void)createTimeoutTimer
+{
     _timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:self.timeoutInterval target:self selector:@selector(timeout) userInfo:nil repeats:NO];
 }
 
-- (void)timeout {
+- (void)timeout
+{
     [self cancelAndInformDelegate:NO];
     RKLogError(@"Failed to send request to %@ due to connection timeout. Timeout interval = %f", [[self URL] absoluteString], self.timeoutInterval);
     NSString* errorMessage = [NSString stringWithFormat:@"The client timed out connecting to the resource at %@", [[self URL] absoluteString]];
@@ -629,12 +655,14 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [self didFailLoadWithError:error];
 }
 
-- (void)invalidateTimeoutTimer {
+- (void)invalidateTimeoutTimer
+{
     [_timeoutTimer invalidate];
     _timeoutTimer = nil;
 }
 
-- (void)didFailLoadWithError:(NSError*)error {
+- (void)didFailLoadWithError:(NSError*)error
+{
     if (_cachePolicy & RKRequestCachePolicyLoadOnError &&
         [self.cache hasResponseForRequest:self]) {
 
@@ -663,13 +691,15 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
 }
 
-- (void)updateInternalCacheDate {
+- (void)updateInternalCacheDate
+{
     NSDate* date = [NSDate date];
     RKLogInfo(@"Updating cache date for request %@ to %@", self, date);
     [self.cache setCacheDate:date forRequest:self];
 }
 
-- (void)didFinishLoad:(RKResponse *)response {
+- (void)didFinishLoad:(RKResponse *)response
+{
     self.loading = NO;
     self.loaded = YES;
 
@@ -710,31 +740,38 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
 }
 
-- (BOOL)isGET {
+- (BOOL)isGET
+{
     return _method == RKRequestMethodGET;
 }
 
-- (BOOL)isPOST {
+- (BOOL)isPOST
+{
     return _method == RKRequestMethodPOST;
 }
 
-- (BOOL)isPUT {
+- (BOOL)isPUT
+{
     return _method == RKRequestMethodPUT;
 }
 
-- (BOOL)isDELETE {
+- (BOOL)isDELETE
+{
     return _method == RKRequestMethodDELETE;
 }
 
-- (BOOL)isHEAD {
+- (BOOL)isHEAD
+{
     return _method == RKRequestMethodHEAD;
 }
 
-- (BOOL)isUnsent {
+- (BOOL)isUnsent
+{
     return self.loading == NO && self.loaded == NO;
 }
 
-- (NSString*)resourcePath {
+- (NSString*)resourcePath
+{
     NSString* resourcePath = nil;
     if ([self.URL isKindOfClass:[RKURL class]]) {
         RKURL* url = (RKURL*)self.URL;
@@ -743,14 +780,16 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return resourcePath;
 }
 
-- (void)setURL:(NSURL *)URL {
+- (void)setURL:(NSURL *)URL
+{
     [URL retain];
     [_URL release];
     _URL = URL;
     _URLRequest.URL = URL;
 }
 
-- (void)setResourcePath:(NSString *)resourcePath {
+- (void)setResourcePath:(NSString *)resourcePath
+{
     if ([self.URL isKindOfClass:[RKURL class]]) {
         self.URL = [(RKURL *)self.URL URLByReplacingResourcePath:resourcePath];
     } else {
@@ -758,15 +797,18 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     }
 }
 
-- (BOOL)wasSentToResourcePath:(NSString*)resourcePath {
+- (BOOL)wasSentToResourcePath:(NSString*)resourcePath
+{
     return [[self resourcePath] isEqualToString:resourcePath];
 }
 
-- (BOOL)wasSentToResourcePath:(NSString *)resourcePath method:(RKRequestMethod)method {
+- (BOOL)wasSentToResourcePath:(NSString *)resourcePath method:(RKRequestMethod)method
+{
     return (self.method == method && [self wasSentToResourcePath:resourcePath]);
 }
 
-- (void)appDidEnterBackgroundNotification:(NSNotification*)notification {
+- (void)appDidEnterBackgroundNotification:(NSNotification*)notification
+{
 #if TARGET_OS_IPHONE
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     if (self.backgroundPolicy == RKRequestBackgroundPolicyCancel) {
@@ -779,11 +821,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 #endif
 }
 
-- (BOOL)isCacheable {
+- (BOOL)isCacheable
+{
     return _method == RKRequestMethodGET;
 }
 
-- (NSString*)cacheKey {
+- (NSString*)cacheKey
+{
     if (! [self isCacheable]) {
         return nil;
     }
@@ -803,7 +847,8 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     return [compositeCacheKey MD5];
 }
 
-- (void)setBody:(NSDictionary *)body forMIMEType:(NSString *)MIMEType {
+- (void)setBody:(NSDictionary *)body forMIMEType:(NSString *)MIMEType
+{
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
 
     NSError *error = nil;
@@ -818,11 +863,13 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 }
 
 // Deprecations
-+ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate {
++ (RKRequest*)requestWithURL:(NSURL*)URL delegate:(id)delegate
+{
     return [[[RKRequest alloc] initWithURL:URL delegate:delegate] autorelease];
 }
 
-- (id)initWithURL:(NSURL*)URL delegate:(id)delegate {
+- (id)initWithURL:(NSURL*)URL delegate:(id)delegate
+{
     self = [self initWithURL:URL];
     if (self) {
         _delegate = delegate;

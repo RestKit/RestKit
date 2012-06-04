@@ -28,7 +28,8 @@
 
 @implementation RKDynamicObjectMappingTest
 
-- (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue {
+- (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue
+{
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
@@ -46,7 +47,8 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
 
-- (void)testShouldMatchOnAnNSNumberAttributeValue {
+- (void)testShouldMatchOnAnNSNumberAttributeValue
+{
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class] usingBlock:^(RKObjectMapping* mapping) {
         [mapping mapAttributes:@"name", nil];
@@ -64,7 +66,8 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
 
-- (void)testShouldPickTheAppropriateMappingBasedOnDelegateCallback {
+- (void)testShouldPickTheAppropriateMappingBasedOnDelegateCallback
+{
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     dynamicMapping.delegate = self;
     RKObjectMapping* mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"girl.json"]];
@@ -75,7 +78,8 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
 
-- (void)testShouldPickTheAppropriateMappingBasedOnBlockDelegateCallback {
+- (void)testShouldPickTheAppropriateMappingBasedOnBlockDelegateCallback
+{
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     dynamicMapping.objectMappingForDataBlock = ^ RKObjectMapping* (id data) {
         if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
@@ -98,7 +102,8 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"Boy")));
 }
 
-- (void)testShouldFailAnAssertionWhenInvokedWithSomethingOtherThanADictionary {
+- (void)testShouldFailAnAssertionWhenInvokedWithSomethingOtherThanADictionary
+{
     NSException* exception = nil;
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     @try {
@@ -114,7 +119,8 @@
 
 #pragma mark - RKDynamicObjectMappingDelegate
 
-- (RKObjectMapping*)objectMappingForData:(id)data {
+- (RKObjectMapping*)objectMappingForData:(id)data
+{
     if ([[data valueForKey:@"type"] isEqualToString:@"Girl"]) {
         return [RKObjectMapping mappingForClass:[Girl class] usingBlock:^(RKObjectMapping* mapping) {
             [mapping mapAttributes:@"name", nil];

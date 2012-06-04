@@ -47,7 +47,8 @@
 
 @implementation RKXMLParserTest
 
-- (void)testShouldMapASingleXMLObjectPayloadToADictionary {
+- (void)testShouldMapASingleXMLObjectPayloadToADictionary
+{
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<hash>\n  <float type=\"float\">2.4</float>\n  <string>string</string>\n  <number type=\"integer\">1</number>\n</hash>\n";
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -58,7 +59,8 @@
     assertThat([result valueForKeyPath:@"hash.string"], is(equalTo(@"string")));
 }
 
-- (void)testShouldMapMultipleObjectsToAnArray {
+- (void)testShouldMapMultipleObjectsToAnArray
+{
     NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records type=\"array\">\n  <record>\n    <float type=\"float\">2.4</float>\n    <string>string</string>\n    <number type=\"integer\">1</number>\n  </record>\n  <record>\n    <another-number type=\"integer\">1</another-number>\n  </record>\n</records>\n";
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -74,7 +76,8 @@
     assertThatInt([[[result2 valueForKeyPath:@"another-number"] valueForKey:@"text"] intValue], is(equalToInt(1)));
 }
 
-- (void)testShouldMapXML {
+- (void)testShouldMapXML
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestTabData class]];
     [mapping mapAttributes:@"title", @"summary", nil];
     RKObjectMappingProvider* provider = [[RKObjectMappingProvider alloc] init];
@@ -88,7 +91,8 @@
     assertThatUnsignedInteger([[data valueForKeyPath:@"tabdata.item"] count], is(equalToInt(2)));
 }
 
-- (void)testShouldParseXMLWithAttributes {
+- (void)testShouldParseXMLWithAttributes
+{
     NSString* XML = [RKTestFixture stringWithContentsOfFixture:@"container_attributes.xml"];
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -106,7 +110,8 @@
     assertThat([secondElement objectForKey:@"subelement"], is(equalTo(@"text2")));
 }
 
-- (void)testShouldParseXMLWithAttributesInTextNodes {
+- (void)testShouldParseXMLWithAttributesInTextNodes
+{
     NSString* XML = [RKTestFixture stringWithContentsOfFixture:@"attributes_without_text_content.xml"];
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -137,7 +142,8 @@
     assertThat([thirdCurrency objectForKey:@"rate"], is(equalTo(@"3.251")));
 }
 
-- (void)testShouldNotCrashWhileParsingOrdersXML {
+- (void)testShouldNotCrashWhileParsingOrdersXML
+{
     NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"orders.xml"];
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -153,7 +159,8 @@
     }
 }
 
-- (void)testShouldParseXMLWithCDATA {
+- (void)testShouldParseXMLWithCDATA
+{
     NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"zend.xml"];
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -166,7 +173,8 @@
     assertThat([[map objectAtIndex:2] valueForKey:@"subtitle"], is(equalTo(@"Kary lives here.")));
 }
 
-- (void)testShouldConsiderASingleCloseTagAnEmptyContainer {
+- (void)testShouldConsiderASingleCloseTagAnEmptyContainer
+{
     NSString *XML = @"<users />";
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -177,7 +185,8 @@
     assertThatBool([users isKindOfClass:[NSDictionary class]], is(equalToBool(YES)));
 }
 
-- (void)testShouldParseRelativelyComplexXML {
+- (void)testShouldParseRelativelyComplexXML
+{
     NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"national_weather_service.xml"];
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
@@ -193,7 +202,8 @@
     }
 }
 
-- (void)testShouldParseXMLElementsAndAttributesProperly {
+- (void)testShouldParseXMLElementsAndAttributesProperly
+{
 
     NSString* XML = [RKTestFixture stringWithContentsOfFixture:@"channels.xml"];
     NSError *error = [[NSError alloc] init];

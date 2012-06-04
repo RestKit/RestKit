@@ -37,7 +37,8 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 
 @implementation NSString (RKAdditions)
 
-- (NSString *)stringByAppendingQueryParameters:(NSDictionary *)queryParameters {
+- (NSString *)stringByAppendingQueryParameters:(NSDictionary *)queryParameters
+{
     if ([queryParameters count] > 0) {
         return [NSString stringWithFormat:@"%@?%@", self, [queryParameters stringWithURLEncodedEntries]];
     }
@@ -45,31 +46,37 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 }
 
 // Deprecated
-- (NSString *)appendQueryParams:(NSDictionary *)queryParams {
+- (NSString *)appendQueryParams:(NSDictionary *)queryParams
+{
     return [self stringByAppendingQueryParameters:queryParams];
 }
 
-- (NSString *)interpolateWithObject:(id)object addingEscapes:(BOOL)addEscapes {
+- (NSString *)interpolateWithObject:(id)object addingEscapes:(BOOL)addEscapes
+{
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:self];
     NSString *interpolatedPath = [matcher pathFromObject:object addingEscapes:addEscapes];
     return interpolatedPath;
 }
 
-- (NSString *)interpolateWithObject:(id)object {
+- (NSString *)interpolateWithObject:(id)object
+{
     return [self interpolateWithObject:object addingEscapes:YES];
 }
 
-- (NSDictionary *)queryParameters {
+- (NSDictionary *)queryParameters
+{
     return [self queryParametersUsingEncoding:NSUTF8StringEncoding];
 }
 
-- (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding {
+- (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding
+{
     return [self queryParametersUsingArrays:NO encoding:encoding];
 }
 
 // TODO: Eliminate...
-- (NSDictionary*)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding {
+- (NSDictionary*)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding
+{
     NSString *stringToParse = self;
     NSRange chopRange = [stringToParse rangeOfString:@"?"];
     if (chopRange.length > 0) {
@@ -119,7 +126,8 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 }
 
 // NOTE: See http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters
-- (NSString *)stringByAddingURLEncoding {
+- (NSString *)stringByAddingURLEncoding
+{
     CFStringRef legalURLCharactersToBeEscaped = CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`\n\r");
     CFStringRef encodedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
                                                                         (CFStringRef)self,
@@ -134,15 +142,18 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     return @"";
 }
 
-- (NSString *)stringByReplacingURLEncoding {
+- (NSString *)stringByReplacingURLEncoding
+{
     return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 }
 
-- (NSDictionary *)fileExtensionsToMIMETypesDictionary {
+- (NSDictionary *)fileExtensionsToMIMETypesDictionary
+{
     return [NSDictionary dictionaryWithObjectsAndKeys:@"application/json", @"json", nil];
 }
 
-- (NSString *)MIMETypeForPathExtension {
+- (NSString *)MIMETypeForPathExtension
+{
     NSString *fileExtension = [self pathExtension];
     CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef) fileExtension, NULL);
     if (uti != NULL) {
@@ -159,20 +170,23 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     return [[self fileExtensionsToMIMETypesDictionary] valueForKey:fileExtension];
 }
 
-- (BOOL)isIPAddress {
+- (BOOL)isIPAddress
+{
     struct sockaddr_in sa;
     char *hostNameOrIPAddressCString = (char *) [self UTF8String];
     int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));
     return (result != 0);
 }
 
-- (NSString *)stringByAppendingPathComponent:(NSString *)pathComponent isDirectory:(BOOL)isDirectory {
+- (NSString *)stringByAppendingPathComponent:(NSString *)pathComponent isDirectory:(BOOL)isDirectory
+{
     NSString *stringWithPathComponent = [self stringByAppendingPathComponent:pathComponent];
     if (isDirectory) return [stringWithPathComponent stringByAppendingString:@"/"];
     return stringWithPathComponent;
 }
 
-- (NSString *)MD5 {
+- (NSString *)MD5
+{
     // Create pointer to the string as UTF8
     const char* ptr = [self UTF8String];
 

@@ -22,7 +22,8 @@
 
 @implementation RKTableViewCellMappingsTest
 
-- (void)testRaiseAnExceptionWhenAnAttemptIsMadeToRegisterAnExistingMappableClass {
+- (void)testRaiseAnExceptionWhenAnAttemptIsMadeToRegisterAnExistingMappableClass
+{
     RKTableViewCellMappings* cellMappings = [RKTableViewCellMappings cellMappings];
     RKTableViewCellMapping* firstMapping = [RKTableViewCellMapping cellMapping];
     RKTableViewCellMapping* secondMapping = [RKTableViewCellMapping cellMapping];
@@ -39,7 +40,8 @@
     }
 }
 
-- (void)testFindCellMappingsWithAnExactClassMatch {
+- (void)testFindCellMappingsWithAnExactClassMatch
+{
     RKTableViewCellMappings* cellMappings = [RKTableViewCellMappings cellMappings];
     RKTableViewCellMapping* firstMapping = [RKTableViewCellMapping cellMapping];
     RKTableViewCellMapping* secondMapping = [RKTableViewCellMapping cellMapping];
@@ -48,7 +50,8 @@
     assertThat([cellMappings cellMappingForObject:[RKTestUser new]], is(equalTo(secondMapping)));
 }
 
-- (void)testFindCellMappingsWithASubclassMatch {
+- (void)testFindCellMappingsWithASubclassMatch
+{
     RKTableViewCellMappings* cellMappings = [RKTableViewCellMappings cellMappings];
     RKTableViewCellMapping* firstMapping = [RKTableViewCellMapping cellMapping];
     RKTableViewCellMapping* secondMapping = [RKTableViewCellMapping cellMapping];
@@ -57,7 +60,8 @@
     assertThat([cellMappings cellMappingForObject:[RKTestSubclassedUser new]], is(equalTo(secondMapping)));
 }
 
-- (void)testReturnTheCellMappingForAnObjectInstance {
+- (void)testReturnTheCellMappingForAnObjectInstance
+{
     RKTableViewCellMappings* cellMappings = [RKTableViewCellMappings cellMappings];
     RKTableViewCellMapping* mapping = [RKTableViewCellMapping cellMapping];
     [cellMappings setCellMapping:mapping forClass:[RKTestUser class]];

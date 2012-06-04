@@ -28,13 +28,15 @@
 @synthesize friendsSet = _friendsSet;
 @synthesize friendsOrderedSet = _friendsOrderedSet;
 
-+ (RKTestUser*)user {
++ (RKTestUser*)user
+{
     return [[self new] autorelease];
 }
 
 // isEqual: is consulted by the mapping operation
 // to determine if assocation values should be set
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
     if ([object isKindOfClass:[RKTestUser class]]) {
         if ([(RKTestUser*)object userID] == nil && self.userID == nil) {
             // No primary key -- consult superclass
@@ -47,12 +49,14 @@
     return NO;
 }
 
-- (id)valueForUndefinedKey:(NSString *)key {
+- (id)valueForUndefinedKey:(NSString *)key
+{
     RKLogError(@"Unexpectedly asked for undefined key '%@'", key);
     return [super valueForUndefinedKey:key];
 }
 
-- (void)setValue:(id)value forUndefinedKey:(NSString *)key {
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key
+{
     RKLogError(@"Asked to set value '%@' for undefined key '%@'", value, key);
     [super setValue:value forUndefinedKey:key];
 }

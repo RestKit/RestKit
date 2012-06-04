@@ -28,17 +28,20 @@ RK_FIX_CATEGORY_BUG(NSManagedObjectContext_ActiveRecord)
 
 @implementation NSManagedObjectContext (ActiveRecord)
 
-+ (NSManagedObjectContext *)defaultContext {
++ (NSManagedObjectContext *)defaultContext
+{
     return defaultContext;
 }
 
-+ (void)setDefaultContext:(NSManagedObjectContext *)newDefaultContext {
++ (void)setDefaultContext:(NSManagedObjectContext *)newDefaultContext
+{
     [newDefaultContext retain];
     [defaultContext release];
     defaultContext = newDefaultContext;
 }
 
-+ (NSManagedObjectContext *)contextForCurrentThread {
++ (NSManagedObjectContext *)contextForCurrentThread
+{
     NSAssert([RKManagedObjectStore defaultObjectStore], @"[RKManagedObjectStore defaultObjectStore] cannot be nil");
     return [[RKManagedObjectStore defaultObjectStore] managedObjectContextForCurrentThread];
 }
@@ -51,19 +54,22 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 
 #pragma mark - RKManagedObject methods
 
-+ (NSEntityDescription*)entity {
++ (NSEntityDescription*)entity
+{
     NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
     return [NSEntityDescription entityForName:className inManagedObjectContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (NSFetchRequest*)fetchRequest {
++ (NSFetchRequest*)fetchRequest
+{
     NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
     NSEntityDescription *entity = [self entity];
     [fetchRequest setEntity:entity];
     return fetchRequest;
 }
 
-+ (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest {
++ (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest
+{
     NSError* error = nil;
     NSArray* objects = [[NSManagedObjectContext contextForCurrentThread] executeFetchRequest:fetchRequest error:&error];
     if (objects == nil) {
@@ -72,7 +78,8 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return objects;
 }
 
-+ (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest*)fetchRequest {
++ (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest*)fetchRequest
+{
     NSError* error = nil;
     NSUInteger objectCount = [[NSManagedObjectContext contextForCurrentThread] countForFetchRequest:fetchRequest error:&error];
     if (objectCount    == NSNotFound) {
@@ -81,7 +88,8 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return objectCount;
 }
 
-+ (NSArray*)objectsWithFetchRequests:(NSArray*)fetchRequests {
++ (NSArray*)objectsWithFetchRequests:(NSArray*)fetchRequests
+{
     NSMutableArray* mutableObjectArray = [[NSMutableArray alloc] init];
     for (NSFetchRequest* fetchRequest in fetchRequests) {
         [mutableObjectArray addObjectsFromArray:[self objectsWithFetchRequest:fetchRequest]];
@@ -91,7 +99,8 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return objects;
 }
 
-+ (id)objectWithFetchRequest:(NSFetchRequest*)fetchRequest {
++ (id)objectWithFetchRequest:(NSFetchRequest*)fetchRequest
+{
     [fetchRequest setFetchLimit:1];
     NSArray* objects = [self objectsWithFetchRequest:fetchRequest];
     if ([objects count] == 0) {
@@ -101,43 +110,51 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     }
 }
 
-+ (NSArray*)objectsWithPredicate:(NSPredicate*)predicate {
++ (NSArray*)objectsWithPredicate:(NSPredicate*)predicate
+{
     NSFetchRequest* fetchRequest = [self fetchRequest];
     [fetchRequest setPredicate:predicate];
     return [self objectsWithFetchRequest:fetchRequest];
 }
 
-+ (id)objectWithPredicate:(NSPredicate*)predicate {
++ (id)objectWithPredicate:(NSPredicate*)predicate
+{
     NSFetchRequest* fetchRequest = [self fetchRequest];
     [fetchRequest setPredicate:predicate];
     return [self objectWithFetchRequest:fetchRequest];
 }
 
-+ (NSArray*)allObjects {
++ (NSArray*)allObjects
+{
     return [self objectsWithPredicate:nil];
 }
 
-+ (NSUInteger)count:(NSError**)error {
++ (NSUInteger)count:(NSError**)error
+{
     NSFetchRequest* fetchRequest = [self fetchRequest];
     return [[NSManagedObjectContext contextForCurrentThread] countForFetchRequest:fetchRequest error:error];
 }
 
-+ (NSUInteger)count {
++ (NSUInteger)count
+{
     NSError *error = nil;
     return [self count:&error];
 }
 
-+ (id)object {
++ (id)object
+{
     id object = [[self alloc] initWithEntity:[self entity] insertIntoManagedObjectContext:[NSManagedObjectContext contextForCurrentThread]];
     return [object autorelease];
 }
 
-- (BOOL)isNew {
+- (BOOL)isNew
+{
     NSDictionary *vals = [self committedValuesForKeys:nil];
     return [vals count] == 0;
 }
 
-+ (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context {
++ (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context
+{
     NSPredicate *predicate = [[self entityDescriptionInContext:context] predicateForPrimaryKeyAttributeWithValue:primaryKeyValue];
     if (! predicate) {
         RKLogWarning(@"Attempt to findByPrimaryKey for entity with nil primaryKeyAttribute. Set the primaryKeyAttributeName and try again! %@", self);
@@ -147,13 +164,15 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return [self findFirstWithPredicate:predicate inContext:context];
 }
 
-+ (id)findByPrimaryKey:(id)primaryKeyValue {
++ (id)findByPrimaryKey:(id)primaryKeyValue
+{
     return [self findByPrimaryKey:primaryKeyValue inContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
 #pragma mark - MagicalRecord Ported Methods
 
-+ (NSManagedObjectContext*)currentContext; {
++ (NSManagedObjectContext*)currentContext;
+{
     return [NSManagedObjectContext contextForCurrentThread];
 }
 

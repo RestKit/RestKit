@@ -49,7 +49,8 @@
 @synthesize orderedSet = _orderedSet;
 @synthesize array = _array;
 
-- (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError {
+- (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError
+{
     if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"FAIL"]) {
         *outError = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
         return NO;
@@ -73,7 +74,8 @@
 
 @implementation RKObjectMappingOperationTest
 
-- (void)testShouldNotUpdateEqualURLProperties {
+- (void)testShouldNotUpdateEqualURLProperties
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"url", nil];
     NSURL* url1 = [NSURL URLWithString:@"http://www.restkit.org"];
@@ -90,7 +92,8 @@
     [operation release];
 }
 
-- (void)testShouldSuccessfullyMapBoolsToStrings {
+- (void)testShouldSuccessfullyMapBoolsToStrings
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolString", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -105,7 +108,8 @@
     [operation release];
 }
 
-- (void)testShouldSuccessfullyMapTrueBoolsToNSNumbers {
+- (void)testShouldSuccessfullyMapTrueBoolsToNSNumbers
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolNumber", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -120,7 +124,8 @@
     [operation release];
 }
 
-- (void)testShouldSuccessfullyMapFalseBoolsToNSNumbers {
+- (void)testShouldSuccessfullyMapFalseBoolsToNSNumbers
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolNumber", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -135,7 +140,8 @@
     [operation release];
 }
 
-- (void)testShouldSuccessfullyMapNumbersToStrings {
+- (void)testShouldSuccessfullyMapNumbersToStrings
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapKeyPath:@"number" toAttribute:@"boolString"];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -150,7 +156,8 @@
     [operation release];
 }
 
-- (void)testShouldSuccessfullyMapArraysToOrderedSets {
+- (void)testShouldSuccessfullyMapArraysToOrderedSets
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapKeyPath:@"numbers" toAttribute:@"orderedSet"];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -166,7 +173,8 @@
     [operation release];
 }
 
-- (void)testShouldSuccessfullyMapOrderedSetsToArrays {
+- (void)testShouldSuccessfullyMapOrderedSetsToArrays
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapKeyPath:@"orderedSet" toAttribute:@"array"];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -182,7 +190,8 @@
     [operation release];
 }
 
-- (void)testShouldFailTheMappingOperationIfKeyValueValidationSetsAnError {
+- (void)testShouldFailTheMappingOperationIfKeyValueValidationSetsAnError
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolString", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -195,7 +204,8 @@
     [operation release];
 }
 
-- (void)testShouldNotSetTheAttributeIfKeyValueValidationReturnsNo {
+- (void)testShouldNotSetTheAttributeIfKeyValueValidationReturnsNo
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolString", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -209,7 +219,8 @@
     [operation release];
 }
 
-- (void)testModifyingValueWithinKeyValueValidationIsRespected {
+- (void)testModifyingValueWithinKeyValueValidationIsRespected
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"boolString", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -224,7 +235,8 @@
 
 #pragma mark - TimeZone Handling
 
-- (void)testShouldMapAUTCDateWithoutChangingTheTimeZone {
+- (void)testShouldMapAUTCDateWithoutChangingTheTimeZone
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"date", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -238,7 +250,8 @@
     [operation release];
 }
 
-- (void)testShouldMapAUnixTimestampStringAppropriately {
+- (void)testShouldMapAUnixTimestampStringAppropriately
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"date", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -252,7 +265,8 @@
     [operation release];
 }
 
-- (void)testShouldMapASimpleDateStringAppropriately {
+- (void)testShouldMapASimpleDateStringAppropriately
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"date", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -266,7 +280,8 @@
     [operation release];
 }
 
-- (void)testShouldMapAISODateStringAppropriately {
+- (void)testShouldMapAISODateStringAppropriately
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapAttributes:@"date", nil];
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
@@ -280,7 +295,8 @@
     [operation release];
 }
 
-- (void)testShouldMapAStringIntoTheLocalTimeZone {
+- (void)testShouldMapAStringIntoTheLocalTimeZone
+{
     NSTimeZone *EDTTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"EDT"];
     NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
     dateFormatter.dateFormat = @"MM-dd-yyyy";
@@ -300,7 +316,8 @@
     [operation release];
 }
 
-- (void)testShouldMapADateToAStringUsingThePreferredDateFormatter {
+- (void)testShouldMapADateToAStringUsingThePreferredDateFormatter
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[TestMappable class]];
     [mapping mapKeyPath:@"date" toAttribute:@"boolString"];
     NSDateFormatter *dateFormatter = [[NSDateFormatter new] autorelease];
@@ -317,7 +334,8 @@
     assertThat(newObject.boolString, is(equalTo(@"11-27-1982")));
 }
 
-- (void)testShouldGenerateAnUnknownKeyPathExceptionWhenIgnoreUnknownKeyPathsIsNO {
+- (void)testShouldGenerateAnUnknownKeyPathExceptionWhenIgnoreUnknownKeyPathsIsNO
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"invalid", @"boolString", nil];
     mapping.ignoreUnknownKeyPaths = NO;
@@ -340,7 +358,8 @@
     }
 }
 
-- (void)testShouldOptionallyIgnoreUnknownKeyPathAttributes {
+- (void)testShouldOptionallyIgnoreUnknownKeyPathAttributes
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"invalid", @"boolString", nil];
     mapping.ignoreUnknownKeyPaths = YES;
@@ -364,7 +383,8 @@
     }
 }
 
-- (void)testShouldOptionallyIgnoreUnknownKeyPathRelationships {
+- (void)testShouldOptionallyIgnoreUnknownKeyPathRelationships
+{
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"boolString", nil];
     [mapping mapRelationship:@"invalid" withMapping:[RKObjectMapping mappingForClass:[TestMappable class]]];
@@ -389,7 +409,8 @@
     }
 }
 
-- (void)testShouldLogADebugMessageIfTheRelationshipMappingTargetsAnArrayOfArrays {
+- (void)testShouldLogADebugMessageIfTheRelationshipMappingTargetsAnArrayOfArrays
+{
     // Create a dictionary with a dictionary containing an array
     // Use keyPath to traverse to the collection and target a hasMany
     id data = [RKTestFixture parsedObjectWithContentsOfFixture:@"ArrayOfNestedDictionaries.json"];

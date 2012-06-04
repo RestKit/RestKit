@@ -28,7 +28,8 @@
 
 @implementation RKParamsTest
 
-- (void)testShouldNotOverReleaseTheParams {
+- (void)testShouldNotOverReleaseTheParams
+{
     NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
     RKParams* params = [[RKParams alloc] initWithDictionary:dictionary];
     NSURL* URL = [NSURL URLWithString:[[RKTestFactory baseURLString] stringByAppendingFormat:@"/echo_params"]];
@@ -42,7 +43,8 @@
     [request release];
 }
 
-- (void)testShouldUploadFilesViaRKParams {
+- (void)testShouldUploadFilesViaRKParams
+{
     RKClient* client = [RKTestFactory client];
     RKParams* params = [RKParams params];
     [params setValue:@"one" forParam:@"value"];
@@ -57,7 +59,8 @@
     assertThatInteger(responseLoader.response.statusCode, is(equalToInt(200)));
 }
 
-- (void)testShouldUploadFilesViaRKParamsWithMixedTypes {
+- (void)testShouldUploadFilesViaRKParamsWithMixedTypes
+{
     NSNumber* idUsuari = [NSNumber numberWithInt:1234];
     NSArray* userList = [NSArray arrayWithObjects:@"one", @"two", @"three", nil];
     NSNumber* idTema = [NSNumber numberWithInt:1234];
@@ -90,14 +93,16 @@
     assertThatInteger(responseLoader.response.statusCode, is(equalToInt(200)));
 }
 
-- (void)testShouldCalculateAnMD5ForTheParams {
+- (void)testShouldCalculateAnMD5ForTheParams
+{
     NSDictionary *values = [NSDictionary dictionaryWithObjectsAndKeys:@"foo", @"bar", @"this", @"that", nil];
     RKParams *params = [RKParams paramsWithDictionary:values];
     NSString *MD5 = [params MD5];
     assertThat(MD5, is(equalTo(@"da7d80084b86aa5022b434e3bf084caf")));
 }
 
-- (void)testShouldProperlyCalculateContentLengthForFileUploads {
+- (void)testShouldProperlyCalculateContentLengthForFileUploads
+{
     RKClient* client = [RKTestFactory client];
     RKParams* params = [RKParams params];
     [params setValue:@"one" forParam:@"value"];

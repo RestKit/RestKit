@@ -42,7 +42,8 @@
     [RKTestFactory tearDown];
 }
 
-- (void)testShouldReturnTheDefaultValueForACoreDataAttribute {
+- (void)testShouldReturnTheDefaultValueForACoreDataAttribute
+{
     // Load Core Data
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
 
@@ -51,7 +52,8 @@
     assertThat(value, is(equalTo(@"Kitty Cat!")));
 }
 
-- (void)testShouldCreateNewInstancesOfUnmanagedObjects {
+- (void)testShouldCreateNewInstancesOfUnmanagedObjects
+{
     [RKTestFactory managedObjectStore];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
@@ -59,7 +61,8 @@
     assertThat([object class], is(equalTo([RKMappableObject class])));
 }
 
-- (void)testShouldCreateNewInstancesOfManagedObjectsWhenTheMappingIsAnRKObjectMapping {
+- (void)testShouldCreateNewInstancesOfManagedObjectsWhenTheMappingIsAnRKObjectMapping
+{
     [RKTestFactory managedObjectStore];
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
     id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
@@ -67,7 +70,8 @@
     assertThat([object class], is(equalTo([RKMappableObject class])));
 }
 
-- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData {
+- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
@@ -78,7 +82,8 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
-- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute {
+- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
 
@@ -88,7 +93,8 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
-- (void)testShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull {
+- (void)testShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     mapping.primaryKeyAttribute = @"railsID";
@@ -100,7 +106,8 @@
     assertThat(object, is(instanceOf([RKHuman class])));
 }
 
-- (void)testShouldMapACollectionOfObjectsWithDynamicKeys {
+- (void)testShouldMapACollectionOfObjectsWithDynamicKeys
+{
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     mapping.forceCollectionMapping = YES;
@@ -126,7 +133,8 @@
     [mockCacheStrategy verify];
 }
 
-- (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue {
+- (void)testShouldPickTheAppropriateMappingBasedOnAnAttributeValue
+{
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:objectStore];
@@ -150,7 +158,8 @@
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"RKChild")));
 }
 
-- (void)testShouldIncludeTransformableAttributesInPropertyNamesAndTypes {
+- (void)testShouldIncludeTransformableAttributesInPropertyNamesAndTypes
+{
     [RKTestFactory managedObjectStore];
     NSDictionary *attributesByName = [[RKHuman entity] attributesByName];
     NSDictionary *propertiesByName = [[RKHuman entity] propertiesByName];
@@ -163,14 +172,16 @@
     assertThat([propertyNamesAndTypes objectForKey:@"favoriteColors"], is(notNilValue()));
 }
 
-- (void)testThatAssigningAnEntityWithANonNilPrimaryKeyAttributeSetsTheDefaultValueForTheMapping {
+- (void)testThatAssigningAnEntityWithANonNilPrimaryKeyAttributeSetsTheDefaultValueForTheMapping
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:store.primaryManagedObjectContext];
     RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForEntity:entity inManagedObjectStore:store];
     assertThat(mapping.primaryKeyAttribute, is(equalTo(@"railsID")));
 }
 
-- (void)testThatAssigningAPrimaryKeyAttributeToAMappingWhoseEntityHasANilPrimaryKeyAttributeAssignsItToTheEntity {
+- (void)testThatAssigningAPrimaryKeyAttributeToAMappingWhoseEntityHasANilPrimaryKeyAttributeAssignsItToTheEntity
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCloud" inManagedObjectContext:store.primaryManagedObjectContext];
     RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForEntity:entity inManagedObjectStore:store];
@@ -182,7 +193,8 @@
 
 #pragma mark - Fetched Results Cache
 
-- (void)testShouldFindExistingManagedObjectsByPrimaryKeyWithFetchedResultsCache {
+- (void)testShouldFindExistingManagedObjectsByPrimaryKeyWithFetchedResultsCache
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
     RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
@@ -200,7 +212,8 @@
     assertThat(object, is(equalTo(human)));
 }
 
-- (void)testShouldFindExistingManagedObjectsByPrimaryKeyPathWithFetchedResultsCache {
+- (void)testShouldFindExistingManagedObjectsByPrimaryKeyPathWithFetchedResultsCache
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
     [RKHuman truncateAll];
@@ -223,7 +236,8 @@
 
 #pragma mark - In Memory Cache
 
-- (void)testShouldFindExistingManagedObjectsByPrimaryKeyWithInMemoryCache {
+- (void)testShouldFindExistingManagedObjectsByPrimaryKeyWithInMemoryCache
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     [RKHuman truncateAllInContext:store.primaryManagedObjectContext];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
@@ -243,7 +257,8 @@
     assertThat(object, is(equalTo(human)));
 }
 
-- (void)testShouldFindExistingManagedObjectsByPrimaryKeyPathWithInMemoryCache {
+- (void)testShouldFindExistingManagedObjectsByPrimaryKeyPathWithInMemoryCache
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     [RKHuman truncateAllInContext:store.primaryManagedObjectContext];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];

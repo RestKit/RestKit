@@ -11,7 +11,8 @@
 
 @implementation NSObject (URLEncoding)
 
-- (NSString*)URLEncodedString {
+- (NSString*)URLEncodedString
+{
     NSString *string = [NSString stringWithFormat:@"%@", self];
     NSString *encodedString = (NSString*)CFURLCreateStringByAddingPercentEscapes(NULL,
                                                                                  (CFStringRef)string,

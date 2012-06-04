@@ -23,7 +23,8 @@
 
 @implementation UIView (FindFirstResponder)
 
-- (UIView*)findFirstResponder {
+- (UIView*)findFirstResponder
+{
     if (self.isFirstResponder) {
         return self;
     }

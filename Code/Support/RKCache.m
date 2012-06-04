@@ -27,7 +27,8 @@
 
 @implementation RKCache
 
-- (id)initWithPath:(NSString*)cachePath subDirectories:(NSArray*)subDirectories {
+- (id)initWithPath:(NSString*)cachePath subDirectories:(NSArray*)subDirectories
+{
     self = [super init];
     if (self) {
         _cachePath = [cachePath copy];
@@ -63,7 +64,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_cachePath release];
     _cachePath = nil;
     [_cacheLock release];
@@ -71,11 +73,13 @@
     [super dealloc];
 }
 
-- (NSString*)cachePath {
+- (NSString*)cachePath
+{
     return _cachePath;
 }
 
-- (NSString*)pathForCacheKey:(NSString*)cacheKey {
+- (NSString*)pathForCacheKey:(NSString*)cacheKey
+{
     [_cacheLock lock];
     NSString* pathForCacheKey = [_cachePath stringByAppendingPathComponent:cacheKey];
     [_cacheLock unlock];
@@ -83,7 +87,8 @@
     return pathForCacheKey;
 }
 
-- (BOOL)hasEntry:(NSString*)cacheKey {
+- (BOOL)hasEntry:(NSString*)cacheKey
+{
     [_cacheLock lock];
     BOOL hasEntry = NO;
     NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -94,7 +99,8 @@
     return hasEntry;
 }
 
-- (void)writeDictionary:(NSDictionary*)dictionary withCacheKey:(NSString*)cacheKey {
+- (void)writeDictionary:(NSDictionary*)dictionary withCacheKey:(NSString*)cacheKey
+{
     if (dictionary) {
         [_cacheLock lock];
         RKLogTrace(@"Writing dictionary to cache key: '%@'", cacheKey);
@@ -108,7 +114,8 @@
     }
 }
 
-- (void)writeData:(NSData*)data withCacheKey:(NSString*)cacheKey {
+- (void)writeData:(NSData*)data withCacheKey:(NSString*)cacheKey
+{
     if (data) {
         [_cacheLock lock];
         NSString* cachePath = [self pathForCacheKey:cacheKey];
@@ -125,7 +132,8 @@
     }
 }
 
-- (NSDictionary*)dictionaryForCacheKey:(NSString*)cacheKey {
+- (NSDictionary*)dictionaryForCacheKey:(NSString*)cacheKey
+{
     [_cacheLock lock];
     NSDictionary* dictionary = nil;
     NSString* cachePath = [self pathForCacheKey:cacheKey];
@@ -143,7 +151,8 @@
     return dictionary;
 }
 
-- (NSData*)dataForCacheKey:(NSString*)cacheKey {
+- (NSData*)dataForCacheKey:(NSString*)cacheKey
+{
     [_cacheLock lock];
     NSData* data = nil;
     NSString* cachePath = [self pathForCacheKey:cacheKey];
@@ -159,7 +168,8 @@
     return data;
 }
 
-- (void)invalidateEntry:(NSString*)cacheKey {
+- (void)invalidateEntry:(NSString*)cacheKey
+{
     [_cacheLock lock];
     RKLogDebug(@"Invalidating cache entry for '%@'", cacheKey);
     NSString* cachePath = [self pathForCacheKey:cacheKey];
@@ -171,7 +181,8 @@
     [_cacheLock unlock];
 }
 
-- (void)invalidateSubDirectory:(NSString*)subDirectory {
+- (void)invalidateSubDirectory:(NSString*)subDirectory
+{
     [_cacheLock lock];
     if (_cachePath && subDirectory) {
         NSString* subDirectoryPath = [_cachePath stringByAppendingPathComponent:subDirectory];
@@ -201,7 +212,8 @@
     [_cacheLock unlock];
 }
 
-- (void)invalidateAll {
+- (void)invalidateAll
+{
     [_cacheLock lock];
     if (_cachePath) {
         RKLogInfo(@"Invalidating cache at path: %@", _cachePath);

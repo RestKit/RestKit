@@ -32,7 +32,8 @@
 
 @implementation RKManagedObjectMappingOperation
 
-- (void)connectRelationship:(NSString *)relationshipName {
+- (void)connectRelationship:(NSString *)relationshipName
+{
     NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     id primaryKeyObject = [relationshipsAndPrimaryKeyAttributes objectForKey:relationshipName];
     NSString* primaryKeyAttribute = nil;
@@ -102,7 +103,8 @@
     }
 }
 
-- (void)connectRelationships {
+- (void)connectRelationships
+{
     NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping *)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", relationshipsAndPrimaryKeyAttributes);
     for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
@@ -118,7 +120,8 @@
     }
 }
 
-- (BOOL)performMapping:(NSError **)error {
+- (BOOL)performMapping:(NSError **)error
+{
     BOOL success = [super performMapping:error];
     if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
         /**

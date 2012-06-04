@@ -17,7 +17,8 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     // Initialize RestKit
     RKObjectManager* objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
 
@@ -108,7 +109,8 @@
     return YES;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [super dealloc];
 }
 

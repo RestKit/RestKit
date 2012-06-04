@@ -27,7 +27,8 @@
 
 @implementation RKObjectMappingResultTest
 
-- (void)testShouldNotCrashWhenAsObjectIsInvokedOnAnEmptyResult {
+- (void)testShouldNotCrashWhenAsObjectIsInvokedOnAnEmptyResult
+{
     NSException* exception = nil;
     RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     @try {
@@ -41,12 +42,14 @@
     }
 }
 
-- (void)testShouldReturnNilForAnEmptyCollectionCoercedToAsObject {
+- (void)testShouldReturnNilForAnEmptyCollectionCoercedToAsObject
+{
     RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     assertThat([result asObject], is(equalTo(nil)));
 }
 
-- (void)testShouldReturnTheFirstObjectInTheCollectionWhenCoercedToAsObject {
+- (void)testShouldReturnTheFirstObjectInTheCollectionWhenCoercedToAsObject
+{
     NSDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"one", @"one", @"two", @"two", nil];
     RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:dictionary];
     assertThat([result asObject], is(equalTo(@"one")));

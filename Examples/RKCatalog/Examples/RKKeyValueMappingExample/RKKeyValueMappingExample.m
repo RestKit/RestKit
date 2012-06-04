@@ -48,7 +48,8 @@
 
 @synthesize infoLabel = _infoLabel;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
@@ -57,7 +58,8 @@
     return self;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
 
     RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[SimpleAccount class]];
@@ -74,7 +76,8 @@
     [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKKeyValueMappingExample" delegate:self];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
+- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects
+{
     SimpleAccount* account = [objects objectAtIndex:0];
 
     NSString* info = [NSString stringWithFormat:
@@ -87,7 +90,8 @@
     _infoLabel.text = info;
 }
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
+{
     _infoLabel.text = [NSString stringWithFormat:@"Error: %@", [error localizedDescription]];
     _infoLabel.textColor = [UIColor redColor];
 }

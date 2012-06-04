@@ -15,7 +15,8 @@
 
 @implementation RKRelationshipMappingExample
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
@@ -52,12 +53,14 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_objects release];
     [super dealloc];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
 
     self.title = @"Task List";
@@ -65,12 +68,14 @@
     [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKRelationshipMappingExample" delegate:self];
 }
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects
+{
     _objects = [objects retain];
     [self.tableView reloadData];
 }
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
+{
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Rats!" otherButtonTitles:nil];
     [alert show];
     [alert release];
@@ -78,11 +83,13 @@
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 2;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     if (section == 0) {
         // Return number of projects
         return [_objects count];
@@ -97,7 +104,8 @@
     return 0;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 150, 100)];
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont boldSystemFontOfSize:18];
@@ -113,7 +121,8 @@
 
 #pragma mark - Table View Selection
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     // Don't allow selections in the bottom section
     if (indexPath.section == 1) {
         return nil;
@@ -122,7 +131,8 @@
     return indexPath;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     [_selectedProject release];
     _selectedProject = [[_objects objectAtIndex:indexPath.row] retain];
 
@@ -131,7 +141,8 @@
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     static NSString *CellIdentifier = @"Cell";
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];

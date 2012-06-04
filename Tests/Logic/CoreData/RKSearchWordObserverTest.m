@@ -16,12 +16,14 @@
 
 @implementation RKSearchWordObserverTest
 
-- (void)testInstantiateASearchWordObserverOnObjectStoreInit {
+- (void)testInstantiateASearchWordObserverOnObjectStoreInit
+{
     [RKTestFactory managedObjectStore];
     assertThat([RKSearchWordObserver sharedObserver], isNot(nil));
 }
 
-- (void)testTriggerSearchWordRegenerationForChagedSearchableValuesAtObjectContextSaveTime {
+- (void)testTriggerSearchWordRegenerationForChagedSearchableValuesAtObjectContextSaveTime
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKSearchable* searchable = [RKSearchable createEntity];
     searchable.title = @"This is the title of my new object";

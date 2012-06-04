@@ -37,11 +37,13 @@
 
 @synthesize objectStore = _objectStore;
 
-+ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore
+{
     return [[[self alloc] initWithURL:URL mappingProvider:mappingProvider objectStore:objectStore] autorelease];
 }
 
-- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore {
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore
+{
     self = [self initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
         _objectStore = [objectStore retain];
@@ -50,7 +52,8 @@
     return self;
 }
 
-- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider {
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider
+{
     self = [super initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
         _managedObjectKeyPaths = [[NSMutableSet alloc] init];
@@ -59,7 +62,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_targetObjectID release];
     _targetObjectID = nil;
     _deleteObjectOnFailure = NO;
@@ -69,7 +73,8 @@
     [super dealloc];
 }
 
-- (void)reset {
+- (void)reset
+{
     [super reset];
     [_targetObjectID release];
     _targetObjectID = nil;
@@ -77,7 +82,8 @@
 
 #pragma mark - RKObjectMapperDelegate methods
 
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping {
+- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping
+{
     if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
         [_managedObjectKeyPaths addObject:keyPath];
     }
@@ -86,7 +92,8 @@
 #pragma mark - RKObjectLoader overrides
 
 // Overload the target object reader to return a thread-local copy of the target object
-- (id)targetObject {
+- (id)targetObject
+{
     if ([NSThread isMainThread] == NO && _targetObjectID) {
         return [self.objectStore objectWithID:_targetObjectID];
     }
@@ -94,7 +101,8 @@
     return _targetObject;
 }
 
-- (void)setTargetObject:(NSObject*)targetObject {
+- (void)setTargetObject:(NSObject*)targetObject
+{
     [_targetObject release];
     _targetObject = nil;
     _targetObject = [targetObject retain];
@@ -103,7 +111,8 @@
     _targetObjectID = nil;
 }
 
-- (BOOL)prepareURLRequest {
+- (BOOL)prepareURLRequest
+{
     // NOTE: There is an important sequencing issue here. You MUST save the
     // managed object context before retaining the objectID or you will run
     // into an error where the object context cannot be saved. We do this
@@ -118,7 +127,8 @@
     return [super prepareURLRequest];
 }
 
-- (NSArray *)cachedObjects {
+- (NSArray *)cachedObjects
+{
     NSFetchRequest *fetchRequest = [self.mappingProvider fetchRequestForResourcePath:self.resourcePath];
     if (fetchRequest) {
         return [NSManagedObject objectsWithFetchRequest:fetchRequest];
@@ -127,7 +137,8 @@
     return nil;
 }
 
-- (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result {
+- (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result
+{
     if (! [self isGET]) {
         RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
         return;
@@ -148,7 +159,8 @@
 }
 
 // NOTE: We are on the background thread here, be mindful of Core Data's threading needs
-- (void)processMappingResult:(RKObjectMappingResult*)result {
+- (void)processMappingResult:(RKObjectMappingResult*)result
+{
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
         NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
@@ -189,7 +201,8 @@
 }
 
 // Overloaded to handle deleting an object orphaned by a failed postObject:
-- (void)handleResponseError {
+- (void)handleResponseError
+{
     [super handleResponseError];
 
     if (_targetObjectID) {
@@ -208,7 +221,8 @@
     }
 }
 
-- (BOOL)isResponseMappable {
+- (BOOL)isResponseMappable
+{
     if ([self.response wasLoadedFromCache]) {
         NSArray* cachedObjects = [self cachedObjects];
         if (! cachedObjects) {

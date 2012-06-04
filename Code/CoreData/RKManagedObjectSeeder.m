@@ -42,7 +42,8 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 
 @synthesize delegate = _delegate;
 
-+ (void)generateSeedDatabaseWithObjectManager:(RKObjectManager*)objectManager fromFiles:(NSString*)firstFileName, ... {
++ (void)generateSeedDatabaseWithObjectManager:(RKObjectManager*)objectManager fromFiles:(NSString*)firstFileName, ...
+{
     RKManagedObjectSeeder* seeder = [RKManagedObjectSeeder objectSeederWithObjectManager:objectManager];
 
     va_list args;
@@ -61,11 +62,13 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     [seeder finalizeSeedingAndExit];
 }
 
-+ (RKManagedObjectSeeder*)objectSeederWithObjectManager:(RKObjectManager*)objectManager {
++ (RKManagedObjectSeeder*)objectSeederWithObjectManager:(RKObjectManager*)objectManager
+{
     return [[[RKManagedObjectSeeder alloc] initWithObjectManager:objectManager] autorelease];
 }
 
-- (id)initWithObjectManager:(RKObjectManager*)manager {
+- (id)initWithObjectManager:(RKObjectManager*)manager
+{
     self = [self init];
     if (self) {
         _manager = [manager retain];
@@ -82,16 +85,19 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_manager release];
     [super dealloc];
 }
 
-- (NSString*)pathToSeedDatabase {
+- (NSString*)pathToSeedDatabase
+{
     return _manager.objectStore.pathToStoreFile;
 }
 
-- (void)seedObjectsFromFiles:(NSString*)firstFileName, ... {
+- (void)seedObjectsFromFiles:(NSString*)firstFileName, ...
+{
     va_list args;
     va_start(args, firstFileName);
     NSMutableArray* fileNames = [NSMutableArray array];
@@ -105,7 +111,8 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     }
 }
 
-- (void)seedObjectsFromFile:(NSString*)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping {
+- (void)seedObjectsFromFile:(NSString*)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping
+{
     [self seedObjectsFromFile:fileName withObjectMapping:nilOrObjectMapping bundle:nil];
 }
 
@@ -162,7 +169,8 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     }
 }
 
-- (void)finalizeSeedingAndExit {
+- (void)finalizeSeedingAndExit
+{
     NSError *error = nil;
     BOOL success = [[_manager objectStore] save:&error];
     if (! success) {

@@ -32,12 +32,14 @@ static NSMutableCharacterSet* __removeSet;
 
 @synthesize mode = _mode;
 
-+ (id)searchEngine {
++ (id)searchEngine
+{
     RKManagedObjectSearchEngine* searchEngine = [[[RKManagedObjectSearchEngine alloc] init] autorelease];
     return searchEngine;
 }
 
-- (id)init {
+- (id)init
+{
     if (self = [super init]) {
         _mode = RKSearchModeOr;
     }
@@ -48,7 +50,8 @@ static NSMutableCharacterSet* __removeSet;
 #pragma mark -
 #pragma mark Private
 
-- (NSPredicate*)predicateForSearch:(NSArray*)searchTerms compoundSelector:(SEL)selector {
+- (NSPredicate*)predicateForSearch:(NSArray*)searchTerms compoundSelector:(SEL)selector
+{
     NSMutableArray* termPredicates = [NSMutableArray array];
     for (NSString* searchTerm in searchTerms) {
         [termPredicates addObject:
@@ -60,7 +63,8 @@ static NSMutableCharacterSet* __removeSet;
 #pragma mark -
 #pragma mark Public
 
-+ (NSArray*)tokenizedNormalizedString:(NSString*)string {
++ (NSArray*)tokenizedNormalizedString:(NSString*)string
+{
     if (__removeSet == nil) {
         NSMutableCharacterSet* removeSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
         [removeSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -77,7 +81,8 @@ static NSMutableCharacterSet* __removeSet;
     return tokens;
 }
 
-- (NSPredicate*)predicateForSearch:(NSString*)searchText {
+- (NSPredicate*)predicateForSearch:(NSString*)searchText
+{
     NSString* searchQuery = [searchText copy];
     NSArray* searchTerms = [RKManagedObjectSearchEngine tokenizedNormalizedString:searchQuery];
     [searchQuery release];

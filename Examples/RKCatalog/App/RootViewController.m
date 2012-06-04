@@ -11,7 +11,8 @@
 
 @implementation RootViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
 
     _exampleTableItems = [[NSArray alloc] initWithObjects:
@@ -26,21 +27,25 @@
                           nil];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_exampleTableItems release];
 
     [super dealloc];
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     return [_exampleTableItems count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     static NSString *cellIdentifier = @"RKCatalogCellIdentifier";
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
@@ -56,7 +61,8 @@
     return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     // Clear the singleton instances to isolate the examples
     [RKClient setSharedClient:nil];
     [RKObjectManager setSharedManager:nil];

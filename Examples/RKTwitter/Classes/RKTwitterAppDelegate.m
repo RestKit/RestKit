@@ -17,7 +17,8 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
 
@@ -64,7 +65,8 @@
     return YES;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [super dealloc];
 }
 

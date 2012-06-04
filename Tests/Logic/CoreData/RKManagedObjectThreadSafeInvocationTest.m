@@ -33,7 +33,8 @@
 
 @implementation RKManagedObjectThreadSafeInvocationTest
 
-- (void)testShouldSerializeOneManagedObjectToManagedObjectID {
+- (void)testShouldSerializeOneManagedObjectToManagedObjectID
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = objectStore;
@@ -45,7 +46,8 @@
     assertThat([dictionary valueForKeyPath:@"human"], is(instanceOf([NSManagedObjectID class])));
 }
 
-- (void)testShouldSerializeOneManagedObjectWithKeyPathToManagedObjectID {
+- (void)testShouldSerializeOneManagedObjectWithKeyPathToManagedObjectID
+{
     NSString *testKey = @"data.human";
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
@@ -59,7 +61,8 @@
 }
 
 
-- (void)testShouldSerializeCollectionOfManagedObjectsToManagedObjectIDs {
+- (void)testShouldSerializeCollectionOfManagedObjectsToManagedObjectIDs
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = objectStore;
@@ -74,7 +77,8 @@
     assertThat([[dictionary valueForKeyPath:@"humans"] lastObject], is(instanceOf([NSManagedObjectID class])));
 }
 
-- (void)testShouldDeserializeOneManagedObjectIDToManagedObject {
+- (void)testShouldDeserializeOneManagedObjectIDToManagedObject
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = objectStore;
@@ -88,7 +92,8 @@
     assertThat([dictionary valueForKeyPath:@"human"], is(equalTo(human)));
 }
 
-- (void)testShouldDeserializeCollectionOfManagedObjectIDToManagedObjects {
+- (void)testShouldDeserializeCollectionOfManagedObjectIDToManagedObjects
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = objectStore;
@@ -105,7 +110,8 @@
     assertThat([dictionary valueForKeyPath:@"humans"], is(equalTo(humans)));
 }
 
-- (void)informDelegateWithDictionary:(NSDictionary*)results {
+- (void)informDelegateWithDictionary:(NSDictionary*)results
+{
     assertThatBool([NSThread isMainThread], equalToBool(YES));
     assertThat(results, isNot(nilValue()));
     assertThat(results, isNot(empty()));
@@ -113,7 +119,8 @@
     _waiting = NO;
 }
 
-- (void)createBackgroundObjects {
+- (void)createBackgroundObjects
+{
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     assertThatBool([NSThread isMainThread], equalToBool(NO));
 
@@ -136,7 +143,8 @@
     [pool drain];
 }
 
-- (void)testShouldSerializeAndDeserializeManagedObjectsAcrossAThreadInvocation {
+- (void)testShouldSerializeAndDeserializeManagedObjectsAcrossAThreadInvocation
+{
     _objectStore = [[RKTestFactory managedObjectStore] retain];
     _waiting = YES;
     [self performSelectorInBackground:@selector(createBackgroundObjects) withObject:nil];

@@ -35,7 +35,8 @@
 
 @implementation RKManagedObjectMappingOperationTest
 
-- (void)testShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate {
+- (void)testShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* managedMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     NSDictionary* sourceObject = [NSDictionary dictionary];
@@ -44,7 +45,8 @@
     assertThat(operation, is(instanceOf([RKManagedObjectMappingOperation class])));
 }
 
-- (void)testShouldOverloadInitializationOfRKObjectMappingOperationButReturnUnmanagedMappingOperationWhenAppropriate {
+- (void)testShouldOverloadInitializationOfRKObjectMappingOperationButReturnUnmanagedMappingOperationWhenAppropriate
+{
     RKObjectMapping* vanillaMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     NSDictionary* sourceObject = [NSDictionary dictionary];
     NSMutableDictionary* destinationObject = [NSMutableDictionary dictionary];
@@ -52,7 +54,8 @@
     assertThat(operation, is(instanceOf([RKObjectMappingOperation class])));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKey {
+- (void)testShouldConnectRelationshipsByPrimaryKey
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
@@ -81,7 +84,8 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testConnectRelationshipsDoesNotLeakMemory {
+- (void)testConnectRelationshipsDoesNotLeakMemory
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
@@ -110,7 +114,8 @@
     assertThatInteger([operation retainCount], is(equalToInteger(1)));
 }
 
-- (void)testConnectionOfHasManyRelationshipsByPrimaryKey {
+- (void)testConnectionOfHasManyRelationshipsByPrimaryKey
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
@@ -139,7 +144,8 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths {
+- (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
@@ -175,7 +181,8 @@
     assertThat([human.cats valueForKeyPath:@"name"], containsInAnyOrder(@"Asia", @"Reginald Royford Williams III", nil));
 }
 
-- (void)testShouldLoadNestedHasManyRelationship {
+- (void)testShouldLoadNestedHasManyRelationship
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -195,7 +202,8 @@
     assertThatBool(success, is(equalToBool(YES)));
 }
 
-- (void)testShouldLoadOrderedHasManyRelationship {
+- (void)testShouldLoadOrderedHasManyRelationship
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
@@ -216,7 +224,8 @@
     assertThat([human catsInOrderByAge], isNot(empty()));
 }
 
-- (void)testShouldMapNullToAHasManyRelationship {
+- (void)testShouldMapNullToAHasManyRelationship
+{
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     [catMapping mapAttributes:@"name", nil];
@@ -234,7 +243,8 @@
     assertThat(human.cats, is(empty()));
 }
 
-- (void)testShouldLoadNestedHasManyRelationshipWithoutABackingClass {
+- (void)testShouldLoadNestedHasManyRelationshipWithoutABackingClass
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* cloudMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCloud" inManagedObjectStore:objectStore];
     [cloudMapping mapAttributes:@"name", nil];
@@ -253,7 +263,8 @@
     assertThatBool(success, is(equalToBool(YES)));
 }
 
-- (void)testShouldDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingSucceeds {
+- (void)testShouldDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingSucceeds
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
@@ -282,7 +293,8 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testShouldNotDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingFails {
+- (void)testShouldNotDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingFails
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
@@ -310,7 +322,8 @@
     assertThat(human.favoriteCat, is(nilValue()));
 }
 
-- (void)testShouldConnectManyToManyRelationships {
+- (void)testShouldConnectManyToManyRelationships
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"railsID";
@@ -338,7 +351,8 @@
     assertThatUnsignedInteger([[[parent.children anyObject] parents] count], is(equalToInt(1)));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder {
+- (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", nil];
@@ -364,7 +378,8 @@
     assertThat(child.father, is(notNilValue()));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithFetchRequestMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithFetchRequestMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
 
@@ -392,7 +407,8 @@
     assertThatInteger(childrenCount, is(equalToInteger(4)));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithInMemoryMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithInMemoryMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
 
@@ -420,7 +436,8 @@
     assertThatInteger(childrenCount, is(equalToInteger(4)));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
 
@@ -455,7 +472,8 @@
     assertThatInteger(childrenCount, is(equalToInteger(51)));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
 

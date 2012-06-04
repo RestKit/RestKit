@@ -30,7 +30,8 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 
 @implementation RKObjectPropertyInspector
 
-+ (RKObjectPropertyInspector*)sharedInspector {
++ (RKObjectPropertyInspector*)sharedInspector
+{
     if (sharedInspector == nil) {
         sharedInspector = [RKObjectPropertyInspector new];
     }
@@ -38,7 +39,8 @@ static RKObjectPropertyInspector* sharedInspector = nil;
     return sharedInspector;
 }
 
-- (id)init {
+- (id)init
+{
     if ((self = [super init])) {
         _cachedPropertyNamesAndTypes = [[NSMutableDictionary alloc] init];
     }
@@ -46,12 +48,14 @@ static RKObjectPropertyInspector* sharedInspector = nil;
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_cachedPropertyNamesAndTypes release];
     [super dealloc];
 }
 
-+ (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString {
++ (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString
+{
     NSString *type = [NSString string];
     NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
     [typeScanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@"@"] intoString:NULL];
@@ -66,7 +70,8 @@ static RKObjectPropertyInspector* sharedInspector = nil;
     return type;
 }
 
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass {
+- (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass
+{
     NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:theClass];
     if (propertyNames) {
         return propertyNames;
@@ -108,7 +113,8 @@ static RKObjectPropertyInspector* sharedInspector = nil;
     return propertyNames;
 }
 
-- (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass {
+- (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass
+{
     NSDictionary* dictionary = [self propertyNamesAndTypesForClass:objectClass];
     return [dictionary objectForKey:propertyName];
 }

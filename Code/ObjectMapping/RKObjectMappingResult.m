@@ -24,7 +24,8 @@
 
 @implementation RKObjectMappingResult
 
-- (id)initWithDictionary:(id)dictionary {
+- (id)initWithDictionary:(id)dictionary
+{
     self = [self init];
     if (self) {
         _keyPathToMappedObjects = [dictionary retain];
@@ -33,20 +34,24 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_keyPathToMappedObjects release];
     [super dealloc];
 }
 
-+ (RKObjectMappingResult*)mappingResultWithDictionary:(NSDictionary*)keyPathToMappedObjects {
++ (RKObjectMappingResult*)mappingResultWithDictionary:(NSDictionary*)keyPathToMappedObjects
+{
     return [[[self alloc] initWithDictionary:keyPathToMappedObjects] autorelease];
 }
 
-- (NSDictionary*)asDictionary {
+- (NSDictionary*)asDictionary
+{
     return _keyPathToMappedObjects;
 }
 
-- (NSArray*)asCollection {
+- (NSArray*)asCollection
+{
     // Flatten results down into a single array
     NSMutableArray* collection = [NSMutableArray array];
     for (id object in [_keyPathToMappedObjects allValues]) {
@@ -62,7 +67,8 @@
     return collection;
 }
 
-- (id)asObject {
+- (id)asObject
+{
     NSArray* collection = [self asCollection];
     NSUInteger count = [collection count];
     if (count == 0) {
@@ -73,7 +79,8 @@
     return [collection objectAtIndex:0];
 }
 
-- (NSError*)asError {
+- (NSError*)asError
+{
     NSArray* collection = [self asCollection];
     NSString* description = nil;
     if ([collection count] > 0) {

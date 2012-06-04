@@ -24,11 +24,13 @@
 
 @synthesize objectStore = _objectStore;
 
-+ (RKManagedObjectThreadSafeInvocation*)invocationWithMethodSignature:(NSMethodSignature*)methodSignature {
++ (RKManagedObjectThreadSafeInvocation*)invocationWithMethodSignature:(NSMethodSignature*)methodSignature
+{
     return (RKManagedObjectThreadSafeInvocation*) [super invocationWithMethodSignature:methodSignature];
 }
 
-- (void)setManagedObjectKeyPaths:(NSSet*)keyPaths forArgument:(NSInteger)index {
+- (void)setManagedObjectKeyPaths:(NSSet*)keyPaths forArgument:(NSInteger)index
+{
     if (nil == _argumentKeyPaths) {
         _argumentKeyPaths = [[NSMutableDictionary alloc] init];
     }
@@ -37,7 +39,8 @@
     [_argumentKeyPaths setObject:keyPaths forKey:argumentIndex];
 }
 
-- (void)setValue:(id)value forKeyPathOrKey:(NSString *)keyPath object:(id)object {
+- (void)setValue:(id)value forKeyPathOrKey:(NSString *)keyPath object:(id)object
+{
     [object setValue:value forKeyPath:keyPath];
 
     id testValue = [object valueForKeyPath:keyPath];
@@ -49,7 +52,8 @@
     }
 }
 
-- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths {
+- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths
+{
     for (NSString* keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObject class]]) {
@@ -71,7 +75,8 @@
     }
 }
 
-- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths {
+- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths
+{
     for (NSString* keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObjectID class]]) {
@@ -96,7 +101,8 @@
         }
     }
 }
-- (void)serializeManagedObjects {
+- (void)serializeManagedObjects
+{
     for (NSNumber* argumentIndex in _argumentKeyPaths) {
         NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
@@ -107,7 +113,8 @@
     }
 }
 
-- (void)deserializeManagedObjects {
+- (void)deserializeManagedObjects
+{
     for (NSNumber* argumentIndex in _argumentKeyPaths) {
         NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
@@ -118,19 +125,22 @@
     }
 }
 
-- (void)performInvocationOnMainThread {
+- (void)performInvocationOnMainThread
+{
     [self deserializeManagedObjects];
     [self invoke];
 }
 
-- (void)invokeOnMainThread {
+- (void)invokeOnMainThread
+{
     [self retain];
     [self serializeManagedObjects];
     [self performSelectorOnMainThread:@selector(performInvocationOnMainThread) withObject:nil waitUntilDone:YES];
     [self release];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_argumentKeyPaths release];
     [_objectStore release];
     [super dealloc];

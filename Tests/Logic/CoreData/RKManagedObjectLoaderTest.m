@@ -34,7 +34,8 @@
 
 @implementation RKManagedObjectLoaderTest
 
-- (void)testShouldDeleteObjectFromLocalStoreOnDELETE {
+- (void)testShouldDeleteObjectFromLocalStoreOnDELETE
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     [store save:nil];
     RKObjectManager* objectManager = [RKTestFactory objectManager];
@@ -59,7 +60,8 @@
     assertThatBool([human isDeleted], equalToBool(YES));
 }
 
-- (void)testShouldLoadAnObjectWithAToOneRelationship {
+- (void)testShouldLoadAnObjectWithAToOneRelationship
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
@@ -82,7 +84,8 @@
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
+- (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"
                                                                        inManagedObjectStore:store];
@@ -125,7 +128,8 @@
     assertThatBool([deleteMe isDeleted], is(equalToBool(YES)));
 }
 
-- (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
+- (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
@@ -140,7 +144,8 @@
     assertThatInteger(response.statusCode, is(equalToInt(200)));
 }
 
-- (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent {
+- (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent
+{
     [RKTestFactory clearCacheDirectory];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
@@ -200,7 +205,8 @@
     }
 }
 
-- (void)testTheOnDidFailBlockIsInvokedOnFailure {
+- (void)testTheOnDidFailBlockIsInvokedOnFailure
+{
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKManagedObjectLoader *loader = [objectManager loaderWithResourcePath:@"/fail"];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
@@ -214,7 +220,8 @@
     assertThatBool(invoked, is(equalToBool(YES)));
 }
 
-- (void)testThatObjectLoadedDidFinishLoadingIsCalledOnStoreSaveFailure {
+- (void)testThatObjectLoadedDidFinishLoadingIsCalledOnStoreSaveFailure
+{
     RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
     RKObjectManager* objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;

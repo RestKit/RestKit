@@ -35,11 +35,13 @@
 @synthesize object = _object;
 @synthesize mapping = _mapping;
 
-+ (id)serializerWithObject:(id)object mapping:(RKObjectMapping*)mapping {
++ (id)serializerWithObject:(id)object mapping:(RKObjectMapping*)mapping
+{
     return [[[self alloc] initWithObject:object mapping:mapping] autorelease];
 }
 
-- (id)initWithObject:(id)object mapping:(RKObjectMapping*)mapping {
+- (id)initWithObject:(id)object mapping:(RKObjectMapping*)mapping
+{
     self = [super init];
     if (self) {
         _object = [object retain];
@@ -48,7 +50,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_object release];
     [_mapping release];
 
@@ -56,7 +59,8 @@
 }
 
 // Return it serialized into a dictionary
-- (id)serializedObject:(NSError**)error {
+- (id)serializedObject:(NSError**)error
+{
     NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
     RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withMapping:_mapping];
     operation.delegate = self;
@@ -74,7 +78,8 @@
     return dictionary;
 }
 
-- (id)serializedObjectForMIMEType:(NSString*)MIMEType error:(NSError**)error {
+- (id)serializedObjectForMIMEType:(NSString*)MIMEType error:(NSError**)error
+{
     // TODO: This will fail for form encoded...
     id serializedObject = [self serializedObject:error];
     if (serializedObject) {
@@ -90,7 +95,8 @@
     return nil;
 }
 
-- (id<RKRequestSerializable>)serializationForMIMEType:(NSString *)MIMEType error:(NSError **)error {
+- (id<RKRequestSerializable>)serializationForMIMEType:(NSString *)MIMEType error:(NSError **)error
+{
     if ([MIMEType isEqualToString:RKMIMETypeFormURLEncoded]) {
         // Dictionaries are natively RKRequestSerializable as Form Encoded
         return [self serializedObject:error];
@@ -107,7 +113,8 @@
 
 #pragma mark - RKObjectMappingOperationDelegate
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping
+{
     id transformedValue = nil;
     Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
 

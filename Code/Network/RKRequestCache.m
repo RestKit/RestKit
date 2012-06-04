@@ -39,7 +39,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
 
 @synthesize storagePolicy = _storagePolicy;
 
-+ (NSDateFormatter*)rfc1123DateFormatter {
++ (NSDateFormatter*)rfc1123DateFormatter
+{
     if (__rfc1123DateFormatter == nil) {
         __rfc1123DateFormatter = [[NSDateFormatter alloc] init];
         [__rfc1123DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
@@ -48,7 +49,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return __rfc1123DateFormatter;
 }
 
-- (id)initWithPath:(NSString*)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy {
+- (id)initWithPath:(NSString*)cachePath storagePolicy:(RKRequestCacheStoragePolicy)storagePolicy
+{
     self = [super init];
     if (self) {
         _cache = [[RKCache alloc] initWithPath:cachePath
@@ -61,17 +63,20 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_cache release];
     _cache = nil;
     [super dealloc];
 }
 
-- (NSString*)path {
+- (NSString*)path
+{
     return _cache.cachePath;
 }
 
-- (NSString*)pathForRequest:(RKRequest*)request {
+- (NSString*)pathForRequest:(RKRequest*)request
+{
     NSString* pathForRequest = nil;
     NSString* requestCacheKey = [request cacheKey];
     if (requestCacheKey) {
@@ -88,7 +93,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return pathForRequest;
 }
 
-- (BOOL)hasResponseForRequest:(RKRequest*)request {
+- (BOOL)hasResponseForRequest:(RKRequest*)request
+{
     BOOL hasEntryForRequest = NO;
     NSString* cacheKey = [self pathForRequest:request];
     if (cacheKey) {
@@ -99,7 +105,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return hasEntryForRequest;
 }
 
-- (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request {
+- (void)storeResponse:(RKResponse*)response forRequest:(RKRequest*)request
+{
     if ([self hasResponseForRequest:request]) {
         [self invalidateRequest:request];
     }
@@ -133,7 +140,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     }
 }
 
-- (RKResponse*)responseForRequest:(RKRequest*)request {
+- (RKResponse*)responseForRequest:(RKRequest*)request
+{
     RKResponse* response = nil;
     NSString* cacheKey = [self pathForRequest:request];
     if (cacheKey) {
@@ -145,7 +153,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return response;
 }
 
-- (NSDictionary*)headersForRequest:(RKRequest*)request {
+- (NSDictionary*)headersForRequest:(RKRequest*)request
+{
     NSDictionary* headers = nil;
     NSString* cacheKey = [self pathForRequest:request];
     if (cacheKey) {
@@ -162,7 +171,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return headers;
 }
 
-- (NSString*)etagForRequest:(RKRequest*)request {
+- (NSString*)etagForRequest:(RKRequest*)request
+{
     NSString* etag = nil;
 
     NSDictionary* responseHeaders = [self headersForRequest:request];
@@ -177,7 +187,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return etag;
 }
 
-- (void)setCacheDate:(NSDate*)date forRequest:(RKRequest*)request {
+- (void)setCacheDate:(NSDate*)date forRequest:(RKRequest*)request
+{
     NSString* cacheKey = [self pathForRequest:request];
     if (cacheKey) {
         NSMutableDictionary* responseHeaders = [[self headersForRequest:request] mutableCopy];
@@ -190,7 +201,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     }
 }
 
-- (NSDate*)cacheDateForRequest:(RKRequest*)request {
+- (NSDate*)cacheDateForRequest:(RKRequest*)request
+{
     NSDate* date = nil;
     NSString* dateString = nil;
 
@@ -207,7 +219,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     return date;
 }
 
-- (void)invalidateRequest:(RKRequest*)request {
+- (void)invalidateRequest:(RKRequest*)request
+{
     RKLogDebug(@"Invalidating cache entry for '%@'", request);
     NSString* cacheKey = [self pathForRequest:request];
     if (cacheKey) {
@@ -217,7 +230,8 @@ static NSDateFormatter* __rfc1123DateFormatter;
     }
 }
 
-- (void)invalidateWithStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy {
+- (void)invalidateWithStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy
+{
     if (storagePolicy != RKRequestCacheStoragePolicyDisabled) {
         if (storagePolicy == RKRequestCacheStoragePolicyForDurationOfSession) {
             [_cache invalidateSubDirectory:RKRequestCacheSessionCacheDirectory];
@@ -227,13 +241,15 @@ static NSDateFormatter* __rfc1123DateFormatter;
     }
 }
 
-- (void)invalidateAll {
+- (void)invalidateAll
+{
     RKLogInfo(@"Invalidating all cache entries...");
     [_cache invalidateSubDirectory:RKRequestCacheSessionCacheDirectory];
     [_cache invalidateSubDirectory:RKRequestCachePermanentCacheDirectory];
 }
 
-- (void)setStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy {
+- (void)setStoragePolicy:(RKRequestCacheStoragePolicy)storagePolicy
+{
     [self invalidateWithStoragePolicy:RKRequestCacheStoragePolicyForDurationOfSession];
     if (storagePolicy == RKRequestCacheStoragePolicyDisabled) {
         [self invalidateWithStoragePolicy:RKRequestCacheStoragePolicyPermanently];

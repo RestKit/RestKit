@@ -26,7 +26,8 @@ RK_FIX_CATEGORY_BUG(NSData_RKAdditions)
 
 @implementation NSData (RKAdditions)
 
-- (NSString *)MD5 {
+- (NSString *)MD5
+{
     // Create byte array of unsigned chars
     unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
 

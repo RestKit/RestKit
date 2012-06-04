@@ -33,7 +33,8 @@ RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
 
 @implementation RKObjectPropertyInspector (CoreData)
 
-- (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription*)entity {
+- (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription*)entity
+{
     NSMutableDictionary* propertyNamesAndTypes = [_cachedPropertyNamesAndTypes objectForKey:[entity name]];
     if (propertyNamesAndTypes) {
         return propertyNamesAndTypes;
@@ -80,7 +81,8 @@ RK_FIX_CATEGORY_BUG(RKObjectPropertyInspector_CoreData)
     return propertyNamesAndTypes;
 }
 
-- (Class)typeForProperty:(NSString*)propertyName ofEntity:(NSEntityDescription*)entity {
+- (Class)typeForProperty:(NSString*)propertyName ofEntity:(NSEntityDescription*)entity
+{
     return [[self propertyNamesAndTypesForEntity:entity] valueForKey:propertyName];
 }
 
