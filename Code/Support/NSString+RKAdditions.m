@@ -73,7 +73,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     NSString *stringToParse = self;
     NSRange chopRange = [stringToParse rangeOfString:@"?"];
     if (chopRange.length > 0) {
-        chopRange.location+=1; // we want inclusive chopping up *through* "?"
+        chopRange.location += 1; // we want inclusive chopping up *through* "?"
         if (chopRange.location < [stringToParse length])
             stringToParse = [stringToParse substringFromIndex:chopRange.location];
     }

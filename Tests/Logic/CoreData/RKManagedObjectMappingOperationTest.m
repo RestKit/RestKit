@@ -445,7 +445,7 @@
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
 
     [RKBenchmark report:@"Mapping with Fetch Request Cache" executionBlock:^{
-        for (NSUInteger i=0; i<50; i++) {
+        for (NSUInteger i = 0; i < 50; i++) {
             [mapper performMapping];
         }
     }];
@@ -480,7 +480,7 @@
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
 
     [RKBenchmark report:@"Mapping with In Memory Cache" executionBlock:^{
-        for (NSUInteger i=0; i<50; i++) {
+        for (NSUInteger i = 0; i < 50; i++) {
             [mapper performMapping];
         }
     }];

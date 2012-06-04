@@ -139,7 +139,7 @@
     return;
     RKClient* client = [RKClient clientWithBaseURLString:@"http://ohblockhero.appspot.com/api/v1"];
     client.cachePolicy = RKRequestCachePolicyNone;
-    RKParams *params=[RKParams params];
+    RKParams *params = [RKParams params];
     [params setValue:@"username" forParam:@"username"];
     [params setValue:@"Dear Daniel" forParam:@"fullName"];
     [params setValue:@"aa@aa.com" forParam:@"email"];

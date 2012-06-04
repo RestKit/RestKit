@@ -507,7 +507,7 @@
     assertThat(group.name, is(equalTo(@"restkit")));
 
 
-    NSSortDescriptor * sortByName =[[[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES] autorelease];
+    NSSortDescriptor * sortByName = [[[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES] autorelease];
     NSArray * descriptors = [NSArray arrayWithObject:sortByName];;
     NSArray * users = [group.users sortedArrayUsingDescriptors:descriptors];
     RKTestUser* user = [users objectAtIndex:0];

@@ -150,9 +150,9 @@ return __VA_ARGS__;                                                             
 
     if ([challenge previousFailureCount] == 0) {
         NSURLCredential *newCredential;
-        newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                 password:[NSString stringWithFormat:@"%@", _request.password]
-                                              persistence:NSURLCredentialPersistenceNone];
+        newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+                                                   password:[NSString stringWithFormat:@"%@", _request.password]
+                                                persistence:NSURLCredentialPersistenceNone];
         [[challenge sender] useCredential:newCredential
                forAuthenticationChallenge:challenge];
     } else {
