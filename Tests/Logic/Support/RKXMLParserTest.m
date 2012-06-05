@@ -23,12 +23,12 @@
 
 // See Tests/Fixtures/XML/tab_data.xml
 @interface RKTestTabData : NSObject {
-    NSString* _title;
-    NSString* _summary;
+    NSString *_title;
+    NSString *_summary;
 }
 
-@property (nonatomic, retain) NSString* title;
-@property (nonatomic, retain) NSString* summary;
+@property (nonatomic, retain) NSString *title;
+@property (nonatomic, retain) NSString *summary;
 
 @end
 
@@ -49,9 +49,9 @@
 
 - (void)testShouldMapASingleXMLObjectPayloadToADictionary
 {
-    NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<hash>\n  <float type=\"float\">2.4</float>\n  <string>string</string>\n  <number type=\"integer\">1</number>\n</hash>\n";
+    NSString *data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<hash>\n  <float type=\"float\">2.4</float>\n  <string>string</string>\n  <number type=\"integer\">1</number>\n</hash>\n";
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     id result = [parser objectFromString:data error:&error];
     assertThat(NSStringFromClass([result class]), is(equalTo(@"__NSCFDictionary")));
     assertThatFloat([[[result valueForKeyPath:@"hash.float"] valueForKey:@"text"] floatValue], is(equalToFloat(2.4f)));
@@ -61,11 +61,11 @@
 
 - (void)testShouldMapMultipleObjectsToAnArray
 {
-    NSString* data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records type=\"array\">\n  <record>\n    <float type=\"float\">2.4</float>\n    <string>string</string>\n    <number type=\"integer\">1</number>\n  </record>\n  <record>\n    <another-number type=\"integer\">1</another-number>\n  </record>\n</records>\n";
+    NSString *data = @"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<records type=\"array\">\n  <record>\n    <float type=\"float\">2.4</float>\n    <string>string</string>\n    <number type=\"integer\">1</number>\n  </record>\n  <record>\n    <another-number type=\"integer\">1</another-number>\n  </record>\n</records>\n";
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     id result = [parser objectFromString:data error:&error];
-    NSArray* records = (NSArray*)[result valueForKeyPath:@"records.record"];
+    NSArray *records = (NSArray *)[result valueForKeyPath:@"records.record"];
     assertThatUnsignedInteger([records count], is(equalToInt(2)));
     id result1 = [records objectAtIndex:0];
     assertThat(NSStringFromClass([result1 class]), is(equalTo(@"__NSCFDictionary")));
@@ -78,14 +78,14 @@
 
 - (void)testShouldMapXML
 {
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[RKTestTabData class]];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKTestTabData class]];
     [mapping mapAttributes:@"title", @"summary", nil];
-    RKObjectMappingProvider* provider = [[RKObjectMappingProvider alloc] init];
+    RKObjectMappingProvider *provider = [[RKObjectMappingProvider alloc] init];
     id data = [RKTestFixture parsedObjectWithContentsOfFixture:@"tab_data.xml"];
     assertThat([data valueForKeyPath:@"tabdata.item"], is(instanceOf([NSArray class])));
     [provider setMapping:mapping forKeyPath:@"tabdata.item"];
-    RKObjectMapper* mapper = [RKObjectMapper mapperWithObject:data mappingProvider:provider];
-    RKObjectMappingResult* result = [mapper performMapping];
+    RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:data mappingProvider:provider];
+    RKObjectMappingResult *result = [mapper performMapping];
     assertThatUnsignedInteger([[result asCollection] count], is(equalToInt(2)));
     assertThatUnsignedInteger([[data valueForKeyPath:@"tabdata.title"] count], is(equalToInt(2)));
     assertThatUnsignedInteger([[data valueForKeyPath:@"tabdata.item"] count], is(equalToInt(2)));
@@ -93,49 +93,49 @@
 
 - (void)testShouldParseXMLWithAttributes
 {
-    NSString* XML = [RKTestFixture stringWithContentsOfFixture:@"container_attributes.xml"];
+    NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"container_attributes.xml"];
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     NSDictionary *result = [parser objectFromString:XML error:&error];
     assertThat(result, is(instanceOf([NSDictionary class])));
-    NSArray* elements = [[result objectForKey:@"elements"] objectForKey:@"element"];
+    NSArray *elements = [[result objectForKey:@"elements"] objectForKey:@"element"];
     assertThat(elements, isNot(nilValue()));
     assertThat(elements, is(instanceOf([NSArray class])));
     assertThat(elements, hasCountOf(2));
-    NSDictionary* firstElement = [elements objectAtIndex:0];
+    NSDictionary *firstElement = [elements objectAtIndex:0];
     assertThat([firstElement objectForKey:@"attribute"], is(equalTo(@"1")));
     assertThat([firstElement objectForKey:@"subelement"], is(equalTo(@"text")));
-    NSDictionary* secondElement = [elements objectAtIndex:1];
+    NSDictionary *secondElement = [elements objectAtIndex:1];
     assertThat([secondElement objectForKey:@"attribute"], is(equalTo(@"2")));
     assertThat([secondElement objectForKey:@"subelement"], is(equalTo(@"text2")));
 }
 
 - (void)testShouldParseXMLWithAttributesInTextNodes
 {
-    NSString* XML = [RKTestFixture stringWithContentsOfFixture:@"attributes_without_text_content.xml"];
+    NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"attributes_without_text_content.xml"];
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     NSDictionary *result = [parser objectFromString:XML error:&error];
-    NSDictionary* exchangeRate = [result objectForKey:@"exchange_rate"];
+    NSDictionary *exchangeRate = [result objectForKey:@"exchange_rate"];
     assertThat(exchangeRate, is(notNilValue()));
     assertThat([exchangeRate objectForKey:@"type"], is(equalTo(@"XML_RATE_TYPE_EBNK_MIDDLE")));
     assertThat([exchangeRate objectForKey:@"valid_from"], is(equalTo(@"2011-08-03 00:00:00.0")));
     assertThat([exchangeRate objectForKey:@"name"], nilValue()); // This is to test for bug in parsing
-    NSArray* currency = [exchangeRate objectForKey:@"currency"];
+    NSArray *currency = [exchangeRate objectForKey:@"currency"];
     assertThat(currency, hasCountOf(3));
-    NSDictionary* firstCurrency = [currency objectAtIndex:0];
+    NSDictionary *firstCurrency = [currency objectAtIndex:0];
     assertThat(firstCurrency, is(instanceOf([NSDictionary class])));
     assertThat([firstCurrency objectForKey:@"name"], is(equalTo(@"AUD")));
     assertThat([firstCurrency objectForKey:@"quota"], is(equalTo(@"1")));
     assertThat([firstCurrency objectForKey:@"rate"], is(equalTo(@"18.416")));
 
-    NSDictionary* secondCurrency = [currency objectAtIndex:1];
+    NSDictionary *secondCurrency = [currency objectAtIndex:1];
     assertThat(secondCurrency, is(instanceOf([NSDictionary class])));
     assertThat([secondCurrency objectForKey:@"name"], is(equalTo(@"HRK")));
     assertThat([secondCurrency objectForKey:@"quota"], is(equalTo(@"1")));
     assertThat([secondCurrency objectForKey:@"rate"], is(equalTo(@"3.25017")));
 
-    NSDictionary* thirdCurrency = [currency objectAtIndex:2];
+    NSDictionary *thirdCurrency = [currency objectAtIndex:2];
     assertThat(thirdCurrency, is(instanceOf([NSDictionary class])));
     assertThat([thirdCurrency objectForKey:@"name"], is(equalTo(@"DKK")));
     assertThat([thirdCurrency objectForKey:@"quota"], is(equalTo(@"1")));
@@ -146,7 +146,7 @@
 {
     NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"orders.xml"];
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     NSException *exception = nil;
     @try {
         [parser objectFromString:XML error:&error];;
@@ -163,7 +163,7 @@
 {
     NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"zend.xml"];
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     NSDictionary *output = [parser objectFromString:XML error:&error];
     NSArray *map = [output valueForKeyPath:@"Api.getList.map"];
     assertThat(map, isNot(nilValue()));
@@ -177,7 +177,7 @@
 {
     NSString *XML = @"<users />";
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     NSDictionary *output = [parser objectFromString:XML error:&error];
     NSDictionary *users = [output valueForKey:@"users"];
     NSLog(@"%@", output);
@@ -189,7 +189,7 @@
 {
     NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"national_weather_service.xml"];
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     NSException *exception = nil;
     @try {
         [parser objectFromString:XML error:&error];
@@ -205,9 +205,9 @@
 - (void)testShouldParseXMLElementsAndAttributesProperly
 {
 
-    NSString* XML = [RKTestFixture stringWithContentsOfFixture:@"channels.xml"];
+    NSString *XML = [RKTestFixture stringWithContentsOfFixture:@"channels.xml"];
     NSError *error = [[NSError alloc] init];
-    RKXMLParserXMLReader* parser = [[RKXMLParserXMLReader new] autorelease];
+    RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     NSDictionary *result = [parser objectFromString:XML error:&error];
 
     NSLog(@"result : %@", result);

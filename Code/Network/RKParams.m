@@ -34,19 +34,19 @@
 /**
  * The boundary used used for multi-part headers
  */
-NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
+NSString * const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 @implementation RKParams
 
-+ (RKParams*)params
++ (RKParams *)params
 {
-    RKParams* params = [[[RKParams alloc] init] autorelease];
+    RKParams *params = [[[RKParams alloc] init] autorelease];
     return params;
 }
 
-+ (RKParams*)paramsWithDictionary:(NSDictionary*)dictionary
++ (RKParams *)paramsWithDictionary:(NSDictionary *)dictionary
 {
-    RKParams* params = [[[RKParams alloc] initWithDictionary:dictionary] autorelease];
+    RKParams *params = [[[RKParams alloc] initWithDictionary:dictionary] autorelease];
     return params;
 }
 
@@ -199,7 +199,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
         _length += [attachment length];
     }
 
-    return (NSInputStream*)self;
+    return (NSInputStream *)self;
 }
 
 #pragma mark NSInputStream methods

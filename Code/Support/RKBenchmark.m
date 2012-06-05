@@ -18,7 +18,7 @@
 
 @implementation RKBenchmark
 
-static NSMutableDictionary * __sharedBenchmarks = nil;
+static NSMutableDictionary *__sharedBenchmarks = nil;
 
 + (NSMutableDictionary *)sharedBenchmarks
 {

@@ -20,7 +20,7 @@
 
 #import "RKObjectAttributeMapping.h"
 
-extern NSString* const RKObjectMappingNestingAttributeKeyName;
+extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 @implementation RKObjectAttributeMapping
 
@@ -45,7 +45,7 @@ extern NSString* const RKObjectMappingNestingAttributeKeyName;
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RKObjectAttributeMapping* copy = [[[self class] allocWithZone:zone] initWithSourceKeyPath:self.sourceKeyPath andDestinationKeyPath:self.destinationKeyPath];
+    RKObjectAttributeMapping *copy = [[[self class] allocWithZone:zone] initWithSourceKeyPath:self.sourceKeyPath andDestinationKeyPath:self.destinationKeyPath];
     return copy;
 }
 

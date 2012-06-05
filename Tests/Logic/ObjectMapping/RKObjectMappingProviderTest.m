@@ -31,7 +31,7 @@
 #import "RKOrderedDictionary.h"
 
 @interface RKObjectMappingProviderTest : RKTestCase {
-    RKObjectManager* _objectManager;
+    RKObjectManager *_objectManager;
 }
 
 @end
@@ -49,7 +49,7 @@
 - (void)testShouldFindAnExistingObjectMappingForAClass
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
@@ -61,7 +61,7 @@
 - (void)testShouldFindAnExistingObjectMappingForAKeyPath
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
@@ -74,7 +74,7 @@
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];
@@ -221,7 +221,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    RKObjectMappingDefinition * matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
+    RKObjectMappingDefinition *matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 
@@ -231,7 +231,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableArray class]];
     [mappingProvider setMapping:mapping forPattern:@"/articles/:id" context:1];
 
-    RKObjectMappingDefinition * matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
+    RKObjectMappingDefinition *matchedMapping = [mappingProvider mappingForPatternMatchingString:@"/articles/12345?page=5&this=that" context:1];
     assertThat(matchedMapping, is(equalTo(mapping)));
 }
 

@@ -18,7 +18,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        RKClient* client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
+        RKClient *client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
         [RKClient setSharedClient:client];
 
         // Ask RestKit to spin the network activity indicator for us

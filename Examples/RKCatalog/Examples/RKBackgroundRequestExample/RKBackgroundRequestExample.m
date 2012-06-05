@@ -19,7 +19,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        RKClient* client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
+        RKClient *client = [RKClient clientWithBaseURL:gRKCatalogBaseURL];
         [RKClient setSharedClient:client];
     }
 
@@ -35,7 +35,7 @@
 
 - (IBAction)sendRequest
 {
-    RKRequest* request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample"];
+    RKRequest *request = [[RKClient sharedClient] requestWithResourcePath:@"/RKBackgroundRequestExample"];
     request.delegate = self;
     request.backgroundPolicy = _segmentedControl.selectedSegmentIndex;
     [request send];

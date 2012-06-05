@@ -119,9 +119,9 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     return cellMapping;
 }
 
-+ (id)cellMappingUsingBlock:(void (^)(RKTableViewCellMapping*))block
++ (id)cellMappingUsingBlock:(void (^)(RKTableViewCellMapping *))block
 {
-    RKTableViewCellMapping* cellMapping = [self cellMapping];
+    RKTableViewCellMapping *cellMapping = [self cellMapping];
     block(cellMapping);
     return cellMapping;
 }
@@ -203,7 +203,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 {
     NSAssert([tableView isKindOfClass:[UITableView class]], @"Expected to be invoked with a tableView as the data. Got %@", tableView);
     RKLogTrace(@"About to dequeue reusable cell using self.reuseIdentifier=%@", self.reuseIdentifier);
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:self.reuseIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.reuseIdentifier];
     if (! cell) {
         cell = [[[self.objectClass alloc] initWithStyle:self.style
                                        reuseIdentifier:self.reuseIdentifier] autorelease];
@@ -245,7 +245,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     [self setObjectClass:cellClass];
 }
 
-- (NSString*)cellClassName
+- (NSString *)cellClassName
 {
     return NSStringFromClass(self.cellClass);
 }

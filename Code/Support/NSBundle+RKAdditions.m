@@ -65,14 +65,14 @@
 
 - (NSString *)stringWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension encoding:(NSStringEncoding)encoding
 {
-    NSError* error = nil;
+    NSError *error = nil;
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (! resourcePath) {
         RKLogWarning(@"%@ Failed to locate Resource with name '%@' and extension '%@': File Not Found.", self, resourcePath, extension);
         return nil;
     }
 
-    NSString* fixtureData = [NSString stringWithContentsOfFile:resourcePath encoding:encoding error:&error];
+    NSString *fixtureData = [NSString stringWithContentsOfFile:resourcePath encoding:encoding error:&error];
     if (fixtureData == nil && error) {
         RKLogWarning(@"Failed to read ");
     }
@@ -95,9 +95,9 @@
 
 - (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension
 {
-    NSError* error = nil;
-    NSString* resourceContents = [self stringWithContentsOfResource:name withExtension:extension encoding:NSUTF8StringEncoding];
-    NSString* MIMEType = [self MIMETypeForResource:name withExtension:extension];
+    NSError *error = nil;
+    NSString *resourceContents = [self stringWithContentsOfResource:name withExtension:extension encoding:NSUTF8StringEncoding];
+    NSString *MIMEType = [self MIMETypeForResource:name withExtension:extension];
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
     if (! parser) {
         RKLogError(@"%@ Unable to parse Resource with name '%@' and extension '%@': failed to find parser registered to handle MIME Type '%@'", self, name, extension, MIMEType);

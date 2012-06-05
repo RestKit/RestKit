@@ -54,13 +54,13 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 
 #pragma mark - RKManagedObject methods
 
-+ (NSEntityDescription*)entity
++ (NSEntityDescription *)entity
 {
-    NSString* className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
+    NSString *className = [NSString stringWithCString:class_getName([self class]) encoding:NSASCIIStringEncoding];
     return [NSEntityDescription entityForName:className inManagedObjectContext:[NSManagedObjectContext contextForCurrentThread]];
 }
 
-+ (NSFetchRequest*)fetchRequest
++ (NSFetchRequest *)fetchRequest
 {
     NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
     NSEntityDescription *entity = [self entity];
@@ -68,19 +68,19 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return fetchRequest;
 }
 
-+ (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest
++ (NSArray *)objectsWithFetchRequest:(NSFetchRequest *)fetchRequest
 {
-    NSError* error = nil;
-    NSArray* objects = [[NSManagedObjectContext contextForCurrentThread] executeFetchRequest:fetchRequest error:&error];
+    NSError *error = nil;
+    NSArray *objects = [[NSManagedObjectContext contextForCurrentThread] executeFetchRequest:fetchRequest error:&error];
     if (objects == nil) {
         RKLogError(@"Error: %@", [error localizedDescription]);
     }
     return objects;
 }
 
-+ (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest*)fetchRequest
++ (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest *)fetchRequest
 {
-    NSError* error = nil;
+    NSError *error = nil;
     NSUInteger objectCount = [[NSManagedObjectContext contextForCurrentThread] countForFetchRequest:fetchRequest error:&error];
     if (objectCount    == NSNotFound) {
         RKLogError(@"Error: %@", [error localizedDescription]);
@@ -88,21 +88,21 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return objectCount;
 }
 
-+ (NSArray*)objectsWithFetchRequests:(NSArray*)fetchRequests
++ (NSArray *)objectsWithFetchRequests:(NSArray *)fetchRequests
 {
-    NSMutableArray* mutableObjectArray = [[NSMutableArray alloc] init];
-    for (NSFetchRequest* fetchRequest in fetchRequests) {
+    NSMutableArray *mutableObjectArray = [[NSMutableArray alloc] init];
+    for (NSFetchRequest *fetchRequest in fetchRequests) {
         [mutableObjectArray addObjectsFromArray:[self objectsWithFetchRequest:fetchRequest]];
     }
-    NSArray* objects = [NSArray arrayWithArray:mutableObjectArray];
+    NSArray *objects = [NSArray arrayWithArray:mutableObjectArray];
     [mutableObjectArray release];
     return objects;
 }
 
-+ (id)objectWithFetchRequest:(NSFetchRequest*)fetchRequest
++ (id)objectWithFetchRequest:(NSFetchRequest *)fetchRequest
 {
     [fetchRequest setFetchLimit:1];
-    NSArray* objects = [self objectsWithFetchRequest:fetchRequest];
+    NSArray *objects = [self objectsWithFetchRequest:fetchRequest];
     if ([objects count] == 0) {
         return nil;
     } else {
@@ -110,28 +110,28 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     }
 }
 
-+ (NSArray*)objectsWithPredicate:(NSPredicate*)predicate
++ (NSArray *)objectsWithPredicate:(NSPredicate *)predicate
 {
-    NSFetchRequest* fetchRequest = [self fetchRequest];
+    NSFetchRequest *fetchRequest = [self fetchRequest];
     [fetchRequest setPredicate:predicate];
     return [self objectsWithFetchRequest:fetchRequest];
 }
 
-+ (id)objectWithPredicate:(NSPredicate*)predicate
++ (id)objectWithPredicate:(NSPredicate *)predicate
 {
-    NSFetchRequest* fetchRequest = [self fetchRequest];
+    NSFetchRequest *fetchRequest = [self fetchRequest];
     [fetchRequest setPredicate:predicate];
     return [self objectWithFetchRequest:fetchRequest];
 }
 
-+ (NSArray*)allObjects
++ (NSArray *)allObjects
 {
     return [self objectsWithPredicate:nil];
 }
 
-+ (NSUInteger)count:(NSError**)error
++ (NSUInteger)count:(NSError **)error
 {
-    NSFetchRequest* fetchRequest = [self fetchRequest];
+    NSFetchRequest *fetchRequest = [self fetchRequest];
     return [[NSManagedObjectContext contextForCurrentThread] countForFetchRequest:fetchRequest error:error];
 }
 
@@ -171,7 +171,7 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
 
 #pragma mark - MagicalRecord Ported Methods
 
-+ (NSManagedObjectContext*)currentContext;
++ (NSManagedObjectContext *)currentContext;
 {
     return [NSManagedObjectContext contextForCurrentThread];
 }

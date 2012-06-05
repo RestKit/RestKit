@@ -46,7 +46,7 @@
 
 + (id)sectionUsingBlock:(void (^)(RKTableSection *))block
 {
-    RKTableSection* section = [self section];
+    RKTableSection *section = [self section];
     block(section);
     return section;
 }
@@ -85,7 +85,7 @@
 - (void)setObjects:(NSArray *)objects
 {
     if (! [objects isMemberOfClass:[NSMutableArray class]]) {
-        NSMutableArray* mutableObjects = [objects mutableCopy];
+        NSMutableArray *mutableObjects = [objects mutableCopy];
         [_objects release];
         _objects = mutableObjects;
     } else {
@@ -105,16 +105,16 @@
     return [_objects objectAtIndex:rowIndex];
 }
 
-- (UITableView*)tableView
+- (UITableView *)tableView
 {
     return _tableController.tableView;
 }
 
 - (void)insertObject:(id)object atIndex:(NSUInteger)index
 {
-    [(NSMutableArray*)_objects insertObject:object atIndex:index];
+    [(NSMutableArray *)_objects insertObject:object atIndex:index];
 
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:index
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index
                                                 inSection:[_tableController indexForSection:self]];
     [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:_tableController.defaultRowAnimation];
@@ -127,9 +127,9 @@
 - (void)removeObjectAtIndex:(NSUInteger)index
 {
     id object = [self objectAtIndex:index];
-    [(NSMutableArray*)_objects removeObjectAtIndex:index];
+    [(NSMutableArray *)_objects removeObjectAtIndex:index];
 
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:index
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index
                                                 inSection:[_tableController indexForSection:self]];
     [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:_tableController.defaultRowAnimation];
@@ -141,9 +141,9 @@
 
 - (void)replaceObjectAtIndex:(NSUInteger)index withObject:(id)object
 {
-    [(NSMutableArray*)_objects replaceObjectAtIndex:index withObject:object];
+    [(NSMutableArray *)_objects replaceObjectAtIndex:index withObject:object];
 
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:index
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index
                                                 inSection:[_tableController indexForSection:self]];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:_tableController.defaultRowAnimation];

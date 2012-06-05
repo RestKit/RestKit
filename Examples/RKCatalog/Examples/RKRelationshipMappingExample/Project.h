@@ -10,17 +10,17 @@
 #import "User.h"
 
 @interface Project : NSObject {
-    NSNumber* _projectID;
-    NSString* _name;
-    NSString* _description;
-    User* _user;
-    NSArray* _tasks;
+    NSNumber *_projectID;
+    NSString *_name;
+    NSString *_description;
+    User *_user;
+    NSArray *_tasks;
 }
 
-@property (nonatomic, retain) NSNumber* projectID;
-@property (nonatomic, retain) NSString* name;
-@property (nonatomic, retain) NSString* description;
-@property (nonatomic, retain) User* user;
-@property (nonatomic, retain) NSArray* tasks;
+@property (nonatomic, retain) NSNumber *projectID;
+@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSString *description;
+@property (nonatomic, retain) User *user;
+@property (nonatomic, retain) NSArray *tasks;
 
 @end

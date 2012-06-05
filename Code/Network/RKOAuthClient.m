@@ -79,7 +79,7 @@
 
     //Use the parsedBody answer in NSDictionary
 
-    NSDictionary* oauthResponse = (NSDictionary *) [response parsedBody:&error];
+    NSDictionary *oauthResponse = (NSDictionary *) [response parsedBody:&error];
     if ([oauthResponse isKindOfClass:[NSDictionary class]]) {
 
         //Check the if an access token comes in the response
@@ -117,7 +117,7 @@
                 errorCode = RKOAuthClientErrorInvalidScope;
             }
 
-            NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                       errorDescription, NSLocalizedDescriptionKey, nil];
             NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
 
@@ -169,7 +169,7 @@
 
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error
 {
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                               error, NSUnderlyingErrorKey, nil];
     NSError *clientError = [NSError errorWithDomain:RKErrorDomain code:RKOAuthClientErrorRequestFailure userInfo:userInfo];
     if ([self.delegate respondsToSelector:@selector(OAuthClient:didFailLoadingRequest:withError:)]) {

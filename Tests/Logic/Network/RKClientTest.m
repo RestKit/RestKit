@@ -40,7 +40,7 @@
 
 - (void)testShouldDetectNetworkStatusWithAHostname
 {
-    RKClient* client = [[RKClient alloc] initWithBaseURLString:@"http://restkit.org"];
+    RKClient *client = [[RKClient alloc] initWithBaseURLString:@"http://restkit.org"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
     assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));
@@ -58,26 +58,26 @@
 
 - (void)testShouldSetTheCachePolicyOfTheRequest
 {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.cachePolicy = RKRequestCachePolicyLoadIfOffline;
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThatInt(request.cachePolicy, is(equalToInt(RKRequestCachePolicyLoadIfOffline)));
 }
 
 - (void)testShouldInitializeTheCacheOfTheRequest
 {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.requestCache = [[[RKRequestCache alloc] init] autorelease];
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThat(request.cache, is(equalTo(client.requestCache)));
 }
 
 - (void)testShouldLoadPageWithNoContentTypeInformation
 {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.semiose.fr"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://www.semiose.fr"];
     client.defaultHTTPEncoding = NSISOLatin1StringEncoding;
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKRequest* request = [client requestWithResourcePath:@"/"];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [client requestWithResourcePath:@"/"];
     request.delegate = loader;
     [request send];
     [loader waitForResponse];
@@ -88,14 +88,14 @@
 
 - (void)testShouldAllowYouToChangeTheBaseURL
 {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     assertThatBool([client isNetworkReachable], is(equalToBool(YES)));
     client.baseURL = [RKURL URLWithString:@"http://www.restkit.org"];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
     assertThatBool([client isNetworkReachable], is(equalToBool(YES)));
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
-    RKRequest* request = [client requestWithResourcePath:@"/"];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [client requestWithResourcePath:@"/"];
     request.delegate = loader;
     [request send];
     [loader waitForResponse];
@@ -122,7 +122,7 @@
 
 - (void)testShouldSuspendTheQueueOnBaseURLChangeWhenReachabilityHasNotBeenEstablished
 {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://www.google.com"];
     client.baseURL = [RKURL URLWithString:@"http://restkit.org"];
     assertThatBool(client.requestQueue.suspended, is(equalToBool(YES)));
 }
@@ -140,9 +140,9 @@
 
 - (void)testShouldAllowYouToChangeTheTimeoutInterval
 {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.timeoutInterval = 20.0;
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThatFloat(request.timeoutInterval, is(equalToFloat(20.0)));
 }
 
@@ -150,13 +150,13 @@
 {
     NSLog(@"PENDING ---> FIX ME!!!");
     return;
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://ohblockhero.appspot.com/api/v1"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://ohblockhero.appspot.com/api/v1"];
     client.cachePolicy = RKRequestCachePolicyNone;
     RKParams *params = [RKParams params];
     [params setValue:@"username" forParam:@"username"];
     [params setValue:@"Dear Daniel" forParam:@"fullName"];
     [params setValue:@"aa@aa.com" forParam:@"email"];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     [client put:@"/userprofile" params:params delegate:loader];
     STAssertNoThrow([loader waitForResponse], @"");
     [loader waitForResponse];
@@ -165,16 +165,16 @@
 
 - (void)testShouldAllowYouToChangeTheCacheTimeoutInterval
 {
-    RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
+    RKClient *client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.cacheTimeoutInterval = 20.0;
-    RKRequest* request = [client requestWithResourcePath:@""];
+    RKRequest *request = [client requestWithResourcePath:@""];
     assertThatFloat(request.cacheTimeoutInterval, is(equalToFloat(20.0)));
 }
 
 - (void)testThatRunLoopModePropertyRespected
 {
     NSString * const dummyRunLoopMode = @"dummyRunLoopMode";
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKClient *client = [RKTestFactory client];
     client.runLoopMode = dummyRunLoopMode;
     [client get:[[RKTestFactory baseURL] absoluteString] delegate:loader];

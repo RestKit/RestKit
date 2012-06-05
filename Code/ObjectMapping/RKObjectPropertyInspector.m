@@ -26,11 +26,11 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-static RKObjectPropertyInspector* sharedInspector = nil;
+static RKObjectPropertyInspector *sharedInspector = nil;
 
 @implementation RKObjectPropertyInspector
 
-+ (RKObjectPropertyInspector*)sharedInspector
++ (RKObjectPropertyInspector *)sharedInspector
 {
     if (sharedInspector == nil) {
         sharedInspector = [RKObjectPropertyInspector new];
@@ -54,7 +54,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
     [super dealloc];
 }
 
-+ (NSString*)propertyTypeFromAttributeString:(NSString*)attributeString
++ (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString
 {
     NSString *type = [NSString string];
     NSScanner *typeScanner = [NSScanner scannerWithString:attributeString];
@@ -72,7 +72,7 @@ static RKObjectPropertyInspector* sharedInspector = nil;
 
 - (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass
 {
-    NSMutableDictionary* propertyNames = [_cachedPropertyNamesAndTypes objectForKey:theClass];
+    NSMutableDictionary *propertyNames = [_cachedPropertyNamesAndTypes objectForKey:theClass];
     if (propertyNames) {
         return propertyNames;
     }
@@ -91,12 +91,12 @@ static RKObjectPropertyInspector* sharedInspector = nil;
         for (i = 0; i < outCount; i++) {
             // property_getAttributes() returns everything we need to implement this...
             // See: http://developer.apple.com/mac/library/DOCUMENTATION/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html#//apple_ref/doc/uid/TP40008048-CH101-SW5
-            objc_property_t* prop = propList + i;
-            NSString* attributeString = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
+            objc_property_t *prop = propList + i;
+            NSString *attributeString = [NSString stringWithCString:property_getAttributes(*prop) encoding:NSUTF8StringEncoding];
             propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
 
             if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-                const char* className = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
+                const char *className = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
                 Class aClass = objc_getClass(className);
                 if (aClass) {
                     [propertyNames setObject:aClass forKey:propName];
@@ -113,9 +113,9 @@ static RKObjectPropertyInspector* sharedInspector = nil;
     return propertyNames;
 }
 
-- (Class)typeForProperty:(NSString*)propertyName ofClass:(Class)objectClass
+- (Class)typeForProperty:(NSString *)propertyName ofClass:(Class)objectClass
 {
-    NSDictionary* dictionary = [self propertyNamesAndTypesForClass:objectClass];
+    NSDictionary *dictionary = [self propertyNamesAndTypesForClass:objectClass];
     return [dictionary objectForKey:propertyName];
 }
 

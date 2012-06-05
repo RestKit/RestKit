@@ -24,18 +24,18 @@
 
 @synthesize objectStore = _objectStore;
 
-+ (RKManagedObjectThreadSafeInvocation*)invocationWithMethodSignature:(NSMethodSignature*)methodSignature
++ (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature
 {
-    return (RKManagedObjectThreadSafeInvocation*) [super invocationWithMethodSignature:methodSignature];
+    return (RKManagedObjectThreadSafeInvocation *) [super invocationWithMethodSignature:methodSignature];
 }
 
-- (void)setManagedObjectKeyPaths:(NSSet*)keyPaths forArgument:(NSInteger)index
+- (void)setManagedObjectKeyPaths:(NSSet *)keyPaths forArgument:(NSInteger)index
 {
     if (nil == _argumentKeyPaths) {
         _argumentKeyPaths = [[NSMutableDictionary alloc] init];
     }
 
-    NSNumber* argumentIndex = [NSNumber numberWithInteger:index];
+    NSNumber *argumentIndex = [NSNumber numberWithInteger:index];
     [_argumentKeyPaths setObject:keyPaths forKey:argumentIndex];
 }
 
@@ -52,18 +52,18 @@
     }
 }
 
-- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths
+- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths
 {
-    for (NSString* keyPath in keyPaths) {
+    for (NSString *keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObject class]]) {
-            NSManagedObjectID *objectID = [(NSManagedObject*)value objectID];
+            NSManagedObjectID *objectID = [(NSManagedObject *)value objectID];
             [self setValue:objectID forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObject class]]) {
-                    [collection addObject:[(NSManagedObject*)subObject objectID]];
+                    [collection addObject:[(NSManagedObject *)subObject objectID]];
                 } else {
                     [collection addObject:subObject];
                 }
@@ -75,13 +75,13 @@
     }
 }
 
-- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet*)keyPaths
+- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths
 {
-    for (NSString* keyPath in keyPaths) {
+    for (NSString *keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObjectID class]]) {
             NSAssert(self.objectStore, @"Object store cannot be nil");
-            NSManagedObject* managedObject = [self.objectStore objectWithID:(NSManagedObjectID*)value];
+            NSManagedObject *managedObject = [self.objectStore objectWithID:(NSManagedObjectID *)value];
             NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
             [self setValue:managedObject forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
@@ -89,7 +89,7 @@
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
                     NSAssert(self.objectStore, @"Object store cannot be nil");
-                    NSManagedObject* managedObject = [self.objectStore objectWithID:(NSManagedObjectID*)subObject];
+                    NSManagedObject *managedObject = [self.objectStore objectWithID:(NSManagedObjectID *)subObject];
                     [collection addObject:managedObject];
                 } else {
                     [collection addObject:subObject];
@@ -103,8 +103,8 @@
 }
 - (void)serializeManagedObjects
 {
-    for (NSNumber* argumentIndex in _argumentKeyPaths) {
-        NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
+    for (NSNumber *argumentIndex in _argumentKeyPaths) {
+        NSSet *managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
         [self getArgument:&argument atIndex:[argumentIndex intValue]];
         if (argument) {
@@ -115,8 +115,8 @@
 
 - (void)deserializeManagedObjects
 {
-    for (NSNumber* argumentIndex in _argumentKeyPaths) {
-        NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
+    for (NSNumber *argumentIndex in _argumentKeyPaths) {
+        NSSet *managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
         [self getArgument:&argument atIndex:[argumentIndex intValue]];
         if (argument) {

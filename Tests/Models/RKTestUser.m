@@ -28,7 +28,7 @@
 @synthesize friendsSet = _friendsSet;
 @synthesize friendsOrderedSet = _friendsOrderedSet;
 
-+ (RKTestUser*)user
++ (RKTestUser *)user
 {
     return [[self new] autorelease];
 }
@@ -38,11 +38,11 @@
 - (BOOL)isEqual:(id)object
 {
     if ([object isKindOfClass:[RKTestUser class]]) {
-        if ([(RKTestUser*)object userID] == nil && self.userID == nil) {
+        if ([(RKTestUser *)object userID] == nil && self.userID == nil) {
             // No primary key -- consult superclass
             return [super isEqual:object];
         } else {
-            return [[(RKTestUser*)object userID] isEqualToNumber:self.userID];
+            return [[(RKTestUser *)object userID] isEqualToNumber:self.userID];
         }
     }
 

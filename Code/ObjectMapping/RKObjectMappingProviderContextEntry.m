@@ -45,7 +45,7 @@
 {
     int prime = 31;
     int result = 1;
-    result = prime * [self.userData hash] ? [self.mapping hash] : [self.userData hash];
+    result = prime *[self.userData hash] ? [self.mapping hash] : [self.userData hash];
     return result;
 }
 

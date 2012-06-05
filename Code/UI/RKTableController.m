@@ -159,9 +159,9 @@
 
 #pragma mark - Static Tables
 
-- (NSArray*)objectsWithHeaderAndFooters:(NSArray *)objects forSection:(NSUInteger)sectionIndex
+- (NSArray *)objectsWithHeaderAndFooters:(NSArray *)objects forSection:(NSUInteger)sectionIndex
 {
-    NSMutableArray* mutableObjects = [objects mutableCopy];
+    NSMutableArray *mutableObjects = [objects mutableCopy];
     if (sectionIndex == 0) {
         if ([self.headerItems count] > 0) {
             [mutableObjects insertObjects:self.headerItems atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.headerItems.count)]];
@@ -184,7 +184,7 @@
     // Clear any existing error state from the table
     self.error = nil;
 
-    RKTableSection* section = [self sectionAtIndex:sectionIndex];
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
     section.objects = [self objectsWithHeaderAndFooters:objects forSection:sectionIndex];
     for (NSUInteger index = 0; index < [section.objects count]; index++) {
         if ([self.delegate respondsToSelector:@selector(tableController:didInsertObject:atIndexPath:)]) {
@@ -236,7 +236,7 @@
     NSAssert(tableItems, @"Cannot load a nil collection of table items");
     NSAssert(sectionIndex < self.sectionCount, @"Cannot load table items into a section that does not exist");
     NSAssert(cellMapping, @"Cannot load table items without a cell mapping");
-    for (RKTableItem* tableItem in tableItems) {
+    for (RKTableItem *tableItem in tableItems) {
         tableItem.cellMapping = cellMapping;
     }
     [self loadTableItems:tableItems inSection:sectionIndex];
@@ -291,12 +291,12 @@
 
 #pragma mark - UITableViewDataSource methods
 
-- (void)tableView:(UITableView*)theTableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)theTableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:commitEditingStyle:forRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     if (self.canEditRows) {
         if (editingStyle == UITableViewCellEditingStyleDelete) {
-            RKTableSection* section = [self.sections objectAtIndex:indexPath.section];
+            RKTableSection *section = [self.sections objectAtIndex:indexPath.section];
             [section removeObjectAtIndex:indexPath.row];
 
         } else if (editingStyle == UITableViewCellEditingStyleInsert) {
@@ -305,21 +305,21 @@
     }
 }
 
-- (void)tableView:(UITableView*)theTableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destIndexPath
+- (void)tableView:(UITableView *)theTableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destIndexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:moveRowAtIndexPath:toIndexPath: invoked with inappropriate tableView: %@", theTableView);
     if (self.canMoveRows) {
         if (sourceIndexPath.section == destIndexPath.section) {
-            RKTableSection* section = [self.sections objectAtIndex:sourceIndexPath.section];
+            RKTableSection *section = [self.sections objectAtIndex:sourceIndexPath.section];
             [section moveObjectAtIndex:sourceIndexPath.row toIndex:destIndexPath.row];
 
         } else {
             [self.tableView beginUpdates];
-            RKTableSection* sourceSection = [self.sections objectAtIndex:sourceIndexPath.section];
+            RKTableSection *sourceSection = [self.sections objectAtIndex:sourceIndexPath.section];
             id object = [[sourceSection objectAtIndex:sourceIndexPath.row] retain];
             [sourceSection removeObjectAtIndex:sourceIndexPath.row];
 
-            RKTableSection* destinationSection = nil;
+            RKTableSection *destinationSection = nil;
             if (destIndexPath.section < [self sectionCount]) {
                 destinationSection = [self.sections objectAtIndex:destIndexPath.section];
             } else {
@@ -415,7 +415,7 @@
 
 - (RKTableSection *)sectionWithHeaderTitle:(NSString *)title
 {
-    for (RKTableSection* section in _sections) {
+    for (RKTableSection *section in _sections) {
         if ([section.headerTitle isEqualToString:title]) {
             return section;
         }
@@ -431,17 +431,17 @@
 
 - (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
 {
-    RKTableSection* section = [self sectionAtIndex:indexPath.section];
+    RKTableSection *section = [self sectionAtIndex:indexPath.section];
     id mappableObject = [section objectAtIndex:indexPath.row];
-    RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
+    RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
 
-    UITableViewCell* cell = [cellMapping mappableObjectForData:self.tableView];
+    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
     NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
 
     // Map the object state into the cell
-    RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
-    NSError* error = nil;
+    RKObjectMappingOperation *mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
+    NSError *error = nil;
     BOOL success = [mappingOperation performMapping:&error];
     [mappingOperation release];
     // NOTE: If there is no mapping work performed, but no error is generated then
@@ -460,44 +460,44 @@
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(indexPath, @"Cannot lookup object with a nil indexPath");
-    RKTableSection* section = [self sectionAtIndex:indexPath.section];
+    RKTableSection *section = [self sectionAtIndex:indexPath.section];
     return [section objectAtIndex:indexPath.row];
 }
 
 #pragma mark - UITableViewDataSource methods
 
-- (NSString*)tableView:(UITableView*)theTableView titleForHeaderInSection:(NSInteger)section
+- (NSString *)tableView:(UITableView *)theTableView titleForHeaderInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"tableView:titleForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
     return [[_sections objectAtIndex:section] headerTitle];
 }
 
-- (NSString*)tableView:(UITableView*)theTableView titleForFooterInSection:(NSInteger)section
+- (NSString *)tableView:(UITableView *)theTableView titleForFooterInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"tableView:titleForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
     return [[_sections objectAtIndex:section] footerTitle];
 }
 
-- (BOOL)tableView:(UITableView*)theTableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)tableView:(UITableView *)theTableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:canEditRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     return self.canEditRows;
 }
 
-- (BOOL)tableView:(UITableView*)theTableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)tableView:(UITableView *)theTableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:canMoveRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     return self.canMoveRows;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)theTableView
 {
     NSAssert(theTableView == self.tableView, @"numberOfSectionsInTableView: invoked with inappropriate tableView: %@", theTableView);
     RKLogTrace(@"%@ numberOfSectionsInTableView = %d", self, self.sectionCount);
     return self.sectionCount;
 }
 
-- (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)theTableView numberOfRowsInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"tableView:numberOfRowsInSection: invoked with inappropriate tableView: %@", theTableView);
     RKLogTrace(@"%@ numberOfRowsInSection:%d = %d", self, section, self.sectionCount);

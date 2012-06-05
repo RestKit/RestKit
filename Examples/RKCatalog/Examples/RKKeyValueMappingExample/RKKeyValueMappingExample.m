@@ -13,20 +13,20 @@
  This code is excerpted from the Advanced Tutorial. See Docs/ for explanation
  */
 @interface SimpleAccount : NSObject {
-    NSNumber* _accountID;
-    NSString* _name;
-    NSNumber* _balance;
-    NSNumber* _transactionsCount;
-    NSNumber* _averageTransactionAmount;
-    NSArray*  _distinctPayees;
+    NSNumber *_accountID;
+    NSString *_name;
+    NSNumber *_balance;
+    NSNumber *_transactionsCount;
+    NSNumber *_averageTransactionAmount;
+    NSArray *_distinctPayees;
 }
 
-@property (nonatomic, retain) NSNumber* accountID;
-@property (nonatomic, retain) NSString* name;
-@property (nonatomic, retain) NSNumber* balance;
-@property (nonatomic, retain) NSNumber* transactionsCount;
-@property (nonatomic, retain) NSNumber* averageTransactionAmount;
-@property (nonatomic, retain) NSArray*  distinctPayees;
+@property (nonatomic, retain) NSNumber *accountID;
+@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSNumber *balance;
+@property (nonatomic, retain) NSNumber *transactionsCount;
+@property (nonatomic, retain) NSNumber *averageTransactionAmount;
+@property (nonatomic, retain) NSArray *distinctPayees;
 
 @end
 
@@ -62,7 +62,7 @@
 {
     [super viewDidAppear:animated];
 
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[SimpleAccount class]];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[SimpleAccount class]];
     [mapping mapKeyPathsToAttributes:
      @"id", @"accountID",
      @"name", @"name",
@@ -76,11 +76,11 @@
     [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKKeyValueMappingExample" delegate:self];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects
+- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects
 {
-    SimpleAccount* account = [objects objectAtIndex:0];
+    SimpleAccount *account = [objects objectAtIndex:0];
 
-    NSString* info = [NSString stringWithFormat:
+    NSString *info = [NSString stringWithFormat:
                       @"The count is %@\n"
                       @"The average transaction amount is %@\n"
                       @"The distinct list of payees is: %@",

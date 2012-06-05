@@ -21,7 +21,7 @@
     self.navigationController.navigationBar.tintColor = [UIColor blackColor];
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadButtonWasPressed:)] autorelease];
 
-    UIImageView* imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
+    UIImageView *imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
     imageView.frame = CGRectOffset(imageView.frame, 0, -64);
 
     [self.view insertSubview:imageView atIndex:0];
@@ -47,8 +47,8 @@
 - (void)loadObjectsFromDataStore
 {
     [_statuses release];
-    NSFetchRequest* request = [RKTStatus fetchRequest];
-    NSSortDescriptor* descriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO];
+    NSFetchRequest *request = [RKTStatus fetchRequest];
+    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO];
     [request setSortDescriptors:[NSArray arrayWithObject:descriptor]];
     _statuses = [[RKTStatus objectsWithFetchRequest:request] retain];
 }
@@ -56,7 +56,7 @@
 - (void)loadData
 {
     // Load the object model via RestKit
-    RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    RKObjectManager *objectManager = [RKObjectManager sharedManager];
     [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" delegate:self];
 }
 
@@ -68,7 +68,7 @@
 
 #pragma mark RKObjectLoaderDelegate methods
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects
+- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects
 {
     [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"LastUpdatedAt"];
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -77,9 +77,9 @@
     [_tableView reloadData];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
 {
-    UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error"
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Error"
                                                      message:[error localizedDescription]
                                                     delegate:nil
                                            cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
@@ -104,8 +104,8 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSDate* lastUpdatedAt = [[NSUserDefaults standardUserDefaults] objectForKey:@"LastUpdatedAt"];
-    NSString* dateString = [NSDateFormatter localizedStringFromDate:lastUpdatedAt dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterMediumStyle];
+    NSDate *lastUpdatedAt = [[NSUserDefaults standardUserDefaults] objectForKey:@"LastUpdatedAt"];
+    NSString *dateString = [NSDateFormatter localizedStringFromDate:lastUpdatedAt dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterMediumStyle];
     if (nil == dateString) {
         dateString = @"Never";
     }
@@ -114,8 +114,8 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString* reuseIdentifier = @"Tweet Cell";
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+    NSString *reuseIdentifier = @"Tweet Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
     if (nil == cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier] autorelease];
         cell.textLabel.font = [UIFont systemFontOfSize:14];
@@ -123,7 +123,7 @@
         cell.textLabel.backgroundColor = [UIColor clearColor];
         cell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"listbg.png"]];
     }
-    RKTStatus* status = [_statuses objectAtIndex:indexPath.row];
+    RKTStatus *status = [_statuses objectAtIndex:indexPath.row];
     cell.textLabel.text = status.text;
     return cell;
 }

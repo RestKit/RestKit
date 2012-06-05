@@ -80,11 +80,11 @@
     NSString *resourcePathWithoutQueryString = (queryCharacterRange.location == NSNotFound) ? theResourcePath : [theResourcePath substringToIndex:queryCharacterRange.location];
     NSString *baseURLPath = [[theBaseURL path] isEqualToString:@"/"] ? @"" : [[theBaseURL path] stringByStandardizingPath];
     NSString *completePath = resourcePathWithoutQueryString ? [baseURLPath stringByAppendingString:resourcePathWithoutQueryString] : baseURLPath;
-    NSString* completePathWithQuery = [completePath stringByAppendingQueryParameters:mergedQueryParameters];
+    NSString *completePathWithQuery = [completePath stringByAppendingQueryParameters:mergedQueryParameters];
 
     // NOTE: You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
     // So we unfortunately convert into an NSURL before going back into an NSString -> RKURL
-    NSURL* completeURL = [NSURL URLWithString:completePathWithQuery relativeToURL:theBaseURL];
+    NSURL *completeURL = [NSURL URLWithString:completePathWithQuery relativeToURL:theBaseURL];
     if (!completeURL) {
         RKLogError(@"Failed to build RKURL by appending resourcePath and query parameters '%@' to baseURL '%@'", theResourcePath, theBaseURL);
         [self release];

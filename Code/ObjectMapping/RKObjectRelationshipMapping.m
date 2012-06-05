@@ -25,22 +25,22 @@
 @synthesize mapping = _mapping;
 @synthesize reversible = _reversible;
 
-+ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping reversible:(BOOL)reversible
++ (RKObjectRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping reversible:(BOOL)reversible
 {
-    RKObjectRelationshipMapping* relationshipMapping = (RKObjectRelationshipMapping*) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
+    RKObjectRelationshipMapping *relationshipMapping = (RKObjectRelationshipMapping *) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
     relationshipMapping.reversible = reversible;
     relationshipMapping.mapping = objectOrDynamicMapping;
     return relationshipMapping;
 }
 
-+ (RKObjectRelationshipMapping*)mappingFromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
++ (RKObjectRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
 {
     return [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping reversible:YES];
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RKObjectRelationshipMapping* copy = [super copyWithZone:zone];
+    RKObjectRelationshipMapping *copy = [super copyWithZone:zone];
     copy.mapping = self.mapping;
     copy.reversible = self.reversible;
     return copy;

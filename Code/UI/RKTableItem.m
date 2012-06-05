@@ -30,13 +30,13 @@
 @synthesize URL = _URL;
 @synthesize userData = _userData;
 
-+ (NSArray*)tableItemsFromStrings:(NSString*)firstString, ...
++ (NSArray *)tableItemsFromStrings:(NSString *)firstString, ...
 {
     va_list args;
     va_start(args, firstString);
-    NSMutableArray* tableItems = [NSMutableArray array];
-    for (NSString* string = firstString; string != nil; string = va_arg(args, NSString*)) {
-        RKTableItem* tableItem = [RKTableItem new];
+    NSMutableArray *tableItems = [NSMutableArray array];
+    for (NSString *string = firstString; string != nil; string = va_arg(args, NSString *)) {
+        RKTableItem *tableItem = [RKTableItem new];
         tableItem.text = string;
         [tableItems addObject:tableItem];
         [tableItem release];
@@ -53,7 +53,7 @@
 
 + (id)tableItemUsingBlock:(void (^)(RKTableItem *))block
 {
-    RKTableItem* tableItem = [self tableItem];
+    RKTableItem *tableItem = [self tableItem];
     block(tableItem);
     return tableItem;
 }
@@ -73,9 +73,9 @@
     }];
 }
 
-+ (id)tableItemWithText:(NSString *)text detailText:(NSString *)detailText image:(UIImage*)image
++ (id)tableItemWithText:(NSString *)text detailText:(NSString *)detailText image:(UIImage *)image
 {
-    RKTableItem* tableItem = [self new];
+    RKTableItem *tableItem = [self new];
     tableItem.text = text;
     tableItem.detailText = detailText;
     tableItem.image = image;
@@ -85,7 +85,7 @@
 
 + (id)tableItemWithText:(NSString *)text usingBlock:(void (^)(RKTableItem *))block
 {
-    RKTableItem* tableItem = [[self new] autorelease];
+    RKTableItem *tableItem = [[self new] autorelease];
     tableItem.text = text;
     block(tableItem);
     return tableItem;
@@ -93,7 +93,7 @@
 
 + (id)tableItemWithText:(NSString *)text URL:(NSString *)URL
 {
-    RKTableItem* tableItem = [self tableItem];
+    RKTableItem *tableItem = [self tableItem];
     tableItem.text = text;
     tableItem.URL = URL;
     return tableItem;
@@ -138,7 +138,7 @@
     [super dealloc];
 }
 
-- (NSString*)description
+- (NSString *)description
 {
     return [NSString stringWithFormat:@"<%@: %p text=%@, detailText=%@, image=%p>", NSStringFromClass([self class]), self, self.text, self.detailText, self.image];
 }

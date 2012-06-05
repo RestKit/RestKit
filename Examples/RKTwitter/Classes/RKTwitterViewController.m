@@ -18,7 +18,7 @@
 - (void)loadTimeline
 {
     // Load the object model via RestKit
-    RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    RKObjectManager *objectManager = [RKObjectManager sharedManager];
     objectManager.client.baseURL = [RKURL URLWithString:@"http://www.twitter.com"];
     [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" delegate:self];
 }
@@ -33,7 +33,7 @@
     self.navigationController.navigationBar.tintColor = [UIColor blackColor];
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(loadTimeline)] autorelease];
 
-    UIImageView* imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
+    UIImageView *imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
     imageView.frame = CGRectOffset(imageView.frame, 0, -64);
 
     [self.view insertSubview:imageView atIndex:0];
@@ -57,12 +57,12 @@
 
 #pragma mark RKObjectLoaderDelegate methods
 
-- (void)request:(RKRequest*)request didLoadResponse:(RKResponse*)response
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response
 {
     NSLog(@"Loaded payload: %@", [response bodyAsString]);
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects
+- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects
 {
     NSLog(@"Loaded statuses: %@", objects);
     [_statuses release];
@@ -70,9 +70,9 @@
     [_tableView reloadData];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
 {
-    UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
     [alert show];
     NSLog(@"Hit error: %@", error);
 }
@@ -94,8 +94,8 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString* reuseIdentifier = @"Tweet Cell";
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+    NSString *reuseIdentifier = @"Tweet Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
     if (nil == cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier] autorelease];
         cell.textLabel.font = [UIFont systemFontOfSize:14];

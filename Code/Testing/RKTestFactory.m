@@ -231,8 +231,8 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)clearCacheDirectory
 {
-    NSError* error = nil;
-    NSString* cachePath = [RKDirectory cachesDirectory];
+    NSError *error = nil;
+    NSString *cachePath = [RKDirectory cachesDirectory];
     BOOL success = [[NSFileManager defaultManager] removeItemAtPath:cachePath error:&error];
     if (success) {
         RKLogDebug(@"Cleared cache directory...");

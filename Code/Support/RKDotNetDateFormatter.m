@@ -126,7 +126,7 @@ NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs) {
 
 
 NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds) {
-    return seconds * 1000.f;
+    return seconds *1000.f;
 }
 
 #endif

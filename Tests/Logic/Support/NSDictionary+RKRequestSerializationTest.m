@@ -31,8 +31,8 @@
 
 - (void)testShouldHaveKeysAndValuesDictionaryInitializer
 {
-    NSDictionary* dictionary1 = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", @"value2", @"key2", nil];
-    NSDictionary* dictionary2 = [NSDictionary dictionaryWithKeysAndObjects:@"key", @"value", @"key2", @"value2", nil];
+    NSDictionary *dictionary1 = [NSDictionary dictionaryWithObjectsAndKeys:@"value", @"key", @"value2", @"key2", nil];
+    NSDictionary *dictionary2 = [NSDictionary dictionaryWithKeysAndObjects:@"key", @"value", @"key2", @"value2", nil];
     assertThat(dictionary2, is(equalTo(dictionary1)));
 }
 
@@ -70,13 +70,13 @@
 
 - (void)testShouldEncodeArrayOfDictionaries
 {
-    NSDictionary * dictA = [NSDictionary dictionaryWithKeysAndObjects:@"a", @"x", @"b", @"y", nil];
-    NSDictionary * dictB = [NSDictionary dictionaryWithKeysAndObjects:@"a", @"1", @"b", @"2", nil];
+    NSDictionary *dictA = [NSDictionary dictionaryWithKeysAndObjects:@"a", @"x", @"b", @"y", nil];
+    NSDictionary *dictB = [NSDictionary dictionaryWithKeysAndObjects:@"a", @"1", @"b", @"2", nil];
 
-    NSArray * array = [NSArray arrayWithObjects: dictA, dictB, nil];
-    NSDictionary * dictRoot = [NSDictionary dictionaryWithKeysAndObjects:@"root", array, nil];
+    NSArray *array = [NSArray arrayWithObjects: dictA, dictB, nil];
+    NSDictionary *dictRoot = [NSDictionary dictionaryWithKeysAndObjects:@"root", array, nil];
 
-    NSString * validString = @"root[][a]=x&root[][b]=y&root[][a]=1&root[][b]=2";
+    NSString *validString = @"root[][a]=x&root[][b]=y&root[][a]=1&root[][b]=2";
     assertThat([dictRoot stringWithURLEncodedEntries], is(equalTo(validString)));
 }
 

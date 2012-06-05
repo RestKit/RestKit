@@ -94,7 +94,7 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
     self.paginatedObjects = nil;
     self.paginationError = nil;
 
-    NSDate* startDate = [NSDate date];
+    NSDate *startDate = [NSDate date];
 
     while (loading) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];

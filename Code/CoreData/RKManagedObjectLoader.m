@@ -82,7 +82,7 @@
 
 #pragma mark - RKObjectMapperDelegate methods
 
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMapping*)objectMapping
+- (void)objectMapper:(RKObjectMapper *)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMapping *)objectMapping
 {
     if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
         [_managedObjectKeyPaths addObject:keyPath];
@@ -101,7 +101,7 @@
     return _targetObject;
 }
 
-- (void)setTargetObject:(NSObject*)targetObject
+- (void)setTargetObject:(NSObject *)targetObject
 {
     [_targetObject release];
     _targetObject = nil;
@@ -119,9 +119,9 @@
     // right before send to avoid sequencing issues where the target object is
     // set before the managed object store.
     if (self.targetObject && [self.targetObject isKindOfClass:[NSManagedObject class]]) {
-        _deleteObjectOnFailure = [(NSManagedObject*)self.targetObject isNew];
+        _deleteObjectOnFailure = [(NSManagedObject *)self.targetObject isNew];
         [self.objectStore save:nil];
-        _targetObjectID = [[(NSManagedObject*)self.targetObject objectID] retain];
+        _targetObjectID = [[(NSManagedObject *)self.targetObject objectID] retain];
     }
 
     return [super prepareURLRequest];
@@ -137,7 +137,7 @@
     return nil;
 }
 
-- (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult*)result
+- (void)deleteCachedObjectsMissingFromResult:(RKObjectMappingResult *)result
 {
     if (! [self isGET]) {
         RKLogDebug(@"Skipping cleanup of objects via managed object cache: only used for GET requests.");
@@ -159,11 +159,11 @@
 }
 
 // NOTE: We are on the background thread here, be mindful of Core Data's threading needs
-- (void)processMappingResult:(RKObjectMappingResult*)result
+- (void)processMappingResult:(RKObjectMappingResult *)result
 {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
     if (_targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
-        NSManagedObject* backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
+        NSManagedObject *backgroundThreadObject = [self.objectStore objectWithID:_targetObjectID];
         RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
         [[self.objectStore managedObjectContextForCurrentThread] deleteObject:backgroundThreadObject];
     }
@@ -175,8 +175,8 @@
         BOOL success = [self.objectStore save:&error];
         if (! success) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
-            NSMethodSignature* signature = [(NSObject *)self methodSignatureForSelector:@selector(informDelegateOfError:)];
-            RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+            NSMethodSignature *signature = [(NSObject *)self methodSignatureForSelector:@selector(informDelegateOfError:)];
+            RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
             [invocation setTarget:self];
             [invocation setSelector:@selector(informDelegateOfError:)];
             [invocation setArgument:&error atIndex:2];
@@ -189,9 +189,9 @@
         }
     }
 
-    NSDictionary* dictionary = [result asDictionary];
-    NSMethodSignature* signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
-    RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+    NSDictionary *dictionary = [result asDictionary];
+    NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
+    RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
     [invocation setObjectStore:self.objectStore];
     [invocation setTarget:self];
     [invocation setSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
@@ -208,7 +208,7 @@
     if (_targetObjectID) {
         if (_deleteObjectOnFailure) {
             RKLogInfo(@"Error response encountered: Deleting existing managed object with ID: %@", _targetObjectID);
-            NSManagedObject* objectToDelete = [self.objectStore objectWithID:_targetObjectID];
+            NSManagedObject *objectToDelete = [self.objectStore objectWithID:_targetObjectID];
             if (objectToDelete) {
                 [[self.objectStore managedObjectContextForCurrentThread] deleteObject:objectToDelete];
                 [self.objectStore save:nil];
@@ -224,7 +224,7 @@
 - (BOOL)isResponseMappable
 {
     if ([self.response wasLoadedFromCache]) {
-        NSArray* cachedObjects = [self cachedObjects];
+        NSArray *cachedObjects = [self cachedObjects];
         if (! cachedObjects) {
             RKLogDebug(@"Skipping managed object mapping optimization -> Managed object cache returned nil cachedObjects for resourcePath: %@", self.resourcePath);
             return [super isResponseMappable];

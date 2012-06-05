@@ -24,7 +24,7 @@
 
 @interface RKSearchable : RKSearchableManagedObject
 
-@property (nonatomic, retain) NSString * title;
-@property (nonatomic, retain) NSString * body;
+@property (nonatomic, retain) NSString *title;
+@property (nonatomic, retain) NSString *body;
 
 @end

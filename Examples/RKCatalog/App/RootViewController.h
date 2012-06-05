@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface RootViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource> {
-    NSArray* _exampleTableItems;
+    NSArray *_exampleTableItems;
 }
 
 @end

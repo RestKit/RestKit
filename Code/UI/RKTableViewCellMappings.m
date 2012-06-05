@@ -37,7 +37,7 @@
     return self;
 }
 
-- (void)setCellMapping:(RKTableViewCellMapping*)cellMapping forClass:(Class)objectClass
+- (void)setCellMapping:(RKTableViewCellMapping *)cellMapping forClass:(Class)objectClass
 {
     if ([_cellMappings objectForKey:objectClass]) {
         @throw [NSException exceptionWithName:NSInvalidArgumentException
@@ -48,10 +48,10 @@
     [_cellMappings setObject:cellMapping forKey:objectClass];
 }
 
-- (RKTableViewCellMapping*)cellMappingForClass:(Class)objectClass
+- (RKTableViewCellMapping *)cellMappingForClass:(Class)objectClass
 {
     // Exact match
-    RKTableViewCellMapping* cellMapping = [_cellMappings objectForKey:objectClass];
+    RKTableViewCellMapping *cellMapping = [_cellMappings objectForKey:objectClass];
     if (cellMapping) return cellMapping;
 
     // Subclass match
@@ -64,12 +64,12 @@
     return nil;
 }
 
-- (RKTableViewCellMapping*)cellMappingForObject:(id)object
+- (RKTableViewCellMapping *)cellMappingForObject:(id)object
 {
     if ([object respondsToSelector:@selector(cellMapping)]) {
         // TODO: Trace logging...
         // TODO: This needs unit test coverage on the did select row case...
-        RKTableViewCellMapping* cellMapping = [object cellMapping];
+        RKTableViewCellMapping *cellMapping = [object cellMapping];
         if (cellMapping) return [object cellMapping];
     }
 

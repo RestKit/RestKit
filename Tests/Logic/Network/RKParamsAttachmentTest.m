@@ -31,11 +31,11 @@
 
 - (void)testShouldRaiseAnExceptionWhenTheAttachedFileDoesNotExist
 {
-    NSException* exception = nil;
+    NSException *exception = nil;
     @try {
         [[RKParamsAttachment alloc] initWithName:@"woot" file:@"/this/is/an/invalid/path"];
     }
-    @catch (NSException* e) {
+    @catch (NSException *e) {
         exception = e;
     }
     assertThat(exception, isNot(nilValue()));

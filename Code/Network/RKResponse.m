@@ -65,7 +65,7 @@ return __VA_ARGS__;                                                             
     return self;
 }
 
-- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers
+- (id)initWithRequest:(RKRequest *)request body:(NSData *)body headers:(NSDictionary *)headers
 {
     self = [self initWithRequest:request];
     if (self) {
@@ -77,7 +77,7 @@ return __VA_ARGS__;                                                             
     return self;
 }
 
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error
+- (id)initWithSynchronousRequest:(RKRequest *)request URLResponse:(NSHTTPURLResponse *)URLResponse body:(NSData *)body error:(NSError *)error
 {
     self = [super init];
     if (self) {
@@ -263,7 +263,7 @@ return __VA_ARGS__;                                                             
     }
 }
 
-- (NSString*)localizedStatusCodeString
+- (NSString *)localizedStatusCodeString
 {
     return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];
 }
@@ -299,7 +299,7 @@ return __VA_ARGS__;                                                             
     return nil;
 }
 
-- (id)parsedBody:(NSError**)error
+- (id)parsedBody:(NSError **)error
 {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:[self MIMEType]];
     if (! parser) {
@@ -316,7 +316,7 @@ return __VA_ARGS__;                                                             
     return object;
 }
 
-- (NSString*)failureErrorDescription
+- (NSString *)failureErrorDescription
 {
     if ([self isFailure]) {
         return [_failureError localizedDescription];
@@ -330,7 +330,7 @@ return __VA_ARGS__;                                                             
     return (_responseHeaders != nil);
 }
 
-- (NSURL*)URL
+- (NSURL *)URL
 {
     if ([self wasLoadedFromCache]) {
         return [NSURL URLWithString:[_responseHeaders valueForKey:RKRequestCacheURLHeadersKey]];
@@ -338,7 +338,7 @@ return __VA_ARGS__;                                                             
     return [_httpURLResponse URL];
 }
 
-- (NSString*)MIMEType
+- (NSString *)MIMEType
 {
     if ([self wasLoadedFromCache]) {
         return [_responseHeaders valueForKey:RKRequestCacheMIMETypeHeadersKey];
@@ -354,7 +354,7 @@ return __VA_ARGS__;                                                             
     return ([_httpURLResponse respondsToSelector:@selector(statusCode)] ? [_httpURLResponse statusCode] : 200);
 }
 
-- (NSDictionary*)allHeaderFields
+- (NSDictionary *)allHeaderFields
 {
     if ([self wasLoadedFromCache]) {
         return _responseHeaders;
@@ -362,7 +362,7 @@ return __VA_ARGS__;                                                             
     return ([_httpURLResponse respondsToSelector:@selector(allHeaderFields)] ? [_httpURLResponse allHeaderFields] : nil);
 }
 
-- (NSArray*)cookies
+- (NSArray *)cookies
 {
     return [NSHTTPCookie cookiesWithResponseHeaderFields:self.allHeaderFields forURL:self.URL];
 }
@@ -472,24 +472,24 @@ return __VA_ARGS__;                                                             
     return ([self statusCode] == 503);
 }
 
-- (NSString*)contentType
+- (NSString *)contentType
 {
     return ([[self allHeaderFields] objectForKey:@"Content-Type"]);
 }
 
-- (NSString*)contentLength
+- (NSString *)contentLength
 {
     return ([[self allHeaderFields] objectForKey:@"Content-Length"]);
 }
 
-- (NSString*)location
+- (NSString *)location
 {
     return ([[self allHeaderFields] objectForKey:@"Location"]);
 }
 
 - (BOOL)isHTML
 {
-    NSString* contentType = [self contentType];
+    NSString *contentType = [self contentType];
     return (contentType && ([contentType rangeOfString:@"text/html"
                                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 ||
                            [self isXHTML]));
@@ -497,7 +497,7 @@ return __VA_ARGS__;                                                             
 
 - (BOOL)isXHTML
 {
-    NSString* contentType = [self contentType];
+    NSString *contentType = [self contentType];
     return (contentType &&
             [contentType rangeOfString:@"application/xhtml+xml"
                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
@@ -505,7 +505,7 @@ return __VA_ARGS__;                                                             
 
 - (BOOL)isXML
 {
-    NSString* contentType = [self contentType];
+    NSString *contentType = [self contentType];
     return (contentType &&
             [contentType rangeOfString:@"application/xml"
                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
@@ -513,7 +513,7 @@ return __VA_ARGS__;                                                             
 
 - (BOOL)isJSON
 {
-    NSString* contentType = [self contentType];
+    NSString *contentType = [self contentType];
     return (contentType &&
             [contentType rangeOfString:@"application/json"
                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);

@@ -34,7 +34,7 @@
 
 + (RKObjectMappingProvider *)mappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *mappingProvider))block
 {
-    RKObjectMappingProvider* mappingProvider = [self mappingProvider];
+    RKObjectMappingProvider *mappingProvider = [self mappingProvider];
     block(mappingProvider);
     return mappingProvider;
 }
@@ -90,7 +90,7 @@
     return (RKObjectMapping *) [self mappingForKeyPath:NSStringFromClass(objectClass) context:RKObjectMappingProviderContextSerialization];
 }
 
-- (NSDictionary*)objectMappingsByKeyPath
+- (NSDictionary *)objectMappingsByKeyPath
 {
     return [NSDictionary dictionaryWithDictionary:(NSDictionary *) [self valueForContext:RKObjectMappingProviderContextObjectsByKeyPath]];
 }
@@ -100,7 +100,7 @@
     // TODO: Should generate logs
     objectMapping.rootKeyPath = keyPath;
     [self setMapping:objectMapping forKeyPath:keyPath];
-    RKObjectMapping* inverseMapping = [objectMapping inverseMapping];
+    RKObjectMapping *inverseMapping = [objectMapping inverseMapping];
     inverseMapping.rootKeyPath = keyPath;
     [self setSerializationMapping:inverseMapping forClass:objectMapping.objectClass];
 }
@@ -129,7 +129,7 @@
 
 - (RKObjectMapping *)objectMappingForClass:(Class)theClass
 {
-    NSArray* objectMappings = [self objectMappingsForClass:theClass];
+    NSArray *objectMappings = [self objectMappingsForClass:theClass];
     return ([objectMappings count] > 0) ? [objectMappings objectAtIndex:0] : nil;
 }
 
@@ -375,7 +375,7 @@
 }
 
 // Deprecated
-+ (id)mappingProviderWithBlock:(void (^)(RKObjectMappingProvider*))block
++ (id)mappingProviderWithBlock:(void (^)(RKObjectMappingProvider *))block
 {
     return [self mappingProviderUsingBlock:block];
 }

@@ -18,7 +18,7 @@
 @synthesize isFavorited = _isFavorited;
 @synthesize user = _user;
 
-- (NSString*)description
+- (NSString *)description
 {
     return [NSString stringWithFormat:@"%@ (ID: %@)", self.text, self.statusID];
 }

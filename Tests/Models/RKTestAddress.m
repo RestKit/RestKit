@@ -15,7 +15,7 @@
 @synthesize state = _state;
 @synthesize country = _country;
 
-+ (RKTestAddress*)address
++ (RKTestAddress *)address
 {
     return [[self new] autorelease];
 }
@@ -25,7 +25,7 @@
 - (BOOL)isEqual:(id)object
 {
     if ([object isKindOfClass:[RKTestAddress class]]) {
-        return [[(RKTestAddress*)object addressID] isEqualToNumber:self.addressID];
+        return [[(RKTestAddress *)object addressID] isEqualToNumber:self.addressID];
     } else {
         return NO;
     }

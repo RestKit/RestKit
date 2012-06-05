@@ -30,8 +30,8 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 {
     va_list args;
     va_start(args, firstKey);
-    NSMutableArray* keys = [NSMutableArray array];
-    NSMutableArray* values = [NSMutableArray array];
+    NSMutableArray *keys = [NSMutableArray array];
+    NSMutableArray *values = [NSMutableArray array];
     for (id key = firstKey; key != nil; key = va_arg(args, id)) {
         id value = va_arg(args, id);
         [keys addObject:key];
@@ -84,13 +84,13 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
     return queryComponents;
 }
 
-- (void)URLEncodePart:(NSMutableArray*)parts path:(NSString*)path value:(id)value
+- (void)URLEncodePart:(NSMutableArray *)parts path:(NSString *)path value:(id)value
 {
     NSString *encodedPart = [[value description] stringByAddingURLEncoding];
     [parts addObject:[NSString stringWithFormat: @"%@=%@", path, encodedPart]];
 }
 
-- (void)URLEncodeParts:(NSMutableArray*)parts path:(NSString*)inPath
+- (void)URLEncodeParts:(NSMutableArray *)parts path:(NSString *)inPath
 {
     [self enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
         NSString *encodedKey = [[key description] stringByAddingURLEncoding];
@@ -116,7 +116,7 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 
 - (NSString *)stringWithURLEncodedEntries
 {
-    NSMutableArray* parts = [NSMutableArray array];
+    NSMutableArray *parts = [NSMutableArray array];
     [self URLEncodeParts:parts path:nil];
     return [parts componentsJoinedByString:@"&"];
 }

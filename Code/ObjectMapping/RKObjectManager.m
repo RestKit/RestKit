@@ -24,8 +24,8 @@
 #import "RKManagedObjectLoader.h"
 #import "Support.h"
 
-NSString* const RKObjectManagerDidBecomeOfflineNotification = @"RKDidEnterOfflineModeNotification";
-NSString* const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnlineModeNotification";
+NSString * const RKObjectManagerDidBecomeOfflineNotification = @"RKDidEnterOfflineModeNotification";
+NSString * const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnlineModeNotification";
 
 //////////////////////////////////
 // Shared Instances
@@ -263,7 +263,7 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method
 {
-    NSString* resourcePath = (method == RKRequestMethodInvalid) ? nil : [self.router resourcePathForObject:object method:method];
+    NSString *resourcePath = (method == RKRequestMethodInvalid) ? nil : [self.router resourcePathForObject:object method:method];
     RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
     loader.method = method;
     loader.sourceObject = object;
@@ -324,9 +324,9 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 #pragma mark - Block Configured Object Loaders
 
-- (void)loadObjectsAtResourcePath:(NSString*)resourcePath usingBlock:(void(^)(RKObjectLoader *))block
+- (void)loadObjectsAtResourcePath:(NSString *)resourcePath usingBlock:(void(^)(RKObjectLoader *))block
 {
-    RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
+    RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
     loader.method = RKRequestMethodGET;
 
     // Yield to the block for setup
@@ -460,13 +460,13 @@ static dispatch_queue_t defaultMappingQueue = nil;
 
 - (RKObjectLoader *)objectLoaderWithResourcePath:(NSString *)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate
 {
-    RKObjectLoader* loader = [self loaderWithResourcePath:resourcePath];
+    RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
     loader.delegate = delegate;
 
     return loader;
 }
 
-- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate
+- (RKObjectLoader *)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate
 {
     RKObjectLoader *loader = [self loaderForObject:object method:method];
     loader.delegate = delegate;

@@ -302,7 +302,7 @@
     _sortComparator = Block_copy(sortComparator);
 }
 
-- (void)setSectionNameKeyPath:(NSString*)sectionNameKeyPath
+- (void)setSectionNameKeyPath:(NSString *)sectionNameKeyPath
 {
     NSAssert(_sortSelector == nil, @"Attempted to create a sectioned fetchedResultsController when a sortSelector is present");
     NSAssert(_sortComparator == nil, @"Attempted to create a sectioned fetchedResultsController when a sortComparator is present");
@@ -311,7 +311,7 @@
     _sectionNameKeyPath = sectionNameKeyPath;
 }
 
-- (void)setResourcePath:(NSString*)resourcePath
+- (void)setResourcePath:(NSString *)resourcePath
 {
     [_resourcePath release];
     _resourcePath = [resourcePath copy];
@@ -354,15 +354,15 @@
     id mappableObject = [self objectForRowAtIndexPath:indexPath];
     NSAssert(mappableObject, @"Cannot build a tableView cell without an object");
 
-    RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
+    RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
 
-    UITableViewCell* cell = [cellMapping mappableObjectForData:self.tableView];
+    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
     NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
 
     // Map the object state into the cell
-    RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
-    NSError* error = nil;
+    RKObjectMappingOperation *mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
+    NSError *error = nil;
     BOOL success = [mappingOperation performMapping:&error];
     [mappingOperation release];
 
@@ -392,14 +392,14 @@
 
 #pragma mark - UITableViewDataSource methods
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)theTableView
 {
     NSAssert(theTableView == self.tableView, @"numberOfSectionsInTableView: invoked with inappropriate tableView: %@", theTableView);
     RKLogTrace(@"numberOfSectionsInTableView: %d (%@)", [[_fetchedResultsController sections] count], [[_fetchedResultsController sections] valueForKey:@"name"]);
     return [[_fetchedResultsController sections] count];
 }
 
-- (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)theTableView numberOfRowsInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"tableView:numberOfRowsInSection: invoked with inappropriate tableView: %@", theTableView);
     RKLogTrace(@"%@ numberOfRowsInSection:%d = %d", self, section, self.sectionCount);
@@ -416,19 +416,19 @@
     return numberOfRows;
 }
 
-- (NSString*)tableView:(UITableView*)theTableView titleForHeaderInSection:(NSInteger)section
+- (NSString *)tableView:(UITableView *)theTableView titleForHeaderInSection:(NSInteger)section
 {
     id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:section];
     return [sectionInfo name];
 }
 
-- (NSString*)tableView:(UITableView*)theTableView titleForFooterInSection:(NSInteger)section
+- (NSString *)tableView:(UITableView *)theTableView titleForFooterInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"tableView:titleForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
     return nil;
 }
 
-- (NSArray*)sectionIndexTitlesForTableView:(UITableView*)theTableView
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)theTableView
 {
     if (theTableView.style == UITableViewStylePlain && self.showsSectionIndexTitles) {
         return [_fetchedResultsController sectionIndexTitles];
@@ -436,7 +436,7 @@
     return nil;
 }
 
-- (NSInteger)tableView:(UITableView*)theTableView sectionForSectionIndexTitle:(NSString*)title atIndex:(NSInteger)index
+- (NSInteger)tableView:(UITableView *)theTableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
     if (theTableView.style == UITableViewStylePlain && self.showsSectionIndexTitles) {
         return [_fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
@@ -444,15 +444,15 @@
     return 0;
 }
 
-- (void)tableView:(UITableView*)theTableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)theTableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:commitEditingStyle:forRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     if (self.canEditRows && editingStyle == UITableViewCellEditingStyleDelete) {
-        NSManagedObject* managedObject = [self objectForRowAtIndexPath:indexPath];
-        RKObjectMapping* mapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[managedObject class]];
+        NSManagedObject *managedObject = [self objectForRowAtIndexPath:indexPath];
+        RKObjectMapping *mapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[managedObject class]];
         if ([mapping isKindOfClass:[RKManagedObjectMapping class]]) {
-            RKManagedObjectMapping* managedObjectMapping = (RKManagedObjectMapping*)mapping;
-            NSString* primaryKeyAttribute = managedObjectMapping.primaryKeyAttribute;
+            RKManagedObjectMapping *managedObjectMapping = (RKManagedObjectMapping *)mapping;
+            NSString *primaryKeyAttribute = managedObjectMapping.primaryKeyAttribute;
 
             if ([managedObject valueForKeyPath:primaryKeyAttribute]) {
                 RKLogTrace(@"About to fire a delete request for managedObject: %@", managedObject);
@@ -461,7 +461,7 @@
                 RKLogTrace(@"About to locally delete managedObject: %@", managedObject);
                 [managedObject.managedObjectContext deleteObject:managedObject];
 
-                NSError* error = nil;
+                NSError *error = nil;
                 [managedObject.managedObjectContext save:&error];
                 if (error) {
                     RKLogError(@"Failed to save managedObjectContext after a delete with error: %@", error);
@@ -471,18 +471,18 @@
     }
 }
 
-- (void)tableView:(UITableView*)theTableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destIndexPath
+- (void)tableView:(UITableView *)theTableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destIndexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:moveRowAtIndexPath:toIndexPath: invoked with inappropriate tableView: %@", theTableView);
 }
 
-- (BOOL)tableView:(UITableView*)theTableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)tableView:(UITableView *)theTableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:canEditRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     return self.canEditRows && [self isOnline] && !([self isHeaderIndexPath:indexPath] || [self isFooterIndexPath:indexPath] || [self isEmptyItemIndexPath:indexPath]);
 }
 
-- (BOOL)tableView:(UITableView*)theTableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)tableView:(UITableView *)theTableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:canMoveRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     return self.canMoveRows && !([self isHeaderIndexPath:indexPath] || [self isFooterIndexPath:indexPath] || [self isEmptyItemIndexPath:indexPath]);
@@ -490,23 +490,23 @@
 
 #pragma mark - UITableViewDelegate methods
 
-- (CGFloat)tableView:(UITableView*)theTableView heightForHeaderInSection:(NSInteger)section
+- (CGFloat)tableView:(UITableView *)theTableView heightForHeaderInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"heightForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
     return _heightForHeaderInSection;
 }
 
-- (CGFloat)tableView:(UITableView*)theTableView heightForFooterInSection:(NSInteger)sectionIndex
+- (CGFloat)tableView:(UITableView *)theTableView heightForFooterInSection:(NSInteger)sectionIndex
 {
     NSAssert(theTableView == self.tableView, @"heightForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
     return 0;
 }
 
-- (UIView*)tableView:(UITableView*)theTableView viewForHeaderInSection:(NSInteger)section
+- (UIView *)tableView:(UITableView *)theTableView viewForHeaderInSection:(NSInteger)section
 {
     NSAssert(theTableView == self.tableView, @"viewForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
     if (_onViewForHeaderInSection) {
-        NSString* sectionTitle = [self tableView:self.tableView titleForHeaderInSection:section];
+        NSString *sectionTitle = [self tableView:self.tableView titleForHeaderInSection:section];
         if (sectionTitle) {
             return _onViewForHeaderInSection(section, sectionTitle);
         }
@@ -514,7 +514,7 @@
     return nil;
 }
 
-- (UIView*)tableView:(UITableView*)theTableView viewForFooterInSection:(NSInteger)sectionIndex
+- (UIView *)tableView:(UITableView *)theTableView viewForFooterInSection:(NSInteger)sectionIndex
 {
     NSAssert(theTableView == self.tableView, @"viewForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
     return nil;
@@ -568,7 +568,7 @@
 
 #pragma mark - NSFetchedResultsControllerDelegate methods
 
-- (void)controllerWillChangeContent:(NSFetchedResultsController*)controller
+- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
 {
     RKLogTrace(@"Beginning updates for fetchedResultsController (%@). Current section count = %d (resource path: %@)", controller, [[controller sections] count], _resourcePath);
 
@@ -578,7 +578,7 @@
     _isEmptyBeforeAnimation = [self isEmpty];
 }
 
-- (void)controller:(NSFetchedResultsController*)controller
+- (void)controller:(NSFetchedResultsController *)controller
   didChangeSection:(id<NSFetchedResultsSectionInfo>)sectionInfo
            atIndex:(NSUInteger)sectionIndex
      forChangeType:(NSFetchedResultsChangeType)type
@@ -611,7 +611,7 @@
     }
 }
 
-- (void)controller:(NSFetchedResultsController*)controller
+- (void)controller:(NSFetchedResultsController *)controller
    didChangeObject:(id)anObject
        atIndexPath:(NSIndexPath *)indexPath
      forChangeType:(NSFetchedResultsChangeType)type
@@ -620,8 +620,8 @@
 
     if (_sortSelector) return;
 
-    NSIndexPath* adjIndexPath = [self indexPathForFetchedResultsIndexPath:indexPath];
-    NSIndexPath* adjNewIndexPath = [self indexPathForFetchedResultsIndexPath:newIndexPath];
+    NSIndexPath *adjIndexPath = [self indexPathForFetchedResultsIndexPath:indexPath];
+    NSIndexPath *adjNewIndexPath = [self indexPathForFetchedResultsIndexPath:newIndexPath];
 
     switch (type) {
         case NSFetchedResultsChangeInsert:
@@ -655,7 +655,7 @@
     }
 }
 
-- (void)controllerDidChangeContent:(NSFetchedResultsController*)controller
+- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     RKLogTrace(@"Ending updates for fetchedResultsController (%@). New section count = %d (resource path: %@)",
                controller, [[controller sections] count], _resourcePath);
@@ -677,10 +677,10 @@
 
 #pragma mark - UITableViewDataSource methods
 
-- (UITableViewCell *)tableView:(UITableView*)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
-    UITableViewCell* cell = [self cellForObjectAtIndexPath:indexPath];
+    UITableViewCell *cell = [self cellForObjectAtIndexPath:indexPath];
 
     RKLogTrace(@"%@ cellForRowAtIndexPath:%@ = %@", self, indexPath, cell);
     return cell;

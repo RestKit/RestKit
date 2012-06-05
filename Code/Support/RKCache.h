@@ -19,20 +19,20 @@
 //
 
 @interface RKCache : NSObject {
-    NSString* _cachePath;
-    NSRecursiveLock* _cacheLock;
+    NSString *_cachePath;
+    NSRecursiveLock *_cacheLock;
 }
 
-@property (nonatomic, readonly) NSString* cachePath;
+@property (nonatomic, readonly) NSString *cachePath;
 
-- (id)initWithPath:(NSString*)cachePath subDirectories:(NSArray*)subDirectories;
-- (BOOL)hasEntry:(NSString*)cacheKey;
-- (void)invalidateEntry:(NSString*)cacheKey;
-- (void)invalidateSubDirectory:(NSString*)subDirectory;
+- (id)initWithPath:(NSString *)cachePath subDirectories:(NSArray *)subDirectories;
+- (BOOL)hasEntry:(NSString *)cacheKey;
+- (void)invalidateEntry:(NSString *)cacheKey;
+- (void)invalidateSubDirectory:(NSString *)subDirectory;
 - (void)invalidateAll;
-- (void)writeDictionary:(NSDictionary*)dictionary withCacheKey:(NSString*)cacheKey;
-- (void)writeData:(NSData*)data withCacheKey:(NSString*)cacheKey;
-- (NSDictionary*)dictionaryForCacheKey:(NSString*)cacheKey ;
-- (NSData*)dataForCacheKey:(NSString*)cacheKey;
+- (void)writeDictionary:(NSDictionary *)dictionary withCacheKey:(NSString *)cacheKey;
+- (void)writeData:(NSData *)data withCacheKey:(NSString *)cacheKey;
+- (NSDictionary *)dictionaryForCacheKey:(NSString *)cacheKey ;
+- (NSData *)dataForCacheKey:(NSString *)cacheKey;
 
 @end

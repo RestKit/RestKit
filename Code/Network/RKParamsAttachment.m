@@ -31,7 +31,7 @@
 /**
  * The multi-part boundary. See RKParams.m
  */
-extern NSString* const kRKStringBoundary;
+extern NSString * const kRKStringBoundary;
 
 @implementation RKParamsAttachment
 
@@ -56,7 +56,7 @@ extern NSString* const kRKStringBoundary;
 {
     if ((self = [self initWithName:name])) {
         if ([value respondsToSelector:@selector(dataUsingEncoding:)]) {
-            _body = [[(NSString*)value dataUsingEncoding:NSUTF8StringEncoding] retain];
+            _body = [[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] retain];
         } else {
             _body = [[[NSString stringWithFormat:@"%@", value] dataUsingEncoding:NSUTF8StringEncoding] retain];
         }
@@ -69,7 +69,7 @@ extern NSString* const kRKStringBoundary;
     return self;
 }
 
-- (id)initWithName:(NSString*)name data:(NSData*)data
+- (id)initWithName:(NSString *)name data:(NSData *)data
 {
     self = [self initWithName:name];
     if (self) {
@@ -81,7 +81,7 @@ extern NSString* const kRKStringBoundary;
     return self;
 }
 
-- (id)initWithName:(NSString*)name file:(NSString*)filePath
+- (id)initWithName:(NSString *)name file:(NSString *)filePath
 {
     self = [self initWithName:name];
     if (self) {
@@ -93,8 +93,8 @@ extern NSString* const kRKStringBoundary;
         _MIMEType = [MIMEType retain];
         _bodyStream = [[NSInputStream alloc] initWithFileAtPath:filePath];
 
-        NSError* error;
-        NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+        NSError *error;
+        NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
         if (attributes) {
             _bodyLength    = [[attributes objectForKey:NSFileSize] unsignedIntegerValue];
         }
@@ -125,7 +125,7 @@ extern NSString* const kRKStringBoundary;
     [super dealloc];
 }
 
-- (NSString*)MIMEBoundary
+- (NSString *)MIMEBoundary
 {
     return kRKStringBoundary;
 }

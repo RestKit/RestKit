@@ -22,7 +22,7 @@
 #import "RKResponse.h"
 
 @interface RKResponseTest : RKTestCase {
-    RKResponse* _response;
+    RKResponse *_response;
 }
 
 @end
@@ -36,7 +36,7 @@
 
 - (void)testShouldConsiderResponsesLessThanOneHudredOrGreaterThanSixHundredInvalid
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 99;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -48,7 +48,7 @@
 
 - (void)testShouldConsiderResponsesInTheOneHudredsInformational
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 100;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -60,7 +60,7 @@
 
 - (void)testShouldConsiderResponsesInTheTwoHundredsSuccessful
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger twoHundred = 200;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(twoHundred)] statusCode];
@@ -72,7 +72,7 @@
 
 - (void)testShouldConsiderResponsesInTheThreeHundredsRedirects
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 300;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -84,7 +84,7 @@
 
 - (void)testShouldConsiderResponsesInTheFourHundredsClientErrors
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 400;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -96,7 +96,7 @@
 
 - (void)testShouldConsiderResponsesInTheFiveHundredsServerErrors
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 500;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -108,7 +108,7 @@
 
 - (void)testShouldConsiderATwoHundredResponseOK
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 200;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -117,7 +117,7 @@
 
 - (void)testShouldConsiderATwoHundredAndOneResponseCreated
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 201;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -126,7 +126,7 @@
 
 - (void)testShouldConsiderAFourOhThreeResponseForbidden
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 403;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -135,7 +135,7 @@
 
 - (void)testShouldConsiderAFourOhFourResponseNotFound
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 404;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -144,7 +144,7 @@
 
 - (void)testShouldConsiderAFourOhNineResponseConflict
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 409;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -153,7 +153,7 @@
 
 - (void)testShouldConsiderAFourHundredAndTenResponseConflict
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 410;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -162,7 +162,7 @@
 
 - (void)testShouldConsiderVariousThreeHundredResponsesRedirect
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 301;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -180,7 +180,7 @@
 
 - (void)testShouldConsiderVariousResponsesEmpty
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     NSInteger statusCode = 201;
     [[[mock stub] andReturnValue:OCMOCK_VALUE(statusCode)] statusCode];
@@ -195,9 +195,9 @@
 
 - (void)testShouldMakeTheContentTypeHeaderAccessible
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
-    NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
+    NSDictionary *headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
     [[[mock stub] andReturn:headers] allHeaderFields];
     assertThat([mock contentType], is(equalTo(@"application/xml")));
 }
@@ -205,47 +205,47 @@
 // Should this return a string???
 - (void)testShouldMakeTheContentLengthHeaderAccessible
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
-    NSDictionary* headers = [NSDictionary dictionaryWithObject:@"12345" forKey:@"Content-Length"];
+    NSDictionary *headers = [NSDictionary dictionaryWithObject:@"12345" forKey:@"Content-Length"];
     [[[mock stub] andReturn:headers] allHeaderFields];
     assertThat([mock contentLength], is(equalTo(@"12345")));
 }
 
 - (void)testShouldMakeTheLocationHeaderAccessible
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
-    NSDictionary* headers = [NSDictionary dictionaryWithObject:@"/foo/bar" forKey:@"Location"];
+    NSDictionary *headers = [NSDictionary dictionaryWithObject:@"/foo/bar" forKey:@"Location"];
     [[[mock stub] andReturn:headers] allHeaderFields];
     assertThat([mock location], is(equalTo(@"/foo/bar")));
 }
 
 - (void)testShouldKnowIfItIsAnXMLResponse
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
-    NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
+    NSDictionary *headers = [NSDictionary dictionaryWithObject:@"application/xml" forKey:@"Content-Type"];
     [[[mock stub] andReturn:headers] allHeaderFields];
     assertThatBool([mock isXML], is(equalToBool(YES)));
 }
 
 - (void)testShouldKnowIfItIsAnJSONResponse
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
-    NSDictionary* headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
+    NSDictionary *headers = [NSDictionary dictionaryWithObject:@"application/json" forKey:@"Content-Type"];
     [[[mock stub] andReturn:headers] allHeaderFields];
     assertThatBool([mock isJSON], is(equalToBool(YES)));
 }
 
 - (void)testShouldReturnParseErrorsWhenParsedBodyFails
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mock = [OCMockObject partialMockForObject:response];
     [[[mock stub] andReturn:@"sad;sdvjnk;"] bodyAsString];
     [[[mock stub] andReturn:@"application/json"] MIMEType];
-    NSError* error = nil;
+    NSError *error = nil;
     id object = [mock parsedBody:&error];
     assertThat(object, is(nilValue()));
     assertThat(error, isNot(nilValue()));
@@ -265,14 +265,14 @@
 
 - (void)testShouldNotCrashWhenParserReturnsNilWithoutAnError
 {
-    RKResponse* response = [[[RKResponse alloc] init] autorelease];
+    RKResponse *response = [[[RKResponse alloc] init] autorelease];
     id mockResponse = [OCMockObject partialMockForObject:response];
     [[[mockResponse stub] andReturn:@""] bodyAsString];
     [[[mockResponse stub] andReturn:RKMIMETypeJSON] MIMEType];
     id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
     id mockRegistry = [OCMockObject partialMockForObject:[RKParserRegistry sharedRegistry]];
     [[[mockRegistry expect] andReturn:mockParser] parserForMIMEType:RKMIMETypeJSON];
-    NSError* error = nil;
+    NSError *error = nil;
     [[[mockParser expect] andReturn:nil] objectFromString:@"" error:[OCMArg setTo:error]];
     id object = [mockResponse parsedBody:&error];
     [mockRegistry verify];
@@ -284,8 +284,8 @@
 
 - (void)testLoadingNonUTF8Charset
 {
-    RKClient* client = [RKTestFactory client];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     [client get:@"/encoding" delegate:loader];
     [loader waitForResponse];
     assertThat([loader.response bodyEncodingName], is(equalTo(@"us-ascii")));
@@ -294,8 +294,8 @@
 
 - (void)testFollowRedirect
 {
-    RKClient* client = [RKTestFactory client];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     [client get:@"/redirection" delegate:loader];
     [loader waitForResponse];
     assertThatInteger(loader.response.statusCode, is(equalToInteger(200)));
@@ -306,10 +306,10 @@
 
 - (void)testNoFollowRedirect
 {
-    RKClient* client = [RKTestFactory client];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
 
-    RKRequest* request = [client requestWithResourcePath:@"/redirection"];
+    RKRequest *request = [client requestWithResourcePath:@"/redirection"];
     request.method = RKRequestMethodGET;
     request.followRedirect = NO;
     request.delegate = loader;
@@ -324,7 +324,7 @@
 - (void)testThatLoadingInvalidURLDoesNotCrashApp
 {
     NSURL *URL = [[NSURL alloc] initWithString:@"http://localhost:5629"];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKClient *client = [RKClient clientWithBaseURL:URL];
 
     RKRequest *request = [client requestWithResourcePath:@"/invalid"];

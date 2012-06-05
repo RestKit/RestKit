@@ -30,11 +30,11 @@
 
 - (void)testShouldNotOverReleaseTheParams
 {
-    NSDictionary* dictionary = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
-    RKParams* params = [[RKParams alloc] initWithDictionary:dictionary];
-    NSURL* URL = [NSURL URLWithString:[[RKTestFactory baseURLString] stringByAppendingFormat:@"/echo_params"]];
-    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
-    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"];
+    RKParams *params = [[RKParams alloc] initWithDictionary:dictionary];
+    NSURL *URL = [NSURL URLWithString:[[RKTestFactory baseURLString] stringByAppendingFormat:@"/echo_params"]];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    RKRequest *request = [[RKRequest alloc] initWithURL:URL];
     request.method = RKRequestMethodPOST;
     request.params = params;
     request.delegate = responseLoader;
@@ -45,15 +45,15 @@
 
 - (void)testShouldUploadFilesViaRKParams
 {
-    RKClient* client = [RKTestFactory client];
-    RKParams* params = [RKParams params];
+    RKClient *client = [RKTestFactory client];
+    RKParams *params = [RKParams params];
     [params setValue:@"one" forParam:@"value"];
     [params setValue:@"two" forParam:@"value"];
     [params setValue:@"three" forParam:@"value"];
     [params setValue:@"four" forParam:@"value"];
     NSData *data = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
     [params setData:data MIMEType:@"image/png" forParam:@"file"];
-    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     [client post:@"/upload" params:params delegate:responseLoader];
     [responseLoader waitForResponse];
     assertThatInteger(responseLoader.response.statusCode, is(equalToInt(200)));
@@ -61,17 +61,17 @@
 
 - (void)testShouldUploadFilesViaRKParamsWithMixedTypes
 {
-    NSNumber* idUsuari = [NSNumber numberWithInt:1234];
-    NSArray* userList = [NSArray arrayWithObjects:@"one", @"two", @"three", nil];
-    NSNumber* idTema = [NSNumber numberWithInt:1234];
-    NSString* titulo = @"whatever";
-    NSString* texto = @"more text";
+    NSNumber *idUsuari = [NSNumber numberWithInt:1234];
+    NSArray *userList = [NSArray arrayWithObjects:@"one", @"two", @"three", nil];
+    NSNumber *idTema = [NSNumber numberWithInt:1234];
+    NSString *titulo = @"whatever";
+    NSString *texto = @"more text";
     NSData *data = [RKTestFixture dataWithContentsOfFixture:@"blake.png"];
-    NSNumber* cel = [NSNumber numberWithFloat:1.232442];
-    NSNumber* lon = [NSNumber numberWithFloat:18231.232442];;
-    NSNumber* lat = [NSNumber numberWithFloat:13213123.232442];;
+    NSNumber *cel = [NSNumber numberWithFloat:1.232442];
+    NSNumber *lon = [NSNumber numberWithFloat:18231.232442];;
+    NSNumber *lat = [NSNumber numberWithFloat:13213123.232442];;
 
-    RKParams* params = [RKParams params];
+    RKParams *params = [RKParams params];
 
     // Set values
     [params setValue:idUsuari forParam:@"idUsuariPropietari"];
@@ -86,8 +86,8 @@
     [params setValue:lon forParam:@"lon"];
     [params setValue:lat forParam:@"lat"];
 
-    RKClient* client = [RKTestFactory client];
-    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
+    RKClient *client = [RKTestFactory client];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     [client post:@"/upload" params:params delegate:responseLoader];
     [responseLoader waitForResponse];
     assertThatInteger(responseLoader.response.statusCode, is(equalToInt(200)));
@@ -103,8 +103,8 @@
 
 - (void)testShouldProperlyCalculateContentLengthForFileUploads
 {
-    RKClient* client = [RKTestFactory client];
-    RKParams* params = [RKParams params];
+    RKClient *client = [RKTestFactory client];
+    RKParams *params = [RKParams params];
     [params setValue:@"one" forParam:@"value"];
     [params setValue:@"two" forParam:@"value"];
     [params setValue:@"three" forParam:@"value"];

@@ -29,7 +29,7 @@
 #import <RestKit/Testing.h>
 #import <RestKit/RKManagedObjectStore.h>
 
-RKOAuthClient* RKTestNewOAuthClient(RKTestResponseLoader* loader);
+RKOAuthClient *RKTestNewOAuthClient(RKTestResponseLoader *loader);
 
 /*
  Base class for RestKit test cases. Provides initialization of testing

@@ -57,7 +57,7 @@
     _awaitingResponse = NO;
 }
 
-- (void)tableController:(RKAbstractTableController*)tableController didFailLoadWithError:(NSError *)error
+- (void)tableController:(RKAbstractTableController *)tableController didFailLoadWithError:(NSError *)error
 {
     _awaitingResponse = NO;
 }
@@ -88,31 +88,31 @@
 - (void)tableController:(RKAbstractTableController *)tableController didLoadTableWithObjectLoader:(RKObjectLoader *)objectLoader
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController willBeginEditing:(id)object atIndexPath:(NSIndexPath*)indexPath
+- (void)tableController:(RKAbstractTableController *)tableController willBeginEditing:(id)object atIndexPath:(NSIndexPath *)indexPath
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController didEndEditing:(id)object atIndexPath:(NSIndexPath*)indexPath
+- (void)tableController:(RKAbstractTableController *)tableController didEndEditing:(id)object atIndexPath:(NSIndexPath *)indexPath
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController didInsertSection:(RKTableSection*)section atIndex:(NSUInteger)sectionIndex
+- (void)tableController:(RKAbstractTableController *)tableController didInsertSection:(RKTableSection *)section atIndex:(NSUInteger)sectionIndex
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController didRemoveSection:(RKTableSection*)section atIndex:(NSUInteger)sectionIndex
+- (void)tableController:(RKAbstractTableController *)tableController didRemoveSection:(RKTableSection *)section atIndex:(NSUInteger)sectionIndex
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController didInsertObject:(id)object atIndexPath:(NSIndexPath*)indexPath
+- (void)tableController:(RKAbstractTableController *)tableController didInsertObject:(id)object atIndexPath:(NSIndexPath *)indexPath
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController didUpdateObject:(id)object atIndexPath:(NSIndexPath*)indexPath
+- (void)tableController:(RKAbstractTableController *)tableController didUpdateObject:(id)object atIndexPath:(NSIndexPath *)indexPath
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController didDeleteObject:(id)object atIndexPath:(NSIndexPath*)indexPath
+- (void)tableController:(RKAbstractTableController *)tableController didDeleteObject:(id)object atIndexPath:(NSIndexPath *)indexPath
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController willAddSwipeView:(UIView*)swipeView toCell:(UITableViewCell*)cell forObject:(id)object
+- (void)tableController:(RKAbstractTableController *)tableController willAddSwipeView:(UIView *)swipeView toCell:(UITableViewCell *)cell forObject:(id)object
 {}
 
-- (void)tableController:(RKAbstractTableController*)tableController willRemoveSwipeView:(UIView*)swipeView fromCell:(UITableViewCell*)cell forObject:(id)object
+- (void)tableController:(RKAbstractTableController *)tableController willRemoveSwipeView:(UIView *)swipeView fromCell:(UITableViewCell *)cell forObject:(id)object
 {}
 
 - (void)tableController:(RKTableController *)tableController didLoadObjects:(NSArray *)objects inSection:(NSUInteger)sectionIndex

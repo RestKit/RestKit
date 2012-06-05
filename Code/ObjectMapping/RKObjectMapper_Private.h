@@ -21,7 +21,7 @@
 @interface RKObjectMapper (Private)
 
 - (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping;
-- (NSArray*)mapCollection:(NSArray*)mappableObjects atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMappingDefinition *)mapping;
+- (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping;
 - (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping;
 - (id)objectWithMapping:(RKObjectMappingDefinition *)objectMapping andData:(id)mappableData;
 

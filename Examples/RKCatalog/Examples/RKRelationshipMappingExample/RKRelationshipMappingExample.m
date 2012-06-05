@@ -19,18 +19,18 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
+        RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
         RKManagedObjectStore *objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
         objectManager.objectStore = objectStore;
 
-        RKManagedObjectMapping* taskMapping = [RKManagedObjectMapping mappingForClass:[Task class] inManagedObjectStore:objectStore];
+        RKManagedObjectMapping *taskMapping = [RKManagedObjectMapping mappingForClass:[Task class] inManagedObjectStore:objectStore];
         taskMapping.primaryKeyAttribute = @"taskID";
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
         [objectManager.mappingProvider setMapping:taskMapping forKeyPath:@"task"];
 
-        RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class] inManagedObjectStore:objectStore];
+        RKManagedObjectMapping *userMapping = [RKManagedObjectMapping mappingForClass:[User class] inManagedObjectStore:objectStore];
         userMapping.primaryKeyAttribute = @"userID";
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
@@ -42,7 +42,7 @@
         [taskMapping connectRelationship:@"assignedUser" withObjectForPrimaryKeyAttribute:@"assignedUserID"];
 
         // NOTE - Project is not backed by Core Data
-        RKObjectMapping* projectMapping = [RKObjectMapping mappingForClass:[Project class]];
+        RKObjectMapping *projectMapping = [RKObjectMapping mappingForClass:[Project class]];
         [projectMapping mapKeyPath:@"id" toAttribute:@"projectID"];
         [projectMapping mapAttributes:@"name", @"description", nil];
         [projectMapping mapRelationship:@"user" withMapping:userMapping];
@@ -76,7 +76,7 @@
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
 {
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Rats!" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"Rats!" otherButtonTitles:nil];
     [alert show];
     [alert release];
 }
@@ -95,7 +95,7 @@
         return [_objects count];
     } else {
         // Return number of tasks in the selected project...
-        NSIndexPath* indexPath = [self.tableView indexPathForSelectedRow];
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         if (indexPath) {
             return [[[_objects objectAtIndex:indexPath.row] tasks] count];
         }
@@ -106,7 +106,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 150, 100)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 150, 100)];
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont boldSystemFontOfSize:18];
 
@@ -137,7 +137,7 @@
     _selectedProject = [[_objects objectAtIndex:indexPath.row] retain];
 
     [self.tableView reloadData];
-    UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
+    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
 }
 
@@ -151,13 +151,13 @@
     }
 
     if (indexPath.section == 0) {
-        Project* project = (Project*) [_objects objectAtIndex:indexPath.row];
+        Project *project = (Project *) [_objects objectAtIndex:indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.text = project.name;
     } else if (indexPath.section == 1) {
         // NOTE: We refetch the object here because Project is not Core Data backed
-        NSManagedObject* objectReference = [_selectedProject.tasks objectAtIndex:indexPath.row];
-        Task* task = (Task*) [[RKObjectManager sharedManager].objectStore objectWithID:[objectReference objectID]];
+        NSManagedObject *objectReference = [_selectedProject.tasks objectAtIndex:indexPath.row];
+        Task *task = (Task *) [[RKObjectManager sharedManager].objectStore objectWithID:[objectReference objectID]];
         cell.textLabel.text = [NSString stringWithFormat:@"%@", task.name];
         cell.detailTextLabel.text = [NSString stringWithFormat:@"Assigned to: %@", task.assignedUser.name];
     }

@@ -47,7 +47,7 @@ NSString *RKMakeURLPath(NSString *resourcePath) {
     return [[[RKClient sharedClient].baseURL URLByAppendingResourcePath:resourcePath] absoluteString];
 }
 
-NSString *RKMakePathWithObjectAddingEscapes(NSString* pattern, id object, BOOL addEscapes) {
+NSString *RKMakePathWithObjectAddingEscapes(NSString *pattern, id object, BOOL addEscapes) {
     NSCAssert(pattern != NULL, @"Pattern string must not be empty in order to create a path from an interpolated object.");
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pattern];
@@ -378,7 +378,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 - (RKRequest *)load:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate
 {
-    RKURL* resourcePathURL = nil;
+    RKURL *resourcePathURL = nil;
     if (method == RKRequestMethodGET) {
         resourcePathURL = [self.baseURL URLByAppendingResourcePath:resourcePath queryParameters:(NSDictionary *)params];
     } else {

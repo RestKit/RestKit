@@ -45,7 +45,7 @@ NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
 
 // NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
 NSString *RKEncodeURLString(NSString *unencodedString) {
-    NSString * encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(
+    NSString *encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(
                                                                                    NULL,
                                                                                    (CFStringRef)unencodedString,
                                                                                    NULL,
@@ -69,7 +69,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RKPathMatcher* copy = [[[self class] allocWithZone:zone] init];
+    RKPathMatcher *copy = [[[self class] allocWithZone:zone] init];
     copy.socPattern = self.socPattern;
     copy.sourcePath = self.sourcePath;
     copy.rootPath = self.rootPath;
@@ -167,9 +167,9 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
 {
     NSAssert(self.socPattern != NULL, @"Matcher has no established pattern.  Instantiate it using matcherWithPattern: before calling pathFromObject:");
     NSAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
-    NSString *(^encoderBlock)(NSString* interpolatedString) = nil;
+    NSString *(^encoderBlock)(NSString *interpolatedString) = nil;
     if (addEscapes)
-        encoderBlock = ^NSString *(NSString* interpolatedString) {
+        encoderBlock = ^NSString *(NSString *interpolatedString) {
             return RKEncodeURLString(interpolatedString);
         };
     NSString *path = [self.socPattern stringFromObject:object withBlock:encoderBlock];

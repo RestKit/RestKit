@@ -43,9 +43,9 @@
 @end
 
 // Constants
-NSString* const RKReachabilityDidChangeNotification = @"RKReachabilityDidChangeNotification";
-NSString* const RKReachabilityFlagsUserInfoKey = @"RKReachabilityFlagsUserInfoKey";
-NSString* const RKReachabilityWasDeterminedNotification = @"RKReachabilityWasDeterminedNotification";
+NSString * const RKReachabilityDidChangeNotification = @"RKReachabilityDidChangeNotification";
+NSString * const RKReachabilityFlagsUserInfoKey = @"RKReachabilityFlagsUserInfoKey";
+NSString * const RKReachabilityWasDeterminedNotification = @"RKReachabilityWasDeterminedNotification";
 
 static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info) {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];

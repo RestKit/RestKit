@@ -30,15 +30,15 @@
 
 - (IBAction)uploadButtonWasTouched:(id)sender
 {
-    RKParams* params = [RKParams params];
+    RKParams *params = [RKParams params];
 
     // Attach the Image from Image View
     NSLog(@"Got image: %@", [_imageView image]);
-    NSData* imageData = UIImagePNGRepresentation([_imageView image]);
+    NSData *imageData = UIImagePNGRepresentation([_imageView image]);
     [params setData:imageData MIMEType:@"image/png" forParam:@"image1"];
 
     // Attach an Image from the App Bundle
-    UIImage* image = [UIImage imageNamed:@"RestKit.png"];
+    UIImage *image = [UIImage imageNamed:@"RestKit.png"];
     imageData = UIImagePNGRepresentation(image);
     [params setData:imageData MIMEType:@"image/png" forParam:@"image2"];
 

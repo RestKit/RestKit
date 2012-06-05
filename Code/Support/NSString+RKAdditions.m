@@ -69,44 +69,44 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     return [self queryParametersUsingEncoding:NSUTF8StringEncoding];
 }
 
-- (NSDictionary*)queryParametersUsingEncoding:(NSStringEncoding)encoding
+- (NSDictionary *)queryParametersUsingEncoding:(NSStringEncoding)encoding
 {
     return [self queryParametersUsingArrays:NO encoding:encoding];
 }
 
 // TODO: Eliminate...
-- (NSDictionary*)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding
+- (NSDictionary *)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding
 {
     NSString *stringToParse = self;
     NSRange chopRange = [stringToParse rangeOfString:@"?"];
     if (chopRange.length > 0) {
-        chopRange.location += 1; // we want inclusive chopping up *through* "?"
+        chopRange.location += 1; // we want inclusive chopping up *through *"?"
         if (chopRange.location < [stringToParse length])
             stringToParse = [stringToParse substringFromIndex:chopRange.location];
     }
-    NSCharacterSet* delimiterSet = [NSCharacterSet characterSetWithCharactersInString:@"&;"];
-    NSMutableDictionary* pairs = [NSMutableDictionary dictionary];
-    NSScanner* scanner = [[[NSScanner alloc] initWithString:stringToParse] autorelease];
+    NSCharacterSet *delimiterSet = [NSCharacterSet characterSetWithCharactersInString:@"&;"];
+    NSMutableDictionary *pairs = [NSMutableDictionary dictionary];
+    NSScanner *scanner = [[[NSScanner alloc] initWithString:stringToParse] autorelease];
     while (![scanner isAtEnd]) {
-        NSString* pairString = nil;
+        NSString *pairString = nil;
         [scanner scanUpToCharactersFromSet:delimiterSet intoString:&pairString];
         [scanner scanCharactersFromSet:delimiterSet intoString:NULL];
-        NSArray* kvPair = [pairString componentsSeparatedByString:@"="];
+        NSArray *kvPair = [pairString componentsSeparatedByString:@"="];
 
         if (!shouldUseArrays) {
             if (kvPair.count == 2) {
-                NSString* key = [[kvPair objectAtIndex:0]
+                NSString *key = [[kvPair objectAtIndex:0]
                                  stringByReplacingPercentEscapesUsingEncoding:encoding];
-                NSString* value = [[kvPair objectAtIndex:1]
+                NSString *value = [[kvPair objectAtIndex:1]
                                    stringByReplacingPercentEscapesUsingEncoding:encoding];
                 [pairs setObject:value forKey:key];
             }
         }
         else {
             if (kvPair.count == 1 || kvPair.count == 2) {
-                NSString* key = [[kvPair objectAtIndex:0]
+                NSString *key = [[kvPair objectAtIndex:0]
                                  stringByReplacingPercentEscapesUsingEncoding:encoding];
-                NSMutableArray* values = [pairs objectForKey:key];
+                NSMutableArray *values = [pairs objectForKey:key];
                 if (nil == values) {
                     values = [NSMutableArray array];
                     [pairs setObject:values forKey:key];
@@ -115,7 +115,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
                     [values addObject:[NSNull null]];
 
                 } else if (kvPair.count == 2) {
-                    NSString* value = [[kvPair objectAtIndex:1]
+                    NSString *value = [[kvPair objectAtIndex:1]
                                        stringByReplacingPercentEscapesUsingEncoding:encoding];
                     [values addObject:value];
                 }
@@ -188,7 +188,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 - (NSString *)MD5
 {
     // Create pointer to the string as UTF8
-    const char* ptr = [self UTF8String];
+    const char *ptr = [self UTF8String];
 
     // Create byte array of unsigned chars
     unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
@@ -197,7 +197,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     CC_MD5(ptr, (CC_LONG) strlen(ptr), md5Buffer);
 
     // Convert MD5 value in the buffer to NSString of hex values
-    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH * 2];
+    NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH *2];
     for (int i = 0; i < CC_MD5_DIGEST_LENGTH; i++) {
         [output appendFormat:@"%02x", md5Buffer[i]];
     }

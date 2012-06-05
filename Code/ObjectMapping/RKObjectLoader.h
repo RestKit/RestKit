@@ -285,6 +285,6 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
 
 @class RKObjectManager;
 @interface RKObjectLoader (Deprecations)
-+ (id)loaderWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (id)initWithResourcePath:(NSString*)resourcePath objectManager:(RKObjectManager*)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
++ (id)loaderWithResourcePath:(NSString *)resourcePath objectManager:(RKObjectManager *)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (id)initWithResourcePath:(NSString *)resourcePath objectManager:(RKObjectManager *)objectManager delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 @end

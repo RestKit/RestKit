@@ -40,20 +40,20 @@
     [super dealloc];
 }
 
-+ (RKObjectMappingResult*)mappingResultWithDictionary:(NSDictionary*)keyPathToMappedObjects
++ (RKObjectMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects
 {
     return [[[self alloc] initWithDictionary:keyPathToMappedObjects] autorelease];
 }
 
-- (NSDictionary*)asDictionary
+- (NSDictionary *)asDictionary
 {
     return _keyPathToMappedObjects;
 }
 
-- (NSArray*)asCollection
+- (NSArray *)asCollection
 {
     // Flatten results down into a single array
-    NSMutableArray* collection = [NSMutableArray array];
+    NSMutableArray *collection = [NSMutableArray array];
     for (id object in [_keyPathToMappedObjects allValues]) {
         // We don't want to strip the keys off of a mapped dictionary result
 
@@ -69,7 +69,7 @@
 
 - (id)asObject
 {
-    NSArray* collection = [self asCollection];
+    NSArray *collection = [self asCollection];
     NSUInteger count = [collection count];
     if (count == 0) {
         return nil;
@@ -79,19 +79,19 @@
     return [collection objectAtIndex:0];
 }
 
-- (NSError*)asError
+- (NSError *)asError
 {
-    NSArray* collection = [self asCollection];
-    NSString* description = nil;
+    NSArray *collection = [self asCollection];
+    NSString *description = nil;
     if ([collection count] > 0) {
         description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
     } else {
         RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
     }
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
                               description, NSLocalizedDescriptionKey, nil];
 
-    NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
+    NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
     return error;
 }
 

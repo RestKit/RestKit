@@ -94,7 +94,7 @@
                                      @"RKObjectMapperKeyPath", keyPath ? keyPath : (NSString *) [NSNull null],
                                      nil];
     [userInfo addEntriesFromDictionary:otherInfo];
-    NSError* error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
+    NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
     [self addError:error];
 }
 
@@ -311,7 +311,7 @@
 
         // Found something to map
         foundMappable = YES;
-        RKObjectMappingDefinition * mapping = [mappingsByKeyPath objectForKey:keyPath];
+        RKObjectMappingDefinition *mapping = [mappingsByKeyPath objectForKey:keyPath];
         if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
             [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:mapping];
         }
@@ -351,7 +351,7 @@
     } else if ([mappingsForContext isKindOfClass:[RKObjectMappingDefinition class]]) {
         id mappableData = self.sourceObject;
         if ([mappingsForContext rootKeyPath] != nil) {
-            NSString* rootKeyPath = [mappingsForContext rootKeyPath];
+            NSString *rootKeyPath = [mappingsForContext rootKeyPath];
             mappableData = [self.sourceObject valueForKeyPath:rootKeyPath];
             RKLogDebug(@"Selected object mapping has rootKeyPath. Apply valueForKeyPath to mappable data: %@", rootKeyPath);
         }

@@ -38,7 +38,7 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
 
 + (id)valueWithBlock:(RKMutableBlockDictionaryValueBlock)executionBlock
 {
-    RKMutableBlockDictionaryBlockValue* value = [[self new] autorelease];
+    RKMutableBlockDictionaryBlockValue *value = [[self new] autorelease];
     value.executionBlock = executionBlock;
 
     return value;
@@ -119,7 +119,7 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
 
 - (void)setValueWithBlock:(id (^)())block forKey:(NSString *)key
 {
-    RKMutableBlockDictionaryBlockValue* blockValue = [RKMutableBlockDictionaryBlockValue valueWithBlock:block];
+    RKMutableBlockDictionaryBlockValue *blockValue = [RKMutableBlockDictionaryBlockValue valueWithBlock:block];
     [self setObject:blockValue forKey:key];
 }
 

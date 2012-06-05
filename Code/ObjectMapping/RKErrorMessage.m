@@ -31,7 +31,7 @@
     [super dealloc];
 }
 
-- (NSString*)description
+- (NSString *)description
 {
     return _errorMessage;
 }

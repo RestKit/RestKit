@@ -82,7 +82,7 @@
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
 
-    RKTestResponseLoader* resourceLoader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *resourceLoader = [RKTestResponseLoader responseLoader];
     RKClient *requestClient = [RKClient clientWithBaseURLString:[client authorizationURL]];
     requestClient.OAuth2AccessToken = client.accessToken;
     requestClient.authenticationType = RKRequestAuthenticationTypeOAuth2;

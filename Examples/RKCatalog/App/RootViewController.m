@@ -55,7 +55,7 @@
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
 
-    NSString* exampleName = [_exampleTableItems objectAtIndex:indexPath.row];
+    NSString *exampleName = [_exampleTableItems objectAtIndex:indexPath.row];
     cell.textLabel.text = exampleName;
 
     return cell;
@@ -67,9 +67,9 @@
     [RKClient setSharedClient:nil];
     [RKObjectManager setSharedManager:nil];
 
-    NSString* exampleName = [_exampleTableItems objectAtIndex:indexPath.row];
+    NSString *exampleName = [_exampleTableItems objectAtIndex:indexPath.row];
     Class exampleClass = NSClassFromString(exampleName);
-    UIViewController* exampleController = [[exampleClass alloc] initWithNibName:exampleName bundle:nil];
+    UIViewController *exampleController = [[exampleClass alloc] initWithNibName:exampleName bundle:nil];
     if (exampleController) {
         [self.navigationController pushViewController:exampleController animated:YES];
         if (exampleController.title == nil) {

@@ -86,7 +86,7 @@
     }
 }
 
-- (void)processNotification:(NSNotification*)notification
+- (void)processNotification:(NSNotification *)notification
 {
     NSAssert([name isEqualToString:notification.name],
              @"Received notification (%@) differs from expected notification (%@)",

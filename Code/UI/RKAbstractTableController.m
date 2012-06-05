@@ -46,7 +46,7 @@ NSString * const RKTableControllerDidLoadErrorNotification = @"RKTableController
 NSString * const RKTableControllerDidBecomeOnline = @"RKTableControllerDidBecomeOnline";
 NSString * const RKTableControllerDidBecomeOffline = @"RKTableControllerDidBecomeOffline";
 
-static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
+static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 @implementation RKAbstractTableController
 
@@ -209,7 +209,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 - (void)setViewController:(UIViewController *)viewController
 {
     if ([viewController isKindOfClass:[UITableViewController class]]) {
-        self.tableView = [(UITableViewController*)viewController tableView];
+        self.tableView = [(UITableViewController *)viewController tableView];
     }
 }
 
@@ -1261,7 +1261,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)animationDidStopAddingSwipeView:(NSString *)animationID finished:(NSNumber *)finished context:(void*)context
+- (void)animationDidStopAddingSwipeView:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context
 {
     _animatingCellSwipe = NO;
 }

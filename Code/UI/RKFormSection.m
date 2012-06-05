@@ -52,7 +52,7 @@
         [tableItem.cellMapping addDefaultMappings];
     }
     // TODO: WTF? _objects is declared @protected but using _objects here fails to build...
-    [(NSMutableArray*)self.objects addObject:tableItem];
+    [(NSMutableArray *)self.objects addObject:tableItem];
 }
 
 - (UIControl *)controlWithType:(RKFormControlType)controlType

@@ -10,8 +10,8 @@
 #import "Project.h"
 
 @interface RKRelationshipMappingExample : UITableViewController <RKObjectLoaderDelegate, UITableViewDelegate> {
-    Project* _selectedProject;
-    NSArray* _objects;
+    Project *_selectedProject;
+    NSArray *_objects;
 }
 
 @end
