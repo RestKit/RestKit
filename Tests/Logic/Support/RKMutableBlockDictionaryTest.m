@@ -15,22 +15,25 @@
 
 @implementation RKMutableBlockDictionaryTest
 
-- (void)testLetYouAssignABlockToTheDictionary {
-    RKMutableBlockDictionary* blockDictionary = [[RKMutableBlockDictionary new] autorelease];
+- (void)testLetYouAssignABlockToTheDictionary
+{
+    RKMutableBlockDictionary *blockDictionary = [[RKMutableBlockDictionary new] autorelease];
     [blockDictionary setValueWithBlock:^id{ return @"Value from the block!"; } forKey:@"theKey"];
     assertThat([blockDictionary valueForKey:@"theKey"], is(equalTo(@"Value from the block!")));
 }
 
-- (void)testLetYouUseKVC {
-    RKMutableBlockDictionary* blockDictionary = [[RKMutableBlockDictionary new] autorelease];
+- (void)testLetYouUseKVC
+{
+    RKMutableBlockDictionary *blockDictionary = [[RKMutableBlockDictionary new] autorelease];
     [blockDictionary setValue:@"a value" forKey:@"a key"];
     assertThat([blockDictionary valueForKey:@"a key"], is(equalTo(@"a value")));
 }
 
-- (void)testLetYouAccessABlockValueUsingAKeyPath {
-    RKMutableBlockDictionary* blockDictionary = [[RKMutableBlockDictionary new] autorelease];
+- (void)testLetYouAccessABlockValueUsingAKeyPath
+{
+    RKMutableBlockDictionary *blockDictionary = [[RKMutableBlockDictionary new] autorelease];
     [blockDictionary setValueWithBlock:^id{ return @"Value from the block!"; } forKey:@"theKey"];
-    NSDictionary* otherDictionary = [NSDictionary dictionaryWithObject:blockDictionary forKey:@"dictionary"];
+    NSDictionary *otherDictionary = [NSDictionary dictionaryWithObject:blockDictionary forKey:@"dictionary"];
     assertThat([otherDictionary valueForKeyPath:@"dictionary.theKey"], is(equalTo(@"Value from the block!")));
 }
 

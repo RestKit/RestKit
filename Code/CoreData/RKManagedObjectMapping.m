@@ -36,26 +36,31 @@
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
 @synthesize objectStore = _objectStore;
 
-+ (id)mappingForClass:(Class)objectClass {
++ (id)mappingForClass:(Class)objectClass
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must provide a managedObjectStore. Invoke mappingForClass:inManagedObjectStore: instead."]
                                  userInfo:nil];
 }
 
-+ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore {
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore
+{
     return [self mappingForEntityWithName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
 }
 
-+ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore {
++ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore
+{
     return [[[self alloc] initWithEntity:entity inManagedObjectStore:objectStore] autorelease];
 }
 
-+ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString*)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore {
++ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore
+{
     return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.primaryManagedObjectContext]
              inManagedObjectStore:objectStore];
 }
 
-- (id)initWithEntity:(NSEntityDescription*)entity inManagedObjectStore:(RKManagedObjectStore*)objectStore {
+- (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore
+{
     NSAssert(entity, @"Cannot initialize an RKManagedObjectMapping without an entity. Maybe you want RKObjectMapping instead?");
     NSAssert(objectStore, @"Object store cannot be nil");
     Class objectClass = NSClassFromString([entity managedObjectClassName]);
@@ -73,7 +78,8 @@
     return self;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _relationshipToPrimaryKeyMappings = [[NSMutableDictionary alloc] init];
@@ -82,7 +88,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [self removeObserver:self forKeyPath:@"entity"];
     [self removeObserver:self forKeyPath:@"primaryKeyAttribute"];
 
@@ -91,20 +98,23 @@
     [super dealloc];
 }
 
-- (NSDictionary*)relationshipsAndPrimaryKeyAttributes {
+- (NSDictionary *)relationshipsAndPrimaryKeyAttributes
+{
     return _relationshipToPrimaryKeyMappings;
 }
 
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute {
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+{
     NSAssert([_relationshipToPrimaryKeyMappings objectForKey:relationshipName] == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", relationshipName);
     [_relationshipToPrimaryKeyMappings setObject:primaryKeyAttribute forKey:relationshipName];
 }
 
-- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString*)firstRelationshipName, ... {
+- (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ...
+{
     va_list args;
     va_start(args, firstRelationshipName);
-    for (NSString* relationshipName = firstRelationshipName; relationshipName != nil; relationshipName = va_arg(args, NSString*)) {
-        NSString* primaryKeyAttribute = va_arg(args, NSString*);
+    for (NSString *relationshipName = firstRelationshipName; relationshipName != nil; relationshipName = va_arg(args, NSString *)) {
+        NSString *primaryKeyAttribute = va_arg(args, NSString *);
         NSAssert(primaryKeyAttribute != nil, @"Cannot connect a relationship without an attribute containing the primary key");
         [self connectRelationship:relationshipName withObjectForPrimaryKeyAttribute:primaryKeyAttribute];
         // TODO: Raise proper exception here, argument error...
@@ -112,40 +122,44 @@
     va_end(args);
 }
 
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value {
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
+{
     NSAssert([_relationshipToPrimaryKeyMappings objectForKey:relationshipName] == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", relationshipName);
-    RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value primaryKeyAttribute:primaryKeyAttribute];
+    RKDynamicObjectMappingMatcher *matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value primaryKeyAttribute:primaryKeyAttribute];
     [_relationshipToPrimaryKeyMappings setObject:matcher forKey:relationshipName];
     [matcher release];
 }
 
-- (void)connectRelationship:(NSString*)relationshipName withObjectForPrimaryKeyAttribute:(NSString*)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block {
+- (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block
+{
     NSAssert([_relationshipToPrimaryKeyMappings objectForKey:relationshipName] == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", relationshipName);
-    RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithPrimaryKeyAttribute:primaryKeyAttribute evaluationBlock:block];
+    RKDynamicObjectMappingMatcher *matcher = [[RKDynamicObjectMappingMatcher alloc] initWithPrimaryKeyAttribute:primaryKeyAttribute evaluationBlock:block];
     [_relationshipToPrimaryKeyMappings setObject:matcher forKey:relationshipName];
     [matcher release];
 }
 
-- (id)defaultValueForMissingAttribute:(NSString*)attributeName {
+- (id)defaultValueForMissingAttribute:(NSString *)attributeName
+{
     NSAttributeDescription *desc = [[self.entity attributesByName] valueForKey:attributeName];
     return [desc defaultValue];
 }
 
-- (id)mappableObjectForData:(id)mappableData {
+- (id)mappableObjectForData:(id)mappableData
+{
     NSAssert(mappableData, @"Mappable data cannot be nil");
 
     id object = nil;
     id primaryKeyValue = nil;
-    NSString* primaryKeyAttribute;
+    NSString *primaryKeyAttribute;
 
-    NSEntityDescription* entity = [self entity];
-    RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
+    NSEntityDescription *entity = [self entity];
+    RKObjectAttributeMapping *primaryKeyAttributeMapping = nil;
 
     primaryKeyAttribute = [self primaryKeyAttribute];
     if (primaryKeyAttribute) {
         // If a primary key has been set on the object mapping, find the attribute mapping
         // so that we can extract any existing primary key from the mappable data
-        for (RKObjectAttributeMapping* attributeMapping in self.attributeMappings) {
+        for (RKObjectAttributeMapping *attributeMapping in self.attributeMappings) {
             if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
                 primaryKeyAttributeMapping = attributeMapping;
                 break;
@@ -157,7 +171,7 @@
             RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
             primaryKeyValue = [[mappableData allKeys] lastObject];
         } else {
-            NSString* keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
+            NSString *keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
             if (keyPathForPrimaryKeyElement) {
                 primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
             } else {
@@ -193,7 +207,8 @@
     return object;
 }
 
-- (Class)classForProperty:(NSString*)propertyName {
+- (Class)classForProperty:(NSString *)propertyName
+{
     Class propertyClass = [super classForProperty:propertyName];
     if (! propertyClass) {
         propertyClass = [[RKObjectPropertyInspector sharedInspector] typeForProperty:propertyName ofEntity:self.entity];

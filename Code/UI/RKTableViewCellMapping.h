@@ -26,9 +26,9 @@
 typedef void(^RKTableViewCellForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef CGFloat(^RKTableViewHeightOfCellForObjectAtIndexPathBlock)(id object, NSIndexPath *indexPath);
 typedef void(^RKTableViewAccessoryButtonTappedForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
-typedef NSString*(^RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
+typedef NSString *(^RKTableViewTitleForDeleteButtonForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
 typedef UITableViewCellEditingStyle(^RKTableViewEditingStyleForObjectAtIndexPathBlock)(UITableViewCell *cell, id object, NSIndexPath *indexPath);
-typedef NSIndexPath*(^RKTableViewTargetIndexPathForMoveBlock)(UITableViewCell *cell, id object, NSIndexPath *sourceIndexPath, NSIndexPath *destIndexPath);
+typedef NSIndexPath *(^RKTableViewTargetIndexPathForMoveBlock)(UITableViewCell *cell, id object, NSIndexPath *sourceIndexPath, NSIndexPath *destIndexPath);
 typedef void(^RKTableViewAnonymousBlock)();
 typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 
@@ -69,7 +69,7 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
  @default @"GGImageButtonTableViewCell"
  @see cellClass
  */
-@property (nonatomic, assign) NSString* cellClassName;
+@property (nonatomic, assign) NSString *cellClassName;
 
 /**
  A reuse identifier for cells created using this mapping. These cells will be
@@ -80,7 +80,7 @@ typedef void(^RKTableViewCellBlock)(UITableViewCell *cell);
 
  @default NSStringFromClass(self.objectClass)
  */
-@property (nonatomic, retain) NSString* reuseIdentifier;
+@property (nonatomic, retain) NSString *reuseIdentifier;
 
 /**
  A Boolean value that determines whether the cell mapping manages basic cell

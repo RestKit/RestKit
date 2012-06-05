@@ -34,21 +34,24 @@
 /**
  * The boundary used used for multi-part headers
  */
-NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
+NSString * const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 @implementation RKParams
 
-+ (RKParams*)params {
-    RKParams* params = [[[RKParams alloc] init] autorelease];
++ (RKParams *)params
+{
+    RKParams *params = [[[RKParams alloc] init] autorelease];
     return params;
 }
 
-+ (RKParams*)paramsWithDictionary:(NSDictionary*)dictionary {
-    RKParams* params = [[[RKParams alloc] initWithDictionary:dictionary] autorelease];
++ (RKParams *)paramsWithDictionary:(NSDictionary *)dictionary
+{
+    RKParams *params = [[[RKParams alloc] initWithDictionary:dictionary] autorelease];
     return params;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _attachments = [NSMutableArray new];
@@ -59,14 +62,16 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_attachments release];
     [_footer release];
 
     [super dealloc];
 }
 
-- (RKParams *)initWithDictionary:(NSDictionary *)dictionary {
+- (RKParams *)initWithDictionary:(NSDictionary *)dictionary
+{
     self = [self init];
     if (self) {
         // NOTE: We sort the keys to try and ensure given identical dictionaries we'll wind up
@@ -81,7 +86,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return self;
 }
 
-- (RKParamsAttachment *)setValue:(id <NSObject>)value forParam:(NSString *)param {
+- (RKParamsAttachment *)setValue:(id <NSObject>)value forParam:(NSString *)param
+{
     RKParamsAttachment *attachment = [[RKParamsAttachment alloc] initWithName:param value:value];
     [_attachments addObject:attachment];
     [attachment release];
@@ -89,7 +95,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return attachment;
 }
 
-- (NSDictionary *)dictionaryOfPlainTextParams {
+- (NSDictionary *)dictionaryOfPlainTextParams
+{
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     for (RKParamsAttachment *attachment in _attachments)
         if (attachment.value)   // if the value exist, it is plain text param
@@ -97,7 +104,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return [NSDictionary dictionaryWithDictionary:result];
 }
 
-- (RKParamsAttachment *)setFile:(NSString *)filePath forParam:(NSString *)param {
+- (RKParamsAttachment *)setFile:(NSString *)filePath forParam:(NSString *)param
+{
     NSParameterAssert(filePath);
     NSParameterAssert(param);
     RKParamsAttachment *attachment = [[RKParamsAttachment alloc] initWithName:param file:filePath];
@@ -107,7 +115,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return attachment;
 }
 
-- (RKParamsAttachment *)setData:(NSData *)data forParam:(NSString *)param {
+- (RKParamsAttachment *)setData:(NSData *)data forParam:(NSString *)param
+{
     NSParameterAssert(data);
     NSParameterAssert(param);
     RKParamsAttachment *attachment = [[RKParamsAttachment alloc] initWithName:param data:data];
@@ -117,7 +126,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return attachment;
 }
 
-- (RKParamsAttachment *)setData:(NSData *)data MIMEType:(NSString *)MIMEType forParam:(NSString *)param {
+- (RKParamsAttachment *)setData:(NSData *)data MIMEType:(NSString *)MIMEType forParam:(NSString *)param
+{
     NSParameterAssert(data);
     NSParameterAssert(MIMEType);
     NSParameterAssert(param);
@@ -129,7 +139,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return attachment;
 }
 
-- (RKParamsAttachment *)setData:(NSData *)data MIMEType:(NSString *)MIMEType fileName:(NSString *)fileName forParam:(NSString *)param {
+- (RKParamsAttachment *)setData:(NSData *)data MIMEType:(NSString *)MIMEType fileName:(NSString *)fileName forParam:(NSString *)param
+{
     NSParameterAssert(data);
     NSParameterAssert(param);
     RKParamsAttachment *attachment = [self setData:data forParam:param];
@@ -143,7 +154,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return attachment;
 }
 
-- (RKParamsAttachment *)setFile:(NSString *)filePath MIMEType:(NSString *)MIMEType fileName:(NSString *)fileName forParam:(NSString *)param {
+- (RKParamsAttachment *)setFile:(NSString *)filePath MIMEType:(NSString *)MIMEType fileName:(NSString *)fileName forParam:(NSString *)param
+{
     NSParameterAssert(filePath);
     NSParameterAssert(param);
     RKParamsAttachment *attachment = [self setFile:filePath forParam:param];
@@ -159,21 +171,25 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 #pragma mark RKRequestSerializable methods
 
-- (NSString *)HTTPHeaderValueForContentType {
+- (NSString *)HTTPHeaderValueForContentType
+{
     return [NSString stringWithFormat:@"multipart/form-data; boundary=%@", kRKStringBoundary];
 }
 
-- (NSUInteger)HTTPHeaderValueForContentLength {
+- (NSUInteger)HTTPHeaderValueForContentLength
+{
     return _length;
 }
 
-- (void)reset {
+- (void)reset
+{
     _bytesDelivered = 0;
     _length = 0;
     _streamStatus = NSStreamStatusNotOpen;
 }
 
-- (NSInputStream *)HTTPBodyStream {
+- (NSInputStream *)HTTPBodyStream
+{
     // Open each of our attachments
     [_attachments makeObjectsPerformSelector:@selector(open)];
 
@@ -183,12 +199,13 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
         _length += [attachment length];
     }
 
-    return (NSInputStream*)self;
+    return (NSInputStream *)self;
 }
 
 #pragma mark NSInputStream methods
 
-- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLength {
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLength
+{
     NSUInteger bytesSentInThisRead = 0, bytesRead;
     NSUInteger lengthOfAttachments = (_length - _footerLength);
 
@@ -224,20 +241,24 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return bytesSentInThisRead;
 }
 
-- (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len {
+- (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len
+{
     return NO;
 }
 
-- (BOOL)hasBytesAvailable {
+- (BOOL)hasBytesAvailable
+{
     return _bytesDelivered < _length;
 }
 
-- (void)open {
+- (void)open
+{
     _streamStatus = NSStreamStatusOpen;
     RKLogTrace(@"RKParams stream opened...");
 }
 
-- (void)close {
+- (void)close
+{
     if (_streamStatus != NSStreamStatusClosed) {
         _streamStatus = NSStreamStatusClosed;
 
@@ -257,7 +278,8 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     }
 }
 
-- (NSStreamStatus)streamStatus {
+- (NSStreamStatus)streamStatus
+{
     if (_streamStatus != NSStreamStatusClosed && _bytesDelivered >= _length) {
         _streamStatus = NSStreamStatusAtEnd;
     }
@@ -265,11 +287,13 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     return _streamStatus;
 }
 
-- (NSArray *)attachments {
+- (NSArray *)attachments
+{
     return [NSArray arrayWithArray:_attachments];
 }
 
-- (NSString *)MD5 {
+- (NSString *)MD5
+{
     NSMutableString *attachmentsMD5 = [[NSMutableString new] autorelease];
     for (RKParamsAttachment *attachment in self.attachments) {
         [attachmentsMD5 appendString:[attachment MD5]];
@@ -280,10 +304,12 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 
 #pragma mark Core Foundation stream methods
 
-- (void)_scheduleInCFRunLoop:(NSRunLoop *)runLoop forMode:(id)mode {
+- (void)_scheduleInCFRunLoop:(NSRunLoop *)runLoop forMode:(id)mode
+{
 }
 
-- (void)_setCFClientFlags:(CFOptionFlags)flags callback:(CFReadStreamClientCallBack)callback context:(CFStreamClientContext)context {
+- (void)_setCFClientFlags:(CFOptionFlags)flags callback:(CFReadStreamClientCallBack)callback context:(CFStreamClientContext)context
+{
 }
 
 @end

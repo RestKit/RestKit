@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		5CDFCEF1157DA60000A904AE /* uncrust */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 5CDFCEF4157DA60000A904AE /* Build configuration list for PBXAggregateTarget "uncrust" */;
+			buildPhases = (
+				5CDFCEF6157DA60500A904AE /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = uncrust;
+			productName = uncrust;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		2501405315366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		2501405415366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
@@ -2522,6 +2536,7 @@
 				25160E61145651060060A5C5 /* RestKitFramework */,
 				25160E77145651060060A5C5 /* RestKitFrameworkTests */,
 				259C301515128079003066A2 /* RestKitResources */,
+				5CDFCEF1157DA60000A904AE /* uncrust */,
 			);
 		};
 /* End PBXProject section */
@@ -2691,6 +2706,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "/bin/bash -ex";
 			shellScript = "rsync -av --delete ${BUILT_PRODUCTS_DIR}/${FULL_PRODUCT_NAME}/ ${SOURCE_ROOT}/${FULL_PRODUCT_NAME}";
+		};
+		5CDFCEF6157DA60500A904AE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/Users/jawwad/.rvm/rubies/ruby-1.9.2-p290/bin/ruby /Users/jawwad/bin/uncrustify_wrapper.rb --xcode";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -3393,6 +3421,20 @@
 			};
 			name = Release;
 		};
+		5CDFCEF2157DA60000A904AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		5CDFCEF3157DA60000A904AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3449,6 +3491,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		5CDFCEF4157DA60000A904AE /* Build configuration list for PBXAggregateTarget "uncrust" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5CDFCEF2157DA60000A904AE /* Debug */,
+				5CDFCEF3157DA60000A904AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 

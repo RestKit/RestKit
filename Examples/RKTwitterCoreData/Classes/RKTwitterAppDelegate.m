@@ -17,9 +17,10 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     // Initialize RestKit
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
 
     // Enable automatic network activity indicator management
     objectManager.client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
@@ -41,7 +42,7 @@
      name. This allows us to map back Twitter user objects directly onto NSManagedObject instances --
      there is no backing model class!
      */
-    RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKTUser" inManagedObjectStore:objectManager.objectStore];
+    RKManagedObjectMapping *userMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKTUser" inManagedObjectStore:objectManager.objectStore];
     userMapping.primaryKeyAttribute = @"userID";
     [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
     [userMapping mapKeyPath:@"screen_name" toAttribute:@"screenName"];
@@ -52,7 +53,7 @@
      for you using the Active Record pattern where the class name corresponds to the entity name within Core Data.
      Twitter status objects will be mapped onto RKTStatus instances.
      */
-    RKManagedObjectMapping* statusMapping = [RKManagedObjectMapping mappingForClass:[RKTStatus class] inManagedObjectStore:objectManager.objectStore];
+    RKManagedObjectMapping *statusMapping = [RKManagedObjectMapping mappingForClass:[RKTStatus class] inManagedObjectStore:objectManager.objectStore];
     statusMapping.primaryKeyAttribute = @"statusID";
     [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
      @"created_at", @"createdAt",
@@ -83,7 +84,7 @@
 #ifdef RESTKIT_GENERATE_SEED_DB
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelInfo);
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelTrace);
-    RKManagedObjectSeeder* seeder = [RKManagedObjectSeeder objectSeederWithObjectManager:objectManager];
+    RKManagedObjectSeeder *seeder = [RKManagedObjectSeeder objectSeederWithObjectManager:objectManager];
 
     // Seed the database with instances of RKTStatus from a snapshot of the RestKit Twitter timeline
     [seeder seedObjectsFromFile:@"restkit.json" withObjectMapping:statusMapping];
@@ -99,16 +100,17 @@
 #endif
 
     // Create Window and View Controllers
-    RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-    UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
-    UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+    RKTwitterViewController *viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+    UINavigationController *controller = [[UINavigationController alloc] initWithRootViewController:viewController];
+    UIWindow *window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     [window addSubview:controller.view];
     [window makeKeyAndVisible];
 
     return YES;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [super dealloc];
 }
 

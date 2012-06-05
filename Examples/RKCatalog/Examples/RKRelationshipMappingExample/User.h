@@ -11,9 +11,9 @@
 @interface User : NSManagedObject {
 }
 
-@property (nonatomic, retain) NSNumber* userID;
-@property (nonatomic, retain) NSString* name;
-@property (nonatomic, retain) NSString* email;
-@property (nonatomic, retain) NSSet* tasks;
+@property (nonatomic, retain) NSNumber *userID;
+@property (nonatomic, retain) NSString *name;
+@property (nonatomic, retain) NSString *email;
+@property (nonatomic, retain) NSSet *tasks;
 
 @end

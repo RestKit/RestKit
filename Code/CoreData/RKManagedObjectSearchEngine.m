@@ -28,16 +28,18 @@
 
 @implementation RKManagedObjectSearchEngine
 
-static NSMutableCharacterSet* __removeSet;
+static NSMutableCharacterSet *__removeSet;
 
 @synthesize mode = _mode;
 
-+ (id)searchEngine {
-    RKManagedObjectSearchEngine* searchEngine = [[[RKManagedObjectSearchEngine alloc] init] autorelease];
++ (id)searchEngine
+{
+    RKManagedObjectSearchEngine *searchEngine = [[[RKManagedObjectSearchEngine alloc] init] autorelease];
     return searchEngine;
 }
 
-- (id)init {
+- (id)init
+{
     if (self = [super init]) {
         _mode = RKSearchModeOr;
     }
@@ -48,9 +50,10 @@ static NSMutableCharacterSet* __removeSet;
 #pragma mark -
 #pragma mark Private
 
-- (NSPredicate*)predicateForSearch:(NSArray*)searchTerms compoundSelector:(SEL)selector {
-    NSMutableArray* termPredicates = [NSMutableArray array];
-    for (NSString* searchTerm in searchTerms) {
+- (NSPredicate *)predicateForSearch:(NSArray *)searchTerms compoundSelector:(SEL)selector
+{
+    NSMutableArray *termPredicates = [NSMutableArray array];
+    for (NSString *searchTerm in searchTerms) {
         [termPredicates addObject:
          [NSPredicate predicateWithFormat:@"(ANY searchWords.word beginswith %@)", searchTerm]];
     }
@@ -60,26 +63,28 @@ static NSMutableCharacterSet* __removeSet;
 #pragma mark -
 #pragma mark Public
 
-+ (NSArray*)tokenizedNormalizedString:(NSString*)string {
++ (NSArray *)tokenizedNormalizedString:(NSString *)string
+{
     if (__removeSet == nil) {
-        NSMutableCharacterSet* removeSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
+        NSMutableCharacterSet *removeSet = [[NSCharacterSet alphanumericCharacterSet] mutableCopy];
         [removeSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
         [removeSet invert];
         __removeSet = removeSet;
     }
 
-    NSString* scannerString = [[[[string lowercaseString] decomposedStringWithCanonicalMapping]
+    NSString *scannerString = [[[[string lowercaseString] decomposedStringWithCanonicalMapping]
                                stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]
                                 stringByReplacingOccurrencesOfString:@"-" withString:@" "];
 
-    NSArray* tokens = [[[scannerString componentsSeparatedByCharactersInSet:__removeSet]
+    NSArray *tokens = [[[scannerString componentsSeparatedByCharactersInSet:__removeSet]
                         componentsJoinedByString:@""] componentsSeparatedByString:@" "];
     return tokens;
 }
 
-- (NSPredicate*)predicateForSearch:(NSString*)searchText {
-    NSString* searchQuery = [searchText copy];
-    NSArray* searchTerms = [RKManagedObjectSearchEngine tokenizedNormalizedString:searchQuery];
+- (NSPredicate *)predicateForSearch:(NSString *)searchText
+{
+    NSString *searchQuery = [searchText copy];
+    NSArray *searchTerms = [RKManagedObjectSearchEngine tokenizedNormalizedString:searchQuery];
     [searchQuery release];
 
     if ([searchTerms count] == 0) {

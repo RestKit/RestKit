@@ -34,22 +34,23 @@
 
 @implementation RKManagedObjectLoaderTest
 
-- (void)testShouldDeleteObjectFromLocalStoreOnDELETE {
-    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
+- (void)testShouldDeleteObjectFromLocalStoreOnDELETE
+{
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     [store save:nil];
-    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
-    RKHuman* human = [RKHuman object];
+    RKHuman *human = [RKHuman object];
     human.name = @"Blake Watters";
     human.railsID = [NSNumber numberWithInt:1];
     [objectManager.objectStore save:nil];
 
     assertThat(objectManager.objectStore.primaryManagedObjectContext, is(equalTo(store.primaryManagedObjectContext)));
 
-    RKManagedObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
-    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
+    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/humans/1"];
-    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
+    RKManagedObjectLoader *objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
     objectLoader.delegate = responseLoader;
     objectLoader.method = RKRequestMethodDELETE;
     objectLoader.objectMapping = mapping;
@@ -59,32 +60,34 @@
     assertThatBool([human isDeleted], equalToBool(YES));
 }
 
-- (void)testShouldLoadAnObjectWithAToOneRelationship {
-    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
-    RKObjectManager* objectManager = [RKTestFactory objectManager];
+- (void)testShouldLoadAnObjectWithAToOneRelationship
+{
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
-    RKObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
     [humanMapping mapAttributes:@"name", nil];
-    RKObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:store];
+    RKObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:store];
     [catMapping mapAttributes:@"name", nil];
     [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/humans/with_to_one_relationship.json"];
-    RKManagedObjectLoader* objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
+    RKManagedObjectLoader *objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
     objectLoader.delegate = responseLoader;
     [objectLoader send];
     [responseLoader waitForResponse];
-    RKHuman* human = [responseLoader.objects lastObject];
+    RKHuman *human = [responseLoader.objects lastObject];
     assertThat(human, isNot(nilValue()));
     assertThat(human.favoriteCat, isNot(nilValue()));
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache {
-    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"
+- (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache
+{
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"
                                                                        inManagedObjectStore:store];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
@@ -94,16 +97,16 @@
     // Create 3 objects, we will expect 2 after the load
     [RKHuman truncateAll];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(0)));
-    RKHuman* blake = [RKHuman createEntity];
+    RKHuman *blake = [RKHuman createEntity];
     blake.railsID = [NSNumber numberWithInt:123];
-    RKHuman* other = [RKHuman createEntity];
+    RKHuman *other = [RKHuman createEntity];
     other.railsID = [NSNumber numberWithInt:456];
-    RKHuman* deleteMe = [RKHuman createEntity];
+    RKHuman *deleteMe = [RKHuman createEntity];
     deleteMe.railsID = [NSNumber numberWithInt:9999];
     [store save:nil];
     assertThatUnsignedInteger([RKHuman count:nil], is(equalToInt(3)));
 
-    RKObjectManager* objectManager = [RKTestFactory objectManager];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setObjectMapping:humanMapping
                              forResourcePathPattern:@"/JSON/humans/all.json"
                               withFetchRequestBlock:^ (NSString *resourcePath) {
@@ -111,7 +114,7 @@
                               }];
     objectManager.objectStore = store;
 
-    RKTestResponseLoader* responseLoader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     responseLoader.timeout = 25;
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/JSON/humans/all.json"];
     RKManagedObjectLoader *objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
@@ -125,22 +128,24 @@
     assertThatBool([deleteMe isDeleted], is(equalToBool(YES)));
 }
 
-- (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest {
-    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
-    RKObjectManager* objectManager = [RKTestFactory objectManager];
+- (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest
+{
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
-    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
-    RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
+    RKObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
     RKResponse *response = [objectLoader sendSynchronously];
 
-    NSArray* humans = [RKHuman findAll];
+    NSArray *humans = [RKHuman findAll];
     assertThatUnsignedInteger([humans count], is(equalToInt(1)));
     assertThatInteger(response.statusCode, is(equalToInt(200)));
 }
 
-- (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent {
+- (void)testShouldSkipObjectMappingOnRequestCacheHitWhenObjectCachePresent
+{
     [RKTestFactory clearCacheDirectory];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
@@ -200,7 +205,8 @@
     }
 }
 
-- (void)testTheOnDidFailBlockIsInvokedOnFailure {
+- (void)testTheOnDidFailBlockIsInvokedOnFailure
+{
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKManagedObjectLoader *loader = [objectManager loaderWithResourcePath:@"/fail"];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
@@ -214,16 +220,17 @@
     assertThatBool(invoked, is(equalToBool(YES)));
 }
 
-- (void)testThatObjectLoadedDidFinishLoadingIsCalledOnStoreSaveFailure {
-    RKManagedObjectStore* store = [RKTestFactory managedObjectStore];
-    RKObjectManager* objectManager = [RKTestFactory objectManager];
+- (void)testThatObjectLoadedDidFinishLoadingIsCalledOnStoreSaveFailure
+{
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
     id mockStore = [OCMockObject partialMockForObject:store];
     BOOL success = NO;
     [[[mockStore stub] andReturnValue:OCMOCK_VALUE(success)] save:[OCMArg anyPointer]];
 
-    RKObjectMapping* mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
-    RKManagedObjectLoader* objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
+    RKObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];

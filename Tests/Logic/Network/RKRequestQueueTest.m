@@ -22,8 +22,8 @@
 
 // Expose the request queue's [add|remove]LoadingRequest methods testing purposes...
 @interface RKRequestQueue ()
-- (void)addLoadingRequest:(RKRequest*)request;
-- (void)removeLoadingRequest:(RKRequest*)request;
+- (void)addLoadingRequest:(RKRequest *)request;
+- (void)removeLoadingRequest:(RKRequest *)request;
 @end
 
 @interface RKRequestQueueTest : RKTestCase {
@@ -35,16 +35,19 @@
 
 @implementation RKRequestQueueTest
 
-- (void)setUp {
+- (void)setUp
+{
     _autoreleasePool = [NSAutoreleasePool new];
 }
 
-- (void)tearDown {
+- (void)tearDown
+{
     [_autoreleasePool drain];
 }
 
-- (void)testShouldBeSuspendedWhenInitialized {
-    RKRequestQueue* queue = [RKRequestQueue new];
+- (void)testShouldBeSuspendedWhenInitialized
+{
+    RKRequestQueue *queue = [RKRequestQueue new];
     assertThatBool(queue.suspended, is(equalToBool(YES)));
     [queue release];
 }
@@ -52,9 +55,10 @@
 #if TARGET_OS_IPHONE
 
 // TODO: Crashing...
-- (void)testShouldSuspendTheQueueOnTransitionToTheBackground {
+- (void)testShouldSuspendTheQueueOnTransitionToTheBackground
+{
     return;
-    RKRequestQueue* queue = [RKRequestQueue new];
+    RKRequestQueue *queue = [RKRequestQueue new];
     assertThatBool(queue.suspended, is(equalToBool(YES)));
     queue.suspended = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidEnterBackgroundNotification object:nil];
@@ -62,10 +66,11 @@
     [queue release];
 }
 
-- (void)testShouldUnsuspendTheQueueOnTransitionToTheForeground {
+- (void)testShouldUnsuspendTheQueueOnTransitionToTheForeground
+{
     // TODO: Crashing...
     return;
-    RKRequestQueue* queue = [RKRequestQueue new];
+    RKRequestQueue *queue = [RKRequestQueue new];
     assertThatBool(queue.suspended, is(equalToBool(YES)));
     [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationWillEnterForegroundNotification object:nil];
     assertThatBool(queue.suspended, is(equalToBool(NO)));
@@ -74,65 +79,70 @@
 
 #endif
 
-- (void)testShouldInformTheDelegateWhenSuspended {
-    RKRequestQueue* queue = [RKRequestQueue new];
+- (void)testShouldInformTheDelegateWhenSuspended
+{
+    RKRequestQueue *queue = [RKRequestQueue new];
     assertThatBool(queue.suspended, is(equalToBool(YES)));
     queue.suspended = NO;
-    OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+    OCMockObject *delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueWasSuspended:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    queue.delegate = (NSObject<RKRequestQueueDelegate> *)delegateMock;
     queue.suspended = YES;
     [delegateMock verify];
     [queue release];
 }
 
-- (void)testShouldInformTheDelegateWhenUnsuspended {
-    RKRequestQueue* queue = [RKRequestQueue new];
+- (void)testShouldInformTheDelegateWhenUnsuspended
+{
+    RKRequestQueue *queue = [RKRequestQueue new];
     assertThatBool(queue.suspended, is(equalToBool(YES)));
-    OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+    OCMockObject *delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueWasUnsuspended:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    queue.delegate = (NSObject<RKRequestQueueDelegate> *)delegateMock;
     queue.suspended = NO;
     [delegateMock verify];
     [queue release];
 }
 
-- (void)testShouldInformTheDelegateOnTransitionFromEmptyToProcessing {
-    RKRequestQueue* queue = [RKRequestQueue new];
-    OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+- (void)testShouldInformTheDelegateOnTransitionFromEmptyToProcessing
+{
+    RKRequestQueue *queue = [RKRequestQueue new];
+    OCMockObject *delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidBeginLoading:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
-    NSURL* URL = [RKTestFactory baseURL];
-    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    queue.delegate = (NSObject<RKRequestQueueDelegate> *)delegateMock;
+    NSURL *URL = [RKTestFactory baseURL];
+    RKRequest *request = [[RKRequest alloc] initWithURL:URL];
     [queue addLoadingRequest:request];
     [delegateMock verify];
     [queue release];
 }
 
-- (void)testShouldInformTheDelegateOnTransitionFromProcessingToEmpty {
-    RKRequestQueue* queue = [RKRequestQueue new];
-    OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+- (void)testShouldInformTheDelegateOnTransitionFromProcessingToEmpty
+{
+    RKRequestQueue *queue = [RKRequestQueue new];
+    OCMockObject *delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
     [[delegateMock expect] requestQueueDidFinishLoading:queue];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
-    NSURL* URL = [RKTestFactory baseURL];
-    RKRequest* request = [[RKRequest alloc] initWithURL:URL];
+    queue.delegate = (NSObject<RKRequestQueueDelegate> *)delegateMock;
+    NSURL *URL = [RKTestFactory baseURL];
+    RKRequest *request = [[RKRequest alloc] initWithURL:URL];
     [queue addLoadingRequest:request];
     [queue removeLoadingRequest:request];
     [delegateMock verify];
     [queue release];
 }
 
-- (void)testShouldInformTheDelegateOnTransitionFromProcessingToEmptyForQueuesWithASingleRequest {
-    OCMockObject* delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
-    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+- (void)testShouldInformTheDelegateOnTransitionFromProcessingToEmptyForQueuesWithASingleRequest
+{
+    OCMockObject *delegateMock = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
 
-    NSString* url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", [RKTestFactory baseURLString]];
-    NSURL* URL = [NSURL URLWithString:url];
-    RKRequest * request = [[RKRequest alloc] initWithURL:URL];
+    NSString *url = [NSString stringWithFormat:@"%@/ok-with-delay/0.3", [RKTestFactory baseURLString]];
+    NSURL *URL = [NSURL URLWithString:url];
+    RKRequest *request = [[RKRequest alloc] initWithURL:URL];
     request.delegate = loader;
 
-    RKRequestQueue* queue = [RKRequestQueue new];
-    queue.delegate = (NSObject<RKRequestQueueDelegate>*) delegateMock;
+    RKRequestQueue *queue = [RKRequestQueue new];
+    queue.delegate = (NSObject<RKRequestQueueDelegate> *)delegateMock;
     [[delegateMock expect] requestQueueDidFinishLoading:queue];
     [queue addRequest:request];
     [queue start];
@@ -145,7 +155,7 @@
 // testing area
 //- (void)testShouldBeginSpinningTheNetworkActivityIfAsked {
 //    [[UIApplication sharedApplication] rk_resetNetworkActivity];
-//    RKRequestQueue* queue = [RKRequestQueue new];
+//    RKRequestQueue *queue = [RKRequestQueue new];
 //    queue.showsNetworkActivityIndicatorWhenBusy = YES;
 //    assertThatBool([UIApplication sharedApplication].networkActivityIndicatorVisible, is(equalToBool(NO)));
 //    [queue setValue:[NSNumber numberWithInt:1] forKey:@"loadingCount"];
@@ -155,7 +165,7 @@
 //
 //- (void)testShouldStopSpinningTheNetworkActivityIfAsked {
 //    [[UIApplication sharedApplication] rk_resetNetworkActivity];
-//    RKRequestQueue* queue = [RKRequestQueue new];
+//    RKRequestQueue *queue = [RKRequestQueue new];
 //    queue.showsNetworkActivityIndicatorWhenBusy = YES;
 //    [queue setValue:[NSNumber numberWithInt:1] forKey:@"loadingCount"];
 //    assertThatBool([UIApplication sharedApplication].networkActivityIndicatorVisible, is(equalToBool(YES)));
@@ -166,21 +176,21 @@
 //
 //- (void)testShouldJointlyManageTheNetworkActivityIndicator {
 //    [[UIApplication sharedApplication] rk_resetNetworkActivity];
-//    RKTestResponseLoader* loader = [RKTestResponseLoader responseLoader];
+//    RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
 //    loader.timeout = 10;
 //
 //    RKRequestQueue *queue1 = [RKRequestQueue new];
 //    queue1.showsNetworkActivityIndicatorWhenBusy = YES;
-//    NSString* url1 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", [RKTestFactory baseURL]];
-//    NSURL* URL1 = [NSURL URLWithString:url1];
-//    RKRequest * request1 = [[RKRequest alloc] initWithURL:URL1];
+//    NSString *url1 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", [RKTestFactory baseURL]];
+//    NSURL *URL1 = [NSURL URLWithString:url1];
+//    RKRequest *request1 = [[RKRequest alloc] initWithURL:URL1];
 //    request1.delegate = loader;
 //
 //    RKRequestQueue *queue2 = [RKRequestQueue new];
 //    queue2.showsNetworkActivityIndicatorWhenBusy = YES;
-//    NSString* url2 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", [RKTestFactory baseURL]];
-//    NSURL* URL2 = [NSURL URLWithString:url2];
-//    RKRequest * request2 = [[RKRequest alloc] initWithURL:URL2];
+//    NSString *url2 = [NSString stringWithFormat:@"%@/ok-with-delay/2.0", [RKTestFactory baseURL]];
+//    NSURL *URL2 = [NSURL URLWithString:url2];
+//    RKRequest *request2 = [[RKRequest alloc] initWithURL:URL2];
 //    request2.delegate = loader;
 //
 //    assertThatBool([UIApplication sharedApplication].networkActivityIndicatorVisible, is(equalToBool(NO)));
@@ -196,55 +206,63 @@
 //    assertThatBool([UIApplication sharedApplication].networkActivityIndicatorVisible, is(equalToBool(NO)));
 //}
 
-- (void)testShouldLetYouReturnAQueueByName {
-    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images"];
+- (void)testShouldLetYouReturnAQueueByName
+{
+    RKRequestQueue *queue = [RKRequestQueue requestQueueWithName:@"Images"];
     assertThat(queue, isNot(nilValue()));
     assertThat(queue.name, is(equalTo(@"Images")));
 }
 
-- (void)testShouldReturnAnExistingQueueByName {
-    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images2"];
+- (void)testShouldReturnAnExistingQueueByName
+{
+    RKRequestQueue *queue = [RKRequestQueue requestQueueWithName:@"Images2"];
     assertThat(queue, isNot(nilValue()));
-    RKRequestQueue* secondQueue = [RKRequestQueue requestQueueWithName:@"Images2"];
+    RKRequestQueue *secondQueue = [RKRequestQueue requestQueueWithName:@"Images2"];
     assertThat(queue, is(equalTo(secondQueue)));
 }
 
-- (void)testShouldReturnTheQueueWithoutAModifiedRetainCount {
-    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images3"];
+- (void)testShouldReturnTheQueueWithoutAModifiedRetainCount
+{
+    RKRequestQueue *queue = [RKRequestQueue requestQueueWithName:@"Images3"];
     assertThat(queue, isNot(nilValue()));
     assertThatUnsignedInteger([queue retainCount], is(equalToInt(1)));
 }
 
-- (void)testShouldReturnYESWhenAQueueExistsWithAGivenName {
+- (void)testShouldReturnYESWhenAQueueExistsWithAGivenName
+{
     assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images4"], is(equalToBool(NO)));
     [RKRequestQueue requestQueueWithName:@"Images4"];
     assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images4"], is(equalToBool(YES)));
 }
 
-- (void)testShouldRemoveTheQueueFromTheNamedInstancesOnDealloc {
+- (void)testShouldRemoveTheQueueFromTheNamedInstancesOnDealloc
+{
     // TODO: Crashing...
     return;
-    RKRequestQueue* queue = [RKRequestQueue requestQueueWithName:@"Images5"];
+    RKRequestQueue *queue = [RKRequestQueue requestQueueWithName:@"Images5"];
     assertThat(queue, isNot(nilValue()));
     assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images5"], is(equalToBool(YES)));
     [queue release];
     assertThatBool([RKRequestQueue requestQueueExistsWithName:@"Images5"], is(equalToBool(NO)));
 }
 
-- (void)testShouldReturnANewOwningReferenceViaNewRequestWithName {
-    RKRequestQueue* requestQueue = [RKRequestQueue newRequestQueueWithName:@"Images6"];
+- (void)testShouldReturnANewOwningReferenceViaNewRequestWithName
+{
+    RKRequestQueue *requestQueue = [RKRequestQueue newRequestQueueWithName:@"Images6"];
     assertThat(requestQueue, isNot(nilValue()));
     assertThatUnsignedInteger([requestQueue retainCount], is(equalToInt(1)));
 }
 
-- (void)testShouldReturnNilIfNewRequestQueueWithNameIsCalledForAnExistingName {
-    RKRequestQueue* queue = [RKRequestQueue newRequestQueueWithName:@"Images7"];
+- (void)testShouldReturnNilIfNewRequestQueueWithNameIsCalledForAnExistingName
+{
+    RKRequestQueue *queue = [RKRequestQueue newRequestQueueWithName:@"Images7"];
     assertThat(queue, isNot(nilValue()));
-    RKRequestQueue* queue2 = [RKRequestQueue newRequestQueueWithName:@"Images7"];
+    RKRequestQueue *queue2 = [RKRequestQueue newRequestQueueWithName:@"Images7"];
     assertThat(queue2, is(nilValue()));
 }
 
-- (void)testShouldRemoveItemsFromTheQueueWithAnUnmappableResponse {
+- (void)testShouldRemoveItemsFromTheQueueWithAnUnmappableResponse
+{
     RKRequestQueue *queue = [RKRequestQueue requestQueue];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
@@ -256,7 +274,8 @@
     assertThatUnsignedInteger(queue.loadingCount, is(equalToInt(0)));
 }
 
-- (void)testThatSendingRequestToInvalidURLDoesNotGetSentTwice {
+- (void)testThatSendingRequestToInvalidURLDoesNotGetSentTwice
+{
     RKRequestQueue *queue = [RKRequestQueue requestQueue];
     NSURL *URL = [NSURL URLWithString:@"http://localhost:7662/RKRequestQueueExample"];
     RKRequest *request = [RKRequest requestWithURL:URL];

@@ -9,9 +9,9 @@
 #import "RKCatalog.h"
 
 @interface RKKeyValueMappingExample : UIViewController <RKObjectLoaderDelegate> {
-    UILabel* _infoLabel;
+    UILabel *_infoLabel;
 }
 
-@property (nonatomic, retain) IBOutlet UILabel* infoLabel;
+@property (nonatomic, retain) IBOutlet UILabel *infoLabel;
 
 @end

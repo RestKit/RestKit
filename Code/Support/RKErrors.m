@@ -20,7 +20,7 @@
 
 #import "RKErrors.h"
 
-NSString* const RKErrorDomain = @"org.restkit.RestKit.ErrorDomain";
+NSString * const RKErrorDomain = @"org.restkit.RestKit.ErrorDomain";
 
-NSString* const RKObjectMapperErrorObjectsKey = @"RKObjectMapperErrorObjectsKey";
-NSString* const RKErrorNotificationErrorKey = @"error";
+NSString * const RKObjectMapperErrorObjectsKey = @"RKObjectMapperErrorObjectsKey";
+NSString * const RKErrorNotificationErrorKey = @"error";

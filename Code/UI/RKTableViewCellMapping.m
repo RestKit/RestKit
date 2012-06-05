@@ -49,11 +49,13 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 
 @implementation RKControlBlockAction
 
-+ (id)actionWithBlock:(void(^)(id sender))block {
++ (id)actionWithBlock:(void(^)(id sender))block
+{
     return [[[self alloc] initWithBlock:block] autorelease];
 }
 
-- (id)initWithBlock:(void(^)(id sender))block {
+- (id)initWithBlock:(void(^)(id sender))block
+{
     self = [self init];
     if (self) {
         _actionBlock = Block_copy(block);
@@ -62,15 +64,18 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     return self;
 }
 
-- (void)actionForControlEvent:(id)sender {
+- (void)actionForControlEvent:(id)sender
+{
     _actionBlock(sender);
 }
 
-- (SEL)actionSelector {
+- (SEL)actionSelector
+{
     return @selector(actionForControlEvent:);
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     Block_release(_actionBlock);
     [super dealloc];
 }
@@ -95,29 +100,34 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 @synthesize deselectsRowOnSelection = _deselectsRowOnSelection;
 @synthesize managesCellAttributes;
 
-+ (id)cellMapping {
++ (id)cellMapping
+{
     return [self mappingForClass:[UITableViewCell class]];
 }
 
-+ (id)cellMappingForReuseIdentifier:(NSString *)reuseIdentifier {
++ (id)cellMappingForReuseIdentifier:(NSString *)reuseIdentifier
+{
     RKTableViewCellMapping *cellMapping = [self cellMapping];
     cellMapping.reuseIdentifier = reuseIdentifier;
     return cellMapping;
 }
 
-+ (id)defaultCellMapping {
++ (id)defaultCellMapping
+{
     RKTableViewCellMapping *cellMapping = [self cellMapping];
     [cellMapping addDefaultMappings];
     return cellMapping;
 }
 
-+ (id)cellMappingUsingBlock:(void (^)(RKTableViewCellMapping*))block {
-    RKTableViewCellMapping* cellMapping = [self cellMapping];
++ (id)cellMappingUsingBlock:(void (^)(RKTableViewCellMapping *))block
+{
+    RKTableViewCellMapping *cellMapping = [self cellMapping];
     block(cellMapping);
     return cellMapping;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         self.cellClass = [UITableViewCell class];
@@ -133,13 +143,15 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     return self;
 }
 
-- (void)addDefaultMappings {
+- (void)addDefaultMappings
+{
     [self mapKeyPath:@"text" toAttribute:@"textLabel.text"];
     [self mapKeyPath:@"detailText" toAttribute:@"detailTextLabel.text"];
     [self mapKeyPath:@"image" toAttribute:@"imageView.image"];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_reuseIdentifier release];
     [_prepareCellBlocks release];
     Block_release(_onSelectCell);
@@ -153,11 +165,13 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     [super dealloc];
 }
 
-- (NSMutableArray *)prepareCellBlocks {
+- (NSMutableArray *)prepareCellBlocks
+{
     return _prepareCellBlocks;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
     RKTableViewCellMapping *copy = [super copyWithZone:zone];
     copy.reuseIdentifier = self.reuseIdentifier;
     copy.style = self.style;
@@ -185,10 +199,11 @@ typedef void(^RKControlBlockActionBlock)(id sender);
 }
 
 
-- (id)mappableObjectForData:(UITableView *)tableView {
+- (id)mappableObjectForData:(UITableView *)tableView
+{
     NSAssert([tableView isKindOfClass:[UITableView class]], @"Expected to be invoked with a tableView as the data. Got %@", tableView);
     RKLogTrace(@"About to dequeue reusable cell using self.reuseIdentifier=%@", self.reuseIdentifier);
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:self.reuseIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:self.reuseIdentifier];
     if (! cell) {
         cell = [[[self.objectClass alloc] initWithStyle:self.style
                                        reuseIdentifier:self.reuseIdentifier] autorelease];
@@ -207,50 +222,60 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     return cell;
 }
 
-- (void)setSelectionStyle:(UITableViewCellSelectionStyle)selectionStyle {
+- (void)setSelectionStyle:(UITableViewCellSelectionStyle)selectionStyle
+{
     self.managesCellAttributes = YES;
     _selectionStyle = selectionStyle;
 }
 
-- (void)setAccessoryType:(UITableViewCellAccessoryType)accessoryType {
+- (void)setAccessoryType:(UITableViewCellAccessoryType)accessoryType
+{
     self.managesCellAttributes = YES;
     _accessoryType = accessoryType;
 }
 
-- (void)setObjectClass:(Class)objectClass {
+- (void)setObjectClass:(Class)objectClass
+{
     NSAssert([objectClass isSubclassOfClass:[UITableViewCell class]], @"Cell mappings can only target classes that inherit from UITableViewCell");
     [super setObjectClass:objectClass];
 }
 
-- (void)setCellClass:(Class)cellClass {
+- (void)setCellClass:(Class)cellClass
+{
     [self setObjectClass:cellClass];
 }
 
-- (NSString*)cellClassName {
+- (NSString *)cellClassName
+{
     return NSStringFromClass(self.cellClass);
 }
 
-- (void)setCellClassName:(NSString *)cellClassName {
+- (void)setCellClassName:(NSString *)cellClassName
+{
     self.cellClass = NSClassFromString(cellClassName);
 }
 
-- (Class)cellClass {
+- (Class)cellClass
+{
     return [self objectClass];
 }
 
-- (NSString *)reuseIdentifier {
+- (NSString *)reuseIdentifier
+{
     return _reuseIdentifier ? _reuseIdentifier : NSStringFromClass(self.objectClass);
 }
 
 #pragma mark - Control Action Helpers
 
-- (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block {
+- (void)addPrepareCellBlock:(void (^)(UITableViewCell *cell))block
+{
     void (^blockCopy)(UITableViewCell *cell) = [block copy];
     [_prepareCellBlocks addObject:blockCopy];
     [blockCopy release];
 }
 
-- (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath {
+- (void)addTarget:(id)target action:(SEL)action forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath
+{
     [self addPrepareCellBlock:^(UITableViewCell *cell) {
         UIControl *control = [cell valueForKeyPath:keyPath];
         if (control) {
@@ -261,11 +286,13 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     }];
 }
 
-- (void)addTarget:(id)target action:(SEL)action forTouchEventToControlAtKeyPath:(NSString *)keyPath {
+- (void)addTarget:(id)target action:(SEL)action forTouchEventToControlAtKeyPath:(NSString *)keyPath
+{
     [self addTarget:target action:action forControlEvents:UIControlEventTouchUpInside toControlAtKeyPath:keyPath];
 }
 
-- (void)addBlockAction:(void (^)(id sender))block forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath {
+- (void)addBlockAction:(void (^)(id sender))block forControlEvents:(UIControlEvents)controlEvents toControlAtKeyPath:(NSString *)keyPath
+{
     [self addPrepareCellBlock:^(UITableViewCell *cell) {
         RKControlBlockAction *blockAction = [RKControlBlockAction actionWithBlock:block];
         UIControl *control = [cell valueForKeyPath:keyPath];
@@ -277,7 +304,8 @@ typedef void(^RKControlBlockActionBlock)(id sender);
     }];
 }
 
-- (void)addBlockAction:(void (^)(id sender))block forTouchEventToControlAtKeyPath:(NSString *)keyPath {
+- (void)addBlockAction:(void (^)(id sender))block forTouchEventToControlAtKeyPath:(NSString *)keyPath
+{
     [self addBlockAction:block forControlEvents:UIControlEventTouchUpInside toControlAtKeyPath:keyPath];
 }
 

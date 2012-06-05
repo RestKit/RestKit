@@ -18,11 +18,13 @@
 @synthesize isFavorited = _isFavorited;
 @synthesize user = _user;
 
-- (NSString*)description {
+- (NSString *)description
+{
     return [NSString stringWithFormat:@"%@ (ID: %@)", self.text, self.statusID];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_statusID release];
     [_createdAt release];
     [_text release];

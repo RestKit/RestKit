@@ -20,7 +20,7 @@
 
 #import "RKMIMETypes.h"
 
-NSString* const RKMIMETypeJSON = @"application/json";
-NSString* const RKMIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";
-NSString* const RKMIMETypeXML = @"application/xml";
-NSString* const RKMIMETypeTextXML = @"text/xml";
+NSString * const RKMIMETypeJSON = @"application/json";
+NSString * const RKMIMETypeFormURLEncoded = @"application/x-www-form-urlencoded";
+NSString * const RKMIMETypeXML = @"application/xml";
+NSString * const RKMIMETypeTextXML = @"text/xml";

@@ -11,4 +11,4 @@
 #import <RestKit/CoreData.h>
 
 // Import the base URL defined in the app delegate
-extern NSURL* gRKCatalogBaseURL;
+extern NSURL *gRKCatalogBaseURL;

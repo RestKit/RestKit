@@ -29,8 +29,8 @@
  */
 @interface RKManagedObjectLoader : RKObjectLoader {
     RKManagedObjectStore *_objectStore;
-    NSManagedObjectID* _targetObjectID;
-    NSMutableSet* _managedObjectKeyPaths;
+    NSManagedObjectID *_targetObjectID;
+    NSMutableSet *_managedObjectKeyPaths;
     BOOL _deleteObjectOnFailure;
 }
 
@@ -39,7 +39,7 @@
 
  @see RKManagedObjectStore
  */
-@property (nonatomic, retain) RKManagedObjectStore* objectStore;
+@property (nonatomic, retain) RKManagedObjectStore *objectStore;
 
 + (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
 - (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;

@@ -621,7 +621,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 
  @return YES if the request was sent a cancel message, otherwise NO.
  */
-@property(nonatomic, assign, readonly, getter=isCancelled) BOOL cancelled;
+@property (nonatomic, assign, readonly, getter=isCancelled) BOOL cancelled;
 
 /**
  Cancels the underlying URL connection.

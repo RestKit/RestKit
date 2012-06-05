@@ -19,7 +19,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @synthesize objectMapping = _objectMapping;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
 
-- (id)initWithKey:(NSString*)key value:(id)value objectMapping:(RKObjectMapping*)objectMapping {
+- (id)initWithKey:(NSString *)key value:(id)value objectMapping:(RKObjectMapping *)objectMapping
+{
     self = [super init];
     if (self) {
         _keyPath = [key retain];
@@ -30,7 +31,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return self;
 }
 
-- (id)initWithKey:(NSString*)key value:(id)value primaryKeyAttribute:(NSString*)primaryKeyAttribute {
+- (id)initWithKey:(NSString *)key value:(id)value primaryKeyAttribute:(NSString *)primaryKeyAttribute
+{
     self = [super init];
     if (self) {
         _keyPath = [key retain];
@@ -41,7 +43,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return self;
 }
 
-- (id)initWithPrimaryKeyAttribute:(NSString*)primaryKeyAttribute evaluationBlock:(BOOL (^)(id data))block {
+- (id)initWithPrimaryKeyAttribute:(NSString *)primaryKeyAttribute evaluationBlock:(BOOL (^)(id data))block
+{
     self = [super init];
     if (self) {
         _primaryKeyAttribute = [primaryKeyAttribute retain];
@@ -50,7 +53,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_keyPath release];
     [_value release];
     [_objectMapping release];
@@ -61,14 +65,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [super dealloc];
 }
 
-- (BOOL)isMatchForData:(id)data {
+- (BOOL)isMatchForData:(id)data
+{
     if (_isMatchForDataBlock) {
         return _isMatchForDataBlock(data);
     }
     return RKObjectIsValueEqualToValue([data valueForKeyPath:_keyPath], _value);
 }
 
-- (NSString*)matchDescription {
+- (NSString *)matchDescription
+{
     if (_isMatchForDataBlock) {
         return @"No description available. Using block to perform match.";
     }

@@ -27,13 +27,13 @@
 #import "RKAlert.h"
 #import "RKLog.h"
 
-void RKAlert(NSString* message) {
+void RKAlert(NSString *message) {
     RKAlertWithTitle(message, @"Alert");
 }
 
-void RKAlertWithTitle(NSString* message, NSString* title) {
+void RKAlertWithTitle(NSString *message, NSString *title) {
 #if TARGET_OS_IPHONE
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:title
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                         message:message
                                                        delegate:nil
                                               cancelButtonTitle:NSLocalizedString(@"OK", nil)

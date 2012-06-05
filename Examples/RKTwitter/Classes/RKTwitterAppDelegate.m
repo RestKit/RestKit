@@ -17,23 +17,24 @@
 #pragma mark -
 #pragma mark Application lifecycle
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
     RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
 
     // Initialize RestKit
-    RKObjectManager* objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
 
     // Enable automatic network activity indicator management
     objectManager.client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
 
     // Setup our object mappings
-    RKObjectMapping* userMapping = [RKObjectMapping mappingForClass:[RKTUser class]];
+    RKObjectMapping *userMapping = [RKObjectMapping mappingForClass:[RKTUser class]];
     [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
     [userMapping mapKeyPath:@"screen_name" toAttribute:@"screenName"];
     [userMapping mapAttributes:@"name", nil];
 
-    RKObjectMapping* statusMapping = [RKObjectMapping mappingForClass:[RKTStatus class]];
+    RKObjectMapping *statusMapping = [RKObjectMapping mappingForClass:[RKTStatus class]];
     [statusMapping mapKeyPathsToAttributes:@"id", @"statusID",
      @"created_at", @"createdAt",
      @"text", @"text",
@@ -55,16 +56,17 @@
     [objectManager.mappingProvider setObjectMapping:statusMapping forResourcePathPattern:@"/status/user_timeline/:username"];
 
     // Create Window and View Controllers
-    RKTwitterViewController* viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-    UINavigationController* controller = [[UINavigationController alloc] initWithRootViewController:viewController];
-    UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+    RKTwitterViewController *viewController = [[[RKTwitterViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+    UINavigationController *controller = [[UINavigationController alloc] initWithRootViewController:viewController];
+    UIWindow *window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     [window addSubview:controller.view];
     [window makeKeyAndVisible];
 
     return YES;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [super dealloc];
 }
 
