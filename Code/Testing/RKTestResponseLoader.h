@@ -30,7 +30,7 @@
  object under test. Once assigned as the delegate to a request and the request has been sent,
  waitForResponse: is invoked to block execution until the response is loaded.
  */
-@interface RKTestResponseLoader : NSObject <RKObjectLoaderDelegate, RKOAuthClientDelegate>
+@interface RKTestResponseLoader : NSObject <RKObjectLoaderDelegate, RKOAuthClientDelegate, RKRequestQueueDelegate>
 
 /**
  The RKResponse object loaded from the RKRequest or RKObjectLoader the receiver is acting as the delegate for.
