@@ -21,6 +21,7 @@
 #if TARGET_OS_IPHONE
 
 #import <UIKit/UIKit.h>
+#import "RKTableCellBlockTypes.h"
 #import "RKTableViewCellMappings.h"
 #import "RKTableItem.h"
 #import "RKObjectManager.h"
@@ -257,6 +258,20 @@ typedef NSUInteger RKTableControllerState;
  @see imageForError
  */
 - (BOOL)isError;
+
+///-----------------------------------------------------------------------------
+/// @name Block Callbacks
+///-----------------------------------------------------------------------------
+
+// TODO: Audit and expand the library of callbacks...
+// TODO: Docs AND tests...
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onSelectCellForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onPrepareCellForObjectAtIndexPath; // TODO: May want to eliminate...
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onWillDisplayCellForObjectAtIndexPath;
+
+- (void)setOnSelectCellForObjectAtIndexPath:(RKTableCellForObjectAtIndexPathBlock)onSelectCellForObjectAtIndexPath;
+- (void)setOnPrepareCellForObjectAtIndexPath:(RKTableCellForObjectAtIndexPathBlock)onPrepareCellForObjectAtIndexPath;
+- (void)setOnWillDisplayCellForObjectAtIndexPath:(RKTableCellForObjectAtIndexPathBlock)onWillDisplayCellForObjectAtIndexPath;
 
 ///-----------------------------------------------------------------------------
 /// @name Model State Views

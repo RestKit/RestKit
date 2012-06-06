@@ -673,6 +673,8 @@
 		25B6EA0414CF943E00B1E881 /* RKMutableBlockDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B6E9FC14CF943E00B1E881 /* RKMutableBlockDictionary.m */; };
 		25B6EA0614CF946400B1E881 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6EA0514CF946300B1E881 /* QuartzCore.framework */; };
 		25B6EA0814CF947E00B1E881 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */; };
+		25C93DF2157FB6370089259B /* RKTableCellBlockTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25C93DF1157FB6370089259B /* RKTableCellBlockTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25C93DF3157FB6370089259B /* RKTableCellBlockTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25C93DF1157FB6370089259B /* RKTableCellBlockTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25C954A715542A47005C9E08 /* RKTestConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C954A415542A47005C9E08 /* RKTestConstants.m */; };
 		25C954A815542A47005C9E08 /* RKTestConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C954A415542A47005C9E08 /* RKTestConstants.m */; };
 		25CA7A8F14EC570200888FF8 /* RKObjectMappingDefinition.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CA7A8E14EC570100888FF8 /* RKObjectMappingDefinition.m */; };
@@ -1194,6 +1196,7 @@
 		25B6E9FC14CF943E00B1E881 /* RKMutableBlockDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMutableBlockDictionary.m; sourceTree = "<group>"; };
 		25B6EA0514CF946300B1E881 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		25B6EA0714CF947D00B1E881 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		25C93DF1157FB6370089259B /* RKTableCellBlockTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKTableCellBlockTypes.h; sourceTree = "<group>"; };
 		25C954A415542A47005C9E08 /* RKTestConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestConstants.m; path = Testing/RKTestConstants.m; sourceTree = "<group>"; };
 		25CA7A8E14EC570100888FF8 /* RKObjectMappingDefinition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKObjectMappingDefinition.m; sourceTree = "<group>"; };
 		25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfHumans.json; sourceTree = "<group>"; };
@@ -2049,6 +2052,7 @@
 				25EC1A2B14F6FDAC00C3CF3F /* RKObjectManager+RKTableController.m */,
 				25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */,
 				25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */,
+				25C93DF1157FB6370089259B /* RKTableCellBlockTypes.h */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -2310,6 +2314,7 @@
 				258113C815781848009835EB /* RKObjectMappingProvider+CoreData.h in Headers */,
 				25545959155F0527007D7625 /* RKBenchmark.h in Headers */,
 				25E4DAB4156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */,
+				25C93DF2157FB6370089259B /* RKTableCellBlockTypes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2436,6 +2441,7 @@
 				252028FD1577AE0B00076FB4 /* RKRouter.h in Headers */,
 				252029041577AE1800076FB4 /* RKRoute.h in Headers */,
 				258113C915781848009835EB /* RKObjectMappingProvider+CoreData.h in Headers */,
+				25C93DF3157FB6370089259B /* RKTableCellBlockTypes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

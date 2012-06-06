@@ -68,6 +68,7 @@
 		2552087E14E5B0B500EFD81F /* RKTestEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 2552087D14E5B0B500EFD81F /* RKTestEnvironment.m */; };
 		25AE61DC15ADECAE00B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61D915ADECAE00B319C8 /* OCClassMockRecorder.m */; };
 		25AE61DD15ADECAE00B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61DB15ADECAE00B319C8 /* OCMockClassObject.m */; };
+		25C93E03157FE7C40089259B /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25C93E02157FE7C40089259B /* Storyboard.storyboard */; };
 		25FABEA914E3698100E609E7 /* blake.png in Resources */ = {isa = PBXBuildFile; fileRef = 25FABE8114E3698100E609E7 /* blake.png */; };
 		25FABEAA14E3698100E609E7 /* ArrayOfNestedDictionaries.json in Resources */ = {isa = PBXBuildFile; fileRef = 25FABE8314E3698100E609E7 /* ArrayOfNestedDictionaries.json */; };
 		25FABEAB14E3698100E609E7 /* ArrayOfResults.json in Resources */ = {isa = PBXBuildFile; fileRef = 25FABE8414E3698100E609E7 /* ArrayOfResults.json */; };
@@ -272,6 +273,7 @@
 		25AE61D915ADECAE00B319C8 /* OCClassMockRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCClassMockRecorder.m; sourceTree = "<group>"; };
 		25AE61DA15ADECAE00B319C8 /* OCMockClassObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockClassObject.h; sourceTree = "<group>"; };
 		25AE61DB15ADECAE00B319C8 /* OCMockClassObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMockClassObject.m; sourceTree = "<group>"; };
+		25C93E02157FE7C40089259B /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
 		25FABE8114E3698100E609E7 /* blake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blake.png; sourceTree = "<group>"; };
 		25FABE8314E3698100E609E7 /* ArrayOfNestedDictionaries.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfNestedDictionaries.json; sourceTree = "<group>"; };
 		25FABE8414E3698100E609E7 /* ArrayOfResults.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfResults.json; sourceTree = "<group>"; };
@@ -392,6 +394,7 @@
 				253B487514E3415800B0483F /* RKATAppDelegate.m */,
 				255207EB14E5A50800EFD81F /* RKATTests.xcdatamodeld */,
 				253B486C14E3415800B0483F /* Supporting Files */,
+				25C93E02157FE7C40089259B /* Storyboard.storyboard */,
 			);
 			name = App;
 			path = RKApplicationTests/App;
@@ -787,6 +790,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				253B487014E3415800B0483F /* InfoPlist.strings in Resources */,
+				25C93E03157FE7C40089259B /* Storyboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -431,6 +431,7 @@
 
 - (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSAssert(indexPath, @"Cannot retrieve cell for nil indexPath");
     RKTableSection *section = [self sectionAtIndex:indexPath.section];
     id mappableObject = [section objectAtIndex:indexPath.row];
     RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
