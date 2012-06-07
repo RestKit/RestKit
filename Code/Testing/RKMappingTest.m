@@ -68,7 +68,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@: mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@", [self class], self.sourceKeyPath, self.destinationKeyPath, self.value];
+    return [NSString stringWithFormat:@"%@ mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@>", [self class],
+            self.sourceKeyPath, self.destinationKeyPath, self.value];
 }
 
 @end
@@ -226,6 +227,22 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     for (RKMappingTestExpectation *expectation in self.expectations) {
         [self verifyExpectation:expectation];
     }
+}
+
+- (NSString *)expectationsDescription
+{
+    return [self.expectations valueForKey:@"description"];
+}
+
+- (NSString *)eventsDescription
+{
+    return [self.events valueForKey:@"description"];
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@ Expectations: %@\nEvents: %@",
+            [self class], [self expectationsDescription], [self eventsDescription]];
 }
 
 #pragma mark - RKObjecMappingOperationDelegate
