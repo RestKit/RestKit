@@ -526,15 +526,23 @@
 - (CGFloat)tableView:(UITableView *)theTableView heightForHeaderInSection:(NSInteger)sectionIndex
 {
     NSAssert(theTableView == self.tableView, @"heightForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
-    RKTableSection *section = [self sectionAtIndex:sectionIndex];
-    return section.headerHeight;
+    if ([self.delegate respondsToSelector:@selector(tableController:heightForHeaderInSection:)]) {
+        return [self.delegate tableController:self heightForHeaderInSection:sectionIndex];
+    } else {
+        RKTableSection *section = [self sectionAtIndex:sectionIndex];
+        return section.headerHeight;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)theTableView heightForFooterInSection:(NSInteger)sectionIndex
 {
     NSAssert(theTableView == self.tableView, @"heightForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
-    RKTableSection *section = [self sectionAtIndex:sectionIndex];
-    return section.footerHeight;
+    if ([self.delegate respondsToSelector:@selector(tableController:heightForFooterInSection:)]) {
+        return [self.delegate tableController:self heightForFooterInSection:sectionIndex];
+    } else {
+        RKTableSection *section = [self sectionAtIndex:sectionIndex];
+        return section.footerHeight;
+    }
 }
 
 - (UIView *)tableView:(UITableView *)theTableView viewForHeaderInSection:(NSInteger)sectionIndex
