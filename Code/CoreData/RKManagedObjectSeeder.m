@@ -118,7 +118,7 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
     }
 
     NSString* filePath = [nilOrBundle pathForResource:fileName ofType:nil];
-    NSString* payload = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:&error];
+    NSData *payload = [NSData dataWithContentsOfFile:filePath options:0 error:&error];
 
     if (payload) {
         NSString* MIMEType = [fileName MIMETypeForPathExtension];
@@ -126,9 +126,10 @@ NSString* const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
             // Default the MIME type to the value of the Accept header if we couldn't detect it...
             MIMEType = _manager.acceptMIMEType;
         }
-        id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
-        NSAssert1(parser, @"Could not find a parser for the MIME Type '%@'", MIMEType);
-        id parsedData = [parser objectFromString:payload error:&error];
+        id parsedData = [[RKParserRegistry sharedRegistry] parseData:payload withMIMEType:MIMEType error:&error];
+        if (!parsedData && error) {
+            RKLogError(@"%@", [error localizedDescription]);
+        }
         NSAssert(parsedData, @"Cannot perform object load without data for mapping");
 
         RKObjectMappingProvider* mappingProvider = nil;

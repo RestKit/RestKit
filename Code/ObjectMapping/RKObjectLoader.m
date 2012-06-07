@@ -183,27 +183,29 @@
 #pragma mark - Response Object Mapping
 
 - (RKObjectMappingResult*)mapResponseWithMappingProvider:(RKObjectMappingProvider*)mappingProvider toObject:(id)targetObject inContext:(RKObjectMappingProviderContext)context error:(NSError**)error {
-    id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
-    NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
+    id parsedData = [[RKParserRegistry sharedRegistry] parseData:[self.response bodyForParsing]
+                                                    withMIMEType:self.response.MIMEType
+                                                        encoding:[self.response bodyEncoding]
+                                                           error:error];
 
-    // Check that there is actually content in the response body for mapping. It is possible to get back a 200 response
-    // with the appropriate MIME Type with no content (such as for a successful PUT or DELETE). Make sure we don't generate an error
-    // in these cases
-    id bodyAsString = [self.response bodyAsString];
-    RKLogTrace(@"bodyAsString: %@", bodyAsString);
-    if (bodyAsString == nil || [[bodyAsString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
-        RKLogDebug(@"Mapping attempted on empty response body...");
-        if (self.targetObject) {
-            return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
+    if (!parsedData && error) {
+        // Check that there is actually content in the response body for mapping. It is possible to get back a 200 response
+        // with the appropriate MIME Type with no content (such as for a successful PUT or DELETE). Make sure we don't generate an error
+        // in these cases
+        if ([*error code] == RKParserRegistryEmptyDataError) {
+            RKLogDebug(@"Mapping attempted on empty response body...");
+            if (self.targetObject) {
+                return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
+            } else {
+                return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
+            }
+        } else {
+            RKLogError(@"%@", [*error localizedDescription]);
+            return nil;
         }
-
-        return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     }
 
-    id parsedData = [parser objectFromString:bodyAsString error:error];
-    if (parsedData == nil && error) {
-        return nil;
-    }
+    RKLogTrace(@"parsed data: %@", parsedData);
 
     // Allow the delegate to manipulate the data
     if ([self.delegate respondsToSelector:@selector(objectLoader:willMapData:)]) {
@@ -279,15 +281,6 @@
     });
 }
 
-- (BOOL)canParseMIMEType:(NSString*)MIMEType {
-    if ([[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType]) {
-        return YES;
-    }
-
-    RKLogWarning(@"Unable to find parser for MIME Type '%@'", MIMEType);
-    return NO;
-}
-
 - (BOOL)isResponseMappable {
     if ([self.response isServiceUnavailable]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKServiceDidBecomeUnavailableNotification object:self];
@@ -310,7 +303,8 @@
         }
         [self informDelegateOfObjectLoadWithResultDictionary:resultDictionary];
         return NO;
-    } else if (NO == [self canParseMIMEType:[self.response MIMEType]]) {
+    } else if (NO == [[RKParserRegistry sharedRegistry] canParseMIMEType:[self.response MIMEType]]) {
+        RKLogWarning(@"Unable to find parser for MIME Type '%@'", [self.response MIMEType]);
         // We can't parse the response, it's unmappable regardless of the status code
         RKLogWarning(@"Encountered unexpected response with status code: %ld (MIME Type: %@ -> URL: %@)", (long) self.response.statusCode, self.response.MIMEType, self.URL);
         NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKObjectLoaderUnexpectedResponseError userInfo:nil];

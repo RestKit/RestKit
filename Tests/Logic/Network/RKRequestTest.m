@@ -891,7 +891,7 @@ request.timeoutInterval = 1.0;
     assertThat(blockError, is(notNilValue()));
 }
 
-- (void)testShouldBuildAProperRequestWhenSettingBodyByMIMEType {
+- (void)testShouldBuildAProperRequestWhenSettingBodyByMIMETypeJSON {
     RKClient* client = [RKTestFactory client];
     NSDictionary *bodyParams = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:10], @"number",
                                 @"JSON String", @"string",
@@ -901,6 +901,18 @@ request.timeoutInterval = 1.0;
     [request setBody:bodyParams forMIMEType:RKMIMETypeJSON];
     [request prepareURLRequest];
     assertThat(request.HTTPBodyString, is(equalTo(@"{\"number\":10,\"string\":\"JSON String\"}")));
+}
+
+- (void)testShouldBuildAProperRequestWhenSettingBodyByMIMETypeFormEncoded {
+    RKClient* client = [RKTestFactory client];
+    NSDictionary *bodyParams = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:10], @"number",
+                                @"A String", @"string",
+                                nil];
+    RKRequest *request = [client requestWithResourcePath:@"/upload"];
+    [request setMethod:RKRequestMethodPOST];
+    [request setBody:bodyParams forMIMEType:RKMIMETypeFormURLEncoded];
+    [request prepareURLRequest];
+    assertThat(request.HTTPBodyString, is(equalTo(@"number=10&string=A%20String")));
 }
 
 - (void)testThatGETRequestsAreConsideredCacheable

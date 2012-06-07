@@ -31,13 +31,12 @@
 // the internal caching capabilities from the JSONKit serializer
 @implementation RKJSONParserJSONKit
 
-- (NSDictionary*)objectFromString:(NSString*)string error:(NSError**)error {
-    RKLogTrace(@"string='%@'", string);
-    return [string objectFromJSONStringWithParseOptions:JKParseOptionStrict error:error];
+- (id)objectFromData:(NSData *)data error:(NSError **)error {
+    return [data objectFromJSONDataWithParseOptions:JKParseOptionStrict error:error];
 }
 
-- (NSString*)stringFromObject:(id)object error:(NSError**)error {
-    return [object JSONStringWithOptions:JKSerializeOptionNone error:error];
+- (NSData *)dataFromObject:(id)object error:(NSError **)error {
+    return [object JSONDataWithOptions:JKSerializeOptionNone error:error];
 }
 
 @end

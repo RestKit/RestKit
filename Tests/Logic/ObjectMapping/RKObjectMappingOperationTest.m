@@ -96,7 +96,7 @@
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
 
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
-    id data = [parser objectFromString:@"{\"boolString\":true}" error:nil];
+    id data = [parser objectFromData:[@"{\"boolString\":true}" dataUsingEncoding:NSUTF8StringEncoding] error:nil];
 
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
@@ -111,7 +111,7 @@
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
 
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
-    id data = [parser objectFromString:@"{\"boolNumber\":true}" error:nil];
+    id data = [parser objectFromData:[@"{\"boolNumber\":true}" dataUsingEncoding:NSUTF8StringEncoding] error:nil];
 
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
@@ -126,7 +126,7 @@
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
 
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
-    id data = [parser objectFromString:@"{\"boolNumber\":false}" error:nil];
+    id data = [parser objectFromData:[@"{\"boolNumber\":false}" dataUsingEncoding:NSUTF8StringEncoding] error:nil];
 
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
@@ -141,7 +141,7 @@
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
 
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
-    id data = [parser objectFromString:@"{\"number\":123}" error:nil];
+    id data = [parser objectFromData:[@"{\"number\":123}" dataUsingEncoding:NSUTF8StringEncoding] error:nil];
 
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
@@ -156,7 +156,7 @@
     TestMappable* object = [[[TestMappable alloc] init] autorelease];
 
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
-    id data = [parser objectFromString:@"{\"numbers\":[1, 2, 3]}" error:nil];
+    id data = [parser objectFromData:[@"{\"numbers\":[1, 2, 3]}" dataUsingEncoding:NSUTF8StringEncoding] error:nil];
 
     RKObjectMappingOperation* operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];

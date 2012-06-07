@@ -44,14 +44,7 @@
  with a target object type of NSMutableDictionary. The serialized object will contain attributes
  and relationships composed of simple KVC compliant Cocoa types.
  */
-- (NSMutableDictionary*)serializedObject:(NSError**)error;
-
-/**
- Return a serialized representation of the source object by mapping it into a NSMutableDictionary and
- then encoding it into the destination MIME Type via an instance of RKParser that is registered
- for the specified MIME Type
- */
-- (NSString*)serializedObjectForMIMEType:(NSString*)MIMEType error:(NSError**)error;
+- (NSMutableDictionary*)serializedAsDictionary:(NSError**)error;
 
 /**
  Return a request serialization for the source object by mapping it to an NSMutableDictionary, encoding

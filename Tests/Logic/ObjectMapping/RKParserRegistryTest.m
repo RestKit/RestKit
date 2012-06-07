@@ -30,6 +30,76 @@
 
 @implementation RKParserRegistryTest
 
+- (void)testShouldReturnNilAndSetErrorIfNoParserRegisteredWhenParsing {
+    NSError *error = nil;
+    id object = [[RKParserRegistry new] parseData:[NSData dataWithBytes:"foobar" length:6]
+                                     withMIMEType:@"application/json"
+                                         encoding:NSUTF8StringEncoding
+                                            error:&error];
+    assertThat(object, is(nilValue()));
+    assertThat(error, isNot(nilValue()));
+    assertThatInteger([error code], is(equalToInt(RKParserRegistryMissingParserError)));
+    assertThat([error domain], is(equalTo(RKErrorDomain)));
+}
+
+- (void)testShouldPassDataToParser {
+    NSArray *parsedData = [NSArray array];
+    NSError *error = nil;
+    NSData *data = [@"foobar" dataUsingEncoding:NSUTF8StringEncoding];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
+    [[[mockParser expect] andReturn:parsedData] objectFromData:data error:[OCMArg setTo:error]];
+    RKParserRegistry *registry = [RKParserRegistry sharedRegistry];
+    id mockRegistry = [OCMockObject partialMockForObject:registry];
+    [[[mockRegistry stub] andReturn:mockParser] parserForMIMEType:@"application/bson"];
+    id object = [registry parseData:data
+                       withMIMEType:@"application/bson"
+                           encoding:NSUTF8StringEncoding
+                              error:&error];
+    assertThat(object, is(parsedData));
+    assertThat(error, is(nilValue()));
+}
+
+- (void)testShouldReturnNilAndSetErrorIfNoParserRegisteredWhenSerializing {
+    NSError *error = nil;
+    NSObject *object = [NSObject new];
+    NSData *data = [[RKParserRegistry new] serializeObject:object
+                                               forMIMEType:@"application/json"
+                                                     error:&error];
+    assertThat(data, is(nilValue()));
+    assertThat(error, isNot(nilValue()));
+    assertThatInteger([error code], is(equalToInt(RKParserRegistryMissingParserError)));
+    assertThat([error domain], is(equalTo(RKErrorDomain)));
+}
+
+- (void)testShouldSerializeWithParser {
+    NSError *error = nil;
+    NSData *data = [NSData data];
+    NSObject *object = [NSObject new];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
+    [[[mockParser expect] andReturn:data] dataFromObject:object error:[OCMArg setTo:error]];
+    RKParserRegistry *registry = [RKParserRegistry sharedRegistry];
+    id mockRegistry = [OCMockObject partialMockForObject:registry];
+    [[[mockRegistry stub] andReturn:mockParser] parserForMIMEType:@"application/bson"];
+    NSData *serializedData = [registry serializeObject:object forMIMEType:@"application/bson" error:&error];
+    assertThat(serializedData, is(equalTo(data)));
+    assertThat(error, is(nilValue()));
+}
+
+- (void)testShouldInvokeParseMethodWithDefaultEncoding {
+    id mockRegistry = [OCMockObject partialMockForObject:[RKParserRegistry new]];
+    NSArray *parsedData = [NSArray array];
+    NSData *data = [NSData data];
+    NSString *MIMEType = @"application/json";
+    NSError *error = [NSError new];
+    [[[mockRegistry expect] andReturn:parsedData] parseData:data
+                                               withMIMEType:MIMEType
+                                                   encoding:NSUTF8StringEncoding
+                                                      error:[OCMArg setTo:error]];
+    id retVal = [mockRegistry parseData:data withMIMEType:MIMEType error:&error];
+    [mockRegistry verify];
+    assertThat(retVal, is(equalTo(parsedData)));
+}
+
 - (void)testShouldEnableRegistrationFromMIMETypeToParserClasses {
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
     [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
@@ -83,6 +153,32 @@
     // Fallback to regex
     id<RKParser> regexParser = [registry parserForMIMEType:@"application/xml+different"];
     assertThat(regexParser, is(instanceOf([RKJSONParserJSONKit class])));
+}
+
+- (void)testShoulBeAbleToParseForRegisteredMIMEType {
+    RKParserRegistry *registry = [RKParserRegistry new];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
+    [registry setParserClass:mockParser forMIMEType:@"application/foobar"];
+    assertThatBool([registry canParseMIMEType:@"application/foobar"], is(equalToBool(YES)));
+}
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
+
+- (void)testShoulBeAbleToParseForRegisteredMIMETypeRegularExpression {
+    RKParserRegistry *registry = [RKParserRegistry new];
+    id mockParser = [OCMockObject mockForProtocol:@protocol(RKParser)];
+    NSRegularExpression *expression = [NSRegularExpression regularExpressionWithPattern:@"(text|application)\\/json"
+                                                                                options:NSRegularExpressionSearch
+                                                                                  error:NULL];
+    [registry setParserClass:mockParser forMIMETypeRegularExpression:expression];
+    assertThatBool([registry canParseMIMEType:@"text/json"], is(equalToBool(YES)));
+}
+
+#endif
+
+- (void)testShoulNotBeAbleToParseForNotRegisteredMIMEType {
+    RKParserRegistry *registry = [RKParserRegistry new];
+    assertThatBool([registry canParseMIMEType:@"application/foobar"], is(equalToBool(NO)));
 }
 
 @end
