@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 5/31/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@
 #import "RKManagedObjectMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKDynamicObjectMappingMatcher.h"
+#import "RKManagedObjectCaching.h"
 #import "RKManagedObjectStore.h"
 #import "RKLog.h"
 
@@ -49,7 +50,7 @@
         primaryKeyAttribute = (NSString*)primaryKeyObject;
     }
     NSAssert(primaryKeyAttribute, @"Cannot connect relationship without primaryKeyAttribute");
-    
+
     RKObjectRelationshipMapping* relationshipMapping = [self.objectMapping mappingForRelationship:relationshipName];
     RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
     NSAssert(mapping, @"Attempted to connect relationship for keyPath '%@' without a relationship mapping defined.");
@@ -68,23 +69,31 @@
         id relatedObject = nil;
         if ([valueOfLocalPrimaryKeyAttribute conformsToProtocol:@protocol(NSFastEnumeration)]) {
             RKLogTrace(@"Connecting has-many relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K IN %@", primaryKeyAttributeOfRelatedObject, valueOfLocalPrimaryKeyAttribute];
-            NSFetchRequest *fetchRequest = [NSManagedObject requestAllInContext:[self.destinationObject managedObjectContext]];
-            fetchRequest.predicate = predicate;
-            fetchRequest.entity = objectMapping.entity;
-            NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:[self.destinationObject managedObjectContext]];
-            relatedObject = [NSSet setWithArray:objects];
+
+            // Implemented for issue 284 - https://github.com/RestKit/RestKit/issues/284
+            relatedObject = [NSMutableSet set];
+            NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
+            for (id foreignKey in valueOfLocalPrimaryKeyAttribute) {
+                id searchResult = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:foreignKey inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
+                if (searchResult) {
+                    [relatedObject addObject:searchResult];
+                }
+            }
         } else {
             RKLogTrace(@"Connecting has-one relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
-            NSFetchRequest *fetchRequest = [NSManagedObject requestFirstByAttribute:primaryKeyAttributeOfRelatedObject withValue:valueOfLocalPrimaryKeyAttribute inContext:[self.destinationObject managedObjectContext]];
-            fetchRequest.entity = objectMapping.entity;
-            NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:[self.destinationObject managedObjectContext]];
-            relatedObject = [objects lastObject];
+
+            // Normal foreign key
+            NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
+            relatedObject = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:valueOfLocalPrimaryKeyAttribute inManagedObjectContext:[self.destinationObject managedObjectContext]];
         }
-        if (relatedObject) {                
+        if (relatedObject) {
             RKLogDebug(@"Connected relationship '%@' to object with primary key value '%@': %@", relationshipName, valueOfLocalPrimaryKeyAttribute, relatedObject);
         } else {
             RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@' with primary key value '%@'", [[objectMapping entity] name], relationshipName, valueOfLocalPrimaryKeyAttribute);
+        }
+        if ([relatedObject isKindOfClass:[NSManagedObject class]]) {
+            // Sanity check the managed object contexts
+            NSAssert([[(NSManagedObject *)self.destinationObject managedObjectContext] isEqual:[(NSManagedObject *)relatedObject managedObjectContext]], nil);
         }
         RKLogTrace(@"setValue of %@ forKeyPath %@", relatedObject, relationshipName);
         [self.destinationObject setValue:relatedObject forKeyPath:relationshipName];
@@ -94,7 +103,7 @@
 }
 
 - (void)connectRelationships {
-    NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
+    NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping *)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", relationshipsAndPrimaryKeyAttributes);
     for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
         if (self.queue) {
@@ -110,7 +119,7 @@
 }
 
 - (BOOL)performMapping:(NSError **)error {
-    BOOL success = [super performMapping:error];    
+    BOOL success = [super performMapping:error];
     if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
         /**
          NOTE: Processing the pending changes here ensures that the managed object context generates observable
@@ -119,7 +128,6 @@
          manually invoke processPendingChanges to prevent recreating objects with the same primary key.
          See https://github.com/RestKit/RestKit/issues/661
          */
-        [[[(RKManagedObjectMapping *)self.objectMapping objectStore] managedObjectContextForCurrentThread] processPendingChanges];
         [self connectRelationships];
     }
     return success;

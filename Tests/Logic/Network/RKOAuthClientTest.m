@@ -19,6 +19,13 @@
 //
 
 #import "RKTestEnvironment.h"
+#import "RKPortCheck.h"
+
+#define RKOAuthClientTestSkipWithoutMongoDB() \
+    if (! [self isMongoRunning]) { \
+        NSLog(@"!! Skipping OAuth Test: MongoDB not running"); \
+        return; \
+    }
 
 @interface RKOAuthClientTest : RKTestCase
 
@@ -26,17 +33,31 @@
 
 @implementation RKOAuthClientTest
 
+- (BOOL)isMongoRunning {
+    static RKPortCheck *portCheck = nil;
+    if (! portCheck) {
+        portCheck = [[RKPortCheck alloc] initWithHost:@"localhost" port:27017];
+        [portCheck run];
+    }
+
+    return [portCheck isOpen];
+}
+
 - (void)testShouldGetAccessToken{
+    RKOAuthClientTestSkipWithoutMongoDB();
+
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);
-    client.authorizationCode = @"1234";
+    client.authorizationCode = @"4fa8182d7184797dd5000002";
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
     [loader waitForResponse];
     assertThatBool(loader.wasSuccessful, is(equalToBool(YES)));
 }
 
-- (void)testShouldNotGetAccessToken{
+- (void)testShouldNotGetAccessToken {
+    RKOAuthClientTestSkipWithoutMongoDB();
+
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);
     client.authorizationCode = @"someInvalidAuthorizationCode";
@@ -45,13 +66,15 @@
     [loader waitForResponse];
 
     assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
-
 }
+
 - (void)testShouldGetProtectedResource{
+    RKOAuthClientTestSkipWithoutMongoDB();
+
     //TODO: Encapsulate this code in a correct manner
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     RKOAuthClient *client = RKTestNewOAuthClient(loader);
-    client.authorizationCode = @"1234";
+    client.authorizationCode = @"4fa8182d7184797dd5000002";
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
 
@@ -59,7 +82,7 @@
     RKClient *requestClient = [RKClient clientWithBaseURLString:[client authorizationURL]];
     requestClient.OAuth2AccessToken = client.accessToken;
     requestClient.authenticationType = RKRequestAuthenticationTypeOAuth2;
-    RKRequest *request = [requestClient requestWithResourcePath:@"/me"];
+    RKRequest *request = [requestClient requestWithResourcePath:@"/oauth2/pregen/me"];
     request.delegate = resourceLoader;
     [request send];
     [resourceLoader waitForResponse];

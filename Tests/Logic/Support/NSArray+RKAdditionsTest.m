@@ -29,7 +29,7 @@
     user.name = @"Blake";
     user.country = @"USA";
     NSArray *users = [NSArray arrayWithObject:user];
-    
+
     NSArray *sections = [users sectionsGroupedByKeyPath:@"country"];
     assertThat(sections, hasCountOf(1));
 }
@@ -39,17 +39,17 @@
     RKTestUser *user1 = [RKTestUser new];
     user1.name = @"Blake";
     user1.country = @"USA";
-    
+
     RKTestUser *user2 = [RKTestUser new];
     user2.name = @"Colin";
     user2.country = @"USA";
-    
+
     RKTestUser *user3 = [RKTestUser new];
     user3.name = @"Pepe";
-    user3.country = @"Spain";    
-    
+    user3.country = @"Spain";
+
     NSArray *users = [NSArray arrayWithObjects:user1, user2, user3, nil];
-    
+
     NSArray *sections = [users sectionsGroupedByKeyPath:@"country"];
     assertThat(sections, hasCountOf(2));
     assertThat([sections objectAtIndex:0], contains(user1, user2, nil));
@@ -60,22 +60,22 @@
 {
     RKTestUser *user1 = [RKTestUser new];
     user1.name = @"Blake";
-    user1.country = @"USA";        
-    
+    user1.country = @"USA";
+
     RKTestUser *user2 = [RKTestUser new];
     user2.name = @"Expatriate";
     user2.country = nil;
-    
+
     RKTestUser *user3 = [RKTestUser new];
     user3.name = @"John Doe";
     user3.country = nil;
-    
+
     RKTestUser *user4 = [RKTestUser new];
     user4.name = @"Pepe";
     user4.country = @"Spain";
-    
+
     NSArray *users = [NSArray arrayWithObjects:user1, user2, user3, user4, nil];
-    
+
     NSArray *sections = [users sectionsGroupedByKeyPath:@"country"];
     assertThat(sections, hasCountOf(3));
     assertThat([sections objectAtIndex:0], contains(user1, nil));

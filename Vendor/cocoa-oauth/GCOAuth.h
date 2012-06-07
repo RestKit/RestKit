@@ -85,7 +85,7 @@
                         tokenSecret:(NSString *)tokenSecret;
 
 /*
- Creates and returns a URL request that will perform a POST HTTPS operation. All
+ Creates and returns a URL request that will perform a POST HTTP operation. All
  data will be sent as form URL encoded. Restrictions on the arguments to this
  method are the same as the GET request methods.
  */
@@ -135,10 +135,21 @@
                      consumerSecret:(NSString *)consumerSecret
                         accessToken:(NSString *)accessToken
                         tokenSecret:(NSString *)tokenSecret;
-
-
 @end
 
+@interface NSString (GCOAuthAdditions)
+
+// better percent escape
+- (NSString *)pcen;
+@end
+
+@interface NSURL (GCOAuthURL)
+
+/*
+ Get host:port from URL unless port is 80 or 443 (http://tools.ietf.org/html/rfc5849#section-3.4.1.2). Otherwis reurn only host.
+ */
+- (NSString *)hostAndPort;
+@end
 /*
  
  XAuth example (because you may otherwise be scratching your head):

@@ -15,7 +15,7 @@
     if (self) {
         _operations = [NSMutableArray new];
     }
-    
+
     return self;
 }
 

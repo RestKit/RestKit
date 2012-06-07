@@ -61,13 +61,38 @@ namespace :test do
   task :application => 'application:ios'
   
   desc "Run all tests for iOS and OS X"
-  task :all => ['test:logic', 'test:application']
+  task :all do
+    Rake.application.invoke_task("test:logic")
+    unit_status = $?.exitstatus
+    Rake.application.invoke_task("test:application")
+    integration_status = $?.exitstatus
+    puts "\033[0;31m!! Unit Tests failed with exit status of #{unit_status}" if unit_status != 0
+    puts "\033[0;31m!! Integration Tests failed with exit status of #{integration_status}" if integration_status != 0
+    puts "\033[0;32m** All Tests executed successfully" if unit_status == 0 && integration_status == 0
+  end
+  
+  task :check_mongodb do
+    port_check = RestKit::Server::PortCheck.new('127.0.0.1', 27017)
+    port_check.run
+    if port_check.closed?
+      puts "\033[0;33m!! Warning: MongoDB was not found running on port 27017"
+      puts "MongoDB is required for the execution of the OAuth tests. Tests in RKOAuthClientTest will NOT be executed"
+      `which mongo`
+      if $?.exitstatus == 0
+        puts "Execute MongoDB via `mongod run --config /usr/local/etc/mongod.conf`"
+      else
+        puts "Install mongodb with Homebrew via `brew install mongodb`"
+      end
+      puts "\033[0m"
+      sleep(5)
+    end
+  end
 end
 
-desc 'Run all the GateGuru tests'
+desc 'Run all the RestKit tests'
 task :test => "test:all"
 
-task :default => ["server:autostart", "test:all", "server:autostop"]
+task :default => ["test:check_mongodb", "server:autostart", "test:all", "server:autostop"]
 
 def restkit_version
   @restkit_version ||= ENV['VERSION'] || File.read("VERSION").chomp
@@ -180,4 +205,26 @@ end
 desc "Validate a branch is ready for merging by checking for common issues"
 task :validate => [:build, 'docs:check', 'uispec:all'] do  
   puts "Project state validated successfully. Proceed with merge."
+end
+
+namespace :payload do
+  task :generate do
+    require 'json'
+    require 'faker'
+    
+    ids = (1..25).to_a
+    child_ids = (50..100).to_a
+    child_counts = (10..25).to_a
+    hash = ids.inject({'parents' => []}) do |hash, parent_id|
+      child_count = child_counts.sample
+      children = (0..child_count).collect do
+        {'name' => Faker::Name.name, 'childID' => child_ids.sample}
+      end
+      parent = {'parentID' => parent_id, 'name' => Faker::Name.name, 'children' => children}
+      hash['parents'] << parent
+      hash
+    end
+    File.open('payload.json', 'w+') { |f| f << hash.to_json }
+    puts "Generated payload at: payload.json"
+  end
 end

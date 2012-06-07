@@ -19,8 +19,8 @@
 //
 
 @interface RKCache : NSObject {
-	NSString* _cachePath;
-	NSRecursiveLock* _cacheLock;
+    NSString* _cachePath;
+    NSRecursiveLock* _cacheLock;
 }
 
 @property (nonatomic, readonly) NSString* cachePath;

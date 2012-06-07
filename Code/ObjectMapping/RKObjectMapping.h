@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 4/30/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -100,8 +100,8 @@ relationship. Relationships are processed using an object mapping as well.
 @property (nonatomic, assign) BOOL setNilForMissingRelationships;
 
 /**
- When YES, RestKit will invoke key-value validation at object mapping time. 
- 
+ When YES, RestKit will invoke key-value validation at object mapping time.
+
  **Default**: YES
  @see validateValue:forKey:error:
  */
@@ -125,10 +125,10 @@ relationship. Relationships are processed using an object mapping as well.
  into NSDate attributes on the target objectClass. Each date formatter
  will be invoked with the string value being mapped until one of the date
  formatters does not return nil.
- 
+
  Defaults to the application-wide collection of date formatters configured via:
  [RKObjectMapping setDefaultDateFormatters:]
- 
+
  @see [RKObjectMapping defaultDateFormatters]
  */
 @property (nonatomic, retain) NSArray *dateFormatters;
@@ -138,10 +138,10 @@ relationship. Relationships are processed using an object mapping as well.
  and time configuration. This date formatter will be used when generating
  string representations of NSDate attributes (i.e. during serialization to
  URL form encoded or JSON format).
- 
+
  Defaults to the application-wide preferred date formatter configured via:
  [RKObjectMapping setPreferredDateFormatter:]
- 
+
  @see [RKObjectMapping preferredDateFormatter]
  */
 @property (nonatomic, retain) NSFormatter *preferredDateFormatter;
@@ -172,10 +172,10 @@ relationship. Relationships are processed using an object mapping as well.
  Returns an object mapping targeting the specified class. The RKObjectMapping instance will
  be yieled to the block so that you can perform on the fly configuration without having to
  obtain a reference variable for the mapping.
- 
- For example, consider we have a one-off request that will load a few attributes for our object. 
+
+ For example, consider we have a one-off request that will load a few attributes for our object.
  Using blocks, this is very succinct:
- 
+
     [[RKObjectManager sharedManager] postObject:self usingBlock:^(RKObjectLoader* loader) {
         loader.objectMapping = [RKObjectMapping mappingForClass:[Person class] usingBlock:^(RKObjectMapping* mapping) {
             [mapping mapAttributes:@"email", @"first_name", nil];
@@ -188,10 +188,10 @@ relationship. Relationships are processed using an object mapping as well.
  Returns serialization mapping for encoding a local object to a dictionary for transport. The RKObjectMapping instance will
  be yieled to the block so that you can perform on the fly configuration without having to
  obtain a reference variable for the mapping.
- 
+
  For example, consider we have a one-off request within which we want to post a subset of our object
  data. Using blocks, this is very succinct:
- 
+
     - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
         if ([self validatePassword:newPassword error:error]) {
             self.password = newPassword;
@@ -202,7 +202,7 @@ relationship. Relationships are processed using an object mapping as well.
             }];
         }
     }
- 
+
  Using the block forms we are able to quickly configure and send this request on the fly.
  */
 + (id)serializationMappingUsingBlock:(void (^)(RKObjectMapping *serializationMapping))block;
@@ -242,7 +242,7 @@ relationship. Relationships are processed using an object mapping as well.
 
 /**
  Returns the attribute or relationship mapping for the given destination keyPath.
- 
+
  @param destinationKeyPath A keyPath on the destination object that is currently
  */
 - (id)mappingForDestinationKeyPath:(NSString *)destinationKeyPath;
@@ -283,15 +283,15 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
  destination attribute property have the same name.
- 
+
  For example, given the transformation from a JSON dictionary:
- 
+
     {"name": "My Name", "age": 28}
- 
+
  To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
- 
+
     [mapping mapAttributesFromSet:[NSSet setWithObjects:@"name", @"age", nil]];
- 
+
  @param set A set of string attribute keyPaths to deifne mappings for
  */
 - (void)mapAttributesFromSet:(NSSet *)set;
@@ -299,15 +299,15 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  Defines an attribute mapping for each string attribute in the collection where the source keyPath and the
  destination attribute property have the same name.
- 
+
  For example, given the transformation from a JSON dictionary:
- 
+
     {"name": "My Name", "age": 28}
- 
+
  To a Person class with corresponding name &amp; age properties, we could configure the attribute mappings via:
- 
+
     [mapping mapAttributesFromSet:[NSArray arrayWithObjects:@"name", @"age", nil]];
- 
+
  @param array An array of string attribute keyPaths to deifne mappings for
  */
 - (void)mapAttributesFromArray:(NSArray *)set;
@@ -443,7 +443,7 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  Returns the attribute mapping targeting the key of a nested dictionary in the source JSON.
  This attribute mapping corresponds to the attributeName configured via mapKeyOfNestedDictionaryToAttribute:
- 
+
  @see mapKeyOfNestedDictionaryToAttribute:
  @returns An attribute mapping for the key of a nested dictionary being mapped or nil
  */
@@ -498,9 +498,9 @@ relationship. Relationships are processed using an object mapping as well.
 
 /**
  Returns the class of the attribute or relationship property of the target objectClass
- 
+
  Given the name of a string property, this will return an NSString, etc.
- 
+
  @param propertyName The name of the property we would like to retrieve the type of
  */
 - (Class)classForProperty:(NSString*)propertyName;
@@ -534,12 +534,12 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  Returns the collection of default date formatters that will be used for all object mappings
  that have not been configured specifically.
- 
+
  Out of the box, RestKit initializes the following default date formatters for you in the
  UTC time zone:
     * yyyy-MM-dd'T'HH:mm:ss'Z'
     * MM/dd/yyyy
- 
+
  @return An array of NSFormatter objects used when mapping strings into NSDate attributes
  */
 + (NSArray *)defaultDateFormatters;
@@ -548,7 +548,7 @@ relationship. Relationships are processed using an object mapping as well.
  Sets the collection of default date formatters to the specified array. The array should
  contain configured instances of NSDateFormatter in the order in which you want them applied
  during object mapping operations.
- 
+
  @param dateFormatters An array of date formatters to replace the existing defaults
  @see defaultDateFormatters
  */
@@ -556,7 +556,7 @@ relationship. Relationships are processed using an object mapping as well.
 
 /**
  Adds a date formatter instance to the default collection
- 
+
  @param dateFormatter An NSFormatter object to append to the end of the default formatters collection
  @see defaultDateFormatters
  */
@@ -565,7 +565,7 @@ relationship. Relationships are processed using an object mapping as well.
 /**
  Convenience method for quickly constructing a date formatter and adding it to the collection of default
  date formatters. The locale is auto-configured to en_US_POSIX
- 
+
  @param dateFormatString The dateFormat string to assign to the newly constructed NSDateFormatter instance
  @param nilOrTimeZone The NSTimeZone object to configure on the NSDateFormatter instance. Defaults to UTC time.
  @result A new NSDateFormatter will be appended to the defaultDateFormatters with the specified date format and time zone
@@ -577,9 +577,9 @@ relationship. Relationships are processed using an object mapping as well.
  Returns the preferred date formatter to use when generating NSString representations from NSDate attributes.
  This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations
  that do not have a native time construct.
- 
+
  Defaults to a date formatter configured for the UTC Time Zone with a format string of "yyyy-MM-dd HH:mm:ss Z"
- 
+
  @return The preferred NSFormatter object to use when serializing dates into strings
  */
 + (NSFormatter *)preferredDateFormatter;
@@ -588,7 +588,7 @@ relationship. Relationships are processed using an object mapping as well.
  Sets the preferred date formatter to use when generating NSString representations from NSDate attributes.
  This type of transformation occurs when RestKit is mapping local objects into JSON or form encoded serializations
  that do not have a native time construct.
- 
+
  @param dateFormatter The NSFormatter object to designate as the new preferred instance
  */
 + (void)setPreferredDateFormatter:(NSFormatter *)dateFormatter;

@@ -193,7 +193,7 @@ typedef void(^RKControlBlockActionBlock)(id sender);
         cell = [[[self.objectClass alloc] initWithStyle:self.style
                                        reuseIdentifier:self.reuseIdentifier] autorelease];
     }
-    
+
     if (self.managesCellAttributes) {
         cell.accessoryType = self.accessoryType;
         cell.selectionStyle = self.selectionStyle;

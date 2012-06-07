@@ -66,10 +66,10 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 }
 
 - (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error {
-	NSDate *date = [self dateFromString:string];
-	if (outValue)
-		*outValue = date;
-	return (date != nil);
+    NSDate *date = [self dateFromString:string];
+    if (outValue)
+        *outValue = date;
+    return (date != nil);
 }
 
 - (id)init {

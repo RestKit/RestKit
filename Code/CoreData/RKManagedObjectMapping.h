@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 5/31/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -88,7 +88,7 @@ typedef enum {
 
 /**
  Returns a dictionary containing Core Data relationships and attribute pairs containing
- the primary key for 
+ the primary key for
  */
 @property (nonatomic, readonly) NSDictionary *relationshipsAndPrimaryKeyAttributes;
 
@@ -112,16 +112,16 @@ typedef enum {
 /**
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
  the related object by primary key.
- 
+
  For example, given a Project object associated with a User, where the 'user' relationship is
  specified by a userID property on the managed object:
- 
+
  [mapping connectRelationship:@"user" withObjectForPrimaryKeyAttribute:@"userID"];
- 
+
  Will hydrate the 'user' association on the managed object with the object
  in the local object graph having the primary key specified in the managed object's
  userID property.
-  
+
  In effect, this approach allows foreign key relationships between managed objects
  to be automatically maintained from the server to the underlying Core Data object graph.
  */
@@ -130,7 +130,7 @@ typedef enum {
 /**
  Connects relationships using the primary key values contained in the specified attribute. This method is
  a short-cut for repeated invocation of `connectRelationship:withObjectForPrimaryKeyAttribute:`.
- 
+
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
 - (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION;

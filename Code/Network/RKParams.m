@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 8/3/09.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,14 +55,14 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
         _footer       = [[[NSString stringWithFormat:@"--%@--\r\n", kRKStringBoundary] dataUsingEncoding:NSUTF8StringEncoding] retain];
         _footerLength = [_footer length];
     }
-    
+
     return self;
 }
 
 - (void)dealloc {
     [_attachments release];
     [_footer release];
-    
+
     [super dealloc];
 }
 
@@ -77,7 +77,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
             [self setValue:value forParam:key];
         }
     }
-    
+
     return self;
 }
 
@@ -85,7 +85,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     RKParamsAttachment *attachment = [[RKParamsAttachment alloc] initWithName:param value:value];
     [_attachments addObject:attachment];
     [attachment release];
-    
+
     return attachment;
 }
 
@@ -103,7 +103,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     RKParamsAttachment *attachment = [[RKParamsAttachment alloc] initWithName:param file:filePath];
     [_attachments addObject:attachment];
     [attachment release];
-    
+
     return attachment;
 }
 
@@ -113,7 +113,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     RKParamsAttachment *attachment = [[RKParamsAttachment alloc] initWithName:param data:data];
     [_attachments addObject:attachment];
     [attachment release];
-    
+
     return attachment;
 }
 
@@ -125,7 +125,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     if (MIMEType != nil) {
         attachment.MIMEType = MIMEType;
     }
-    
+
     return attachment;
 }
 
@@ -139,7 +139,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     if (fileName) {
         attachment.fileName = fileName;
     }
-    
+
     return attachment;
 }
 
@@ -153,7 +153,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     if (fileName) {
         attachment.fileName = fileName;
     }
-    
+
     return attachment;
 }
 
@@ -176,13 +176,13 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 - (NSInputStream *)HTTPBodyStream {
     // Open each of our attachments
     [_attachments makeObjectsPerformSelector:@selector(open)];
-    
+
     // Calculate the length of the stream
-    _length = _footerLength;    
+    _length = _footerLength;
     for (RKParamsAttachment *attachment in _attachments) {
         _length += [attachment length];
     }
-    
+
     return (NSInputStream*)self;
 }
 
@@ -191,7 +191,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)maxLength {
     NSUInteger bytesSentInThisRead = 0, bytesRead;
     NSUInteger lengthOfAttachments = (_length - _footerLength);
-    
+
     // Proxy the read through to our attachments
     _streamStatus = NSStreamStatusReading;
     while (_bytesDelivered < _length && bytesSentInThisRead < maxLength && _currentPart < [_attachments count]) {
@@ -199,28 +199,28 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
             _currentPart ++;
             continue;
         }
-        
+
         bytesSentInThisRead += bytesRead;
         _bytesDelivered += bytesRead;
     }
-    
+
     // If we have sent all the attachments data, begin emitting the boundary footer
     if ((_bytesDelivered >= lengthOfAttachments) && (bytesSentInThisRead < maxLength)) {
         NSUInteger footerBytesSent, footerBytesRemaining, bytesRemainingInBuffer;
-        
+
         // Calculate our position in the stream & buffer
         footerBytesSent = _bytesDelivered - lengthOfAttachments;
         footerBytesRemaining = _footerLength - footerBytesSent;
         bytesRemainingInBuffer = maxLength - bytesSentInThisRead;
-        
+
         // Send the entire footer back if there is room
-        bytesRead = (footerBytesRemaining < bytesRemainingInBuffer) ? footerBytesRemaining : bytesRemainingInBuffer;        
+        bytesRead = (footerBytesRemaining < bytesRemainingInBuffer) ? footerBytesRemaining : bytesRemainingInBuffer;
         [_footer getBytes:buffer + bytesSentInThisRead range:NSMakeRange(footerBytesSent, bytesRead)];
-        
+
         bytesSentInThisRead += bytesRead;
         _bytesDelivered += bytesRead;
     }
-    
+
     return bytesSentInThisRead;
 }
 
@@ -240,9 +240,9 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
 - (void)close {
     if (_streamStatus != NSStreamStatusClosed) {
         _streamStatus = NSStreamStatusClosed;
-        
-        RKLogTrace(@"RKParams stream closed. Releasing self.");        
-        
+
+        RKLogTrace(@"RKParams stream closed. Releasing self.");
+
 #if TARGET_OS_IPHONE
         // NOTE: When we are assigned to the URL request, we get
         // retained. We release ourselves here to ensure the retain
@@ -261,7 +261,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     if (_streamStatus != NSStreamStatusClosed && _bytesDelivered >= _length) {
         _streamStatus = NSStreamStatusAtEnd;
     }
-    
+
     return _streamStatus;
 }
 
@@ -274,7 +274,7 @@ NSString* const kRKStringBoundary = @"0xKhTmLbOuNdArY";
     for (RKParamsAttachment *attachment in self.attachments) {
         [attachmentsMD5 appendString:[attachment MD5]];
     }
-    
+
     return [attachmentsMD5 MD5];
 }
 

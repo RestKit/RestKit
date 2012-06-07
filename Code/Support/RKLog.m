@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 6/10/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -126,4 +126,46 @@ int RKLogLevelForString(NSString *logLevel, NSString *envVarName)
 
         return -1;
     }
+}
+
+void RKLogValidationError(NSError *validationError) {
+    if ([[validationError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+        NSDictionary *userInfo = [validationError userInfo];
+        NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
+        if (errors) {
+            for (NSError *detailedError in errors) {
+                NSDictionary *subUserInfo = [detailedError userInfo];
+                RKLogError(@"Core Data Save Error\n \
+                           NSLocalizedDescription:\t\t%@\n \
+                           NSValidationErrorKey:\t\t\t%@\n \
+                           NSValidationErrorPredicate:\t%@\n \
+                           NSValidationErrorObject:\n%@\n",
+                           [subUserInfo valueForKey:@"NSLocalizedDescription"],
+                           [subUserInfo valueForKey:@"NSValidationErrorKey"],
+                           [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
+                           [subUserInfo valueForKey:@"NSValidationErrorObject"]);
+            }
+        }
+        else {
+            RKLogError(@"Core Data Save Error\n \
+                       NSLocalizedDescription:\t\t%@\n \
+                       NSValidationErrorKey:\t\t\t%@\n \
+                       NSValidationErrorPredicate:\t%@\n \
+                       NSValidationErrorObject:\n%@\n",
+                       [userInfo valueForKey:@"NSLocalizedDescription"],
+                       [userInfo valueForKey:@"NSValidationErrorKey"],
+                       [userInfo valueForKey:@"NSValidationErrorPredicate"],
+                       [userInfo valueForKey:@"NSValidationErrorObject"]);
+        }
+    }
+}
+
+void RKLogIntegerAsBinary(NSUInteger bitMask) {
+    NSUInteger bit = ~(NSUIntegerMax >> 1);
+    NSMutableString *string = [NSMutableString string];
+    do {
+        [string appendString:(((NSUInteger)bitMask & bit) ? @"1" : @"0")];
+    } while ( bit >>= 1 );
+    
+    NSLog(@"Value of %ld in binary: %@", (long) bitMask, string);
 }

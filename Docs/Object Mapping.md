@@ -737,7 +737,7 @@ Let's take a look at how you can leverage key-value validation to perform the ab
 @implementation Article
 - (BOOL)validateTitle:(id *)ioValue error:(NSError **)outError {
     // Force the title to uppercase
-    *iovalue = [(NSString*)iovalue uppercaseString];
+    *ioValue = [(NSString*)ioValue uppercaseString];
     return YES;
 }
 

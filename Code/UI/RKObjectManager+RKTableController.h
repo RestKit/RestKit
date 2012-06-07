@@ -20,7 +20,7 @@
 /**
  Creates and returns a table controller object capable of loading remote object representations
  into a UITableView using the RestKit object mapping engine for a given table view controller.
- 
+
  @param tableViewController A UITableViewController to instantiate a table controller for
  @return An RKTableController instance ready to drive the table view for the provided tableViewController.
  */
@@ -29,7 +29,7 @@
 /**
  Creates and returns a table controller object capable of loading remote object representations
  into a UITableView using the RestKit object mapping engine for a given table view and view controller.
- 
+
  @param tableView The UITableView object that table controller with acts as the delegate and data source for.
  @param viewController The UIViewController that owns the specified tableView.
  @return An RKTableController instance ready to drive the table view for the provided tableViewController.
@@ -39,7 +39,7 @@
 /**
  Creates and returns a fetched results table controller object capable of loading remote object representations
  stored in Core Data into a UITableView using the RestKit object mapping engine for a given table view controller.
- 
+
  @param tableViewController A UITableViewController to instantiate a table controller for
  @return An RKFetchedResultsTableController instance ready to drive the table view for the provided tableViewController.
  */
@@ -48,7 +48,7 @@
 /**
  Creates and returns a table controller object capable of loading remote object representations
  stored in Core Data into a UITableView using the RestKit object mapping engine for a given table view and view controller.
- 
+
  @param tableView The UITableView object that table controller with acts as the delegate and data source for.
  @param viewController The UIViewController that owns the specified tableView.
  @return An RKFetchedResultsTableController instance ready to drive the table view for the provided tableViewController.

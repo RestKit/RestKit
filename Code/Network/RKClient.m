@@ -65,6 +65,11 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+@interface RKClient ()
+@property (nonatomic, retain, readwrite) NSMutableDictionary *HTTPHeaders;
+@property (nonatomic, retain, readwrite) NSSet *additionalRootCertificates;
+@end
+
 @implementation RKClient
 
 @synthesize baseURL = _baseURL;
@@ -93,12 +98,12 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize runLoopMode = _runLoopMode;
 
 + (RKClient *)sharedClient {
-	return sharedClient;
+    return sharedClient;
 }
 
 + (void)setSharedClient:(RKClient *)client {
-	[sharedClient release];
-	sharedClient = [client retain];
+    [sharedClient release];
+    sharedClient = [client retain];
 }
 
 + (RKClient *)clientWithBaseURLString:(NSString *)baseURLString {
@@ -106,43 +111,42 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 }
 
 + (RKClient *)clientWithBaseURL:(NSURL *)baseURL {
-	RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
-	return client;
+    RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
+    return client;
 }
 
 + (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password {
-	RKClient *client = [RKClient clientWithBaseURLString:baseURL];
+    RKClient *client = [RKClient clientWithBaseURLString:baseURL];
     client.authenticationType = RKRequestAuthenticationTypeHTTPBasic;
-	client.username = username;
-	client.password = password;
-	return client;
+    client.username = username;
+    client.password = password;
+    return client;
 }
 
 - (id)init {
     self = [super init];
-	if (self) {
-		_HTTPHeaders = [[NSMutableDictionary alloc] init];
-        _additionalRootCertificates = [[NSMutableSet alloc] init];
-        _defaultHTTPEncoding = NSUTF8StringEncoding;
+    if (self) {
+        self.HTTPHeaders = [NSMutableDictionary dictionary];
+        self.additionalRootCertificates = [NSMutableSet set];
+        self.defaultHTTPEncoding = NSUTF8StringEncoding;
         self.cacheTimeoutInterval = 0;
         self.runLoopMode = NSRunLoopCommonModes;
-		self.serviceUnavailableAlertEnabled = NO;
-		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
-		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
+        self.requestQueue = [RKRequestQueue requestQueue];
+        self.serviceUnavailableAlertEnabled = NO;
+        self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
+        self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(serviceDidBecomeUnavailableNotification:)
                                                      name:RKServiceDidBecomeUnavailableNotification
                                                    object:nil];
 
-        // Configure reachability and queue
+        // Configure observers
         [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-        self.requestQueue = [RKRequestQueue requestQueue];
-
         [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
-        [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-	}
+        [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial context:nil];
+    }
 
-	return self;
+    return self;
 }
 
 - (id)initWithBaseURL:(NSURL *)baseURL {
@@ -200,20 +204,20 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 }
 
 - (BOOL)isNetworkReachable {
-	BOOL isNetworkReachable = YES;
-	if (self.reachabilityObserver) {
-		isNetworkReachable = [self.reachabilityObserver isNetworkReachable];
-	}
+    BOOL isNetworkReachable = YES;
+    if (self.reachabilityObserver) {
+        isNetworkReachable = [self.reachabilityObserver isNetworkReachable];
+    }
 
-	return isNetworkReachable;
+    return isNetworkReachable;
 }
 
 - (void)configureRequest:(RKRequest *)request {
-	request.additionalHTTPHeaders = _HTTPHeaders;
+    request.additionalHTTPHeaders = _HTTPHeaders;
     request.authenticationType = self.authenticationType;
-	request.username = self.username;
-	request.password = self.password;
-	request.cachePolicy = self.cachePolicy;
+    request.username = self.username;
+    request.password = self.password;
+    request.cachePolicy = self.cachePolicy;
     request.cache = self.requestCache;
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;
@@ -245,7 +249,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 }
 
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header {
-	[_HTTPHeaders setValue:value forKey:header];
+    [_HTTPHeaders setValue:value forKey:header];
 }
 
 - (void)addRootCertificate:(SecCertificateRef)cert {
@@ -335,14 +339,14 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 - (RKRequest *)requestWithResourcePath:(NSString *)resourcePath {
     RKRequest *request = [[RKRequest alloc] initWithURL:[self.baseURL URLByAppendingResourcePath:resourcePath]];
-	[self configureRequest:request];
-	[request autorelease];
+    [self configureRequest:request];
+    [request autorelease];
 
-	return request;
+    return request;
 }
 
 - (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate {
-	RKRequest *request = [self requestWithResourcePath:resourcePath];
+    RKRequest *request = [self requestWithResourcePath:resourcePath];
     request.delegate = delegate;
 
     return request;
@@ -353,43 +357,43 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - (RKRequest *)load:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate {
-	RKURL* resourcePathURL = nil;
-	if (method == RKRequestMethodGET) {
+    RKURL* resourcePathURL = nil;
+    if (method == RKRequestMethodGET) {
         resourcePathURL = [self.baseURL URLByAppendingResourcePath:resourcePath queryParameters:(NSDictionary *)params];
-	} else {
-		resourcePathURL = [self.baseURL URLByAppendingResourcePath:resourcePath];
-	}
-	RKRequest *request = [RKRequest requestWithURL:resourcePathURL];
+    } else {
+        resourcePathURL = [self.baseURL URLByAppendingResourcePath:resourcePath];
+    }
+    RKRequest *request = [RKRequest requestWithURL:resourcePathURL];
     request.delegate = delegate;
-	[self configureRequest:request];
-	request.method = method;
-	if (method != RKRequestMethodGET) {
-		request.params = params;
-	}
+    [self configureRequest:request];
+    request.method = method;
+    if (method != RKRequestMethodGET) {
+        request.params = params;
+    }
 
     [request send];
 
-	return request;
+    return request;
 }
 
 - (RKRequest *)get:(NSString *)resourcePath delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
+    return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
 }
 
 - (RKRequest *)get:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodGET params:queryParameters delegate:delegate];
+    return [self load:resourcePath method:RKRequestMethodGET params:queryParameters delegate:delegate];
 }
 
 - (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
+    return [self load:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
 }
 
 - (RKRequest *)put:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
+    return [self load:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
 }
 
 - (RKRequest *)delete:(NSString *)resourcePath delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate];
+    return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate];
 }
 
 - (void)serviceDidBecomeUnavailableNotification:(NSNotification *)notification {
@@ -463,7 +467,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 }
 
 - (NSString *)resourcePath:(NSString *)resourcePath withQueryParams:(NSDictionary *)queryParams {
-	return RKPathAppendQueryParams(resourcePath, queryParams);
+    return RKPathAppendQueryParams(resourcePath, queryParams);
 }
 
 - (NSURL *)URLForResourcePath:(NSString *)resourcePath {
@@ -471,7 +475,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 }
 
 - (NSString *)URLPathForResourcePath:(NSString *)resourcePath {
-	return [[self URLForResourcePath:resourcePath] absoluteString];
+    return [[self URLForResourcePath:resourcePath] absoluteString];
 }
 
 - (NSURL *)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams {

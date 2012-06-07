@@ -53,42 +53,42 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 
 - (id)init {
     self = [super init];
-	if (self) {
-		timeout = 4;
-		awaitingResponse = NO;
-	}
+    if (self) {
+        timeout = 4;
+        awaitingResponse = NO;
+    }
 
-	return self;
+    return self;
 }
 
 - (void)dealloc {
-	[response release];
+    [response release];
     response = nil;
-	[error release];
+    [error release];
     error = nil;
     [objects release];
     objects = nil;
 
-	[super dealloc];
+    [super dealloc];
 }
 
 - (void)waitForResponse {
-	awaitingResponse = YES;
-	NSDate *startDate = [NSDate date];
+    awaitingResponse = YES;
+    NSDate *startDate = [NSDate date];
 
     RKLogTrace(@"%@ Awaiting response loaded from for %f seconds...", self, self.timeout);
-	while (awaitingResponse) {
-		[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-		if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
-			[NSException raise:RKTestResponseLoaderTimeoutException format:@"*** Operation timed out after %f seconds...", self.timeout];
-			awaitingResponse = NO;
-		}
-	}
+    while (awaitingResponse) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+        if ([[NSDate date] timeIntervalSinceDate:startDate] > self.timeout) {
+            [NSException raise:RKTestResponseLoaderTimeoutException format:@"*** Operation timed out after %f seconds...", self.timeout];
+            awaitingResponse = NO;
+        }
+    }
 }
 
 - (void)loadError:(NSError *)theError {
     awaitingResponse = NO;
-	successful = NO;
+    successful = NO;
     self.error = theError;
 }
 
@@ -105,7 +105,7 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 }
 
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)aResponse {
-	self.response = aResponse;
+    self.response = aResponse;
 
     // If request is an Object Loader, then objectLoader:didLoadObjects:
     // will be sent after didLoadResponse:
@@ -133,15 +133,15 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 }
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)theObjects {
-	RKLogTrace(@"%@ Loaded response for %@ with body: %@", self, objectLoader, [objectLoader.response bodyAsString]);
-	RKLogDebug(@"%@ Loaded objects for %@: %@", self, objectLoader, objects);
-	self.objects = theObjects;
-	awaitingResponse = NO;
-	successful = YES;
+    RKLogTrace(@"%@ Loaded response for %@ with body: %@", self, objectLoader, [objectLoader.response bodyAsString]);
+    RKLogDebug(@"%@ Loaded objects for %@: %@", self, objectLoader, objects);
+    self.objects = theObjects;
+    awaitingResponse = NO;
+    successful = YES;
 }
 
 - (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)theError {
-	[self loadError:theError];
+    [self loadError:theError];
 }
 
 - (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader *)objectLoader {
@@ -149,6 +149,10 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     successful = NO;
     awaitingResponse = NO;
     unexpectedResponse = YES;
+}
+
+- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
+    // Implemented for expectations
 }
 
 #pragma mark - OAuth delegates

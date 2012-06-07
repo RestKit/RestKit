@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 6/8/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,7 +42,7 @@
 //   and its grouping information in a non-technical, human-readable way
 //   which could be used by a user interface. Groups should be separated by the
 //   path separator '/', e.g. 'Example/Main/Component 1'.
-// 
+//
 
 
 //
@@ -56,6 +56,7 @@ _lcl_component(RestKitNetworkQueue,         "restkit.network.queue",            
 _lcl_component(RestKitNetworkReachability,  "restkit.network.reachability",     "RestKit/Network/Reachability")
 _lcl_component(RestKitObjectMapping,        "restkit.object_mapping",           "RestKit/ObjectMapping")
 _lcl_component(RestKitCoreData,             "restkit.core_data",                "RestKit/CoreData")
+_lcl_component(RestKitCoreDataCache,        "restkit.core_data.cache",          "RestKit/CoreData/Cache")
 _lcl_component(RestKitCoreDataSearchEngine, "restkit.core_data.search_engine",  "RestKit/CoreData/SearchEngine")
 _lcl_component(RestKitSupport,              "restkit.support",                  "RestKit/Support")
 _lcl_component(RestKitSupportParsers,       "restkit.support.parsers",          "RestKit/Support/Parsers")

@@ -4,13 +4,13 @@
 //
 //  Created by Blake Watters on 7/28/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
-//  
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -55,7 +55,7 @@
     if (self) {
         _matchers = [NSMutableArray new];
     }
-    
+
     return self;
 }
 
@@ -74,9 +74,9 @@
 - (RKObjectMapping*)objectMappingForDictionary:(NSDictionary*)data {
     NSAssert([data isKindOfClass:[NSDictionary class]], @"Dynamic object mapping can only be performed on NSDictionary mappables, got %@", NSStringFromClass([data class]));
     RKObjectMapping* mapping = nil;
-    
+
     RKLogTrace(@"Performing dynamic object mapping for mappable data: %@", data);
-    
+
     // Consult the declarative matchers first
     for (RKDynamicObjectMappingMatcher* matcher in _matchers) {
         if ([matcher isMatchForData:data]) {
@@ -84,7 +84,7 @@
             return matcher.objectMapping;
         }
     }
-    
+
     // Otherwise consult the delegates
     if (self.delegate) {
         mapping = [self.delegate objectMappingForData:data];
@@ -93,14 +93,14 @@
             return mapping;
         }
     }
-    
-    if (self.objectMappingForDataBlock) {        
+
+    if (self.objectMappingForDataBlock) {
         mapping = self.objectMappingForDataBlock(data);
         if (mapping) {
             RKLogTrace(@"Found dynamic delegateBlock match. objectMappingForDataBlock = %@", self.objectMappingForDataBlock);
         }
     }
-    
+
     return mapping;
 }
 

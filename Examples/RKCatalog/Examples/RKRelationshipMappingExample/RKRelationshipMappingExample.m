@@ -21,21 +21,21 @@
         RKObjectManager* objectManager = [RKObjectManager managerWithBaseURL:gRKCatalogBaseURL];
         RKManagedObjectStore *objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKRelationshipMappingExample.sqlite"];
         objectManager.objectStore = objectStore;
-        
+
         RKManagedObjectMapping* taskMapping = [RKManagedObjectMapping mappingForClass:[Task class] inManagedObjectStore:objectStore];
         taskMapping.primaryKeyAttribute = @"taskID";
         [taskMapping mapKeyPath:@"id" toAttribute:@"taskID"];
         [taskMapping mapKeyPath:@"name" toAttribute:@"name"];
         [taskMapping mapKeyPath:@"assigned_user_id" toAttribute:@"assignedUserID"];
         [objectManager.mappingProvider setMapping:taskMapping forKeyPath:@"task"];
-        
+
         RKManagedObjectMapping* userMapping = [RKManagedObjectMapping mappingForClass:[User class] inManagedObjectStore:objectStore];
         userMapping.primaryKeyAttribute = @"userID";
         [userMapping mapAttributes:@"name", @"email", nil];
         [userMapping mapKeyPath:@"id" toAttribute:@"userID"];
         [userMapping mapRelationship:@"tasks" withMapping:taskMapping];
         [objectManager.mappingProvider setMapping:userMapping forKeyPath:@"user"];
-        
+
         // Hydrate the assignedUser association via primary key
         [taskMapping hasOne:@"assignedUser" withMapping:userMapping];
         [taskMapping connectRelationship:@"assignedUser" withObjectForPrimaryKeyAttribute:@"assignedUserID"];
@@ -48,7 +48,7 @@
         [projectMapping mapRelationship:@"tasks" withMapping:taskMapping];
         [objectManager.mappingProvider setMapping:projectMapping forKeyPath:@"project"];
     }
-    
+
     return self;
 }
 
@@ -59,9 +59,9 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+
     self.title = @"Task List";
-    
+
     [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/RKRelationshipMappingExample" delegate:self];
 }
 
@@ -93,7 +93,7 @@
             return [[[_objects objectAtIndex:indexPath.row] tasks] count];
         }
     }
-    
+
     return 0;
 }
 
@@ -101,7 +101,7 @@
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 150, 100)];
     label.backgroundColor = [UIColor clearColor];
     label.font = [UIFont boldSystemFontOfSize:18];
-    
+
     if (section == 0) {
         label.text = @"Projects";
     } else if (section == 1) {
@@ -118,27 +118,27 @@
     if (indexPath.section == 1) {
         return nil;
     }
-    
+
     return indexPath;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [_selectedProject release];
     _selectedProject = [[_objects objectAtIndex:indexPath.row] retain];
-    
-    [self.tableView reloadData];    
+
+    [self.tableView reloadData];
     UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
     cell.accessoryType = UITableViewCellAccessoryCheckmark;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"Cell";
-    
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
-        
+
     if (indexPath.section == 0) {
         Project* project = (Project*) [_objects objectAtIndex:indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -150,7 +150,7 @@
         cell.textLabel.text = [NSString stringWithFormat:@"%@", task.name];
         cell.detailTextLabel.text = [NSString stringWithFormat:@"Assigned to: %@", task.assignedUser.name];
     }
-    
+
     return cell;
 }
 

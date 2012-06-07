@@ -33,7 +33,7 @@
 + (NSArray*)tableItemsFromStrings:(NSString*)firstString, ... {
     va_list args;
     va_start(args, firstString);
-	NSMutableArray* tableItems = [NSMutableArray array];
+    NSMutableArray* tableItems = [NSMutableArray array];
     for (NSString* string = firstString; string != nil; string = va_arg(args, NSString*)) {
         RKTableItem* tableItem = [RKTableItem new];
         tableItem.text = string;

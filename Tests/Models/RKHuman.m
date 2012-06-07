@@ -40,7 +40,7 @@
 @dynamic catsInOrderByAge;
 
 - (NSString*)polymorphicResourcePath {
-	return @"/this/is/the/path";
+    return @"/this/is/the/path";
 }
 
 @end

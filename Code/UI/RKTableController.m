@@ -23,27 +23,35 @@
 #import "RKLog.h"
 #import "RKFormSection.h"
 #import "NSArray+RKAdditions.h"
+#import "RKObjectMappingOperation.h"
 
 // Define logging component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitUI
 
+@interface RKTableController ()
+@property (nonatomic, readwrite) NSMutableArray *sections;
+@end
+
 @implementation RKTableController
 
+@dynamic delegate;
 @synthesize form = _form;
 @synthesize sectionNameKeyPath = _sectionNameKeyPath;
+@synthesize sections = _sections;
 
 #pragma mark - Instantiation
 
 - (id)init {
     self = [super init];
     if (self) {
+        _sections = [NSMutableArray new];
         [self addObserver:self
                forKeyPath:@"sections"
                   options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
                   context:nil];
 
-        RKTableSection* section = [RKTableSection section];
+        RKTableSection *section = [RKTableSection section];
         [self addSection:section];
     }
 
@@ -54,6 +62,7 @@
     [self removeObserver:self forKeyPath:@"sections"];
     [_form release];
     [_sectionNameKeyPath release];
+    [_sections release];
     
     [super dealloc];
 }
@@ -77,7 +86,7 @@
     [self.sections removeObjectsAtIndexes:indexes];
 }
 
-- (void)replaceObjectsAtIndexes:(NSIndexSet *)indexes withObjects:(NSArray *)objects {
+- (void)replaceSectionsAtIndexes:(NSIndexSet *)indexes withObjects:(NSArray *)objects {
     [self.sections replaceObjectsAtIndexes:indexes withObjects:objects];
 }
 
@@ -89,11 +98,6 @@
     }
 
     [[self sectionsProxy] addObject:section];
-
-    // TODO: move into KVO?
-    if ([self.delegate respondsToSelector:@selector(tableController:didInsertSection:atIndex:)]) {
-        [self.delegate tableController:self didInsertSection:section atIndex:[self.sections indexOfObject:section]];
-    }
 }
 
 - (void)removeSection:(RKTableSection *)section {
@@ -103,10 +107,6 @@
                                        reason:@"Tables must always have at least one section"
                                      userInfo:nil];
     }
-    NSUInteger index = [self.sections indexOfObject:section];
-    if ([self.delegate respondsToSelector:@selector(tableController:didRemoveSection:atIndex:)]) {
-        [self.delegate tableController:self didRemoveSection:section atIndex:index];
-    }
     [[self sectionsProxy] removeObject:section];
 }
 
@@ -114,10 +114,6 @@
     NSAssert(section, @"Cannot insert a nil section");
     section.tableController = self;
     [[self sectionsProxy] insertObject:section atIndex:index];
-
-    if ([self.delegate respondsToSelector:@selector(tableController:didInsertSection:atIndex:)]) {
-        [self.delegate tableController:self didInsertSection:section atIndex:index];
-    }
 }
 
 - (void)removeSectionAtIndex:(NSUInteger)index {
@@ -126,21 +122,10 @@
                                        reason:@"Tables must always have at least one section"
                                      userInfo:nil];
     }
-    RKTableSection* section = [self.sections objectAtIndex:index];
-    if ([self.delegate respondsToSelector:@selector(tableController:didRemoveSection:atIndex:)]) {
-        [self.delegate tableController:self didRemoveSection:section atIndex:index];
-    }
     [[self sectionsProxy] removeObjectAtIndex:index];
 }
 
 - (void)removeAllSections:(BOOL)recreateFirstSection {
-    NSUInteger sectionCount = [self.sections count];
-    for (NSUInteger index = 0; index < sectionCount; index++) {
-        RKTableSection* section = [self.sections objectAtIndex:index];
-        if ([self.delegate respondsToSelector:@selector(tableController:didRemoveSection:atIndex:)]) {
-            [self.delegate tableController:self didRemoveSection:section atIndex:index];
-        }
-    }
     [[self sectionsProxy] removeAllObjects];
 
     if (recreateFirstSection) {
@@ -195,11 +180,15 @@
 
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:self.defaultRowAnimation];
     
-    // The load is finalized via network callbacks for 
+    if ([self.delegate respondsToSelector:@selector(tableController:didLoadObjects:inSection:)]) {
+        [self.delegate tableController:self didLoadObjects:objects inSection:section];
+    }
+    
+    // The load is finalized via network callbacks for
     // dynamic table controllers
     if (nil == self.objectLoader) {
         [self didFinishLoad];
-    }    
+    }
 }
 
 - (void)loadObjects:(NSArray *)objects {
@@ -243,15 +232,17 @@
 
 #pragma mark - Network Table Loading
 
-- (void)loadTableFromResourcePath:(NSString*)resourcePath {
-    NSAssert(self.objectManager, @"Cannot perform a network load without an object manager");
-    [self loadTableWithObjectLoader:[self.objectManager loaderWithResourcePath:resourcePath]];
+- (void)loadTableFromResourcePath:(NSString *)resourcePath
+{
+    [self loadTableFromResourcePath:resourcePath usingBlock:nil];
 }
 
-- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *loader))block {
-    RKObjectLoader* theObjectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
-    block(theObjectLoader);
-    [self loadTableWithObjectLoader:theObjectLoader];
+- (void)loadTableFromResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKObjectLoader *loader))block
+{
+    NSAssert(self.objectManager, @"Cannot perform a network load without an object manager");
+    RKObjectLoader *objectLoader = [self.objectManager loaderWithResourcePath:resourcePath];
+    if (block) block(objectLoader);
+    [self loadTableWithObjectLoader:objectLoader];
 }
 
 #pragma mark - Forms
@@ -322,9 +313,12 @@
 - (void)objectLoader:(RKObjectLoader *)loader didLoadObjects:(NSArray *)objects {
     // TODO: Could not get the KVO to work without a boolean property...
     // TODO: Apply any sorting...
-    
+
     if (self.sectionNameKeyPath) {
         NSArray *sectionedObjects = [objects sectionsGroupedByKeyPath:self.sectionNameKeyPath];
+        if ([sectionedObjects count] == 0) {
+            [self removeAllSections];
+        }
         for (NSArray *sectionOfObjects in sectionedObjects) {
             NSUInteger sectionIndex = [sectionedObjects indexOfObject:sectionOfObjects];
             if (sectionIndex >= [self sectionCount]) {
@@ -334,13 +328,6 @@
         }
     } else {
         [self loadObjects:objects inSection:0];
-    }
-}
-
-- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation {
-    NSIndexPath *indexPath = [self indexPathForObject:object];
-    if (indexPath) {
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:rowAnimation];
     }
 }
 
@@ -374,6 +361,155 @@
     }
 
     // TODO: KVO should be used for managing the row level manipulations on the table view as well...
+}
+
+#pragma mark - Managing Sections
+
+- (NSUInteger)sectionCount {
+    return [_sections count];
+}
+
+- (NSUInteger)rowCount {
+    return [[_sections valueForKeyPath:@"@sum.rowCount"] intValue];
+}
+
+- (RKTableSection *)sectionAtIndex:(NSUInteger)index {
+    return [_sections objectAtIndex:index];
+}
+
+- (NSUInteger)indexForSection:(RKTableSection *)section {
+    NSAssert(section, @"Cannot return index for a nil section");
+    return [_sections indexOfObject:section];
+}
+
+- (RKTableSection *)sectionWithHeaderTitle:(NSString *)title {
+    for (RKTableSection* section in _sections) {
+        if ([section.headerTitle isEqualToString:title]) {
+            return section;
+        }
+    }
+    
+    return nil;
+}
+
+- (NSUInteger)numberOfRowsInSection:(NSUInteger)index {
+    return [self sectionAtIndex:index].rowCount;
+}
+
+- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath {
+    RKTableSection* section = [self sectionAtIndex:indexPath.section];
+    id mappableObject = [section objectAtIndex:indexPath.row];
+    RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
+    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
+    
+    UITableViewCell* cell = [cellMapping mappableObjectForData:self.tableView];
+    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
+    
+    // Map the object state into the cell
+    RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
+    NSError* error = nil;
+    BOOL success = [mappingOperation performMapping:&error];
+    [mappingOperation release];
+    // NOTE: If there is no mapping work performed, but no error is generated then
+    // we consider the operation a success. It is common for table cells to not contain
+    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
+    if (success == NO && error != nil) {
+        RKLogError(@"Failed to generate table cell for object: %@", error);
+        return nil;
+    }
+    
+    return cell;
+}
+
+#pragma mark - Cell Mappings
+
+- (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(indexPath, @"Cannot lookup object with a nil indexPath");
+    RKTableSection* section = [self sectionAtIndex:indexPath.section];
+    return [section objectAtIndex:indexPath.row];
+}
+
+#pragma mark - UITableViewDataSource methods
+
+- (NSString*)tableView:(UITableView*)theTableView titleForHeaderInSection:(NSInteger)section {
+    NSAssert(theTableView == self.tableView, @"tableView:titleForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
+    return [[_sections objectAtIndex:section] headerTitle];
+}
+
+- (NSString*)tableView:(UITableView*)theTableView titleForFooterInSection:(NSInteger)section {
+    NSAssert(theTableView == self.tableView, @"tableView:titleForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
+    return [[_sections objectAtIndex:section] footerTitle];
+}
+
+- (BOOL)tableView:(UITableView*)theTableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(theTableView == self.tableView, @"tableView:canEditRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
+    return self.canEditRows;
+}
+
+- (BOOL)tableView:(UITableView*)theTableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSAssert(theTableView == self.tableView, @"tableView:canMoveRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
+    return self.canMoveRows;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView {
+    NSAssert(theTableView == self.tableView, @"numberOfSectionsInTableView: invoked with inappropriate tableView: %@", theTableView);
+    RKLogTrace(@"%@ numberOfSectionsInTableView = %d", self, self.sectionCount);
+    return self.sectionCount;
+}
+
+- (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section {
+    NSAssert(theTableView == self.tableView, @"tableView:numberOfRowsInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKLogTrace(@"%@ numberOfRowsInSection:%d = %d", self, section, self.sectionCount);
+    return [[_sections objectAtIndex:section] rowCount];
+}
+
+- (NSIndexPath *)indexPathForObject:(id)object {
+    NSUInteger sectionIndex = 0;
+    for (RKTableSection *section in self.sections) {
+        NSUInteger rowIndex = 0;
+        for (id rowObject in section.objects) {
+            if ([rowObject isEqual:object]) {
+                return [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+            }
+            
+            rowIndex++;
+        }
+        sectionIndex++;
+    }
+    
+    return nil;
+}
+
+- (CGFloat)tableView:(UITableView *)theTableView heightForHeaderInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"heightForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.headerHeight;
+}
+
+- (CGFloat)tableView:(UITableView *)theTableView heightForFooterInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"heightForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.footerHeight;
+}
+
+- (UIView *)tableView:(UITableView *)theTableView viewForHeaderInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"viewForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.headerView;
+}
+
+- (UIView *)tableView:(UITableView *)theTableView viewForFooterInSection:(NSInteger)sectionIndex {
+    NSAssert(theTableView == self.tableView, @"viewForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
+    RKTableSection *section = [self sectionAtIndex:sectionIndex];
+    return section.footerView;
+}
+
+- (BOOL)isConsideredEmpty {
+    NSUInteger nonRowItemsCount = [self.headerItems count] + [self.footerItems count];
+    nonRowItemsCount += self.emptyItem ? 1 : 0;
+    BOOL isEmpty = (self.rowCount - nonRowItemsCount) == 0;
+    RKLogTrace(@"Determined isConsideredEmpty = %@. self.rowCount = %d with %d nonRowItems in the table", isEmpty ? @"YES" : @"NO", self.rowCount, nonRowItemsCount);
+    return isEmpty;
 }
 
 @end

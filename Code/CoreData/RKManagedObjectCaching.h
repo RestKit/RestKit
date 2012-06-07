@@ -16,6 +16,8 @@
  */
 @protocol RKManagedObjectCaching
 
+@required
+
 /**
  Retrieves a model object from the object store given a Core Data entity and
  the primary key attribute and value for the desired object.
@@ -31,5 +33,28 @@
                   withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
                                     value:(id)primaryKeyValue
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+@optional
+
+/**
+ Tells the receiver that an object was fetched and should be added to the cache.
+
+ @param object The object that was fetched from a managed object context.
+ */
+- (void)didFetchObject:(NSManagedObject *)object;
+
+/**
+ Tells the receiver that an object was created and should be added to the cache.
+
+ @param object The object that was created in a managed object context.
+ */
+- (void)didCreateObject:(NSManagedObject *)object;
+
+/**
+ Tells the receiver that an object was deleted and should be removed to the cache.
+
+ @param object The object that was deleted from a managed object context.
+ */
+- (void)didDeleteObject:(NSManagedObject *)object;
 
 @end

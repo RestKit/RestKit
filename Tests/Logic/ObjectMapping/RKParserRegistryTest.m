@@ -55,7 +55,7 @@
 
 - (void)testRetrievalOfExactStringMatchForMIMEType {
     RKParserRegistry* registry = [[RKParserRegistry new] autorelease];
-    [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];    
+    [registry setParserClass:[RKJSONParserJSONKit class] forMIMEType:RKMIMETypeJSON];
     id<RKParser> parser = [registry parserForMIMEType:RKMIMETypeJSON];
     assertThat(parser, is(instanceOf([RKJSONParserJSONKit class])));
 }
@@ -73,13 +73,13 @@
     RKParserRegistry *registry = [[RKParserRegistry new] autorelease];
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"application/xml\\+\\w+" options:0 error:&error];
-    [registry setParserClass:[RKJSONParserJSONKit class] forMIMETypeRegularExpression:regex];    
+    [registry setParserClass:[RKJSONParserJSONKit class] forMIMETypeRegularExpression:regex];
     [registry setParserClass:[RKXMLParserXMLReader class] forMIMEType:@"application/xml+whatever"];
-    
+
     // Exact match
     id<RKParser> exactParser = [registry parserForMIMEType:@"application/xml+whatever"];
     assertThat(exactParser, is(instanceOf([RKXMLParserXMLReader class])));
-    
+
     // Fallback to regex
     id<RKParser> regexParser = [registry parserForMIMEType:@"application/xml+different"];
     assertThat(regexParser, is(instanceOf([RKJSONParserJSONKit class])));

@@ -28,19 +28,30 @@
 
 @implementation RKClientTest
 
+- (void)setUp {
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown {
+    [RKTestFactory tearDown];
+}
+
 - (void)testShouldDetectNetworkStatusWithAHostname {
-	RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
-	assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));
+    RKClient* client = [[RKClient alloc] initWithBaseURLString:@"http://restkit.org"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
+    RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
+    assertThatInt(status, is(equalToInt(RKReachabilityReachableViaWiFi)));
+    [client release];
 }
 
 - (void)testShouldDetectNetworkStatusWithAnIPAddressBaseName {
-	RKClient* client = [RKClient clientWithBaseURLString:@"http://173.45.234.197"];
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
-	RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
-	assertThatInt(status, isNot(equalToInt(RKReachabilityIndeterminate)));
+    RKClient *client = [[RKClient alloc] initWithBaseURLString:@"http://173.45.234.197"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.3]]; // Let the runloop cycle
+    RKReachabilityNetworkStatus status = [client.reachabilityObserver networkStatus];
+    assertThatInt(status, isNot(equalToInt(RKReachabilityIndeterminate)));
+    [client release];
 }
+
 - (void)testShouldSetTheCachePolicyOfTheRequest {
     RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.cachePolicy = RKRequestCachePolicyLoadIfOffline;
@@ -52,7 +63,7 @@
     RKClient* client = [RKClient clientWithBaseURLString:@"http://restkit.org"];
     client.requestCache = [[[RKRequestCache alloc] init] autorelease];
     RKRequest* request = [client requestWithResourcePath:@""];
-	assertThat(request.cache, is(equalTo(client.requestCache)));
+    assertThat(request.cache, is(equalTo(client.requestCache)));
 }
 
 - (void)testShouldLoadPageWithNoContentTypeInformation {

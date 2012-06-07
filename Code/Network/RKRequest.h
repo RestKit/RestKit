@@ -159,49 +159,20 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  Models the request portion of an HTTP request/response cycle.
  */
 @interface RKRequest : NSObject {
-    NSURL *_URL;
-    NSMutableURLRequest *_URLRequest;
-    NSURLConnection *_connection;
-    NSDictionary *_additionalHTTPHeaders;
-    NSObject<RKRequestSerializable> *_params;
-    NSObject<RKRequestDelegate> *_delegate;
-    NSObject<RKConfigurationDelegate> *_configurationDelegate;
-    id _userData;
-    RKRequestAuthenticationType _authenticationType;
-    NSString *_username;
-    NSString *_password;
-    NSString *_OAuth1ConsumerKey;
-    NSString *_OAuth1ConsumerSecret;
-    NSString *_OAuth1AccessToken;
-    NSString *_OAuth1AccessTokenSecret;
-    NSString *_OAuth2AccessToken;
-    NSString *_OAuth2RefreshToken;
-    RKRequestMethod _method;
-    BOOL _isLoading;
-    BOOL _isLoaded;
-    RKRequestCachePolicy _cachePolicy;
     BOOL _sentSynchronously;
-    RKRequestCache *_cache;
-    NSTimeInterval _cacheTimeoutInterval;
-    RKRequestQueue *_queue;
-    RKReachabilityObserver *_reachabilityObserver;
+    NSURLConnection *_connection;
+    id<RKRequestDelegate> _delegate;
     NSTimer *_timeoutTimer;
-    NSStringEncoding _defaultHTTPEncoding;
-
-    NSSet *_additionalRootCertificates;
-    BOOL _disableCertificateValidation;
-    BOOL _followRedirect;
-    NSString *_runLoopMode;
-
-    #if TARGET_OS_IPHONE
-    RKRequestBackgroundPolicy _backgroundPolicy;
-    UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
-    #endif
+    RKRequestCachePolicy _cachePolicy;
 
     RKRequestDidLoadResponseBlock _onDidLoadResponse;
     RKRequestDidFailLoadWithErrorBlock _onDidFailLoadWithError;
-}
 
+#if TARGET_OS_IPHONE
+    RKRequestBackgroundPolicy _backgroundPolicy;
+    UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
+#endif
+}
 
 ///-----------------------------------------------------------------------------
 /// @name Creating a Request
@@ -228,7 +199,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  Creates and returns a RKRequest object initialized to load content from a
  provided URL with a specified delegate.
 
- @bug **DEPRECATED** in v0.9.4: Use [RKRequest requestWithURL:] instead
+ @bug **DEPRECATED** in v0.10.0: Use [RKRequest requestWithURL:] instead
  @param URL The remote URL to load
  @param delegate The delegate that will handle the response callbacks.
  @return An autoreleased RKRequest object initialized with URL.
@@ -238,7 +209,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 /**
  Initializes a RKRequest object to load from a provided URL
 
- @bug **DEPRECATED** in v0.9.4: Use [RKRequest initWithURL:] instead
+ @bug **DEPRECATED** in v0.10.0: Use [RKRequest initWithURL:] instead
  @param URL The remote URL to load
  @param delegate The delegate that will handle the response callbacks.
  @return An RKRequest object initialized with URL.
@@ -275,6 +246,11 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  @see [RKRequest method]
  */
 @property (nonatomic, readonly) NSString *HTTPMethod;
+
+/**
+ The response returned when the receiver was sent.
+ */
+@property (nonatomic, retain, readonly) RKResponse *response;
 
 /**
  A serializable collection of parameters sent as the HTTP body of the request
@@ -770,12 +746,12 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 /**
  Returns YES when this request is in-progress
  */
-- (BOOL)isLoading;
+@property (nonatomic, assign, readonly, getter = isLoading) BOOL loading;
 
 /**
  Returns YES when this request has been completed
  */
-- (BOOL)isLoaded;
+@property (nonatomic, assign, readonly, getter = isLoaded) BOOL loaded;
 
 /**
  Returns YES when this request has not yet been sent

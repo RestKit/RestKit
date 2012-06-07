@@ -257,17 +257,26 @@
 }
 
 - (void)testThatSendingRequestToInvalidURLDoesNotGetSentTwice {
-    RKLogConfigureByName("RestKit/Network*", RKLogLevelTrace);
     RKRequestQueue *queue = [RKRequestQueue requestQueue];
-    NSURL *URL = [NSURL URLWithString:@"http://bix.gg/RKRequestQueueExample"];
+    NSURL *URL = [NSURL URLWithString:@"http://localhost:7662/RKRequestQueueExample"];
     RKRequest *request = [RKRequest requestWithURL:URL];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     id mockResponseLoader = [OCMockObject partialMockForObject:responseLoader];
     [[[mockResponseLoader expect] andForwardToRealObject] request:request didFailLoadWithError:OCMOCK_ANY];
     request.delegate = responseLoader;
+    id mockQueueDelegate = [OCMockObject niceMockForProtocol:@protocol(RKRequestQueueDelegate)];
+    __block NSUInteger invocationCount = 0;
+    [[mockQueueDelegate stub] requestQueue:queue willSendRequest:[OCMArg checkWithBlock:^BOOL(id request) {
+        invocationCount++;
+        return YES;
+    }]];
     [queue addRequest:request];
+    queue.delegate = mockQueueDelegate;
     [queue start];
     [mockResponseLoader waitForResponse];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+    [mockResponseLoader verify];
+    assertThatInteger(invocationCount, is(equalToInteger(1)));
 }
 
 @end

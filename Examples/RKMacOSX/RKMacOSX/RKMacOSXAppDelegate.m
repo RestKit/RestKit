@@ -10,8 +10,8 @@
 
 @implementation RKMacOSXAppDelegate
 
-@synthesize client;
-@synthesize window;
+@synthesize client = _client;
+@synthesize window = _window;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
