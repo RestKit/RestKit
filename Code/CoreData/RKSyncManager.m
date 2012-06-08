@@ -20,12 +20,10 @@
 
 #import "RKSyncManager.h"
 
-#define EXIT_IF_SYNCING if ([_queue count] > 0 || _isPulling) {\
-    RKLogWarning(@"Sync manager is currently in a syncing state.");\
-    return;\
-}\
-
 @interface RKSyncManager (Private)
+
+@property (nonatomic, retain, readwrite) RKRequestQueue *requestQueue;
+
 - (void)contextDidSave:(NSNotification*)notification;
 
 //Shortcut for transparent syncing; used for notification call
@@ -48,13 +46,12 @@
 - (void)checkIfQueueFinishedWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
 - (void)sendObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
-- (void)setIsPulling:(BOOL)value;
 
 @end
 
 @implementation RKSyncManager
 
-@synthesize objectManager = _objectManager, delegate = _delegate;
+@synthesize objectManager = _objectManager, delegate = _delegate, requestQueue = _requestQueue;
 @synthesize defaultSyncStrategy = _defaultSyncStrategy, defaultSyncDirection = _defaultSyncDirection;
 @synthesize syncEnabled;
 
@@ -71,6 +68,10 @@
         _strategies = [[NSMutableDictionary alloc] init];
         _directions = [[NSMutableDictionary alloc] init];
         
+        _requestQueue = [RKRequestQueue newRequestQueueWithName:@"_rkSyncRequestQueue"];
+        _requestQueue.concurrentRequestsLimit = 1;
+        [_requestQueue start];
+        
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
         _completedQueueItems = [[NSMutableArray alloc] init];
@@ -80,7 +81,6 @@
         self.syncEnabled = YES;
         
         _shouldPullAfterPush = NO;
-        self.isPulling = NO;
 
         //Register for notifications from the managed object context associated with the object manager
         NSManagedObjectContext *moc = self.objectManager.objectStore.managedObjectContextForCurrentThread;
@@ -109,6 +109,9 @@
   
     [_directions release];
     _directions = nil;
+    
+    [_requestQueue release];
+    _requestQueue = nil;
     
     [_queue release];
     _queue = nil;
@@ -340,6 +343,7 @@
             RKRequestMethod method = [item.syncMethod integerValue];
             if (method == RKRequestMethodPOST) {
                 [_objectManager postObject:object usingBlock:^(RKObjectLoader *loader){
+                    loader.queue = _requestQueue;
                     loader.onDidLoadObject = ^ (id object){
                         [blocksafeSelf addCompletedQueueItem: item];
                         [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
@@ -354,6 +358,7 @@
                 }];
             } else if (method == RKRequestMethodPUT) {
                 [_objectManager putObject:object usingBlock:^(RKObjectLoader *loader){
+                    loader.queue = _requestQueue;
                     loader.onDidLoadObject = ^ (id object){
                         [blocksafeSelf addCompletedQueueItem: item];
                         [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
@@ -369,6 +374,7 @@
             } else if (method == RKRequestMethodDELETE) {
                 //The object doesn't necessarily exist if the context has been saved since it was deleted, so we send using the stored route
                 [[_objectManager client] delete:item.objectRoute usingBlock: ^(RKRequest *request ){
+                    request.queue = _requestQueue;
                     request.onDidLoadResponse = ^ (RKResponse *response){
                         if ([response isSuccessful]) {
                             [blocksafeSelf addCompletedQueueItem: item];
@@ -498,14 +504,8 @@
 
 #pragma mark - Sync Methods
 
-- (void)setIsPulling:(BOOL)value {
-    _isPulling = value;
-}
-
 - (void)syncObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
-    
-    EXIT_IF_SYNCING
     
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
@@ -521,17 +521,12 @@
 
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     //This is the front-facing method, it should only be called when you don't want to pull after pushing (sync)
-    EXIT_IF_SYNCING
     _shouldPullAfterPush = NO;
     [self sendObjectsWithSyncMode:syncMode andClass:objectClass];
 }
 
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
-    
-    EXIT_IF_SYNCING
-    
-    [self setIsPulling: YES];
     
     __block RKSyncManager *blocksafeSelf = self;
     __block NSObject<RKSyncManagerDelegate> *blocksafeDelegate = _delegate;
@@ -561,11 +556,11 @@
               }
 
                 [_objectManager loadObjectsAtResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
+                    loader.queue = _requestQueue;
                     loader.onDidLoadObjects = ^(NSArray *objects){
-                        [blocksafeSelf setIsPulling: NO];
+                        //TODO: delegate call
                     };
                     loader.onDidFailWithError = ^(NSError *error){
-                        [blocksafeSelf setIsPulling: NO];
                         if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
                             [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
                         }

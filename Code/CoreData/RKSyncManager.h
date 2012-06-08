@@ -97,7 +97,6 @@ typedef enum {
     NSMutableArray *_completedQueueItems;
     NSMutableArray *_failedQueueItems;
     BOOL _shouldPullAfterPush;
-    BOOL _isPulling;
 }
 
 /**
@@ -111,6 +110,12 @@ typedef enum {
  @see RKManagedObjectSyncDelegate
  */
 @property (nonatomic, assign) id<RKSyncManagerDelegate> delegate;
+
+/**
+ The local RKRequestQueue that this syncManager uses. Sync operations should be sequential, so this has a limit of one request at a time.
+ @see RKManagedObjectSyncDelegate
+ */
+@property (nonatomic, retain, readonly) RKRequestQueue *requestQueue;
 
 /**
  If NO, the sync manager will take no actions for any inserted, updated, or deleted 
