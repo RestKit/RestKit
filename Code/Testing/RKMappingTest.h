@@ -100,6 +100,17 @@
 - (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock;
 
 /**
+ Creates and adds an expectation that a key path on the source object will be mapped to a new
+ key path on the destination object using the given object mapping.
+
+ @param sourceKeyPath A key path on the sourceObject that should be mapped from.
+ @param destinationKeyPath A key path on the destinationObject that should be mapped to.
+ @param mapping An object mapping that should be used for mapping the source key path.
+ @see RKObjectMappingTestExpectation
+ */
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKObjectMappingDefinition *)mapping;
+
+/**
  Adds an expectation to the receiver to be evaluated during verification.
 
  If the receiver has been configured with verifiesOnExpect = YES, the mapping

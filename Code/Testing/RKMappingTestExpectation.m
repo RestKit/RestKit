@@ -7,21 +7,24 @@
 //
 
 #import "RKMappingTestExpectation.h"
+#import "RKObjectAttributeMapping.h"
 
 @interface RKMappingTestExpectation ()
 @property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
 @property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @property (nonatomic, strong, readwrite) id value;
 @property (nonatomic, copy, readwrite) BOOL (^evaluationBlock)(RKObjectAttributeMapping *mapping, id value);
+@property (nonatomic, strong, readwrite) RKObjectMappingDefinition *mapping;
 @end
 
 
 @implementation RKMappingTestExpectation
 
-@synthesize sourceKeyPath;
-@synthesize destinationKeyPath;
-@synthesize value;
-@synthesize evaluationBlock;
+@synthesize sourceKeyPath = _sourceKeyPath;
+@synthesize destinationKeyPath = _destinationKeyPath;
+@synthesize value = _value;
+@synthesize evaluationBlock = _evaluationBlock;
+@synthesize mapping = _mapping;
 
 + (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
 {
@@ -52,6 +55,16 @@
     return expectation;
 }
 
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)mapping
+{
+    RKMappingTestExpectation *expectation = [self new];
+    expectation.sourceKeyPath = sourceKeyPath;
+    expectation.destinationKeyPath = destinationKeyPath;
+    expectation.mapping = mapping;
+
+    return expectation;
+}
+
 - (NSString *)mappingDescription
 {
     return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@'",
@@ -66,6 +79,9 @@
     } else if (self.evaluationBlock) {
         return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' satisfying evaluation block",
                 self.sourceKeyPath, self.destinationKeyPath];
+    } else if (self.mapping) {
+        return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' using mapping: %@",
+                self.sourceKeyPath, self.destinationKeyPath, self.mapping];
     }
 
     return [self mappingDescription];
