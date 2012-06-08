@@ -23,23 +23,6 @@
 #import "RKManagedObjectMapping.h"
 #import "RKLog.h"
 
-/**
- Sync strategy sets the behavior of the RKSyncManager queue for a given mapping.
- */
-typedef enum {
-  RKSyncStrategyBatch,        /** RKSyncManager will try to reduce network requests by batching similar requests (where possible) & locally removing any objects that never were persisted remotely in the first place. */
-  RKSyncStrategyProxyOnly,    /** RKSyncManager will not perform any batching; when network access is available, it will send all queued requests in the order it received them. */
-} RKSyncStrategy;
-
-/**
- Sync direction sets the behavior of the RKSyncManager queue for a given mapping.
- */
-typedef enum {
-  RKSyncDirectionPush = 0x001,  /** RKSyncManager will push requests, but not pull anything. */
-  RKSyncDirectionPull = 0x010,  /** RKSyncManager will pull requests, but not push anything. */
-  RKSyncDirectionBoth = 0x011   /** RKSyncManager will push requests, and then pull those same routes (true syncing). */
-} RKSyncDirection;
-
 @class RKSyncManager;
 
 /**
@@ -91,8 +74,6 @@ typedef enum {
  `RKSyncManager` handles the observation of Core Data changes and the syncronization of a local store with a remote server. This object is created automatically when an RKManagedObjectStore is initialized, and is associated with the objectStore's related `objectManager`.  
  */
 @interface RKSyncManager : NSObject {
-    NSMutableDictionary *_strategies;
-    NSMutableDictionary *_directions;
     NSMutableArray *_queue;
     NSMutableArray *_completedQueueItems;
     NSMutableArray *_failedQueueItems;
@@ -186,66 +167,30 @@ typedef enum {
  */
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass;
 
+#pragma mark - Sync Mode
+
+/**
+ The default syncMode to be applied to mappings that do not explicitly state otherwise. The default is RKSyncModeNone.
+ @see RKSyncMode
+ */
+
+@property (nonatomic, assign) RKSyncMode defaultSyncMode;
+
 #pragma mark - Sync Direction
 
 /**
- Sets the default RKSyncDirection.  The value will be applied to any class that has not been
- registered with `setSyncDirection:(RKSyncDirection)direction forClass:(Class)objectClass`.
- 
- The default value if you do not call this method is `RKSyncDirectionBoth`.
+ The default syncDirection to be applied to mappings that do not explicitly state otherwise. The default is RKSyncDirectionBoth.
  @see RKSyncDirection
  */
-- (void)setDefaultSyncDirection:(RKSyncDirection)direction;
-
-/**
- Returns the current default RKSyncDirection.  This will be applied to any class that has not been
- registered with `setSyncDirection:(RKSyncDirection)direction forClass:(Class)objectClass`.
- @see RKSyncDirection
- */
-@property (readonly) RKSyncDirection defaultSyncDirection;
-
-/**
- Sets the RKSyncDirection for a Class.  If Class is nil, this changes the default value RKSyncManager
- will use for all classes (same effect as `setDefaultSyncDirection:`).
- @see RKSyncDirection
- */
-- (void)setSyncDirection:(RKSyncDirection)syncDirection forClass:(Class)objectClass;
-
-/**
- Returns the current RKSyncDirection for a Class.  If no strategy has been set for this class, the 
- default value of will be returned (`RKSyncDirectionBoth`).
- @see RKSyncDirection
- */
-- (RKSyncDirection) syncDirectionForClass:(Class)objectClass;
+@property (nonatomic, assign) RKSyncDirection defaultSyncDirection;
 
 #pragma mark - Sync Strategy
 
 /**
- Sets the default RKSyncStrategy to be used with all objects, unless they have been specifically
- registered with `setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass`.
+ The default syncStrategy to be applied to mappings that do not explicitly state otherwise. The default is RKSyncStrategyBatch.
  @see RKSyncStrategy
  */
-- (void)setDefaultSyncStrategy:(RKSyncStrategy)syncStrategy;
+@property (nonatomic, assign) RKSyncStrategy defaultSyncStrategy;
 
-/**
- Returns the current default RKSyncStrategy.  This strategy will be applied to any class that has not
- been registered with `setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass`.
- @see RKSyncStrategy
- */
-@property (readonly) RKSyncStrategy defaultSyncStrategy;
-
-/**
- Sets the RKSyncStrategy for a Class.  If Class is nil, this changes the default value RKSyncManager
- will use for all classes (same effect as `setDefaultSyncStrategy:`).
- @see RKSyncStrategy
- */
-- (void)setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass;
-
-/**
- Returns the current RKSyncStrategy for a Class.  If no strategy has been set for this class, the 
- default value of will be returned (`RKSyncStrategyBatch`).
- @see RKSyncStrategy
- */
-- (RKSyncStrategy) syncStrategyForClass:(Class)objectClass;
 
 @end

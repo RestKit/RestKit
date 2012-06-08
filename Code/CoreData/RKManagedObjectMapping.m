@@ -35,7 +35,7 @@
 @synthesize entity = _entity;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
 @synthesize objectStore = _objectStore;
-@synthesize syncMode = _syncMode;
+@synthesize syncMode = _syncMode, syncDirection = _syncDirection, syncStrategy = _syncStrategy;
 
 + (id)mappingForClass:(Class)objectClass {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
@@ -66,7 +66,9 @@
         _objectClass = [objectClass retain];
         _entity = [entity retain];
         _objectStore = objectStore;
-        _syncMode = RKSyncModeNone;
+        _syncMode = RKSyncModeDefault;
+        _syncStrategy = RKSyncStrategyDefault;
+        _syncDirection = RKSyncDirectionDefault;
 
         [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
         [self addObserver:self forKeyPath:@"primaryKeyAttribute" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];

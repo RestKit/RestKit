@@ -36,8 +36,8 @@
 - (NSArray *)queueItemsForObject:(NSManagedObject *)object;
 
 // Returns YES if we should create a queue object for this object on update
-- (BOOL)shouldUpdateObject:(NSManagedObject *)object;
-- (BOOL)shouldDeleteObject:(NSManagedObject *)object;
+- (BOOL)shouldUpdateObject:(NSManagedObject *)object strategy:(RKSyncStrategy)strategy;
+- (BOOL)shouldDeleteObject:(NSManagedObject *)object strategy:(RKSyncStrategy)strategy;
 - (BOOL) removeExistingQueueItemsForObject:(NSManagedObject *)object;
 - (void)_reachabilityChangedNotificationReceived:(NSNotification *)reachabilityNotification;
 
@@ -52,7 +52,7 @@
 @implementation RKSyncManager
 
 @synthesize objectManager = _objectManager, delegate = _delegate, requestQueue = _requestQueue;
-@synthesize defaultSyncStrategy = _defaultSyncStrategy, defaultSyncDirection = _defaultSyncDirection;
+@synthesize defaultSyncMode = _defaultSyncMode, defaultSyncStrategy = _defaultSyncStrategy, defaultSyncDirection = _defaultSyncDirection;
 @synthesize syncEnabled;
 
 #pragma mark - Init & Dealloc
@@ -60,13 +60,12 @@
 - (id)initWithObjectManager:(RKObjectManager*)objectManager {
     self = [super init];
     if (self) {
+        // By default, don't sync objects
+        _defaultSyncMode = RKSyncModeNone;
         // By default, batch similar objects together & reduce network calls if possible.
         _defaultSyncStrategy = RKSyncStrategyBatch;
         // By default, push AND pull objects from the server at the same time
         _defaultSyncDirection = RKSyncDirectionBoth;
-      
-        _strategies = [[NSMutableDictionary alloc] init];
-        _directions = [[NSMutableDictionary alloc] init];
         
         _requestQueue = [RKRequestQueue newRequestQueueWithName:@"_rkSyncRequestQueue"];
         _requestQueue.concurrentRequestsLimit = 1;
@@ -104,12 +103,6 @@
     [_objectManager release];
     _objectManager = nil;
     
-    [_strategies release];
-    _strategies = nil;
-  
-    [_directions release];
-    _directions = nil;
-    
     [_requestQueue release];
     _requestQueue = nil;
     
@@ -125,63 +118,6 @@
     [super dealloc];
 }
 
-#pragma mark - Sync Direction
-
-- (void)setDefaultSyncDirection:(RKSyncDirection)direction {
-    return [self setSyncDirection:direction forClass:nil];
-}
-
-- (void)setSyncDirection:(RKSyncDirection)syncDirection forClass:(Class)objectClass {
-    NSString *className = NSStringFromClass(objectClass);
-    if (className) {
-        [_strategies setObject:[NSNumber numberWithInt:syncDirection] forKey:className];
-    }
-    else {
-      // Just set the default; they passed a nil class reference
-      _defaultSyncDirection = syncDirection;
-    }
-}
-
-- (RKSyncDirection) syncDirectionForClass:(Class)objectClass {
-    RKSyncDirection direction = _defaultSyncDirection;
-    NSString *className = NSStringFromClass(objectClass);
-    if (className) {
-        NSNumber *value = [_directions objectForKey:className];
-        if (value) {
-            direction = (RKSyncDirection)[value integerValue];
-        }
-    }
-    return direction;
-}
-
-#pragma mark - Sync Strategy
-
-- (void)setDefaultSyncStrategy:(RKSyncStrategy)syncStrategy {
-    return [self setSyncStrategy:syncStrategy forClass:nil];
-}
-
-- (void)setSyncStrategy:(RKSyncStrategy)syncStrategy forClass:(Class)objectClass {
-    NSString *className = NSStringFromClass(objectClass);
-    if (className) {
-        [_strategies setObject:[NSNumber numberWithInt:syncStrategy] forKey:className];
-    }
-    else {
-        // Just set the default; they passed a nil class reference
-        _defaultSyncStrategy = syncStrategy;
-    }
-}
-
-- (RKSyncStrategy) syncStrategyForClass:(Class)objectClass {
-    RKSyncStrategy strategy = _defaultSyncStrategy;
-    NSString *className = NSStringFromClass(objectClass);
-    if (className) {
-        NSNumber *value = [_strategies objectForKey:className];
-        if (value) {
-            strategy = (RKSyncStrategy)[value integerValue];
-        }
-    }
-    return strategy;
-}
 
 #pragma mark - Object ID String Helpers
 
@@ -250,9 +186,8 @@
 
 
 // updated objects should be put, unless there's already a post or a delete
-- (BOOL)shouldUpdateObject:(NSManagedObject *)object {
+- (BOOL)shouldUpdateObject:(NSManagedObject *)object strategy:(RKSyncStrategy)strategy {
     BOOL shouldUpdate = YES;
-    RKSyncStrategy strategy = [self syncStrategyForClass:[object class]];
     if (strategy == RKSyncStrategyBatch) {
       // Find records on the queue - if an update already exists, there's no need to store another.
       NSArray *queueItems = [self queueItemsForObject:object];
@@ -267,9 +202,8 @@
 }
 
 // Check the sync strategy for this object - if it's batch, we may not send this.
-- (BOOL)shouldDeleteObject:(NSManagedObject *)object {
+- (BOOL)shouldDeleteObject:(NSManagedObject *)object  strategy:(RKSyncStrategy)strategy {
     BOOL shouldDelete = YES;
-    RKSyncStrategy strategy = [self syncStrategyForClass:[object class]];
     if (strategy == RKSyncStrategyBatch) {
         //deleted objects should remove other entries
         //if a post record exists, we can just delete locally
@@ -464,8 +398,8 @@
         for (NSManagedObject *object in objects)
         {
             RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:[object class]];
-            RKSyncDirection direction = [self syncDirectionForClass:[object class]];
-            RKSyncMode mode = mapping.syncMode;
+            RKSyncDirection direction = (mapping.syncDirection == RKSyncDirectionDefault) ? _defaultSyncDirection : mapping.syncDirection;
+            RKSyncMode mode = (mapping.syncMode == RKSyncModeDefault) ? _defaultSyncMode : mapping.syncMode;
             if (mode == RKSyncModeNone || [object isKindOfClass:[RKManagedObjectSyncQueue class]]) {
                 // Ignore objects that are non-syncing, or are internal storage for this class.
                 continue;
@@ -473,19 +407,20 @@
                 // If we are only pulling, note that, but don't generate any queue items.
                 shouldPull = YES;
             } else {
+                RKSyncStrategy strategy = (mapping.syncStrategy == RKSyncStrategyDefault) ? _defaultSyncStrategy : mapping.syncStrategy;
                 // Depending on the change type, enqueue an object with a different method.  In Delete & Update cases,
                 // first call -shouldDelete/-shouldUpdate to determine whether we should even bother (depends on strategy)
                 if ([changeType isEqualToString:NSInsertedObjectsKey])
                 {
-                  BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
+                    BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
                   somethingAdded = (somethingAdded || added);
                 }
-                else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object])
+                else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object strategy:strategy])
                 {
                   BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode];
                   somethingAdded = (somethingAdded || added);
                 }
-                else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object])
+                else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object strategy:strategy])
                 {
                   BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode];
                   somethingAdded = (somethingAdded || added);
@@ -528,28 +463,20 @@
 - (void)pullObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     NSAssert(syncMode || objectClass,@"Either syncMode or objectClass must be passed to this method.");
     
-    __block RKSyncManager *blocksafeSelf = self;
     __block NSObject<RKSyncManagerDelegate> *blocksafeDelegate = _delegate;
-    
-    // We can save ourselves a lot of processing if we were provided a class & we have a direction for it.
-    if (objectClass) {
-      RKSyncDirection direction = [self syncDirectionForClass:objectClass];
-      if ((direction & RKSyncDirectionPull) == NO) {
-        // They don't need us to sync pulls, so we are fine to return.
-        return;
-      }
-    }
     
     NSDictionary *mappings = _objectManager.mappingProvider.mappingsByKeyPath;
     for (id key in mappings) {
         RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)[mappings objectForKey:key];
         BOOL classMatches = (objectClass == nil || mapping.objectClass == objectClass);
-        if (mapping.syncMode == syncMode && classMatches) {
+        
+        RKSyncMode mappingSyncMode = (mapping.syncMode == RKSyncModeDefault) ? _defaultSyncMode : mapping.syncMode;
+        if (mappingSyncMode == syncMode && classMatches) {
             NSManagedObject *object = [[NSManagedObject alloc] initWithEntity:mapping.entity insertIntoManagedObjectContext:nil]; 
             NSString *resourcePath = [_objectManager.router resourcePathForObject:object method:RKRequestMethodGET]; 
             [object release];
             
-            RKSyncDirection direction = [self syncDirectionForClass:[object class]];
+            RKSyncDirection direction = (mapping.syncDirection == RKSyncDirectionDefault) ? _defaultSyncDirection : mapping.syncDirection;
             if ((direction & RKSyncDirectionPull)) {
               if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullObjectsOfClass:withSyncMode:)]) {
                 [_delegate syncManager:self willPullObjectsOfClass:objectClass withSyncMode:syncMode];
