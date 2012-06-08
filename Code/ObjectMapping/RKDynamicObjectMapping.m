@@ -111,6 +111,12 @@
     return mapping;
 }
 
+- (BOOL)isEqualToMapping:(RKObjectMappingDefinition *)otherMapping
+{
+    // Comparison of dynamic mappings is not currently supported
+    return NO;
+}
+
 @end
 
 // Compatibility alias...
