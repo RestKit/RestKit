@@ -62,4 +62,11 @@
  */
 @property (nonatomic, assign) BOOL forceCollectionMapping;
 
+/**
+ Returns YES if the receiver and the specified mapping are considered equivalent.
+
+ **NOTE**: Must be implemented in subclass.
+ */
+- (BOOL)isEqualToMapping:(RKObjectMappingDefinition *)otherMapping;
+
 @end
