@@ -22,7 +22,6 @@
  the parsed dictionary at the `@"text"` key.
  */
 
-#import "XMLReader.h"
 #import "RKParser.h"
 
 @interface RKXMLParserXMLReader : NSObject <RKParser> {
