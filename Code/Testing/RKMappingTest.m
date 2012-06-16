@@ -47,7 +47,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @synthesize value;
 @synthesize mapping;
 
-+ (RKMappingTestEvent *)eventWithMapping:(RKObjectAttributeMapping *)mapping value:(id)value {
++ (RKMappingTestEvent *)eventWithMapping:(RKObjectAttributeMapping *)mapping value:(id)value
+{
     RKMappingTestEvent *event = [RKMappingTestEvent new];
     event.value = value;
     event.mapping = mapping;
@@ -55,15 +56,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return event;
 }
 
-- (NSString *)sourceKeyPath {
+- (NSString *)sourceKeyPath
+{
     return self.mapping.sourceKeyPath;
 }
 
-- (NSString *)destinationKeyPath {
+- (NSString *)destinationKeyPath
+{
     return self.mapping.destinationKeyPath;
 }
 
-- (NSString *)description {
+- (NSString *)description
+{
     return [NSString stringWithFormat:@"%@: mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@", [self class], self.sourceKeyPath, self.destinationKeyPath, self.value];
 }
 
@@ -97,15 +101,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @synthesize verifiesOnExpect = _verifiesOnExpect;
 @synthesize performedMapping = _performedMapping;
 
-+ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject {
++ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject
+{
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:nil];
 }
 
-+ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject {
++ (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
+{
     return [[self alloc] initWithMapping:mapping sourceObject:sourceObject destinationObject:destinationObject];
 }
 
-- (id)initWithMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject {
+- (id)initWithMapping:(RKObjectMapping *)mapping sourceObject:(id)sourceObject destinationObject:(id)destinationObject
+{
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(mapping != nil, @"Cannot perform a mapping operation without a mapping");
 
@@ -123,7 +130,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return self;
 }
 
-- (void)addExpectation:(RKMappingTestExpectation *)expectation {
+- (void)addExpectation:(RKMappingTestExpectation *)expectation
+{
     [self.expectations addObject:expectation];
 
     if (self.verifiesOnExpect) {
@@ -132,19 +140,23 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     }
 }
 
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath {
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
+{
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath]];
 }
 
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withValue:(id)value {
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withValue:(id)value
+{
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath value:value]];
 }
 
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock {
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock
+{
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath evaluationBlock:evaluationBlock]];
 }
 
-- (RKMappingTestEvent *)eventMatchingKeyPathsForExpectation:(RKMappingTestExpectation *)expectation {
+- (RKMappingTestEvent *)eventMatchingKeyPathsForExpectation:(RKMappingTestExpectation *)expectation
+{
     for (RKMappingTestEvent *event in self.events) {
         if ([event.sourceKeyPath isEqualToString:expectation.sourceKeyPath] && [event.destinationKeyPath isEqualToString:expectation.destinationKeyPath]) {
             return event;
@@ -154,7 +166,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return nil;
 }
 
-- (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(RKMappingTestExpectation *)expectation {
+- (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(RKMappingTestExpectation *)expectation
+{
     if (expectation.evaluationBlock) {
         // Let the expectation block evaluate the match
         return expectation.evaluationBlock(event.mapping, event.value);
@@ -167,7 +180,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return YES;
 }
 
-- (void)performMapping {
+- (void)performMapping
+{
     NSAssert(self.mapping.objectClass, @"Cannot test a mapping that does not have a destination objectClass");
 
     // Ensure repeated invocations of verify only result in a single mapping operation
@@ -189,7 +203,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     }
 }
 
-- (void)verifyExpectation:(RKMappingTestExpectation *)expectation {
+- (void)verifyExpectation:(RKMappingTestExpectation *)expectation
+{
     RKMappingTestEvent *event = [self eventMatchingKeyPathsForExpectation:expectation];
     if (event) {
         // Found a matching event, check if it satisfies the expectation
@@ -204,7 +219,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     }
 }
 
-- (void)verify {
+- (void)verify
+{
     [self performMapping];
 
     for (RKMappingTestExpectation *expectation in self.expectations) {
@@ -214,15 +230,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 #pragma mark - RKObjecMappingOperationDelegate
 
-- (void)addEvent:(RKMappingTestEvent *)event {
+- (void)addEvent:(RKMappingTestEvent *)event
+{
     [self.events addObject:event];
 }
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping
+{
     [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping {
+- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping
+{
     [self addEvent:[RKMappingTestEvent eventWithMapping:mapping value:value]];
 }
 

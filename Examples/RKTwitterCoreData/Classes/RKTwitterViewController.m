@@ -11,7 +11,8 @@
 
 @implementation RKTwitterViewController
 
-- (void)loadView {
+- (void)loadView
+{
     [super loadView];
 
     // Setup View and Table View
@@ -20,7 +21,7 @@
     self.navigationController.navigationBar.tintColor = [UIColor blackColor];
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadButtonWasPressed:)] autorelease];
 
-    UIImageView* imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
+    UIImageView *imageView = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"BG.png"]] autorelease];
     imageView.frame = CGRectOffset(imageView.frame, 0, -64);
 
     [self.view insertSubview:imageView atIndex:0];
@@ -36,34 +37,39 @@
     [self loadObjectsFromDataStore];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_tableView release];
     [_statuses release];
     [super dealloc];
 }
 
-- (void)loadObjectsFromDataStore {
+- (void)loadObjectsFromDataStore
+{
     [_statuses release];
-    NSFetchRequest* request = [RKTStatus fetchRequest];
-    NSSortDescriptor* descriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO];
+    NSFetchRequest *request = [RKTStatus fetchRequest];
+    NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO];
     [request setSortDescriptors:[NSArray arrayWithObject:descriptor]];
     _statuses = [[RKTStatus objectsWithFetchRequest:request] retain];
 }
 
-- (void)loadData {
+- (void)loadData
+{
     // Load the object model via RestKit
-    RKObjectManager* objectManager = [RKObjectManager sharedManager];
+    RKObjectManager *objectManager = [RKObjectManager sharedManager];
     [objectManager loadObjectsAtResourcePath:@"/status/user_timeline/RestKit" delegate:self];
 }
 
-- (void)reloadButtonWasPressed:(id)sender {
+- (void)reloadButtonWasPressed:(id)sender
+{
     // Load the object model via RestKit
     [self loadData];
 }
 
 #pragma mark RKObjectLoaderDelegate methods
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didLoadObjects:(NSArray*)objects {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects
+{
     [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"LastUpdatedAt"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     NSLog(@"Loaded statuses: %@", objects);
@@ -71,8 +77,9 @@
     [_tableView reloadData];
 }
 
-- (void)objectLoader:(RKObjectLoader*)objectLoader didFailWithError:(NSError*)error {
-    UIAlertView* alert = [[[UIAlertView alloc] initWithTitle:@"Error"
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
+{
+    UIAlertView *alert = [[[UIAlertView alloc] initWithTitle:@"Error"
                                                      message:[error localizedDescription]
                                                     delegate:nil
                                            cancelButtonTitle:@"OK" otherButtonTitles:nil] autorelease];
@@ -82,29 +89,33 @@
 
 #pragma mark UITableViewDelegate methods
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     CGSize size = [[[_statuses objectAtIndex:indexPath.row] text] sizeWithFont:[UIFont systemFontOfSize:14] constrainedToSize:CGSizeMake(300, 9000)];
     return size.height + 10;
 }
 
 #pragma mark UITableViewDataSource methods
 
-- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
+{
     return [_statuses count];
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    NSDate* lastUpdatedAt = [[NSUserDefaults standardUserDefaults] objectForKey:@"LastUpdatedAt"];
-    NSString* dateString = [NSDateFormatter localizedStringFromDate:lastUpdatedAt dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterMediumStyle];
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSDate *lastUpdatedAt = [[NSUserDefaults standardUserDefaults] objectForKey:@"LastUpdatedAt"];
+    NSString *dateString = [NSDateFormatter localizedStringFromDate:lastUpdatedAt dateStyle:NSDateFormatterShortStyle timeStyle:NSDateFormatterMediumStyle];
     if (nil == dateString) {
         dateString = @"Never";
     }
     return [NSString stringWithFormat:@"Last Load: %@", dateString];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSString* reuseIdentifier = @"Tweet Cell";
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *reuseIdentifier = @"Tweet Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier];
     if (nil == cell) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier] autorelease];
         cell.textLabel.font = [UIFont systemFontOfSize:14];
@@ -112,7 +123,7 @@
         cell.textLabel.backgroundColor = [UIColor clearColor];
         cell.contentView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"listbg.png"]];
     }
-    RKTStatus* status = [_statuses objectAtIndex:indexPath.row];
+    RKTStatus *status = [_statuses objectAtIndex:indexPath.row];
     cell.textLabel.text = status.text;
     return cell;
 }

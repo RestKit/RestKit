@@ -23,7 +23,7 @@
 /** @name Error Domain & Codes */
 
 // The error domain for RestKit generated errors
-extern NSString* const RKErrorDomain;
+extern NSString * const RKErrorDomain;
 
 typedef enum {
     RKObjectLoaderRemoteSystemError             =   1,
@@ -39,7 +39,7 @@ typedef enum {
  The key RestKit generated errors will appear at within an NSNotification
  indicating an error
  */
-extern NSString* const RKErrorNotificationErrorKey;
+extern NSString * const RKErrorNotificationErrorKey;
 
 /**
  When RestKit constructs an NSError object from one or more RKErrorMessage
@@ -50,4 +50,4 @@ extern NSString* const RKErrorNotificationErrorKey;
 
  @see RKObjectMappingResult
  */
-extern NSString* const RKObjectMapperErrorObjectsKey;
+extern NSString * const RKObjectMapperErrorObjectsKey;

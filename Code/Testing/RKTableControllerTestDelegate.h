@@ -12,9 +12,9 @@
 
 @interface RKAbstractTableControllerTestDelegate : NSObject <RKAbstractTableControllerDelegate>
 
-@property(nonatomic, readonly, getter = isCancelled) BOOL cancelled;
-@property(nonatomic, assign) NSTimeInterval timeout;
-@property(nonatomic, assign) BOOL awaitingResponse;
+@property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
+@property (nonatomic, assign) NSTimeInterval timeout;
+@property (nonatomic, assign) BOOL awaitingResponse;
 
 + (id)tableControllerDelegate;
 - (void)waitForLoad;

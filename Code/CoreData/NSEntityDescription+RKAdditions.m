@@ -38,7 +38,7 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
     if (attributeDescription) {
         return NSClassFromString(attributeDescription.attributeValueClassName);
     }
-    
+
     return nil;
 }
 
@@ -92,7 +92,7 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
             }
         }
     }
-    
+
     return searchValue;
 }
 

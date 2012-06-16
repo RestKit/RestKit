@@ -23,9 +23,9 @@
 /**
  * Presents an alert dialog with the specified message
  */
-void RKAlert(NSString* message);
+void RKAlert(NSString *message);
 
 /**
  * Presents an alert dialog with the specified message and title
  */
-void RKAlertWithTitle(NSString* message, NSString* title);
+void RKAlertWithTitle(NSString *message, NSString *title);

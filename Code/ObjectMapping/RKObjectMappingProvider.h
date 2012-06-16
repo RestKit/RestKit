@@ -126,7 +126,7 @@ typedef enum {
 
  We might configure a mapping like so:
 
-    RKObjectMapping* mapping = [RKObjectMapping mappingForClass:[Person class]];
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[Person class]];
     [mapping mapAttributes:@"first_name", @"last_name", nil];
 
  If we want to parse the above JSON and serialize it such that using postObject: or putObject: use the same format,
@@ -139,7 +139,7 @@ typedef enum {
 
  If you want to manipulate the serialization mapping yourself, you can work with the mapping directly:
 
-    RKObjectMapping* serializationMappingForPerson = [personMapping inverseMapping];
+    RKObjectMapping *serializationMappingForPerson = [personMapping inverseMapping];
     // NOTE: Serialization mapping default to a nil root keyPath and will serialize to a flat dictionary
     [[RKObjectManager sharedManager].mappingProvider setSerializationMapping:serializationMappingForPerson forClass:[Person class]];
 

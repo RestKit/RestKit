@@ -36,14 +36,16 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
 
 @synthesize executionBlock = _executionBlock;
 
-+ (id)valueWithBlock:(RKMutableBlockDictionaryValueBlock)executionBlock {
-    RKMutableBlockDictionaryBlockValue* value = [[self new] autorelease];
++ (id)valueWithBlock:(RKMutableBlockDictionaryValueBlock)executionBlock
+{
+    RKMutableBlockDictionaryBlockValue *value = [[self new] autorelease];
     value.executionBlock = executionBlock;
 
     return value;
 }
 
-- (void)setExecutionBlock:(RKMutableBlockDictionaryValueBlock)executionBlock {
+- (void)setExecutionBlock:(RKMutableBlockDictionaryValueBlock)executionBlock
+{
     if (_executionBlock) {
         Block_release(_executionBlock);
         _executionBlock = nil;
@@ -51,7 +53,8 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
     _executionBlock = Block_copy(executionBlock);
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     if (_executionBlock) {
         Block_release(_executionBlock);
         _executionBlock = nil;
@@ -63,11 +66,13 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
 
 @implementation RKMutableBlockDictionary
 
-- (id)init {
+- (id)init
+{
     return [self initWithCapacity:0];
 }
 
-- (id)initWithCapacity:(NSUInteger)capacity {
+- (id)initWithCapacity:(NSUInteger)capacity
+{
     self = [super init];
     if (self != nil) {
         _mutableDictionary = [[NSMutableDictionary alloc] initWithCapacity:capacity];
@@ -76,41 +81,50 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_mutableDictionary release];
     [super dealloc];
 }
 
-- (id)copy {
+- (id)copy
+{
     return [self mutableCopy];
 }
 
-- (void)setObject:(id)anObject forKey:(id)aKey {
+- (void)setObject:(id)anObject forKey:(id)aKey
+{
     [_mutableDictionary setObject:anObject forKey:aKey];
 }
 
-- (void)removeObjectForKey:(id)aKey {
+- (void)removeObjectForKey:(id)aKey
+{
     [_mutableDictionary removeObjectForKey:aKey];
 }
 
-- (NSUInteger)count {
+- (NSUInteger)count
+{
     return [_mutableDictionary count];
 }
 
-- (id)objectForKey:(id)aKey {
+- (id)objectForKey:(id)aKey
+{
     return [_mutableDictionary objectForKey:aKey];
 }
 
-- (NSEnumerator *)keyEnumerator {
+- (NSEnumerator *)keyEnumerator
+{
     return [_mutableDictionary keyEnumerator];
 }
 
-- (void)setValueWithBlock:(id (^)())block forKey:(NSString *)key {
-    RKMutableBlockDictionaryBlockValue* blockValue = [RKMutableBlockDictionaryBlockValue valueWithBlock:block];
+- (void)setValueWithBlock:(id (^)())block forKey:(NSString *)key
+{
+    RKMutableBlockDictionaryBlockValue *blockValue = [RKMutableBlockDictionaryBlockValue valueWithBlock:block];
     [self setObject:blockValue forKey:key];
 }
 
-- (id)valueForKey:(NSString *)key {
+- (id)valueForKey:(NSString *)key
+{
     id value = [self objectForKey:key];
     if (value) {
         if ([value isKindOfClass:[RKMutableBlockDictionaryBlockValue class]]) {
@@ -124,7 +138,8 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
     return nil;
 }
 
-- (id)valueForKeyPath:(NSString *)keyPath {
+- (id)valueForKeyPath:(NSString *)keyPath
+{
     id value = [super valueForKeyPath:keyPath];
     if (value) {
         if ([value isKindOfClass:[RKMutableBlockDictionaryBlockValue class]]) {
@@ -138,7 +153,8 @@ typedef id (^RKMutableBlockDictionaryValueBlock)();
     return nil;
 }
 
-- (void)setValue:(id)value forKey:(NSString *)key {
+- (void)setValue:(id)value forKey:(NSString *)key
+{
     [self setObject:value forKey:key];
 }
 

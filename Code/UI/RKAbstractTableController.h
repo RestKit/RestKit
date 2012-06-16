@@ -36,27 +36,27 @@
  */
 extern NSString * const RKTableControllerDidStartLoadNotification;
 
-/** 
+/**
  Posted when the table controller finishes loading.
  */
 extern NSString * const RKTableControllerDidFinishLoadNotification;
 
-/** 
+/**
  Posted when the table controller has loaded objects into the table view.
  */
 extern NSString * const RKTableControllerDidLoadObjectsNotification;
 
-/** 
+/**
  Posted when the table controller has loaded an empty collection of objects into the table view.
  */
 extern NSString * const RKTableControllerDidLoadEmptyNotification;
 
-/** 
+/**
  Posted when the table controller has loaded an error.
  */
 extern NSString * const RKTableControllerDidLoadErrorNotification;
 
-/** 
+/**
  Posted when the table controller has transitioned from an offline to online state.
  */
 extern NSString * const RKTableControllerDidBecomeOnline;
@@ -70,41 +70,41 @@ extern NSString * const RKTableControllerDidBecomeOffline;
 
 /**
  @enum RKTableControllerState
- 
+
  @constant RKTableControllerStateNormal Indicates that the table has
  loaded normally and is displaying cell content. It is not loading content,
  is not empty, has not loaded an error, and is not offline.
- 
+
  @constant RKTableControllerStateLoading Indicates that the table controller
  is loading content from a remote source.
- 
+
  @constant RKTableControllerStateEmpty Indicates that the table controller has
  retrieved an empty collection of objects.
- 
+
  @constant RKTableControllerStateError Indicates that the table controller has
  encountered an error while attempting to load.
- 
+
  @constant RKTableControllerStateOffline Indicates that the table controller is
  offline and cannot perform network access.
- 
+
  @constant RKTableControllerStateNotYetLoaded Indicates that the table controller is
  has not yet attempted a load and state is unknown.
  */
-enum RKTableControllerState {    
+enum RKTableControllerState {
     RKTableControllerStateNormal        = 0,
     RKTableControllerStateLoading       = 1 << 1,
     RKTableControllerStateEmpty         = 1 << 2,
     RKTableControllerStateError         = 1 << 3,
-    RKTableControllerStateOffline       = 1 << 4,    
+    RKTableControllerStateOffline       = 1 << 4,
     RKTableControllerStateNotYetLoaded  = 0xFF000000
 };
 typedef NSUInteger RKTableControllerState;
 
 /**
  RKAbstractTableController is an abstract base class for concrete table controller classes.
- A table controller object acts as both the delegate and data source for a UITableView 
+ A table controller object acts as both the delegate and data source for a UITableView
  object and leverages the RestKit object mapping engine to transform local domain models
- into UITableViewCell representations. Concrete implementations are provided for the 
+ into UITableViewCell representations. Concrete implementations are provided for the
  display of static table views and Core Data backed fetched results controller basied
  table views.
  */
@@ -212,21 +212,21 @@ typedef NSUInteger RKTableControllerState;
 
 /**
  Returns a Boolean value indicating if the table controller has attempted
- a load and transitioned into any state. 
+ a load and transitioned into any state.
  */
 - (BOOL)isLoaded;
 
 /**
  Returns a Boolean value indicating if the table controller has loaded an
  empty set of content.
- 
+
  When YES and there is not an empty item configured, the table controller
  will optionally display an empty image overlayed on top of the table view.
- 
+
  **NOTE**: It is possible for an empty table controller to display cells
  witin the managed table view in the event an empty item or header/footer
  rows are configured.
- 
+
  @see imageForEmpty
  */
 - (BOOL)isEmpty;
@@ -239,10 +239,10 @@ typedef NSUInteger RKTableControllerState;
 
 /**
  Returns a Boolean value indicating if the table controller is offline.
- 
+
  When YES, the table controller will optionally display an offline image
  overlayed on top of the table view.
- 
+
  @see imageForOffline
  */
 - (BOOL)isOffline;
@@ -250,10 +250,10 @@ typedef NSUInteger RKTableControllerState;
 /**
  Returns a Boolean value indicating if the table controller encountered
  an error while attempting to load.
- 
+
  When YES, the table controller will optionally display an error image
  overlayed on top of the table view.
- 
+
  @see imageForError
  */
 - (BOOL)isError;
@@ -294,12 +294,12 @@ typedef NSUInteger RKTableControllerState;
 
 /**
  Returns the image, if any, configured for display when the table controller
- is in the given state. 
- 
+ is in the given state.
+
  **NOTE** This method accepts a single state value.
- 
+
  @param state The table controller state
- @return The image for the specified state, else nil. Always returns nil for 
+ @return The image for the specified state, else nil. Always returns nil for
  RKTableControllerStateNormal, RKTableControllerStateLoading and RKTableControllerStateLoading.
  */
 - (UIImage *)imageForState:(RKTableControllerState)state;
@@ -339,7 +339,7 @@ typedef NSUInteger RKTableControllerState;
 /// @name Managing Sections
 ///-----------------------------------------------------------------------------
 
-/** 
+/**
  The number of sections in the table.
  */
 @property (nonatomic, readonly) NSUInteger sectionCount;
@@ -362,7 +362,7 @@ typedef NSUInteger RKTableControllerState;
 /**
  Returns the UITableViewCell created by applying the specified
  mapping operation to the object identified by indexPath.
- 
+
  @param indexPath The indexPath in the tableView for which a cell is needed.
  */
 - (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath;
@@ -402,7 +402,7 @@ typedef NSUInteger RKTableControllerState;
 - (void)tableControllerDidCancelLoad:(RKAbstractTableController *)tableController;
 
 /**
- Sent to the delegate when the controller is really and truly finished loading/updating, whether from the network or from Core Data, 
+ Sent to the delegate when the controller is really and truly finished loading/updating, whether from the network or from Core Data,
  or from static data, ... this happens in didFinishLoading
  */
 - (void)tableControllerDidFinalizeLoad:(RKAbstractTableController *)tableController;

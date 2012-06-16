@@ -40,12 +40,12 @@
  * Normalize and tokenize the provided string into an NSArray.
  * Note that returned value may contain entries of empty strings.
  */
-+ (NSArray*)tokenizedNormalizedString:(NSString*)string;
++ (NSArray *)tokenizedNormalizedString:(NSString *)string;
 
 /**
  * Generate a predicate for the supplied search term against
  * searchableAttributes (defined for an RKSearchableManagedObject)
  */
-- (NSPredicate*)predicateForSearch:(NSString*)searchText;
+- (NSPredicate *)predicateForSearch:(NSString *)searchText;
 
 @end

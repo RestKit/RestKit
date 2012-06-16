@@ -10,12 +10,14 @@
 
 @implementation RKXMLParserXMLReader
 
-- (id)objectFromString:(NSString*)string error:(NSError**)error {
+- (id)objectFromString:(NSString *)string error:(NSError **)error
+{
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
     return [XMLReader dictionaryForXMLData:data error:error];
 }
 
-- (NSString*)stringFromObject:(id)object error:(NSError**)error {
+- (NSString *)stringFromObject:(id)object error:(NSError **)error
+{
     return nil;
 }
 

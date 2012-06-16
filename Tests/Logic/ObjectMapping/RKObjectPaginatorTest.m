@@ -54,11 +54,13 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
 @synthesize loading;
 @synthesize timeout;
 
-+ (RKTestPaginatorDelegate *)paginatorDelegate {
++ (RKTestPaginatorDelegate *)paginatorDelegate
+{
     return [[self new] autorelease];
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         currentPage = NSIntegerMax;
@@ -68,27 +70,31 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [paginatedObjects release];
     [paginationError release];
 
     [super dealloc];
 }
 
-- (BOOL)isLoaded {
+- (BOOL)isLoaded
+{
     return currentPage != NSIntegerMax;
 }
 
-- (BOOL)isError {
+- (BOOL)isError
+{
     return paginationError == nil;
 }
 
-- (void)waitForLoad {
+- (void)waitForLoad
+{
     loading = YES;
     self.paginatedObjects = nil;
     self.paginationError = nil;
 
-    NSDate* startDate = [NSDate date];
+    NSDate *startDate = [NSDate date];
 
     while (loading) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
@@ -101,26 +107,31 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
 
 #pragma mark - RKObjectPaginatorDelegate
 
-- (void)paginator:(RKObjectPaginator *)paginator didLoadObjects:(NSArray *)objects forPage:(NSUInteger)page {
+- (void)paginator:(RKObjectPaginator *)paginator didLoadObjects:(NSArray *)objects forPage:(NSUInteger)page
+{
     loading = NO;
     self.paginatedObjects = objects;
     currentPage = page;
 }
 
-- (void)paginator:(RKObjectPaginator *)paginator didFailWithError:(NSError *)error objectLoader:(RKObjectLoader *)loader {
+- (void)paginator:(RKObjectPaginator *)paginator didFailWithError:(NSError *)error objectLoader:(RKObjectLoader *)loader
+{
     loading = NO;
     self.paginationError = error;
 }
 
-- (void)paginator:(RKObjectPaginator *)paginator willLoadPage:(NSUInteger)page objectLoader:(RKObjectLoader *)loader {
+- (void)paginator:(RKObjectPaginator *)paginator willLoadPage:(NSUInteger)page objectLoader:(RKObjectLoader *)loader
+{
     // Necessary for OCMock expectations
 }
 
-- (void)paginatorDidLoadFirstPage:(RKObjectPaginator *)paginator {
+- (void)paginatorDidLoadFirstPage:(RKObjectPaginator *)paginator
+{
     // Necessary for OCMock expectations
 }
 
-- (void)paginatorDidLoadLastPage:(RKObjectPaginator *)paginator {
+- (void)paginatorDidLoadLastPage:(RKObjectPaginator *)paginator
+{
     // Necessary for OCMock expectations
 }
 
@@ -135,15 +146,18 @@ NSString * const RKTestPaginatorDelegateTimeoutException = @"RKTestPaginatorDele
 
 static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?per_page=:perPage&page=:currentPage";
 
-- (void)setUp {
+- (void)setUp
+{
     [RKTestFactory setUp];
 }
 
-- (void)tearDown {
+- (void)tearDown
+{
     [RKTestFactory tearDown];
 }
 
-- (RKObjectMappingProvider *)paginationMappingProvider {
+- (RKObjectMappingProvider *)paginationMappingProvider
+{
     RKObjectMapping *paginationMapping = [RKObjectMapping mappingForClass:[RKObjectPaginator class]];
     [paginationMapping mapKeyPath:@"current_page" toAttribute:@"currentPage"];
     [paginationMapping mapKeyPath:@"per_page" toAttribute:@"perPage"];
@@ -158,32 +172,37 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     return mappingProvider;
 }
 
-- (void)testInitCopiesPatternURL {
+- (void)testInitCopiesPatternURL
+{
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org"];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
     assertThat([paginator.patternURL absoluteString], is(equalTo(@"http://restkit.org")));
 }
 
-- (void)testInitRetainsMappingProvider {
+- (void)testInitRetainsMappingProvider
+{
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
     assertThat(paginator.mappingProvider, is(equalTo(mappingProvider)));
 }
 
-- (void)testInitDoesNotHavePageCount {
+- (void)testInitDoesNotHavePageCount
+{
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
     assertThatBool([paginator hasPageCount], is(equalToBool(NO)));
 }
 
-- (void)testInitDoesNotHaveObjectCount {
+- (void)testInitDoesNotHaveObjectCount
+{
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
     assertThatBool([paginator hasObjectCount], is(equalToBool(NO)));
 }
 
-- (void)testThatLoadWithNilMappingProviderRaisesException {
+- (void)testThatLoadWithNilMappingProviderRaisesException
+{
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
     NSException *exception = nil;
@@ -198,7 +217,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     }
 }
 
-- (void)testThatResourcePathPatternEvaluatesAgainstPaginator {
+- (void)testThatResourcePathPatternEvaluatesAgainstPaginator
+{
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
@@ -207,7 +227,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat([[paginator URL] resourcePath], is(equalTo(@"/paginate?per_page=25&page=1")));
 }
 
-- (void)testThatURLReturnsReflectsStateOfPaginator {
+- (void)testThatURLReturnsReflectsStateOfPaginator
+{
     RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:nil];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
@@ -219,7 +240,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat([[mockPaginator URL] queryParameters], is(equalTo(queryParams)));
 }
 
-- (void)testLoadingAPageOfObjects {
+- (void)testLoadingAPageOfObjects
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKTestPaginatorDelegate *testDelegate = [RKTestPaginatorDelegate paginatorDelegate];
@@ -230,7 +252,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThatBool([testDelegate isLoaded], is(equalToBool(YES)));
 }
 
-- (void)testLoadingPageOfObjectMapsPerPage {
+- (void)testLoadingPageOfObjectMapsPerPage
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -241,7 +264,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThatInteger(paginator.perPage, is(equalToInteger(3)));
 }
 
-- (void)testLoadingPageOfObjectMapsTotalEntries {
+- (void)testLoadingPageOfObjectMapsTotalEntries
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -252,7 +276,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThatInteger(paginator.objectCount, is(equalToInteger(6)));
 }
 
-- (void)testLoadingPageOfObjectMapsCurrentPage {
+- (void)testLoadingPageOfObjectMapsCurrentPage
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -263,7 +288,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThatInteger(paginator.currentPage, is(equalToInteger(1)));
 }
 
-- (void)testLoadingPageOfObjectMapsEntriesToObjects {
+- (void)testLoadingPageOfObjectMapsEntriesToObjects
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -275,7 +301,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat([[testDelegate paginatedObjects] valueForKey:@"name"], is(equalTo([NSArray arrayWithObjects:@"Blake", @"Sarah", @"Colin", nil])));
 }
 
-- (void)testLoadingPageOfObjectHasPageCount {
+- (void)testLoadingPageOfObjectHasPageCount
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -286,7 +313,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThatBool([paginator hasPageCount], is(equalToBool(YES)));
 }
 
-- (void)testLoadingPageOfObjectHasObjectCount {
+- (void)testLoadingPageOfObjectHasObjectCount
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -297,7 +325,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThatBool([paginator hasObjectCount], is(equalToBool(YES)));
 }
 
-- (void)testOnDidLoadObjectsForPageBlockIsInvokedOnLoad {
+- (void)testOnDidLoadObjectsForPageBlockIsInvokedOnLoad
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -312,7 +341,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat(blockObjects, is(notNilValue()));
 }
 
-- (void)testDelegateIsInformedOfWillLoadPage {
+- (void)testDelegateIsInformedOfWillLoadPage
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -325,7 +355,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     [mockDelegate verify];
 }
 
-- (void)testDelegateIsInformedOnError {
+- (void)testDelegateIsInformedOnError
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -338,7 +369,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     [mockDelegate verify];
 }
 
-- (void)testOnDidFailWithErrorBlockIsInvokedOnError {
+- (void)testOnDidFailWithErrorBlockIsInvokedOnError
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -353,7 +385,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat(expectedError, is(notNilValue()));
 }
 
-- (void)testDelegateIsInformedOnLoadOfFirstPage {
+- (void)testDelegateIsInformedOnLoadOfFirstPage
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -366,7 +399,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     [mockDelegate verify];
 }
 
-- (void)testDelegateIsInformedOnLoadOfLastPage {
+- (void)testDelegateIsInformedOnLoadOfLastPage
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -379,7 +413,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     [mockDelegate verify];
 }
 
-- (void)testLoadingNextPageOfObjects {
+- (void)testLoadingNextPageOfObjects
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -394,7 +429,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat([[testDelegate paginatedObjects] valueForKey:@"name"], is(equalTo([NSArray arrayWithObjects:@"Asia", @"Roy", @"Lola", nil])));
 }
 
-- (void)testLoadingPreviousPageOfObjects {
+- (void)testLoadingPreviousPageOfObjects
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -409,7 +445,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat([[testDelegate paginatedObjects] valueForKey:@"name"], is(equalTo([NSArray arrayWithObjects:@"Blake", @"Sarah", @"Colin", nil])));
 }
 
-- (void)testFailureWhenLoadingAPageOfObjects {
+- (void)testFailureWhenLoadingAPageOfObjects
+{
     RKURL *patternURL = [[RKTestFactory baseURL] URLByAppendingResourcePath:RKObjectPaginatorTestResourcePathPattern];
     RKObjectMappingProvider *mappingProvider = [self paginationMappingProvider];
     RKObjectPaginator *paginator = [RKObjectPaginator paginatorWithPatternURL:patternURL mappingProvider:mappingProvider];
@@ -420,7 +457,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThat(testDelegate.paginationError, is(notNilValue()));
 }
 
-- (void)testKnowledgeOfHasANextPage {
+- (void)testKnowledgeOfHasANextPage
+{
     RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     BOOL isLoaded = YES;
@@ -441,7 +479,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     assertThatBool([mockPaginator hasNextPage], is(equalToBool(NO)));
 }
 
-- (void)testHasNextPageRaisesExpectionWhenNotLoaded {
+- (void)testHasNextPageRaisesExpectionWhenNotLoaded
+{
     RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     BOOL loaded = NO;
@@ -449,7 +488,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     STAssertThrows([mockPaginator hasNextPage], @"Expected exception due to isLoaded == NO");
 }
 
-- (void)testHasNextPageRaisesExpectionWhenPageCountIsUnknown {
+- (void)testHasNextPageRaisesExpectionWhenPageCountIsUnknown
+{
     RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     BOOL loaded = YES;
@@ -459,7 +499,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     STAssertThrows([mockPaginator hasNextPage], @"Expected exception due to pageCount == NSUIntegerMax");
 }
 
-- (void)testHasPreviousPageRaisesExpectionWhenNotLoaded {
+- (void)testHasPreviousPageRaisesExpectionWhenNotLoaded
+{
     RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     BOOL loaded = NO;
@@ -467,7 +508,8 @@ static NSString * const RKObjectPaginatorTestResourcePathPattern = @"/paginate?p
     STAssertThrows([mockPaginator hasPreviousPage], @"Expected exception due to isLoaded == NO");
 }
 
-- (void)testKnowledgeOfPreviousPage {
+- (void)testKnowledgeOfPreviousPage
+{
     RKObjectPaginator *paginator = [[RKObjectPaginator new] autorelease];
     id mockPaginator = [OCMockObject partialMockForObject:paginator];
     BOOL isLoaded = YES;

@@ -13,7 +13,8 @@
 @synthesize mapping = _mapping;
 @synthesize userData = _userData;
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _mapping = nil;
@@ -22,7 +23,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_mapping release];
     _mapping = nil;
     [_userData release];
@@ -30,7 +32,8 @@
     [super dealloc];
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
     if ([object isKindOfClass:[RKObjectMappingProviderContextEntry class]]) {
         RKObjectMappingProviderContextEntry *entry = (RKObjectMappingProviderContextEntry *)object;
         return ([self.mapping isEqual:entry.mapping] && (self.userData == entry.userData));
@@ -38,20 +41,23 @@
     return NO;
 }
 
-- (NSUInteger)hash {
+- (NSUInteger)hash
+{
     int prime = 31;
     int result = 1;
-    result = prime * [self.userData hash]? [self.mapping hash] : [self.userData hash];
+    result = prime *[self.userData hash] ? [self.mapping hash] : [self.userData hash];
     return result;
 }
 
-+ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKObjectMappingDefinition *)mapping {
++ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKObjectMappingDefinition *)mapping
+{
     RKObjectMappingProviderContextEntry *contextEntry = [[[RKObjectMappingProviderContextEntry alloc] init] autorelease];
     contextEntry.mapping = mapping;
     return contextEntry;
 }
 
-+ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKObjectMappingDefinition *)mapping userData:(id)userData {
++ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKObjectMappingDefinition *)mapping userData:(id)userData
+{
     RKObjectMappingProviderContextEntry *contextEntry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
     contextEntry.userData = userData;
     return contextEntry;

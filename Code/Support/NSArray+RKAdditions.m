@@ -16,7 +16,7 @@
     NSMutableArray *sections = [NSMutableArray array];
 
     // If we don't contain any items, return an empty collection of sections.
-    if([self count] == 0) {
+    if ([self count] == 0) {
         return sections;
     }
 

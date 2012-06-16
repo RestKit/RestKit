@@ -28,11 +28,12 @@
 
 @implementation NSStringRestKitTest
 
-- (void)testShouldAppendQueryParameters {
+- (void)testShouldAppendQueryParameters
+{
     NSString *resourcePath = @"/controller/objects/";
     NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:
                                  @"ascend", @"sortOrder",
-                                 @"name", @"groupBy",nil];
+                                 @"name", @"groupBy", nil];
     NSString *resultingPath = [resourcePath stringByAppendingQueryParameters:queryParams];
     assertThat(resultingPath, isNot(equalTo(nil)));
     NSString *expectedPath1 = @"/controller/objects/?sortOrder=ascend&groupBy=name";
@@ -42,7 +43,8 @@
     assertThatBool(isValidPath, is(equalToBool(YES)));
 }
 
-- (void)testShouldInterpolateObjects {
+- (void)testShouldInterpolateObjects
+{
     RKObjectMapperTestModel *person = [[[RKObjectMapperTestModel alloc] init] autorelease];
     person.name = @"CuddleGuts";
     person.age  = [NSNumber numberWithInt:6];
@@ -52,7 +54,8 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldInterpolateObjectsWithDeprecatedParentheses {
+- (void)testShouldInterpolateObjectsWithDeprecatedParentheses
+{
     RKObjectMapperTestModel *person = [[[RKObjectMapperTestModel alloc] init] autorelease];
     person.name = @"CuddleGuts";
     person.age  = [NSNumber numberWithInt:6];
@@ -62,7 +65,8 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldParseQueryParameters {
+- (void)testShouldParseQueryParameters
+{
     NSString *resourcePath = @"/views/thing/?keyA=valA&keyB=valB";
     NSDictionary *queryParams = [resourcePath queryParametersUsingEncoding:NSASCIIStringEncoding];
     assertThat(queryParams, isNot(empty()));
@@ -70,17 +74,20 @@
     assertThat(queryParams, hasEntries(@"keyA", @"valA", @"keyB", @"valB", nil));
 }
 
-- (void)testReturningTheMIMETypeForAPathWithXMLExtension {
+- (void)testReturningTheMIMETypeForAPathWithXMLExtension
+{
     NSString *MIMEType = [@"/path/to/file.xml" MIMETypeForPathExtension];
     assertThat(MIMEType, is(equalTo(@"application/xml")));
 }
 
-- (void)testReturningTheMIMETypeForAPathWithJSONExtension {
+- (void)testReturningTheMIMETypeForAPathWithJSONExtension
+{
     NSString *MIMEType = [@"/path/to/file.json" MIMETypeForPathExtension];
     assertThat(MIMEType, is(equalTo(@"application/json")));
 }
 
-- (void)testShouldKnowIfTheReceiverContainsAnIPAddress {
+- (void)testShouldKnowIfTheReceiverContainsAnIPAddress
+{
     assertThatBool([@"127.0.0.1" isIPAddress], equalToBool(YES));
     assertThatBool([@"173.45.234.197" isIPAddress], equalToBool(YES));
     assertThatBool([@"google.com" isIPAddress], equalToBool(NO));

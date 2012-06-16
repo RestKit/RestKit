@@ -14,6 +14,6 @@
  *
  * @returns A UTF-8 encoded string representation of the object
  */
-- (NSString*)URLEncodedString;
+- (NSString *)URLEncodedString;
 
 @end

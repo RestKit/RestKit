@@ -26,7 +26,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [authenticatedRequest cancel];
     [authenticatedRequest release];
     authenticatedRequest = nil;
@@ -39,7 +40,8 @@
  It is important to remember that RKClient is really just a factory object for instances
  of RKRequest. At any time you can directly configure an RKRequest instead.
  */
-- (void)sendRequest {
+- (void)sendRequest
+{
     NSURL *URL = [NSURL URLWithString:[URLTextField text]];
     RKRequest *newRequest = [RKRequest requestWithURL:URL];
     newRequest.delegate = self;
@@ -50,24 +52,28 @@
     self.authenticatedRequest = newRequest;
 }
 
-- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
+- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error
+{
     RKLogError(@"Load of RKRequest %@ failed with error: %@", request, error);
     [request release];
 }
 
-- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response
+{
     RKLogCritical(@"Loading of RKRequest %@ completed with status code %d. Response body: %@", request, response.statusCode, [response bodyAsString]);
     [request release];
 }
 
 #pragma mark - UIPickerViewDataSource
 
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
+{
     return 1;
 }
 
 // returns the # of rows in each component..
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
+{
     return 0;
 }
 

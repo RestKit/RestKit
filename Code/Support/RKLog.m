@@ -68,7 +68,7 @@ void RKLogConfigureFromEnvironment(void)
             NSString *logComponent = [envVarName stringByReplacingOccurrencesOfString:logComponentPrefix withString:@""];
             logComponent = [logComponent stringByReplacingOccurrencesOfString:@"." withString:@"/"];
 
-            const char* log_component_c_str = [logComponent cStringUsingEncoding:NSUTF8StringEncoding];
+            const char *log_component_c_str = [logComponent cStringUsingEncoding:NSUTF8StringEncoding];
             int log_level_int = RKLogLevelForString(logLevel, envVarName);
             RKLogConfigureByName(log_component_c_str, log_level_int);
         }
@@ -166,6 +166,6 @@ void RKLogIntegerAsBinary(NSUInteger bitMask) {
     do {
         [string appendString:(((NSUInteger)bitMask & bit) ? @"1" : @"0")];
     } while ( bit >>= 1 );
-    
+
     NSLog(@"Value of %ld in binary: %@", (long) bitMask, string);
 }
