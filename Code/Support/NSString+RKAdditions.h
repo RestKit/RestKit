@@ -141,4 +141,12 @@
  */
 - (NSString *)MD5;
 
+/**
+ Returns a string with the first letter lowercased. This is useful for swizzling.
+ 
+ @return A new string with the first letter lowercased.
+ */
+
+- (NSString *)stringByLowercasingFirstLetter;
+
 @end
