@@ -21,6 +21,13 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		20980713158E54AF00A2A4CA /* JRSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 20980711158E54AF00A2A4CA /* JRSwizzle.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20980714158E54AF00A2A4CA /* JRSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 20980711158E54AF00A2A4CA /* JRSwizzle.h */; };
+		20980715158E54AF00A2A4CA /* JRSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 20980712158E54AF00A2A4CA /* JRSwizzle.m */; };
+		20980716158E54AF00A2A4CA /* JRSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 20980712158E54AF00A2A4CA /* JRSwizzle.m */; };
+		20980717158E54AF00A2A4CA /* JRSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 20980712158E54AF00A2A4CA /* JRSwizzle.m */; };
+		20980718158E54AF00A2A4CA /* JRSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 20980712158E54AF00A2A4CA /* JRSwizzle.m */; };
+		20980719158E54AF00A2A4CA /* JRSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 20980712158E54AF00A2A4CA /* JRSwizzle.m */; };
 		2501405315366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		2501405415366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		25055B8414EEF32A00B9C4DD /* RKMappingTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8014EEF32A00B9C4DD /* RKMappingTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -789,6 +796,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		20980711158E54AF00A2A4CA /* JRSwizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JRSwizzle.h; path = JRSwizzle/JRSwizzle.h; sourceTree = "<group>"; };
+		20980712158E54AF00A2A4CA /* JRSwizzle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JRSwizzle.m; path = JRSwizzle/JRSwizzle.m; sourceTree = "<group>"; };
 		2501405215366000004E0466 /* RKObjectiveCppTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RKObjectiveCppTest.mm; sourceTree = "<group>"; };
 		25055B8014EEF32A00B9C4DD /* RKMappingTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingTest.h; path = Testing/RKMappingTest.h; sourceTree = "<group>"; };
 		25055B8114EEF32A00B9C4DD /* RKMappingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTest.m; path = Testing/RKMappingTest.m; sourceTree = "<group>"; };
@@ -1307,6 +1316,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2098070B158E51DD00A2A4CA /* JRSwizzle */ = {
+			isa = PBXGroup;
+			children = (
+				20980711158E54AF00A2A4CA /* JRSwizzle.h */,
+				20980712158E54AF00A2A4CA /* JRSwizzle.m */,
+			);
+			name = JRSwizzle;
+			sourceTree = "<group>";
+		};
 		250CA67A147D8E7F0047D347 /* OCHamcrest */ = {
 			isa = PBXGroup;
 			children = (
@@ -1613,6 +1631,7 @@
 		25160E8D145652E40060A5C5 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				2098070B158E51DD00A2A4CA /* JRSwizzle */,
 				49A66B0614CEFAD800A6F062 /* XMLReader */,
 				49D2759714C9E83E0090845D /* iso8601parser */,
 				25160E8E1456532C0060A5C5 /* cocoa-oauth */,
@@ -2285,6 +2304,7 @@
 				2572538D155C543000CB05ED /* RKPortCheck.h in Headers */,
 				259D98541550C69A008C90F5 /* RKEntityByAttributeCache.h in Headers */,
 				259D985E155218E5008C90F5 /* RKEntityCache.h in Headers */,
+				20980713158E54AF00A2A4CA /* JRSwizzle.h in Headers */,
 				25545959155F0527007D7625 /* RKBenchmark.h in Headers */,
 				25E4DAB4156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */,
 			);
@@ -2391,27 +2411,13 @@
 				25FABED714E37A2B00E609E7 /* RKTestResponseLoader.h in Headers */,
 				49A66B0D14CEFB0400A6F062 /* XMLReader.h in Headers */,
 				25FABED314E3796C00E609E7 /* RKTestNotificationObserver.h in Headers */,
-				25055B8514EEF32A00B9C4DD /* RKMappingTest.h in Headers */,
-				25055B8914EEF32A00B9C4DD /* RKTestFactory.h in Headers */,
-				25055B9014EEF40000B9C4DD /* RKMappingTestExpectation.h in Headers */,
-				25EC1A2D14F6FDAD00C3CF3F /* RKObjectManager+RKTableController.h in Headers */,
-				25EC1A3A14F72B0A00C3CF3F /* RKFetchRequestManagedObjectCache.h in Headers */,
-				25EC1A3E14F72B2900C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
-				25EC1A4214F72C7300C3CF3F /* RKObjectMappingProvider+CoreData.h in Headers */,
 				25EC1A4814F7394200C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */,
-				25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
-				25EC1ABD14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */,
-				25EC1AC114F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */,
-				25EC1B3A14F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */,
-				257ABAB115112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */,
-				257ABAB71511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
-				25079C70151B93DB00266AE7 /* NSEntityDescription+RKAdditions.h in Headers */,
-				252A20311534714D0078F8AD /* NSArray+RKAdditions.h in Headers */,
 				2572538E155C543000CB05ED /* RKPortCheck.h in Headers */,
 				259D98551550C69A008C90F5 /* RKEntityByAttributeCache.h in Headers */,
 				259D985F155218E5008C90F5 /* RKEntityCache.h in Headers */,
 				2554595A155F0527007D7625 /* RKBenchmark.h in Headers */,
 				25E4DAB5156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */,
+				20980714158E54AF00A2A4CA /* JRSwizzle.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2835,6 +2841,7 @@
 				259D9860155218E5008C90F5 /* RKEntityCache.m in Sources */,
 				2554595B155F0527007D7625 /* RKBenchmark.m in Sources */,
 				25E4DAB6156DA97F00A5C84B /* RKTableControllerTestDelegate.m in Sources */,
+				20980715158E54AF00A2A4CA /* JRSwizzle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2922,6 +2929,7 @@
 				25A2476E153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985A1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,
 				259D986415521B20008C90F5 /* RKEntityCacheTest.m in Sources */,
+				20980716158E54AF00A2A4CA /* JRSwizzle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3025,6 +3033,7 @@
 				259D9861155218E5008C90F5 /* RKEntityCache.m in Sources */,
 				2554595C155F0527007D7625 /* RKBenchmark.m in Sources */,
 				25E4DAB7156DA97F00A5C84B /* RKTableControllerTestDelegate.m in Sources */,
+				20980717158E54AF00A2A4CA /* JRSwizzle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3105,13 +3114,9 @@
 				252EFB0B14D98F4D004863C8 /* RKSearchWordObserverTest.m in Sources */,
 				252EFB0E14D98F76004863C8 /* RKMutableBlockDictionaryTest.m in Sources */,
 				25E36E0315195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */,
-				25079C77151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */,
-				25DB7509151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m in Sources */,
-				252A2035153477870078F8AD /* NSArray+RKAdditionsTest.m in Sources */,
-				2501405415366000004E0466 /* RKObjectiveCppTest.mm in Sources */,
-				25A2476F153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985B1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,
 				259D986515521B20008C90F5 /* RKEntityCacheTest.m in Sources */,
+				20980718158E54AF00A2A4CA /* JRSwizzle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3119,6 +3124,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				20980719158E54AF00A2A4CA /* JRSwizzle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
