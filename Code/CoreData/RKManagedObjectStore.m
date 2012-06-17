@@ -141,6 +141,13 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         if (nilOrNameOfSeedDatabaseInMainBundle) {
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
+        
+        //Swizzle resolvesClassMethod for dynamic findBy
+        NSError *error = nil;
+        [NSManagedObject jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
+        if (error) {
+            RKLogError(@"Error adding dynamic findBy methods: %@", error);
+        }
 
         [self createPersistentStoreCoordinator];
         self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];

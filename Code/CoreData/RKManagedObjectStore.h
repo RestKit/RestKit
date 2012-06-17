@@ -21,6 +21,7 @@
 #import <CoreData/CoreData.h>
 #import "RKManagedObjectMapping.h"
 #import "RKManagedObjectCaching.h"
+#import "JRSwizzle.h"
 
 @class RKManagedObjectStore;
 
