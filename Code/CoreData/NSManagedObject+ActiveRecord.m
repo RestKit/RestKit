@@ -24,9 +24,12 @@ static NSNumber *defaultBatchSize = nil;
 
 static NSManagedObjectContext *defaultContext = nil;
 
+static id dynamicFindBy(id self, SEL _cmd, NSString *string);
+static id dynamicFindAllBy(id self, SEL _cmd, NSString *string);
+
 RK_FIX_CATEGORY_BUG(NSManagedObjectContext_ActiveRecord)
 
-static id dynamicFindBy(id self, SEL _cmd, NSString *string);
+
 
 @implementation NSManagedObjectContext (ActiveRecord)
 
@@ -821,16 +824,30 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return [[self class] objectWithMinValueFor:property inContext:[self currentContext]];
 }
 
-+ (BOOL) resolveClassMethod:(SEL)aSEL
++ (BOOL) swizzledResolveClassMethod:(SEL)aSEL
 {
-    Class selfMetaClass = objc_getMetaClass([[self className] UTF8String]);
-    if (class_getClassMethod(selfMetaClass, aSEL) == NULL &&
-        [[NSString stringWithCString:sel_getName(aSEL)] hasPrefix:@"findBy"]) {
-        Class selfMetaClass = objc_getMetaClass([[self className] UTF8String]);
-        class_addMethod(selfMetaClass, aSEL, (IMP) dynamicFindBy, "@@:@");
+    Class selfMetaClass = objc_getMetaClass([NSStringFromClass([self class]) UTF8String]);
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(aSEL)];
+    
+    if ([methodName hasPrefix:@"findBy"]) {
+        class_addMethod(selfMetaClass, sel_registerName([methodName UTF8String]), (IMP) dynamicFindBy, "@@:@");
+        return YES;
+    } else if ([methodName hasPrefix:@"findAllBy"]) {
+        class_addMethod(selfMetaClass, sel_registerName([methodName UTF8String]), (IMP) dynamicFindAllBy, "@@:@");
         return YES;
     }
-    return [super resolveClassMethod:aSEL];
+    
+    //Double swizzle might not be necessary, since I *believe* resolveClassMethod is only called if a selector isn't found. But it doesn't seem to hurt anything (maybe perfomance?)
+    NSError *error = nil;
+    [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
+    BOOL result = [selfMetaClass resolveClassMethod:aSEL];
+    [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
+    
+    if (error) {
+        RKLogError(@"Error swizzling resolveClassMethod: %@", error);
+    }
+    
+    return result;
 }
                          
 
@@ -838,26 +855,27 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
                          
 static id dynamicFindBy(id self, SEL _cmd, NSString *string) {
     
-    NSString *firstArg = [[[NSString stringWithCString:sel_getName(_cmd)] stringByReplacingOccurrencesOfString:@"findBy" withString:@""] lowercaseString];
-    return [self findFirstByAttribute:firstArg withValue:string];
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(_cmd)];
+    NSRange range = NSMakeRange(6, [methodName length] - 7);
+    NSString *propertyName = [[methodName substringWithRange:range] stringByLowercasingFirstLetter];
     
-    /*
-    NSMethodSignature *methodSignature = [(id) [self class] methodSignatureForSelector:_cmd];
-    NSUInteger numberOfArguments = [methodSignature numberOfArguments] - 2;
+    if (class_getProperty([self class], [propertyName UTF8String]) == NULL) {
+        return nil;
+    }
+
+    return [self findFirstByAttribute:propertyName withValue:string];
+}      
+
+static id dynamicFindAllBy(id self, SEL _cmd, NSString *string) {
     
-    NSString *methodName = [NSString stringWithCString:sel_getName(_cmd)];
-    NSMutableArray *argumentNames = [NSMutableArray arrayWithArray:[methodName componentsSeparatedByString:@":"]];
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(_cmd)];
+    NSRange range = NSMakeRange(9, [methodName length] - 10);
+    NSString *propertyName = [[methodName substringWithRange:range] stringByLowercasingFirstLetter];
     
-    NSString *firstArg = [[[argumentNames objectAtIndex:0] stringByReplacingOccurrencesOfString:@"findBy" withString:@""] lowercaseString];
+    if (class_getProperty([self class], [propertyName UTF8String]) == NULL) {
+        return nil;
+    }
     
-    [argumentNames replaceObjectAtIndex:0 withObject:firstArg];
-    
-    NSMutableArray *predicates = [[NSMutableArray alloc] init];
-    
-    for (NSString *arg in argumentNames) {
-        if (class_getProperty([self class], [arg UTF8String]) != NULL) {
-            [predicates addObject:[NSPredicate predicateWithFormat:@"%K == %@", arg, methodSignature get];
-        }
-    }*/
-}                         
+    return [self findByAttribute:propertyName withValue:string];
+} 
 
