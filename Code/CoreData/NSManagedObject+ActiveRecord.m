@@ -26,6 +26,8 @@ static NSManagedObjectContext *defaultContext = nil;
 
 RK_FIX_CATEGORY_BUG(NSManagedObjectContext_ActiveRecord)
 
+static id dynamicFindBy(id self, SEL _cmd, NSString *string);
+
 @implementation NSManagedObjectContext (ActiveRecord)
 
 + (NSManagedObjectContext *)defaultContext
@@ -819,4 +821,43 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return [[self class] objectWithMinValueFor:property inContext:[self currentContext]];
 }
 
++ (BOOL) resolveClassMethod:(SEL)aSEL
+{
+    Class selfMetaClass = objc_getMetaClass([[self className] UTF8String]);
+    if (class_getClassMethod(selfMetaClass, aSEL) == NULL &&
+        [[NSString stringWithCString:sel_getName(aSEL)] hasPrefix:@"findBy"]) {
+        Class selfMetaClass = objc_getMetaClass([[self className] UTF8String]);
+        class_addMethod(selfMetaClass, aSEL, (IMP) dynamicFindBy, "@@:@");
+        return YES;
+    }
+    return [super resolveClassMethod:aSEL];
+}
+                         
+
 @end
+                         
+static id dynamicFindBy(id self, SEL _cmd, NSString *string) {
+    
+    NSString *firstArg = [[[NSString stringWithCString:sel_getName(_cmd)] stringByReplacingOccurrencesOfString:@"findBy" withString:@""] lowercaseString];
+    return [self findFirstByAttribute:firstArg withValue:string];
+    
+    /*
+    NSMethodSignature *methodSignature = [(id) [self class] methodSignatureForSelector:_cmd];
+    NSUInteger numberOfArguments = [methodSignature numberOfArguments] - 2;
+    
+    NSString *methodName = [NSString stringWithCString:sel_getName(_cmd)];
+    NSMutableArray *argumentNames = [NSMutableArray arrayWithArray:[methodName componentsSeparatedByString:@":"]];
+    
+    NSString *firstArg = [[[argumentNames objectAtIndex:0] stringByReplacingOccurrencesOfString:@"findBy" withString:@""] lowercaseString];
+    
+    [argumentNames replaceObjectAtIndex:0 withObject:firstArg];
+    
+    NSMutableArray *predicates = [[NSMutableArray alloc] init];
+    
+    for (NSString *arg in argumentNames) {
+        if (class_getProperty([self class], [arg UTF8String]) != NULL) {
+            [predicates addObject:[NSPredicate predicateWithFormat:@"%K == %@", arg, methodSignature get];
+        }
+    }*/
+}                         
+
