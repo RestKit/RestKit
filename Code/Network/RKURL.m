@@ -143,6 +143,16 @@
     return [self URLByReplacingResourcePath:[self.resourcePath interpolateWithObject:object]];
 }
 
+- (NSArray *)URLsByInterpolatingResourcePathWithObjects:(NSArray *)objects
+{
+    NSMutableArray *URLs = [NSMutableArray array];
+    for (id object in objects) {
+        RKURL *URL = [self URLByInterpolatingResourcePathWithObject:object];
+        [URLs addObject:URL];
+    }
+    return [[URLs copy] autorelease];
+}
+
 #pragma mark - NSURL Overloads
 
 /*
