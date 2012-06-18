@@ -229,4 +229,19 @@
  */
 - (RKURL *)URLByInterpolatingResourcePathWithObject:(id)object;
 
+/**
+ Returns an array of RKURL objects with its resource path processed as a pattern and
+ evaluated against the specified objects.
+
+ This is a convenience method that will process an array of objects with URLByInterpolatingResourcePathWithObject.
+
+ @param objects The objects to call methods on for the pattern strings in the
+ resource path.
+ @return An array of RKURL objects with resource path evaluated as a pattern and
+ interpolated with properties of the objects
+ */
+
+- (NSArray *)URLsByInterpolatingResourcePathWithObjects:(NSArray *)objects;
+
+
 @end
