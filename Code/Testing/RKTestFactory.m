@@ -223,6 +223,7 @@ static RKTestFactory *sharedFactory = nil;
     [RKObjectManager setSharedManager:nil];
     [RKClient setSharedClient:nil];
     [RKManagedObjectStore setDefaultObjectStore:nil];
+    [NSManagedObjectContext setDefaultContext:nil];
 
     if ([self respondsToSelector:@selector(didTearDown)]) {
         [self didTearDown];
