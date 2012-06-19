@@ -31,7 +31,7 @@ NSString * const RKObjectManagerDidBecomeOnlineNotification = @"RKDidEnterOnline
 // Shared Instances
 
 static RKObjectManager  *sharedManager = nil;
-static dispatch_queue_t defaultMappingQueue = nil;
+static NSOperationQueue *defaultMappingQueue = nil;
 
 ///////////////////////////////////
 
@@ -48,24 +48,26 @@ static dispatch_queue_t defaultMappingQueue = nil;
 @synthesize networkStatus = _networkStatus;
 @synthesize mappingQueue = _mappingQueue;
 
-+ (dispatch_queue_t)defaultMappingQueue
++ (NSOperationQueue *)defaultMappingQueue
 {
     if (! defaultMappingQueue) {
-        defaultMappingQueue = dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL);
+        defaultMappingQueue = [NSOperationQueue new];
+        defaultMappingQueue.name = @"org.restkit.ObjectMapping";
+        defaultMappingQueue.maxConcurrentOperationCount = 1;
     }
 
     return defaultMappingQueue;
 }
 
-+ (void)setDefaultMappingQueue:(dispatch_queue_t)newDefaultMappingQueue
++ (void)setDefaultMappingQueue:(NSOperationQueue *)newDefaultMappingQueue
 {
     if (defaultMappingQueue) {
-        dispatch_release(defaultMappingQueue);
+        [defaultMappingQueue release];
         defaultMappingQueue = nil;
     }
 
     if (newDefaultMappingQueue) {
-        dispatch_retain(newDefaultMappingQueue);
+        [newDefaultMappingQueue retain];
         defaultMappingQueue = newDefaultMappingQueue;
     }
 }
@@ -424,19 +426,6 @@ static dispatch_queue_t defaultMappingQueue = nil;
 - (void)setRouter:(RKRouter *)router
 {
     self.client.router = router;
-}
-
-- (void)setMappingQueue:(dispatch_queue_t)newMappingQueue
-{
-    if (_mappingQueue) {
-        dispatch_release(_mappingQueue);
-        _mappingQueue = nil;
-    }
-
-    if (newMappingQueue) {
-        dispatch_retain(newMappingQueue);
-        _mappingQueue = newMappingQueue;
-    }
 }
 
 #pragma mark - RKConfigrationDelegate

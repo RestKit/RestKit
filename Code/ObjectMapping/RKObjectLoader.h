@@ -136,7 +136,8 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * includes Core Data specific mapping logic.
  */
 @interface RKObjectLoader : RKRequest {
-    NSObject* _targetObject;
+    id _sourceObject;
+    id _targetObject;
 }
 
 /**
@@ -250,11 +251,11 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
 @property (nonatomic, retain) NSObject *targetObject;
 
 /**
- The Grand Central Dispatch queue to perform our parsing and object mapping
+ The operation queue to perform our parsing and object mapping
  within. By default, object loaders will use the mappingQueue from the RKObjectManager
  that created the loader. You can override this on a per-loader basis as necessary.
  */
-@property (nonatomic, assign) dispatch_queue_t mappingQueue;
+@property (nonatomic, retain) NSOperationQueue *mappingQueue;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
