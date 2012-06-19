@@ -240,7 +240,6 @@
  @return An array of RKURL objects with resource path evaluated as a pattern and
  interpolated with properties of the objects
  */
-
 - (NSArray *)URLsByInterpolatingResourcePathWithObjects:(NSArray *)objects;
 
 
