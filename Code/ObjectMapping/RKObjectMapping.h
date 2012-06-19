@@ -46,12 +46,6 @@ relationship. Relationships are processed using an object mapping as well.
 @interface RKObjectMapping : RKObjectMappingDefinition <NSCopying> {
     Class _objectClass;
     NSMutableArray *_mappings;
-    NSString *_rootKeyPath;
-    BOOL _setDefaultValueForMissingAttributes;
-    BOOL _setNilForMissingRelationships;
-    BOOL _performKeyValueValidation;
-    NSArray *_dateFormatters;
-    NSFormatter *_preferredDateFormatter;
 }
 
 /**

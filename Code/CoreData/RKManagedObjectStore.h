@@ -46,13 +46,7 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
 
 ///////////////////////////////////////////////////////////////////
 
-@interface RKManagedObjectStore : NSObject {
-    NSObject<RKManagedObjectStoreDelegate> *_delegate;
-    NSString *_storeFilename;
-    NSString *_pathToStoreFile;
-    NSManagedObjectModel *_managedObjectModel;
-    NSPersistentStoreCoordinator *_persistentStoreCoordinator;
-}
+@interface RKManagedObjectStore : NSObject
 
 // The delegate for this object store
 @property (nonatomic, assign) NSObject<RKManagedObjectStoreDelegate> *delegate;

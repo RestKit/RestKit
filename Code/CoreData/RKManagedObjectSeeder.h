@@ -40,7 +40,6 @@ extern NSString * const RKDefaultSeedDatabaseFileName;
  */
 @interface RKManagedObjectSeeder : NSObject {
     RKObjectManager *_manager;
-    NSObject<RKManagedObjectSeederDelegate> *_delegate;
 }
 
 // Delegate for seeding operations

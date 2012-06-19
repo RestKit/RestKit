@@ -33,13 +33,8 @@
  @see RKMakePathWithObject
  @see RKRouter
  */
-@interface RKPathMatcher : NSObject <NSCopying> {
-@private
-    SOCPattern *socPattern_;
-    NSString *sourcePath_;
-    NSString *rootPath_;
-    NSDictionary *queryParameters_;
-}
+@interface RKPathMatcher : NSObject <NSCopying>
+
 @property (copy, readonly) NSDictionary *queryParameters;
 
 /**
