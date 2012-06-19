@@ -11,6 +11,9 @@
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
+		25014071153706FD004E0466 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6CF147D90C50047D347 /* Security.framework */; };
+		25014085153707CB004E0466 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6C6147D90A50047D347 /* libRestKit.a */; };
+		25014086153707E2004E0466 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39C14D14EEED8700E84874 /* QuartzCore.framework */; };
 		250CA6CE147D90BA0047D347 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6C6147D90A50047D347 /* libRestKit.a */; };
 		250CA6D0147D90C50047D347 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 250CA6CF147D90C50047D347 /* Security.framework */; };
 		2538E814123419EC00ACB5D7 /* RKTStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 2538E813123419EC00ACB5D7 /* RKTStatus.m */; };
@@ -49,6 +52,7 @@
 		3FB46641131D78A400E37C51 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FB46640131D78A400E37C51 /* libxml2.dylib */; };
 		8452D3F9128244D90069F4A9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3F8128244D90069F4A9 /* CFNetwork.framework */; };
 		8452D3FD128244E60069F4A9 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */; };
+		CD39C14E14EEED8700E84874 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD39C14D14EEED8700E84874 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +83,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 25160E78145651060060A5C5;
 			remoteInfo = RestKitFrameworkTests;
+		};
+		256780DD152D1A92000725F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2538E7FF123417E500ACB5D7 /* RestKit.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 259C301615128079003066A2;
+			remoteInfo = RestKitResources;
 		};
 		25F2A1771322D59400A33DE4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -128,6 +139,7 @@
 		8452D3F8128244D90069F4A9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8452D3FC128244E60069F4A9 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* RKTwitter-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "RKTwitter-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		CD39C14D14EEED8700E84874 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +147,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD39C14E14EEED8700E84874 /* QuartzCore.framework in Frameworks */,
 				250CA6D0147D90C50047D347 /* Security.framework in Frameworks */,
 				250CA6CE147D90BA0047D347 /* libRestKit.a in Frameworks */,
 				3FB46641131D78A400E37C51 /* libxml2.dylib in Frameworks */,
@@ -152,6 +165,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25014086153707E2004E0466 /* QuartzCore.framework in Frameworks */,
+				25014085153707CB004E0466 /* libRestKit.a in Frameworks */,
+				25014071153706FD004E0466 /* Security.framework in Frameworks */,
 				25F2A1871322D59400A33DE4 /* Foundation.framework in Frameworks */,
 				25F2A1881322D59400A33DE4 /* UIKit.framework in Frameworks */,
 				25F2A1891322D59400A33DE4 /* CoreGraphics.framework in Frameworks */,
@@ -194,6 +210,7 @@
 				250CA6C8147D90A50047D347 /* RestKitTests.octest */,
 				250CA6CA147D90A50047D347 /* RestKit.framework */,
 				250CA6CC147D90A50047D347 /* RestKitFrameworkTests.octest */,
+				256780DE152D1A92000725F5 /* RestKitResources.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -241,6 +258,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CD39C14D14EEED8700E84874 /* QuartzCore.framework */,
 				250CA6CF147D90C50047D347 /* Security.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
@@ -356,6 +374,13 @@
 			remoteRef = 250CA6CB147D90A50047D347 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		256780DE152D1A92000725F5 /* RestKitResources.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = RestKitResources.bundle;
+			remoteRef = 256780DD152D1A92000725F5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -440,7 +465,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
@@ -454,7 +479,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
-				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
+				HEADER_SEARCH_PATHS = "${TARGET_BUILD_DIR}/../../Headers";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RKTwitterCoreData;
@@ -472,7 +497,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
-				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";
@@ -487,7 +512,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RKTwitter_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = RESTKIT_GENERATE_SEED_DB;
-				HEADER_SEARCH_PATHS = "\"$(SOURCE_ROOT)/../../Build\"";
+				HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)/../../Headers\"";
 				INFOPLIST_FILE = "Resources/RKTwitter-Info.plist";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Generate Seed Database";

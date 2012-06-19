@@ -3,7 +3,7 @@
 // LCLNSLog.h
 //
 //
-// Copyright (c) 2008-2009 Arne Harren <ah@0xc0.de>
+// Copyright (c) 2008-2011 Arne Harren <ah@0xc0.de>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@
 //
 // The logger uses the following format
 //
-//   <NSLog Prefix> <Level> <Component>:<File>:<Line> <Message>
+//   <NSLog Prefix> <Level> <Component>:<File>:<Line>:<Function> <Message>
 //
 // where <NSLog Prefix> is
 //
@@ -40,9 +40,9 @@
 //
 // Examples:
 //
-//   2009-02-01 12:38:32.796 Example[4964:10b] D F1:main.m:28 F1(10)
-//   2009-02-01 12:38:32.798 Example[4964:10b] D F1:main.m:32 F2(20)
-//   2009-02-01 12:38:32.799 Example[4964:10b] D F1:main.m:36 F3(30)
+//   2009-02-01 12:38:32.796 Example[4964:10b] D c1:main.m:28:-[Class method] M1
+//   2009-02-01 12:38:32.798 Example[4964:10b] D c2:main.m:32:-[Class method] M2
+//   2009-02-01 12:38:32.799 Example[4964:10b] D c3:main.m:36:-[Class method] M3
 //
 
 
@@ -50,31 +50,51 @@
 // Integration with LibComponentLogging Core.
 //
 
-#if __has_feature(objc_arc)
-#define LCLNSLogAutoReleasePoolBegin()                                         \
-@autoreleasepool {
+
+// ARC/non-ARC autorelease pool
+#define _lcl_logger_autoreleasepool_arc 0
+#if defined(__has_feature)
+#   if __has_feature(objc_arc)
+#   undef  _lcl_logger_autoreleasepool_arc
+#   define _lcl_logger_autoreleasepool_arc 1
+#   endif
+#endif
+#if _lcl_logger_autoreleasepool_arc
+#define _lcl_logger_autoreleasepool_begin                                      \
+    @autoreleasepool {
+#define _lcl_logger_autoreleasepool_end                                        \
+    }
 #else
-#define LCLNSLogAutoReleasePoolBegin()                                         \
-NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#define _lcl_logger_autoreleasepool_begin                                      \
+    NSAutoreleasePool *_lcl_logger_autoreleasepool = [[NSAutoreleasePool alloc] init];
+#define _lcl_logger_autoreleasepool_end                                        \
+    [_lcl_logger_autoreleasepool release];
 #endif
 
-#if __has_feature(objc_arc)
-#define LCLNSLogAutoReleasePoolEnd()                                           \
+
+// A very simple logger, which redirects to NSLog().
+#if 0
+#define _lcl_logger(_component, _level, _format, ...) {                        \
+    _lcl_logger_autoreleasepool_begin                                          \
+    NSLog(@"%s %s:%@:%d:%s " _format,                                          \
+          _lcl_level_header_1[_level],                                         \
+          _lcl_component_header[_component],                                   \
+          [@__FILE__ lastPathComponent],                                       \
+          __LINE__,                                                            \
+          __PRETTY_FUNCTION__,                                                 \
+          ## __VA_ARGS__);                                                     \
+    _lcl_logger_autoreleasepool_end                                            \
 }
 #else
-#define LCLNSLogAutoReleasePoolEnd()                                           \
-[pool release];
-#endif
-
-// Definition of _lcl_logger.
-#define _lcl_logger(log_component, log_level, log_format, ...) {               \
-    LCLNSLogAutoReleasePoolBegin();                \
-    NSLog(@"%s %s:%@:%d " log_format,                                          \
-          _lcl_level_header_1[log_level],                                      \
-          _lcl_component_header[log_component],                                \
+#define _lcl_logger(_component, _level, _format, ...) {                        \
+    _lcl_logger_autoreleasepool_begin                                          \
+    NSLog(@"%s %s:%@:%d " _format,                                             \
+          _lcl_level_header_1[_level],                                         \
+          _lcl_component_header[_component],                                   \
           [@__FILE__ lastPathComponent],                                       \
           __LINE__,                                                            \
           ## __VA_ARGS__);                                                     \
-    LCLNSLogAutoReleasePoolEnd();                                              \
+    _lcl_logger_autoreleasepool_end                                            \
 }
+#endif
 

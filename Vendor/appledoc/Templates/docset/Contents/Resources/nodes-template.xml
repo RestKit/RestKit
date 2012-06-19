@@ -5,6 +5,16 @@
             <Name>{{projectName}}</Name>
             <Path>{{indexFilename}}</Path>
 			<Subnodes>
+                {{#hasDocs}}
+				<Node type="folder">
+					<Name>{{strings/docset/docsTitle}}</Name>
+					<Path>{{indexFilename}}</Path>
+					<Subnodes>
+						{{#docs}}{{>NodeRef}}
+						{{/docs}}
+					</Subnodes>
+				</Node>
+				{{/hasDocs}}
 				{{#hasClasses}}
 				<Node type="folder">
 					<Name>{{strings/docset/classesTitle}}</Name>
@@ -39,6 +49,8 @@
         </Node>
     </TOC>
 	<Library>
+		{{#docs}}{{>Node}}
+		{{/docs}}
 		{{#classes}}{{>Node}}
 		{{/classes}}
 		{{#categories}}{{>Node}}

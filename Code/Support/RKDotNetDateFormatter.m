@@ -1,13 +1,27 @@
 //
-//  RKDotNetDateFormatter.m
+//  RKDotNetDateFormatter.h
 //  RestKit
 //
 //  Created by Greg Combs on 9/8/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import "RKDotNetDateFormatter.h"
 #import "RestKit.h"
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
 
 BOOL isValidRange(NSRange rangeOfMatch);
 NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs);
@@ -51,6 +65,12 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
     return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
 }
 
+- (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error {
+    NSDate *date = [self dateFromString:string];
+    if (outValue)
+        *outValue = date;
+    return (date != nil);
+}
 
 - (id)init {
     self = [super init];
@@ -58,7 +78,7 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
         self.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
         self.timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
         [self setDateFormat:@"ZZ"]; // GMT offset, like "-0500"
-        NSString *pattern = @"\\/Date\\((\\d+)((?:[\\+\\-]\\d+)?)\\)\\/"; // /Date(mSecs)/ or /Date(mSecs-0400)/
+        NSString *pattern = @"\\/Date\\((-?\\d+)((?:[\\+\\-]\\d+)?)\\)\\/"; // /Date(mSecs)/ or /Date(-mSecs)/ or /Date(mSecs-0400)/
         dotNetExpression = [[NSRegularExpression alloc] initWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:NULL];
     }
     return self;
@@ -101,3 +121,4 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds) {
     return seconds * 1000.f;
 }
 
+#endif

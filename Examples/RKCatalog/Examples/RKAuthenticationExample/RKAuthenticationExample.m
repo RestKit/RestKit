@@ -3,13 +3,14 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 9/27/11.
-//  Copyright (c) 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKAuthenticationExample.h"
 
 @implementation RKAuthenticationExample
 
+@synthesize authenticatedRequest;
 @synthesize URLTextField;
 @synthesize usernameTextField;
 @synthesize passwordTextField;
@@ -25,6 +26,14 @@
     return self;
 }
 
+- (void)dealloc {
+    [authenticatedRequest cancel];
+    [authenticatedRequest release];
+    authenticatedRequest = nil;
+
+    [super dealloc];
+}
+
 /**
  We are constructing our own RKRequest here rather than working with the client.
  It is important to remember that RKClient is really just a factory object for instances
@@ -32,20 +41,23 @@
  */
 - (void)sendRequest {
     NSURL *URL = [NSURL URLWithString:[URLTextField text]];
-    RKRequest *request = [RKRequest requestWithURL:URL delegate:self];
-    request.queue = [RKClient sharedClient].requestQueue;
-    request.authenticationType = RKRequestAuthenticationTypeHTTP;
-    request.username = [usernameTextField text];
-    request.password = [passwordTextField text];
-    [request send];
+    RKRequest *newRequest = [RKRequest requestWithURL:URL];
+    newRequest.delegate = self;
+    newRequest.authenticationType = RKRequestAuthenticationTypeHTTP;
+    newRequest.username = [usernameTextField text];
+    newRequest.password = [passwordTextField text];
+
+    self.authenticatedRequest = newRequest;
 }
 
 - (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
     RKLogError(@"Load of RKRequest %@ failed with error: %@", request, error);
+    [request release];
 }
 
 - (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
     RKLogCritical(@"Loading of RKRequest %@ completed with status code %d. Response body: %@", request, response.statusCode, [response bodyAsString]);
+    [request release];
 }
 
 #pragma mark - UIPickerViewDataSource

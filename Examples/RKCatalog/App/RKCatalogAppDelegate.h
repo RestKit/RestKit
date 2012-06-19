@@ -3,7 +3,7 @@
 //  RKCatalog
 //
 //  Created by Blake Watters on 4/21/11.
-//  Copyright 2011 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

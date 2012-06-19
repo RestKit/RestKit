@@ -3,20 +3,21 @@
 //  RKMacOSX
 //
 //  Created by Blake Watters on 4/10/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKMacOSXAppDelegate.h"
 
 @implementation RKMacOSXAppDelegate
 
-@synthesize window;
+@synthesize client = _client;
+@synthesize window = _window;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // Initialize RestKit
-    RKClient* client = [RKClient clientWithBaseURL:@"http://twitter.com"];
-    [client get:@"/status/user_timeline/twotoasters.json" delegate:self];
+    self.client = [RKClient clientWithBaseURL:[RKURL URLWithBaseURLString:@"http://twitter.com"]];
+    [self.client get:@"/status/user_timeline/RestKit.json" delegate:self];
 }
 
 - (void)request:(RKRequest*)request didLoadResponse:(RKResponse *)response {
