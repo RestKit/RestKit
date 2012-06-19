@@ -650,7 +650,7 @@
     [userMapping mapAttributes:@"name", @"id", nil];
 
     // Suspend the Queue to block object mapping
-    dispatch_suspend(objectManager.mappingQueue);
+    [objectManager.mappingQueue setSuspended:YES];
 
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     [objectManager.mappingProvider setObjectMapping:userMapping forResourcePathPattern:@"/humans/1"];

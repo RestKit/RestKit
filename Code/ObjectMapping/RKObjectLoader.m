@@ -271,24 +271,22 @@
     return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject inContext:RKObjectMappingProviderContextObjectsByKeyPath error:error];
 }
 
-- (void)performMappingInDispatchQueue
+- (void)performMappingInOperationQueue
 {
     NSAssert(self.mappingQueue, @"mappingQueue cannot be nil");
-    dispatch_async(self.mappingQueue, ^{
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-        RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %s", dispatch_queue_get_label(self.mappingQueue));
+    [self.mappingQueue addOperationWithBlock:^{
+        RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
         NSError *error = nil;
         _result = [[self performMapping:&error] retain];
         NSAssert(_result || error, @"Expected performMapping to return a mapping result or an error.");
         if (self.result) {
             [self processMappingResult:self.result];
         } else if (error) {
-            [self performSelectorOnMainThread:@selector(didFailLoadWithError:) withObject:error waitUntilDone:NO];
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self didFailLoadWithError:error];
+            }];
         }
-
-        [pool drain];
-    });
+    }];
 }
 
 - (BOOL)canParseMIMEType:(NSString *)MIMEType
@@ -479,19 +477,6 @@
         } else {
             [self performMappingInDispatchQueue];
         }
-    }
-}
-
-- (void)setMappingQueue:(dispatch_queue_t)newMappingQueue
-{
-    if (_mappingQueue) {
-        dispatch_release(_mappingQueue);
-        _mappingQueue = nil;
-    }
-
-    if (newMappingQueue) {
-        dispatch_retain(newMappingQueue);
-        _mappingQueue = newMappingQueue;
     }
 }
 

@@ -132,25 +132,26 @@ typedef enum {
 /** @name Object Mapping Dispatch Queue */
 
 /**
- Returns the global default Grand Central Dispatch queue used for object mapping
+ Returns the global default operation queue queue used for object mapping
  operations executed by RKObjectLoaders.
 
- All object loaders perform their loading within a Grand Central Dispatch
- queue. This provides control over the number of loaders that are performing
+ All object loaders perform their loading within an operation queue.
+ This provides control over the number of loaders that are performing
  expensive operations such as JSON parsing, object mapping, and accessing Core
  Data concurrently. The defaultMappingQueue is configured as the mappingQueue
  for all RKObjectManager's created by RestKit, but can be overridden on a per
  manager and per object loader basis.
 
- By default, the defaultMappingQueue is configured as serial GCD queue.
+ By default, the defaultMappingQueue is configured with a maximumConcurrentOperationCount
+ of 1.
  */
-+ (dispatch_queue_t)defaultMappingQueue;
++ (NSOperationQueue *)defaultMappingQueue;
 
 /**
- Sets a new global default Grand Central Dispatch queue for use in object mapping
+ Sets a new global default operation queue for use in object mapping
  operations executed by RKObjectLoaders.
  */
-+ (void)setDefaultMappingQueue:(dispatch_queue_t)defaultMappingQueue;
++ (void)setDefaultMappingQueue:(NSOperationQueue *)defaultMappingQueue;
 
 /// @name Initializing an Object Manager
 
@@ -233,10 +234,10 @@ typedef enum {
 @property (nonatomic, retain) RKManagedObjectStore *objectStore;
 
 /**
- The Grand Dispatch Queue to use when performing expensive object mapping operations
+ The operation queue to use when performing expensive object mapping operations
  within RKObjectLoader instances created through this object manager
  */
-@property (nonatomic, assign) dispatch_queue_t mappingQueue;
+@property (nonatomic, retain) NSOperationQueue *mappingQueue;
 
 /**
  The Default MIME Type to be used in object serialization.
