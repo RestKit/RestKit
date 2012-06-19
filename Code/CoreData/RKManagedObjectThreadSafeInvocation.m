@@ -133,10 +133,14 @@
 
 - (void)invokeOnMainThread
 {
-    [self retain];
     [self serializeManagedObjects];
-    [self performSelectorOnMainThread:@selector(performInvocationOnMainThread) withObject:nil waitUntilDone:YES];
-    [self release];
+    if ([NSThread isMainThread]) {
+        [self performInvocationOnMainThread];
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self performInvocationOnMainThread];
+        });
+    }
 }
 
 - (void)dealloc

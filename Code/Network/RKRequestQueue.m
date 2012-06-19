@@ -281,7 +281,9 @@ static const NSTimeInterval kFlushDelay = 0.3;
     // We always want to dispatch requests from the main thread so the current thread does not terminate
     // and cause us to lose the delegate callbacks
     if (! [NSThread isMainThread]) {
-        [self performSelectorOnMainThread:@selector(loadNextInQueue) withObject:nil waitUntilDone:NO];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self loadNextInQueue];
+        });
         return;
     }
 
@@ -590,8 +592,9 @@ static NSInteger networkActivityCount;
 - (void)refreshActivityIndicator
 {
     if (![NSThread isMainThread]) {
-        SEL sel_refresh = @selector(refreshActivityIndicator);
-        [self performSelectorOnMainThread:sel_refresh withObject:nil waitUntilDone:NO];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self refreshActivityIndicator];
+        });
         return;
     }
     BOOL active = (self.networkActivityCount > 0);

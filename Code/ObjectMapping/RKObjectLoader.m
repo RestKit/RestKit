@@ -130,12 +130,13 @@
     self.loading = NO;
     self.loaded = successful;
 
-    if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
-        [(NSObject<RKObjectLoaderDelegate>*)self.delegate performSelectorOnMainThread:@selector(objectLoaderDidFinishLoading:)
-                                                                           withObject:self waitUntilDone:YES];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
+            [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
+        }
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
+    });
 }
 
 // Invoked on the main thread. Inform the delegate.
@@ -185,7 +186,9 @@
 - (void)processMappingResult:(RKObjectMappingResult *)result
 {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
-    [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithResultDictionary:) withObject:[result asDictionary] waitUntilDone:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self informDelegateOfObjectLoadWithResultDictionary:[result asDictionary]];
+    });
 }
 
 #pragma mark - Response Object Mapping
@@ -472,10 +475,12 @@
             if (self.result) {
                 [self processMappingResult:self.result];
             } else {
-                [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+                dispatch_async(rk_get_network_processing_queue(), ^{
+                    [self didFailLoadWithError:error];
+                });
             }
         } else {
-            [self performMappingInDispatchQueue];
+            [self performMappingInOperationQueue];
         }
     }
 }
