@@ -243,6 +243,10 @@
         [fetchRequest setSortDescriptors:_sortDescriptors];
     }
     
+    [_fetchedResultsController setDelegate:nil];
+    [_fetchedResultsController release];
+    _fetchedResultsController = nil;
+    
     _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                         managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
                                                                           sectionNameKeyPath:_sectionNameKeyPath
