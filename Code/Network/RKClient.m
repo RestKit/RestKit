@@ -37,7 +37,7 @@
 static RKClient *sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// URL Conveniences functions
+// Conveniences functions
 
 NSURL *RKMakeURL(NSString *resourcePath) {
     return [[RKClient sharedClient].baseURL URLByAppendingResourcePath:resourcePath];
@@ -62,6 +62,17 @@ NSString *RKMakePathWithObject(NSString *pattern, id object) {
 NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) {
     return [resourcePath stringByAppendingQueryParameters:queryParams];
 }
+
+static dispatch_queue_t rk_network_processing_queue;
+dispatch_queue_t rk_get_network_processing_queue(void)
+{
+    if (rk_network_processing_queue == NULL) {
+        rk_network_processing_queue = dispatch_queue_create("org.restkit.network.processing-queue", 0);
+    }
+
+    return rk_network_processing_queue;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -36,6 +36,8 @@
 #import "RKParserRegistry.h"
 #import "RKRequestSerialization.h"
 
+extern dispatch_queue_t rk_get_network_processing_queue(void);
+
 NSString *RKRequestMethodNameFromType(RKRequestMethod method) {
     switch (method) {
         case RKRequestMethodGET:
@@ -492,7 +494,11 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     if ([self shouldLoadFromCache]) {
         RKResponse *response = [self loadResponseFromCache];
         self.loading = YES;
-        [self performSelector:@selector(didFinishLoad:) withObject:response afterDelay:0];
+        dispatch_async(rk_get_network_processing_queue(), ^{
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self didFinishLoad:response];
+            });
+        });
     } else if ([self shouldDispatchRequest]) {
         [self createTimeoutTimer];
 #if TARGET_OS_IPHONE
@@ -548,7 +554,11 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
                                       errorMessage, NSLocalizedDescriptionKey,
                                       nil];
             NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKRequestBaseURLOfflineError userInfo:userInfo];
-            [self performSelector:@selector(didFailLoadWithError:) withObject:error afterDelay:0];
+            dispatch_async(rk_get_network_processing_queue(), ^{
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self didFailLoadWithError:error];
+                });
+            });
         }
     }
 }
