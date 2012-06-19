@@ -236,4 +236,23 @@
     assertThat([newURL absoluteString], is(equalTo(@"http://127.0.0.1:4567/this/and/that/the/other/thing?where=who&word=up")));
 }
 
+- (void)testCreationOfMultipleURLsFromASinglePattern
+{
+    RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/people/:personID"];
+    NSDictionary *person1 = [NSDictionary dictionaryWithObject:@"1" forKey:@"personID"];
+    NSDictionary *person2 = [NSDictionary dictionaryWithObject:@"2" forKey:@"personID"];
+    NSDictionary *person3 = [NSDictionary dictionaryWithObject:@"3" forKey:@"personID"];
+    NSArray *personURLs = [patternURL URLsByInterpolatingResourcePathWithObjects:[NSArray arrayWithObjects:person1, person2, person3, nil]];
+    assertThat(personURLs, hasCountOf(3));
+    assertThat([personURLs valueForKey:@"absoluteString"], hasItems(@"http://restkit.org/people/1", @"http://restkit.org/people/2", @"http://restkit.org/people/3", nil));
+}
+
+- (void)testCreationOfMultipleURLsFromInvalidPatternReturnsNil
+{
+    RKURL *patternURL = [RKURL URLWithBaseURLString:@"http://•!.restkit.org" resourcePath:@"/people/:personID"];
+    NSDictionary *person1 = [NSDictionary dictionaryWithObject:@"1" forKey:@"personID"];
+    NSArray *personURLs = [patternURL URLsByInterpolatingResourcePathWithObjects:[NSArray arrayWithObject:person1]];
+    assertThat(personURLs, is(nilValue()));
+}
+
 @end
