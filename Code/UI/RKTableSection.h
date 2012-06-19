@@ -24,10 +24,7 @@
 
 @class RKTableController;
 
-@interface RKTableSection : NSObject {
- @protected
-    NSMutableArray *_objects;
-}
+@interface RKTableSection : NSObject
 
 // Basics
 @property (nonatomic, assign)   RKTableController *tableController;

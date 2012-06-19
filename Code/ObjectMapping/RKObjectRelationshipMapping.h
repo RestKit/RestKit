@@ -24,10 +24,7 @@
 
 @class RKObjectmapping;
 
-@interface RKObjectRelationshipMapping : RKObjectAttributeMapping {
-    RKObjectMappingDefinition *_mapping;
-    BOOL _reversible;
-}
+@interface RKObjectRelationshipMapping : RKObjectAttributeMapping
 
 @property (nonatomic, retain) RKObjectMappingDefinition *mapping;
 @property (nonatomic, assign) BOOL reversible;

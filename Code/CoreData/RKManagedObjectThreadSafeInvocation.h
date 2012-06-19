@@ -22,7 +22,6 @@
 
 @interface RKManagedObjectThreadSafeInvocation : NSInvocation {
     NSMutableDictionary *_argumentKeyPaths;
-    RKManagedObjectStore *_objectStore;
 }
 
 @property (nonatomic, retain) RKManagedObjectStore *objectStore;

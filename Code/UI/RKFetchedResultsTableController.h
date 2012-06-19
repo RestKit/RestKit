@@ -38,8 +38,6 @@ typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteg
  */
 @interface RKFetchedResultsTableController : RKAbstractTableController <NSFetchedResultsControllerDelegate> {
 @private
-    NSFetchedResultsController *_fetchedResultsController;
-    BOOL _showsSectionIndexTitles;
     NSArray *_arraySortedFetchedObjects;
     BOOL _isEmptyBeforeAnimation;
 }

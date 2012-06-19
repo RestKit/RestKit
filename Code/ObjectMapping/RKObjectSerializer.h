@@ -28,10 +28,7 @@
  transformed object is then enclosed in an RKRequestSerializable representation
  that is suitable for inclusion in an RKRequest.
  */
-@interface RKObjectSerializer : NSObject <RKObjectMappingOperationDelegate> {
-    id _object;
-    RKObjectMapping *_mapping;
-}
+@interface RKObjectSerializer : NSObject <RKObjectMappingOperationDelegate>
 
 @property (nonatomic, readonly) id object;
 @property (nonatomic, readonly) RKObjectMapping *mapping;

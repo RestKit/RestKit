@@ -13,8 +13,6 @@
 @interface RKDynamicObjectMappingMatcher : NSObject {
     NSString *_keyPath;
     id _value;
-    RKObjectMapping *_objectMapping;
-    NSString *_primaryKeyAttribute;
     BOOL (^_isMatchForDataBlock)(id data);
 }
 

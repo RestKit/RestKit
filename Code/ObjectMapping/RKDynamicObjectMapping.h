@@ -42,10 +42,6 @@ typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
  */
 @interface RKDynamicObjectMapping : RKObjectMappingDefinition {
     NSMutableArray *_matchers;
-    id<RKDynamicObjectMappingDelegate> _delegate;
-    #ifdef NS_BLOCKS_AVAILABLE
-    RKDynamicObjectMappingDelegateBlock _objectMappingForDataBlock;
-    #endif
 }
 
 /**

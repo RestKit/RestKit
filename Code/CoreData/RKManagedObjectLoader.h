@@ -28,7 +28,6 @@
  concerns imposed by Core Data.
  */
 @interface RKManagedObjectLoader : RKObjectLoader {
-    RKManagedObjectStore *_objectStore;
     NSManagedObjectID *_targetObjectID;
     NSMutableSet *_managedObjectKeyPaths;
     BOOL _deleteObjectOnFailure;

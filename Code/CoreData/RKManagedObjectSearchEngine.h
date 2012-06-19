@@ -20,9 +20,7 @@
 
 #import "RKSearchEngine.h"
 
-@interface RKManagedObjectSearchEngine : NSObject {
-    RKSearchMode _mode;
-}
+@interface RKManagedObjectSearchEngine : NSObject
 
 /**
  * The type of searching to perform. Can be either RKSearchModeAnd or RKSearchModeOr.
