@@ -136,8 +136,9 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  * includes Core Data specific mapping logic.
  */
 @interface RKObjectLoader : RKRequest {
-    id _sourceObject;
-    id _targetObject;
+  @protected
+    id<NSObject> _sourceObject;
+    id<NSObject> _targetObject;
 }
 
 /**
@@ -241,14 +242,14 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
 
  @see RKObjectSerializer
  */
-@property (nonatomic, retain) NSObject *sourceObject;
+@property (nonatomic, retain) id<NSObject> sourceObject;
 
 /**
  * The target object to map results back onto. If nil, a new object instance
  * for the appropriate mapping will be created. If not nil, the results will
  * be used to update the targetObject's attributes and relationships.
  */
-@property (nonatomic, retain) NSObject *targetObject;
+@property (nonatomic, retain) id<NSObject> targetObject;
 
 /**
  The operation queue to perform our parsing and object mapping
