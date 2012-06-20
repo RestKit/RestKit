@@ -56,15 +56,26 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     return [NSArray arrayWithArray:routes];
 }
 
+- (NSArray *)relationshipRoutes
+{
+    NSIndexSet *indexes = [self.routes indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        return [(RKRoute *)obj isRelationshipRoute];
+    }];
+    return [self.routes objectsAtIndexes:indexes];
+}
+
 - (void)addRoute:(RKRoute *)route
 {
-    NSAssert([route isNamedRoute] || [route isClassRoute], @"A route must have either a name or a target class.");
-    NSAssert([route.resourcePathPattern length] > 0, @"A route must have a resource path pattern.");
     NSAssert(![self containsRoute:route], @"Cannot add a route that is already added to the router.");
-    NSAssert(![route isNamedRoute] || ![self containsRouteForName:route.name], @"Cannot add a route with the same name as an existing route.");
+    NSAssert(![route isNamedRoute] || [self routeForName:route.name] == nil, @"Cannot add a route with the same name as an existing route.");
     if ([route isClassRoute]) {
         RKRoute *existingRoute = [self routeForClass:route.objectClass method:route.method];
         NSAssert(existingRoute == nil || (existingRoute.method == RKRequestMethodAny && route.method != RKRequestMethodAny), @"Cannot add a route with the same class and method as an existing route.");
+    } else if ([route isRelationshipRoute]) {
+        NSArray *routes = [self routesForRelationship:route.name ofClass:route.objectClass];
+        for (RKRoute *existingRoute in routes) {
+            NSAssert(existingRoute.method != route.method, @"Cannot add a relationship route with the same name and class as an existing route.");
+        }
     }
     [self.routes addObject:route];
 }
@@ -78,21 +89,6 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 - (BOOL)containsRoute:(RKRoute *)route
 {
     return [self.routes containsObject:route];
-}
-
-- (BOOL)containsRouteForName:(NSString *)name
-{
-    return [[self.routes valueForKey:@"name"] containsObject:name];
-}
-
-- (BOOL)containsRouteForResourcePathPattern:(NSString *)resourcePathPattern
-{
-    return [[self.routes valueForKey:@"resourcePathPattern"] containsObject:resourcePathPattern];
-}
-
-- (BOOL)containsRouteForClass:(Class)objectClass method:(RKRequestMethod)method
-{
-    return [self routeForClass:objectClass method:method] != nil;
 }
 
 - (RKRoute *)routeForName:(NSString *)name
@@ -125,6 +121,18 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     return nil;
 }
 
+- (RKRoute *)routeForRelationship:(NSString *)relationshipName ofClass:(Class)objectClass method:(RKRequestMethod)method
+{
+    for (RKRoute *route in [self relationshipRoutes]) {
+
+        if ([route.name isEqualToString:relationshipName] && [route.objectClass isEqual:objectClass] && route.method == method) {
+            return route;
+        }
+    }
+
+    return nil;
+}
+
 - (NSArray *)routesForClass:(Class)objectClass
 {
     NSMutableArray *routes = [NSMutableArray new];
@@ -147,6 +155,15 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     }
 
     return [NSArray arrayWithArray:routes];
+}
+
+- (NSArray *)routesForRelationship:(NSString *)relationshipName ofClass:(Class)objectClass
+{
+    NSIndexSet *indexes = [self.relationshipRoutes indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        return [[(RKRoute *)obj objectClass] isEqual:objectClass] && [[(RKRoute *)obj name] isEqualToString:relationshipName];
+    }];
+
+    return [self.relationshipRoutes objectsAtIndexes:indexes];
 }
 
 - (RKRoute *)routeForObject:(id)object method:(RKRequestMethod)method
@@ -176,7 +193,7 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     return bestMatch;
 }
 
-- (NSArray *)routesForResourcePathPattern:(NSString *)resourcePathPattern
+- (NSArray *)routesWithResourcePathPattern:(NSString *)resourcePathPattern
 {
     NSMutableArray *routes = [NSMutableArray array];
     for (RKRoute *route in self.routes) {
@@ -186,51 +203,6 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
     }
 
     return [NSArray arrayWithArray:routes];
-}
-
-- (void)addRouteWithName:(NSString *)name resourcePathPattern:(NSString *)resourcePathPattern
-{
-    RKRoute *route = [[RKRoute new] autorelease];
-    route.name = name;
-    route.resourcePathPattern = resourcePathPattern;
-    [self addRoute:route];
-}
-
-- (void)addRouteWithClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method
-{
-    RKRoute *route = [[RKRoute new] autorelease];
-    route.objectClass = objectClass;
-    route.resourcePathPattern = resourcePathPattern;
-    route.method = method;
-    [self addRoute:route];
-}
-
-- (void)addRouteWithClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern
-{
-    [self addRouteWithClass:objectClass resourcePathPattern:resourcePathPattern method:RKRequestMethodAny];
-}
-
-- (NSString *)resourcePathForObject:(id)object method:(RKRequestMethod)method
-{
-    RKRoute *route = [self routeForObject:object method:method];
-    RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:route.resourcePathPattern];
-    return [matcher pathFromObject:object addingEscapes:route.shouldEscapeResourcePath];
-}
-
-- (NSString *)resourcePathForRouteNamed:(NSString *)routeName
-{
-    return [self resourcePathForRouteNamed:routeName interpolatedWithObject:nil];
-}
-
-- (NSString *)resourcePathForRouteNamed:(NSString *)routeName interpolatedWithObject:(id)object
-{
-    RKRoute *route = [self routeForName:routeName];
-    if (object) {
-        RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:route.resourcePathPattern];
-        return [matcher pathFromObject:object addingEscapes:route.shouldEscapeResourcePath];
-    }
-
-    return route.resourcePathPattern;
 }
 
 @end

@@ -384,7 +384,7 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKObjectMapperTestModel class]];
     mapping.rootKeyPath = @"human";
     [objectManager.mappingProvider registerObjectMapping:mapping withRootKeyPath:@"human"];
-    [objectManager.router addRouteWithClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/human/1"];
+    [objectManager.router addRouteForClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/human/1" method:RKRequestMethodAny];
     objectManager.serializationMIMEType = RKMIMETypeJSON;
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
 
