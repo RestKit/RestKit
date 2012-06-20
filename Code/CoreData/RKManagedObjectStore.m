@@ -410,9 +410,13 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
 - (void)managedObjectContextDidSaveNotification:(NSNotification *)notification
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    if ([NSThread isMainThread]) {
         [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-    }];
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+        });
+    }
 }
 
 #pragma mark -
