@@ -304,6 +304,7 @@ typedef enum {
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method;
 
 // TODO: loaderForRoute || loaderWithRoute: ???
+//- (id)objectLoaderForRouteWithName: interpolatedWithObject:;
 
 /**
  Creates and returns an RKObjectPaginator instance targeting the specified resource path pattern.
@@ -375,6 +376,10 @@ typedef enum {
     }
  */
 - (void)loadObjectsAtResourcePath:(NSString *)resourcePath usingBlock:(RKObjectLoaderBlock)block;
+
+// TODO: Docs....
+// Always uses a GET request...
+- (void)loadRelationship:(NSString *)relationshipName ofObject:(id)object usingBlock:(void(^)(RKObjectLoader *))block;
 
 /*
  Configure and send an object loader after yielding it to a block for configuration. This allows for very succinct on-the-fly

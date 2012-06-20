@@ -261,7 +261,8 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method
 {
-    NSString *resourcePath = (method == RKRequestMethodInvalid) ? nil : [self.router resourcePathForObject:object method:method];
+    RKRoute *route = [self.router routeForObject:object method:method];
+    NSString* resourcePath = (method == RKRequestMethodInvalid) ? nil : [route resourcePathForObject:object];
     RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
     loader.method = method;
     loader.sourceObject = object;
@@ -345,7 +346,8 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 - (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block
 {
-    NSString *resourcePath = [self.router resourcePathForObject:object method:method];
+    RKRoute *route = [self.router routeForObject:object method:method];
+    NSString *resourcePath = [route resourcePathForObject:object];
     [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
         loader.method = method;
         block(loader);
@@ -370,6 +372,19 @@ static NSOperationQueue *defaultMappingQueue = nil;
 - (void)deleteObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block
 {
     [self sendObject:object method:RKRequestMethodDELETE usingBlock:block];
+}
+
+- (void)loadRelationship:(NSString *)relationshipName ofObject:(id)object usingBlock:(void(^)(RKObjectLoader *))block
+{
+    // TODO: Try to pull the path/url off of the object (relationshipResourcePath | relationshipURL)
+    RKRoute *route = [self.router routeForRelationship:relationshipName ofClass:[object class] method:RKRequestMethodGET];
+    NSString *resourcePath = [route resourcePathForObject:object];
+    [self loadObjectsAtResourcePath:resourcePath usingBlock:block];
+//    id targetObject = [object valueForKey:relationshipName];
+//    [self sendObject:targetObject toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
+//        loader.method = RKRequestMethodGET;
+//        block(loader);
+//    }];
 }
 
 #endif // NS_BLOCKS_AVAILABLE

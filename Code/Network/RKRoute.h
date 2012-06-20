@@ -8,15 +8,24 @@
 
 #import "RKRequest.h"
 
+// Class cluster. Not to be directly instantiated.
 @interface RKRoute : NSObject
 
-@property (nonatomic, retain) NSString *name; // can be nil
-@property (nonatomic, retain) Class objectClass; // can be nil
-@property (nonatomic, assign) RKRequestMethod method;
-@property (nonatomic, retain) NSString *resourcePathPattern;
+@property (nonatomic, retain, readonly) NSString *name;
+@property (nonatomic, retain, readonly) Class objectClass;
+@property (nonatomic, assign, readonly) RKRequestMethod method;
+@property (nonatomic, retain, readonly) NSString *resourcePathPattern;
+
 @property (nonatomic, assign) BOOL shouldEscapeResourcePath; // when YES, the path will be escaped when interpolated
+
++ (id)routeWithName:(NSString *)name resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method;
++ (id)routeWithClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method;
++ (id)routeWithRelationshipName:(NSString *)name objectClass:(Class)objectClass resourcePathPattern:(NSString *)resourcePathPattern method:(RKRequestMethod)method;
 
 - (BOOL)isNamedRoute;
 - (BOOL)isClassRoute;
+- (BOOL)isRelationshipRoute;
+
+- (NSString *)resourcePathForObject:(id)object;
 
 @end
