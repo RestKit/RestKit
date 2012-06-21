@@ -25,10 +25,16 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 {
     self = [super init];
     if (self) {
-        _routes = [NSMutableArray new];
+        self.routes = [NSMutableArray array];
     }
 
     return self;
+}
+
+- (void)dealloc
+{
+    self.routes = nil;
+    [super dealloc];
 }
 
 - (NSArray *)allRoutes
@@ -135,7 +141,7 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 - (NSArray *)routesForClass:(Class)objectClass
 {
-    NSMutableArray *routes = [NSMutableArray new];
+    NSMutableArray *routes = [NSMutableArray array];
     for (RKRoute *route in [self classRoutes]) {
         if ([route.objectClass isEqual:objectClass]) {
             [routes addObject:route];
@@ -147,7 +153,7 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 - (NSArray *)routesForObject:(id)object
 {
-    NSMutableArray *routes = [NSMutableArray new];
+    NSMutableArray *routes = [NSMutableArray array];
     for (RKRoute *route in [self classRoutes]) {
         if ([object isKindOfClass:route.objectClass]) {
             [routes addObject:route];
@@ -168,29 +174,20 @@ RKRequestMethod const RKRequestMethodAny = RKRequestMethodInvalid;
 
 - (RKRoute *)routeForObject:(id)object method:(RKRequestMethod)method
 {
-    NSArray *routesForObject = [self routesForObject:object];
-    RKRoute *bestMatch = nil;
-    for (RKRoute *route in routesForObject) {
-        if ([object isMemberOfClass:[route objectClass]] && route.method == method) {
-            // Exact match
-            return route;
-        } else if ([object isMemberOfClass:[route objectClass]] && route.method == RKRequestMethodAny) {
-            bestMatch = route;
+    Class searchClass = [object class];
+    while (searchClass) {
+        NSArray *routes = [self routesForClass:searchClass];
+        RKRoute *wildcardRoute = nil;
+        for (RKRoute *route in routes) {
+            if (route.method == RKRequestMethodAny) wildcardRoute = route;
+            if (route.method == method) return route;
         }
+
+        if (wildcardRoute) return wildcardRoute;
+        searchClass = [searchClass superclass];
     }
 
-    if (bestMatch) return bestMatch;
-
-    for (RKRoute *route in routesForObject) {
-        if ([object isKindOfClass:[route objectClass]] && route.method == method) {
-            // Superclass match with exact route
-            return route;
-        } else if ([object isKindOfClass:[route objectClass]] && route.method == RKRequestMethodAny) {
-            bestMatch = route;
-        }
-    }
-
-    return bestMatch;
+    return nil;
 }
 
 - (NSArray *)routesWithResourcePathPattern:(NSString *)resourcePathPattern
