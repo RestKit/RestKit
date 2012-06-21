@@ -2,37 +2,22 @@
 //  RKRouter.h
 //  RestKit
 //
-//  Created by Blake Watters on 5/31/12.
+//  Created by Blake Watters on 6/20/12.
 //  Copyright (c) 2012 RestKit. All rights reserved.
 //
 
-#import "RKRoute.h"
-
-// Wildcard matches on objects
-extern RKRequestMethod const RKRequestMethodAny;
+#import "RKRequest.h"
+@class RKURL, RKRouteSet;
 
 @interface RKRouter : NSObject
 
-- (NSArray *)allRoutes;
-- (NSArray *)namedRoutes;
-- (NSArray *)classRoutes;
-- (NSArray *)relationshipRoutes;
+@property (nonatomic, retain) RKURL *baseURL;
+@property (nonatomic, retain) RKRouteSet *routeSet;
 
-- (void)addRoute:(RKRoute *)route;
-- (void)removeRoute:(RKRoute *)route;
-- (BOOL)containsRoute:(RKRoute *)route;
+- (id)initWithBaseURL:(RKURL *)baseURL;
 
-- (RKRoute *)routeForName:(NSString *)name;
-- (RKRoute *)routeForClass:(Class)objectClass method:(RKRequestMethod)method;
-- (RKRoute *)routeForRelationship:(NSString *)relationship ofClass:(Class)objectClass method:(RKRequestMethod)method;
-
-- (NSArray *)routesForClass:(Class)objectClass; // routes specifically for the class
-- (NSArray *)routesForObject:(id)object; // routes for class and superclasses
-- (NSArray *)routesForRelationship:(NSString *)relationshipName ofClass:(Class)objectClass;
-
-// NOTE: Will return an exact match for the object class and then
-// search for a superclass match
-- (RKRoute *)routeForObject:(id)object method:(RKRequestMethod)method;
-- (NSArray *)routesWithResourcePathPattern:(NSString *)resourcePathPattern;
+- (RKURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method;
+- (RKURL *)URLForObject:(id)object method:(RKRequestMethod)method;
+- (RKURL *)URLForRelationship:(NSString *)relationshipName ofObject:(id)object method:(RKRequestMethod)method;
 
 @end

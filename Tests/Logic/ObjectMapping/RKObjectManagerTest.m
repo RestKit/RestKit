@@ -78,7 +78,7 @@
     [provider setSerializationMapping:humanSerialization forClass:[RKHuman class]];
     _objectManager.mappingProvider = provider;
 
-    RKRouter *router = [[[RKRouter alloc] init] autorelease];
+    RKRouteSet* router = [[[RKRouteSet alloc] init] autorelease];
     [router addRouteWithClass:[RKHuman class] resourcePathPattern:@"/humans" method:RKRequestMethodPOST];
     _objectManager.router = router;
 }
@@ -196,7 +196,7 @@
 {
     RKObjectManager *manager = [RKTestFactory objectManager];
 
-    RKRouter *router = [[RKRouter new] autorelease];
+    RKRouteSet* router = [[RKRouteSet new] autorelease];
     [router addRouteWithClass:[RKObjectMapperTestModel class] resourcePathPattern:@"/humans" method:RKRequestMethodPOST];
     manager.router = router;
 

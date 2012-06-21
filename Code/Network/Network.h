@@ -20,6 +20,9 @@
 
 #import "RKClient.h"
 #import "RKURL.h"
+#import "RKRoute.h"
+#import "RKRouteSet.h"
+#import "RKRouter.h"
 #import "RKRequest.h"
 #import "RKResponse.h"
 #import "RKRequestSerializable.h"
