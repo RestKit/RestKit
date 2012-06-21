@@ -21,19 +21,15 @@
 @implementation RKTestSubclassedObject
 @end
 
-@implementation RKTestUser (PolymorphicResourcePath)
-
-- (NSString *)polymorphicResourcePath {
-    return @"/this/is/the/path";
-}
-
+@interface RKTestDeeplySubclassedObject : RKTestSubclassedObject
+@end
+@implementation RKTestDeeplySubclassedObject
 @end
 
-@interface RKRouterTest : RKTestCase
-
+@interface RKRouteSetTest : RKTestCase
 @end
 
-@implementation RKRouterTest
+@implementation RKRouteSetTest
 
 - (void)testNewRouterInitializesEmptyRoutesCollection
 {
@@ -169,7 +165,7 @@
     RKRoute *route = [RKRoute routeWithName:@"test_router" resourcePathPattern:@"/routes" method:RKRequestMethodAny];
     [router addRoute:route];
     assertThat([router routeForName:@"test_router"], is(notNilValue()));
-    assertThat([router routeForName:@"test_router"], is(nilValue()));
+    assertThat([router routeForName:@"test_router2"], is(nilValue()));
 }
 
 - (void)testRouteForName
@@ -236,6 +232,34 @@
     assertThat(route, is(notNilValue()));
     assertThat(route.resourcePathPattern, is(equalTo(@"/users/:userID")));
     assertThat(route.objectClass, is(equalTo([RKTestObject class])));
+    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
+}
+
+- (void)testRouteForObjectFindsNearestSuperclassMatch
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] resourcePathPattern:@"/users/:userID" method:RKRequestMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] resourcePathPattern:@"/subclasses/users/:userID" method:RKRequestMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestDeeplySubclassedObject class] resourcePathPattern:@"/deeply/subclassed/users/:userID" method:RKRequestMethodGET]];
+    RKTestDeeplySubclassedObject *deeplySubclassedObject = [RKTestDeeplySubclassedObject new];
+    RKRoute *route = [router routeForObject:deeplySubclassedObject method:RKRequestMethodGET];
+    assertThat(route, is(notNilValue()));
+    assertThat(route.resourcePathPattern, is(equalTo(@"/deeply/subclassed/users/:userID")));
+    assertThat(route.objectClass, is(equalTo([RKTestDeeplySubclassedObject class])));
+    assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
+}
+
+- (void)testRouteForObjectPrefersSuperclassAnyMatchOverDistantParentMethodMatch
+{
+    RKRouteSet *router = [RKRouteSet new];
+    [router addRoute:[RKRoute routeWithClass:[RKTestObject class] resourcePathPattern:@"/users/:userID" method:RKRequestMethodPOST]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestSubclassedObject class] resourcePathPattern:@"/subclasses/users/:userID" method:RKRequestMethodGET]];
+    [router addRoute:[RKRoute routeWithClass:[RKTestDeeplySubclassedObject class] resourcePathPattern:@"/deeply/subclassed/users/:userID" method:RKRequestMethodGET]];
+    RKTestDeeplySubclassedObject *deeplySubclassedObject = [RKTestDeeplySubclassedObject new];
+    RKRoute *route = [router routeForObject:deeplySubclassedObject method:RKRequestMethodPOST];
+    assertThat(route, is(notNilValue()));
+    assertThat(route.resourcePathPattern, is(equalTo(@"/deeply/subclassed/users/:userID")));
+    assertThat(route.objectClass, is(equalTo([RKTestDeeplySubclassedObject class])));
     assertThatInteger(route.method, is(equalToInteger(RKRequestMethodGET)));
 }
 

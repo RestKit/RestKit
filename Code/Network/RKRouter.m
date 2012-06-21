@@ -38,6 +38,12 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.routeSet = nil;
+    [super dealloc];
+}
+
 - (RKURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method
 {
     RKRoute *route = [self.routeSet routeForName:routeName];
