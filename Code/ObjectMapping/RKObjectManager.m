@@ -261,15 +261,16 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method
 {
-    RKRoute *route = [self.router routeForObject:object method:method];
-    NSString* resourcePath = (method == RKRequestMethodInvalid) ? nil : [route resourcePathForObject:object];
-    RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
+    RKURL *URL = [self.router URLForObject:object method:method];
+//    NSString* resourcePath = (method == RKRequestMethodInvalid) ? nil : [route resourcePathForObject:object];
+//    RKObjectLoader *loader = [self loaderWithResourcePath:resourcePath];
+    RKObjectLoader *loader = [self loaderWithURL:URL];
     loader.method = method;
     loader.sourceObject = object;
     loader.serializationMIMEType = self.serializationMIMEType;
     loader.serializationMapping = [self.mappingProvider serializationMappingForClass:[object class]];
 
-    RKObjectMappingDefinition *objectMapping = resourcePath ? [self.mappingProvider objectMappingForResourcePath:resourcePath] : nil;
+    RKObjectMappingDefinition *objectMapping = URL.resourcePath ? [self.mappingProvider objectMappingForResourcePath:URL.resourcePath] : nil;
     if (objectMapping == nil || ([objectMapping isKindOfClass:[RKObjectMapping class]] && [object isMemberOfClass:[(RKObjectMapping *)objectMapping objectClass]])) {
         loader.targetObject = object;
     } else {
@@ -346,12 +347,19 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 - (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block
 {
-    RKRoute *route = [self.router routeForObject:object method:method];
-    NSString *resourcePath = [route resourcePathForObject:object];
-    [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
-        loader.method = method;
-        block(loader);
-    }];
+//    RKRoute *route = [self.router routeForObject:object method:method];
+//    NSString *resourcePath = [route resourcePathForObject:object];
+//    RKURL *URL = [self.router URLForObject:object method:method];
+//    [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
+//        loader.method = method;
+//        block(loader);
+//    }];
+
+    RKObjectLoader *loader = [self loaderForObject:object method:method];
+    // Yield to the block for setup
+    block(loader);
+
+    [loader send];
 }
 
 - (void)getObject:(id<NSObject>)object usingBlock:(void(^)(RKObjectLoader *))block
@@ -377,14 +385,8 @@ static NSOperationQueue *defaultMappingQueue = nil;
 - (void)loadRelationship:(NSString *)relationshipName ofObject:(id)object usingBlock:(void(^)(RKObjectLoader *))block
 {
     // TODO: Try to pull the path/url off of the object (relationshipResourcePath | relationshipURL)
-    RKRoute *route = [self.router routeForRelationship:relationshipName ofClass:[object class] method:RKRequestMethodGET];
-    NSString *resourcePath = [route resourcePathForObject:object];
-    [self loadObjectsAtResourcePath:resourcePath usingBlock:block];
-//    id targetObject = [object valueForKey:relationshipName];
-//    [self sendObject:targetObject toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
-//        loader.method = RKRequestMethodGET;
-//        block(loader);
-//    }];
+    RKURL *URL = [self.router URLForRelationship:relationshipName ofObject:object method:RKRequestMethodGET];
+    [self loadObjectsAtResourcePath:URL.resourcePath usingBlock:block];
 }
 
 #endif // NS_BLOCKS_AVAILABLE

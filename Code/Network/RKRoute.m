@@ -7,7 +7,6 @@
 //
 
 #import "RKRoute.h"
-#import "RKPathMatcher.h"
 
 @interface RKRoute ()
 @property (nonatomic, retain, readwrite) NSString *name;
@@ -95,13 +94,6 @@
 - (BOOL)isRelationshipRoute
 {
     return NO;
-}
-
-- (NSString *)resourcePathForObject:(id)object
-{
-    if (!object) return self.resourcePathPattern;
-    RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:self.resourcePathPattern];
-    return [pathMatcher pathFromObject:object addingEscapes:self.shouldEscapeResourcePath];
 }
 
 @end

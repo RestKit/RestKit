@@ -144,7 +144,7 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 {
     self = [super init];
     if (self) {
-        _router = [RKRouter new];
+        self.router = [[RKRouter new] autorelease];
         self.HTTPHeaders = [NSMutableDictionary dictionary];
         self.additionalRootCertificates = [NSMutableSet set];
         self.defaultHTTPEncoding = NSUTF8StringEncoding;
@@ -161,7 +161,7 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
         // Configure observers
         [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-        [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
+        [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
         [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial context:nil];
     }
 
@@ -327,6 +327,9 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
     // Don't crash if baseURL is nil'd out (i.e. dealloc)
     if (! [newBaseURL isEqual:[NSNull null]]) {
+        // Update the router
+        self.router.baseURL = newBaseURL;
+
         // Configure a cache for the new base URL
         [_requestCache release];
         _requestCache = [[RKRequestCache alloc] initWithPath:[self cachePath]

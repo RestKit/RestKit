@@ -26,6 +26,4 @@
 - (BOOL)isClassRoute;
 - (BOOL)isRelationshipRoute;
 
-- (NSString *)resourcePathForObject:(id)object;
-
 @end

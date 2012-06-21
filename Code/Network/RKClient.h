@@ -28,6 +28,7 @@
 #import "RKRequestQueue.h"
 #import "RKConfigurationDelegate.h"
 #import "RKRouter.h"
+#import "RKRoute.h"
 
 // Retrieves the dispatch queue for emitting network processing events
 dispatch_queue_t rk_get_network_processing_queue(void);
@@ -190,8 +191,9 @@ dispatch_queue_t rk_get_network_processing_queue(void);
 @property (nonatomic, retain) RKURL *baseURL;
 
 /**
- The router provides for the registration of resource path patterns keyed
- by name or object type and HTTP verb.
+ The router provides for the registration of resource path patterns
+ by name, object class and HTTP method, or by relationship name, object class,
+ and HTTP method.
 
  @see RKRouter
  */

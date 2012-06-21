@@ -223,7 +223,7 @@ typedef enum {
 @property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
 
 /**
- Router object responsible for generating resource paths for
+ Router object responsible for generating URLs for
  HTTP requests
  */
 @property (nonatomic, retain) RKRouter *router;
