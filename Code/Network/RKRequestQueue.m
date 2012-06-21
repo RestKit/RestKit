@@ -409,6 +409,19 @@ static const NSTimeInterval kFlushDelay = 0.3;
     }
 }
 
+- (BOOL)containsRequestWithURL:(NSURL *)URL
+{
+    @synchronized(self) {
+        for (RKRequest *request in _requests) {
+            if ([request.URL isEqual:URL]) {
+                return YES;
+            }
+        }
+    }
+
+    return NO;
+}
+
 - (void)cancelRequest:(RKRequest *)request loadNext:(BOOL)loadNext
 {
     if ([request isUnsent]) {
