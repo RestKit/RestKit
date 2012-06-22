@@ -259,12 +259,13 @@
     if (_sortDescriptors) {
         [fetchRequest setSortDescriptors:_sortDescriptors];
     }
-
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+    
+    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                         managedObjectContext:[NSManagedObjectContext contextForCurrentThread]
                                                                           sectionNameKeyPath:_sectionNameKeyPath
                                                                                    cacheName:_cacheName];
-    _fetchedResultsController.delegate = self;
+    [self.fetchedResultsController release];
+    self.fetchedResultsController.delegate = self;
 
     // Perform the load
     NSError *error;
