@@ -93,10 +93,9 @@
 @property (nonatomic, assign) id<RKSyncManagerDelegate> delegate;
 
 /**
- The local RKRequestQueue that this syncManager uses. Sync operations should be sequential, so this has a limit of one request at a time.
- @see RKManagedObjectSyncDelegate
+ The Grand Central Dispatch concurrent queue to perform our network operations. Push requests (POST, PUT, DELETE) can run concurrently, but pull requests (GET) are barriers - previous queue items must complete before one runs, and no other request can run at the same time.
  */
-@property (nonatomic, retain, readonly) RKRequestQueue *requestQueue;
+@property (nonatomic, assign) dispatch_queue_t networkOperationQueue;
 
 /**
  If NO, the sync manager will take no actions for any inserted, updated, or deleted 

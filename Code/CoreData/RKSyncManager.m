@@ -51,7 +51,7 @@
 
 @implementation RKSyncManager
 
-@synthesize objectManager = _objectManager, delegate = _delegate, requestQueue = _requestQueue;
+@synthesize objectManager = _objectManager, delegate = _delegate, networkOperationQueue = _networkOperationQueue;
 @synthesize defaultSyncMode = _defaultSyncMode, defaultSyncStrategy = _defaultSyncStrategy, defaultSyncDirection = _defaultSyncDirection;
 @synthesize syncEnabled;
 
@@ -67,9 +67,7 @@
         // By default, push AND pull objects from the server at the same time
         _defaultSyncDirection = RKSyncDirectionBoth;
         
-        _requestQueue = [RKRequestQueue newRequestQueueWithName:@"_rkSyncRequestQueue"];
-        _requestQueue.concurrentRequestsLimit = 1;
-        [_requestQueue start];
+        _networkOperationQueue = dispatch_queue_create("com.RestKit.Syncing.NetworkOperationsQueue", DISPATCH_QUEUE_CONCURRENT);
         
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
@@ -102,9 +100,6 @@
   
     [_objectManager release];
     _objectManager = nil;
-    
-    [_requestQueue release];
-    _requestQueue = nil;
     
     [_queue release];
     _queue = nil;
@@ -269,56 +264,59 @@
         }
         
         
-        
+        //These network operations can run concurrently, and so are added normally to the networkOperationsQueue
         for (__block RKManagedObjectSyncQueue *item in _queue) {
             NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
             
             // Depending on what type of item this is, make the appropriate RestKit call 
             RKRequestMethod method = [item.syncMethod integerValue];
             if (method == RKRequestMethodPOST) {
-                [_objectManager postObject:object usingBlock:^(RKObjectLoader *loader){
-                    loader.queue = _requestQueue;
-                    loader.onDidLoadObject = ^ (id object){
-                        [blocksafeSelf addCompletedQueueItem: item];
-                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                    };
-                    loader.onDidFailWithError = ^ (NSError *error){
-                        [blocksafeSelf addFailedQueueItem: item];
-                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                        if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-                            [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
-                        }
-                    };
-                }];
-            } else if (method == RKRequestMethodPUT) {
-                [_objectManager putObject:object usingBlock:^(RKObjectLoader *loader){
-                    loader.queue = _requestQueue;
-                    loader.onDidLoadObject = ^ (id object){
-                        [blocksafeSelf addCompletedQueueItem: item];
-                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                    };
-                    loader.onDidFailWithError = ^ (NSError *error){
-                        [blocksafeSelf addFailedQueueItem: item];
-                        [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                        if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-                            [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
-                        }
-                    };
-                }];
-            } else if (method == RKRequestMethodDELETE) {
-                //The object doesn't necessarily exist if the context has been saved since it was deleted, so we send using the stored route
-                [[_objectManager client] delete:item.objectRoute usingBlock: ^(RKRequest *request ){
-                    request.queue = _requestQueue;
-                    request.onDidLoadResponse = ^ (RKResponse *response){
-                        if ([response isSuccessful]) {
+                dispatch_async(_networkOperationQueue, ^{
+                    [_objectManager postObject:object usingBlock:^(RKObjectLoader *loader){
+                        loader.onDidLoadObject = ^ (id object){
                             [blocksafeSelf addCompletedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                        } else {
+                        };
+                        loader.onDidFailWithError = ^ (NSError *error){
                             [blocksafeSelf addFailedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                        }
-                    };
-                }];
+                            if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
+                                [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                            }
+                        };
+                    }];
+                });
+            } else if (method == RKRequestMethodPUT) {
+                dispatch_async(_networkOperationQueue, ^{
+                    [_objectManager putObject:object usingBlock:^(RKObjectLoader *loader){
+                        loader.onDidLoadObject = ^ (id object){
+                            [blocksafeSelf addCompletedQueueItem: item];
+                            [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                        };
+                        loader.onDidFailWithError = ^ (NSError *error){
+                            [blocksafeSelf addFailedQueueItem: item];
+                            [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                            if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
+                                [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                            }
+                        };
+                    }];
+                });
+            } else if (method == RKRequestMethodDELETE) {
+                //The object doesn't necessarily exist if the context has been saved since it was deleted, so we send using the stored route
+                dispatch_async(_networkOperationQueue, ^{
+                    [[_objectManager client] delete:item.objectRoute usingBlock: ^(RKRequest *request ){
+                        request.onDidLoadResponse = ^ (RKResponse *response){
+                            if ([response isSuccessful]) {
+                                [blocksafeSelf addCompletedQueueItem: item];
+                                [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                            } else {
+                                [blocksafeSelf addFailedQueueItem: item];
+                                [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                            }
+                        };
+                    }];
+                });
             }
         }
     } else {
@@ -481,18 +479,21 @@
               if (_delegate && [_delegate respondsToSelector:@selector(syncManager:willPullObjectsOfClass:withSyncMode:)]) {
                 [_delegate syncManager:self willPullObjectsOfClass:objectClass withSyncMode:syncMode];
               }
-
-                [_objectManager loadObjectsAtResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
-                    loader.queue = _requestQueue;
-                    loader.onDidLoadObjects = ^(NSArray *objects){
-                        //TODO: delegate call
-                    };
-                    loader.onDidFailWithError = ^(NSError *error){
-                        if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-                            [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
-                        }
-                    };
-                }];
+                
+                //Pull requests create a barrier in the queue. We need all push requests to finish before we pull so that the server can respond with all of the data that has been sent.
+                dispatch_barrier_async(_networkOperationQueue, ^{
+                    [_objectManager loadObjectsAtResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
+                        loader.onDidLoadObjects = ^(NSArray *objects){
+                            //TODO: delegate call
+                        };
+                        loader.onDidFailWithError = ^(NSError *error){
+                            if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
+                                [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                            }
+                        };
+                    }];
+                });
+                
               
               if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPullObjectsOfClass:withSyncMode:)]) {
                 [_delegate syncManager:self didPullObjectsOfClass:objectClass withSyncMode:syncMode];
