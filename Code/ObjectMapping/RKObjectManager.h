@@ -433,6 +433,9 @@ typedef enum {
  */
 - (void)deleteObject:(id<NSObject>)object usingBlock:(RKObjectLoaderBlock)block;
 
+
+- (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block;
+
 #endif
 
 //////
