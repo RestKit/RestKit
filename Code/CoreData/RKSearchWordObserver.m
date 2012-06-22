@@ -19,7 +19,8 @@ static RKSearchWordObserver *sharedSearchWordObserver = nil;
 
 @implementation RKSearchWordObserver
 
-+ (RKSearchWordObserver *)sharedObserver {
++ (RKSearchWordObserver *)sharedObserver
+{
     if (! sharedSearchWordObserver) {
         sharedSearchWordObserver = [[RKSearchWordObserver alloc] init];
     }
@@ -27,7 +28,8 @@ static RKSearchWordObserver *sharedSearchWordObserver = nil;
     return sharedSearchWordObserver;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -39,12 +41,14 @@ static RKSearchWordObserver *sharedSearchWordObserver = nil;
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [super dealloc];
 }
 
-- (void)managedObjectContextWillSaveNotification:(NSNotification *)notification {
+- (void)managedObjectContextWillSaveNotification:(NSNotification *)notification
+{
     NSManagedObjectContext *context = [notification object];
     NSSet *candidateObjects = [[NSSet setWithSet:context.insertedObjects] setByAddingObjectsFromSet:context.updatedObjects];
 

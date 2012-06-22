@@ -22,12 +22,12 @@
 
 @interface RKTableViewCellMappings : NSObject {
     @private
-    NSMutableDictionary* _cellMappings;
+    NSMutableDictionary *_cellMappings;
 }
 
 + (id)cellMappings;
-- (void)setCellMapping:(RKTableViewCellMapping*)cellMapping forClass:(Class)objectClass;
-- (RKTableViewCellMapping*)cellMappingForClass:(Class)objectClass;
-- (RKTableViewCellMapping*)cellMappingForObject:(id)object;
+- (void)setCellMapping:(RKTableViewCellMapping *)cellMapping forClass:(Class)objectClass;
+- (RKTableViewCellMapping *)cellMappingForClass:(Class)objectClass;
+- (RKTableViewCellMapping *)cellMappingForObject:(id)object;
 
 @end

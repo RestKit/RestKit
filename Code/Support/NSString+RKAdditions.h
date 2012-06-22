@@ -32,12 +32,12 @@
  when given a resourcePath of /contacts and a dictionary of parameters containing foo=bar and color=red,
  will return /contacts?foo=bar&amp;color=red
 
- *NOTE* - Assumes that the resource path does not already contain any query parameters.
+ *NOTE *- Assumes that the resource path does not already contain any query parameters.
  @param queryParameters A dictionary of query parameters to be URL encoded and appended to the resource path
  @return A new resource path with the query parameters appended
  */
 - (NSString *)stringByAppendingQueryParameters:(NSDictionary *)queryParameters;
-- (NSString *)appendQueryParams:(NSDictionary*)queryParams DEPRECATED_ATTRIBUTE;
+- (NSString *)appendQueryParams:(NSDictionary *)queryParams DEPRECATED_ATTRIBUTE;
 
 /**
  Convenience method for generating a path against the properties of an object. Takes

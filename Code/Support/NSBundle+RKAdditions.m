@@ -27,7 +27,8 @@
 
 @implementation NSBundle (RKAdditions)
 
-+ (NSBundle *)restKitResourcesBundle {
++ (NSBundle *)restKitResourcesBundle
+{
     static BOOL searchedForBundle = NO;
 
     if (! searchedForBundle) {
@@ -41,7 +42,8 @@
     return [NSBundle bundleWithIdentifier:@"org.restkit.RestKitResources"];
 }
 
-- (NSString *)MIMETypeForResource:(NSString *)name withExtension:(NSString *)extension {
+- (NSString *)MIMETypeForResource:(NSString *)name withExtension:(NSString *)extension
+{
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (resourcePath) {
         return [resourcePath MIMETypeForPathExtension];
@@ -50,7 +52,8 @@
     return nil;
 }
 
-- (NSData *)dataWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
+- (NSData *)dataWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension
+{
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (! resourcePath) {
         RKLogWarning(@"%@ Failed to locate Resource with name '%@' and extension '%@': File Not Found.", self, resourcePath, extension);
@@ -60,15 +63,16 @@
     return [NSData dataWithContentsOfFile:resourcePath];
 }
 
-- (NSString *)stringWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension encoding:(NSStringEncoding)encoding {
-    NSError* error = nil;
+- (NSString *)stringWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension encoding:(NSStringEncoding)encoding
+{
+    NSError *error = nil;
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (! resourcePath) {
         RKLogWarning(@"%@ Failed to locate Resource with name '%@' and extension '%@': File Not Found.", self, resourcePath, extension);
         return nil;
     }
 
-    NSString* fixtureData = [NSString stringWithContentsOfFile:resourcePath encoding:encoding error:&error];
+    NSString *fixtureData = [NSString stringWithContentsOfFile:resourcePath encoding:encoding error:&error];
     if (fixtureData == nil && error) {
         RKLogWarning(@"Failed to read ");
     }
@@ -77,7 +81,8 @@
 }
 
 #if TARGET_OS_IPHONE
-- (UIImage *)imageWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
+- (UIImage *)imageWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension
+{
     NSString *resourcePath = [self pathForResource:name ofType:extension];
     if (! resourcePath) {
         RKLogWarning(@"%@ Failed to locate Resource with name '%@' and extension '%@': File Not Found.", self, resourcePath, extension);
@@ -88,10 +93,11 @@
 }
 #endif
 
-- (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension {
-    NSError* error = nil;
-    NSString* resourceContents = [self stringWithContentsOfResource:name withExtension:extension encoding:NSUTF8StringEncoding];
-    NSString* MIMEType = [self MIMETypeForResource:name withExtension:extension];
+- (id)parsedObjectWithContentsOfResource:(NSString *)name withExtension:(NSString *)extension
+{
+    NSError *error = nil;
+    NSString *resourceContents = [self stringWithContentsOfResource:name withExtension:extension encoding:NSUTF8StringEncoding];
+    NSString *MIMEType = [self MIMETypeForResource:name withExtension:extension];
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:MIMEType];
     if (! parser) {
         RKLogError(@"%@ Unable to parse Resource with name '%@' and extension '%@': failed to find parser registered to handle MIME Type '%@'", self, name, extension, MIMEType);

@@ -9,17 +9,17 @@
 #import <Foundation/Foundation.h>
 
 @interface RKTestAddress : NSObject {
-    NSNumber* _addressID;
-    NSString* _city;
-    NSString* _state;
-    NSString* _country;
+    NSNumber *_addressID;
+    NSString *_city;
+    NSString *_state;
+    NSString *_country;
 }
 
-@property (nonatomic, retain) NSNumber* addressID;
-@property (nonatomic, retain) NSString* city;
-@property (nonatomic, retain) NSString* state;
-@property (nonatomic, retain) NSString* country;
+@property (nonatomic, retain) NSNumber *addressID;
+@property (nonatomic, retain) NSString *city;
+@property (nonatomic, retain) NSString *state;
+@property (nonatomic, retain) NSString *country;
 
-+ (RKTestAddress*)address;
++ (RKTestAddress *)address;
 
 @end

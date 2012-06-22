@@ -16,15 +16,16 @@
 
 @implementation RKSearchableManagedObjectTest
 
-- (void)testGenerateSearchWordsForSearchableObjects {
+- (void)testGenerateSearchWordsForSearchableObjects
+{
     [RKTestFactory managedObjectStore];
-    RKSearchable* searchable = [RKSearchable createEntity];
+    RKSearchable *searchable = [RKSearchable createEntity];
     searchable.title = @"This is the title of my new object";
     searchable.body = @"This is the point at which I begin pontificating at length about various and sundry things for no real reason at all. Furthermore, ...";
     assertThat(searchable.searchWords, is(empty()));
     [searchable refreshSearchWords];
     assertThat(searchable.searchWords, isNot(empty()));
-    NSArray* words = [[[searchable.searchWords valueForKey:@"word"] allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
+    NSArray *words = [[[searchable.searchWords valueForKey:@"word"] allObjects] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
     assertThat([words componentsJoinedByString:@", "], is(equalTo(@"about, all, and, at, begin, for, furthermore, i, is, length, my, new, no, object, of, point, pontificating, real, reason, sundry, the, things, this, title, various, which")));
 }
 

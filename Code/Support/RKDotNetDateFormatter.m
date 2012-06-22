@@ -27,24 +27,27 @@ BOOL isValidRange(NSRange rangeOfMatch);
 NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs);
 NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 
-@interface RKDotNetDateFormatter()
+@interface RKDotNetDateFormatter ()
 - (NSString *)millisecondsFromString:(NSString *)string;
 @end
 
 @implementation RKDotNetDateFormatter
 
-+ (RKDotNetDateFormatter *)dotNetDateFormatter {
++ (RKDotNetDateFormatter *)dotNetDateFormatter
+{
     return [RKDotNetDateFormatter dotNetDateFormatterWithTimeZone:nil];
 }
 
-+ (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone {
++ (RKDotNetDateFormatter *)dotNetDateFormatterWithTimeZone:(NSTimeZone *)newTimeZone
+{
     RKDotNetDateFormatter *formatter = [[[RKDotNetDateFormatter alloc] init] autorelease];
     if (newTimeZone)
         formatter.timeZone = newTimeZone;
     return formatter;
 }
 
-- (NSDate *)dateFromString:(NSString *)string {
+- (NSDate *)dateFromString:(NSString *)string
+{
     NSString *milliseconds = [self millisecondsFromString:string];
     if (!milliseconds) {
         RKLogError(@"Attempted to interpret an invalid .NET date string: %@", string);
@@ -55,7 +58,8 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 }
 
 
-- (NSString *)stringFromDate:(NSDate *)date {
+- (NSString *)stringFromDate:(NSDate *)date
+{
     if (!date) {
         RKLogError(@"Attempted to represent an invalid date: %@", date);
         return nil;
@@ -65,14 +69,16 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
     return [NSString stringWithFormat:@"/Date(%1.0lf%@)/", milliseconds, timeZoneOffset];
 }
 
-- (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error {
+- (BOOL)getObjectValue:(id *)outValue forString:(NSString *)string errorDescription:(NSString **)error
+{
     NSDate *date = [self dateFromString:string];
     if (outValue)
         *outValue = date;
     return (date != nil);
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         self.locale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"] autorelease];
@@ -85,13 +91,15 @@ NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds);
 }
 
 
-- (void)dealloc {
+- (void)dealloc
+{
     [dotNetExpression release];
     [super dealloc];
 }
 
 
-- (NSString *)millisecondsFromString:(NSString *)string {
+- (NSString *)millisecondsFromString:(NSString *)string
+{
     if (!string)
         return nil;
     NSTextCheckingResult *match = [dotNetExpression firstMatchInString:string options:NSMatchingCompleted range:NSMakeRange(0, [string length])];
@@ -118,7 +126,7 @@ NSTimeInterval secondsFromMilliseconds(NSTimeInterval millisecs) {
 
 
 NSTimeInterval millisecondsFromSeconds(NSTimeInterval seconds) {
-    return seconds * 1000.f;
+    return seconds *1000.f;
 }
 
 #endif

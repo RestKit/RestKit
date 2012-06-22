@@ -19,7 +19,7 @@
 /**
  The name of the notification the receiver is awaiting.
  */
-@property (nonatomic, copy) NSString* name;
+@property (nonatomic, copy) NSString *name;
 
 /**
  The object expected to post the notification the receiver is awaiting.
