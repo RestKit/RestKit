@@ -77,7 +77,6 @@
     NSMutableArray *_queue;
     NSMutableArray *_completedQueueItems;
     NSMutableArray *_failedQueueItems;
-    BOOL _shouldPullAfterPush;
 }
 
 /**

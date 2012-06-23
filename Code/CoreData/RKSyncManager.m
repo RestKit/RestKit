@@ -78,8 +78,6 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
       
         // Turn us on by default - this can be disabled by the client code if necessary
         self.syncEnabled = YES;
-        
-        _shouldPullAfterPush = NO;
 
         //Register for notifications from the managed object context associated with the object manager
         NSManagedObjectContext *moc = self.objectManager.objectStore.managedObjectContextForCurrentThread;
@@ -351,10 +349,6 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
                 }
             }
         }
-    } else {
-        if (_shouldPullAfterPush) {
-            [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
-        }
     }
 }
 
@@ -399,10 +393,6 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
         
         if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didPushObjects:withSyncMode:)]) {
             [_delegate syncManager:self didPushObjects:(NSSet *)objectSet withSyncMode:syncMode];
-        }
-        
-        if (_shouldPullAfterPush) {
-            [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
         }
     }
 }
@@ -476,8 +466,8 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
         [_delegate syncManager:self willSyncWithSyncMode:syncMode andClass:objectClass];
     }
     
-    _shouldPullAfterPush = YES;
     [self sendObjectsWithSyncMode:syncMode andClass:objectClass];
+    [self pullObjectsWithSyncMode:syncMode andClass:objectClass];
   
     if (_delegate && [_delegate respondsToSelector:@selector(syncManager:didSyncWithSyncMode:andClass:)]) {
         [_delegate syncManager:self didSyncWithSyncMode:syncMode andClass:objectClass];
@@ -486,7 +476,6 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
 
 - (void)pushObjectsWithSyncMode:(RKSyncMode)syncMode andClass:(Class)objectClass {
     //This is the front-facing method, it should only be called when you don't want to pull after pushing (sync)
-    _shouldPullAfterPush = NO;
     [self sendObjectsWithSyncMode:syncMode andClass:objectClass];
 }
 
