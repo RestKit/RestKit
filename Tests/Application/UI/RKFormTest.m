@@ -17,13 +17,11 @@
 
 @implementation UISwitch (ControlValue)
 
-- (NSNumber *)controlValue
-{
+- (NSNumber *)controlValue {
     return [NSNumber numberWithBool:self.isOn];
 }
 
-- (void)setControlValue:(NSNumber *)controlValue
-{
+- (void)setControlValue:(NSNumber *)controlValue {
     self.on = [controlValue boolValue];
 }
 
@@ -62,8 +60,7 @@
 
 @implementation RKFormTest
 
-- (void)testCommitValuesBackToTheFormObjectWithBuiltInTypes
-{
+- (void)testCommitValuesBackToTheFormObjectWithBuiltInTypes {
     RKMappableObject *mappableObject = [[RKMappableObject new] autorelease];
     RKForm *form = [RKForm formForObject:mappableObject usingBlock:^(RKForm *form) {
         [form addRowForAttribute:@"stringTest" withControlType:RKFormControlTypeTextField usingBlock:^(RKControlTableItem *tableItem) {
@@ -78,8 +75,7 @@
     assertThatBool([mappableObject.numberTest boolValue], is(equalToBool(YES)));
 }
 
-- (void)testCommitValuesBackToTheFormObjectFromUserConfiguredControls
-{
+- (void)testCommitValuesBackToTheFormObjectFromUserConfiguredControls {
     RKTestTextField *textField = [[RKTestTextField new] autorelease];
     textField.text = @"testing 123";
     UISwitch *switchControl = [[UISwitch new] autorelease];
@@ -94,8 +90,7 @@
     assertThatBool([mappableObject.numberTest boolValue], is(equalToBool(YES)));
 }
 
-- (void)testCommitValuesBackToTheFormObjectFromCellKeyPaths
-{
+- (void)testCommitValuesBackToTheFormObjectFromCellKeyPaths {
     RKMappableObject *mappableObject = [[RKMappableObject new] autorelease];
     RKForm *form = [RKForm formForObject:mappableObject usingBlock:^(RKForm *form) {
         [form addRowMappingAttribute:@"stringTest" toKeyPath:@"someTextProperty" onCellWithClass:[RKFormSpecTableViewCell class]];
@@ -116,15 +111,13 @@
     assertThat(mappableObject.stringTest, is(equalTo(@"testing 123")));
 }
 
-- (void)testMakeTheTableItemPassKVCInvocationsThroughToTheUnderlyingMappedControlKeyPath
-{
+- (void)testMakeTheTableItemPassKVCInvocationsThroughToTheUnderlyingMappedControlKeyPath {
     // TODO: Implement me
     // add a control
     // invoke valueForKey: with the control value keyPath on the table item...
 }
 
-- (void)testInvokeValueForKeyPathOnTheControlIfControlValueReturnsNil
-{
+- (void)testInvokeValueForKeyPathOnTheControlIfControlValueReturnsNil {
     // TODO: Implement me
     // add a custom control to the form
     // the control value should return nil so that valueForKeyPath is invoked directly

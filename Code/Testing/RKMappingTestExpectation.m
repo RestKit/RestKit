@@ -23,8 +23,7 @@
 @synthesize value;
 @synthesize evaluationBlock;
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath
-{
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath {
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
@@ -32,8 +31,7 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value
-{
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value {
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
@@ -42,8 +40,7 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))testBlock
-{
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))testBlock {
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
     expectation.destinationKeyPath = destinationKeyPath;
@@ -52,14 +49,12 @@
     return expectation;
 }
 
-- (NSString *)mappingDescription
-{
+- (NSString *)mappingDescription {
     return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@'",
             self.sourceKeyPath, self.destinationKeyPath];
 }
 
-- (NSString *)description
-{
+- (NSString *)description {
     if (self.value) {
         return [NSString stringWithFormat:@"expected sourceKeyPath '%@' to map to destinationKeyPath '%@' with %@ value '%@'",
                 self.sourceKeyPath, self.destinationKeyPath, [self.value class], self.value];

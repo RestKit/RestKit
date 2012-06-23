@@ -24,8 +24,7 @@ RKParserRegistry *gSharedRegistry;
 
 @implementation RKParserRegistry
 
-+ (RKParserRegistry *)sharedRegistry
-{
++ (RKParserRegistry *)sharedRegistry {
     if (gSharedRegistry == nil) {
         gSharedRegistry = [RKParserRegistry new];
         [gSharedRegistry autoconfigure];
@@ -34,15 +33,13 @@ RKParserRegistry *gSharedRegistry;
     return gSharedRegistry;
 }
 
-+ (void)setSharedRegistry:(RKParserRegistry *)registry
-{
++ (void)setSharedRegistry:(RKParserRegistry *)registry {
     [registry retain];
     [gSharedRegistry release];
     gSharedRegistry = registry;
 }
 
-- (id)init
-{
+- (id)init {
     self = [super init];
     if (self) {
         _MIMETypeToParserClasses = [[NSMutableDictionary alloc] init];
@@ -52,15 +49,13 @@ RKParserRegistry *gSharedRegistry;
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [_MIMETypeToParserClasses release];
     [_MIMETypeToParserClassesRegularExpressions release];
     [super dealloc];
 }
 
-- (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType
-{
+- (Class<RKParser>)parserClassForMIMEType:(NSString *)MIMEType {
     id parserClass = [_MIMETypeToParserClasses objectForKey:MIMEType];
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
     if (!parserClass)
@@ -78,23 +73,20 @@ RKParserRegistry *gSharedRegistry;
     return parserClass;
 }
 
-- (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString *)MIMEType
-{
+- (void)setParserClass:(Class<RKParser>)parserClass forMIMEType:(NSString *)MIMEType {
     [_MIMETypeToParserClasses setObject:parserClass forKey:MIMEType];
 }
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1070 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
 
-- (void)setParserClass:(Class<RKParser>)parserClass forMIMETypeRegularExpression:(NSRegularExpression *)MIMETypeRegex
-{
+- (void)setParserClass:(Class<RKParser>)parserClass forMIMETypeRegularExpression:(NSRegularExpression *)MIMETypeRegex {
     NSArray *expressionAndClass = [NSArray arrayWithObjects:MIMETypeRegex, parserClass, nil];
     [_MIMETypeToParserClassesRegularExpressions addObject:expressionAndClass];
 }
 
 #endif
 
-- (id<RKParser>)parserForMIMEType:(NSString *)MIMEType
-{
+- (id<RKParser>)parserForMIMEType:(NSString *)MIMEType {
     Class parserClass = [self parserClassForMIMEType:MIMEType];
     if (parserClass) {
         return [[[parserClass alloc] init] autorelease];
@@ -103,8 +95,7 @@ RKParserRegistry *gSharedRegistry;
     return nil;
 }
 
-- (void)autoconfigure
-{
+- (void)autoconfigure {
     Class parserClass = nil;
 
     // JSON

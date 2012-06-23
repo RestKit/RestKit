@@ -147,8 +147,7 @@
     return ([objects count] > 0) ? [objects objectAtIndex:0] : nil;
 }
 
-- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID
-{
+- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID {
     /*
      NOTE:
      We use existingObjectWithID: as opposed to objectWithID: as objectWithID: can return us a fault

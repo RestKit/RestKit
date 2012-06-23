@@ -15,23 +15,19 @@
 
 @implementation RKTableViewCellMappingTest
 
-- (void)testCallTheDesignatedInitializerOnUITableViewCell
-{
+- (void)testCallTheDesignatedInitializerOnUITableViewCell {
 
 }
 
-- (void)testDequeueReusableCells
-{
+- (void)testDequeueReusableCells {
 
 }
 
-- (void)testSetTheAccessoryType
-{
+- (void)testSetTheAccessoryType {
 
 }
 
-- (void)testSetTheCellStyle
-{
+- (void)testSetTheCellStyle {
 
 }
 

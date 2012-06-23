@@ -78,7 +78,7 @@
     }
 
     // Try to connect to the port
-    _open = (connect(sd, (struct sockaddr *) &_remote_saddr, sizeof(_remote_saddr)) == 0);
+    _open = (connect(sd,(struct sockaddr *) &_remote_saddr, sizeof(_remote_saddr)) == 0);
 
     if (_open) {
         close(sd);
