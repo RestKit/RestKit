@@ -136,9 +136,11 @@ static RKManagedObjectStore *defaultObjectStore = nil;
             [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
         }
         
-        // Append the RKSyncManager's queue entity to the model
+        #if NS_BLOCKS_AVAILABLE
+        // Append the RKSyncManager's queue entity to the model - requires blocks
         NSEntityDescription *syncQueueEntity = [RKManagedObjectSyncQueue entityDescription];       
         [_managedObjectModel setEntities:[[_managedObjectModel entities] arrayByAddingObject:syncQueueEntity]];
+        #endif
         
         _delegate = delegate;
 

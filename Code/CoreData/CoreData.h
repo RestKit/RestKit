@@ -32,7 +32,10 @@
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKSearchableManagedObject.h"
 #import "RKSearchWord.h"
+
+#if NS_BLOCKS_AVAILABLE
 #import "RKSyncManager.h"
+#endif
 
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKObjectMappingProvider+CoreData.h"

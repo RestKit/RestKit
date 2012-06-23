@@ -22,6 +22,7 @@
 #import "RKObjectMapping.h"
 //#import "RKManagedObjectStore.h"
 
+#if NS_BLOCKS_AVAILABLE
 /**
  Mode that specifies how the object should be synchronized with the server.
  To use transparent syncing (i.e. calls are sent when network access is available
@@ -54,6 +55,8 @@ typedef enum {
     RKSyncDirectionPull = 0x010,  /** RKSyncManager will pull requests, but not push anything. */
     RKSyncDirectionBoth = 0x011   /** RKSyncManager will push requests, and then pull those same routes (true syncing). */
 } RKSyncDirection;
+
+#endif 
 
 @class RKManagedObjectStore;
 
@@ -117,6 +120,7 @@ typedef enum {
  */
 @property (nonatomic, readonly) RKManagedObjectStore *objectStore;
 
+#if NS_BLOCKS_AVAILABLE
 /**
  The RKSyncMode specifies how objects should be synced, if at all. By default this is set to RKSyncModeNone, or whatever is specified in defaultSyncMode on RKSyncManager.
  
@@ -141,7 +145,7 @@ typedef enum {
  @see RKSyncManager
  */
 @property (nonatomic, assign) RKSyncStrategy syncStrategy;
-
+#endif
 /**
  Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
  the related object by primary key.

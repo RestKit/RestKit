@@ -24,7 +24,10 @@
 #import "RKObjectMappingProvider.h"
 #import "RKConfigurationDelegate.h"
 #import "RKObjectPaginator.h"
+
+#if NS_BLOCKS_AVAILABLE
 #import "RKSyncManager.h"
+#endif
 
 @protocol RKParser;
 
@@ -234,10 +237,12 @@ typedef enum {
  */
 @property (nonatomic, retain) RKManagedObjectStore *objectStore;
 
+#if NS_BLOCKS_AVAILABLE
 /**
  An object that handles the syncronization of objects with the server.
  */
 @property (nonatomic, readonly) RKSyncManager *syncManager;
+#endif
 
 /**
  The Grand Dispatch Queue to use when performing expensive object mapping operations

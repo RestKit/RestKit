@@ -48,7 +48,10 @@ static dispatch_queue_t defaultMappingQueue = nil;
 @synthesize serializationMIMEType = _serializationMIMEType;
 @synthesize networkStatus = _networkStatus;
 @synthesize mappingQueue = _mappingQueue;
+
+#if NS_BLOCKS_AVAILABLE
 @synthesize syncManager = _syncManager;
+#endif
 
 + (dispatch_queue_t)defaultMappingQueue {
     if (! defaultMappingQueue) {
@@ -126,8 +129,12 @@ static dispatch_queue_t defaultMappingQueue = nil;
 - (void)dealloc {
     [self removeObserver:self forKeyPath:@"client.reachabilityObserver"];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    #if NS_BLOCKS_AVAILABLE
     [_syncManager release];
     _syncManager = nil;
+    #endif
+    
     [_router release];
     _router = nil;
     self.client = nil;
@@ -213,7 +220,9 @@ static dispatch_queue_t defaultMappingQueue = nil;
         }
         _objectStore = objectStore;
     }
+    #if NS_BLOCKS_AVAILABLE
     _syncManager = [[RKSyncManager alloc] initWithObjectManager:self];
+    #endif
 }
 
 /////////////////////////////////////////////////////////////
