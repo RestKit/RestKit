@@ -20,6 +20,8 @@
 
 #import "RKSyncManager.h"
 
+typedef void (^RKSyncNetworkOperationBlock)(void);
+
 @interface RKSyncManager (Private)
 
 @property (nonatomic, retain, readwrite) RKRequestQueue *requestQueue;
@@ -242,6 +244,11 @@
     [_queue addObjectsFromArray:[self queueItemsForSyncMode:syncMode class:objectClass]];
     NSUInteger queueCount = [_queue count];
     
+    //TODO: We have to do the following two steps a lot, pull it out into a method
+    //e.g. syncStrategy:forClass: (Private)
+    RKManagedObjectMapping *mapping = ((RKManagedObjectMapping*)[[_objectManager mappingProvider] objectMappingForClass:objectClass]);
+    RKSyncStrategy strategy = (mapping.syncStrategy == RKSyncStrategyDefault) ? _defaultSyncStrategy : mapping.syncStrategy;;
+    
     if (queueCount > 0)
     {
         // weak reference
@@ -250,7 +257,7 @@
         
         NSManagedObjectContext *context = _objectManager.objectStore.managedObjectContextForCurrentThread;
         
-        //Build set of objects that will be synced (deleted objects not garaunteed to exist
+        //Build set of objects that will be synced (deleted objects not garaunteed to exist)
         NSMutableSet *objectSet = [[[NSMutableSet alloc] init] autorelease];
         for (RKManagedObjectSyncQueue *item in _queue) {
             if ([item.syncMethod integerValue] != RKRequestMethodDELETE) {
@@ -268,10 +275,12 @@
         for (__block RKManagedObjectSyncQueue *item in _queue) {
             NSManagedObject *object = [context objectWithID:[self objectIDWithString:item.objectIDString]];
             
+            //TODO: if statement should be refactored so that it only creates the blocks
+            
             // Depending on what type of item this is, make the appropriate RestKit call 
             RKRequestMethod method = [item.syncMethod integerValue];
             if (method == RKRequestMethodPOST) {
-                dispatch_async(_networkOperationQueue, ^{
+                RKSyncNetworkOperationBlock postBlock = ^{
                     [_objectManager postObject:object usingBlock:^(RKObjectLoader *loader){
                         loader.onDidLoadObject = ^ (id object){
                             [blocksafeSelf addCompletedQueueItem: item];
@@ -285,9 +294,17 @@
                             }
                         };
                     }];
-                });
+                };
+                
+                //if we're using proxy only, it's important that each operation happen in order.
+                if (strategy == RKSyncStrategyBatch) {
+                    dispatch_async(_networkOperationQueue, postBlock);
+                } else if (strategy == RKSyncStrategyProxyOnly){
+                    dispatch_barrier_async(_networkOperationQueue, postBlock);
+                }
+                
             } else if (method == RKRequestMethodPUT) {
-                dispatch_async(_networkOperationQueue, ^{
+                RKSyncNetworkOperationBlock putBlock = ^{
                     [_objectManager putObject:object usingBlock:^(RKObjectLoader *loader){
                         loader.onDidLoadObject = ^ (id object){
                             [blocksafeSelf addCompletedQueueItem: item];
@@ -301,10 +318,18 @@
                             }
                         };
                     }];
-                });
+                }; 
+                
+                //if we're using proxy only, it's important that each operation happen in order.
+                if (strategy == RKSyncStrategyBatch) {
+                    dispatch_async(_networkOperationQueue, putBlock);
+                } else if (strategy == RKSyncStrategyProxyOnly){
+                    dispatch_barrier_async(_networkOperationQueue, putBlock);
+                }
+                
             } else if (method == RKRequestMethodDELETE) {
                 //The object doesn't necessarily exist if the context has been saved since it was deleted, so we send using the stored route
-                dispatch_async(_networkOperationQueue, ^{
+                RKSyncNetworkOperationBlock deleteBlock = ^{
                     [[_objectManager client] delete:item.objectRoute usingBlock: ^(RKRequest *request ){
                         request.onDidLoadResponse = ^ (RKResponse *response){
                             if ([response isSuccessful]) {
@@ -316,7 +341,14 @@
                             }
                         };
                     }];
-                });
+                };
+ 
+                //if we're using proxy only, it's important that each operation happen in order.
+                if (strategy == RKSyncStrategyBatch) {
+                    dispatch_async(_networkOperationQueue, deleteBlock);
+                } else if (strategy == RKSyncStrategyProxyOnly){
+                    dispatch_barrier_async(_networkOperationQueue, deleteBlock);
+                }
             }
         }
     } else {
@@ -386,7 +418,7 @@
     // Notification keys of the object sets we care about
     NSArray *objectKeys = [NSArray arrayWithObjects:NSInsertedObjectsKey, NSUpdatedObjectsKey, NSDeletedObjectsKey, nil];
   
-    BOOL somethingAdded = NO;
+    BOOL somethingAddedToQueue = NO;
     BOOL shouldPull = NO;
   
     // Iterate through each type of object change, and then iterate the objects for each type.
@@ -411,17 +443,17 @@
                 if ([changeType isEqualToString:NSInsertedObjectsKey])
                 {
                     BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodPOST syncMode:mode];
-                  somethingAdded = (somethingAdded || added);
+                  somethingAddedToQueue = (somethingAddedToQueue || added);
                 }
                 else if ([changeType isEqualToString:NSDeletedObjectsKey] && [self shouldDeleteObject:object strategy:strategy])
                 {
                   BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodDELETE syncMode:mode];
-                  somethingAdded = (somethingAdded || added);
+                  somethingAddedToQueue = (somethingAddedToQueue || added);
                 }
                 else if ([changeType isEqualToString:NSUpdatedObjectsKey] && [self shouldUpdateObject:object strategy:strategy])
                 {
                   BOOL added = [self addQueueItemForObject:object syncMethod:RKRequestMethodPUT syncMode:mode];
-                  somethingAdded = (somethingAdded || added);
+                  somethingAddedToQueue = (somethingAddedToQueue || added);
                 }
             }
         }
@@ -429,7 +461,7 @@
   
     // transparent sync needs to be called on every nontrivial save and every network change - but only if something was added,
     // otherwise we will end up in an infinite loop, as the other parts of RestKit also save the MOC when this is called.
-    if (somethingAdded || shouldPull)
+    if (somethingAddedToQueue || shouldPull)
     {
       [self transparentSync];
     }
