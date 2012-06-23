@@ -24,7 +24,12 @@ static NSNumber *defaultBatchSize = nil;
 
 static NSManagedObjectContext *defaultContext = nil;
 
+static id dynamicFindBy(id self, SEL _cmd, NSString *string);
+static id dynamicFindAllBy(id self, SEL _cmd, NSString *string);
+
 RK_FIX_CATEGORY_BUG(NSManagedObjectContext_ActiveRecord)
+
+
 
 @implementation NSManagedObjectContext (ActiveRecord)
 
@@ -819,4 +824,58 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     return [[self class] objectWithMinValueFor:property inContext:[self currentContext]];
 }
 
++ (BOOL) swizzledResolveClassMethod:(SEL)aSEL
+{
+    Class selfMetaClass = objc_getMetaClass([NSStringFromClass([self class]) UTF8String]);
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(aSEL)];
+    
+    if ([methodName hasPrefix:@"findBy"]) {
+        class_addMethod(selfMetaClass, sel_registerName([methodName UTF8String]), (IMP) dynamicFindBy, "@@:@");
+        return YES;
+    } else if ([methodName hasPrefix:@"findAllBy"]) {
+        class_addMethod(selfMetaClass, sel_registerName([methodName UTF8String]), (IMP) dynamicFindAllBy, "@@:@");
+        return YES;
+    }
+    
+    //Double swizzle might not be necessary, since I *believe* resolveClassMethod is only called if a selector isn't found. But it doesn't seem to hurt anything (maybe perfomance?)
+    NSError *error = nil;
+    [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
+    BOOL result = [selfMetaClass resolveClassMethod:aSEL];
+    [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
+    
+    if (error) {
+        RKLogError(@"Error swizzling resolveClassMethod: %@", error);
+    }
+    
+    return result;
+}
+                         
+
 @end
+                         
+static id dynamicFindBy(id self, SEL _cmd, NSString *string) {
+    
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(_cmd)];
+    NSRange range = NSMakeRange(6, [methodName length] - 7);
+    NSString *propertyName = [[methodName substringWithRange:range] stringByLowercasingFirstLetter];
+    
+    if (class_getProperty([self class], [propertyName UTF8String]) == NULL) {
+        return nil;
+    }
+
+    return [self findFirstByAttribute:propertyName withValue:string];
+}      
+
+static id dynamicFindAllBy(id self, SEL _cmd, NSString *string) {
+    
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(_cmd)];
+    NSRange range = NSMakeRange(9, [methodName length] - 10);
+    NSString *propertyName = [[methodName substringWithRange:range] stringByLowercasingFirstLetter];
+    
+    if (class_getProperty([self class], [propertyName UTF8String]) == NULL) {
+        return nil;
+    }
+    
+    return [self findByAttribute:propertyName withValue:string];
+} 
+
