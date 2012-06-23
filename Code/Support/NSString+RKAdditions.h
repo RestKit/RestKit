@@ -149,4 +149,12 @@
 
 - (NSString *)stringByLowercasingFirstLetter;
 
+/**
+ Returns a string with the first letter uppercased.
+ 
+ @return A new string with the first letter uppercased.
+ */
+
+- (NSString *)stringByUppercasingFirstLetter;
+
 @end

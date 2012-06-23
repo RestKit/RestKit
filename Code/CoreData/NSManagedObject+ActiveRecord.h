@@ -12,6 +12,7 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import "JRSwizzle.h"
+#import "NSString+RKAdditions.h"
 
 /**
  Extensions to NSManagedObjectContext for RestKit's Active Record pattern implementation

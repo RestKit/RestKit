@@ -211,4 +211,10 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     return [NSString stringWithFormat:@"%@%@", [[self substringWithRange:firstLetterRange] lowercaseString], [self substringWithRange:restOfWordRange]];
 }
 
+- (NSString *) stringByUppercasingFirstLetter {
+    NSRange firstLetterRange = NSMakeRange(0,1);
+    NSRange restOfWordRange = NSMakeRange(1 , [self length] - 1);
+    return [NSString stringWithFormat:@"%@%@", [[self substringWithRange:firstLetterRange] uppercaseString], [self substringWithRange:restOfWordRange]];
+}
+
 @end
