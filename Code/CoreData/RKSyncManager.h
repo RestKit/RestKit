@@ -34,7 +34,7 @@
 /**
  * Sent when there is an error syncing. 
  */
-- (void)syncManager:(RKSyncManager *)syncManager didFailSyncingWithError:(NSError*)error;
+- (void)syncManager:(RKSyncManager *)syncManager didFailSyncingQueueItem:(RKManagedObjectSyncQueue *)syncQueueItem withError:(NSError*)error;
 
 @optional
 

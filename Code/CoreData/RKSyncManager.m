@@ -287,8 +287,8 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
                         loader.onDidFailWithError = ^ (NSError *error){
                             [blocksafeSelf addFailedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                            if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-                                [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                            if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingQueueItem:withError:)]) {
+                                [blocksafeDelegate syncManager:self didFailSyncingQueueItem:item withError:error];
                             }
                         };
                     }];
@@ -311,8 +311,8 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
                         loader.onDidFailWithError = ^ (NSError *error){
                             [blocksafeSelf addFailedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
-                            if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-                                [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                            if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingQueueItem:withError:)]) {
+                                [blocksafeDelegate syncManager:self didFailSyncingQueueItem:item withError:error];
                             }
                         };
                     }];
@@ -336,6 +336,9 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
                             } else {
                                 [blocksafeSelf addFailedQueueItem: item];
                                 [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
+                                if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingQueueItem:withError:)]) {
+                                    [blocksafeDelegate syncManager:self didFailSyncingQueueItem:item withError:nil];
+                                }
                             }
                         };
                     }];
@@ -509,7 +512,8 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
                         };
                         loader.onDidFailWithError = ^(NSError *error){
                             if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
-                                [blocksafeDelegate syncManager:self didFailSyncingWithError:error];
+                                //TODO: Need a good delegate call (no syncQueueItem in this case)
+                                //[blocksafeDelegate syncManager:self didFailSyncingQueueItem withError:<#(NSError *)#> WithError:error];
                             }
                         };
                     }];
