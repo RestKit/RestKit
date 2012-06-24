@@ -36,7 +36,6 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_Dynamic)
     [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
     BOOL result = [selfMetaClass resolveClassMethod:aSEL];
     [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
-    
     if (error) {
         RKLogError(@"Error swizzling resolveClassMethod: %@", error);
     }
@@ -44,11 +43,23 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_Dynamic)
     return result;
 }
 
-//+ (id)where:(NSString *)predicateString {
-//    [self findAllWithPredicate:[NSPredicate predicateWith
-//}
++ (id)create:(NSDictionary *)params {
+    NSManagedObject *newObject = [self object];
+    for (NSString *propertyName in params) {
+        id propertyValue = [params objectForKey:propertyName];
+        SEL propertySelector = NSSelectorFromString([NSString stringWithFormat:@"set%@:", [propertyName stringByUppercasingFirstLetter], nil]);
+        if ([newObject respondsToSelector:propertySelector]) {
+            [newObject performSelector:propertySelector withObject:propertyValue];
+        }
+    }
+    return newObject;
+}
 
-+ (NSManagedObject *)find:(NSDictionary *)params {
+- (void)save:(NSError **)error {
+    [[[self class] currentContext] save:error];
+}
+
++ (id)find:(NSDictionary *)params {
     //TODO: check for nil dictionary?
     //check for existence of properties? Return nil and log error if invalid? 
     NSString *query = @"";

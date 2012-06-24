@@ -14,7 +14,9 @@
 
 @interface NSManagedObject (Dynamic)
 
-+ (NSManagedObject *)find:(NSDictionary *)params;
++ (id)create:(NSDictionary *)params;
+- (void)save:(NSError **)error;
++ (id)find:(NSDictionary *)params;
 + (NSArray *)findAll:(NSDictionary *)params;
 
 @end
