@@ -9,10 +9,7 @@
 //
 
 #import <CoreData/CoreData.h>
-#import <objc/runtime.h>
-#import <objc/message.h>
-#import "JRSwizzle.h"
-#import "NSString+RKAdditions.h"
+#import "NSManagedObject+Dynamic.h"
 
 /**
  Extensions to NSManagedObjectContext for RestKit's Active Record pattern implementation
