@@ -374,14 +374,6 @@ typedef NSUInteger RKTableControllerState;
  */
 - (NSUInteger)numberOfRowsInSection:(NSUInteger)index;
 
-/**
- Returns the UITableViewCell created by applying the specified
- mapping operation to the object identified by indexPath.
-
- @param indexPath The indexPath in the tableView for which a cell is needed.
- */
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath;
-
 ///-----------------------------------------------------------------------------
 /// @name Managing Swipe View
 ///-----------------------------------------------------------------------------
