@@ -13,6 +13,7 @@
 
 static id dynamicFindBy(id self, SEL _cmd, NSString *string);
 static id dynamicFindAllBy(id self, SEL _cmd, NSString *string);
+static BOOL dynamicHas(id self, SEL _cmd);
 
 RK_FIX_CATEGORY_BUG(NSManagedObject_Dynamic)
 
@@ -31,16 +32,22 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_Dynamic)
         return YES;
     }
     
-    //Double swizzle might not be necessary, since I *believe* resolveClassMethod is only called if a selector isn't found. But it doesn't seem to hurt anything (maybe perfomance?)
-    NSError *error = nil;
-    [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
-    BOOL result = [selfMetaClass resolveClassMethod:aSEL];
-    [selfMetaClass jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
-    if (error) {
-        RKLogError(@"Error swizzling resolveClassMethod: %@", error);
+    //We only get here if an unknown method is called that doesn't start with our defined prefixes.
+    //This actually calls the *original* resolveClassMethod    
+    return [self swizzledResolveClassMethod:aSEL];
+}
+
++ (BOOL)swizzledResolveInstanceMethod:(SEL)aSEL {
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(aSEL)];
+    
+    if ([methodName hasPrefix:@"has"]) {
+        class_addMethod(self, sel_registerName([methodName UTF8String]), (IMP) dynamicHas, "@@");
+        return YES;
     }
     
-    return result;
+    //We only get here if an unknown method is called that doesn't start with our defined prefixes, or if an @dynamic property is called.
+    //This actually calls the *original* resolveInstanceMethod.
+    return [self swizzledResolveInstanceMethod:aSEL];
 }
 
 + (id)create:(NSDictionary *)params {
@@ -125,4 +132,17 @@ static id dynamicFindAllBy(id self, SEL _cmd, NSString *string) {
     }
     
     return [self findAll:[NSDictionary dictionaryWithObjectsAndKeys:string, propertyName, nil]];
+}
+
+static BOOL dynamicHas(id self, SEL _cmd) {
+    NSString *methodName = [NSString stringWithUTF8String:sel_getName(_cmd)];
+    NSRange range = NSMakeRange(3, [methodName length] - 3);
+    NSString *propertyName = [[methodName substringWithRange:range] stringByLowercasingFirstLetter];
+    
+    if (class_getProperty([self class], [propertyName UTF8String])) {
+        id property = [self valueForKey:propertyName];
+        return (property) ? YES : NO;
+    }
+    
+    return NO;
 }

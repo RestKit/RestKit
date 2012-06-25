@@ -147,8 +147,14 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         [NSManagedObject jr_swizzleClassMethod:@selector(resolveClassMethod:) withClassMethod:@selector(swizzledResolveClassMethod:) error:&error];
         if (error) {
             RKLogError(@"Error adding dynamic findBy methods: %@", error);
+            error = nil;
         }
-
+        
+        [NSManagedObject jr_swizzleClassMethod:@selector(resolveInstanceMethod:) withClassMethod:@selector(swizzledResolveInstanceMethod:) error:&error];
+        if (error) {
+            RKLogError(@"Error adding dynamic has methods: %@", error);
+        }
+        
         [self createPersistentStoreCoordinator];
         self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
 
