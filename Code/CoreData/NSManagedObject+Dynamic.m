@@ -68,8 +68,8 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_Dynamic)
     return newObject;
 }
 
-- (void)save:(NSError **)error {
-    [[[self class] currentContext] save:error];
+- (BOOL)save:(NSError **)error {
+    return [[[self class] currentContext] save:error];
 }
 
 + (id)find:(NSDictionary *)params {
