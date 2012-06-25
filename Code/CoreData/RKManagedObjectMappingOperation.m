@@ -59,7 +59,7 @@
         RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));
         return;
     }
-    RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *) mapping;
+    RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *)mapping;
     NSAssert(relationshipMapping, @"Unable to find relationship mapping '%@' to connect by primaryKey", relationshipName);
     NSAssert([relationshipMapping isKindOfClass:[RKObjectRelationshipMapping class]], @"Expected mapping for %@ to be a relationship mapping", relationshipName);
     NSAssert([relationshipMapping.mapping isKindOfClass:[RKManagedObjectMapping class]], @"Can only connect RKManagedObjectMapping relationships");

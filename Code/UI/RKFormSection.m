@@ -63,7 +63,7 @@
         case RKFormControlTypeTextFieldSecure:;
             UITextField *textField = [[[UITextField alloc] init] autorelease];
             textField.secureTextEntry = (controlType == RKFormControlTypeTextFieldSecure);
-            control = (UIControl *) textField;
+            control = (UIControl *)textField;
             break;
 
         case RKFormControlTypeSwitch:;

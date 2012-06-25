@@ -151,13 +151,13 @@
     }
 
     if (indexPath.section == 0) {
-        Project *project = (Project *) [_objects objectAtIndex:indexPath.row];
+        Project *project = (Project *)[_objects objectAtIndex:indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.textLabel.text = project.name;
     } else if (indexPath.section == 1) {
         // NOTE: We refetch the object here because Project is not Core Data backed
         NSManagedObject *objectReference = [_selectedProject.tasks objectAtIndex:indexPath.row];
-        Task *task = (Task *) [[RKObjectManager sharedManager].objectStore objectWithID:[objectReference objectID]];
+        Task *task = (Task *)[[RKObjectManager sharedManager].objectStore objectWithID:[objectReference objectID]];
         cell.textLabel.text = [NSString stringWithFormat:@"%@", task.name];
         cell.detailTextLabel.text = [NSString stringWithFormat:@"Assigned to: %@", task.assignedUser.name];
     }

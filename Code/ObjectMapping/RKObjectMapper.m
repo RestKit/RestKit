@@ -91,7 +91,7 @@
 {
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                      errorMessage, NSLocalizedDescriptionKey,
-                                     @"RKObjectMapperKeyPath", keyPath ? keyPath : (NSString *) [NSNull null],
+                                     @"RKObjectMapperKeyPath", keyPath ? keyPath : (NSString *)[NSNull null],
                                      nil];
     [userInfo addEntriesFromDictionary:otherInfo];
     NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];

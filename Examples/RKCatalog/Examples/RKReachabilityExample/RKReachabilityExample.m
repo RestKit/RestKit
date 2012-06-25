@@ -50,7 +50,7 @@
 
 - (void)reachabilityChanged:(NSNotification *)notification
 {
-    RKReachabilityObserver *observer = (RKReachabilityObserver *) [notification object];
+    RKReachabilityObserver *observer = (RKReachabilityObserver *)[notification object];
 
     RKLogCritical(@"Received reachability update: %@", observer);
     _flagsLabel.text = [NSString stringWithFormat:@"Host: %@ -> %@", observer.host, [observer reachabilityFlagsDescription]];

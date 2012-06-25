@@ -70,27 +70,27 @@
 
 - (UIButton *)button
 {
-    return ([self.control isKindOfClass:[UIButton class]]) ? (UIButton *) self.control : nil;
+    return ([self.control isKindOfClass:[UIButton class]]) ? (UIButton *)self.control : nil;
 }
 
 - (UITextField *)textField
 {
-    return ([self.control isKindOfClass:[UITextField class]]) ? (UITextField *) self.control : nil;
+    return ([self.control isKindOfClass:[UITextField class]]) ? (UITextField *)self.control : nil;
 }
 
 - (UISwitch *)switchControl
 {
-    return ([self.control isKindOfClass:[UISwitch class]]) ? (UISwitch *) self.control : nil;
+    return ([self.control isKindOfClass:[UISwitch class]]) ? (UISwitch *)self.control : nil;
 }
 
 - (UISlider *)slider
 {
-    return ([self.control isKindOfClass:[UISlider class]]) ? (UISlider *) self.control : nil;
+    return ([self.control isKindOfClass:[UISlider class]]) ? (UISlider *)self.control : nil;
 }
 
 - (UILabel *)label
 {
-    return ([self.control isKindOfClass:[UILabel class]]) ? (UILabel *) self.control : nil;
+    return ([self.control isKindOfClass:[UILabel class]]) ? (UILabel *)self.control : nil;
 }
 
 // TODO: What if we replace this with a protocol that enables KVC

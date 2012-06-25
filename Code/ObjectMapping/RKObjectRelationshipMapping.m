@@ -27,7 +27,7 @@
 
 + (RKObjectRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping reversible:(BOOL)reversible
 {
-    RKObjectRelationshipMapping *relationshipMapping = (RKObjectRelationshipMapping *) [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
+    RKObjectRelationshipMapping *relationshipMapping = (RKObjectRelationshipMapping *)[self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
     relationshipMapping.reversible = reversible;
     relationshipMapping.mapping = objectOrDynamicMapping;
     return relationshipMapping;

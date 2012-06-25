@@ -167,7 +167,7 @@ static RKTestFactory *sharedFactory = nil;
 
 + (NSSet *)factoryNames
 {
-    return [NSSet setWithArray:[[RKTestFactory sharedFactory].factoryBlocks allKeys] ];
+    return [NSSet setWithArray:[[RKTestFactory sharedFactory].factoryBlocks allKeys]];
 }
 
 + (id)client

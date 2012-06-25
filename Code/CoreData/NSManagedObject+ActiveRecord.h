@@ -152,8 +152,8 @@
 + (NSNumber *)numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm;
 + (NSNumber *)numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
 
-+ (BOOL) hasAtLeastOneEntity;
-+ (BOOL) hasAtLeastOneEntityInContext:(NSManagedObjectContext *)context;
++ (BOOL)hasAtLeastOneEntity;
++ (BOOL)hasAtLeastOneEntityInContext:(NSManagedObjectContext *)context;
 
 + (NSFetchRequest *)requestAll;
 + (NSFetchRequest *)requestAllInContext:(NSManagedObjectContext *)context;
@@ -180,8 +180,8 @@
 + (NSArray *)findAllWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
 
 + (NSNumber *)maxValueFor:(NSString *)property;
-+ (id) objectWithMinValueFor:(NSString *)property;
-+ (id) objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context;
++ (id)objectWithMinValueFor:(NSString *)property;
++ (id)objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context;
 
 + (id)findFirst;
 + (id)findFirstInContext:(NSManagedObjectContext *)context;

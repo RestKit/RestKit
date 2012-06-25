@@ -26,7 +26,7 @@
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature
 {
-    return (RKManagedObjectThreadSafeInvocation *) [super invocationWithMethodSignature:methodSignature];
+    return (RKManagedObjectThreadSafeInvocation *)[super invocationWithMethodSignature:methodSignature];
 }
 
 - (void)setManagedObjectKeyPaths:(NSSet *)keyPaths forArgument:(NSInteger)index

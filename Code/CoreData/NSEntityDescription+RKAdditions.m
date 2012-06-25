@@ -45,7 +45,7 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
 - (NSString *)primaryKeyAttributeName
 {
     // Check for an associative object reference
-    NSString *primaryKeyAttribute = (NSString *) objc_getAssociatedObject(self, &primaryKeyAttributeNameKey);
+    NSString *primaryKeyAttribute = (NSString *)objc_getAssociatedObject(self, &primaryKeyAttributeNameKey);
 
     // Fall back to the userInfo dictionary
     if (! primaryKeyAttribute) {
@@ -71,7 +71,7 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
 
 - (NSPredicate *)predicateForPrimaryKeyAttribute
 {
-    return (NSPredicate *) objc_getAssociatedObject(self, &primaryKeyPredicateKey);
+    return (NSPredicate *)objc_getAssociatedObject(self, &primaryKeyPredicateKey);
 }
 
 - (id)coerceValueForPrimaryKey:(id)primaryKeyValue

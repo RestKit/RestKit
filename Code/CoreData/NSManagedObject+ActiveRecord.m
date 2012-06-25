@@ -311,7 +311,7 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
         id attributeName;
         va_list variadicArguments;
         va_start(variadicArguments, attributesToSortBy);
-        while ((attributeName = va_arg(variadicArguments, id))!= nil)
+        while ((attributeName = va_arg(variadicArguments, id)) != nil)
         {
             NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:attributeName ascending:ascending];
             [attributes addObject:sortDescriptor];
@@ -324,7 +324,7 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     {
         va_list variadicArguments;
         va_start(variadicArguments, attributesToSortBy);
-        [attributes addObject:[[[NSSortDescriptor alloc] initWithKey:attributesToSortBy ascending:ascending] autorelease] ];
+        [attributes addObject:[[[NSSortDescriptor alloc] initWithKey:attributesToSortBy ascending:ascending] autorelease]];
         va_end(variadicArguments);
     }
 

@@ -88,8 +88,8 @@
     self.arrowView.center = imageCenter;
     self.arrowView.frame = CGRectIntegral(self.arrowView.frame);
     self.activityView.center = imageCenter;
-    self.titleLabel.frame = CGRectIntegral(CGRectMake(0.0f, ( CGRectGetHeight(self.bounds) * .25f ), CGRectGetWidth(self.bounds), 20.0f));
-    self.lastUpdatedLabel.frame = CGRectOffset(self.titleLabel.frame, 0.f, 18.f );
+    self.titleLabel.frame = CGRectIntegral(CGRectMake(0.0f, (CGRectGetHeight(self.bounds) * .25f), CGRectGetWidth(self.bounds), 20.0f));
+    self.lastUpdatedLabel.frame = CGRectOffset(self.titleLabel.frame, 0.f, 18.f);
 }
 
 #ifdef UI_APPEARANCE_SELECTOR

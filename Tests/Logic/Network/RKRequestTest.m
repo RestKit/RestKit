@@ -680,8 +680,8 @@ request.timeoutInterval = 1.0;
 {
     RKParams *params = [RKParams params];
 
-    [params setValue: @"hello" forParam:@"username"];
-    [params setValue: @"password" forParam:@"password"];
+    [params setValue:@"hello" forParam:@"username"];
+    [params setValue:@"password" forParam:@"password"];
 
     RKClient *client = [RKTestFactory client];
     client.cachePolicy = RKRequestCachePolicyNone;

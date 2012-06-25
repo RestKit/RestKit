@@ -53,7 +53,7 @@
 
 @implementation RKObjectRouterTest
 
--(void)testThrowAnExceptionWhenAskedForAPathForAnUnregisteredClassAndMethod
+- (void)testThrowAnExceptionWhenAskedForAPathForAnUnregisteredClassAndMethod
 {
     RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     NSException *exception = nil;
@@ -66,7 +66,7 @@
     assertThat(exception, isNot(nilValue()));
 }
 
--(void)testThrowAnExceptionWhenAskedForAPathForARegisteredClassButUnregisteredMethod
+- (void)testThrowAnExceptionWhenAskedForAPathForARegisteredClassButUnregisteredMethod
 {
     RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
@@ -80,7 +80,7 @@
     assertThat(exception, isNot(nilValue()));
 }
 
--(void)testReturnPathsRegisteredForTestificRequestMethods
+- (void)testReturnPathsRegisteredForTestificRequestMethods
 {
     RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];
@@ -88,7 +88,7 @@
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
--(void)testReturnPathsRegisteredForTheClassAsAWhole
+- (void)testReturnPathsRegisteredForTheClassAsAWhole
 {
     RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp"];
@@ -117,7 +117,7 @@
     assertThat(path, is(equalTo(@"/HumanService.asp")));
 }
 
--(void)testFavorTestificMethodsWhenClassAndTestificMethodsAreRegistered
+- (void)testFavorTestificMethodsWhenClassAndTestificMethodsAreRegistered
 {
     RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp"];
@@ -130,7 +130,7 @@
     assertThat(path, is(equalTo(@"/HumanServiceForPUT.asp")));
 }
 
--(void)testRaiseAnExceptionWhenAttemptIsMadeToRegisterOverAnExistingRoute
+- (void)testRaiseAnExceptionWhenAttemptIsMadeToRegisterOverAnExistingRoute
 {
     RKObjectRouter *router = [[[RKObjectRouter alloc] init] autorelease];
     [router routeClass:[RKTestObject class] toResourcePath:@"/HumanService.asp" forMethod:RKRequestMethodGET];

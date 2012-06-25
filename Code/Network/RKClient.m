@@ -431,7 +431,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
 - (void)reachabilityWasDetermined:(NSNotification *)notification
 {
-    RKReachabilityObserver *observer = (RKReachabilityObserver *) [notification object];
+    RKReachabilityObserver *observer = (RKReachabilityObserver *)[notification object];
     NSAssert(observer == self.reachabilityObserver, @"Received unexpected reachability notification from inappropriate reachability observer");
 
     RKLogDebug(@"Reachability to host '%@' determined for client %@, unsuspending queue %@", observer.host, self, self.requestQueue);
