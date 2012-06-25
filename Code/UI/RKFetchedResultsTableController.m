@@ -450,8 +450,9 @@
     if ([self isHeaderSection:section]) {
         numberOfRows += (![self isEmpty] || self.showsHeaderRowsWhenEmpty) ? [self.headerItems count] : 0;
         numberOfRows += ([self isEmpty] && self.emptyItem) ? 1 : 0;
+    }
 
-    } else if ([self isFooterSection:section]) {
+    if ([self isFooterSection:section]) {
         numberOfRows += [self.footerItems count];
     }
     return numberOfRows;
