@@ -360,39 +360,6 @@
     return (fetchedItemCount + nonFetchedItemCount);
 }
 
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSAssert(indexPath, @"Cannot retrieve cell for nil indexPath");
-    id mappableObject = [self objectForRowAtIndexPath:indexPath];
-    NSAssert(mappableObject, @"Cannot build a tableView cell without an object");
-
-    RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
-    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
-
-    // Attempt to get existing cell
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    if (! cell) {
-        cell = [cellMapping mappableObjectForData:self.tableView];
-    }
-    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
-
-    // Map the object state into the cell
-    RKObjectMappingOperation *mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
-    NSError *error = nil;
-    BOOL success = [mappingOperation performMapping:&error];
-    [mappingOperation release];
-
-    // NOTE: If there is no mapping work performed, but no error is generated then
-    // we consider the operation a success. It is common for table cells to not contain
-    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
-    if (success == NO && error != nil) {
-        RKLogError(@"Failed to generate table cell for object: %@", error);
-        return nil;
-    }
-
-    return cell;
-}
-
 - (NSIndexPath *)indexPathForObject:(id)object
 {
     if ([object isKindOfClass:[NSManagedObject class]]) {
@@ -428,7 +395,7 @@
 {
     NSIndexPath *indexPath = [self indexPathForObject:object];
     NSAssert(indexPath, @"Failed to find indexPath for object: %@", object);
-    return [self cellForObjectAtIndexPath:indexPath];
+    return [self.tableView cellForRowAtIndexPath:indexPath];
 }
 
 #pragma mark - UITableViewDataSource methods

@@ -429,33 +429,6 @@
     return [self sectionAtIndex:index].rowCount;
 }
 
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSAssert(indexPath, @"Cannot retrieve cell for nil indexPath");
-    RKTableSection *section = [self sectionAtIndex:indexPath.section];
-    id mappableObject = [section objectAtIndex:indexPath.row];
-    RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
-    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
-
-    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
-    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
-
-    // Map the object state into the cell
-    RKObjectMappingOperation *mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
-    NSError *error = nil;
-    BOOL success = [mappingOperation performMapping:&error];
-    [mappingOperation release];
-    // NOTE: If there is no mapping work performed, but no error is generated then
-    // we consider the operation a success. It is common for table cells to not contain
-    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
-    if (success == NO && error != nil) {
-        RKLogError(@"Failed to generate table cell for object: %@", error);
-        return nil;
-    }
-
-    return cell;
-}
-
 #pragma mark - Cell Mappings
 
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath

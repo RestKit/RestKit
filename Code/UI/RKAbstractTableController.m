@@ -395,13 +395,6 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
                                  userInfo:nil];
 }
 
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
-{
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
-                                 userInfo:nil];
-}
-
 #pragma mark - Cell Mappings
 
 - (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping
@@ -426,7 +419,7 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 - (UITableViewCell *)cellForObject:(id)object
 {
     NSIndexPath *indexPath = [self indexPathForObject:object];
-    return indexPath ? [self cellForObjectAtIndexPath:indexPath] : nil;
+    return indexPath ? [self.tableView cellForRowAtIndexPath:indexPath] : nil;
 }
 
 #pragma mark - Header and Footer Rows
@@ -470,8 +463,29 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 - (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
-    UITableViewCell *cell = [self cellForObjectAtIndexPath:indexPath];
+    NSAssert(indexPath, @"Cannot retrieve cell for nil indexPath");
+    id mappableObject = [self objectForRowAtIndexPath:indexPath];
+    NSAssert(mappableObject, @"Cannot build a tableView cell without an object");
 
+    RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
+    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
+
+    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
+    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
+
+    // Map the object state into the cell
+    RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
+    NSError* error = nil;
+    BOOL success = [mappingOperation performMapping:&error];
+    [mappingOperation release];
+
+    // NOTE: If there is no mapping work performed, but no error is generated then
+    // we consider the operation a success. It is common for table cells to not contain
+    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
+    if (success == NO && error != nil) {
+        RKLogError(@"Failed table cell mapping: %@", error);
+    }
+    
     if (self.onPrepareCellForObjectAtIndexPath) {
         id object = [self objectForRowAtIndexPath:indexPath];
         self.onPrepareCellForObjectAtIndexPath(cell, object, indexPath);

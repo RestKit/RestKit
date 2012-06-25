@@ -527,9 +527,9 @@
 {
     [self bootstrapStoreAndCache];
     [self stubObjectManagerToOnline];
-    [[RKObjectManager sharedManager].router addRouteWithClass:[RKHuman class]
-                                        resourcePathPattern:@"/humans/:railsID"
-                                             method:RKRequestMethodDELETE];
+    [[RKObjectManager sharedManager].router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class]
+                                                                  resourcePathPattern:@"/humans/:railsID"
+                                                                               method:RKRequestMethodDELETE]];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
