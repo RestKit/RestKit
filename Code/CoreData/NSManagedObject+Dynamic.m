@@ -55,6 +55,12 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_Dynamic)
     return newObject;
 }
 
++ (id)createWithBlock:(void (^) (id newObject))creationBlock {
+    id newObject = [self object];    
+    creationBlock(newObject);
+    return newObject;
+}
+
 - (void)save:(NSError **)error {
     [[[self class] currentContext] save:error];
 }
