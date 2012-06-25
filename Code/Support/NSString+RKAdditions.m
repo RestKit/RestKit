@@ -155,7 +155,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 - (NSString *)MIMETypeForPathExtension
 {
     NSString *fileExtension = [self pathExtension];
-    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef) fileExtension, NULL);
+    CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)fileExtension, NULL);
     if (uti != NULL) {
         CFStringRef mime = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType);
         CFRelease(uti);
@@ -173,7 +173,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
 - (BOOL)isIPAddress
 {
     struct sockaddr_in sa;
-    char *hostNameOrIPAddressCString = (char *) [self UTF8String];
+    char *hostNameOrIPAddressCString = (char *)[self UTF8String];
     int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));
     return (result != 0);
 }
@@ -194,7 +194,7 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
 
     // Create 16 byte MD5 hash value, store in buffer
-    CC_MD5(ptr, (CC_LONG) strlen(ptr), md5Buffer);
+    CC_MD5(ptr, (CC_LONG)strlen(ptr), md5Buffer);
 
     // Convert MD5 value in the buffer to NSString of hex values
     NSMutableString *output = [NSMutableString stringWithCapacity:CC_MD5_DIGEST_LENGTH *2];

@@ -116,7 +116,7 @@ return __VA_ARGS__;                                                             
 
     if (_request.disableCertificateValidation) {
         proceed = YES;
-    } else if ([_request.additionalRootCertificates count] > 0 ) {
+    } else if ([_request.additionalRootCertificates count] > 0) {
         CFArrayRef rootCerts = (CFArrayRef)[_request.additionalRootCertificates allObjects];
         SecTrustResultType result;
         OSStatus returnCode;
@@ -164,7 +164,7 @@ return __VA_ARGS__;                                                             
         [[challenge sender] useCredential:newCredential
                forAuthenticationChallenge:challenge];
     } else {
-        RKLogWarning(@"Failed authentication challenge after %ld failures", (long) [challenge previousFailureCount]);
+        RKLogWarning(@"Failed authentication challenge after %ld failures", (long)[challenge previousFailureCount]);
         [[challenge sender] cancelAuthenticationChallenge:challenge];
     }
 }
@@ -216,7 +216,7 @@ return __VA_ARGS__;                                                             
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response
 {
     RKResponseIgnoreDelegateIfCancelled();
-    RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long) [response statusCode]);
+    RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long)[response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
     _httpURLResponse = [response retain];
     [_request invalidateTimeoutTimer];
@@ -283,7 +283,7 @@ return __VA_ARGS__;                                                             
     CFStringEncoding cfEncoding = kCFStringEncodingInvalidId;
     NSString *textEncodingName = [self bodyEncodingName];
     if (textEncodingName) {
-        cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef) textEncodingName);
+        cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)textEncodingName);
     }
     return (cfEncoding ==  kCFStringEncodingInvalidId) ? self.request.defaultHTTPEncoding : CFStringConvertEncodingToNSStringEncoding(cfEncoding);
 }

@@ -163,7 +163,7 @@ NSString * const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
             }
         }
 
-        RKLogInfo(@"Seeded %lu objects from %@...", (unsigned long) [mappedObjects count], [NSString stringWithFormat:@"%@", fileName]);
+        RKLogInfo(@"Seeded %lu objects from %@...", (unsigned long)[mappedObjects count], [NSString stringWithFormat:@"%@", fileName]);
     } else {
         RKLogError(@"Unable to read file %@: %@", fileName, [error localizedDescription]);
     }

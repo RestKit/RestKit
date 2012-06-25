@@ -87,7 +87,7 @@ RK_FIX_CATEGORY_BUG(NSDictionary_RKAdditions)
 - (void)URLEncodePart:(NSMutableArray *)parts path:(NSString *)path value:(id)value
 {
     NSString *encodedPart = [[value description] stringByAddingURLEncoding];
-    [parts addObject:[NSString stringWithFormat: @"%@=%@", path, encodedPart]];
+    [parts addObject:[NSString stringWithFormat:@"%@=%@", path, encodedPart]];
 }
 
 - (void)URLEncodeParts:(NSMutableArray *)parts path:(NSString *)inPath

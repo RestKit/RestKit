@@ -91,7 +91,7 @@
     } else {
         [objects retain];
         [_objects release];
-        _objects = (NSMutableArray *) objects;
+        _objects = (NSMutableArray *)objects;
     }
 }
 

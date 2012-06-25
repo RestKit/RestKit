@@ -44,7 +44,7 @@
  @param pathString The string to evaluate and parse, such as /districts/tx/upper/?apikey=GC5512354
  @return An instantiated RKPathMatcher without an established pattern.
  */
-+(RKPathMatcher *)matcherWithPath:(NSString *)pathString;
++ (RKPathMatcher *)matcherWithPath:(NSString *)pathString;
 
 /**
  Determines if the path string matches the provided pattern, and yields a dictionary with the resulting
@@ -87,7 +87,7 @@
  @param patternString The pattern to use for evaluating, such as /:entityName/:stateID/:chamber/
  @return An instantiated RKPathMatcher with an established pattern.
  */
-+(RKPathMatcher *)matcherWithPattern:(NSString *)patternString;
++ (RKPathMatcher *)matcherWithPattern:(NSString *)patternString;
 
 /**
  Determines if the provided resource path string matches a pattern, and yields a dictionary with the resulting

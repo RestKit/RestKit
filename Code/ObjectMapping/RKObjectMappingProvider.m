@@ -87,12 +87,12 @@
 
 - (RKObjectMapping *)serializationMappingForClass:(Class)objectClass
 {
-    return (RKObjectMapping *) [self mappingForKeyPath:NSStringFromClass(objectClass) context:RKObjectMappingProviderContextSerialization];
+    return (RKObjectMapping *)[self mappingForKeyPath:NSStringFromClass(objectClass) context:RKObjectMappingProviderContextSerialization];
 }
 
 - (NSDictionary *)objectMappingsByKeyPath
 {
-    return [NSDictionary dictionaryWithDictionary:(NSDictionary *) [self valueForContext:RKObjectMappingProviderContextObjectsByKeyPath]];
+    return [NSDictionary dictionaryWithDictionary:(NSDictionary *)[self valueForContext:RKObjectMappingProviderContextObjectsByKeyPath]];
 }
 
 - (void)registerObjectMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath
@@ -117,7 +117,7 @@
     NSArray *mappingByKeyPath = [[self valueForContext:RKObjectMappingProviderContextObjectsByKeyPath] allValues];
     NSArray *mappingsToSearch = [[NSArray arrayWithArray:mappingByType] arrayByAddingObjectsFromArray:mappingByKeyPath];
     for (RKObjectMappingDefinition *candidateMapping in mappingsToSearch) {
-        if ( ![candidateMapping respondsToSelector:@selector(objectClass)] || [mappings containsObject:candidateMapping])
+        if (![candidateMapping respondsToSelector:@selector(objectClass)] || [mappings containsObject:candidateMapping])
             continue;
         Class mappedClass = [candidateMapping performSelector:@selector(objectClass)];
         if (mappedClass && [NSStringFromClass(mappedClass) isEqualToString:NSStringFromClass(theClass)]) {
@@ -137,7 +137,7 @@
 
 - (RKObjectMapping *)errorMapping
 {
-    return (RKObjectMapping *) [self mappingForContext:RKObjectMappingProviderContextErrors];
+    return (RKObjectMapping *)[self mappingForContext:RKObjectMappingProviderContextErrors];
 }
 
 - (void)setErrorMapping:(RKObjectMapping *)errorMapping
@@ -151,7 +151,7 @@
 
 - (RKObjectMapping *)paginationMapping
 {
-    return (RKObjectMapping *) [self mappingForContext:RKObjectMappingProviderContextPagination];
+    return (RKObjectMapping *)[self mappingForContext:RKObjectMappingProviderContextPagination];
 }
 
 - (void)setPaginationMapping:(RKObjectMapping *)paginationMapping
@@ -351,7 +351,7 @@
 
 - (RKObjectMapping *)mappingForKeyPath:(NSString *)keyPath
 {
-    return (RKObjectMapping *) [self objectMappingForKeyPath:keyPath];
+    return (RKObjectMapping *)[self objectMappingForKeyPath:keyPath];
 }
 
 - (void)setMapping:(RKObjectMapping *)mapping forKeyPath:(NSString *)keyPath

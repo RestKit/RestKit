@@ -176,7 +176,7 @@
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     [_objectManager loadObjectsAtResourcePath:@"/JSON/humans/all.json" delegate:loader];
     [loader waitForResponse];
-    NSArray *humans = (NSArray *) loader.objects;
+    NSArray *humans = (NSArray *)loader.objects;
     assertThatUnsignedInteger([humans count], is(equalToInt(2)));
     assertThat([humans objectAtIndex:0], is(instanceOf([RKHuman class])));
 }

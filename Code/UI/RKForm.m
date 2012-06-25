@@ -189,7 +189,7 @@
 - (RKControlTableItem *)controlTableItemForAttribute:(NSString *)attributeKeyPath
 {
     RKTableItem *tableItem = [self tableItemForAttribute:attributeKeyPath];
-    return [tableItem isKindOfClass:[RKControlTableItem class]] ? (RKControlTableItem *) tableItem : nil;
+    return [tableItem isKindOfClass:[RKControlTableItem class]] ? (RKControlTableItem *)tableItem : nil;
 }
 
 - (UIControl *)controlForAttribute:(NSString *)attributeKeyPath
@@ -327,7 +327,7 @@
 
 - (void)reloadObjectOnContextDidSaveNotification:(NSNotification *)notification
 {
-    NSManagedObjectContext *context = (NSManagedObjectContext *) notification.object;
+    NSManagedObjectContext *context = (NSManagedObjectContext *)notification.object;
     NSSet *deletedObjects = [notification.userInfo objectForKey:NSDeletedObjectsKey];
     NSSet *updatedObjects = [notification.userInfo objectForKey:NSUpdatedObjectsKey];
 

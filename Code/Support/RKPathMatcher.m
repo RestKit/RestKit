@@ -46,11 +46,11 @@ NSString *RKPathPatternFindAndReplaceParensWithColons(NSString *pattern) {
 // NSString's stringByAddingPercentEscapes doesn't do a complete job (it ignores "/?&", among others)
 NSString *RKEncodeURLString(NSString *unencodedString) {
     NSString *encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(
-                                                                                   NULL,
-                                                                                   (CFStringRef)unencodedString,
-                                                                                   NULL,
-                                                                                   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-                                                                                   kCFStringEncodingUTF8 );
+                                                                                  NULL,
+                                                                                  (CFStringRef)unencodedString,
+                                                                                  NULL,
+                                                                                  (CFStringRef)@"!*'();:@&=+$,/?%#[]",
+                                                                                  kCFStringEncodingUTF8);
     return [encodedString autorelease];
 }
 
@@ -87,7 +87,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     [super dealloc];
 }
 
-+(RKPathMatcher *)matcherWithPattern:(NSString *)patternString
++ (RKPathMatcher *)matcherWithPattern:(NSString *)patternString
 {
     NSAssert(patternString != NULL, @"Pattern string must not be empty in order to perform pattern matching.");
     patternString = RKPathPatternFindAndReplaceParensWithColons(patternString);
@@ -96,7 +96,7 @@ NSString *RKEncodeURLString(NSString *unencodedString) {
     return matcher;
 }
 
-+(RKPathMatcher *)matcherWithPath:(NSString *)pathString
++ (RKPathMatcher *)matcherWithPath:(NSString *)pathString
 {
     RKPathMatcher *matcher = [[[RKPathMatcher alloc] init] autorelease];
     matcher.sourcePath = pathString;

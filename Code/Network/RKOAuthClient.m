@@ -79,7 +79,7 @@
 
     //Use the parsedBody answer in NSDictionary
 
-    NSDictionary *oauthResponse = (NSDictionary *) [response parsedBody:&error];
+    NSDictionary *oauthResponse = (NSDictionary *)[response parsedBody:&error];
     if ([oauthResponse isKindOfClass:[NSDictionary class]]) {
 
         //Check the if an access token comes in the response

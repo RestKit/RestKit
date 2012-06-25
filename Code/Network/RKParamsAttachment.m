@@ -203,13 +203,13 @@ extern NSString * const kRKStringBoundary;
     if (_delivered >= (_length - 2) && sent < maxLength) {
         if (_delivered == (_length - 2)) {
             *(buffer + sent) = '\r';
-            sent ++;
-            _delivered ++;
+            sent++;
+            _delivered++;
         }
 
         *(buffer + sent) = '\n';
-        sent ++;
-        _delivered ++;
+        sent++;
+        _delivered++;
     }
 
     return sent;
