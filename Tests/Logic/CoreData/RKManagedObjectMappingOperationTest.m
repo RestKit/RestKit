@@ -117,6 +117,8 @@
     assertThat([cat.favoriteOfHumans valueForKeyPath:@"name"], containsInAnyOrder(blake.name, jeremy.name, nil));
 }
 
+- (void)testConnectRelationshipsDoesNotLeakMemory 
+{
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
     RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
@@ -239,6 +241,8 @@
     assertThat(cat.human.name, is(equalTo(@"Blake")));
 }
 
+- (void)testShouldLoadNestedHasManyRelationship
+{
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
