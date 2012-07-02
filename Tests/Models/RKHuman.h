@@ -36,6 +36,7 @@
 @property (nonatomic, retain) NSArray *favoriteColors;
 
 @property (nonatomic, retain) NSSet *cats;
+@property (nonatomic, retain) NSNumber *favoriteCatID;
 @property (nonatomic, retain) RKCat *favoriteCat;
 
 @property (nonatomic, retain) NSArray *catIDs;
