@@ -54,7 +54,8 @@
     assertThat(operation, is(instanceOf([RKObjectMappingOperation class])));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKey {
+- (void)testShouldConnectRelationshipsByPrimaryKey
+{
     /* Connect a new human to a cat */
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
