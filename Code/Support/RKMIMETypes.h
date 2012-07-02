@@ -23,13 +23,13 @@
  */
 
 /// MIME Type application/json
-extern NSString* const RKMIMETypeJSON;
+extern NSString * const RKMIMETypeJSON;
 
 /// MIME Type application/x-www-form-urlencoded
-extern NSString* const RKMIMETypeFormURLEncoded;
+extern NSString * const RKMIMETypeFormURLEncoded;
 
 /// MIME Type application/xml
-extern NSString* const RKMIMETypeXML;
+extern NSString * const RKMIMETypeXML;
 
 /// MIME Type text/xml
-extern NSString* const RKMIMETypeTextXML;
+extern NSString * const RKMIMETypeTextXML;

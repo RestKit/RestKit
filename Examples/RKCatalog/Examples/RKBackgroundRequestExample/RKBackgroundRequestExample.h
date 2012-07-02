@@ -9,14 +9,14 @@
 #import "RKCatalog.h"
 
 @interface RKBackgroundRequestExample : UIViewController <RKRequestDelegate> {
-    UIButton* _sendButton;
-    UISegmentedControl* _segmentedControl;
-    UILabel* _statusLabel;
+    UIButton *_sendButton;
+    UISegmentedControl *_segmentedControl;
+    UILabel *_statusLabel;
 }
 
-@property (nonatomic, retain) IBOutlet UIButton* sendButton;
-@property (nonatomic, retain) IBOutlet UISegmentedControl* segmentedControl;
-@property (nonatomic, retain) IBOutlet UILabel* statusLabel;
+@property (nonatomic, retain) IBOutlet UIButton *sendButton;
+@property (nonatomic, retain) IBOutlet UISegmentedControl *segmentedControl;
+@property (nonatomic, retain) IBOutlet UILabel *statusLabel;
 
 - (IBAction)sendRequest;
 

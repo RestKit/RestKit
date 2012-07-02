@@ -18,16 +18,18 @@
 
 @implementation RKBenchmark
 
-static NSMutableDictionary * __sharedBenchmarks = nil;
+static NSMutableDictionary *__sharedBenchmarks = nil;
 
-+ (NSMutableDictionary *)sharedBenchmarks {
++ (NSMutableDictionary *)sharedBenchmarks
+{
     if (!__sharedBenchmarks) {
         __sharedBenchmarks = [[NSMutableDictionary alloc] init];
     }
     return __sharedBenchmarks;
 }
 
-+ (id)instanceWithName:(NSString *)name {
++ (id)instanceWithName:(NSString *)name
+{
     @synchronized (self) {
         // get the benchmark or create it on-the-fly
         id benchmark = [[self sharedBenchmarks] objectForKey:name];
@@ -49,14 +51,16 @@ static NSMutableDictionary * __sharedBenchmarks = nil;
 # pragma mark -
 # pragma mark Quick access class methods
 
-+ (id)report:(NSString *)info executionBlock:(void (^)(void))block {
++ (id)report:(NSString *)info executionBlock:(void (^)(void))block
+{
     RKBenchmark *benchmark = [self instanceWithName:info];
     [benchmark run:block];
     [benchmark log];
     return benchmark;
 }
 
-+ (CFTimeInterval)measureWithExecutionBlock:(void (^)(void))block {
++ (CFTimeInterval)measureWithExecutionBlock:(void (^)(void))block
+{
     RKBenchmark *benchmark = [[self new] autorelease];
     [benchmark run:block];
     return benchmark.elapsedTime;
@@ -65,11 +69,13 @@ static NSMutableDictionary * __sharedBenchmarks = nil;
 # pragma mark -
 # pragma mark Initializers
 
-+ (id)benchmarkWithName:(NSString *)name {
++ (id)benchmarkWithName:(NSString *)name
+{
     return [[[self alloc] initWithName:name] autorelease];
 }
 
-- (id)initWithName:(NSString *)name {
+- (id)initWithName:(NSString *)name
+{
     if (self = [self init]) {
         self.name = name;
     }
@@ -79,17 +85,20 @@ static NSMutableDictionary * __sharedBenchmarks = nil;
 # pragma mark -
 # pragma mark Benchmark methods
 
-- (void)run:(void (^)(void))executionBlock {
+- (void)run:(void (^)(void))executionBlock
+{
     [self start];
     executionBlock();
     [self stop];
 }
 
-- (void)start {
+- (void)start
+{
     self.startTime = CFAbsoluteTimeGetCurrent();
 }
 
-- (void)stop {
+- (void)stop
+{
     self.endTime = CFAbsoluteTimeGetCurrent();
     self.stopped = YES;
 
@@ -101,7 +110,8 @@ static NSMutableDictionary * __sharedBenchmarks = nil;
     CFRelease(endDate);
 }
 
-- (void)log {
+- (void)log
+{
     CFTimeInterval timeElapsed;
     if (self.isStopped) {
         timeElapsed = self.elapsedTime;

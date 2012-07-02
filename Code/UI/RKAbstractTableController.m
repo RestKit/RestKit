@@ -46,7 +46,7 @@ NSString * const RKTableControllerDidLoadErrorNotification = @"RKTableController
 NSString * const RKTableControllerDidBecomeOnline = @"RKTableControllerDidBecomeOnline";
 NSString * const RKTableControllerDidBecomeOffline = @"RKTableControllerDidBecomeOffline";
 
-static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
+static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 @implementation RKAbstractTableController
 
@@ -97,16 +97,19 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 #pragma mark - Instantiation
 
 + (id)tableControllerWithTableView:(UITableView *)tableView
-                forViewController:(UIViewController *)viewController {
+                forViewController:(UIViewController *)viewController
+{
     return [[[self alloc] initWithTableView:tableView viewController:viewController] autorelease];
 }
 
-+ (id)tableControllerForTableViewController:(UITableViewController *)tableViewController {
++ (id)tableControllerForTableViewController:(UITableViewController *)tableViewController
+{
     return [self tableControllerWithTableView:tableViewController.tableView
                            forViewController:tableViewController];
 }
 
-- (id)initWithTableView:(UITableView *)theTableView viewController:(UIViewController *)theViewController {
+- (id)initWithTableView:(UITableView *)theTableView viewController:(UIViewController *)theViewController
+{
     NSAssert(theTableView, @"Cannot initialize a table view model with a nil tableView");
     NSAssert(theViewController, @"Cannot initialize a table view model with a nil viewController");
     self = [self init];
@@ -122,7 +125,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return self;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         if ([self isMemberOfClass:[RKAbstractTableController class]]) {
@@ -158,7 +162,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     // Disconnect from the tableView
     if (_tableView.delegate == self) _tableView.delegate = nil;
     if (_tableView.dataSource == self) _tableView.dataSource = nil;
@@ -182,7 +187,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     _objectLoader.delegate = nil;
     [_objectLoader release];
     _objectLoader = nil;
-    
+
     [_cellMappings release];
     [_headerItems release];
     [_footerItems release];
@@ -193,20 +198,23 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [super dealloc];
 }
 
-- (void)setTableView:(UITableView *)tableView {
+- (void)setTableView:(UITableView *)tableView
+{
     NSAssert(tableView, @"Cannot assign a nil tableView to the model");
     _tableView = tableView;
     _tableView.delegate = self;
     _tableView.dataSource = self;
 }
 
-- (void)setViewController:(UIViewController *)viewController {
+- (void)setViewController:(UIViewController *)viewController
+{
     if ([viewController isKindOfClass:[UITableViewController class]]) {
-        self.tableView = [(UITableViewController*)viewController tableView];
+        self.tableView = [(UITableViewController *)viewController tableView];
     }
 }
 
-- (void)setObjectManager:(RKObjectManager *)objectManager {
+- (void)setObjectManager:(RKObjectManager *)objectManager
+{
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
 
     // Remove observers
@@ -243,7 +251,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)setAutoResizesForKeyboard:(BOOL)autoResizesForKeyboard {
+- (void)setAutoResizesForKeyboard:(BOOL)autoResizesForKeyboard
+{
     if (_autoResizesForKeyboard != autoResizesForKeyboard) {
         _autoResizesForKeyboard = autoResizesForKeyboard;
         if (_autoResizesForKeyboard) {
@@ -262,7 +271,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)setAutoRefreshFromNetwork:(BOOL)autoRefreshFromNetwork {
+- (void)setAutoRefreshFromNetwork:(BOOL)autoRefreshFromNetwork
+{
     if (_autoRefreshFromNetwork != autoRefreshFromNetwork) {
         _autoRefreshFromNetwork = autoRefreshFromNetwork;
         if (_autoRefreshFromNetwork) {
@@ -279,92 +289,105 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)setLoading:(BOOL)loading {
+- (void)setLoading:(BOOL)loading
+{
     if (loading) {
         self.state |= RKTableControllerStateLoading;
     } else {
-        self.state &= ~RKTableControllerStateLoading;        
+        self.state &= ~RKTableControllerStateLoading;
     }
 }
 
 // NOTE: The loaded flag is handled specially. When loaded becomes NO,
 // we clear all other flags. In practice this should not happen outside of init.
-- (void)setLoaded:(BOOL)loaded {
+- (void)setLoaded:(BOOL)loaded
+{
     if (loaded) {
         self.state &= ~RKTableControllerStateNotYetLoaded;
     } else {
-        self.state = RKTableControllerStateNotYetLoaded;        
+        self.state = RKTableControllerStateNotYetLoaded;
     }
 }
 
-- (void)setEmpty:(BOOL)empty {
+- (void)setEmpty:(BOOL)empty
+{
     if (empty) {
         self.state |= RKTableControllerStateEmpty;
     } else {
-        self.state &= ~RKTableControllerStateEmpty;        
+        self.state &= ~RKTableControllerStateEmpty;
     }
 }
 
-- (void)setOffline:(BOOL)offline {
+- (void)setOffline:(BOOL)offline
+{
     if (offline) {
         self.state |= RKTableControllerStateOffline;
     } else {
-        self.state &= ~RKTableControllerStateOffline;        
+        self.state &= ~RKTableControllerStateOffline;
     }
 }
 
-- (void)setErrorState:(BOOL)error {
+- (void)setErrorState:(BOOL)error
+{
     if (error) {
         self.state |= RKTableControllerStateError;
     } else {
-        self.state &= ~RKTableControllerStateError;        
+        self.state &= ~RKTableControllerStateError;
     }
 }
 
-- (void)objectManagerConnectivityDidChange:(NSNotification *)notification {
+- (void)objectManagerConnectivityDidChange:(NSNotification *)notification
+{
     RKLogTrace(@"%@ received network status change notification: %@", self, [notification name]);
     [self setOffline:!self.objectManager.isOnline];
 }
 
 #pragma mark - Abstract Methods
 
-- (BOOL)isConsideredEmpty {
+- (BOOL)isConsideredEmpty
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                  userInfo:nil];
 }
 
-- (NSUInteger)sectionCount {
+- (NSUInteger)sectionCount
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                  userInfo:nil];
 }
 
-- (NSUInteger)rowCount {
+- (NSUInteger)rowCount
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                  userInfo:nil];
 }
 
-- (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                  userInfo:nil];
 }
 
-- (NSIndexPath *)indexPathForObject:(id)object {
+- (NSIndexPath *)indexPathForObject:(id)object
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                  userInfo:nil];
 }
 
-- (NSUInteger)numberOfRowsInSection:(NSUInteger)index {
+- (NSUInteger)numberOfRowsInSection:(NSUInteger)index
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                  userInfo:nil];
 }
 
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
+{
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
                                  userInfo:nil];
@@ -372,75 +395,88 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 #pragma mark - Cell Mappings
 
-- (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping {
+- (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping
+{
     // TODO: Should we raise an exception/throw a warning if you are doing class mapping for a type
     // that implements a cellMapping instance method? Maybe a class declaration overrides
     [_cellMappings setCellMapping:cellMapping forClass:objectClass];
 }
 
-- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping {
+- (void)mapObjectsWithClassName:(NSString *)objectClassName toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping
+{
     [self mapObjectsWithClass:NSClassFromString(objectClassName) toTableCellsWithMapping:cellMapping];
 }
 
-- (RKTableViewCellMapping *)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath {
+- (RKTableViewCellMapping *)cellMappingForObjectAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(indexPath, @"Cannot lookup cell mapping for object with a nil indexPath");
     id object = [self objectForRowAtIndexPath:indexPath];
     return [self.cellMappings cellMappingForObject:object];
 }
 
-- (UITableViewCell *)cellForObject:(id)object {
+- (UITableViewCell *)cellForObject:(id)object
+{
     NSIndexPath *indexPath = [self indexPathForObject:object];
     return indexPath ? [self cellForObjectAtIndexPath:indexPath] : nil;
 }
 
 #pragma mark - Header and Footer Rows
 
-- (void)addHeaderRowForItem:(RKTableItem *)tableItem {
+- (void)addHeaderRowForItem:(RKTableItem *)tableItem
+{
     [_headerItems addObject:tableItem];
 }
 
-- (void)addFooterRowForItem:(RKTableItem *)tableItem {
+- (void)addFooterRowForItem:(RKTableItem *)tableItem
+{
     [_footerItems addObject:tableItem];
 }
 
-- (void)addHeaderRowWithMapping:(RKTableViewCellMapping *)cellMapping {
+- (void)addHeaderRowWithMapping:(RKTableViewCellMapping *)cellMapping
+{
     RKTableItem *tableItem = [RKTableItem tableItem];
     tableItem.cellMapping = cellMapping;
     [self addHeaderRowForItem:tableItem];
 }
 
-- (void)addFooterRowWithMapping:(RKTableViewCellMapping *)cellMapping {
+- (void)addFooterRowWithMapping:(RKTableViewCellMapping *)cellMapping
+{
     RKTableItem *tableItem = [RKTableItem tableItem];
     tableItem.cellMapping = cellMapping;
     [self addFooterRowForItem:tableItem];
 }
 
-- (void)removeAllHeaderRows {
+- (void)removeAllHeaderRows
+{
     [_headerItems removeAllObjects];
 }
 
-- (void)removeAllFooterRows {
+- (void)removeAllFooterRows
+{
     [_footerItems removeAllObjects];
 }
 
 #pragma mark - UITableViewDataSource methods
 
-- (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     UITableViewCell *cell = [self cellForObjectAtIndexPath:indexPath];
-    
+
     RKLogTrace(@"%@ cellForRowAtIndexPath:%@ = %@", self, indexPath, cell);
     return cell;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     [NSException raise:@"Must be implemented in a subclass!" format:@"sectionCount must be implemented with a subclass"];
     return 0;
 }
 
 #pragma mark - UITableViewDelegate methods
 
-- (void)tableView:(UITableView *)theTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)theTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(theTableView == self.tableView, @"tableView:didSelectRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     RKLogTrace(@"%@: Row at indexPath %@ selected for tableView %@", self, indexPath, theTableView);
 
@@ -464,13 +500,14 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         RKLogTrace(@"%@: Invoking onSelectCellForObjectAtIndexPath block with cellMapping %@ for object %@ at indexPath = %@", self, cell, object, indexPath);
         cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
     }
-    
+
     if ([self.delegate respondsToSelector:@selector(tableController:didSelectCell:forObject:atIndexPath:)]) {
         [self.delegate tableController:self didSelectCell:cell forObject:object atIndexPath:indexPath];
     }
 }
 
-- (void)tableView:(UITableView *)theTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)theTableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSAssert(theTableView == self.tableView, @"tableView:didSelectRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
     cell.hidden = NO;
     id mappableObject = [self objectForRowAtIndexPath:indexPath];
@@ -478,7 +515,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (cellMapping.onCellWillAppearForObjectAtIndexPath) {
         cellMapping.onCellWillAppearForObjectAtIndexPath(cell, mappableObject, indexPath);
     }
-    
+
     if ([self.delegate respondsToSelector:@selector(tableController:willDisplayCell:forObject:atIndexPath:)]) {
         [self.delegate tableController:self willDisplayCell:cell forObject:mappableObject atIndexPath:indexPath];
     }
@@ -508,7 +545,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 // Variable height support
 
-- (CGFloat)tableView:(UITableView *)theTableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (CGFloat)tableView:(UITableView *)theTableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     if (self.variableHeightRows) {
         RKTableViewCellMapping *cellMapping = [self cellMappingForObjectAtIndexPath:indexPath];
 
@@ -527,7 +565,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return self.tableView.rowHeight;
 }
 
-- (void)tableView:(UITableView *)theTableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)theTableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
     RKTableViewCellMapping *cellMapping = [self cellMappingForObjectAtIndexPath:indexPath];
     if (cellMapping.onTapAccessoryButtonForObjectAtIndexPath) {
         RKLogTrace(@"Found a block for tableView:accessoryButtonTappedForRowWithIndexPath: Executing...");
@@ -537,7 +576,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (NSString *)tableView:(UITableView *)theTableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (NSString *)tableView:(UITableView *)theTableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     RKTableViewCellMapping *cellMapping = [self cellMappingForObjectAtIndexPath:indexPath];
     if (cellMapping.titleForDeleteButtonForObjectAtIndexPath) {
         RKLogTrace(@"Found a block for tableView:titleForDeleteConfirmationButtonForRowAtIndexPath: Executing...");
@@ -548,7 +588,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return NSLocalizedString(@"Delete", nil);
 }
 
-- (UITableViewCellEditingStyle)tableView:(UITableView *)theTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCellEditingStyle)tableView:(UITableView *)theTableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     if (_canEditRows) {
         RKTableViewCellMapping *cellMapping = [self cellMappingForObjectAtIndexPath:indexPath];
         UITableViewCell *cell = [self tableView:self.tableView cellForRowAtIndexPath:indexPath];
@@ -562,21 +603,24 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return UITableViewCellEditingStyleNone;
 }
 
-- (void)tableView:(UITableView *)theTableView didEndEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)theTableView didEndEditingRowAtIndexPath:(NSIndexPath *)indexPath
+{
     if ([self.delegate respondsToSelector:@selector(tableController:didEndEditing:atIndexPath:)]) {
         id object = [self objectForRowAtIndexPath:indexPath];
         [self.delegate tableController:self didEndEditing:object atIndexPath:indexPath];
     }
 }
 
-- (void)tableView:(UITableView *)theTableView willBeginEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)theTableView willBeginEditingRowAtIndexPath:(NSIndexPath *)indexPath
+{
     if ([self.delegate respondsToSelector:@selector(tableController:willBeginEditing:atIndexPath:)]) {
         id object = [self objectForRowAtIndexPath:indexPath];
         [self.delegate tableController:self willBeginEditing:object atIndexPath:indexPath];
     }
 }
 
-- (NSIndexPath *)tableView:(UITableView *)theTableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath {
+- (NSIndexPath *)tableView:(UITableView *)theTableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath
+{
     if (_canMoveRows) {
         RKTableViewCellMapping *cellMapping = [self cellMappingForObjectAtIndexPath:sourceIndexPath];
         if (cellMapping.targetIndexPathForMove) {
@@ -589,18 +633,21 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return proposedDestinationIndexPath;
 }
 
-- (NSIndexPath *)tableView:(UITableView *)theTableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+- (NSIndexPath *)tableView:(UITableView *)theTableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
     [self removeSwipeView:YES];
     return indexPath;
 }
 
 #pragma mark - Network Table Loading
 
-- (void)cancelLoad {
+- (void)cancelLoad
+{
     [self.objectLoader cancel];
 }
 
-- (NSDate *)lastUpdatedDate {
+- (NSDate *)lastUpdatedDate
+{
     if (! self.objectLoader) {
         return nil;
     }
@@ -620,7 +667,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return nil;
 }
 
-- (BOOL)isAutoRefreshNeeded {
+- (BOOL)isAutoRefreshNeeded
+{
     BOOL isAutoRefreshNeeded = NO;
     if (_autoRefreshFromNetwork) {
         isAutoRefreshNeeded = YES;
@@ -637,12 +685,14 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 #pragma mark - RKRequestDelegate & RKObjectLoaderDelegate methods
 
-- (void)requestDidStartLoad:(RKRequest *)request {
+- (void)requestDidStartLoad:(RKRequest *)request
+{
     RKLogTrace(@"tableController %@ started loading.", self);
     [self didStartLoad];
 }
 
-- (void)requestDidCancelLoad:(RKRequest *)request {
+- (void)requestDidCancelLoad:(RKRequest *)request
+{
     RKLogTrace(@"tableController %@ cancelled loading.", self);
     self.loading = NO;
 
@@ -651,12 +701,14 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)requestDidTimeout:(RKRequest *)request {
+- (void)requestDidTimeout:(RKRequest *)request
+{
     RKLogTrace(@"tableController %@ timed out while loading.", self);
     self.loading = NO;
 }
 
-- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response
+{
     RKLogTrace(@"tableController %@ finished loading.", self);
 
     // Updated the lastUpdatedDate dictionary using the URL of the request
@@ -677,12 +729,14 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error
+{
     RKLogError(@"tableController %@ failed network load with error: %@", self, error);
     [self didFailLoadWithError:error];
 }
 
-- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
+- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader
+{
     if ([self.delegate respondsToSelector:@selector(tableController:didLoadTableWithObjectLoader:)]) {
         [self.delegate tableController:self didLoadTableWithObjectLoader:objectLoader];
     }
@@ -691,63 +745,69 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [self didFinishLoad];
 }
 
-- (void)didStartLoad {
+- (void)didStartLoad
+{
     self.loading = YES;
 }
 
-- (void)didFailLoadWithError:(NSError *)error {
+- (void)didFailLoadWithError:(NSError *)error
+{
     self.error = error;
     [self didFinishLoad];
 }
 
-- (void)didFinishLoad {
+- (void)didFinishLoad
+{
     self.empty = [self isConsideredEmpty];
     self.loading = [self.objectLoader isLoading]; // Mutate loading state after we have adjusted empty
     self.loaded = YES;
-    
+
     if (![self isEmpty] && ![self isLoading]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidLoadObjectsNotification object:self];
     }
-    
-    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinalizeLoad:)]) {        
-        [self.delegate performSelector:@selector(tableControllerDidFinalizeLoad:) withObject:self];      
+
+    if (self.delegate && [_delegate respondsToSelector:@selector(tableControllerDidFinalizeLoad:)]) {
+        [self.delegate performSelector:@selector(tableControllerDidFinalizeLoad:) withObject:self];
     }
 }
 
 #pragma mark - Table Overlay Views
 
-- (UIImage *)imageForState:(RKTableControllerState)state {
+- (UIImage *)imageForState:(RKTableControllerState)state
+{
     switch (state) {
         case RKTableControllerStateNormal:
         case RKTableControllerStateLoading:
         case RKTableControllerStateNotYetLoaded:
             break;
-            
+
         case RKTableControllerStateEmpty:
             return self.imageForEmpty;
             break;
-            
+
         case RKTableControllerStateError:
             return self.imageForError;
             break;
-            
+
         case RKTableControllerStateOffline:
             return self.imageForOffline;
             break;
-            
+
         default:
             break;
     }
-    
+
     return nil;
 }
 
-- (UIImage *)overlayImage {
+- (UIImage *)overlayImage
+{
     return _stateOverlayImageView.image;
 }
 
 // Adds an overlay view above the table
-- (void)addToOverlayView:(UIView *)view modally:(BOOL)modally {
+- (void)addToOverlayView:(UIView *)view modally:(BOOL)modally
+{
     if (! _tableOverlayView) {
         CGRect overlayFrame = CGRectIsEmpty(self.overlayFrame) ? self.tableView.frame : self.overlayFrame;
         _tableOverlayView = [[UIView alloc] initWithFrame:overlayFrame];
@@ -773,7 +833,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [_tableOverlayView addSubview:view];
 }
 
-- (void)resetOverlayView {
+- (void)resetOverlayView
+{
     if (_stateOverlayImageView && _stateOverlayImageView.image == nil) {
         [_stateOverlayImageView removeFromSuperview];
     }
@@ -784,7 +845,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)addSubviewOverTableView:(UIView *)view {
+- (void)addSubviewOverTableView:(UIView *)view
+{
     NSInteger tableIndex = [_tableView.superview.subviews
                             indexOfObject:_tableView];
     if (NSNotFound != tableIndex) {
@@ -792,7 +854,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (BOOL)removeImageFromOverlay:(UIImage *)image {
+- (BOOL)removeImageFromOverlay:(UIImage *)image
+{
     if (image && _stateOverlayImageView.image == image) {
         _stateOverlayImageView.image = nil;
         return YES;
@@ -800,7 +863,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return NO;
 }
 
-- (void)showImageInOverlay:(UIImage *)image {
+- (void)showImageInOverlay:(UIImage *)image
+{
     NSAssert(self.tableView, @"Cannot add an overlay image to a nil tableView");
     if (! _stateOverlayImageView) {
         _stateOverlayImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -812,13 +876,15 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [self addToOverlayView:_stateOverlayImageView modally:self.showsOverlayImagesModally];
 }
 
-- (void)removeImageOverlay {
+- (void)removeImageOverlay
+{
     _stateOverlayImageView.image = nil;
     [_stateOverlayImageView removeFromSuperview];
     [self resetOverlayView];
 }
 
-- (void)setImageForEmpty:(UIImage *)imageForEmpty {
+- (void)setImageForEmpty:(UIImage *)imageForEmpty
+{
     [imageForEmpty retain];
     BOOL imageRemoved = [self removeImageFromOverlay:_imageForEmpty];
     [_imageForEmpty release];
@@ -826,7 +892,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (imageRemoved) [self showImageInOverlay:_imageForEmpty];
 }
 
-- (void)setImageForError:(UIImage *)imageForError {
+- (void)setImageForError:(UIImage *)imageForError
+{
     [imageForError retain];
     BOOL imageRemoved = [self removeImageFromOverlay:_imageForError];
     [_imageForError release];
@@ -834,7 +901,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (imageRemoved) [self showImageInOverlay:_imageForError];
 }
 
-- (void)setImageForOffline:(UIImage *)imageForOffline {
+- (void)setImageForOffline:(UIImage *)imageForOffline
+{
     [imageForOffline retain];
     BOOL imageRemoved = [self removeImageFromOverlay:_imageForOffline];
     [_imageForOffline release];
@@ -842,7 +910,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     if (imageRemoved) [self showImageInOverlay:_imageForOffline];
 }
 
-- (void)setLoadingView:(UIView *)loadingView {
+- (void)setLoadingView:(UIView *)loadingView
+{
     [loadingView retain];
     BOOL viewRemoved = (_loadingView.superview != nil);
     [_loadingView removeFromSuperview];
@@ -854,31 +923,38 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 #pragma mark - KVO & Table States
 
-- (BOOL)isLoading {
+- (BOOL)isLoading
+{
     return (self.state & RKTableControllerStateLoading) != 0;
 }
 
-- (BOOL)isLoaded {
+- (BOOL)isLoaded
+{
     return (self.state & RKTableControllerStateNotYetLoaded) == 0;
 //    return self.state != RKTableControllerStateNotYetLoaded;
 }
 
-- (BOOL)isOffline {
+- (BOOL)isOffline
+{
     return (self.state & RKTableControllerStateOffline) != 0;
 }
-- (BOOL)isOnline {
+- (BOOL)isOnline
+{
     return ![self isOffline];
 }
 
-- (BOOL)isError {
+- (BOOL)isError
+{
     return (self.state & RKTableControllerStateError) != 0;
 }
 
-- (BOOL)isEmpty {
+- (BOOL)isEmpty
+{
     return (self.state & RKTableControllerStateEmpty) != 0;
 }
 
-- (void)isLoadingDidChange {
+- (void)isLoadingDidChange
+{
     if ([self isLoading]) {
         if ([self.delegate respondsToSelector:@selector(tableControllerDidStartLoad:)]) {
             [self.delegate tableControllerDidStartLoad:self];
@@ -908,7 +984,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     _stateOverlayImageView.hidden = [self isLoading];
 }
 
-- (void)isLoadedDidChange {
+- (void)isLoadedDidChange
+{
     if ([self isLoaded]) {
         RKLogDebug(@"%@: is now loaded.", self);
     } else {
@@ -916,7 +993,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)isErrorDidChange {
+- (void)isErrorDidChange
+{
     if ([self isError]) {
         if ([self.delegate respondsToSelector:@selector(tableController:didFailLoadWithError:)]) {
             [self.delegate tableController:self didFailLoadWithError:self.error];
@@ -927,7 +1005,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)isEmptyDidChange {
+- (void)isEmptyDidChange
+{
     if ([self isEmpty]) {
         if ([self.delegate respondsToSelector:@selector(tableControllerDidBecomeEmpty:)]) {
             [self.delegate tableControllerDidBecomeEmpty:self];
@@ -937,7 +1016,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)isOnlineDidChange {
+- (void)isOnlineDidChange
+{
     if ([self isOnline]) {
         // We just transitioned to online
         if ([self.delegate respondsToSelector:@selector(tableControllerDidBecomeOnline:)]) {
@@ -952,29 +1032,30 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         }
 
         [[NSNotificationCenter defaultCenter] postNotificationName:RKTableControllerDidBecomeOffline object:self];
-    }    
+    }
 }
 
-- (void)updateTableViewForStateChange:(NSDictionary *)change {
+- (void)updateTableViewForStateChange:(NSDictionary *)change
+{
     RKTableControllerState oldState = [[change valueForKey:NSKeyValueChangeOldKey] integerValue];
     RKTableControllerState newState = [[change valueForKey:NSKeyValueChangeNewKey] integerValue];
-    
+
     // Determine state transitions
     BOOL loadedChanged = ((oldState ^ newState) & RKTableControllerStateNotYetLoaded);
     BOOL emptyChanged = ((oldState ^ newState) & RKTableControllerStateEmpty);
     BOOL offlineChanged = ((oldState ^ newState) & RKTableControllerStateOffline);
     BOOL loadingChanged = ((oldState ^ newState) & RKTableControllerStateLoading);
     BOOL errorChanged = ((oldState ^ newState) & RKTableControllerStateError);
-    
+
     if (loadedChanged) [self isLoadedDidChange];
     if (emptyChanged) [self isEmptyDidChange];
     if (offlineChanged) [self isOnlineDidChange];
     if (errorChanged) [self isErrorDidChange];
     if (loadingChanged) [self isLoadingDidChange];
-    
+
     // Clear the image from the overlay
     _stateOverlayImageView.image = nil;
-    
+
     // Determine the appropriate overlay image to display (if any)
     if (self.state == RKTableControllerStateNormal) {
         [self removeImageOverlay];
@@ -983,7 +1064,7 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
             // During a load we don't adjust the overlay
             return;
         }
-        
+
         // Though the table can be in more than one state, we only
         // want to display a single overlay image.
         if ([self isOffline] && self.imageForOffline) {
@@ -994,12 +1075,13 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
             [self showImageInOverlay:self.imageForEmpty];
         }
     }
-    
+
     // Remove the overlay if no longer in use
     [self resetOverlayView];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
     if ([keyPath isEqualToString:@"state"]) {
         [self updateTableViewForStateChange:change];
     } else if ([keyPath isEqualToString:@"error"]) {
@@ -1009,7 +1091,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 #pragma mark - Pull to Refresh
 
-- (RKRefreshGestureRecognizer *)pullToRefreshGestureRecognizer {
+- (RKRefreshGestureRecognizer *)pullToRefreshGestureRecognizer
+{
     RKRefreshGestureRecognizer *refreshRecognizer = nil;
     for (RKRefreshGestureRecognizer *recognizer in self.tableView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[RKRefreshGestureRecognizer class]]) {
@@ -1020,7 +1103,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     return refreshRecognizer;
 }
 
-- (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled {
+- (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled
+{
     RKRefreshGestureRecognizer *recognizer = nil;
     if (pullToRefreshEnabled) {
         recognizer = [[[RKRefreshGestureRecognizer alloc] initWithTarget:self action:@selector(pullToRefreshStateChanged:)] autorelease];
@@ -1034,7 +1118,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     _pullToRefreshEnabled = pullToRefreshEnabled;
 }
 
-- (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture {
+- (void)pullToRefreshStateChanged:(UIGestureRecognizer *)gesture
+{
     if (gesture.state == UIGestureRecognizerStateRecognized) {
         if ([self pullToRefreshDataSourceIsLoading:gesture])
             return;
@@ -1046,25 +1131,29 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)resetPullToRefreshRecognizer {
+- (void)resetPullToRefreshRecognizer
+{
     RKRefreshGestureRecognizer *recognizer = [self pullToRefreshGestureRecognizer];
     if (recognizer)
         [recognizer setRefreshState:RKRefreshIdle];
 }
 
-- (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer *)gesture {
+- (BOOL)pullToRefreshDataSourceIsLoading:(UIGestureRecognizer *)gesture
+{
     // If we have already been loaded and we are loading again, a refresh is taking place...
     return [self isLoaded] && [self isLoading] && [self isOnline];
 }
 
-- (NSDate *)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer *)gesture {
+- (NSDate *)pullToRefreshDataSourceLastUpdated:(UIGestureRecognizer *)gesture
+{
     NSDate *dataSourceLastUpdated = [self lastUpdatedDate];
     return dataSourceLastUpdated ? dataSourceLastUpdated : [NSDate date];
 }
 
 #pragma mark - Cell Swipe Menu Methods
 
-- (void)setupSwipeGestureRecognizers {
+- (void)setupSwipeGestureRecognizers
+{
     // Setup a right swipe gesture recognizer
     UISwipeGestureRecognizer *rightSwipeGestureRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeRight:)];
     rightSwipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
@@ -1078,7 +1167,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [leftSwipeGestureRecognizer release];
 }
 
-- (void)removeSwipeGestureRecognizers {
+- (void)removeSwipeGestureRecognizers
+{
     for (UIGestureRecognizer *recognizer in self.tableView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
             [self.tableView removeGestureRecognizer:recognizer];
@@ -1086,12 +1176,14 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)setCanEditRows:(BOOL)canEditRows {
+- (void)setCanEditRows:(BOOL)canEditRows
+{
     NSAssert(!_cellSwipeViewsEnabled, @"Table model cannot be made editable when cell swipe menus are enabled");
     _canEditRows = canEditRows;
 }
 
-- (void)setCellSwipeViewsEnabled:(BOOL)cellSwipeViewsEnabled {
+- (void)setCellSwipeViewsEnabled:(BOOL)cellSwipeViewsEnabled
+{
     NSAssert(!_canEditRows, @"Cell swipe menus cannot be enabled for editable tableModels");
     if (cellSwipeViewsEnabled) {
         [self setupSwipeGestureRecognizers];
@@ -1102,7 +1194,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     _cellSwipeViewsEnabled = cellSwipeViewsEnabled;
 }
 
-- (void)swipe:(UISwipeGestureRecognizer *)recognizer direction:(UISwipeGestureRecognizerDirection)direction {
+- (void)swipe:(UISwipeGestureRecognizer *)recognizer direction:(UISwipeGestureRecognizerDirection)direction
+{
     if (_cellSwipeViewsEnabled && recognizer && recognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint location = [recognizer locationInView:self.tableView];
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
@@ -1122,15 +1215,18 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)swipeLeft:(UISwipeGestureRecognizer *)recognizer {
+- (void)swipeLeft:(UISwipeGestureRecognizer *)recognizer
+{
     [self swipe:recognizer direction:UISwipeGestureRecognizerDirectionLeft];
 }
 
-- (void)swipeRight:(UISwipeGestureRecognizer *)recognizer {
+- (void)swipeRight:(UISwipeGestureRecognizer *)recognizer
+{
     [self swipe:recognizer direction:UISwipeGestureRecognizerDirectionRight];
 }
 
-- (void)addSwipeViewTo:(UITableViewCell *)cell withObject:(id)object direction:(UISwipeGestureRecognizerDirection)direction {
+- (void)addSwipeViewTo:(UITableViewCell *)cell withObject:(id)object direction:(UISwipeGestureRecognizerDirection)direction
+{
     if (_cellSwipeViewsEnabled) {
         NSAssert(cell, @"Cannot process swipe view with nil cell");
         NSAssert(object, @"Cannot process swipe view with nil object");
@@ -1165,11 +1261,13 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)animationDidStopAddingSwipeView:(NSString *)animationID finished:(NSNumber *)finished context:(void*)context {
+- (void)animationDidStopAddingSwipeView:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context
+{
     _animatingCellSwipe = NO;
 }
 
-- (void)removeSwipeView:(BOOL)animated {
+- (void)removeSwipeView:(BOOL)animated
+{
     if (!_cellSwipeViewsEnabled || !_swipeCell || _animatingCellSwipe) {
         RKLogTrace(@"Exiting early with _cellSwipeViewsEnabled=%d, _swipCell=%@, _animatingCellSwipe=%d",
                    _cellSwipeViewsEnabled, _swipeCell, _animatingCellSwipe);
@@ -1197,13 +1295,14 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
         [UIView commitAnimations];
     } else {
         [_cellSwipeView removeFromSuperview];
-        _swipeCell.frame = CGRectMake(0,_swipeCell.frame.origin.y,_swipeCell.frame.size.width, _swipeCell.frame.size.height);
+        _swipeCell.frame = CGRectMake(0, _swipeCell.frame.origin.y, _swipeCell.frame.size.width, _swipeCell.frame.size.height);
         [_swipeCell release];
         _swipeCell = nil;
     }
 }
 
-- (void)animationDidStopOne:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
+- (void)animationDidStopOne:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context
+{
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.2];
     if (_swipeDirection == UISwipeGestureRecognizerDirectionRight) {
@@ -1217,7 +1316,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [UIView commitAnimations];
 }
 
-- (void)animationDidStopTwo:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
+- (void)animationDidStopTwo:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context
+{
     [UIView commitAnimations];
     [UIView beginAnimations:nil context:nil];
     [UIView setAnimationDuration:0.2];
@@ -1232,7 +1332,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     [UIView commitAnimations];
 }
 
-- (void)animationDidStopThree:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context {
+- (void)animationDidStopThree:(NSString *)animationID finished:(NSNumber *)finished context:(void *)context
+{
     _animatingCellSwipe = NO;
     [_swipeCell release];
     _swipeCell = nil;
@@ -1241,18 +1342,21 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
 
 #pragma mark UIScrollViewDelegate methods
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
     [self removeSwipeView:YES];
 }
 
-- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView {
+- (BOOL)scrollViewShouldScrollToTop:(UIScrollView *)scrollView
+{
     [self removeSwipeView:NO];
     return YES;
 }
 
 #pragma mark - Keyboard Notification methods
 
-- (void)resizeTableViewForKeyboard:(NSNotification *)notification {
+- (void)resizeTableViewForKeyboard:(NSNotification *)notification
+{
     NSAssert(_autoResizesForKeyboard, @"Errantly receiving keyboard notifications while autoResizesForKeyboard=NO");
     NSDictionary *userInfo = [notification userInfo];
 
@@ -1318,14 +1422,15 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)loadTableWithObjectLoader:(RKObjectLoader *)theObjectLoader {
+- (void)loadTableWithObjectLoader:(RKObjectLoader *)theObjectLoader
+{
     NSAssert(theObjectLoader, @"Cannot perform a network load without an object loader");
     if (! [self.objectLoader isEqual:theObjectLoader]) {
         if (self.objectLoader) {
             RKLogDebug(@"Cancelling in progress table load: asked to load with a new object loader.");
             [self.objectLoader.queue cancelRequest:self.objectLoader];
         }
-        
+
         theObjectLoader.delegate = self;
         self.objectLoader = theObjectLoader;
     }
@@ -1337,7 +1442,8 @@ static NSString * lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey"
     }
 }
 
-- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation {
+- (void)reloadRowForObject:(id)object withRowAnimation:(UITableViewRowAnimation)rowAnimation
+{
     NSIndexPath *indexPath = [self indexPathForObject:object];
     if (indexPath) {
         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:rowAnimation];

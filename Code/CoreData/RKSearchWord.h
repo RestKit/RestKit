@@ -25,16 +25,16 @@ extern NSString * const RKSearchWordPrimaryKeyAttribute;
 
 @interface RKSearchWord : NSManagedObject
 
-@property (nonatomic, retain) NSString* word;
-@property (nonatomic, retain) NSSet* searchableManagedObjects;
+@property (nonatomic, retain) NSString *word;
+@property (nonatomic, retain) NSSet *searchableManagedObjects;
 
 @end
 
 @interface RKSearchWord (SearchableManagedObjectsAccessors)
 
-- (void)addSearchableManagedObjectsObject:(RKSearchableManagedObject*)searchableManagedObject;
-- (void)removeSearchableManagedObjectsObject:(RKSearchableManagedObject*)searchableManagedObject;
-- (void)addSearchableManagedObjects:(NSSet*)searchableManagedObjects;
-- (void)removeSearchableManagedObjects:(NSSet*)searchableManagedObjects;
+- (void)addSearchableManagedObjectsObject:(RKSearchableManagedObject *)searchableManagedObject;
+- (void)removeSearchableManagedObjectsObject:(RKSearchableManagedObject *)searchableManagedObject;
+- (void)addSearchableManagedObjects:(NSSet *)searchableManagedObjects;
+- (void)removeSearchableManagedObjects:(NSSet *)searchableManagedObjects;
 
 @end

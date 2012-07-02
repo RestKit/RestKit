@@ -12,7 +12,8 @@
 
 @implementation UIImage (RKAdditions)
 
-- (id)initWithContentsOfResolutionIndependentFile:(NSString *)path {
+- (id)initWithContentsOfResolutionIndependentFile:(NSString *)path
+{
     if ( [[[UIDevice currentDevice] systemVersion] intValue] >= 4 && [[UIScreen mainScreen] scale] == 2.0 ) {
         NSString *path2x = [[path stringByDeletingLastPathComponent]
                             stringByAppendingPathComponent:[NSString stringWithFormat:@"%@@2x.%@",
@@ -27,7 +28,8 @@
     return [self initWithData:[NSData dataWithContentsOfFile:path]];
 }
 
-+ (UIImage *)imageWithContentsOfResolutionIndependentFile:(NSString *)path {
++ (UIImage *)imageWithContentsOfResolutionIndependentFile:(NSString *)path
+{
     return [[[UIImage alloc] initWithContentsOfResolutionIndependentFile:path] autorelease];
 }
 

@@ -21,13 +21,13 @@
 #import <Foundation/Foundation.h>
 
 @interface RKObjectLoaderTestResultModel : NSObject {
-    NSNumber* _ID;
-    NSDate* _endsAt;
-    NSString* _photoURL;
+    NSNumber *_ID;
+    NSDate *_endsAt;
+    NSString *_photoURL;
 }
 
-@property (nonatomic, retain) NSNumber* ID;
-@property (nonatomic, retain) NSDate* endsAt;
-@property (nonatomic, retain) NSString* photoURL;
+@property (nonatomic, retain) NSNumber *ID;
+@property (nonatomic, retain) NSDate *endsAt;
+@property (nonatomic, retain) NSString *photoURL;
 
 @end

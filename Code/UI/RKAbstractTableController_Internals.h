@@ -69,7 +69,7 @@
  Returns a Boolean value indicating if the table controller
  should be considered empty and transitioned into the empty state.
  Used by the abstract table controller to trigger state transitions.
- 
+
  **NOTE**: This is an abstract method that MUST be implemented with
  a subclass.
  */

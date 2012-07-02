@@ -24,7 +24,8 @@
 
 @implementation RKObjectRouter
 
-- (id)init {
+- (id)init
+{
     if ((self = [super init])) {
         _routes = [[NSMutableDictionary alloc] init];
     }
@@ -32,12 +33,14 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_routes release];
     [super dealloc];
 }
 
-- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePathPattern forMethodName:(NSString *)methodName escapeRoutedPath:(BOOL)addEscapes {
+- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePathPattern forMethodName:(NSString *)methodName escapeRoutedPath:(BOOL)addEscapes
+{
     NSString *className = NSStringFromClass(theClass);
     if (nil == [_routes objectForKey:theClass]) {
         NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
@@ -55,7 +58,8 @@
     [classRoutes setValue:routeEntry forKey:methodName];
 }
 
-- (NSString *)HTTPVerbForMethod:(RKRequestMethod)method {
+- (NSString *)HTTPVerbForMethod:(RKRequestMethod)method
+{
     switch (method) {
         case RKRequestMethodGET:
             return @"GET";
@@ -77,22 +81,26 @@
 
 // Public
 
-- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePathPattern {
+- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePathPattern
+{
     [self routeClass:theClass toResourcePathPattern:resourcePathPattern forMethodName:@"ANY" escapeRoutedPath:YES];
 }
 
-- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePath forMethod:(RKRequestMethod)method {
+- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePath forMethod:(RKRequestMethod)method
+{
     [self routeClass:theClass toResourcePath:resourcePath forMethod:method escapeRoutedPath:YES];
 }
 
-- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes {
+- (void)routeClass:(Class)theClass toResourcePathPattern:(NSString *)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes
+{
     NSString *methodName = [self HTTPVerbForMethod:method];
     [self routeClass:theClass toResourcePathPattern:resourcePath forMethodName:methodName escapeRoutedPath:addEscapes];
 }
 
 #pragma mark RKRouter
 
-- (NSString *)resourcePathForObject:(NSObject *)object method:(RKRequestMethod)method {
+- (NSString *)resourcePathForObject:(NSObject *)object method:(RKRequestMethod)method
+{
     NSString *methodName = [self HTTPVerbForMethod:method];
     NSString *className  = NSStringFromClass([object class]);
     NSDictionary *classRoutes = nil;
@@ -136,15 +144,18 @@
 
 @implementation RKObjectRouter (CompatibilityAliases)
 
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath {
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath
+{
     [self routeClass:objectClass toResourcePathPattern:resourcePath];
 }
 
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath forMethod:(RKRequestMethod)method {
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath forMethod:(RKRequestMethod)method
+{
     [self routeClass:objectClass toResourcePathPattern:resourcePath forMethod:method];
 }
 
-- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes {
+- (void)routeClass:(Class)objectClass toResourcePath:(NSString *)resourcePath forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes
+{
     [self routeClass:objectClass toResourcePathPattern:resourcePath forMethod:method escapeRoutedPath:addEscapes];
 }
 

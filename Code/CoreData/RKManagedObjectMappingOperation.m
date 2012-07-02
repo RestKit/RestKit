@@ -32,7 +32,8 @@
 
 @implementation RKManagedObjectMappingOperation
 
-- (void)connectRelationship:(RKObjectConnectionMapping *)connectionMapping {
+- (void)connectRelationship:(RKObjectConnectionMapping *)connectionMapping 
+{
     RKLogTrace(@"Connecting relationship '%@'", connectionMapping.relationshipName);
 
     id relatedObject = [connectionMapping findConnected:self.destinationObject];
@@ -46,7 +47,8 @@
     }
 }
 
-- (void)connectRelationships {
+- (void)connectRelationships 
+{
     RKManagedObjectMapping *mapping = (RKManagedObjectMapping*)self.objectMapping;
     RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", mapping.connections);
     for (RKObjectConnectionMapping* connectionMapping in mapping.connections) {
@@ -62,7 +64,8 @@
     }
 }
 
-- (BOOL)performMapping:(NSError **)error {
+- (BOOL)performMapping:(NSError **)error
+{
     BOOL success = [super performMapping:error];
     if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
         /**

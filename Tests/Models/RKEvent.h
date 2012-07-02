@@ -25,9 +25,9 @@
 
 }
 
-@property (nonatomic, retain) NSString* eventID;
-@property (nonatomic, retain) NSString* eventType;
-@property (nonatomic, retain) NSString* location;
-@property (nonatomic, retain) NSString* summary;
+@property (nonatomic, retain) NSString *eventID;
+@property (nonatomic, retain) NSString *eventType;
+@property (nonatomic, retain) NSString *location;
+@property (nonatomic, retain) NSString *summary;
 
 @end

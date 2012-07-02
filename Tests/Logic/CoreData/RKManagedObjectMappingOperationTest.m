@@ -35,53 +35,56 @@
 
 @implementation RKManagedObjectMappingOperationTest
 
-- (void)testShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate {
+- (void)testShouldOverloadInitializationOfRKObjectMappingOperationToReturnInstancesOfRKManagedObjectMappingOperationWhenAppropriate
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* managedMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
-    NSDictionary* sourceObject = [NSDictionary dictionary];
-    RKHuman* human = [RKHuman createEntity];
-    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:human withMapping:managedMapping];
+    RKManagedObjectMapping *managedMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    NSDictionary *sourceObject = [NSDictionary dictionary];
+    RKHuman *human = [RKHuman createEntity];
+    RKObjectMappingOperation *operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:human withMapping:managedMapping];
     assertThat(operation, is(instanceOf([RKManagedObjectMappingOperation class])));
 }
 
-- (void)testShouldOverloadInitializationOfRKObjectMappingOperationButReturnUnmanagedMappingOperationWhenAppropriate {
-    RKObjectMapping* vanillaMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
-    NSDictionary* sourceObject = [NSDictionary dictionary];
-    NSMutableDictionary* destinationObject = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation* operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:destinationObject withMapping:vanillaMapping];
+- (void)testShouldOverloadInitializationOfRKObjectMappingOperationButReturnUnmanagedMappingOperationWhenAppropriate
+{
+    RKObjectMapping *vanillaMapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
+    NSDictionary *sourceObject = [NSDictionary dictionary];
+    NSMutableDictionary *destinationObject = [NSMutableDictionary dictionary];
+    RKObjectMappingOperation *operation = [RKObjectMappingOperation mappingOperationFromObject:sourceObject toObject:destinationObject withMapping:vanillaMapping];
     assertThat(operation, is(instanceOf([RKObjectMappingOperation class])));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKey {
-    /* Connect a new human to a cat */
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
+- (void)testShouldConnectRelationshipsByPrimaryKey
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID"];
 
     // Create a cat to connect
-    RKCat* cat = [RKCat object];
+    RKCat *cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
     [objectStore save:nil];
 
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.favoriteCat, isNot(nilValue()));
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKeyReverse {
+- (void)testShouldConnectRelationshipsByPrimaryKeyReverse 
+{
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     
     RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
@@ -114,98 +117,100 @@
     assertThat([cat.favoriteOfHumans valueForKeyPath:@"name"], containsInAnyOrder(blake.name, jeremy.name, nil));
 }
 
-- (void)testConnectRelationshipsDoesNotLeakMemory {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID"];
 
     // Create a cat to connect
-    RKCat* cat = [RKCat object];
+    RKCat *cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
     [objectStore save:nil];
 
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
     operation.queue = [RKMappingOperationQueue new];
-    NSError* error = nil;
+    NSError *error = nil;
     [operation performMapping:&error];
 
     assertThatInteger([operation retainCount], is(equalToInteger(1)));
 }
 
-- (void)testConnectionOfHasManyRelationshipsByPrimaryKey {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
+- (void)testConnectionOfHasManyRelationshipsByPrimaryKey
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID"];
 
     // Create a cat to connect
-    RKCat* cat = [RKCat object];
+    RKCat *cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
     [objectStore save:nil];
 
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.favoriteCat, isNot(nilValue()));
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
+- (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPaths
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"catIDs", nil];
     [humanMapping connectRelationship:@"cats" withMapping:catMapping fromKeyPath:@"catIDs" toKeyPath:@"railsID"];
 
     // Create a couple of cats to connect
-    RKCat* asia = [RKCat object];
+    RKCat *asia = [RKCat object];
     asia.name = @"Asia";
     asia.railsID = [NSNumber numberWithInt:31337];
 
-    RKCat* roy = [RKCat object];
+    RKCat *roy = [RKCat object];
     roy.name = @"Reginald Royford Williams III";
     roy.railsID = [NSNumber numberWithInt:31338];
 
     [objectStore save:nil];
 
     NSArray *catIDs = [NSArray arrayWithObjects:[NSNumber numberWithInt:31337], [NSNumber numberWithInt:31338], nil];
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"catIDs", catIDs, nil];
-    RKHuman* human = [RKHuman object];
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"catIDs", catIDs, nil];
+    RKHuman *human = [RKHuman object];
 
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.cats, isNot(nilValue()));
     assertThat([human.cats valueForKeyPath:@"name"], containsInAnyOrder(@"Asia", @"Reginald Royford Williams III", nil));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPathsReverse {
+- (void)testShouldConnectRelationshipsByPrimaryKeyWithDifferentSourceAndDestinationKeyPathsReverse 
+{
     /* Connect a new cat to a human */
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
     
@@ -234,158 +239,163 @@
     assertThat(cat.human.name, is(equalTo(@"Blake")));
 }
 
-- (void)testShouldLoadNestedHasManyRelationship {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping hasMany:@"cats" withMapping:catMapping];
 
-    NSArray* catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], @"cats", catsData, nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    NSArray *catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], @"cats", catsData, nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
 }
 
-- (void)testShouldLoadOrderedHasManyRelationship {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+- (void)testShouldLoadOrderedHasManyRelationship
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping mapKeyPath:@"cats" toRelationship:@"catsInOrderByAge" withMapping:catMapping];
 
-    NSArray* catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], @"cats", catsData, nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    NSArray *catsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Asia" forKey:@"name"]];
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], @"cats", catsData, nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat([human catsInOrderByAge], isNot(empty()));
 }
 
-- (void)testShouldMapNullToAHasManyRelationship {
+- (void)testShouldMapNullToAHasManyRelationship
+{
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping hasMany:@"cats" withMapping:catMapping];
 
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"cats", [NSNull null], nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"cats", [NSNull null], nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.cats, is(empty()));
 }
 
-- (void)testShouldLoadNestedHasManyRelationshipWithoutABackingClass {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* cloudMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCloud" inManagedObjectStore:objectStore];
+- (void)testShouldLoadNestedHasManyRelationshipWithoutABackingClass
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    RKManagedObjectMapping *cloudMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCloud" inManagedObjectStore:objectStore];
     [cloudMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* stormMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKStorm" inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *stormMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKStorm" inManagedObjectStore:objectStore];
     [stormMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [stormMapping hasMany:@"clouds" withMapping:cloudMapping];
 
-    NSArray* cloudsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Nimbus" forKey:@"name"]];
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Hurricane", @"clouds", cloudsData, nil];
-    NSEntityDescription* entity = [NSEntityDescription entityForName:@"RKStorm" inManagedObjectContext:objectStore.primaryManagedObjectContext];
-    NSManagedObject* storm = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:objectStore.primaryManagedObjectContext];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:storm mapping:stormMapping];
-    NSError* error = nil;
+    NSArray *cloudsData = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:@"Nimbus" forKey:@"name"]];
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Hurricane", @"clouds", cloudsData, nil];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKStorm" inManagedObjectContext:objectStore.primaryManagedObjectContext];
+    NSManagedObject *storm = [[NSManagedObject alloc] initWithEntity:entity insertIntoManagedObjectContext:objectStore.primaryManagedObjectContext];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:storm mapping:stormMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
 }
 
-- (void)testShouldDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingSucceeds {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
+- (void)testShouldDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingSucceeds
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" whenValueOfKeyPath:@"name" isEqualTo:@"Blake"];
 
     // Create a cat to connect
-    RKCat* cat = [RKCat object];
+    RKCat *cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
     [objectStore save:nil];
 
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.favoriteCat, isNot(nilValue()));
     assertThat(human.favoriteCat.name, is(equalTo(@"Asia")));
 }
 
-- (void)testShouldNotDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingFails {
-    RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
+- (void)testShouldNotDynamicallyConnectRelationshipsByPrimaryKeyWhenMatchingFails
+{
+    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
 
-    RKManagedObjectMapping* catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
     catMapping.primaryKeyAttribute = @"railsID";
     [catMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
     humanMapping.primaryKeyAttribute = @"railsID";
     [humanMapping mapAttributes:@"name", @"favoriteCatID", nil];
     [humanMapping connectRelationship:@"favoriteCat" withMapping:catMapping fromKeyPath:@"favoriteCatID" toKeyPath:@"railsID" whenValueOfKeyPath:@"name" isEqualTo:@"Jeff"];
 
     // Create a cat to connect
-    RKCat* cat = [RKCat object];
+    RKCat *cat = [RKCat object];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
     [objectStore save:nil];
 
-    NSDictionary* mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
-    RKHuman* human = [RKHuman object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
-    NSError* error = nil;
+    NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
+    RKHuman *human = [RKHuman object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(human.favoriteCat, is(nilValue()));
 }
 
-- (void)testShouldConnectManyToManyRelationships {
+- (void)testShouldConnectManyToManyRelationships
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    RKManagedObjectMapping *childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"railsID";
     [childMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    RKManagedObjectMapping *parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     parentMapping.primaryKeyAttribute = @"railsID";
     [parentMapping mapAttributes:@"name", @"age", nil];
     [parentMapping hasMany:@"children" withMapping:childMapping];
 
-    NSArray* childMappableData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithKeysAndObjects:@"name", @"Maya", nil],
+    NSArray *childMappableData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithKeysAndObjects:@"name", @"Maya", nil],
                                   [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Brady", nil], nil];
-    NSDictionary* parentMappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Win",
+    NSDictionary *parentMappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Win",
                                         @"age", [NSNumber numberWithInt:34],
                                         @"children", childMappableData, nil];
-    RKParent* parent = [RKParent object];
-    RKManagedObjectMappingOperation* operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:parentMappableData destinationObject:parent mapping:parentMapping];
-    NSError* error = nil;
+    RKParent *parent = [RKParent object];
+    RKManagedObjectMappingOperation *operation = [[RKManagedObjectMappingOperation alloc] initWithSourceObject:parentMappableData destinationObject:parent mapping:parentMapping];
+    NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(parent.children, isNot(nilValue()));
@@ -395,13 +405,14 @@
     assertThatUnsignedInteger([[[parent.children anyObject] parents] count], is(equalToInt(1)));
 }
 
-- (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder {
+- (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    RKManagedObjectMapping *parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
 
-    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    RKManagedObjectMapping *childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     [childMapping mapAttributes:@"fatherID", nil];
     [childMapping connectRelationship:@"father" withMapping:parentMapping fromKeyPath:@"fatherID" toKeyPath:@"parentID"];
     
@@ -420,15 +431,16 @@
     assertThat(child.father, is(notNilValue()));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithFetchRequestMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithFetchRequestMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
 
-    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    RKManagedObjectMapping *childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
 
-    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    RKManagedObjectMapping *parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
@@ -448,15 +460,16 @@
     assertThatInteger(childrenCount, is(equalToInteger(4)));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithInMemoryMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsDoesNotYieldDuplicatesWithInMemoryMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
 
-    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    RKManagedObjectMapping *childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
 
-    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    RKManagedObjectMapping *parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
@@ -476,15 +489,16 @@
     assertThatInteger(childrenCount, is(equalToInteger(4)));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithFetchRequestMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
 
-    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    RKManagedObjectMapping *childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
 
-    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    RKManagedObjectMapping *parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
@@ -501,7 +515,7 @@
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
 
     [RKBenchmark report:@"Mapping with Fetch Request Cache" executionBlock:^{
-        for (NSUInteger i=0; i<50; i++) {
+        for (NSUInteger i = 0; i < 50; i++) {
             [mapper performMapping];
         }
     }];
@@ -511,15 +525,16 @@
     assertThatInteger(childrenCount, is(equalToInteger(51)));
 }
 
-- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache {
+- (void)testMappingAPayloadContainingRepeatedObjectsPerformsAcceptablyWithInMemoryMappingCache
+{
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
 
-    RKManagedObjectMapping* childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
+    RKManagedObjectMapping *childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:store];
     childMapping.primaryKeyAttribute = @"childID";
     [childMapping mapAttributes:@"name", @"childID", nil];
 
-    RKManagedObjectMapping* parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
+    RKManagedObjectMapping *parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:store];
     [parentMapping mapAttributes:@"parentID", @"name", nil];
     parentMapping.primaryKeyAttribute = @"parentID";
     [parentMapping mapRelationship:@"children" withMapping:childMapping];
@@ -536,7 +551,7 @@
     RKLogConfigureByName("RestKit/CoreData", RKLogLevelOff);
 
     [RKBenchmark report:@"Mapping with In Memory Cache" executionBlock:^{
-        for (NSUInteger i=0; i<50; i++) {
+        for (NSUInteger i = 0; i < 50; i++) {
             [mapper performMapping];
         }
     }];

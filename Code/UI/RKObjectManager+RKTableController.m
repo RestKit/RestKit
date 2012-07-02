@@ -15,25 +15,29 @@
 
 @implementation RKObjectManager (RKTableController)
 
-- (RKTableController *)tableControllerForTableViewController:(UITableViewController *)tableViewController {
+- (RKTableController *)tableControllerForTableViewController:(UITableViewController *)tableViewController
+{
     RKTableController *tableController = [RKTableController tableControllerForTableViewController:tableViewController];
     tableController.objectManager = self;
     return tableController;
 }
 
-- (RKTableController *)tableControllerWithTableView:(UITableView *)tableView forViewController:(UIViewController *)viewController {
+- (RKTableController *)tableControllerWithTableView:(UITableView *)tableView forViewController:(UIViewController *)viewController
+{
     RKTableController *tableController = [RKTableController tableControllerWithTableView:tableView forViewController:viewController];
     tableController.objectManager = self;
     return tableController;
 }
 
-- (RKFetchedResultsTableController *)fetchedResultsTableControllerForTableViewController:(UITableViewController *)tableViewController {
+- (RKFetchedResultsTableController *)fetchedResultsTableControllerForTableViewController:(UITableViewController *)tableViewController
+{
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
     tableController.objectManager = self;
     return tableController;
 }
 
-- (RKFetchedResultsTableController *)fetchedResultsTableControllerWithTableView:(UITableView *)tableView forViewController:(UIViewController *)viewController {
+- (RKFetchedResultsTableController *)fetchedResultsTableControllerWithTableView:(UITableView *)tableView forViewController:(UIViewController *)viewController
+{
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerWithTableView:tableView forViewController:viewController];
     return tableController;
 }
