@@ -118,40 +118,44 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 - (NSDate*)parseDateFromString:(NSString*)string {
     RKLogTrace(@"Transforming string value '%@' to NSDate...", string);
-
+    
     NSDate* date = nil;
-
+    
+    BOOL success;
+    
+    // first, let's try all the date formatters
+    for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
+        @synchronized(dateFormatter) {
+            if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
+                RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
+            }
+            NSString *errorDescription = nil;
+            success = [dateFormatter getObjectValue:&date forString:string errorDescription:&errorDescription];
+        }
+        
+        if (success && date) {
+            if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
+                RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
+                           string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
+            }
+            
+            break;
+        }
+    }
+    
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
-
+    
     NSNumber *numeric = [numberFormatter numberFromString:string];
 
-    [numberFormatter release];
-
-    if (numeric) {
+    // if we weren't successful with the dateformatters, let's try to interpret the provided string as timestamp
+    
+    if (NO == success && numeric) {
         date = [NSDate dateWithTimeIntervalSince1970:[numeric doubleValue]];
-    } else if(![string isEqualToString:@""]) {
-        for (NSFormatter *dateFormatter in self.objectMapping.dateFormatters) {
-            BOOL success;
-        @synchronized(dateFormatter) {
-                if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
-                    RKLogTrace(@"Attempting to parse string '%@' with format string '%@' and time zone '%@'", string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone]);
-                }
-                NSString *errorDescription = nil;
-                success = [dateFormatter getObjectValue:&date forString:string errorDescription:&errorDescription];
-        }
-
-        if (success && date) {
-                if ([dateFormatter isKindOfClass:[NSDateFormatter class]]) {
-                    RKLogTrace(@"Successfully parsed string '%@' with format string '%@' and time zone '%@' and turned into date '%@'",
-                                string, [(NSDateFormatter *)dateFormatter dateFormat], [(NSDateFormatter *)dateFormatter timeZone], date);
-                }
-
-                break;
-            }
-    }
     }
 
+    [numberFormatter release];
+    
     return date;
 }
 
