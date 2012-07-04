@@ -22,6 +22,42 @@
 #import "RKObjectMapping.h"
 //#import "RKManagedObjectStore.h"
 
+#if NS_BLOCKS_AVAILABLE
+/**
+ Mode that specifies how the object should be synchronized with the server.
+ To use transparent syncing (i.e. calls are sent when network access is available
+ and queued otherwise), set the mode to `RKSyncModeTransparent` on each object
+ mapping for which you would like this behavior.
+ */
+typedef enum {
+    RKSyncModeDefault,        /** RKSyncManager will use the default syncMode set on the syncManager */
+    RKSyncModeNone,           /** RKSyncManager will ignore objects with this mode */
+    RKSyncModeTransparent,    /** RKSyncManager will transparently sync objects with this mode */
+    RKSyncModeInterval,       /** RKSyncManager will sync objects with this mode at an interval */
+    RKSyncModeManual          /** RKSyncManager will queue requests until `[syncManager push]` is called */
+} RKSyncMode;
+
+/**
+ Sync strategy sets the behavior of the RKSyncManager queue for a given mapping.
+ */
+typedef enum {
+    RKSyncStrategyDefault,     /** RKSyncManager will use the default strategy set on the syncManager */
+    RKSyncStrategyBatch,        /** RKSyncManager will try to reduce network requests by batching similar requests (where possible) & locally removing any objects that never were persisted remotely in the first place. */
+    RKSyncStrategyProxyOnly,    /** RKSyncManager will not perform any batching; when network access is available, it will send all queued requests in the order it received them. */
+} RKSyncStrategy;
+
+/**
+ Sync direction sets the behavior of the RKSyncManager queue for a given mapping.
+ */
+typedef enum {
+    RKSyncDirectionDefault = 0x00, /** RKSyncManager will use the default direction set on the syncManager */
+    RKSyncDirectionPush = 0x001,  /** RKSyncManager will push requests, but not pull anything. */
+    RKSyncDirectionPull = 0x010,  /** RKSyncManager will pull requests, but not push anything. */
+    RKSyncDirectionBoth = 0x011   /** RKSyncManager will push requests, and then pull those same routes (true syncing). */
+} RKSyncDirection;
+
+#endif 
+
 @class RKManagedObjectStore;
 
 /**
@@ -84,8 +120,34 @@
  */
 @property (nonatomic, readonly) RKManagedObjectStore *objectStore;
 
+#if NS_BLOCKS_AVAILABLE
 /**
- Instructs RestKit to automatically connect a relationship of the object being mapped by looking up
+ The RKSyncMode specifies how objects should be synced, if at all. By default this is set to RKSyncModeNone, or whatever is specified in defaultSyncMode on RKSyncManager.
+ 
+ If set to RKSyncModeNone, the objects will not be managed by `RKSyncManager`. 
+ If set to RKSyncModeTransparent, the objects will be synced immediately if a connection is available, or saved for later and synced as soon as a connection is available. 
+ If set to RKSyncModeInterval, the objects will be synced at a regular interval set by the syncManager.
+ If set to RKSyncModeManual, the objects will be synced only when a call is made directly on the syncManager to do so.
+ RKSyncInterval is for convenience - to sync with a set interval, create a timer that calls `[syncManager syncObjectsWithSyncMode:RKSyncModeInterval andClass:nil];` This could be done with any of the other types of syncMode, but setting to RKSyncInterval prevents those objects from being synced manually or transparently as well.
+ @see RKSyncManager
+ */
+@property (nonatomic, assign) RKSyncMode syncMode;
+
+/**
+ Sync direction sets the behavior of the RKSyncManager queue for a given mapping. If set to Push, RKSyncManager will push requests, but not pull anything.  If set to Pull, RKSyncManager will pull requests, but not push anything. If set to Sync, RKSyncManager will push requests, and then pull those same routes (true syncing). 
+ @see RKSyncManager
+ */
+@property (nonatomic, assign) RKSyncDirection syncDirection;
+
+
+/**
+ If syncMode != RKSyncModeNone, sync strategy sets the behavior of the RKSyncManager queue for a given mapping. If set to batch, RKSyncManager will try to reduce network requests by batching similar requests (where possible) & locally removing any objects that never were persisted remotely in the first place. If set to proxyOnly, RKSyncManager will not perform any batching; when network access is available, it will send all queued requests in the order it received them. 
+ @see RKSyncManager
+ */
+@property (nonatomic, assign) RKSyncStrategy syncStrategy;
+#endif
+/**
+ Instructs RestKit to automatically connect a relationship of the object being mapped by looking up 
  the related object by primary key.
 
  For example, given a Project object associated with a User, where the 'user' relationship is

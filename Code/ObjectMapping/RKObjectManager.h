@@ -25,6 +25,10 @@
 #import "RKConfigurationDelegate.h"
 #import "RKObjectPaginator.h"
 
+#if NS_BLOCKS_AVAILABLE
+#import "RKSyncManager.h"
+#endif
+
 @protocol RKParser;
 
 /** Notifications */
@@ -32,12 +36,12 @@
 /**
  Posted when the object managed has transitioned to the offline state
  */
-extern NSString * const RKObjectManagerDidBecomeOfflineNotification;
+extern NSString* const RKObjectManagerDidBecomeOfflineNotification;
 
 /**
  Posted when the object managed has transitioned to the online state
  */
-extern NSString * const RKObjectManagerDidBecomeOnlineNotification;
+extern NSString* const RKObjectManagerDidBecomeOnlineNotification;
 
 typedef enum {
     RKObjectManagerNetworkStatusUnknown,
@@ -46,6 +50,7 @@ typedef enum {
 } RKObjectManagerNetworkStatus;
 
 @class RKManagedObjectStore;
+@class RKSyncManager;
 
 /**
  The object manager is the primary interface for interacting with RESTful resources via HTTP. It is
@@ -93,8 +98,8 @@ typedef enum {
 
  Mappings are registered by constructing instances of RKObjectMapping and registering them with the provider:
  `
-    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:myBaseURL];
-    RKObjectMapping *articleMapping = [RKObjectMapping mappingForClass:[Article class]];
+    RKObjectManager* manager = [RKObjectManager managerWithBaseURL:myBaseURL];
+    RKObjectMapping* articleMapping = [RKObjectMapping mappingForClass:[Article class]];
     [mapping mapAttributes:@"title", @"body", @"publishedAt", nil];
     [manager.mappingProvider setObjectMapping:articleMapping forKeyPath:@"article"];
 
@@ -232,6 +237,13 @@ typedef enum {
  */
 @property (nonatomic, retain) RKManagedObjectStore *objectStore;
 
+#if NS_BLOCKS_AVAILABLE
+/**
+ An object that handles the syncronization of objects with the server.
+ */
+@property (nonatomic, readonly) RKSyncManager *syncManager;
+#endif
+
 /**
  The Grand Dispatch Queue to use when performing expensive object mapping operations
  within RKObjectLoader instances created through this object manager
@@ -366,7 +378,7 @@ typedef enum {
  For example:
 
     - (void)loadObjectUsingBlockExample {
-        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" usingBlock:^(RKObjectLoader *loader) {
+        [[RKObjectManager sharedManager] loadObjectsAtResourcePath:@"/monkeys.json" usingBlock:^(RKObjectLoader* loader) {
             loader.objectMapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[Monkey class]];
         }];
     }
@@ -379,16 +391,16 @@ typedef enum {
 
  For example:
 
-    - (BOOL)changePassword:(NSString *)newPassword error:(NSError **)error {
+    - (BOOL)changePassword:(NSString*)newPassword error:(NSError**)error {
         if ([self validatePassword:newPassword error:error]) {
             self.password = newPassword;
-            [[RKObjectManager sharedManager] sendObject:self toResourcePath:@"/some/path" usingBlock:^(RKObjectLoader *loader) {
+            [[RKObjectManager sharedManager] sendObject:self toResourcePath:@"/some/path" usingBlock:^(RKObjectLoader* loader) {
                 loader.delegate = self;
                 loader.method = RKRequestMethodPOST;
                 loader.serializationMIMEType = RKMIMETypeJSON; // We want to send this request as JSON
                 loader.targetObject = nil;  // Map the results back onto a new object instead of self
                 // Set up a custom serialization mapping to handle this request
-                loader.serializationMapping = [RKObjectMapping serializationMappingUsingBlock:^(RKObjectMapping *mapping) {
+                loader.serializationMapping = [RKObjectMapping serializationMappingUsingBlock:^(RKObjectMapping* mapping) {
                     [mapping mapAttributes:@"password", nil];
                 }];
             }];
@@ -434,8 +446,8 @@ typedef enum {
 
 + (RKObjectManager *)objectManagerWithBaseURLString:(NSString *)baseURLString;
 + (RKObjectManager *)objectManagerWithBaseURL:(NSURL *)baseURL;
-- (void)loadObjectsAtResourcePath:(NSString *)resourcePath objectMapping:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
-- (RKObjectLoader *)objectLoaderWithResourcePath:(NSString *)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (void)loadObjectsAtResourcePath:(NSString*)resourcePath objectMapping:(RKObjectMapping*)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+- (RKObjectLoader *)objectLoaderWithResourcePath:(NSString*)resourcePath delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (RKObjectLoader *)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
 /*
@@ -444,7 +456,7 @@ typedef enum {
  The mapResponseWith: family of methods have been deprecated by the support for object mapping selection
  using resourcePath's
  */
-- (RKObjectLoader *)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate;
+- (RKObjectLoader*)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate;
 - (RKObjectLoader *)objectLoaderForObject:(id<NSObject>)object method:(RKRequestMethod)method delegate:(id<RKObjectLoaderDelegate>)delegate;
 - (void)getObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (void)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;

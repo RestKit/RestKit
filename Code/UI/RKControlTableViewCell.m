@@ -24,8 +24,7 @@
 
 @synthesize control;
 
-- (void)layoutSubviews
-{
+- (void)layoutSubviews {
     [super layoutSubviews];
 
     if (self.control.superview != self.contentView) {

@@ -3,6 +3,7 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/30/10.
+//  Copyright 2010 Two Toasters
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,6 +32,10 @@
 #import "RKFetchRequestManagedObjectCache.h"
 #import "RKSearchableManagedObject.h"
 #import "RKSearchWord.h"
+
+#if NS_BLOCKS_AVAILABLE
+#import "RKSyncManager.h"
+#endif
 
 #import "RKObjectPropertyInspector+CoreData.h"
 #import "RKObjectMappingProvider+CoreData.h"

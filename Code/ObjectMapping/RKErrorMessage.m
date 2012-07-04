@@ -25,14 +25,12 @@
 
 @synthesize errorMessage = _errorMessage;
 
-- (void)dealloc
-{
+- (void)dealloc {
     [_errorMessage release];
     [super dealloc];
 }
 
-- (NSString *)description
-{
+- (NSString*)description {
     return _errorMessage;
 }
 

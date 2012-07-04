@@ -33,8 +33,7 @@
 
 @implementation RKOAuthClientTest
 
-- (BOOL)isMongoRunning
-{
+- (BOOL)isMongoRunning {
     static RKPortCheck *portCheck = nil;
     if (! portCheck) {
         portCheck = [[RKPortCheck alloc] initWithHost:@"localhost" port:27017];
@@ -44,8 +43,7 @@
     return [portCheck isOpen];
 }
 
-- (void)testShouldGetAccessToken
-{
+- (void)testShouldGetAccessToken{
     RKOAuthClientTestSkipWithoutMongoDB();
 
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
@@ -57,8 +55,7 @@
     assertThatBool(loader.wasSuccessful, is(equalToBool(YES)));
 }
 
-- (void)testShouldNotGetAccessToken
-{
+- (void)testShouldNotGetAccessToken {
     RKOAuthClientTestSkipWithoutMongoDB();
 
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
@@ -71,8 +68,7 @@
     assertThatBool(loader.wasSuccessful, is(equalToBool(NO)));
 }
 
-- (void)testShouldGetProtectedResource
-{
+- (void)testShouldGetProtectedResource{
     RKOAuthClientTestSkipWithoutMongoDB();
 
     //TODO: Encapsulate this code in a correct manner
@@ -82,7 +78,7 @@
     client.callbackURL = @"http://someURL.com";
     [client validateAuthorizationCode];
 
-    RKTestResponseLoader *resourceLoader = [RKTestResponseLoader responseLoader];
+    RKTestResponseLoader* resourceLoader = [RKTestResponseLoader responseLoader];
     RKClient *requestClient = [RKClient clientWithBaseURLString:[client authorizationURL]];
     requestClient.OAuth2AccessToken = client.accessToken;
     requestClient.authenticationType = RKRequestAuthenticationTypeOAuth2;

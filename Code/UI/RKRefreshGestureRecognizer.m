@@ -47,8 +47,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
 @synthesize dateFormatter = _dateFormatter;
 
 #pragma mark - Life Cycle
-- (id)initWithTarget:(id)target action:(SEL)action
-{
+- (id)initWithTarget:(id)target action:(SEL)action {
 
     self = [super initWithTarget:target action:action];
     if (self) {
@@ -62,8 +61,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self removeObserver:self forKeyPath:@"view"];
     if (self.triggerView)
         [self.triggerView removeFromSuperview];
@@ -73,8 +71,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
 
 #pragma mark - Utilities
 
-- (void)refreshLastUpdatedDate
-{
+- (void)refreshLastUpdatedDate {
 
     SEL lastUpdatedSelector = @selector(pullToRefreshDataSourceLastUpdated:);
     if (self.scrollView.delegate && [self.scrollView.delegate respondsToSelector:lastUpdatedSelector]) {
@@ -90,8 +87,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
 
 }
 
-- (void)setRefreshState:(RKRefreshState)refreshState
-{
+- (void)setRefreshState:(RKRefreshState)refreshState {
     if (refreshState == _refreshState)
         return;
 
@@ -148,8 +144,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
     _refreshState = refreshState;
 }
 
-- (CABasicAnimation *)triggeredAnimation
-{
+- (CABasicAnimation *)triggeredAnimation {
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     animation.duration = kFlipArrowAnimationTime;
     animation.toValue = [NSNumber numberWithDouble:M_PI];
@@ -158,8 +153,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
     return animation;
 }
 
-- (CABasicAnimation *)idlingAnimation
-{
+- (CABasicAnimation *)idlingAnimation {
     CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     animation.delegate = self;
     animation.duration = kFlipArrowAnimationTime;
@@ -168,18 +162,15 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
     return animation;
 }
 
-- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag
-{
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
     [self.triggerView.arrowView.layer removeAllAnimations];
 }
 
-- (UIScrollView *)scrollView
-{
+- (UIScrollView *)scrollView {
     return (UIScrollView *)self.view;
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     id obj = [object valueForKeyPath:keyPath];
     if (NO == [obj isKindOfClass:[UIScrollView class]]) {
         self.isBoundToScrollView = NO;
@@ -191,18 +182,15 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
 }
 
 #pragma mark UIGestureRecognizer
-- (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
-{
+- (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer {
     return NO;
 }
 
-- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
-{
+- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer {
     return NO;
 }
 
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     if (!self.isBoundToScrollView)
         return;
     if (self.state < UIGestureRecognizerStateBegan) {
@@ -218,8 +206,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
     }
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     if (!self.isBoundToScrollView) {
         self.state = UIGestureRecognizerStateFailed;
         return;
@@ -233,8 +220,7 @@ static CGFloat const kDefaultTriggerViewHeight = 64.f;
     self.refreshState = RKRefreshIdle;
 }
 
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
-{
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
         self.state = UIGestureRecognizerStateCancelled;
 }
 

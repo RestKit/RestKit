@@ -27,10 +27,9 @@
 
 @implementation RKObjectMappingResultTest
 
-- (void)testShouldNotCrashWhenAsObjectIsInvokedOnAnEmptyResult
-{
-    NSException *exception = nil;
-    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
+- (void)testShouldNotCrashWhenAsObjectIsInvokedOnAnEmptyResult {
+    NSException* exception = nil;
+    RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     @try {
         [result asObject];
     }
@@ -42,16 +41,14 @@
     }
 }
 
-- (void)testShouldReturnNilForAnEmptyCollectionCoercedToAsObject
-{
-    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
+- (void)testShouldReturnNilForAnEmptyCollectionCoercedToAsObject {
+    RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     assertThat([result asObject], is(equalTo(nil)));
 }
 
-- (void)testShouldReturnTheFirstObjectInTheCollectionWhenCoercedToAsObject
-{
-    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"one", @"one", @"two", @"two", nil];
-    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:dictionary];
+- (void)testShouldReturnTheFirstObjectInTheCollectionWhenCoercedToAsObject {
+    NSDictionary* dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"one", @"one", @"two", @"two", nil];
+    RKObjectMappingResult* result = [RKObjectMappingResult mappingResultWithDictionary:dictionary];
     assertThat([result asObject], is(equalTo(@"one")));
 }
 
