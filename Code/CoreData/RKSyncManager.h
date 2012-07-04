@@ -59,7 +59,7 @@
 - (void)syncManager:(RKSyncManager *)syncManager didPushObjects:(NSSet *)objects withSyncMode:(RKSyncMode)syncMode;
 
 /**
- * When implemented, sent before updates are pulled from ther server.
+ * When implemented, sent before updates are pulled from the server.
  */
 - (void)syncManager:(RKSyncManager *)syncManager willPullObjectsOfClass:(Class)objectClass withSyncMode:(RKSyncMode)syncMode;
 
@@ -70,6 +70,7 @@
 
 @end
 
+//TODO:Add a good introduction, and a more in-depth intro in markdown for the repo and wiki.
 /**
  `RKSyncManager` handles the observation of Core Data changes and the syncronization of a local store with a remote server. This object is created automatically when an RKManagedObjectStore is initialized, and is associated with the objectStore's related `objectManager`.  
  */
@@ -95,6 +96,11 @@
  The Grand Central Dispatch concurrent queue to perform our network operations. Push requests (POST, PUT, DELETE) can run concurrently, but pull requests (GET) are barriers - previous queue items must complete before one runs, and no other request can run at the same time.
  */
 @property (nonatomic, assign) dispatch_queue_t networkOperationQueue;
+
+/**
+ Returns the current number of network operations in the networkOperationQueue. This is decremented only when an item in the queue finishes running.
+ */
+@property (nonatomic, readonly) __block NSInteger networkOperationCount;
 
 /**
  If NO, the sync manager will take no actions for any inserted, updated, or deleted 

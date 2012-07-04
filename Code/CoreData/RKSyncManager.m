@@ -24,7 +24,7 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
 
 @interface RKSyncManager (Private)
 
-@property (nonatomic, retain, readwrite) RKRequestQueue *requestQueue;
+@property (nonatomic, assign, readwrite) __block NSInteger networkOperationCount;
 
 - (void)contextDidSave:(NSNotification*)notification;
 
@@ -53,7 +53,8 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
 
 @implementation RKSyncManager
 
-@synthesize objectManager = _objectManager, delegate = _delegate, networkOperationQueue = _networkOperationQueue;
+@synthesize objectManager = _objectManager, delegate = _delegate;
+@synthesize networkOperationQueue = _networkOperationQueue, networkOperationCount = _networkOperationCount;
 @synthesize defaultSyncMode = _defaultSyncMode, defaultSyncStrategy = _defaultSyncStrategy, defaultSyncDirection = _defaultSyncDirection;
 @synthesize syncEnabled;
 
@@ -70,6 +71,7 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
         _defaultSyncDirection = RKSyncDirectionBoth;
         
         _networkOperationQueue = dispatch_queue_create("com.RestKit.Syncing.NetworkOperationsQueue", DISPATCH_QUEUE_CONCURRENT);
+        _networkOperationCount = 0;
         
         _objectManager = [objectManager retain];
         _queue = [[NSMutableArray alloc] init];
@@ -103,6 +105,9 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
     
     [_queue release];
     _queue = nil;
+    
+    dispatch_release(_networkOperationQueue);
+    _networkOperationQueue = nil;
     
     [_completedQueueItems release];
     _completedQueueItems = nil;
@@ -279,12 +284,15 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
             RKRequestMethod method = [item.syncMethod integerValue];
             if (method == RKRequestMethodPOST) {
                 RKSyncNetworkOperationBlock postBlock = ^{
+                    _networkOperationCount++;
                     [_objectManager postObject:object usingBlock:^(RKObjectLoader *loader){
                         loader.onDidLoadObject = ^ (id object){
+                            _networkOperationCount--;
                             [blocksafeSelf addCompletedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                         };
                         loader.onDidFailWithError = ^ (NSError *error){
+                            _networkOperationCount--;
                             [blocksafeSelf addFailedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                             if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingQueueItem:withError:)]) {
@@ -303,12 +311,15 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
                 
             } else if (method == RKRequestMethodPUT) {
                 RKSyncNetworkOperationBlock putBlock = ^{
+                    _networkOperationCount++;
                     [_objectManager putObject:object usingBlock:^(RKObjectLoader *loader){
                         loader.onDidLoadObject = ^ (id object){
+                            _networkOperationCount--;
                             [blocksafeSelf addCompletedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                         };
                         loader.onDidFailWithError = ^ (NSError *error){
+                            _networkOperationCount--;
                             [blocksafeSelf addFailedQueueItem: item];
                             [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
                             if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingQueueItem:withError:)]) {
@@ -328,8 +339,10 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
             } else if (method == RKRequestMethodDELETE) {
                 //The object doesn't necessarily exist if the context has been saved since it was deleted, so we send using the stored route
                 RKSyncNetworkOperationBlock deleteBlock = ^{
+                    _networkOperationCount++;
                     [[_objectManager client] delete:item.objectRoute usingBlock: ^(RKRequest *request ){
                         request.onDidLoadResponse = ^ (RKResponse *response){
+                            _networkOperationCount--;
                             if ([response isSuccessful]) {
                                 [blocksafeSelf addCompletedQueueItem: item];
                                 [blocksafeSelf checkIfQueueFinishedWithSyncMode:syncMode andClass:objectClass];
@@ -507,10 +520,13 @@ typedef void (^RKSyncNetworkOperationBlock)(void);
                 //Pull requests create a barrier in the queue. We need all push requests to finish before we pull so that the server can respond with all of the data that has been sent.
                 dispatch_barrier_async(_networkOperationQueue, ^{
                     [_objectManager loadObjectsAtResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
+                        _networkOperationCount++;
                         loader.onDidLoadObjects = ^(NSArray *objects){
                             //TODO: delegate call
+                            _networkOperationCount--;
                         };
                         loader.onDidFailWithError = ^(NSError *error){
+                            _networkOperationCount--;
                             if (blocksafeDelegate && [blocksafeDelegate respondsToSelector:@selector(syncManager:didFailSyncingWithError:)]) {
                                 //TODO: Need a good delegate call (no syncQueueItem in this case)
                                 //[blocksafeDelegate syncManager:self didFailSyncingQueueItem withError:<#(NSError *)#> WithError:error];

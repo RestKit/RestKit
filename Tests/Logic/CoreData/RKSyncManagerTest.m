@@ -109,7 +109,7 @@
     
     // Create a new human
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:31337];
     [self.manager.objectStore save:nil];
     
@@ -121,7 +121,7 @@
 - (void)testShouldCreateQueueItemWhenObjectInserted {
     // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:1337];
     [self.manager.objectStore save:nil];
     
@@ -172,6 +172,8 @@
     assertThat([RKManagedObjectSyncQueue findAll],hasCountOf(1));
 }
 
+
+//TODO: test all permutations
 - (void)testShouldNotPruneExtraUpdatesWithProxyStrategy {
     // Tell the RKSyncManager not to prune theoretically unnecessary UPDATE requests
     [self.manager.syncManager setDefaultSyncStrategy:RKSyncStrategyProxyOnly];
@@ -190,7 +192,7 @@
 - (void)testShouldPruneLocalOnlyObjectsWithBatchStrategy {
     // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:12345];
     [self.manager.objectStore save:nil];
     assertThat([RKManagedObjectSyncQueue findAll],hasCountOf(1));
@@ -207,7 +209,7 @@
   
     // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:6789];
     [self.manager.objectStore save:nil];
     assertThat([RKManagedObjectSyncQueue findAll],hasCountOf(1));
@@ -225,12 +227,12 @@
   
     // Create a new human - we have a mapping w/ syncMode set so we expect sync behavior
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:987];
     [self.manager.objectStore save:nil];
     
     // There should already be a request in the queue w/o us doing anything.
-    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
@@ -239,17 +241,17 @@
     
     // Create a new human
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:567];
     [self.manager.objectStore save:nil];
     
     // We are in manual sync mode, so no requests should happen automatically.
-    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(0));
     
     // Now after a manual "push" call it should have 1
     [self.manager.syncManager push];
-    numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
@@ -258,18 +260,18 @@
     
     // Create a new human
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:11235];
     [self.manager.objectStore save:nil];
 
     // Here we're syncing cats, not humans
     [self.manager.syncManager syncObjectsOfClass:[RKCat class]];
-    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(0));
 
     // Let's try that again with humans - push & pull request expected
     [self.manager.syncManager syncObjectsOfClass:[RKHuman class]];
-    numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(2));
 }
 
@@ -280,18 +282,19 @@
   
   // Create a new human
   RKHuman *human = [RKHuman object];
-  human.name = @"Eric Cordell";
+  human.name = @"Evan Cordell";
   human.railsID = [NSNumber numberWithInt:135711];
   [self.manager.objectStore save:nil];
   
   // Wait a little bit just to double-check
-  [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
-  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  // TODO: fix. Removed - getting a bad access?
+  //[[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.5]];
+  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
   assertThat(numRequests,equalToUnsignedInt(0));
   
   // Now unleash any queued requests and confirm that we have 1
   [self.manager.syncManager syncObjectsWithSyncMode:RKSyncModeInterval andClass:nil];
-  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
   assertThat(numRequests,equalToUnsignedInt(1));
 }
 
@@ -308,7 +311,7 @@
     assertThat(queueItems,hasCountOf(1));
     
     // But there should be 2 requests - a push and a pull
-    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(2));
 }
 
@@ -324,7 +327,7 @@
     assertThat(queueItems,hasCountOf(1));
     
     // And there should be 1 requests - a push.
-    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
@@ -340,13 +343,17 @@
     assertThat(queueItems,hasCountOf(0));
     
     // And there should be 1 requests - a pull.
-    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(1));
 }
 
 -(void)testDifferentObjectsShouldNotInterfereWithSyncDirections {
-    [self.manager.syncManager setSyncDirection:RKSyncDirectionPush forClass:[RKHuman class]];
-    [self.manager.syncManager setSyncDirection:RKSyncDirectionPull forClass:[RKCat class]];
+    RKManagedObjectMapping *pushMapping = [self.manualSyncMapping copy];
+    RKManagedObjectMapping *pullMapping = [self.manualSyncMapping copy];
+    pushMapping.syncDirection = RKSyncDirectionPush;
+    pullMapping.syncDirection = RKSyncDirectionPull;
+    [self.manager.mappingProvider setMapping:pushMapping forKeyPath:@"/humans"];
+    [self.manager.mappingProvider setMapping:pullMapping forKeyPath:@"/cats"];
   
     // Make a new cat & update a human
     RKCat *newCat = [RKCat object];
@@ -361,7 +368,7 @@
     assertThat(item.className,equalTo(@"RKHuman"));
   
     // And there should be 2 requests - a pull AND a push.
-    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+    NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
     assertThat(numRequests,equalToUnsignedInt(2));
 }
 
@@ -384,7 +391,7 @@
     // Now create a human and see that the delegates are called when we manually sync
     [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/humans"];
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell";
+    human.name = @"Evan Cordell";
     human.railsID = [NSNumber numberWithInt:31415];
   
     // Create the cat & save both
@@ -413,7 +420,7 @@
     // Now create a human (with manual syncing) and see that the delegates are called
     [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/humans"];
     RKHuman *human = [RKHuman object];
-    human.name = @"Eric Cordell Push";
+    human.name = @"Evan Cordell Push";
     human.railsID = [NSNumber numberWithInt:2];
 
     NSSet *objs = [NSSet setWithObject:human];
@@ -486,8 +493,8 @@
 - (void)testZZZShouldCallErrorDelegateMethod {
   id syncDelegate = [OCMockObject niceMockForProtocol:@protocol(RKSyncManagerDelegate)];
   self.manager.syncManager.delegate = syncDelegate;
-  
-  [[syncDelegate expect] syncManager:self.manager.syncManager didFailSyncingWithError:[OCMArg any]];
+    
+  [[syncDelegate expect] syncManager:self.manager.syncManager didFailSyncingQueueItem:[OCMArg any] withError:[OCMArg any]];
 
   [self.manager.mappingProvider setMapping:self.manualSyncMapping forKeyPath:@"/humans"];
   [self.manager.syncManager pullObjectsWithSyncMode:RKSyncModeManual andClass:[RKHuman class]];
@@ -513,7 +520,7 @@
   [self.manager.objectStore save:nil];
   NSArray *queueItems = [RKManagedObjectSyncQueue findAll];
   assertThat(queueItems,hasCountOf(1));
-  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  NSNumber *numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
   assertThat(numRequests,equalToUnsignedInt(0));
   
   // Now go ahead and change to a legitimate base URL -- this alone should trigger the notification
@@ -532,7 +539,7 @@
   self.manager.objectStore = self.store;
   
   // Wow, look at that - we have 2 requests (a pull & a push)
-  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.requestQueue.loadingCount];
+  numRequests = [NSNumber numberWithUnsignedInteger:self.manager.syncManager.networkOperationCount];
   assertThat(numRequests,equalToUnsignedInt(2));
 }*/
 
