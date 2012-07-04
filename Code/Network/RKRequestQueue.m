@@ -87,29 +87,31 @@ static const NSTimeInterval kFlushDelay = 0.3;
 }
 
 + (id)requestQueueWithName:(NSString *)name {
-    if (RKRequestQueueInstances == nil) {
-        RKRequestQueueInstances = [NSMutableArray new];
-    }
-
-    // Find existing reference
-    NSArray *requestQueueInstances = [RKRequestQueueInstances copy];
-    RKRequestQueue *namedQueue = nil;
-    for (NSValue* value in requestQueueInstances) {
-        RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
-        if ([queue.name isEqualToString:name]) {
-            namedQueue = queue;
-            break;
+    @synchronized(RKRequestQueueInstances) {
+        if (RKRequestQueueInstances == nil) {
+            RKRequestQueueInstances = [NSMutableArray new];
         }
+        
+        // Find existing reference
+        NSArray *requestQueueInstances = [RKRequestQueueInstances copy];
+        RKRequestQueue *namedQueue = nil;
+        for (NSValue* value in requestQueueInstances) {
+            RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
+            if ([queue.name isEqualToString:name]) {
+                namedQueue = queue;
+                break;
+            }
+        }
+        [requestQueueInstances release];
+        
+        if (namedQueue == nil) {
+            namedQueue = [self requestQueue];
+            namedQueue.name = name;
+            [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:namedQueue]];
+        }
+        
+        return namedQueue;
     }
-    [requestQueueInstances release];
-
-    if (namedQueue == nil) {
-        namedQueue = [self requestQueue];
-        namedQueue.name = name;
-        [RKRequestQueueInstances addObject:[NSValue valueWithNonretainedObject:namedQueue]];
-    }
-
-    return namedQueue;
 }
 
 + (BOOL)requestQueueExistsWithName:(NSString*)name {
@@ -157,11 +159,13 @@ static const NSTimeInterval kFlushDelay = 0.3;
 
 - (void)removeFromNamedQueues {
     if (self.name) {
-        for (NSValue* value in RKRequestQueueInstances) {
-            RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
-            if ([queue.name isEqualToString:self.name]) {
-                [RKRequestQueueInstances removeObject:value];
-                return;
+        @synchronized(RKRequestQueueInstances) {
+            for (NSValue* value in RKRequestQueueInstances) {
+                RKRequestQueue* queue = (RKRequestQueue*) [value nonretainedObjectValue];
+                if ([queue.name isEqualToString:self.name]) {
+                    [RKRequestQueueInstances removeObject:value];
+                    return;
+                }
             }
         }
     }
