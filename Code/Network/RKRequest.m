@@ -352,34 +352,17 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
             parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
         else
             parameters = [_URL queryParameters];
-
-        if (self.method == RKRequestMethodPUT)
-            echo = [GCOAuth URLRequestForPath:[_URL path]
-                                PUTParameters:parameters
-                                       scheme:[_URL scheme]
-                                         host:[_URL hostAndPort]
-                                  consumerKey:self.OAuth1ConsumerKey
-                               consumerSecret:self.OAuth1ConsumerSecret
-                                  accessToken:self.OAuth1AccessToken
-                                  tokenSecret:self.OAuth1AccessTokenSecret];
-        else if (self.method == RKRequestMethodPOST)
-            echo = [GCOAuth URLRequestForPath:[_URL path]
-                               POSTParameters:parameters
-                                       scheme:[_URL scheme]
-                                         host:[_URL hostAndPort]
-                                  consumerKey:self.OAuth1ConsumerKey
-                               consumerSecret:self.OAuth1ConsumerSecret
-                                  accessToken:self.OAuth1AccessToken
-                                  tokenSecret:self.OAuth1AccessTokenSecret];
-        else
-            echo = [GCOAuth URLRequestForPath:[_URL path]
-                                GETParameters:[_URL queryParameters]
-                                       scheme:[_URL scheme]
-                                         host:[_URL hostAndPort]
-                                  consumerKey:self.OAuth1ConsumerKey
-                               consumerSecret:self.OAuth1ConsumerSecret
-                                  accessToken:self.OAuth1AccessToken
-                                  tokenSecret:self.OAuth1AccessTokenSecret];
+        
+        NSString *methodString = RKRequestMethodNameFromType(self.method);        
+        echo = [GCOAuth URLRequestForPath:[_URL path] 
+                               HTTPMethod:methodString 
+                               parameters:(self.method == RKRequestMethodGET) ? [_URL queryParameters] : parameters 
+                                   scheme:[_URL scheme] 
+                                     host:[_URL host] 
+                              consumerKey:self.OAuth1ConsumerKey 
+                           consumerSecret:self.OAuth1ConsumerSecret 
+                              accessToken:self.OAuth1AccessToken 
+                              tokenSecret:self.OAuth1AccessTokenSecret];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Authorization"] forHTTPHeaderField:@"Authorization"];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"Accept-Encoding"] forHTTPHeaderField:@"Accept-Encoding"];
         [_URLRequest setValue:[echo valueForHTTPHeaderField:@"User-Agent"] forHTTPHeaderField:@"User-Agent"];
