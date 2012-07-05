@@ -27,6 +27,7 @@
 #import "RKObjectManager.h"
 #import "RKObjectMapping.h"
 #import "RKObjectLoader.h"
+#import "RKKeyboardScroller.h"
 
 ///-----------------------------------------------------------------------------
 /// @name Constants
