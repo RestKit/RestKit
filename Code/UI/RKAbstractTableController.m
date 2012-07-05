@@ -48,6 +48,13 @@ NSString * const RKTableControllerDidBecomeOffline = @"RKTableControllerDidBecom
 
 static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
+@interface RKAbstractTableController ()
+
+@property (nonatomic, retain) RKKeyboardScroller *keyboardScroller;
+
+@end
+
+
 @implementation RKAbstractTableController
 
 @synthesize delegate = _delegate;
@@ -97,6 +104,8 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 @synthesize stateOverlayImageView = _stateOverlayImageView;
 @synthesize cache = _cache;
 @synthesize pullToRefreshHeaderView = _pullToRefreshHeaderView;
+
+@synthesize keyboardScroller = _keyboardScroller;
 
 #pragma mark - Instantiation
 
@@ -265,17 +274,9 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     if (_autoResizesForKeyboard != autoResizesForKeyboard) {
         _autoResizesForKeyboard = autoResizesForKeyboard;
         if (_autoResizesForKeyboard) {
-            // Register for Keyboard notifications
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(resizeTableViewForKeyboard:)
-                                                         name:UIKeyboardWillShowNotification
-                                                       object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(resizeTableViewForKeyboard:)
-                                                         name:UIKeyboardWillHideNotification
-                                                       object:nil];
+            self.keyboardScroller = [[RKKeyboardScroller alloc] initWithViewController:self.viewController scrollView:self.tableView];
         } else {
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
+            self.keyboardScroller = nil;
         }
     }
 }
@@ -1388,75 +1389,6 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 {
     [self removeSwipeView:NO];
     return YES;
-}
-
-#pragma mark - Keyboard Notification methods
-
-- (void)resizeTableViewForKeyboard:(NSNotification *)notification
-{
-    NSAssert(_autoResizesForKeyboard, @"Errantly receiving keyboard notifications while autoResizesForKeyboard=NO");
-    NSDictionary *userInfo = [notification userInfo];
-
-    CGRect keyboardEndFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat heightForViewShift = keyboardEndFrame.size.height;
-    RKLogTrace(@"keyboardEndFrame.size.height=%f, heightForViewShift=%f",
-               keyboardEndFrame.size.height, heightForViewShift);
-
-    CGFloat bottomBarOffset = 0.0;
-    UINavigationController *navigationController = self.viewController.navigationController;
-    if (navigationController && navigationController.toolbar && !navigationController.toolbarHidden) {
-        bottomBarOffset += navigationController.toolbar.frame.size.height;
-        RKLogTrace(@"Found a visible toolbar. Reducing size of heightForViewShift by=%f", bottomBarOffset);
-    }
-
-    UITabBarController *tabBarController = self.viewController.tabBarController;
-    if (tabBarController && tabBarController.tabBar && !self.viewController.hidesBottomBarWhenPushed) {
-        bottomBarOffset += tabBarController.tabBar.frame.size.height;
-        RKLogTrace(@"Found a visible tabBar. Reducing size of heightForViewShift by=%f", bottomBarOffset);
-    }
-
-    if ([[notification name] isEqualToString:UIKeyboardWillShowNotification]) {
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.2];
-        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, 0, (heightForViewShift - bottomBarOffset), 0);
-        self.tableView.contentInset = contentInsets;
-        self.tableView.scrollIndicatorInsets = contentInsets;
-
-        CGRect nonKeyboardRect = self.tableView.frame;
-        nonKeyboardRect.size.height -= heightForViewShift;
-        RKLogTrace(@"Searching for a firstResponder not inside our nonKeyboardRect (%f, %f, %f, %f)",
-                   nonKeyboardRect.origin.x, nonKeyboardRect.origin.y,
-                   nonKeyboardRect.size.width, nonKeyboardRect.size.height);
-
-        UIView *firstResponder = [self.tableView findFirstResponder];
-        if (firstResponder) {
-            CGRect firstResponderFrame = firstResponder.frame;
-            RKLogTrace(@"Found firstResponder=%@ at (%f, %f, %f, %f)", firstResponder,
-                       firstResponderFrame.origin.x, firstResponderFrame.origin.y,
-                       firstResponderFrame.size.width, firstResponderFrame.size.width);
-
-            if (![firstResponder.superview isEqual:self.tableView]) {
-                firstResponderFrame = [firstResponder.superview convertRect:firstResponderFrame toView:self.tableView];
-                RKLogTrace(@"firstResponder (%@) frame is not in tableView's coordinate system. Coverted to (%f, %f, %f, %f)",
-                           firstResponder, firstResponderFrame.origin.x, firstResponderFrame.origin.y,
-                           firstResponderFrame.size.width, firstResponderFrame.size.height);
-            }
-
-            if (!CGRectContainsPoint(nonKeyboardRect, firstResponderFrame.origin)) {
-                RKLogTrace(@"firstResponder (%@) is underneath keyboard. Beginning scroll of tableView to show", firstResponder);
-                [self.tableView scrollRectToVisible:firstResponderFrame animated:YES];
-            }
-        }
-        [UIView commitAnimations];
-
-    } else if ([[notification name] isEqualToString:UIKeyboardWillHideNotification]) {
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.2];
-        UIEdgeInsets contentInsets = UIEdgeInsetsZero;
-        self.tableView.contentInset = contentInsets;
-        self.tableView.scrollIndicatorInsets = contentInsets;
-        [UIView commitAnimations];
-    }
 }
 
 - (void)loadTableWithObjectLoader:(RKObjectLoader *)theObjectLoader

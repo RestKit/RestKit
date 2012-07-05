@@ -531,6 +531,10 @@
 		258113C915781848009835EB /* RKObjectMappingProvider+CoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 258113C615781848009835EB /* RKObjectMappingProvider+CoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258113CD15781871009835EB /* RKObjectMappingProvider+CoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 258113CC15781871009835EB /* RKObjectMappingProvider+CoreData.m */; };
 		258113CE15781871009835EB /* RKObjectMappingProvider+CoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 258113CC15781871009835EB /* RKObjectMappingProvider+CoreData.m */; };
+		258EA57815A63D07007E07A6 /* RKKeyboardScroller.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		258EA57915A63D07007E07A6 /* RKKeyboardScroller.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		258EA57A15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */; };
+		258EA57B15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */; };
 		259C301715128079003066A2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25EC1B0014F8078100C3CF3F /* CoreFoundation.framework */; };
 		259C3022151280A1003066A2 /* blackArrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1ADE14F8022600C3CF3F /* blackArrow.png */; };
 		259C3023151280A1003066A2 /* blackArrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 25EC1ADF14F8022600C3CF3F /* blackArrow@2x.png */; };
@@ -1096,6 +1100,8 @@
 		257ABAB51511371D00CCAA76 /* NSManagedObject+RKAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+RKAdditions.m"; sourceTree = "<group>"; };
 		258113C615781848009835EB /* RKObjectMappingProvider+CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "RKObjectMappingProvider+CoreData.h"; sourceTree = "<group>"; };
 		258113CC15781871009835EB /* RKObjectMappingProvider+CoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RKObjectMappingProvider+CoreData.m"; sourceTree = "<group>"; };
+		258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKKeyboardScroller.h; sourceTree = "<group>"; };
+		258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKKeyboardScroller.m; sourceTree = "<group>"; };
 		259C301615128079003066A2 /* RestKitResources.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RestKitResources.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		259D983B154F6C90008C90F5 /* benchmark_parents_and_children.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = benchmark_parents_and_children.json; sourceTree = "<group>"; };
 		259D98521550C69A008C90F5 /* RKEntityByAttributeCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEntityByAttributeCache.h; sourceTree = "<group>"; };
@@ -2071,6 +2077,8 @@
 				25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */,
 				25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */,
 				25C93DF1157FB6370089259B /* RKTableCellBlockTypes.h */,
+				258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */,
+				258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -2334,6 +2342,7 @@
 				25E4DAB4156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */,
 				25C93DF2157FB6370089259B /* RKTableCellBlockTypes.h in Headers */,
 				25FBB852159272DD00955D27 /* RKRouter.h in Headers */,
+				258EA57815A63D07007E07A6 /* RKKeyboardScroller.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2462,6 +2471,7 @@
 				258113C915781848009835EB /* RKObjectMappingProvider+CoreData.h in Headers */,
 				25C93DF3157FB6370089259B /* RKTableCellBlockTypes.h in Headers */,
 				25FBB853159272DD00955D27 /* RKRouter.h in Headers */,
+				258EA57915A63D07007E07A6 /* RKKeyboardScroller.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2874,6 +2884,7 @@
 				252029051577AE1800076FB4 /* RKRoute.m in Sources */,
 				258113CD15781871009835EB /* RKObjectMappingProvider+CoreData.m in Sources */,
 				25FBB854159272DD00955D27 /* RKRouter.m in Sources */,
+				258EA57A15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3071,6 +3082,7 @@
 				252029061577AE1800076FB4 /* RKRoute.m in Sources */,
 				258113CE15781871009835EB /* RKObjectMappingProvider+CoreData.m in Sources */,
 				25FBB855159272DD00955D27 /* RKRouter.m in Sources */,
+				258EA57B15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
