@@ -84,7 +84,7 @@
     if (self) {
         if ([self isMemberOfClass:[RKRoute class]]) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                           reason:[NSString stringWithFormat:@"%@ is not meant to be directly instantiated. Use one of the initializer methods instead..",
+                                           reason:[NSString stringWithFormat:@"%@ is not meant to be directly instantiated. Use one of the initializer methods instead.",
                                                    NSStringFromClass([self class])]
                                          userInfo:nil];
         }
