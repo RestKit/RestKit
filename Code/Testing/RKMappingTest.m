@@ -246,7 +246,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         // Found a matching event, check if it satisfies the expectation
         NSString *errorMessage = nil;
         if (! [self event:event satisfiesExpectation:expectation errorMessage:&errorMessage]) {
+            #pragma GCC diagnostic ignored "-Wformat-security"
             [NSException raise:NSInternalInconsistencyException format:errorMessage];
+            #pragma GCC diagnostic pop
         }
     } else {
         // No match
