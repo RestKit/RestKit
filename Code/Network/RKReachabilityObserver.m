@@ -398,7 +398,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkReach
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p host=%@ isReachabilityDetermined=%@ isMonitoringLocalWiFi=%d reachabilityFlags=%@>",
+    return [NSString stringWithFormat:@"<%@: %p host=%@ isReachabilityDetermined=%@ isMonitoringLocalWiFi=%@ reachabilityFlags=%@>",
             NSStringFromClass([self class]), self, self.host, self.isReachabilityDetermined ? @"YES" : @"NO",
             self.isMonitoringLocalWiFi ? @"YES" : @"NO", [self reachabilityFlagsDescription]];
 }
