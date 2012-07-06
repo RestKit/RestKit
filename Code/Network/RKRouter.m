@@ -56,12 +56,12 @@
     [super dealloc];
 }
 
-- (RKURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method
+- (RKURL *)URLForRouteNamed:(NSString *)routeName method:(out RKRequestMethod *)method object:(id)object
 {
     RKRoute *route = [self.routeSet routeForName:routeName];
     if (! route) return nil;
     if (method) *method = route.method;
-    return [self.baseURL URLByAppendingResourcePath:[self resourcePathFromRoute:route forObject:nil]];
+    return [self.baseURL URLByAppendingResourcePath:[self resourcePathFromRoute:route forObject:object]];
 }
 
 - (RKURL *)URLForObject:(id)object method:(RKRequestMethod)method
