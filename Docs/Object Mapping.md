@@ -667,7 +667,7 @@ RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
 [boyMapping mapAttributes:@"name", nil];
 RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
 [girlMapping mapAttributes:@"name", nil];
-RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+RKDynamicObjectMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
 [boyMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:dynamicMapping];
 [girlMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:dynamicMapping];
 
