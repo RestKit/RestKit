@@ -60,4 +60,6 @@
  */
 - (id<RKRequestSerializable>)serializationForMIMEType:(NSString*)mimeType error:(NSError**)error;
 
+- (NSString *)formattedStringFromDate:(NSDate*)date;
+
 @end
