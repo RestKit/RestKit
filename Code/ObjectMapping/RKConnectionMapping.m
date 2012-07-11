@@ -46,7 +46,7 @@
     return [mapping autorelease];
 }
 
-+ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKDynamicObjectMappingMatcher *)matcher matcher:(RKObjectMappingDefinition *)objectOrDynamicMapping {
++ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher {
     RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:matcher];
     return [mapping autorelease];
 }
