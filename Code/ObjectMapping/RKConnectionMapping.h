@@ -60,7 +60,7 @@ typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
  @return A new instance of a RKObjectConnectionMapping.
  */
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKDynamicObjectMappingMatcher *)matcher matcher:(RKObjectMappingDefinition *)objectOrDynamicMapping;
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher;
 
 /**
  Initializes the receiver with a relationship name, source key path, destination key path, mapping, and matcher.
