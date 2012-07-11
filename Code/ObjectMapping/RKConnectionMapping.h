@@ -1,5 +1,5 @@
 //
-//  RKObjectConnectionMapping.h
+//  RKConnectionMapping.h
 //  RestKit
 //
 //  Created by Charlie Savage on 5/15/12.
@@ -22,19 +22,19 @@
 #import <CoreData/CoreData.h>
 #import "RKObjectMappingDefinition.h"
 
-@class RKObjectConnectionMapping;
+@class RKConnectionMapping;
 @class RKDynamicObjectMappingMatcher;
 
-typedef id(^RKObjectConnectionBlock)(RKObjectConnectionMapping * mapping, id source);
+typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
 // Defines the rules for connecting relationsips
-@interface RKObjectConnectionMapping : NSObject
+@interface RKConnectionMapping : NSObject
 
-@property (nonatomic, retain, readonly) NSString * relationshipName;
-@property (nonatomic, retain, readonly) NSString * sourceKeyPath;
-@property (nonatomic, retain, readonly) NSString * destinationKeyPath;
-@property (nonatomic, retain, readonly) RKObjectMappingDefinition * mapping;
-@property (nonatomic, retain, readonly) RKDynamicObjectMappingMatcher* matcher;
+@property (nonatomic, retain, readonly) NSString *relationshipName;
+@property (nonatomic, retain, readonly) NSString *sourceKeyPath;
+@property (nonatomic, retain, readonly) NSString *destinationKeyPath;
+@property (nonatomic, retain, readonly) RKObjectMappingDefinition *mapping;
+@property (nonatomic, retain, readonly) RKDynamicObjectMappingMatcher *matcher;
 
 /**
  Defines a mapping that is used to connect a source object relationship to
@@ -50,7 +50,7 @@ typedef id(^RKObjectConnectionBlock)(RKObjectConnectionMapping * mapping, id sou
 
  @return A new instance of a RKObjectConnectionMapping.
  */
-+ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
 
 /**
  Defines a mapping that is used to connect a source object relationship to
@@ -60,9 +60,12 @@ typedef id(^RKObjectConnectionBlock)(RKObjectConnectionMapping * mapping, id sou
 
  @return A new instance of a RKObjectConnectionMapping.
  */
-+ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKDynamicObjectMappingMatcher *)matcher matcher:(RKObjectMappingDefinition *)objectOrDynamicMapping;
 
-- (id)init:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+/**
+ Initializes the receiver with a relationship name, source key path, destination key path, mapping, and matcher.
+ */
+- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher;
 
 /**
  Finds the connected objects for this relationship mapping.
@@ -70,4 +73,5 @@ typedef id(^RKObjectConnectionBlock)(RKObjectConnectionMapping * mapping, id sou
  @return A single object, a set of 0 or more objects or nil.
  */
 - (id)findConnected:(NSManagedObject *)source;
+
 @end
