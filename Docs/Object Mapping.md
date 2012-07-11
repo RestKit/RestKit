@@ -609,12 +609,12 @@ Thus far we have examined clear-cut cases where the appropriate object mapping c
 key path or by the developer directly providing the mapping. Sometimes it is desirable to dynamically determine the appropriate
 object mapping to use at mapping time. Perhaps we have a collection of objects with identical attribute names, but we wish
 to represent them differently. Or maybe we are loading a collection of objects that are not KVC compliant, but contain a mixture
-of types that we would like to model. RestKit supports such use cases via the RKObjectDynamicMapping class. 
-RKObjectDynamicMapping is a sibling class to RKObjectMapping and can be added to instances of RKObjectMappingProvider and
-used to configure RKObjectMappingOperation instances. RKObjectDynamicMapping allows you to hook into the mapping process
+of types that we would like to model. RestKit supports such use cases via the RKDynamicObjectMapping class. 
+RKDynamicObjectMapping is a sibling class to RKObjectMapping and can be added to instances of RKObjectMappingProvider and
+used to configure RKObjectMappingOperation instances. RKDynamicObjectMapping allows you to hook into the mapping process
 and determine an appropriate RKObjectMapping to use on a per-object basis. 
 
-When RestKit is performing a mapping operation and the current mapping being applied is an RKObjectDynamicMapping instance,
+When RestKit is performing a mapping operation and the current mapping being applied is an RKDynamicObjectMapping instance,
 the dynamic mapping will be sent the `objectMappingForDictionary:` message with the NSDictionary that is currently being 
 mapped. The dynamic mapping is responsible for introspecting the contents of the dictionary and returning an RKObjectMapping
 instance that can be used to map the data into a concrete object.
@@ -625,9 +625,9 @@ There are three ways in which the determination of the appropriate object mappin
 be used to infer the appropriate object type, then you are in luck -- RestKit can handle the dynamic mapping via simple 
 configuration.
 2. Via a delegate callback. If your data requires some special analysis or you want to dynamically construct an object mapping
-to handle the data, you can assign a delegate to the RKObjectDynamicMapping and you will be called back to perform whatever
+to handle the data, you can assign a delegate to the RKDynamicObjectMapping and you will be called back to perform whatever
 logic you need to implement the object mapping lookup/construction.
-3. Via a delegate block invocation. Similar to the delegate configuration, you can assign a delegateBlock to the RKObjectDynamicMapping that will be invoked to determine the appropriate RKObjectMapping to use for the mappable data.
+3. Via a delegate block invocation. Similar to the delegate configuration, you can assign a delegateBlock to the RKDynamicObjectMapping that will be invoked to determine the appropriate RKObjectMapping to use for the mappable data.
 
 To illustrate these concepts, let's consider the following JSON fragment:
 
@@ -667,7 +667,7 @@ RKObjectMapping* boyMapping = [RKObjectMapping mappingForClass:[Boy class]];
 [boyMapping mapAttributes:@"name", nil];
 RKObjectMapping* girlMapping = [RKObjectMapping mappingForClass:[Girl class]];
 [girlMapping mapAttributes:@"name", nil];
-RKObjectDynamicMapping* dynamicMapping = [RKObjectDynamicMapping dynamicMapping];
+RKDynamicObjectMapping* dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
 [boyMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:dynamicMapping];
 [girlMapping mapKeyPath:@"friends" toRelationship:@"friends" withMapping:dynamicMapping];
 
