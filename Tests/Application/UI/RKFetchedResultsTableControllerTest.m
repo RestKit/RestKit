@@ -1532,42 +1532,6 @@
     [mockDelegate verify];
 }
 
-- (void)testRetrievalOfExistingCellsByObject
-{
-    [self bootstrapStoreAndCache];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
-    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
-    RKFetchedResultsTableController *tableController;
-    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
-    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
-    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
-    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
-    tableController.resourcePath = @"/JSON/humans/all.json";
-
-    RKTableItem *tableItem = [RKTableItem tableItemWithText:@"Test"];
-    tableItem.cellMapping.reuseIdentifier = @"HeaderCell";
-    [tableItem.cellMapping addDefaultMappings];
-    [tableController addHeaderRowForItem:tableItem];
-
-    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
-
-    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidLoadObjectsNotification usingBlock:^{
-        [tableController loadTable];
-    }];
-    assertThatInt([tableController numberOfRowsInSection:0], is(equalToInteger(3)));
-
-    NSIndexPath *headerIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    UITableViewCell *cellFromTableView = [tableViewController.tableView cellForRowAtIndexPath:headerIndexPath];
-
-    UITableViewCell *cellForObject = [tableController cellForObject:tableItem];
-    assertThat(cellForObject, is(equalTo(cellFromTableView)));
-
-    UITableViewCell *cellFromTableController = [tableController cellForObjectAtIndexPath:headerIndexPath];
-    assertThat(cellForObject, is(equalTo(cellFromTableController)));
-
-    assertThat(cellFromTableView, is(equalTo(cellFromTableController)));
-}
-
 - (void)testRetrievalOfManagedObjectIndexPath
 {
     [self bootstrapStoreAndCache];

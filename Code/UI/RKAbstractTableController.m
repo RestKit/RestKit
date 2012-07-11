@@ -511,7 +511,6 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
     id object = [self objectForRowAtIndexPath:indexPath];
 
-    // NOTE: Do NOT use cellForObjectAtIndexPath here. See https://gist.github.com/eafbb641d37bb7137759
     UITableViewCell *cell = [theTableView cellForRowAtIndexPath:indexPath];
     RKTableViewCellMapping *cellMapping = [_cellMappings cellMappingForObject:object];
 

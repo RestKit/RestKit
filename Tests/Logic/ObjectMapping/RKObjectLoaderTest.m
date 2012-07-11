@@ -320,7 +320,7 @@
     RKObjectMapping *serializationMapping = [mapping inverseMapping];
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/notNestedUsed" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestComplexUser class] resourcePathPattern:@"/notNestedUser" method:RKRequestMethodAny]];
     [objectManager.mappingProvider setSerializationMapping:serializationMapping forClass:[RKTestComplexUser class]];
 
     RKTestComplexUser *user = [[RKTestComplexUser new] autorelease];

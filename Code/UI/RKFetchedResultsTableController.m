@@ -285,8 +285,11 @@
         [self didFailLoadWithError:error];
     }
     [self updateSortedArray];
-    [self.tableView reloadData];
     [self didFinishLoad];
+    
+    // Load the table view after we have finished the load to ensure the state
+    // is accurate when computing the table view data source responses
+    [self.tableView reloadData];
 
     if ([self isAutoRefreshNeeded] && [self isOnline] &&
         ![self.objectLoader isLoading] &&
@@ -420,7 +423,7 @@
     }
 
     if ([self isFooterSection:section]) {
-        numberOfRows += [self.footerItems count];
+        numberOfRows += (![self isEmpty] || self.showsFooterRowsWhenEmpty) ? [self.footerItems count] : 0;
     }
     return numberOfRows;
 }
@@ -535,11 +538,9 @@
 {
     if ([self isEmptyItemIndexPath:indexPath]) {
         return self.emptyItem;
-
     } else if ([self isHeaderIndexPath:indexPath]) {
         NSUInteger row = ([self isEmpty] && self.emptyItem) ? (indexPath.row - 1) : indexPath.row;
         return [self.headerItems objectAtIndex:row];
-
     } else if ([self isFooterIndexPath:indexPath]) {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:indexPath.section];
         NSUInteger footerRow = (indexPath.row - sectionInfo.numberOfObjects);
@@ -552,7 +553,14 @@
     } else if (_sortSelector || _sortComparator) {
         return [_arraySortedFetchedObjects objectAtIndex:[self fetchedResultsIndexPathForIndexPath:indexPath].row];
     }
-    return [_fetchedResultsController objectAtIndexPath:[self fetchedResultsIndexPathForIndexPath:indexPath]];
+    
+    NSIndexPath *fetchedResultsIndexPath = [self fetchedResultsIndexPathForIndexPath:indexPath];
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:fetchedResultsIndexPath.section];
+    if (fetchedResultsIndexPath.row < [sectionInfo numberOfObjects]) {
+        return [_fetchedResultsController objectAtIndexPath:fetchedResultsIndexPath];
+    } else {
+        return nil;
+    }
 }
 
 #pragma mark - Network Table Loading
