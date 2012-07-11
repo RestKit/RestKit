@@ -121,4 +121,36 @@
 
 @end
 
-// TODO: Add compatibility aliases...
+@interface RKRouter (CompatibilityAliases)
+
+/**
+ Use `[[router URLForObject:object method:method] resourcePath]` instead.
+
+ @bug Deprecated in v0.11.0
+ */
+- (NSString *)resourcePathForObject:(NSObject *)object method:(RKRequestMethod)method DEPRECATED_ATTRIBUTE;
+
+/**
+ Use `[router.routeSet addRoute:[RKRoute routeWithClass:objectClass resourcePathPattern:resourcePathPattern method:RKRequestMethodAny]]` instead.
+
+ @bug Deprecated in v0.11.0
+ */
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern DEPRECATED_ATTRIBUTE;
+
+/**
+ Use `[router.routeSet addRoute:[RKRoute routeWithClass:objectClass resourcePathPattern:resourcePathPattern method:method]]` instead.
+
+ @bug Deprecated in v0.11.0
+ */
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method DEPRECATED_ATTRIBUTE;
+
+/**
+ Use the following instead:
+
+    RKRoute *route = [RKRoute routeWithClass:objectClass resourcePathPattern:resourcePathPattern method:method];
+    route.shouldEscapeResourcePath = addEscapes;
+    [router.routeSet addRoute:route];
+ */
+- (void)routeClass:(Class)objectClass toResourcePathPattern:(NSString*)resourcePathPattern forMethod:(RKRequestMethod)method escapeRoutedPath:(BOOL)addEscapes DEPRECATED_ATTRIBUTE;
+
+@end
