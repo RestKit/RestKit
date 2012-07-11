@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCObserverMockObject : NSObject
+@interface OCObserverMockObject : NSObject 
 {
 	BOOL			expectationOrderMatters;
 	NSMutableArray	*recorders;

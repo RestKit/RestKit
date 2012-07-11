@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMRealObjectForwarder : NSObject
+@interface OCMRealObjectForwarder : NSObject 
 {
 }
 

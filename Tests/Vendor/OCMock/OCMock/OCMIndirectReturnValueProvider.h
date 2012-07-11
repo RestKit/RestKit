@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMIndirectReturnValueProvider : NSObject
+@interface OCMIndirectReturnValueProvider : NSObject 
 {
 	id	provider;
 	SEL	selector;
