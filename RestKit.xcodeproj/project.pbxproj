@@ -550,6 +550,8 @@
 		25AE61C715ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */; };
 		25AE61C815ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; };
 		25AE61C915ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; };
+		25AE61CA15ADEBD000B319C8 /* RKConnectionMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25AE61DE15ADEF5800B319C8 /* RKConnectionMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BC044C91576CE72003DCDD6 /* RKConnectionMapping.m */; };
 		25B408261491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408271491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408281491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
@@ -744,7 +746,7 @@
 		73D3907714CA1AE60093E3D6 /* child.json in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907314CA1A4A0093E3D6 /* child.json */; };
 		73D3907914CA1DD40093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
 		73D3907A14CA1DD50093E3D6 /* channels.xml in Resources */ = {isa = PBXBuildFile; fileRef = 73D3907814CA1D710093E3D6 /* channels.xml */; };
-		8BC044CA1576CE72003DCDD6 /* RKConnectionMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */; };
+		8BC044CA1576CE72003DCDD6 /* RKConnectionMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BC044C81576CE72003DCDD6 /* RKConnectionMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8BC044CB1576CE72003DCDD6 /* RKConnectionMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 8BC044C91576CE72003DCDD6 /* RKConnectionMapping.m */; };
 /* End PBXBuildFile section */
 
@@ -2427,6 +2429,7 @@
 				259D985F155218E5008C90F5 /* RKEntityCache.h in Headers */,
 				2554595A155F0527007D7625 /* RKBenchmark.h in Headers */,
 				25E4DAB5156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */,
+				25AE61CA15ADEBD000B319C8 /* RKConnectionMapping.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2932,6 +2935,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25AE61DE15ADEF5800B319C8 /* RKConnectionMapping.m in Sources */,
 				25160ECD1456532C0060A5C5 /* GCOAuth.m in Sources */,
 				25160ED11456532C0060A5C5 /* NSData+Base64.m in Sources */,
 				25160ED41456532C0060A5C5 /* FileMD5Hash.c in Sources */,
