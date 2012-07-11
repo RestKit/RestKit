@@ -123,10 +123,8 @@
     [self addTableItem:tableItem];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block {
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block
+- (void)addMappingFromAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)keyPath forTableItem:(RKTableItem *)tableItem
 {
-- (void)addMappingFromAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)keyPath forTableItem:(RKTableItem *)tableItem {
     RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
     attributeMapping.sourceKeyPath = [NSString stringWithFormat:@"userData.__RestKit__object.%@", attributeKeyPath];
     attributeMapping.destinationKeyPath = keyPath;
