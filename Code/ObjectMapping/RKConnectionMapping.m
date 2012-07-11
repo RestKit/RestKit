@@ -1,5 +1,5 @@
 //
-//  RKObjectConnectionMapping.m
+//  RKConnectionMapping.m
 //  RestKit
 //
 //  Created by Charlie Savage on 5/15/12.
@@ -18,51 +18,53 @@
 //  limitations under the License.
 //
 
-#import "RKObjectConnectionMapping.h"
+#import "RKConnectionMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectMapping.h"
 #import "RKObjectManager.h"
 #import "RKManagedObjectCaching.h"
 #import "RKDynamicObjectMappingMatcher.h"
 
-@interface RKObjectConnectionMapping()
-@property (nonatomic, retain) NSString * relationshipName;
-@property (nonatomic, retain) NSString * destinationKeyPath;
-@property (nonatomic, retain) RKObjectMappingDefinition * mapping;
-@property (nonatomic, retain) RKDynamicObjectMappingMatcher* matcher;
-@property (nonatomic, retain) NSString * sourceKeyPath;
+@interface RKConnectionMapping()
+@property (nonatomic, retain) NSString *relationshipName;
+@property (nonatomic, retain) NSString *destinationKeyPath;
+@property (nonatomic, retain) RKObjectMappingDefinition *mapping;
+@property (nonatomic, retain) RKDynamicObjectMappingMatcher *matcher;
+@property (nonatomic, retain) NSString *sourceKeyPath;
 @end
 
-@implementation RKObjectConnectionMapping
+@implementation RKConnectionMapping
 
-@synthesize relationshipName;
-@synthesize destinationKeyPath;
-@synthesize mapping;
-@synthesize matcher;
-@synthesize sourceKeyPath;
+@synthesize relationshipName = _relationshipName;
+@synthesize destinationKeyPath = _destinationKeyPath;
+@synthesize mapping = _mapping;
+@synthesize matcher = _matcher;
+@synthesize sourceKeyPath = _sourceKeyPath;
 
-+ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
-    RKObjectConnectionMapping *mapping = [[self alloc] init:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath matcher:nil withMapping:objectOrDynamicMapping];
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
+    RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:nil];
     return [mapping autorelease];
 }
 
-+ (RKObjectConnectionMapping*)mapping:(NSString *)relationshipName fromKeyPath:(NSString*)sourceKeyPath toKeyPath:(NSString*)destinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)matcher withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
-    RKObjectConnectionMapping *mapping = [[self alloc] init:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath matcher:matcher withMapping:objectOrDynamicMapping];
++ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKDynamicObjectMappingMatcher *)matcher matcher:(RKObjectMappingDefinition *)objectOrDynamicMapping {
+    RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:matcher];
     return [mapping autorelease];
 }
 
-- (id)init:(NSString *)aRelationshipName fromKeyPath:(NSString*)aSourceKeyPath toKeyPath:(NSString*)aDestinationKeyPath matcher:(RKDynamicObjectMappingMatcher *)aMatcher withMapping:(RKObjectMappingDefinition *)aObjectOrDynamicMapping {
+- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher {
     self = [super init];
-    self.relationshipName = aRelationshipName;
-    self.sourceKeyPath = aSourceKeyPath;
-    self.destinationKeyPath = aDestinationKeyPath;
-    self.mapping = aObjectOrDynamicMapping;
-    self.matcher = aMatcher;
+    if (self) {
+        self.relationshipName = relationshipName;
+        self.sourceKeyPath = sourceKeyPath;
+        self.destinationKeyPath = destinationKeyPath;
+        self.mapping = objectOrDynamicMapping;
+        self.matcher = matcher;
+    }
     return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    return [[[self class] allocWithZone:zone] init:self.relationshipName fromKeyPath:self.sourceKeyPath toKeyPath:self.destinationKeyPath matcher:self.matcher withMapping:mapping];
+    return [[[self class] allocWithZone:zone] initWithRelationshipName:self.relationshipName sourceKeyPath:self.sourceKeyPath destinationKeyPath:self.destinationKeyPath mapping:self.mapping matcher:self.matcher];
 }
 
 - (void)dealloc {
@@ -81,14 +83,14 @@
     return relationship.isToMany;
 }
 
-- (NSManagedObject*)findOneConnected:(NSManagedObject *)source sourceValue:(id)sourceValue  {
+- (NSManagedObject *)findOneConnected:(NSManagedObject *)source sourceValue:(id)sourceValue  {
     RKManagedObjectMapping* objectMapping = (RKManagedObjectMapping *)self.mapping;
     NSObject<RKManagedObjectCaching> *cache = [[objectMapping objectStore] cacheStrategy];
     NSManagedObjectContext *context = [[objectMapping objectStore] managedObjectContextForCurrentThread];
     return [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:self.destinationKeyPath value:sourceValue inManagedObjectContext:context];
 }
 
-- (NSMutableSet*)findAllConnected:(NSManagedObject *)source sourceValue:(id)sourceValue {
+- (NSMutableSet *)findAllConnected:(NSManagedObject *)source sourceValue:(id)sourceValue {
     NSMutableSet *result = [NSMutableSet set];
 
     RKManagedObjectMapping* objectMapping = (RKManagedObjectMapping *)self.mapping;
@@ -110,11 +112,10 @@
 }
 
 - (BOOL)checkMatcher:(NSManagedObject *)source {
-    if (!matcher) {
+    if (!self.matcher) {
         return YES;
-    }
-    else {
-        return [matcher isMatchForData:source];
+    } else {
+        return [self.matcher isMatchForData:source];
     }
 }
 
@@ -125,13 +126,12 @@
         id sourceValue = [source valueForKey:self.sourceKeyPath];
         if (isToMany) {
             return [self findAllConnected:source sourceValue:sourceValue];
-        }
-        else {
+        } else {
             return [self findOneConnected:source sourceValue:sourceValue];
         }
-    }
-    else {
+    } else {
         return nil;
     }
 }
+
 @end

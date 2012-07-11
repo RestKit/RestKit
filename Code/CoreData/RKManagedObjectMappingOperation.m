@@ -32,7 +32,7 @@
 
 @implementation RKManagedObjectMappingOperation
 
-- (void)connectRelationship:(RKObjectConnectionMapping *)connectionMapping
+- (void)connectRelationship:(RKConnectionMapping *)connectionMapping
 {
     RKLogTrace(@"Connecting relationship '%@'", connectionMapping.relationshipName);
 
@@ -51,7 +51,7 @@
 {
     RKManagedObjectMapping *mapping = (RKManagedObjectMapping *)self.objectMapping;
     RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", mapping.connections);
-    for (RKObjectConnectionMapping *connectionMapping in mapping.connections) {
+    for (RKConnectionMapping *connectionMapping in mapping.connections) {
         if (self.queue) {
             RKLogTrace(@"Enqueueing relationship connection using operation queue");
             __block RKManagedObjectMappingOperation *selfRef = self;

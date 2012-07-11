@@ -20,7 +20,7 @@
 
 #import <CoreData/CoreData.h>
 #import "RKObjectMapping.h"
-#import "RKObjectConnectionMapping.h"
+#import "RKConnectionMapping.h"
 
 @class RKManagedObjectStore;
 
@@ -84,7 +84,7 @@
 /**
  Returns the RKObjectRelationshipMapping connection for the specified relationship.
  */
-- (RKObjectConnectionMapping*)mappingForConnection:(NSString*)relationshipName;
+- (RKConnectionMapping*)mappingForConnection:(NSString*)relationshipName;
 
 /**
  Instructs RestKit to connect a relationship of the object being mapped to the
