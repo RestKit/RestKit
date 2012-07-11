@@ -89,4 +89,20 @@
     assertThat([date description], is(equalTo(@"2001-09-11 12:46:00 +0000")));
 }
 
+- (void)testShouldCreateADotNetStringWithStringForObjectValueFromADateWithATimeZone {
+    NSTimeZone *timeZoneEST = [NSTimeZone timeZoneWithAbbreviation:@"EST"];
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatterWithTimeZone:timeZoneEST];
+    NSDate *referenceDate = [NSDate dateWithTimeIntervalSince1970:1000212360];
+    NSString *string = [formatter stringForObjectValue:referenceDate];
+    assertThat(formatter.timeZone, is(equalTo(timeZoneEST)));
+    assertThat(string, is(equalTo(@"/Date(1000212360000-0400)/")));
+}
+
+- (void)testShouldCreateADotNetStringWithStringForObjectValueFromADateBefore1970WithoutAnOffset {
+    RKDotNetDateFormatter *formatter = [RKDotNetDateFormatter dotNetDateFormatter];
+    NSDate *referenceDate = [NSDate dateWithTimeIntervalSince1970:-1000212360];
+    NSString *string = [formatter stringForObjectValue:referenceDate];
+    assertThat(string, is(equalTo(@"/Date(-1000212360000+0000)/")));
+}
+
 @end
