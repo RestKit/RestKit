@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMockRecorder : NSProxy
+@interface OCMockRecorder : NSProxy 
 {
 	id				signatureResolver;
 	NSInvocation	*recordedInvocation;
@@ -23,7 +23,7 @@
 - (id)andPost:(NSNotification *)aNotification;
 - (id)andCall:(SEL)selector onObject:(id)anObject;
 #if NS_BLOCKS_AVAILABLE
-- (id)andDo:(void (^)(NSInvocation *))block;
+- (id)andDo:(void (^)(NSInvocation *))block; 
 #endif
 - (id)andForwardToRealObject;
 

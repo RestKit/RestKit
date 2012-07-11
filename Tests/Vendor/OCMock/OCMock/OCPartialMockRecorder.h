@@ -5,7 +5,7 @@
 
 #import "OCMockRecorder.h"
 
-@interface OCPartialMockRecorder : OCMockRecorder
+@interface OCPartialMockRecorder : OCMockRecorder 
 {
 }
 

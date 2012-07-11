@@ -546,6 +546,10 @@
 		25A2476E153E667E003240B6 /* RKCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A2476D153E667E003240B6 /* RKCacheTest.m */; };
 		25A2476F153E667E003240B6 /* RKCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25A2476D153E667E003240B6 /* RKCacheTest.m */; };
 		25A34245147D8AAA0009758D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 25A34244147D8AAA0009758D /* Security.framework */; };
+		25AE61C615ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */; };
+		25AE61C715ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */; };
+		25AE61C815ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; };
+		25AE61C915ADE9E500B319C8 /* OCMockClassObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */; };
 		25B408261491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408271491CDDC00F21111 /* RKDirectory.h in Headers */ = {isa = PBXBuildFile; fileRef = 25B408241491CDDB00F21111 /* RKDirectory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25B408281491CDDC00F21111 /* RKDirectory.m in Sources */ = {isa = PBXBuildFile; fileRef = 25B408251491CDDB00F21111 /* RKDirectory.m */; };
@@ -1080,6 +1084,16 @@
 		259D986315521B1F008C90F5 /* RKEntityCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKEntityCacheTest.m; sourceTree = "<group>"; };
 		25A2476D153E667E003240B6 /* RKCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKCacheTest.m; sourceTree = "<group>"; };
 		25A34244147D8AAA0009758D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = SDKs/MacOSX10.7.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
+		25AE61BC15ADE9E400B319C8 /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
+		25AE61BD15ADE9E500B319C8 /* OCClassMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCClassMockRecorder.h; sourceTree = "<group>"; };
+		25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCClassMockRecorder.m; sourceTree = "<group>"; };
+		25AE61BF15ADE9E500B319C8 /* OCMArg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMArg.h; sourceTree = "<group>"; };
+		25AE61C015ADE9E500B319C8 /* OCMConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMConstraint.h; sourceTree = "<group>"; };
+		25AE61C115ADE9E500B319C8 /* OCMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMock.h; sourceTree = "<group>"; };
+		25AE61C215ADE9E500B319C8 /* OCMockClassObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockClassObject.h; sourceTree = "<group>"; };
+		25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCMockClassObject.m; sourceTree = "<group>"; };
+		25AE61C415ADE9E500B319C8 /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
+		25AE61C515ADE9E500B319C8 /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
 		25B408241491CDDB00F21111 /* RKDirectory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKDirectory.h; sourceTree = "<group>"; };
 		25B408251491CDDB00F21111 /* RKDirectory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKDirectory.m; sourceTree = "<group>"; };
 		25B6E90314CF778D00B1E881 /* RKAbstractTableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKAbstractTableController.h; sourceTree = "<group>"; };
@@ -2034,6 +2048,16 @@
 		25B6E97A14CF829400B1E881 /* OCMock */ = {
 			isa = PBXGroup;
 			children = (
+				25AE61BC15ADE9E400B319C8 /* NSNotificationCenter+OCMAdditions.h */,
+				25AE61BD15ADE9E500B319C8 /* OCClassMockRecorder.h */,
+				25AE61BE15ADE9E500B319C8 /* OCClassMockRecorder.m */,
+				25AE61BF15ADE9E500B319C8 /* OCMArg.h */,
+				25AE61C015ADE9E500B319C8 /* OCMConstraint.h */,
+				25AE61C115ADE9E500B319C8 /* OCMock.h */,
+				25AE61C215ADE9E500B319C8 /* OCMockClassObject.h */,
+				25AE61C315ADE9E500B319C8 /* OCMockClassObject.m */,
+				25AE61C415ADE9E500B319C8 /* OCMockObject.h */,
+				25AE61C515ADE9E500B319C8 /* OCMockRecorder.h */,
 				25B6E97B14CF829400B1E881 /* InfoPlist.strings */,
 				25B6E97D14CF829400B1E881 /* NSInvocation+OCMAdditions.h */,
 				25B6E97E14CF829400B1E881 /* NSInvocation+OCMAdditions.m */,
@@ -2507,7 +2531,7 @@
 		25160D0D14564E810060A5C5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = RestKit;
 			};
 			buildConfigurationList = 25160D1014564E810060A5C5 /* Build configuration list for PBXProject "RestKit" */;
@@ -2899,6 +2923,8 @@
 				25A2476E153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985A1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,
 				259D986415521B20008C90F5 /* RKEntityCacheTest.m in Sources */,
+				25AE61C615ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */,
+				25AE61C815ADE9E500B319C8 /* OCMockClassObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3088,6 +3114,8 @@
 				25A2476F153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985B1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,
 				259D986515521B20008C90F5 /* RKEntityCacheTest.m in Sources */,
+				25AE61C715ADE9E500B319C8 /* OCClassMockRecorder.m in Sources */,
+				25AE61C915ADE9E500B319C8 /* OCMockClassObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3255,6 +3283,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3282,6 +3311,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -3309,6 +3339,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
 					"\"$(SRCROOT)/Tests/Vendor\"",
@@ -3336,6 +3367,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
@@ -3363,6 +3395,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Resources/RestKitResources-Prefix.pch";
@@ -3382,6 +3415,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
