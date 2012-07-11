@@ -567,6 +567,8 @@
 }
 
 /* Test deprecated connectionMapping API */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 - (void)testShouldConnectRelationshipsByPrimaryKeyDeprecated {
     RKManagedObjectStore* objectStore = [RKTestFactory managedObjectStore];
 
@@ -772,4 +774,7 @@
     RKChild *child = [children lastObject];
     assertThat(child.father, is(notNilValue()));
 }
+
+#pragma GCC diagnostic pop
+
 @end
