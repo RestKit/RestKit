@@ -34,6 +34,21 @@
                                     value:(id)primaryKeyValue
                    inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
+/**
+ Retrieves an array of model objects from the object store given a Core Data entity and
+ the primary key attribute and value for the desired object.
+
+ @param entity The Core Data entity for the type of object to be retrieved from the cache.
+ @param primaryKeyAttribute The name of the attribute that acts as the primary key for the entity.
+ @param primaryKeyValue The value for the primary key attribute of the object to be retrieved from the cache.
+ @param mmanagedObjectContext The managed object context to be searched for a matching instance.
+ @return An array of managed objects that are instances of the given entity with a primary key and value matching
+ the specified parameters, or nil if no object was found.
+ */
+- (NSArray *)findInstancesOfEntity:(NSEntityDescription *)entity
+           withPrimaryKeyAttribute:(NSString *)primaryKeyAttribute
+                             value:(id)primaryKeyValue
+            inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 @optional
 
 /**

@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMReturnValueProvider : NSObject
+@interface OCMReturnValueProvider : NSObject 
 {
 	id	returnValue;
 }

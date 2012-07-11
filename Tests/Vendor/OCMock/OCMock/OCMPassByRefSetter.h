@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMPassByRefSetter : NSObject
+@interface OCMPassByRefSetter : NSObject 
 {
 	id value;
 }

@@ -3,6 +3,7 @@
 //  Copyright (c) 2009-2010 by Mulle Kybernetik. See License file for details.
 //---------------------------------------------------------------------------------------
 
+#import <objc/runtime.h>
 #import <OCMock/OCMArg.h>
 #import <OCMock/OCMConstraint.h>
 #import "OCMPassByRefSetter.h"
@@ -44,7 +45,7 @@
 
 #if NS_BLOCKS_AVAILABLE
 
-+ (id)checkWithBlock:(BOOL (^)(id))block
++ (id)checkWithBlock:(BOOL (^)(id))block 
 {
 	return [[[OCMBlockConstraint alloc] initWithConstraintBlock:block] autorelease];
 }
@@ -64,7 +65,7 @@
 		void *pointer = [value pointerValue];
 		if(pointer == (void *)0x01234567)
 			return [OCMArg any];
-		if((pointer != NULL) && (((id)pointer)->isa == [OCMPassByRefSetter class]))
+		if((pointer != NULL) && (object_getClass((id)pointer) == [OCMPassByRefSetter class]))
 			return (id)pointer;
 	}
 	return value;

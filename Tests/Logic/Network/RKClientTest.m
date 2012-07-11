@@ -178,8 +178,10 @@
     RKClient *client = [RKTestFactory client];
     client.runLoopMode = dummyRunLoopMode;
     [client get:[[RKTestFactory baseURL] absoluteString] delegate:loader];
-    while ([[NSRunLoop currentRunLoop] runMode:dummyRunLoopMode beforeDate:[[NSRunLoop currentRunLoop] limitDateForMode:dummyRunLoopMode]])
-        ;
+    for (NSUInteger i = 0; i < 25; i++) {
+        NSLog
+        [[NSRunLoop currentRunLoop] runMode:dummyRunLoopMode beforeDate:[[NSRunLoop currentRunLoop] limitDateForMode:dummyRunLoopMode]];
+    }
     assertThatBool([loader wasSuccessful], is(equalToBool(YES)));
 }
 

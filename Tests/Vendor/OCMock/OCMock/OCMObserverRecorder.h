@@ -5,7 +5,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface OCMObserverRecorder : NSObject
+@interface OCMObserverRecorder : NSObject 
 {
 	NSNotification *recordedNotification;
 }

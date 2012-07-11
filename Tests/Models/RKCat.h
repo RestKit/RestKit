@@ -39,5 +39,6 @@
 @property (nonatomic, retain) NSDate *updatedAt;
 
 @property (nonatomic, retain) RKHuman *human;
+@property (nonatomic, retain) NSSet *favoriteOfHumans;
 
 @end

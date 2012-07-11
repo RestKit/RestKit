@@ -5,7 +5,7 @@
 
 #import "OCClassMockObject.h"
 
-@interface OCPartialMockObject : OCClassMockObject
+@interface OCPartialMockObject : OCClassMockObject 
 {
 	NSObject	*realObject;
 }
@@ -14,7 +14,7 @@
 
 - (NSObject *)realObject;
 
-- (void)stop;
+- (void)stopMocking;
 
 - (void)setupSubclassForObject:(id)anObject;
 - (void)setupForwarderForSelector:(SEL)selector;

@@ -5,7 +5,7 @@
 
 #import "OCMReturnValueProvider.h"
 
-@interface OCMBoxedReturnValueProvider : OCMReturnValueProvider
+@interface OCMBoxedReturnValueProvider : OCMReturnValueProvider 
 {
 }
 
