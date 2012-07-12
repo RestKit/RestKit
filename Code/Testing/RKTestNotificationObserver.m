@@ -66,7 +66,7 @@
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self removeObserver];
     [super dealloc];
 }
 
@@ -85,6 +85,12 @@
     self.startDate = [NSDate date];
 }
 
+- (void)removeObserver
+{
+    if (! self.isObserverAdded) return;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)waitForNotification
 {
     [self addObserver];
@@ -96,6 +102,8 @@
             self.awaitingNotification = NO;
         }
     }
+    
+    [self removeObserver];
 }
 
 - (void)processNotification:(NSNotification *)notification
