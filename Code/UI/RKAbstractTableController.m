@@ -48,6 +48,13 @@ NSString * const RKTableControllerDidBecomeOffline = @"RKTableControllerDidBecom
 
 static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
+@interface RKAbstractTableController ()
+
+@property (nonatomic, retain) RKKeyboardScroller *keyboardScroller;
+
+@end
+
+
 @implementation RKAbstractTableController
 
 @synthesize delegate = _delegate;
@@ -80,6 +87,10 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 @synthesize autoResizesForKeyboard = _autoResizesForKeyboard;
 @synthesize emptyItem = _emptyItem;
 
+@synthesize onSelectCellForObjectAtIndexPath = _onSelectCellForObjectAtIndexPath;
+@synthesize onPrepareCellForObjectAtIndexPath = _onPrepareCellForObjectAtIndexPath;
+@synthesize onWillDisplayCellForObjectAtIndexPath = _onWillDisplayCellForObjectAtIndexPath;
+
 @synthesize cellSwipeViewsEnabled = _cellSwipeViewsEnabled;
 @synthesize cellSwipeView = _cellSwipeView;
 @synthesize swipeCell = _swipeCell;
@@ -93,6 +104,8 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 @synthesize stateOverlayImageView = _stateOverlayImageView;
 @synthesize cache = _cache;
 @synthesize pullToRefreshHeaderView = _pullToRefreshHeaderView;
+
+@synthesize keyboardScroller = _keyboardScroller;
 
 #pragma mark - Instantiation
 
@@ -188,6 +201,11 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     [_objectLoader release];
     _objectLoader = nil;
 
+    // Blocks
+    [_onSelectCellForObjectAtIndexPath release];
+    [_onPrepareCellForObjectAtIndexPath release];
+    [_onWillDisplayCellForObjectAtIndexPath release];
+
     [_cellMappings release];
     [_headerItems release];
     [_footerItems release];
@@ -256,17 +274,9 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     if (_autoResizesForKeyboard != autoResizesForKeyboard) {
         _autoResizesForKeyboard = autoResizesForKeyboard;
         if (_autoResizesForKeyboard) {
-            // Register for Keyboard notifications
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(resizeTableViewForKeyboard:)
-                                                         name:UIKeyboardWillShowNotification
-                                                       object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self
-                                                     selector:@selector(resizeTableViewForKeyboard:)
-                                                         name:UIKeyboardWillHideNotification
-                                                       object:nil];
+            self.keyboardScroller = [[RKKeyboardScroller alloc] initWithViewController:self.viewController scrollView:self.tableView];
         } else {
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
+            self.keyboardScroller = nil;
         }
     }
 }
@@ -386,13 +396,6 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
                                  userInfo:nil];
 }
 
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
-{
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
-                                 userInfo:nil];
-}
-
 #pragma mark - Cell Mappings
 
 - (void)mapObjectsWithClass:(Class)objectClass toTableCellsWithMapping:(RKTableViewCellMapping *)cellMapping
@@ -417,7 +420,7 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 - (UITableViewCell *)cellForObject:(id)object
 {
     NSIndexPath *indexPath = [self indexPathForObject:object];
-    return indexPath ? [self cellForObjectAtIndexPath:indexPath] : nil;
+    return indexPath ? [self.tableView cellForRowAtIndexPath:indexPath] : nil;
 }
 
 #pragma mark - Header and Footer Rows
@@ -461,7 +464,33 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 - (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
-    UITableViewCell *cell = [self cellForObjectAtIndexPath:indexPath];
+    NSAssert(indexPath, @"Cannot retrieve cell for nil indexPath");
+    id mappableObject = [self objectForRowAtIndexPath:indexPath];
+    NSAssert(mappableObject, @"Cannot build a tableView cell without an object");
+
+    RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
+    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
+
+    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
+    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
+
+    // Map the object state into the cell
+    RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
+    NSError* error = nil;
+    BOOL success = [mappingOperation performMapping:&error];
+    [mappingOperation release];
+
+    // NOTE: If there is no mapping work performed, but no error is generated then
+    // we consider the operation a success. It is common for table cells to not contain
+    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
+    if (success == NO && error != nil) {
+        RKLogError(@"Failed table cell mapping: %@", error);
+    }
+    
+    if (self.onPrepareCellForObjectAtIndexPath) {
+        id object = [self objectForRowAtIndexPath:indexPath];
+        self.onPrepareCellForObjectAtIndexPath(cell, object, indexPath);
+    }
 
     RKLogTrace(@"%@ cellForRowAtIndexPath:%@ = %@", self, indexPath, cell);
     return cell;
@@ -482,7 +511,6 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
     id object = [self objectForRowAtIndexPath:indexPath];
 
-    // NOTE: Do NOT use cellForObjectAtIndexPath here. See https://gist.github.com/eafbb641d37bb7137759
     UITableViewCell *cell = [theTableView cellForRowAtIndexPath:indexPath];
     RKTableViewCellMapping *cellMapping = [_cellMappings cellMappingForObject:object];
 
@@ -501,6 +529,11 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         cellMapping.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
     }
 
+    // Table level selection callbacks
+    if (self.onSelectCellForObjectAtIndexPath) {
+        self.onSelectCellForObjectAtIndexPath(cell, object, indexPath);
+    }
+
     if ([self.delegate respondsToSelector:@selector(tableController:didSelectCell:forObject:atIndexPath:)]) {
         [self.delegate tableController:self didSelectCell:cell forObject:object atIndexPath:indexPath];
     }
@@ -514,6 +547,10 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     if (cellMapping.onCellWillAppearForObjectAtIndexPath) {
         cellMapping.onCellWillAppearForObjectAtIndexPath(cell, mappableObject, indexPath);
+    }
+
+    if (self.onWillDisplayCellForObjectAtIndexPath) {
+        self.onWillDisplayCellForObjectAtIndexPath(cell, mappableObject, indexPath);
     }
 
     if ([self.delegate respondsToSelector:@selector(tableController:willDisplayCell:forObject:atIndexPath:)]) {
@@ -1351,75 +1388,6 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 {
     [self removeSwipeView:NO];
     return YES;
-}
-
-#pragma mark - Keyboard Notification methods
-
-- (void)resizeTableViewForKeyboard:(NSNotification *)notification
-{
-    NSAssert(_autoResizesForKeyboard, @"Errantly receiving keyboard notifications while autoResizesForKeyboard=NO");
-    NSDictionary *userInfo = [notification userInfo];
-
-    CGRect keyboardEndFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGFloat heightForViewShift = keyboardEndFrame.size.height;
-    RKLogTrace(@"keyboardEndFrame.size.height=%f, heightForViewShift=%f",
-               keyboardEndFrame.size.height, heightForViewShift);
-
-    CGFloat bottomBarOffset = 0.0;
-    UINavigationController *navigationController = self.viewController.navigationController;
-    if (navigationController && navigationController.toolbar && !navigationController.toolbarHidden) {
-        bottomBarOffset += navigationController.toolbar.frame.size.height;
-        RKLogTrace(@"Found a visible toolbar. Reducing size of heightForViewShift by=%f", bottomBarOffset);
-    }
-
-    UITabBarController *tabBarController = self.viewController.tabBarController;
-    if (tabBarController && tabBarController.tabBar && !self.viewController.hidesBottomBarWhenPushed) {
-        bottomBarOffset += tabBarController.tabBar.frame.size.height;
-        RKLogTrace(@"Found a visible tabBar. Reducing size of heightForViewShift by=%f", bottomBarOffset);
-    }
-
-    if ([[notification name] isEqualToString:UIKeyboardWillShowNotification]) {
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.2];
-        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, 0, (heightForViewShift - bottomBarOffset), 0);
-        self.tableView.contentInset = contentInsets;
-        self.tableView.scrollIndicatorInsets = contentInsets;
-
-        CGRect nonKeyboardRect = self.tableView.frame;
-        nonKeyboardRect.size.height -= heightForViewShift;
-        RKLogTrace(@"Searching for a firstResponder not inside our nonKeyboardRect (%f, %f, %f, %f)",
-                   nonKeyboardRect.origin.x, nonKeyboardRect.origin.y,
-                   nonKeyboardRect.size.width, nonKeyboardRect.size.height);
-
-        UIView *firstResponder = [self.tableView findFirstResponder];
-        if (firstResponder) {
-            CGRect firstResponderFrame = firstResponder.frame;
-            RKLogTrace(@"Found firstResponder=%@ at (%f, %f, %f, %f)", firstResponder,
-                       firstResponderFrame.origin.x, firstResponderFrame.origin.y,
-                       firstResponderFrame.size.width, firstResponderFrame.size.width);
-
-            if (![firstResponder.superview isEqual:self.tableView]) {
-                firstResponderFrame = [firstResponder.superview convertRect:firstResponderFrame toView:self.tableView];
-                RKLogTrace(@"firstResponder (%@) frame is not in tableView's coordinate system. Coverted to (%f, %f, %f, %f)",
-                           firstResponder, firstResponderFrame.origin.x, firstResponderFrame.origin.y,
-                           firstResponderFrame.size.width, firstResponderFrame.size.height);
-            }
-
-            if (!CGRectContainsPoint(nonKeyboardRect, firstResponderFrame.origin)) {
-                RKLogTrace(@"firstResponder (%@) is underneath keyboard. Beginning scroll of tableView to show", firstResponder);
-                [self.tableView scrollRectToVisible:firstResponderFrame animated:YES];
-            }
-        }
-        [UIView commitAnimations];
-
-    } else if ([[notification name] isEqualToString:UIKeyboardWillHideNotification]) {
-        [UIView beginAnimations:nil context:nil];
-        [UIView setAnimationDuration:0.2];
-        UIEdgeInsets contentInsets = UIEdgeInsetsZero;
-        self.tableView.contentInset = contentInsets;
-        self.tableView.scrollIndicatorInsets = contentInsets;
-        [UIView commitAnimations];
-    }
 }
 
 - (void)loadTableWithObjectLoader:(RKObjectLoader *)theObjectLoader

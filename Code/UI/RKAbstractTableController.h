@@ -21,11 +21,13 @@
 #if TARGET_OS_IPHONE
 
 #import <UIKit/UIKit.h>
+#import "RKTableCellBlockTypes.h"
 #import "RKTableViewCellMappings.h"
 #import "RKTableItem.h"
 #import "RKObjectManager.h"
 #import "RKObjectMapping.h"
 #import "RKObjectLoader.h"
+#import "RKKeyboardScroller.h"
 
 ///-----------------------------------------------------------------------------
 /// @name Constants
@@ -259,6 +261,20 @@ typedef NSUInteger RKTableControllerState;
 - (BOOL)isError;
 
 ///-----------------------------------------------------------------------------
+/// @name Block Callbacks
+///-----------------------------------------------------------------------------
+
+// TODO: Audit and expand the library of callbacks...
+// TODO: Docs AND tests...
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onSelectCellForObjectAtIndexPath;
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onPrepareCellForObjectAtIndexPath; // TODO: May want to eliminate...
+@property (nonatomic, copy) RKTableCellForObjectAtIndexPathBlock onWillDisplayCellForObjectAtIndexPath;
+
+- (void)setOnSelectCellForObjectAtIndexPath:(RKTableCellForObjectAtIndexPathBlock)onSelectCellForObjectAtIndexPath;
+- (void)setOnPrepareCellForObjectAtIndexPath:(RKTableCellForObjectAtIndexPathBlock)onPrepareCellForObjectAtIndexPath;
+- (void)setOnWillDisplayCellForObjectAtIndexPath:(RKTableCellForObjectAtIndexPathBlock)onWillDisplayCellForObjectAtIndexPath;
+
+///-----------------------------------------------------------------------------
 /// @name Model State Views
 ///-----------------------------------------------------------------------------
 
@@ -359,14 +375,6 @@ typedef NSUInteger RKTableControllerState;
  */
 - (NSUInteger)numberOfRowsInSection:(NSUInteger)index;
 
-/**
- Returns the UITableViewCell created by applying the specified
- mapping operation to the object identified by indexPath.
-
- @param indexPath The indexPath in the tableView for which a cell is needed.
- */
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath;
-
 ///-----------------------------------------------------------------------------
 /// @name Managing Swipe View
 ///-----------------------------------------------------------------------------
@@ -438,6 +446,10 @@ typedef NSUInteger RKTableControllerState;
 // Cells
 - (void)tableController:(RKAbstractTableController *)tableController willDisplayCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
 - (void)tableController:(RKAbstractTableController *)tableController didSelectCell:(UITableViewCell *)cell forObject:(id)object atIndexPath:(NSIndexPath *)indexPath;
+
+// Sections
+- (CGFloat)tableController:(RKAbstractTableController *)tableController heightForHeaderInSection:(NSInteger)sectionIndex;
+- (CGFloat)tableController:(RKAbstractTableController *)tableController heightForFooterInSection:(NSInteger)sectionIndex;
 
 @end
 

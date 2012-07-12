@@ -450,27 +450,6 @@
     assertThat([tableController cellMappingForObjectAtIndexPath:indexPath], is(equalTo(cellMapping)));
 }
 
-- (void)testReturnATableViewCellForTheObjectAtAGivenIndexPath
-{
-    RKMappableObject *object = [RKMappableObject new];
-    object.stringTest = @"Testing!!";
-    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping mappingForClass:[UITableViewCell class]];
-    [cellMapping mapKeyPath:@"stringTest" toAttribute:@"textLabel.text"];
-    NSArray *objects = [NSArray arrayWithObject:object];
-    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
-    [mappings setCellMapping:cellMapping forClass:[RKMappableObject class]];
-    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
-    UITableViewController *tableViewController = [UITableViewController new];
-    tableViewController.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 0, 0) style:UITableViewStylePlain];
-    RKTableController *tableController = [RKTableController tableControllerForTableViewController:tableViewController];
-    [tableController insertSection:section atIndex:0];
-    tableController.cellMappings = mappings;
-
-    UITableViewCell *cell = [tableController cellForObjectAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    assertThat(cell, isNot(nilValue()));
-    assertThat(cell.textLabel.text, is(equalTo(@"Testing!!")));
-}
-
 - (void)testChangeTheReuseIdentifierWhenMutatedWithinTheBlockInitializer
 {
     RKTableControllerTestTableViewController *viewController = [RKTableControllerTestTableViewController new];

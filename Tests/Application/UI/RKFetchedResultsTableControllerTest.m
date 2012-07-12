@@ -83,6 +83,10 @@
     [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/all\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
         return [RKHuman requestAllSortedBy:@"name" ascending:YES];
     }];
+
+    [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/empty\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
+        return [RKHuman requestAllSortedBy:@"name" ascending:YES];
+    }];
 }
 
 - (void)bootstrapNakedObjectStoreAndCache
@@ -523,9 +527,9 @@
 {
     [self bootstrapStoreAndCache];
     [self stubObjectManagerToOnline];
-    [[RKObjectManager sharedManager].router routeClass:[RKHuman class]
-                                        toResourcePath:@"/humans/:railsID"
-                                             forMethod:RKRequestMethodDELETE];
+    [[RKObjectManager sharedManager].router.routeSet addRoute:[RKRoute routeWithClass:[RKHuman class]
+                                                                  resourcePathPattern:@"/humans/:railsID"
+                                                                               method:RKRequestMethodDELETE]];
     RKFetchedResultsTableControllerSpecViewController *viewController = [RKFetchedResultsTableControllerSpecViewController new];
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:viewController];
     tableController.resourcePath = @"/JSON/humans/all.json";
@@ -1526,6 +1530,204 @@
     [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:viewController];
     [tableController loadTable];
     [mockDelegate verify];
+}
+
+- (void)testRetrievalOfManagedObjectIndexPath
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+    RKHuman *human = [[RKHuman findAllSortedBy:@"name" ascending:YES] objectAtIndex:0];
+    NSIndexPath *indexPath = [tableController indexPathForObject:human];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(1)));
+}
+
+- (void)testRetrievalOfHeaderItemIndexPath
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:headerItem];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(0)));
+}
+
+- (void)testRetrievalOfFooterItemIndexPath
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:footerItem];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(3)));
+}
+
+- (void)testRetrievalOfEmptyItemReturnsNilIndexPathWhenNotEmpty
+{
+    [self bootstrapStoreAndCache];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.resourcePath = @"/JSON/humans/all.json";
+
+    RKTableItem *emptyItem = [RKTableItem tableItemWithText:@"Empty!"];
+    emptyItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [emptyItem.cellMapping addDefaultMappings];
+    tableController.emptyItem = emptyItem;
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(4)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:emptyItem];
+    assertThat(indexPath, is(nilValue()));
+}
+
+- (void)testRetrievalOfEmptyItemReturnsIndexPathWhenEmpty
+{
+    [self bootstrapStoreAndCache];
+    [RKHuman truncateAll];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
+    UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
+    RKFetchedResultsTableController *tableController;
+    tableController = [[RKFetchedResultsTableController tableControllerForTableViewController:tableViewController] retain];
+    RKTableViewCellMapping *cellMapping = [RKTableViewCellMapping cellMapping];
+    [cellMapping mapKeyPath:@"name" toAttribute:@"textLabel.text"];
+    [tableController mapObjectsWithClass:[RKHuman class] toTableCellsWithMapping:cellMapping];
+    tableController.resourcePath = @"/JSON/humans/empty.json";
+    tableController.showsFooterRowsWhenEmpty = NO;
+    tableController.showsHeaderRowsWhenEmpty = NO;
+
+    RKTableItem *emptyItem = [RKTableItem tableItemWithText:@"Empty!"];
+    emptyItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [emptyItem.cellMapping addDefaultMappings];
+    tableController.emptyItem = emptyItem;
+
+    RKTableItem *headerItem = [RKTableItem tableItemWithText:@"Header"];
+    headerItem.cellMapping.reuseIdentifier = @"HeaderCell";
+    [headerItem.cellMapping addDefaultMappings];
+    [tableController addHeaderRowForItem:headerItem];
+
+    RKTableItem *footerItem = [RKTableItem tableItemWithText:@"Footer"];
+    footerItem.cellMapping.reuseIdentifier = @"FooterCell";
+    [footerItem.cellMapping addDefaultMappings];
+    [tableController addFooterRowForItem:footerItem];
+
+    [[[[UIApplication sharedApplication] windows] objectAtIndex:0] setRootViewController:tableViewController];
+
+    [RKTestNotificationObserver waitForNotificationWithName:RKTableControllerDidFinishLoadNotification usingBlock:^{
+        [tableController loadTable];
+    }];
+
+    // Let the table update
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    assertThatInt([tableController rowCount], is(equalToInteger(1)));
+    NSIndexPath *indexPath = [tableController indexPathForObject:emptyItem];
+    assertThatInteger(indexPath.section, is(equalToInteger(0)));
+    assertThatInteger(indexPath.row, is(equalToInteger(0)));
 }
 
 @end

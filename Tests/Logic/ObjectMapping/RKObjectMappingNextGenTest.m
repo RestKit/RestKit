@@ -1570,8 +1570,8 @@
     [mapping mapAttributes:@"name", @"website", nil];
     [mapping mapKeyPath:@"id" toAttribute:@"userID"];
 
-    [objectManager.router routeClass:[RKTestUser class] toResourcePath:@"/humans/:userID"];
-    [objectManager.router routeClass:[RKTestUser class] toResourcePath:@"/humans" forMethod:RKRequestMethodPOST];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] resourcePathPattern:@"/humans/:userID" method:RKRequestMethodAny]];
+    [objectManager.router.routeSet addRoute:[RKRoute routeWithClass:[RKTestUser class] resourcePathPattern:@"/humans" method:RKRequestMethodPOST]];
     [objectManager.mappingProvider registerMapping:mapping withRootKeyPath:@"human"];
 
     RKTestUser *user = [RKTestUser new];

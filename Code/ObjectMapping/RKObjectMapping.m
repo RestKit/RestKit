@@ -399,6 +399,29 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
     return _dateFormatters ? _dateFormatters : [RKObjectMapping defaultDateFormatters];
 }
 
+- (BOOL)isEqualToMapping:(RKObjectMapping *)otherMapping
+{
+    if (! [otherMapping isKindOfClass:[RKObjectMapping class]]) return NO;
+    if ((self.objectClass && otherMapping.objectClass) &&
+        ! [otherMapping.objectClass isEqual:self.objectClass]) {
+        return NO;
+    } else if (self.objectClass != nil && otherMapping.objectClass == nil) {
+        return NO;
+    } else if (self.objectClass == nil && otherMapping.objectClass != nil) {
+        return NO;
+    }
+
+    // Check that the number of attribute/relationship mappings is equal and compare all
+    if ([self.mappings count] != [otherMapping.mappings count]) return NO;
+
+    for (RKObjectAttributeMapping *attributeMapping in self.mappings) {
+        RKObjectAttributeMapping *otherAttributeMapping = [otherMapping mappingForSourceKeyPath:attributeMapping.sourceKeyPath];
+        if (! [attributeMapping isEqualToMapping:otherAttributeMapping]) return NO;
+    }
+
+    return YES;
+}
+
 @end
 
 /////////////////////////////////////////////////////////////////////////////

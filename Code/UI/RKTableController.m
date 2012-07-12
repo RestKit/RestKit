@@ -429,32 +429,6 @@
     return [self sectionAtIndex:index].rowCount;
 }
 
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
-{
-    RKTableSection *section = [self sectionAtIndex:indexPath.section];
-    id mappableObject = [section objectAtIndex:indexPath.row];
-    RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
-    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
-
-    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
-    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
-
-    // Map the object state into the cell
-    RKObjectMappingOperation *mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
-    NSError *error = nil;
-    BOOL success = [mappingOperation performMapping:&error];
-    [mappingOperation release];
-    // NOTE: If there is no mapping work performed, but no error is generated then
-    // we consider the operation a success. It is common for table cells to not contain
-    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
-    if (success == NO && error != nil) {
-        RKLogError(@"Failed to generate table cell for object: %@", error);
-        return nil;
-    }
-
-    return cell;
-}
-
 #pragma mark - Cell Mappings
 
 - (id)objectForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -525,15 +499,23 @@
 - (CGFloat)tableView:(UITableView *)theTableView heightForHeaderInSection:(NSInteger)sectionIndex
 {
     NSAssert(theTableView == self.tableView, @"heightForHeaderInSection: invoked with inappropriate tableView: %@", theTableView);
-    RKTableSection *section = [self sectionAtIndex:sectionIndex];
-    return section.headerHeight;
+    if ([self.delegate respondsToSelector:@selector(tableController:heightForHeaderInSection:)]) {
+        return [self.delegate tableController:self heightForHeaderInSection:sectionIndex];
+    } else {
+        RKTableSection *section = [self sectionAtIndex:sectionIndex];
+        return section.headerHeight;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)theTableView heightForFooterInSection:(NSInteger)sectionIndex
 {
     NSAssert(theTableView == self.tableView, @"heightForFooterInSection: invoked with inappropriate tableView: %@", theTableView);
-    RKTableSection *section = [self sectionAtIndex:sectionIndex];
-    return section.footerHeight;
+    if ([self.delegate respondsToSelector:@selector(tableController:heightForFooterInSection:)]) {
+        return [self.delegate tableController:self heightForFooterInSection:sectionIndex];
+    } else {
+        RKTableSection *section = [self sectionAtIndex:sectionIndex];
+        return section.footerHeight;
+    }
 }
 
 - (UIView *)tableView:(UITableView *)theTableView viewForHeaderInSection:(NSInteger)sectionIndex

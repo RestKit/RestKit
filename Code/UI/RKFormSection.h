@@ -27,6 +27,7 @@
 @property (nonatomic, readonly) id object;
 
 + (id)sectionInForm:(RKForm *)form;
++ (id)sectionUsingBlock:(void (^)(RKFormSection *))block;
 - (id)initWithForm:(RKForm *)form;
 
 - (void)addTableItem:(RKTableItem *)tableItem;
@@ -42,5 +43,7 @@
 // Map an attribute to a keyPath on a particular cell class
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass;
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block;
+
+- (void)addMappingFromAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)keyPath forTableItem:(RKTableItem *)tableItem;
 
 @end

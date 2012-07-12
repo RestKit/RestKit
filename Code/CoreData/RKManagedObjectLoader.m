@@ -101,7 +101,7 @@
     return _targetObject;
 }
 
-- (void)setTargetObject:(NSObject *)targetObject
+- (void)setTargetObject:(id<NSObject>)targetObject
 {
     [_targetObject release];
     _targetObject = nil;

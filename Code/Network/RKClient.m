@@ -37,7 +37,7 @@
 static RKClient *sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// URL Conveniences functions
+// Conveniences functions
 
 NSURL *RKMakeURL(NSString *resourcePath) {
     return [[RKClient sharedClient].baseURL URLByAppendingResourcePath:resourcePath];
@@ -63,6 +63,17 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     return [resourcePath stringByAppendingQueryParameters:queryParams];
 }
 
+static dispatch_queue_t rk_network_processing_queue;
+dispatch_queue_t rk_get_network_processing_queue(void)
+{
+    if (rk_network_processing_queue == NULL) {
+        rk_network_processing_queue = dispatch_queue_create("org.restkit.network.processing-queue", 0);
+    }
+
+    return rk_network_processing_queue;
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 @interface RKClient ()
@@ -73,6 +84,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @implementation RKClient
 
 @synthesize baseURL = _baseURL;
+@synthesize router = _router;
 @synthesize authenticationType = _authenticationType;
 @synthesize username = _username;
 @synthesize password = _password;
@@ -132,6 +144,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 {
     self = [super init];
     if (self) {
+        self.router = [[RKRouter new] autorelease];
         self.HTTPHeaders = [NSMutableDictionary dictionary];
         self.additionalRootCertificates = [NSMutableSet set];
         self.defaultHTTPEncoding = NSUTF8StringEncoding;
@@ -148,7 +161,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
         // Configure observers
         [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-        [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
+        [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
         [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial context:nil];
     }
 
@@ -186,6 +199,9 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     self.reachabilityObserver = nil;
     self.baseURL = nil;
     self.requestQueue = nil;
+
+    [_router release];
+    _router = nil;
 
     [self removeObserver:self forKeyPath:@"reachabilityObserver"];
     [self removeObserver:self forKeyPath:@"baseURL"];
@@ -311,6 +327,9 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 
     // Don't crash if baseURL is nil'd out (i.e. dealloc)
     if (! [newBaseURL isEqual:[NSNull null]]) {
+        // Update the router
+        self.router.baseURL = newBaseURL;
+
         // Configure a cache for the new base URL
         [_requestCache release];
         _requestCache = [[RKRequestCache alloc] initWithPath:[self cachePath]

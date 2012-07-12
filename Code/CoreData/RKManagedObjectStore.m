@@ -398,7 +398,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
         // If we are a background Thread MOC, we need to inform the main thread on save
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(mergeChanges:)
+                                                 selector:@selector(managedObjectContextDidSaveNotification:)
                                                      name:NSManagedObjectContextDidSaveNotification
                                                    object:managedObjectContext];
     }
@@ -406,18 +406,15 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     return managedObjectContext;
 }
 
-- (void)mergeChangesOnMainThreadWithNotification:(NSNotification *)notification
+- (void)managedObjectContextDidSaveNotification:(NSNotification *)notification
 {
-    assert([NSThread isMainThread]);
-    [self.primaryManagedObjectContext performSelectorOnMainThread:@selector(mergeChangesFromContextDidSaveNotification:)
-                                                withObject:notification
-                                             waitUntilDone:YES];
-}
-
-- (void)mergeChanges:(NSNotification *)notification
-{
-    // Merge changes into the main context on the main thread
-    [self performSelectorOnMainThread:@selector(mergeChangesOnMainThreadWithNotification:) withObject:notification waitUntilDone:YES];
+    if ([NSThread isMainThread]) {
+        [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+        });
+    }
 }
 
 #pragma mark -

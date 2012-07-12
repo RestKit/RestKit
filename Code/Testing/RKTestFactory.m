@@ -204,7 +204,7 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)setUp
 {
-    [RKObjectManager setDefaultMappingQueue:dispatch_queue_create("org.restkit.ObjectMapping", DISPATCH_QUEUE_SERIAL)];
+    [RKObjectManager setDefaultMappingQueue:nil];
     [RKObjectMapping setDefaultDateFormatters:nil];
 
     // Delete the store if it exists
@@ -223,6 +223,7 @@ static RKTestFactory *sharedFactory = nil;
     [RKObjectManager setSharedManager:nil];
     [RKClient setSharedClient:nil];
     [RKManagedObjectStore setDefaultObjectStore:nil];
+    [NSManagedObjectContext setDefaultContext:nil];
 
     if ([self respondsToSelector:@selector(didTearDown)]) {
         [self didTearDown];

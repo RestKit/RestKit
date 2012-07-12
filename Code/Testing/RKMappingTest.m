@@ -68,7 +68,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"%@: mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@", [self class], self.sourceKeyPath, self.destinationKeyPath, self.value];
+    return [NSString stringWithFormat:@"%@ mapped sourceKeyPath '%@' => destinationKeyPath '%@' with value: %@>", [self class],
+            self.sourceKeyPath, self.destinationKeyPath, self.value];
 }
 
 @end
@@ -155,6 +156,11 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath evaluationBlock:evaluationBlock]];
 }
 
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKObjectMappingDefinition *)mapping
+{
+    [self addExpectation:[RKMappingTestExpectation expectationWithSourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:mapping]];
+}
+
 - (RKMappingTestEvent *)eventMatchingKeyPathsForExpectation:(RKMappingTestExpectation *)expectation
 {
     for (RKMappingTestEvent *event in self.events) {
@@ -166,18 +172,48 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return nil;
 }
 
-- (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(RKMappingTestExpectation *)expectation
+- (BOOL)event:(RKMappingTestEvent *)event satisfiesExpectation:(RKMappingTestExpectation *)expectation errorMessage:(NSString **)errorMessage
 {
+    BOOL success;
     if (expectation.evaluationBlock) {
         // Let the expectation block evaluate the match
-        return expectation.evaluationBlock(event.mapping, event.value);
+        success = expectation.evaluationBlock(event.mapping, event.value);
+
+        if (! success) {
+            *errorMessage = [NSString stringWithFormat:@"%@: expectation not satisfied: %@, but instead got %@ '%@'",
+                             [self description], expectation, [event.value class], event.value];
+        }
     } else if (expectation.value) {
         // Use RestKit comparison magic to match values
-        return RKObjectIsValueEqualToValue(event.value, expectation.value);
+        success = RKObjectIsValueEqualToValue(event.value, expectation.value);
+
+        if (! success) {
+            *errorMessage = [NSString stringWithFormat:@"%@: expectation not satisfied: %@, but instead got %@ '%@'",
+                             [self description], expectation, [event.value class], event.value];
+        }
+    } else if (expectation.mapping) {
+        if ([event.mapping isKindOfClass:[RKObjectRelationshipMapping class]]) {
+            // Check the mapping that was used to map the relationship
+            RKObjectMappingDefinition *relationshipMapping = [(RKObjectRelationshipMapping *)event.mapping mapping];
+            success = [relationshipMapping isEqualToMapping:expectation.mapping];
+
+            if (! success) {
+                *errorMessage = [NSString stringWithFormat:@"%@: expectation not satisfied: %@ but was instead mapped using: %@",
+                                 [self description], expectation, relationshipMapping];
+            }
+        } else {
+            *errorMessage = [NSString stringWithFormat:@"%@: expectation not satisfied: %@, expected an RKObjectRelationshipMapping but instead got a %@",
+                                 [self description], expectation, [expectation.mapping class]];
+
+            // Error message here that a relationship was not mapped!!!
+            return NO;
+        }
+    } else {
+        // We only wanted to know that a mapping occured between the keyPaths
+        success = YES;
     }
 
-    // We only wanted to know that a mapping occured between the keyPaths
-    return YES;
+    return success;
 }
 
 - (void)performMapping
@@ -195,8 +231,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
         mappingOperation.delegate = self;
         BOOL success = [mappingOperation performMapping:&error];
         if (! success) {
-            [NSException raise:NSInternalInconsistencyException format:@"%@: failure when mapping from %@ to %@ with mapping %@",
-             [self description], self.sourceObject, self.destinationObject, self.mapping];
+            [NSException raise:NSInternalInconsistencyException format:@"%p: failed with error: %@\n%@ during mapping from %@ to %@ with mapping %@",
+             self, error, [self description], self.sourceObject, self.destinationObject, self.mapping];
         }
 
         self.performedMapping = YES;
@@ -208,9 +244,11 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     RKMappingTestEvent *event = [self eventMatchingKeyPathsForExpectation:expectation];
     if (event) {
         // Found a matching event, check if it satisfies the expectation
-        if (! [self event:event satisfiesExpectation:expectation]) {
-            [NSException raise:NSInternalInconsistencyException format:@"%@: expectation not satisfied: %@, but instead got %@ '%@'",
-             [self description], expectation, [event.value class], event.value];
+        NSString *errorMessage = nil;
+        if (! [self event:event satisfiesExpectation:expectation errorMessage:&errorMessage]) {
+            #pragma GCC diagnostic ignored "-Wformat-security"
+            [NSException raise:NSInternalInconsistencyException format:errorMessage];
+            #pragma GCC diagnostic pop
         }
     } else {
         // No match
@@ -226,6 +264,22 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     for (RKMappingTestExpectation *expectation in self.expectations) {
         [self verifyExpectation:expectation];
     }
+}
+
+- (NSString *)expectationsDescription
+{
+    return [self.expectations valueForKey:@"description"];
+}
+
+- (NSString *)eventsDescription
+{
+    return [self.events valueForKey:@"description"];
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"%@ Expectations: %@\nEvents: %@",
+            [self class], [self expectationsDescription], [self eventsDescription]];
 }
 
 #pragma mark - RKObjecMappingOperationDelegate

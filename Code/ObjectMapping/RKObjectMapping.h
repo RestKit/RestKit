@@ -507,6 +507,12 @@ relationship. Relationships are processed using an object mapping as well.
  */
 - (id)mappableObjectForData:(id)mappableData;
 
+/**
+ Returns YES if the receiever and the other mapping target the same object class
+ and contain an equivalent set of attribute and relationship mappings.
+ */
+- (BOOL)isEqualToMapping:(RKObjectMapping *)otherMapping;
+
 // Deprecations
 + (id)mappingForClass:(Class)objectClass withBlock:(void (^)(RKObjectMapping *))block DEPRECATED_ATTRIBUTE;
 + (id)mappingForClass:(Class)objectClass block:(void (^)(RKObjectMapping *))block DEPRECATED_ATTRIBUTE;

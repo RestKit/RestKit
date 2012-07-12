@@ -27,7 +27,11 @@
 #import "RKRequestCache.h"
 #import "RKRequestQueue.h"
 #import "RKConfigurationDelegate.h"
+#import "RKRouter.h"
+#import "RKRoute.h"
 
+// Retrieves the dispatch queue for emitting network processing events
+dispatch_queue_t rk_get_network_processing_queue(void);
 
 /**
  RKClient exposes the low level client interface for working with HTTP servers
@@ -81,6 +85,7 @@
  and PUT operations. It is worth noting however that this functionality is
  provided via the RKRequestSerializable protocol and is not specific to
  NSDictionary objects.
+
 
  ### Sending Asynchronous Requests
 
@@ -184,6 +189,15 @@
  @see requestCache
  */
 @property (nonatomic, retain) RKURL *baseURL;
+
+/**
+ The router provides for the registration of resource path patterns
+ by name, object class and HTTP method, or by relationship name, object class,
+ and HTTP method.
+
+ @see RKRouter
+ */
+@property (nonatomic, retain) RKRouter *router;
 
 /**
  A dictionary of headers to be sent with each request

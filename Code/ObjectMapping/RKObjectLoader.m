@@ -130,12 +130,13 @@
     self.loading = NO;
     self.loaded = successful;
 
-    if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
-        [(NSObject<RKObjectLoaderDelegate>*)self.delegate performSelectorOnMainThread:@selector(objectLoaderDidFinishLoading:)
-                                                                           withObject:self waitUntilDone:YES];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
+            [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
+        }
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
+    });
 }
 
 // Invoked on the main thread. Inform the delegate.
@@ -185,7 +186,9 @@
 - (void)processMappingResult:(RKObjectMappingResult *)result
 {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
-    [self performSelectorOnMainThread:@selector(informDelegateOfObjectLoadWithResultDictionary:) withObject:[result asDictionary] waitUntilDone:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self informDelegateOfObjectLoadWithResultDictionary:[result asDictionary]];
+    });
 }
 
 #pragma mark - Response Object Mapping
@@ -271,24 +274,22 @@
     return [self mapResponseWithMappingProvider:mappingProvider toObject:self.targetObject inContext:RKObjectMappingProviderContextObjectsByKeyPath error:error];
 }
 
-- (void)performMappingInDispatchQueue
+- (void)performMappingInOperationQueue
 {
     NSAssert(self.mappingQueue, @"mappingQueue cannot be nil");
-    dispatch_async(self.mappingQueue, ^{
-        NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-        RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %s", dispatch_queue_get_label(self.mappingQueue));
+    [self.mappingQueue addOperationWithBlock:^{
+        RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
         NSError *error = nil;
         _result = [[self performMapping:&error] retain];
         NSAssert(_result || error, @"Expected performMapping to return a mapping result or an error.");
         if (self.result) {
             [self processMappingResult:self.result];
         } else if (error) {
-            [self performSelectorOnMainThread:@selector(didFailLoadWithError:) withObject:error waitUntilDone:NO];
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                [self didFailLoadWithError:error];
+            }];
         }
-
-        [pool drain];
-    });
+    }];
 }
 
 - (BOOL)canParseMIMEType:(NSString *)MIMEType
@@ -474,24 +475,13 @@
             if (self.result) {
                 [self processMappingResult:self.result];
             } else {
-                [self performSelectorInBackground:@selector(didFailLoadWithError:) withObject:error];
+                dispatch_async(rk_get_network_processing_queue(), ^{
+                    [self didFailLoadWithError:error];
+                });
             }
         } else {
-            [self performMappingInDispatchQueue];
+            [self performMappingInOperationQueue];
         }
-    }
-}
-
-- (void)setMappingQueue:(dispatch_queue_t)newMappingQueue
-{
-    if (_mappingQueue) {
-        dispatch_release(_mappingQueue);
-        _mappingQueue = nil;
-    }
-
-    if (newMappingQueue) {
-        dispatch_retain(newMappingQueue);
-        _mappingQueue = newMappingQueue;
     }
 }
 

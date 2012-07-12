@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RKObjectAttributeMapping.h"
+@class RKObjectMappingDefinition, RKObjectAttributeMapping;
 
 /**
  An RKMappingTestExpectation defines an expected mapping event that should
@@ -26,7 +26,7 @@
 
  @param sourceKeyPath A key path on the source object that should be mapped.
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
- @return An expectation specifying that sourceKeyPath should be mapped to destionationKeyPath.
+ @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath.
  */
 + (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath;
 
@@ -37,7 +37,7 @@
  @param sourceKeyPath A key path on the source object that should be mapped.
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
  @param value The value that is expected to be assigned to the destination object at destinationKeyPath.
- @return An expectation specifying that sourceKeyPath should be mapped to destionationKeyPath with value.
+ @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath with value.
  */
 + (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath value:(id)value;
 
@@ -49,9 +49,20 @@
  @param sourceKeyPath A key path on the source object that should be mapped.
  @param destinationKeyPath A key path on the destination object that should be mapped onto.
  @param evaluationBlock A block with which to evaluate the success of the mapping.
- @return An expectation specifying that sourceKeyPath should be mapped to destionationKeyPath with value.
+ @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath with value.
  */
 + (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock;
+
+/**
+ Creates and returns a new expectation specifying that a key path in a source object should be
+ mapped to another key path on a destinaton object using a specific object mapping for the relationship.
+
+ @param sourceKeyPath A key path on the source object that should be mapped.
+ @param destinationKeyPath A key path on the destination object that should be mapped onto.
+ @param mapping An object mapping that is expected to be used for mapping the nested relationship.
+ @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath using a specific object mapping.
+ */
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)mapping;
 
 ///-----------------------------------------------------------------------------
 /// @name Expectation Values
@@ -76,6 +87,11 @@
  A block used to evaluate if the expectation has been satisfied.
  */
 @property (nonatomic, copy, readonly) BOOL (^evaluationBlock)(RKObjectAttributeMapping *mapping, id value);
+
+/**
+ Returns the expected object mapping to be used for mapping a nested relationship.
+ */
+@property (nonatomic, strong, readonly) RKObjectMappingDefinition *mapping;
 
 /**
  Returns a string summary of the expected keyPath mapping within the expectation

@@ -125,9 +125,14 @@
     }
 }
 
+- (NSUInteger)headerSectionIndex
+{
+    return 0;
+}
+
 - (BOOL)isHeaderSection:(NSUInteger)section
 {
-    return (section == 0);
+    return (section == [self headerSectionIndex]);
 }
 
 - (BOOL)isHeaderRow:(NSUInteger)row
@@ -142,9 +147,14 @@
     return isHeaderRow;
 }
 
+- (NSUInteger)footerSectionIndex
+{
+    return ([self sectionCount] - 1);
+}
+
 - (BOOL)isFooterSection:(NSUInteger)section
 {
-    return (section == ([self sectionCount] - 1));
+    return (section == [self footerSectionIndex]);
 }
 
 - (BOOL)isFooterRow:(NSUInteger)row
@@ -275,8 +285,11 @@
         [self didFailLoadWithError:error];
     }
     [self updateSortedArray];
-    [self.tableView reloadData];
     [self didFinishLoad];
+    
+    // Load the table view after we have finished the load to ensure the state
+    // is accurate when computing the table view data source responses
+    [self.tableView reloadData];
 
     if ([self isAutoRefreshNeeded] && [self isOnline] &&
         ![self.objectLoader isLoading] &&
@@ -350,45 +363,42 @@
     return (fetchedItemCount + nonFetchedItemCount);
 }
 
-- (UITableViewCell *)cellForObjectAtIndexPath:(NSIndexPath *)indexPath
-{
-    id mappableObject = [self objectForRowAtIndexPath:indexPath];
-    NSAssert(mappableObject, @"Cannot build a tableView cell without an object");
-
-    RKTableViewCellMapping *cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
-    NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
-
-    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
-    NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
-
-    // Map the object state into the cell
-    RKObjectMappingOperation *mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
-    NSError *error = nil;
-    BOOL success = [mappingOperation performMapping:&error];
-    [mappingOperation release];
-
-    // NOTE: If there is no mapping work performed, but no error is generated then
-    // we consider the operation a success. It is common for table cells to not contain
-    // any dynamically mappable content (i.e. header/footer rows, banners, etc.)
-    if (success == NO && error != nil) {
-        RKLogError(@"Failed to generate table cell for object: %@", error);
-        return nil;
-    }
-
-    return cell;
-}
-
 - (NSIndexPath *)indexPathForObject:(id)object
 {
     if ([object isKindOfClass:[NSManagedObject class]]) {
         return [self indexPathForFetchedResultsIndexPath:[_fetchedResultsController indexPathForObject:object]];
+    } else if ([object isKindOfClass:[RKTableItem class]]) {
+        if ([object isEqual:self.emptyItem]) {
+            return ([self isEmpty]) ? [self emptyItemIndexPath] : nil;
+        } else if ([self.headerItems containsObject:object]) {
+            // Figure out the row number for the object
+            NSUInteger objectIndex = [self.headerItems indexOfObject:object];
+            NSUInteger row = ([self isEmpty] && self.emptyItem) ? (objectIndex + 1) : objectIndex;
+            return [NSIndexPath indexPathForRow:row inSection:[self headerSectionIndex]];
+        } else if ([self.footerItems containsObject:object]) {
+            NSUInteger footerSectionIndex = [self sectionCount] - 1;
+            id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:footerSectionIndex];
+            NSUInteger numberOfFetchedResults = sectionInfo.numberOfObjects;
+            NSUInteger objectIndex = [self.footerItems indexOfObject:object];
+            NSUInteger row = numberOfFetchedResults + objectIndex;
+            row += ([self isEmpty] && self.emptyItem) ? 1 : 0;
+            if ([self isHeaderSection:footerSectionIndex]) {
+                row += [self.headerItems count];
+            }
+
+            return [NSIndexPath indexPathForRow:row inSection:footerSectionIndex];
+        }
+    } else {
+        RKLogWarning(@"Asked for indexPath of unsupported object type '%@': %@", [object class], object);
     }
     return nil;
 }
 
 - (UITableViewCell *)cellForObject:(id)object
 {
-    return [self cellForObjectAtIndexPath:[self indexPathForObject:object]];
+    NSIndexPath *indexPath = [self indexPathForObject:object];
+    NSAssert(indexPath, @"Failed to find indexPath for object: %@", object);
+    return [self.tableView cellForRowAtIndexPath:indexPath];
 }
 
 #pragma mark - UITableViewDataSource methods
@@ -410,9 +420,10 @@
     if ([self isHeaderSection:section]) {
         numberOfRows += (![self isEmpty] || self.showsHeaderRowsWhenEmpty) ? [self.headerItems count] : 0;
         numberOfRows += ([self isEmpty] && self.emptyItem) ? 1 : 0;
+    }
 
-    } else if ([self isFooterSection:section]) {
-        numberOfRows += [self.footerItems count];
+    if ([self isFooterSection:section]) {
+        numberOfRows += (![self isEmpty] || self.showsFooterRowsWhenEmpty) ? [self.footerItems count] : 0;
     }
     return numberOfRows;
 }
@@ -527,11 +538,9 @@
 {
     if ([self isEmptyItemIndexPath:indexPath]) {
         return self.emptyItem;
-
     } else if ([self isHeaderIndexPath:indexPath]) {
         NSUInteger row = ([self isEmpty] && self.emptyItem) ? (indexPath.row - 1) : indexPath.row;
         return [self.headerItems objectAtIndex:row];
-
     } else if ([self isFooterIndexPath:indexPath]) {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:indexPath.section];
         NSUInteger footerRow = (indexPath.row - sectionInfo.numberOfObjects);
@@ -544,7 +553,14 @@
     } else if (_sortSelector || _sortComparator) {
         return [_arraySortedFetchedObjects objectAtIndex:[self fetchedResultsIndexPathForIndexPath:indexPath].row];
     }
-    return [_fetchedResultsController objectAtIndexPath:[self fetchedResultsIndexPathForIndexPath:indexPath]];
+    
+    NSIndexPath *fetchedResultsIndexPath = [self fetchedResultsIndexPathForIndexPath:indexPath];
+    id <NSFetchedResultsSectionInfo> sectionInfo = [[_fetchedResultsController sections] objectAtIndex:fetchedResultsIndexPath.section];
+    if (fetchedResultsIndexPath.row < [sectionInfo numberOfObjects]) {
+        return [_fetchedResultsController objectAtIndexPath:fetchedResultsIndexPath];
+    } else {
+        return nil;
+    }
 }
 
 #pragma mark - Network Table Loading
@@ -677,15 +693,6 @@
 }
 
 #pragma mark - UITableViewDataSource methods
-
-- (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
-    UITableViewCell *cell = [self cellForObjectAtIndexPath:indexPath];
-
-    RKLogTrace(@"%@ cellForRowAtIndexPath:%@ = %@", self, indexPath, cell);
-    return cell;
-}
 
 - (NSUInteger)numberOfRowsInSection:(NSUInteger)index
 {

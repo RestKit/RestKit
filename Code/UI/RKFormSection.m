@@ -29,8 +29,14 @@
     return [[[self alloc] initWithForm:form] autorelease];
 }
 
-- (id)initWithForm:(RKForm *)form
++ (id)sectionUsingBlock:(void (^)(RKFormSection *))block
 {
+    RKFormSection *section = [self section];
+    block(section);
+    return section;
+}
+
+- (id)initWithForm:(RKForm *)form {
     self = [super init];
     if (self) {
         self.form = form;
@@ -117,8 +123,24 @@
     [self addTableItem:tableItem];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block
+- (void)addMappingFromAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)keyPath forTableItem:(RKTableItem *)tableItem
 {
+    RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
+    attributeMapping.sourceKeyPath = [NSString stringWithFormat:@"userData.__RestKit__object.%@", attributeKeyPath];
+    attributeMapping.destinationKeyPath = keyPath;
+
+    // TODO: This is duplicating code...
+    [tableItem.cellMapping addAttributeMapping:attributeMapping];
+
+    // Use KVC storage to associate the table item with object being mapped
+    // TODO: Move these to constants...
+    [tableItem.userData setValue:self.object forKey:@"__RestKit__object"];
+    [tableItem.userData setValue:attributeKeyPath forKey:@"__RestKit__attributeKeyPath"];
+    [tableItem.userData setValue:attributeMapping forKey:@"__RestKit__attributeToControlMapping"];
+//    [self addAttributeMapping:attributeMapping forKeyPath:attributeKeyPath toTableItem:tableItem];
+}
+
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block {
     RKControlTableItem *tableItem = [RKControlTableItem tableItemWithControl:control];
     RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
     attributeMapping.sourceKeyPath = [NSString stringWithFormat:@"userData.__RestKit__object.%@", attributeKeyPath];
