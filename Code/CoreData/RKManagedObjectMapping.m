@@ -152,6 +152,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value primaryKeyAttribute:sourceKeyPath];
     RKConnectionMapping* mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping matcher:matcher];
     [self addConnectionMapping:mapping];
+    [matcher release];
 }
 
 - (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block
@@ -159,6 +160,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithPrimaryKeyAttribute:sourceKeyPath evaluationBlock:block];
     RKConnectionMapping* mapping = [RKConnectionMapping connectionMappingForRelationship:relationshipName fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping matcher:matcher];
     [self addConnectionMapping:mapping];
+    [matcher release];
 }
 
 - (id)defaultValueForMissingAttribute:(NSString *)attributeName
