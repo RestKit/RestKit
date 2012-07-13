@@ -20,7 +20,7 @@
 
 #import "RKTestEnvironment.h"
 #import "RKManagedObjectLoader.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKHuman.h"
 #import "RKCat.h"
 #import "NSManagedObject+ActiveRecord.h"
@@ -47,7 +47,7 @@
 
     assertThat(objectManager.objectStore.primaryManagedObjectContext, is(equalTo(store.primaryManagedObjectContext)));
 
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
     RKURL *URL = [objectManager.baseURL URLByAppendingResourcePath:@"/humans/1"];
     RKManagedObjectLoader *objectLoader = [RKManagedObjectLoader loaderWithURL:URL mappingProvider:objectManager.mappingProvider objectStore:store];
@@ -66,9 +66,9 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
-    RKObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKObjectMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     [humanMapping mapAttributes:@"name", nil];
-    RKObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:store];
+    RKObjectMapping *catMapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:store.primaryManagedObjectContext];
     [catMapping mapAttributes:@"name", nil];
     [humanMapping mapKeyPath:@"favorite_cat" toRelationship:@"favoriteCat" withMapping:catMapping];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
@@ -87,8 +87,8 @@
 - (void)testShouldDeleteObjectsMissingFromPayloadReturnedByObjectCache
 {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman"
-                                                                       inManagedObjectStore:store];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman"
+                                                                       inManagedObjectContext:store.primaryManagedObjectContext];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
@@ -134,7 +134,7 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = store;
 
-    RKObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
     RKResponse *response = [objectLoader sendSynchronously];
@@ -151,7 +151,7 @@
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     objectManager.objectStore = objectStore;
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKHuman" inManagedObjectStore:objectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
@@ -229,7 +229,7 @@
     BOOL success = NO;
     [[[mockStore stub] andReturnValue:OCMOCK_VALUE(success)] save:[OCMArg anyPointer]];
 
-    RKObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
     objectLoader.objectMapping = mapping;
 

@@ -27,11 +27,7 @@
  transient object loader only by handling the special threading
  concerns imposed by Core Data.
  */
-@interface RKManagedObjectLoader : RKObjectLoader {
-    NSManagedObjectID *_targetObjectID;
-    NSMutableSet *_managedObjectKeyPaths;
-    BOOL _deleteObjectOnFailure;
-}
+@interface RKManagedObjectLoader : RKObjectLoader
 
 /**
  A reference to a RestKit managed object store for interacting with Core Data
@@ -39,6 +35,7 @@
  @see RKManagedObjectStore
  */
 @property (nonatomic, retain) RKManagedObjectStore *objectStore;
+@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 
 + (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
 - (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;

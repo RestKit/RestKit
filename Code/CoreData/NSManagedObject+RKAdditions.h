@@ -8,7 +8,7 @@
 
 #import <CoreData/CoreData.h>
 
-@class RKManagedObjectStore, RKManagedObjectMapping;
+@class RKManagedObjectStore, RKEntityMapping;
 
 /**
  Provides extensions to NSManagedObject for various common tasks.

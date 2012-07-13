@@ -18,12 +18,14 @@
 //  limitations under the License.
 //
 
+#import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
 #import "RKObjectMapping.h"
 #import "RKObjectMappingOperation.h"
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
 #import "RKMappingOperationQueue.h"
+#import "RKMappingOperationDataSource.h"
 #import "Support.h"
 
 @class RKObjectMapper;
@@ -41,6 +43,8 @@
 - (void)objectMapper:(RKObjectMapper *)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
 - (void)objectMapper:(RKObjectMapper *)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
 - (void)objectMapper:(RKObjectMapper *)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError *)error atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
+
+- (void)objectMapper:(RKObjectMapper *)objectMapper willPerformMappingOperation:(RKObjectMappingOperation *)mappingOperation; // Added in 0.11.0
 @end
 
 /**
@@ -58,6 +62,7 @@
 @property (nonatomic, assign) RKObjectMappingProviderContext context;
 @property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
 @property (nonatomic, readonly) NSArray *errors;
+@property (nonatomic, retain) id<RKMappingOperationDataSource> mappingOperationDataSource;
 
 + (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 - (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;

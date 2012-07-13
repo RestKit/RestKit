@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectStore.h"
 #import "RKDynamicObjectMappingMatcher.h"
@@ -33,12 +33,16 @@
 // Implemented in RKObjectMappingOperation
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
+@interface RKEntityMapping () {
+    NSMutableArray *_connections;
+}
 
-@implementation RKManagedObjectMapping
+@end
+
+@implementation RKEntityMapping
 
 @synthesize entity = _entity;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;
-@synthesize objectStore = _objectStore;
 
 + (id)mappingForClass:(Class)objectClass
 {
@@ -47,33 +51,26 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
                                  userInfo:nil];
 }
 
-+ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore
++ (id)mappingForEntityWithName:(NSString *)entityName inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    return [self mappingForEntityWithName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:managedObjectContext];
+    return [self mappingForEntity:entity];
 }
 
-+ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore
++ (id)mappingForEntity:(NSEntityDescription *)entity
 {
-    return [[[self alloc] initWithEntity:entity inManagedObjectStore:objectStore] autorelease];
+    return [[[self alloc] initWithEntity:entity] autorelease];
 }
 
-+ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore
+- (id)initWithEntity:(NSEntityDescription *)entity
 {
-    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.primaryManagedObjectContext]
-             inManagedObjectStore:objectStore];
-}
-
-- (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore
-{
-    NSAssert(entity, @"Cannot initialize an RKManagedObjectMapping without an entity. Maybe you want RKObjectMapping instead?");
-    NSAssert(objectStore, @"Object store cannot be nil");
+    NSAssert(entity, @"Cannot initialize an RKEntityMapping without an entity. Maybe you want RKObjectMapping instead?");
     Class objectClass = NSClassFromString([entity managedObjectClassName]);
     NSAssert(objectClass, @"The managedObjectClass for an object mapped entity cannot be nil.");
     self = [self init];
     if (self) {
         _objectClass = [objectClass retain];
         _entity = [entity retain];
-        _objectStore = objectStore;
 
         [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
         [self addObserver:self forKeyPath:@"primaryKeyAttribute" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
@@ -107,7 +104,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return _connections;
 }
 
-- (RKConnectionMapping *)mappingForConnection:(NSString *)relationshipName
+- (RKConnectionMapping *)connectionMappingForRelationshipWithName:(NSString *)relationshipName
 {
     for (RKConnectionMapping *connection in self.connections) {
         if ([connection.relationshipName isEqualToString:relationshipName]) {
@@ -126,16 +123,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 - (NSString *)primaryKeyPathForRelationship:(NSString *)relationshipName
 {
     RKObjectMappingDefinition* mappingDef = [self objectMappingForRelationship:relationshipName];
-    RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *) mappingDef;
+    RKEntityMapping *objectMapping = (RKEntityMapping *) mappingDef;
     return [objectMapping primaryKeyAttribute];
 }
 
 - (void)addConnectionMapping:(RKConnectionMapping *)mapping
 {
-    RKConnectionMapping *connectionMapping = [self mappingForConnection:mapping.relationshipName];
+    RKConnectionMapping *connectionMapping = [self connectionMappingForRelationshipWithName:mapping.relationshipName];
     NSAssert(connectionMapping == nil, @"Cannot add connect relationship %@ by primary key, a mapping already exists.", mapping.relationshipName);
     NSAssert(mapping.mapping, @"Attempted to connect relationship '%@' without a relationship mapping defined.", mapping.relationshipName);
-    NSAssert([mapping.mapping isKindOfClass:[RKManagedObjectMapping class]], @"Can only connect RKManagedObjectMapping relationships");
+    NSAssert([mapping.mapping isKindOfClass:[RKEntityMapping class]], @"Can only connect RKManagedObjectMapping relationships");
     [_connections addObject:mapping];
 }
 
@@ -167,67 +164,69 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return [desc defaultValue];
 }
 
+// TODO: Gut this method from superclass...
 - (id)mappableObjectForData:(id)mappableData
 {
+    NSAssert(false, @"DISABLED!!!");
     NSAssert(mappableData, @"Mappable data cannot be nil");
-
-    id object = nil;
-    id primaryKeyValue = nil;
-    NSString *primaryKeyAttribute;
-
-    NSEntityDescription *entity = [self entity];
-    RKObjectAttributeMapping *primaryKeyAttributeMapping = nil;
-
-    primaryKeyAttribute = [self primaryKeyAttribute];
-    if (primaryKeyAttribute) {
-        // If a primary key has been set on the object mapping, find the attribute mapping
-        // so that we can extract any existing primary key from the mappable data
-        for (RKObjectAttributeMapping *attributeMapping in self.attributeMappings) {
-            if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
-                primaryKeyAttributeMapping = attributeMapping;
-                break;
-            }
-        }
-
-        // Get the primary key value out of the mappable data (if any)
-        if ([primaryKeyAttributeMapping isMappingForKeyOfNestedDictionary]) {
-            RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
-            primaryKeyValue = [[mappableData allKeys] lastObject];
-        } else {
-            NSString *keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
-            if (keyPathForPrimaryKeyElement) {
-                primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
-            } else {
-                RKLogWarning(@"Unable to find source attribute for primaryKeyAttribute '%@': unable to find existing object instances by primary key.", primaryKeyAttribute);
-            }
-        }
-    }
-
-    // If we have found the primary key attribute & value, try to find an existing instance to update
-    if (primaryKeyAttribute && primaryKeyValue && NO == [primaryKeyValue isEqual:[NSNull null]]) {
-        object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
-                                              withPrimaryKeyAttribute:primaryKeyAttribute
-                                                                value:primaryKeyValue
-                                               inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
-
-        if (object && [self.objectStore.cacheStrategy respondsToSelector:@selector(didFetchObject:)]) {
-            [self.objectStore.cacheStrategy didFetchObject:object];
-        }
-    }
-
-    if (object == nil) {
-        object = [[[NSManagedObject alloc] initWithEntity:entity
-                           insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
-        if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
-            id coercedPrimaryKeyValue = [entity coerceValueForPrimaryKey:primaryKeyValue];
-            [object setValue:coercedPrimaryKeyValue forKey:primaryKeyAttribute];
-        }
-
-        if ([self.objectStore.cacheStrategy respondsToSelector:@selector(didCreateObject:)]) {
-            [self.objectStore.cacheStrategy didCreateObject:object];
-        }
-    }
-    return object;
+    return nil;
+//    id object = nil;
+//    id primaryKeyValue = nil;
+//    NSString *primaryKeyAttribute;
+//
+//    NSEntityDescription *entity = [self entity];
+//    RKObjectAttributeMapping *primaryKeyAttributeMapping = nil;
+//
+//    primaryKeyAttribute = [self primaryKeyAttribute];
+//    if (primaryKeyAttribute) {
+//        // If a primary key has been set on the object mapping, find the attribute mapping
+//        // so that we can extract any existing primary key from the mappable data
+//        for (RKObjectAttributeMapping *attributeMapping in self.attributeMappings) {
+//            if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
+//                primaryKeyAttributeMapping = attributeMapping;
+//                break;
+//            }
+//        }
+//
+//        // Get the primary key value out of the mappable data (if any)
+//        if ([primaryKeyAttributeMapping isMappingForKeyOfNestedDictionary]) {
+//            RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
+//            primaryKeyValue = [[mappableData allKeys] lastObject];
+//        } else {
+//            NSString *keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
+//            if (keyPathForPrimaryKeyElement) {
+//                primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
+//            } else {
+//                RKLogWarning(@"Unable to find source attribute for primaryKeyAttribute '%@': unable to find existing object instances by primary key.", primaryKeyAttribute);
+//            }
+//        }
+//    }
+//
+//    // If we have found the primary key attribute & value, try to find an existing instance to update
+//    if (primaryKeyAttribute && primaryKeyValue && NO == [primaryKeyValue isEqual:[NSNull null]]) {
+//        object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
+//                                              withPrimaryKeyAttribute:primaryKeyAttribute
+//                                                                value:primaryKeyValue
+//                                               inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
+//
+//        if (object && [self.objectStore.cacheStrategy respondsToSelector:@selector(didFetchObject:)]) {
+//            [self.objectStore.cacheStrategy didFetchObject:object];
+//        }
+//    }
+//
+//    if (object == nil) {
+//        object = [[[NSManagedObject alloc] initWithEntity:entity
+//                           insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
+//        if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
+//            id coercedPrimaryKeyValue = [entity coerceValueForPrimaryKey:primaryKeyValue];
+//            [object setValue:coercedPrimaryKeyValue forKey:primaryKeyAttribute];
+//        }
+//
+//        if ([self.objectStore.cacheStrategy respondsToSelector:@selector(didCreateObject:)]) {
+//            [self.objectStore.cacheStrategy didCreateObject:object];
+//        }
+//    }
+//    return object;
 }
 
 - (Class)classForProperty:(NSString *)propertyName
@@ -294,4 +293,30 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     NSString *destinationKeyPath = [self primaryKeyPathForRelationship:relationshipName];
     [self connectRelationship:relationshipName withMapping:objectOrDynamicMapping fromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath usingEvaluationBlock:block];
 }
+
+@end
+
+@implementation RKEntityMapping (CompatibilityAliases)
+
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
+{
+    return [self mappingForEntityWithName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
+}
+
++ (RKEntityMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
+{
+    return [[[self alloc] initWithEntity:entity inManagedObjectStore:objectStore] autorelease];
+}
+
++ (RKEntityMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
+{
+    return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.primaryManagedObjectContext]
+             inManagedObjectStore:objectStore];
+}
+
+- (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
+{
+    return [self initWithEntity:entity];
+}
+
 @end

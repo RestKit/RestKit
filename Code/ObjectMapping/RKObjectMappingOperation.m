@@ -26,6 +26,8 @@
 #import "RKObjectMapper.h"
 #import "RKErrors.h"
 #import "RKLog.h"
+#import "RKMappingOperationDataSource.h"
+#import "RKObjectMappingOperationDataSource.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -95,6 +97,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if (self) {
         _sourceObject = [sourceObject retain];
         _destinationObject = [destinationObject retain];
+        self.dataSource = [[RKObjectMappingOperationDataSource new] autorelease];
 
         if ([objectMapping isKindOfClass:[RKDynamicObjectMapping class]]) {
             _objectMapping = [[(RKDynamicObjectMapping *)objectMapping objectMappingForDictionary:_sourceObject] retain];
@@ -115,6 +118,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     [_objectMapping release];
     [_nestedAttributeSubstitution release];
     [_queue release];
+    self.dataSource = nil;
 
     [super dealloc];
 }
@@ -441,7 +445,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return [self isTypeACollection:[value class]];
 }
 
-- (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withRealtionshipMapping:(RKObjectRelationshipMapping *)relationshipMapping
+- (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withRelationshipMapping:(RKObjectRelationshipMapping *)relationshipMapping
 {
     NSAssert(anObject, @"Cannot map nested object without a nested source object");
     NSAssert(anotherObject, @"Cannot map nested object without a destination object");
@@ -452,6 +456,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     RKObjectMappingOperation *subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
     subOperation.delegate = self.delegate;
     subOperation.queue = self.queue;
+    [self willPerformChildMappingOperation:subOperation];
     if (NO == [subOperation performMapping:&error]) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     }
@@ -461,6 +466,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 - (BOOL)applyRelationshipMappings
 {
+    NSAssert(self.dataSource, @"Cannot perform relationship mapping without a data source");
     BOOL appliedMappings = NO;
     id destinationObject = nil;
 
@@ -552,9 +558,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 } else {
                     NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
                 }
-                id mappedObject = [objectMapping mappableObjectForData:nestedObject];
-                if ([self mapNestedObject:nestedObject toObject:mappedObject withRealtionshipMapping:relationshipMapping]) {
-                    [destinationObject addObject:mappedObject];
+                id mappableObject = [self.dataSource objectForMappableContent:nestedObject mapping:objectMapping];
+                if ([self mapNestedObject:nestedObject toObject:mappableObject withRelationshipMapping:relationshipMapping]) {
+                    [destinationObject addObject:mappableObject];
                 }
             }
 
@@ -603,8 +609,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 objectMapping = (RKObjectMapping *)mapping;
             }
             NSAssert(objectMapping, @"Encountered unknown mapping type '%@'", NSStringFromClass([mapping class]));
-            destinationObject = [objectMapping mappableObjectForData:value];
-            if ([self mapNestedObject:value toObject:destinationObject withRealtionshipMapping:relationshipMapping]) {
+            destinationObject = [self.dataSource objectForMappableContent:value mapping:objectMapping];
+            if ([self mapNestedObject:value toObject:destinationObject withRelationshipMapping:relationshipMapping]) {
                 appliedMappings = YES;
             }
 
@@ -660,6 +666,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     BOOL mappedRelationships = [self applyRelationshipMappings];
     if ((mappedAttributes || mappedRelationships) && _validationError == nil) {
         RKLogDebug(@"Finished mapping operation successfully...");
+        
+        if ([self.dataSource respondsToSelector:@selector(commitChangesForMappingOperation:)]) {
+            [self.dataSource commitChangesForMappingOperation:self];
+        }
         return YES;
     }
 
@@ -683,6 +693,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 {
     return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object. Mapping values from object %@ to object %@ with object mapping %@",
             NSStringFromClass([self.destinationObject class]), self.sourceObject, self.destinationObject, self.objectMapping];
+}
+
+// TODO: Eliminate...
+- (void)willPerformChildMappingOperation:(RKObjectMappingOperation *)childMappingOperation
+{
+    
 }
 
 @end

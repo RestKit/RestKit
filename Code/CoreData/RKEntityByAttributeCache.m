@@ -104,8 +104,11 @@
     [fetchRequest setEntity:self.entity];
     [fetchRequest setResultType:NSManagedObjectIDResultType];
 
-    NSError *error = nil;
-    NSArray *objectIDs = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    __block NSError *error = nil;
+    __block NSArray *objectIDs = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    }];    
     [fetchRequest release];
     if (error) {
         RKLogError(@"Failed to load entity cache: %@", error);
@@ -114,8 +117,11 @@
 
     self.attributeValuesToObjectIDs = [NSMutableDictionary dictionaryWithCapacity:[objectIDs count]];
     for (NSManagedObjectID *objectID in objectIDs) {
-        NSError *error = nil;
-        NSManagedObject *object = [self.managedObjectContext existingObjectWithID:objectID error:&error];
+        __block NSError *error = nil;
+        __block NSManagedObject *object = nil;
+        [self.managedObjectContext performBlockAndWait:^{
+            object = [self.managedObjectContext existingObjectWithID:objectID error:&error];
+        }];
         if (! object && error) {
             RKLogError(@"Failed to retrieve managed object with ID %@: %@", objectID, error);
         }

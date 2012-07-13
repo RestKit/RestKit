@@ -28,14 +28,26 @@
 #import "RKRequest_Internals.h"
 #import "RKObjectMappingProvider+CoreData.h"
 #import "RKLog.h"
+#import "RKManagedObjectMappingOperationDataSource.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
+@interface RKManagedObjectLoader ()
+
+@property (nonatomic, retain) NSManagedObjectID *targetObjectID;
+@property (nonatomic, retain) NSMutableSet *managedObjectKeyPaths;
+@property (nonatomic, assign) BOOL deleteObjectOnFailure;
+@property (nonatomic, retain, readwrite) NSManagedObjectContext *managedObjectContext;
+@end
+
 @implementation RKManagedObjectLoader
 
 @synthesize objectStore = _objectStore;
+@synthesize targetObjectID = _targetObjectID;
+@synthesize managedObjectKeyPaths = _managedObjectKeyPaths;
+@synthesize deleteObjectOnFailure = _deleteObjectOnFailure;
 
 + (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore
 {
@@ -46,7 +58,7 @@
 {
     self = [self initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
-        _objectStore = [objectStore retain];
+        self.objectStore = objectStore;        
     }
 
     return self;
@@ -56,7 +68,8 @@
 {
     self = [super initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
-        _managedObjectKeyPaths = [[NSMutableSet alloc] init];
+        self.managedObjectKeyPaths = [NSMutableSet set];
+        [self addObserver:self forKeyPath:@"objectStore" options:0 context:nil];
     }
 
     return self;
@@ -64,11 +77,11 @@
 
 - (void)dealloc
 {
-    [_targetObjectID release];
-    _targetObjectID = nil;
-    _deleteObjectOnFailure = NO;
-    [_managedObjectKeyPaths release];
-    [_objectStore release];
+    [self removeObserver:self forKeyPath:@"objectStore"];
+    self.targetObjectID = nil;
+    self.managedObjectKeyPaths = nil;
+    self.objectStore = nil;
+    self.managedObjectContext = nil;
 
     [super dealloc];
 }
@@ -76,8 +89,17 @@
 - (void)reset
 {
     [super reset];
-    [_targetObjectID release];
-    _targetObjectID = nil;
+    self.targetObjectID = nil;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"objectStore"]) {
+        self.managedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+        self.managedObjectContext.parentContext = self.objectStore.primaryManagedObjectContext;
+        self.managedObjectContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
+        self.mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext];
+    }
 }
 
 #pragma mark - RKObjectMapperDelegate methods
@@ -88,6 +110,14 @@
         [_managedObjectKeyPaths addObject:keyPath];
     }
 }
+
+// TODO: This is a hack until we can figure out more elegant solution...
+//- (void)objectMapper:(RKObjectMapper *)objectMapper willPerformMappingOperation:(RKObjectMappingOperation *)mappingOperation
+//{
+//    if ([mappingOperation isKindOfClass:[RKManagedObjectMappingOperation class]]) {
+//        [(RKManagedObjectMappingOperation *)mappingOperation setManagedObjectContext:self.managedObjectContext];
+//    }
+//}
 
 #pragma mark - RKObjectLoader overrides
 
@@ -119,9 +149,9 @@
     // right before send to avoid sequencing issues where the target object is
     // set before the managed object store.
     if (self.targetObject && [self.targetObject isKindOfClass:[NSManagedObject class]]) {
-        _deleteObjectOnFailure = [(NSManagedObject *)self.targetObject isNew];
+        self.deleteObjectOnFailure = [(NSManagedObject *)self.targetObject isNew];
         [self.objectStore save:nil];
-        _targetObjectID = [[(NSManagedObject *)self.targetObject objectID] retain];
+        self.targetObjectID = [[(NSManagedObject *)self.targetObject objectID] retain];
     }
 
     return [super prepareURLRequest];
@@ -171,8 +201,19 @@
     // If the response was successful, save the store...
     if ([self.response isSuccessful]) {
         [self deleteCachedObjectsMissingFromResult:result];
-        NSError *error = nil;
-        BOOL success = [self.objectStore save:&error];
+        __block BOOL success = NO;
+        __block NSError *error = nil;
+        
+        NSLog(@"Before save...");
+//        NSLog(@"Saving objectStore = %@. MOC = %@", self.objectStore, self.objectStore.managedObjectContextForCurrentThread);
+        NSLog(@"Saving managedObjectContext: %@", self.managedObjectContext);
+        
+        [self.managedObjectContext performBlockAndWait:^{
+            success = [self.managedObjectContext save:&error];
+            NSLog(@"Saved MOC success = %d. Error: %@", success, error);
+        }];
+//        BOOL success = [self.objectStore save:&error];
+        NSLog(@"After save...");
         if (! success) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
             NSMethodSignature *signature = [(NSObject *)self methodSignatureForSelector:@selector(informDelegateOfError:)];
@@ -191,12 +232,53 @@
 
     NSDictionary *dictionary = [result asDictionary];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
-    RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    [invocation setObjectStore:self.objectStore];
-    [invocation setTarget:self];
-    [invocation setSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
+    if (self.managedObjectContext.parentContext) {
+        NSLog(@"Saving parent context...");
+        [self.managedObjectContext.parentContext performBlockAndWait:^{
+            NSError *error = nil;
+            if (! [self.managedObjectContext.parentContext save:&error]) {
+                NSLog(@"Failed to save parent context. Error: %@", error);
+                
+                if ([[error domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+                    NSDictionary *userInfo = [error userInfo];
+                    NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
+                    if (errors) {
+                        for (NSError *detailedError in errors) {
+                            NSDictionary *subUserInfo = [detailedError userInfo];
+                            RKLogError(@"Core Data Save Error\n \
+                                       NSLocalizedDescription:\t\t%@\n \
+                                       NSValidationErrorKey:\t\t\t%@\n \
+                                       NSValidationErrorPredicate:\t%@\n \
+                                       NSValidationErrorObject:\n%@\n",
+                                       [subUserInfo valueForKey:@"NSLocalizedDescription"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorKey"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorObject"]);
+                        }
+                    }
+                    else {
+                        RKLogError(@"Core Data Save Error\n \
+                                   NSLocalizedDescription:\t\t%@\n \
+                                   NSValidationErrorKey:\t\t\t%@\n \
+                                   NSValidationErrorPredicate:\t%@\n \
+                                   NSValidationErrorObject:\n%@\n",
+                                   [userInfo valueForKey:@"NSLocalizedDescription"],
+                                   [userInfo valueForKey:@"NSValidationErrorKey"],
+                                   [userInfo valueForKey:@"NSValidationErrorPredicate"],
+                                   [userInfo valueForKey:@"NSValidationErrorObject"]);
+                    }
+                }
+                
+                NSAssert(false, @"WTF");
+            }
+        }];
+    }
+    RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+    invocation.managedObjectContext = self.managedObjectContext;
+    invocation.target = self;
+    invocation.selector = @selector(informDelegateOfObjectLoadWithResultDictionary:);
     [invocation setArgument:&dictionary atIndex:2];
-    [invocation setManagedObjectKeyPaths:_managedObjectKeyPaths forArgument:2];
+    [invocation setManagedObjectKeyPaths:self.managedObjectKeyPaths forArgument:2];
     [invocation invokeOnMainThread];
 }
 

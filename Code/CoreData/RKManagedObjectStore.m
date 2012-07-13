@@ -43,6 +43,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
 @interface RKManagedObjectStore ()
 @property (nonatomic, retain, readwrite) NSManagedObjectContext *primaryManagedObjectContext;
+@property (nonatomic, retain, readwrite) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
 - (void)createPersistentStoreCoordinator;
@@ -58,7 +59,8 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
 @synthesize cacheStrategy = _cacheStrategy;
-@synthesize primaryManagedObjectContext;
+@synthesize primaryManagedObjectContext = _primaryManagedObjectContext;
+@synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
 
 + (RKManagedObjectStore *)defaultObjectStore
 {
@@ -143,7 +145,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         }
 
         [self createPersistentStoreCoordinator];
-        self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
+        [self createManagedObjectContexts];
 
         _cacheStrategy = [RKInMemoryManagedObjectCache new];
 
@@ -220,8 +222,8 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     _persistentStoreCoordinator = nil;
     [_cacheStrategy release];
     _cacheStrategy = nil;
-    [primaryManagedObjectContext release];
-    primaryManagedObjectContext = nil;
+    [_primaryManagedObjectContext release];
+    _primaryManagedObjectContext = nil;
 
     [super dealloc];
 }
@@ -236,7 +238,9 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     NSError *localError = nil;
 
     @try {
+        NSLog(@"Saving managed object context %@ (isMainThread = %d)", moc, [NSThread isMainThread]);
         if (![moc save:&localError]) {
+            NSLog(@"FAILED TO SAVE MOC: %@", localError);
             if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
                 [self.delegate managedObjectStore:self didFailToSaveContext:moc error:localError exception:nil];
             }
@@ -293,9 +297,21 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     return YES;
 }
 
+- (NSManagedObjectContext *)managedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType
+{
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType];
+    [managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
+    [managedObjectContext setUndoManager:nil];
+    [managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+    managedObjectContext.managedObjectStore = self;
+    
+    return managedObjectContext;
+}
+
+// threadConfinedManagedObjectContext | mainThreadManagedObjectContext | privateManagedObjectContext
 - (NSManagedObjectContext *)newManagedObjectContext
 {
-    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] init];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
     [managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
     [managedObjectContext setUndoManager:nil];
     [managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
@@ -346,10 +362,31 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
 }
 
+- (void)createManagedObjectContexts
+{
+    // Our primary MOC is a private queue concurrency type
+    self.primaryManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    self.primaryManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
+    self.primaryManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    self.primaryManagedObjectContext.managedObjectStore = self;
+    
+    // Create an MOC for use on the main queue
+    self.mainQueueManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    self.mainQueueManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
+    self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    self.mainQueueManagedObjectContext.managedObjectStore = self;
+    
+    // Merge changes from a primary MOC back into the main queue when complete
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handlePrimaryManagedObjectContextDidSaveNotification:)
+                                                 name:NSManagedObjectContextDidSaveNotification
+                                               object:self.primaryManagedObjectContext];
+}
+
 - (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile
 {
-    NSURL *storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
-    NSError *error = nil;
+    NSURL* storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
+    NSError* error = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
         if (![[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
             if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
@@ -369,11 +406,9 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     if (seedFile) {
         [self createStoreIfNecessaryUsingSeedDatabase:seedFile];
     }
-
+    
     [self createPersistentStoreCoordinator];
-
-    // Recreate the MOC
-    self.primaryManagedObjectContext = [[self newManagedObjectContext] autorelease];
+    [self createPrimaryManagedObjectContext];
 }
 
 - (void)deletePersistentStore
@@ -390,8 +425,12 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     // Background threads leverage thread-local storage
     NSManagedObjectContext *managedObjectContext = [self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
     if (!managedObjectContext) {
-        managedObjectContext = [self newManagedObjectContext];
-
+//        managedObjectContext = [self newManagedObjectContext];
+        // TODO: Encapsulate this...
+        managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        managedObjectContext.parentContext = self.primaryManagedObjectContext;
+        managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+        managedObjectContext.managedObjectStore = self;
         // Store into thread local storage dictionary
         [self setThreadLocalObject:managedObjectContext forKey:RKManagedObjectStoreThreadDictionaryContextKey];
         [managedObjectContext release];
@@ -406,15 +445,19 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     return managedObjectContext;
 }
 
-- (void)managedObjectContextDidSaveNotification:(NSNotification *)notification
+- (void)handlePrimaryManagedObjectContextDidSaveNotification:(NSNotification *)notification
 {
-    if ([NSThread isMainThread]) {
-        [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-    } else {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-        });
-    }
+    [self.mainQueueManagedObjectContext performBlock:^{
+        [self.mainQueueManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+    }];
+//    NSLog(@"Merging managed objects notification: %@", notification);
+//    if ([NSThread isMainThread]) {
+//        [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+//    } else {
+//        dispatch_sync(dispatch_get_main_queue(), ^{
+//            [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+//        });
+//    }
 }
 
 #pragma mark -

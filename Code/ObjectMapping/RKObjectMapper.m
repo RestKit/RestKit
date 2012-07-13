@@ -22,6 +22,7 @@
 #import "RKObjectMapperError.h"
 #import "RKObjectMapper_Private.h"
 #import "RKObjectMappingProvider+Contexts.h"
+#import "RKObjectMappingOperationDataSource.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -33,6 +34,7 @@
 @synthesize targetObject;
 @synthesize delegate;
 @synthesize mappingProvider;
+@synthesize mappingOperationDataSource = _mappingOperationDataSource;
 @synthesize errors;
 @synthesize context;
 
@@ -50,6 +52,7 @@
         errors = [NSMutableArray new];
         operationQueue = [RKMappingOperationQueue new];
         context = RKObjectMappingProviderContextObjectsByKeyPath;
+        self.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
     }
 
     return self;
@@ -226,11 +229,15 @@
 
     NSError *error = nil;
 
-    RKObjectMappingOperation *operation = [RKObjectMappingOperation mappingOperationFromObject:mappableObject
-                                                                                      toObject:destinationObject
-                                                                                   withMapping:mapping];
-    operation.queue = operationQueue;
-    BOOL success = [operation performMapping:&error];
+    RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:mappableObject
+                                                                                             toObject:destinationObject
+                                                                                          withMapping:mapping];
+    mappingOperation.queue = operationQueue;
+    mappingOperation.dataSource = self.mappingOperationDataSource;
+    if ([self.delegate respondsToSelector:@selector(objectMapper:willPerformMappingOperation:)]) {
+        [self.delegate objectMapper:self willPerformMappingOperation:mappingOperation];
+    }
+    BOOL success = [mappingOperation performMapping:&error];
     if (success) {
         if ([self.delegate respondsToSelector:@selector(objectMapper:didMapFromObject:toObject:atKeyPath:usingMapping:)]) {
             [self.delegate objectMapper:self didMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
@@ -262,7 +269,7 @@
     }
 
     if (objectMapping) {
-        return [objectMapping mappableObjectForData:mappableData];
+        return [self.mappingOperationDataSource objectForMappableContent:mappableData mapping:objectMapping];
     }
 
     return nil;

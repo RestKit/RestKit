@@ -204,6 +204,10 @@ static RKTestFactory *sharedFactory = nil;
 
 + (void)setUp
 {
+    [RKObjectManager setSharedManager:nil];
+    [RKClient setSharedClient:nil];
+    [RKManagedObjectStore setDefaultObjectStore:nil];
+    [NSManagedObjectContext setDefaultContext:nil];
     [RKObjectManager setDefaultMappingQueue:nil];
     [RKObjectMapping setDefaultDateFormatters:nil];
 

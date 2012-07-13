@@ -82,11 +82,15 @@
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     objectManager.objectStore = objectStore;
-    RKHuman *human = [RKHuman object];
+    RKHuman* human = [RKHuman object];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:[human objectID] forKey:@"human"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
-    RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.objectStore = objectStore;
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    [managedObjectContext performBlockAndWait:^{
+        managedObjectContext.parentContext = objectStore.primaryManagedObjectContext;
+    }];
+    RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
+    invocation.managedObjectContext = managedObjectContext;
     [invocation deserializeManagedObjectIDsForArgument:dictionary withKeyPaths:[NSSet setWithObject:@"human"]];
     assertThat([dictionary valueForKeyPath:@"human"], is(instanceOf([NSManagedObject class])));
     assertThat([dictionary valueForKeyPath:@"human"], is(equalTo(human)));
@@ -103,7 +107,7 @@
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:humanIDs forKey:@"humans"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.objectStore = objectStore;
+    invocation.managedObjectContext = objectStore.primaryManagedObjectContext;
     [invocation deserializeManagedObjectIDsForArgument:dictionary withKeyPaths:[NSSet setWithObject:@"humans"]];
     assertThat([dictionary valueForKeyPath:@"humans"], is(instanceOf([NSArray class])));
     NSArray *humans = [NSArray arrayWithObjects:human1, human2, nil];
@@ -132,7 +136,7 @@
     _dictionary = [[NSMutableDictionary dictionaryWithObject:humans forKey:@"humans"] retain];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.objectStore = _objectStore;
+    invocation.managedObjectContext = _objectStore.primaryManagedObjectContext;
     [invocation retain];
     [invocation setTarget:self];
     [invocation setSelector:@selector(informDelegateWithDictionary:)];

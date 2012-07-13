@@ -23,8 +23,8 @@
 #import "RKObjectMappingResult.h"
 #import "RKObjectMappingProvider.h"
 
-@class RKObjectMappingProvider;
-@class RKObjectLoader;
+@class RKObjectMappingProvider, RKObjectLoader;
+@protocol RKMappingOperationDataSource;
 
 // Block Types
 typedef void(^RKObjectLoaderBlock)(RKObjectLoader *loader);
@@ -203,6 +203,8 @@ typedef void(^RKObjectLoaderDidLoadObjectsDictionaryBlock)(NSDictionary *diction
  @see RKObjectMappingProvider
  */
 @property (nonatomic, retain) RKObjectMappingProvider *mappingProvider;
+
+@property (nonatomic, retain) id<RKMappingOperationDataSource> mappingOperationDataSource;
 
 /**
  * The underlying response object for this loader

@@ -136,12 +136,9 @@ static NSOperationQueue *defaultMappingQueue = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     self.client = nil;
-    [_objectStore release];
-    _objectStore = nil;
-    [_serializationMIMEType release];
-    _serializationMIMEType = nil;
-    [_mappingProvider release];
-    _mappingProvider = nil;
+    self.objectStore = nil;
+    self.serializationMIMEType = nil;
+    self.mappingProvider = nil;
 
     [super dealloc];
 }

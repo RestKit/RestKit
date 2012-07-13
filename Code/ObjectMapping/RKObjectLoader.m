@@ -27,6 +27,7 @@
 #import "RKRequest_Internals.h"
 #import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectSerializer.h"
+#import "RKObjectMappingOperationDataSource.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -57,6 +58,7 @@
 @synthesize onDidLoadObject = _onDidLoadObject;
 @synthesize onDidLoadObjects = _onDidLoadObjects;
 @synthesize onDidLoadObjectsDictionary = _onDidLoadObjectsDictionary;
+@synthesize mappingOperationDataSource = _mappingOperationDataSource;
 @dynamic loaded;
 @dynamic loading;
 @dynamic response;
@@ -70,8 +72,10 @@
 {
     self = [super initWithURL:URL];
     if (self) {
-        _mappingProvider = [mappingProvider retain];
-        _mappingQueue = [RKObjectManager defaultMappingQueue];
+        self.mappingProvider = mappingProvider;
+        self.mappingQueue = [RKObjectManager defaultMappingQueue];
+        [self.mappingQueue release];
+        self.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
     }
 
     return self;
@@ -101,6 +105,7 @@
     _onDidLoadObjects = nil;
     [_onDidLoadObjectsDictionary release];
     _onDidLoadObjectsDictionary = nil;
+    self.mappingOperationDataSource = nil;
 
     [super dealloc];
 }
@@ -227,6 +232,7 @@
     mapper.targetObject = targetObject;
     mapper.delegate = self;
     mapper.context = context;
+    mapper.mappingOperationDataSource = self.mappingOperationDataSource;
     RKObjectMappingResult *result = [mapper performMapping];
 
     // Log any mapping errors
