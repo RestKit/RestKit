@@ -278,7 +278,11 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header
 {
-    [_HTTPHeaders setValue:value forKey:header];
+    if (value == nil) {
+        [_HTTPHeaders removeObjectForKey:header];
+    } else {
+        [_HTTPHeaders setValue:value forKey:header];
+    }
 }
 
 - (void)addRootCertificate:(SecCertificateRef)cert
