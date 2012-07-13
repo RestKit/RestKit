@@ -20,7 +20,7 @@
 
 #import "RKConnectionMapping.h"
 #import "NSManagedObject+ActiveRecord.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKObjectManager.h"
 #import "RKManagedObjectCaching.h"
 #import "RKDynamicObjectMappingMatcher.h"
@@ -41,17 +41,20 @@
 @synthesize matcher = _matcher;
 @synthesize sourceKeyPath = _sourceKeyPath;
 
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping {
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
+{
     RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:nil];
     return [mapping autorelease];
 }
 
-+ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher {
++ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher
+{
     RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:matcher];
     return [mapping autorelease];
 }
 
-- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher {
+- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher
+{
     self = [super init];
     if (self) {
         self.relationshipName = relationshipName;
@@ -63,75 +66,19 @@
     return self;
 }
 
-- (id)copyWithZone:(NSZone *)zone {
+- (id)copyWithZone:(NSZone *)zone
+{
     return [[[self class] allocWithZone:zone] initWithRelationshipName:self.relationshipName sourceKeyPath:self.sourceKeyPath destinationKeyPath:self.destinationKeyPath mapping:self.mapping matcher:self.matcher];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     self.relationshipName = nil;
     self.destinationKeyPath = nil;
     self.mapping = nil;
     self.matcher = nil;
     self.sourceKeyPath = nil;
     [super dealloc];
-}
-
-- (BOOL)isToMany:(NSManagedObject *)source {
-    NSEntityDescription *entity = [source entity];
-    NSDictionary *relationships = [entity relationshipsByName];
-    NSRelationshipDescription *relationship = [relationships objectForKey:self.relationshipName];
-    return relationship.isToMany;
-}
-
-- (NSManagedObject *)findOneConnected:(NSManagedObject *)source sourceValue:(id)sourceValue  {
-    RKManagedObjectMapping* objectMapping = (RKManagedObjectMapping *)self.mapping;
-    NSObject<RKManagedObjectCaching> *cache = [[objectMapping objectStore] cacheStrategy];
-    NSManagedObjectContext *context = [[objectMapping objectStore] managedObjectContextForCurrentThread];
-    return [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:self.destinationKeyPath value:sourceValue inManagedObjectContext:context];
-}
-
-- (NSMutableSet *)findAllConnected:(NSManagedObject *)source sourceValue:(id)sourceValue {
-    NSMutableSet *result = [NSMutableSet set];
-
-    RKManagedObjectMapping* objectMapping = (RKManagedObjectMapping *)self.mapping;
-    NSObject<RKManagedObjectCaching> *cache = [[objectMapping objectStore] cacheStrategy];
-    NSManagedObjectContext *context = [[objectMapping objectStore] managedObjectContextForCurrentThread];
-
-    id values = nil;
-    if ([sourceValue conformsToProtocol:@protocol(NSFastEnumeration)]) {
-        values = sourceValue;
-    } else {
-        values = [NSArray arrayWithObject:sourceValue];
-    }
-
-    for (id value in values) {
-        NSArray *objects = [cache findInstancesOfEntity:objectMapping.entity withPrimaryKeyAttribute:self.destinationKeyPath value:value inManagedObjectContext:context];
-        [result addObjectsFromArray:objects];
-    }
-    return result;
-}
-
-- (BOOL)checkMatcher:(NSManagedObject *)source {
-    if (!self.matcher) {
-        return YES;
-    } else {
-        return [self.matcher isMatchForData:source];
-    }
-}
-
-- (id)findConnected:(NSManagedObject *)source {
-    if ([self checkMatcher:source])
-    {
-        BOOL isToMany = [self isToMany:source];
-        id sourceValue = [source valueForKey:self.sourceKeyPath];
-        if (isToMany) {
-            return [self findAllConnected:source sourceValue:sourceValue];
-        } else {
-            return [self findOneConnected:source sourceValue:sourceValue];
-        }
-    } else {
-        return nil;
-    }
 }
 
 @end

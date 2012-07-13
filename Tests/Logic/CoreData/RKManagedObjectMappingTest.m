@@ -19,7 +19,7 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKHuman.h"
 #import "RKMappableObject.h"
 #import "RKChild.h"
@@ -47,69 +47,15 @@
     // Load Core Data
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
 
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForEntityWithName:@"RKCat" inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:store.primaryManagedObjectContext];
     id value = [mapping defaultValueForMissingAttribute:@"name"];
     assertThat(value, is(equalTo(@"Kitty Cat!")));
-}
-
-- (void)testShouldCreateNewInstancesOfUnmanagedObjects
-{
-    [RKTestFactory managedObjectStore];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
-    id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
-    assertThat(object, isNot(nilValue()));
-    assertThat([object class], is(equalTo([RKMappableObject class])));
-}
-
-- (void)testShouldCreateNewInstancesOfManagedObjectsWhenTheMappingIsAnRKObjectMapping
-{
-    [RKTestFactory managedObjectStore];
-    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[RKMappableObject class]];
-    id object = [mapping mappableObjectForData:[NSDictionary dictionary]];
-    assertThat(object, isNot(nilValue()));
-    assertThat([object class], is(equalTo([RKMappableObject class])));
-}
-
-- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyInTheData
-{
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
-    mapping.primaryKeyAttribute = @"railsID";
-
-    NSDictionary *data = [NSDictionary dictionary];
-    id object = [mapping mappableObjectForData:data];
-    assertThat(object, isNot(nilValue()));
-    assertThat(object, is(instanceOf([RKHuman class])));
-}
-
-- (void)testShouldCreateNewManagedObjectInstancesWhenThereIsNoPrimaryKeyAttribute
-{
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
-
-    NSDictionary *data = [NSDictionary dictionary];
-    id object = [mapping mappableObjectForData:data];
-    assertThat(object, isNot(nilValue()));
-    assertThat(object, is(instanceOf([RKHuman class])));
-}
-
-- (void)testShouldCreateANewManagedObjectWhenThePrimaryKeyValueIsNSNull
-{
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
-    mapping.primaryKeyAttribute = @"railsID";
-    [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
-
-    NSDictionary *data = [NSDictionary dictionaryWithObject:[NSNull null] forKey:@"id"];
-    id object = [mapping mappableObjectForData:data];
-    assertThat(object, isNot(nilValue()));
-    assertThat(object, is(instanceOf([RKHuman class])));
 }
 
 - (void)testShouldMapACollectionOfObjectsWithDynamicKeys
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";
     [mapping mapKeyOfNestedDictionaryToAttribute:@"name"];
@@ -137,11 +83,11 @@
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKDynamicObjectMapping *dynamicMapping = [RKDynamicObjectMapping dynamicMapping];
-    RKManagedObjectMapping *childMapping = [RKManagedObjectMapping mappingForClass:[RKChild class] inManagedObjectStore:objectStore];
+    RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityWithName:@"RKChild" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     childMapping.primaryKeyAttribute = @"railsID";
     [childMapping mapAttributes:@"name", nil];
 
-    RKManagedObjectMapping *parentMapping = [RKManagedObjectMapping mappingForClass:[RKParent class] inManagedObjectStore:objectStore];
+    RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityWithName:@"RKParent" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     parentMapping.primaryKeyAttribute = @"railsID";
     [parentMapping mapAttributes:@"name", @"age", nil];
 
@@ -150,11 +96,11 @@
 
     RKObjectMapping *mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"parent.json"]];
     assertThat(mapping, is(notNilValue()));
-    assertThatBool([mapping isKindOfClass:[RKManagedObjectMapping class]], is(equalToBool(YES)));
+    assertThatBool([mapping isKindOfClass:[RKEntityMapping class]], is(equalToBool(YES)));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"RKParent")));
     mapping = [dynamicMapping objectMappingForDictionary:[RKTestFixture parsedObjectWithContentsOfFixture:@"child.json"]];
     assertThat(mapping, is(notNilValue()));
-    assertThatBool([mapping isKindOfClass:[RKManagedObjectMapping class]], is(equalToBool(YES)));
+    assertThatBool([mapping isKindOfClass:[RKEntityMapping class]], is(equalToBool(YES)));
     assertThat(NSStringFromClass(mapping.objectClass), is(equalTo(@"RKChild")));
 }
 
@@ -176,7 +122,7 @@
 {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCat" inManagedObjectContext:store.primaryManagedObjectContext];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForEntity:entity inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntity:entity];
     assertThat(mapping.primaryKeyAttribute, is(equalTo(@"railsID")));
 }
 
@@ -184,7 +130,7 @@
 {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKCloud" inManagedObjectContext:store.primaryManagedObjectContext];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForEntity:entity inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntity:entity];
     assertThat(mapping.primaryKeyAttribute, is(nilValue()));
     mapping.primaryKeyAttribute = @"name";
     assertThat(entity.primaryKeyAttributeName, is(equalTo(@"name")));
@@ -197,7 +143,7 @@
 {
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
 
@@ -217,7 +163,7 @@
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
     [RKHuman truncateAll];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
 
@@ -241,7 +187,7 @@
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     [RKHuman truncateAllInContext:store.primaryManagedObjectContext];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
 
@@ -263,7 +209,7 @@
     [RKHuman truncateAllInContext:store.primaryManagedObjectContext];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
     [RKHuman truncateAll];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
 
@@ -285,7 +231,7 @@
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKFetchRequestManagedObjectCache new];
     [RKHuman truncateAll];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"name";
     [RKHuman entity].primaryKeyAttributeName = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];
@@ -311,7 +257,7 @@
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
     [RKHuman truncateAll];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"name";
     [RKHuman entity].primaryKeyAttributeName = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];
@@ -337,7 +283,7 @@
     RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     store.cacheStrategy = [RKInMemoryManagedObjectCache new];
     [RKHuman truncateAll];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:store];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:store.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
     [RKHuman entity].primaryKeyAttributeName = @"railsID";
     [mapping addAttributeMapping:[RKObjectAttributeMapping mappingFromKeyPath:@"monkey.name" toKeyPath:@"name"]];

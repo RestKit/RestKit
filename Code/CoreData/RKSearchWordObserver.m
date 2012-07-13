@@ -49,6 +49,7 @@ static RKSearchWordObserver *sharedSearchWordObserver = nil;
 
 - (void)managedObjectContextWillSaveNotification:(NSNotification *)notification
 {
+    return;
     NSManagedObjectContext *context = [notification object];
     NSSet *candidateObjects = [[NSSet setWithSet:context.insertedObjects] setByAddingObjectsFromSet:context.updatedObjects];
 

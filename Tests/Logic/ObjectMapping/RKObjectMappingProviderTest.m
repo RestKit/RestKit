@@ -22,7 +22,7 @@
 #import "RKObjectManager.h"
 #import "RKManagedObjectStore.h"
 #import "RKTestResponseLoader.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingProvider.h"
 #import "RKHuman.h"
@@ -49,7 +49,7 @@
 - (void)testShouldFindAnExistingObjectMappingForAClass
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
@@ -61,7 +61,7 @@
 - (void)testShouldFindAnExistingObjectMappingForAKeyPath
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
@@ -74,7 +74,7 @@
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-    RKManagedObjectMapping *catMapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];

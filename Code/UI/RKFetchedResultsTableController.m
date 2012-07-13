@@ -23,7 +23,7 @@
 #import "RKManagedObjectStore.h"
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKObjectMappingOperation.h"
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKLog.h"
 #import "RKObjectMappingProvider+CoreData.h"
 
@@ -462,8 +462,8 @@
     if (self.canEditRows && editingStyle == UITableViewCellEditingStyleDelete) {
         NSManagedObject *managedObject = [self objectForRowAtIndexPath:indexPath];
         RKObjectMapping *mapping = [[RKObjectManager sharedManager].mappingProvider objectMappingForClass:[managedObject class]];
-        if ([mapping isKindOfClass:[RKManagedObjectMapping class]]) {
-            RKManagedObjectMapping *managedObjectMapping = (RKManagedObjectMapping *)mapping;
+        if ([mapping isKindOfClass:[RKEntityMapping class]]) {
+            RKEntityMapping *managedObjectMapping = (RKEntityMapping *)mapping;
             NSString *primaryKeyAttribute = managedObjectMapping.primaryKeyAttribute;
 
             if ([managedObject valueForKeyPath:primaryKeyAttribute]) {

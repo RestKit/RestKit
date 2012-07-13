@@ -21,8 +21,8 @@
 #import "RKObjectMapping.h"
 #import "RKObjectAttributeMapping.h"
 
-@class RKObjectMappingOperation;
-@class RKMappingOperationQueue;
+@class RKObjectMappingOperation, RKMappingOperationQueue;
+@protocol RKMappingOperationDataSource;
 
 /**
  Objects acting as the delegate for RKObjectMappingOperation objects must adopt the
@@ -126,6 +126,14 @@
 @property (nonatomic, retain) RKMappingOperationQueue *queue;
 
 /**
+ The data source is responsible for providing the mapping operation with an appropriate target object for
+ mapping when the destination is nil.
+
+ @see RKMappingOperationDataSource
+ */
+@property (nonatomic, retain) id<RKMappingOperationDataSource> dataSource;
+
+/**
  Creates and returns a new mapping operation configured to transform the object representation
  in a source object to a new destination object according to an object mapping definition.
 
@@ -161,5 +169,16 @@
  @return A Boolean value indicating if the mapping operation was successful.
  */
 - (BOOL)performMapping:(NSError **)error;
+
+/// @name Subclass Hooks ///
+
+/**
+ Invoked just before the receiver performs a child mapping operation to map nested content. The default implementation
+ does nothing.
+ 
+ @param childMappingOperation The child mapping operation that is about to be performed.
+ */
+// TODO: Eliminate...
+- (void)willPerformChildMappingOperation:(RKObjectMappingOperation *)childMappingOperation;
 
 @end

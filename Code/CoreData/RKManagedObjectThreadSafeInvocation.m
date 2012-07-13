@@ -20,9 +20,14 @@
 
 #import "RKManagedObjectThreadSafeInvocation.h"
 
+@interface RKManagedObjectThreadSafeInvocation ()
+@property (nonatomic, retain) NSMutableDictionary *argumentKeyPaths;
+@end
+
 @implementation RKManagedObjectThreadSafeInvocation
 
-@synthesize objectStore = _objectStore;
+@synthesize managedObjectContext = _managedObjectContext;
+@synthesize argumentKeyPaths = _argumentKeyPaths;
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature
 {
@@ -32,11 +37,11 @@
 - (void)setManagedObjectKeyPaths:(NSSet *)keyPaths forArgument:(NSInteger)index
 {
     if (nil == _argumentKeyPaths) {
-        _argumentKeyPaths = [[NSMutableDictionary alloc] init];
+        self.argumentKeyPaths = [NSMutableDictionary dictionary];
     }
 
     NSNumber *argumentIndex = [NSNumber numberWithInteger:index];
-    [_argumentKeyPaths setObject:keyPaths forKey:argumentIndex];
+    [self.argumentKeyPaths setObject:keyPaths forKey:argumentIndex];
 }
 
 - (void)setValue:(id)value forKeyPathOrKey:(NSString *)keyPath object:(id)object
@@ -58,17 +63,22 @@
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObject class]]) {
             NSManagedObjectID *objectID = [(NSManagedObject *)value objectID];
+            NSLog(@"^^^ Serializing object %@ with ID %@", value, objectID);
             [self setValue:objectID forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
+            NSLog(@"Serializing objects in collection %@", value);
             for (id subObject in value) {
+                NSLog(@"Serializing %@", subObject);
                 if ([subObject isKindOfClass:[NSManagedObject class]]) {
                     [collection addObject:[(NSManagedObject *)subObject objectID]];
+                    NSLog(@"^^^ Serializing object %@ with ID %@. isTemporary = %d. moc = %@", subObject, [subObject objectID], [[subObject objectID] isTemporaryID], [subObject managedObjectContext]);
                 } else {
                     [collection addObject:subObject];
                 }
             }
-
+            
+            NSLog(@"Setting value %@ for keyPath %@ on object %@", collection, keyPath, argument);
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
             [collection release];
         }
@@ -77,34 +87,48 @@
 
 - (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths
 {
-    for (NSString *keyPath in keyPaths) {
+    NSAssert(self.managedObjectContext, @"Managed object context cannot be nil");
+    NSLog(@"Deserializing argument %@ with keyPaths %@", argument, keyPaths);
+    for (NSString* keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
+        NSLog(@"*** Found value %@ to deserialize", value);
         if ([value isKindOfClass:[NSManagedObjectID class]]) {
-            NSAssert(self.objectStore, @"Object store cannot be nil");
-            NSManagedObject *managedObject = [self.objectStore objectWithID:(NSManagedObjectID *)value];
+            __block NSManagedObject *managedObject = nil;
+            [self.managedObjectContext performBlockAndWait:^{
+                managedObject = [self.managedObjectContext objectWithID:(NSManagedObjectID*)value];
+            }];
+//            NSManagedObject* managedObject = [self.managedObjectContext objectWithID:(NSManagedObjectID*)value];
+            NSLog(@"!!! Found managed object %@ for ID %@", managedObject, value);
             NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
             [self setValue:managedObject forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
             id collection = [[[[[value class] alloc] init] autorelease] mutableCopy];
+            NSLog(@"Deserializing array of managed object ID's: %@", value);
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
-                    NSAssert(self.objectStore, @"Object store cannot be nil");
-                    NSManagedObject *managedObject = [self.objectStore objectWithID:(NSManagedObjectID *)subObject];
+                    __block NSManagedObject *managedObject = nil;
+                    [self.managedObjectContext performBlockAndWait:^{
+                        managedObject = [self.managedObjectContext objectWithID:(NSManagedObjectID*)subObject];
+                    }];
+                    [managedObject performSelector:@selector(amenityID)];
+                    NSLog(@"--> Found managed object %@ for ID %@", managedObject, subObject);
                     [collection addObject:managedObject];
                 } else {
                     [collection addObject:subObject];
                 }
             }
+            
 
             [self setValue:collection forKeyPathOrKey:keyPath object:argument];
             [collection release];
         }
     }
 }
+
 - (void)serializeManagedObjects
 {
-    for (NSNumber *argumentIndex in _argumentKeyPaths) {
-        NSSet *managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
+    for (NSNumber* argumentIndex in _argumentKeyPaths) {
+        NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
         [self getArgument:&argument atIndex:[argumentIndex intValue]];
         if (argument) {
@@ -146,7 +170,7 @@
 - (void)dealloc
 {
     [_argumentKeyPaths release];
-    [_objectStore release];
+    [_managedObjectContext release];
     [super dealloc];
 }
 

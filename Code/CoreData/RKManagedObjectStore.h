@@ -19,7 +19,7 @@
 //
 
 #import <CoreData/CoreData.h>
-#import "RKManagedObjectMapping.h"
+#import "RKEntityMapping.h"
 #import "RKManagedObjectCaching.h"
 
 @class RKManagedObjectStore;
@@ -155,12 +155,15 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
  Retrieves the Managed Object Context for the main thread that was initialized when
  the object store was created.
  */
+@property (nonatomic, retain, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 @property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
 
 /**
  Instantiates a new managed object context
+ 
+ @bug Deprecated in v0.11.0
  */
-- (NSManagedObjectContext *)newManagedObjectContext;
+- (NSManagedObjectContext *)newManagedObjectContext DEPRECATED_ATTRIBUTE;
 
 /*
  * This returns an appropriate managed object context for this object store.

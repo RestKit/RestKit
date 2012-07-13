@@ -22,7 +22,7 @@
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
     NSEntityDescription *entity = [RKCat entityDescription];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKCat class] inManagedObjectStore:objectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
 
     RKCat *reginald = [RKCat createInContext:objectStore.primaryManagedObjectContext];
@@ -43,7 +43,7 @@
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKFetchRequestManagedObjectCache *cache = [RKFetchRequestManagedObjectCache new];
     NSEntityDescription *entity = [RKEvent entityDescription];
-    RKManagedObjectMapping *mapping = [RKManagedObjectMapping mappingForClass:[RKEvent class] inManagedObjectStore:objectStore];
+    RKEntityMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKEvent" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"eventID";
 
     RKEvent *birthday = [RKEvent createInContext:objectStore.primaryManagedObjectContext];

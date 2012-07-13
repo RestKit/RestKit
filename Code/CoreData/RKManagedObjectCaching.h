@@ -14,7 +14,7 @@
  when objects are retrieved from Core Data during object mapping operations and provide
  an opportunity to accelerate the mapping process by trading memory for speed.
  */
-@protocol RKManagedObjectCaching
+@protocol RKManagedObjectCaching <NSObject>
 
 @required
 

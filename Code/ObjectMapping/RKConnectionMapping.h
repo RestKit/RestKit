@@ -22,8 +22,8 @@
 #import <CoreData/CoreData.h>
 #import "RKObjectMappingDefinition.h"
 
-@class RKConnectionMapping;
-@class RKDynamicObjectMappingMatcher;
+@class RKConnectionMapping, RKDynamicObjectMappingMatcher;
+@protocol RKManagedObjectCaching;
 
 typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
 
@@ -66,12 +66,5 @@ typedef id(^RKObjectConnectionBlock)(RKConnectionMapping *mapping, id source);
  Initializes the receiver with a relationship name, source key path, destination key path, mapping, and matcher.
  */
 - (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher;
-
-/**
- Finds the connected objects for this relationship mapping.
-
- @return A single object, a set of 0 or more objects or nil.
- */
-- (id)findConnected:(NSManagedObject *)source;
 
 @end

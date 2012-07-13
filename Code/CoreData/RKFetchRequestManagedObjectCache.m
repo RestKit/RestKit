@@ -47,11 +47,14 @@
         // Parse a predicate
         predicate = [NSPredicate predicateWithFormat:@"%K = %@", primaryKeyAttribute, searchValue];
     }
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    fetchRequest.entity = entity;
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[entity name]];
     fetchRequest.fetchLimit = 1;
     fetchRequest.predicate = predicate;
-    NSArray *objects = [NSManagedObject executeFetchRequest:fetchRequest inContext:managedObjectContext];
+    NSError *error = nil;
+    NSArray *objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if (! objects) {
+        RKLogError(@"Failed to execute fetch request due to error: %@", error);
+    }
     RKLogDebug(@"Found objects '%@' using fetchRequest '%@'", objects, fetchRequest);
     [fetchRequest release];
 

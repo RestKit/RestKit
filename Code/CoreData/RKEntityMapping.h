@@ -1,5 +1,5 @@
 //
-//  RKManagedObjectMapping.h
+//  RKEntityMapping.h
 //  RestKit
 //
 //  Created by Blake Watters on 5/31/11.
@@ -25,28 +25,13 @@
 @class RKManagedObjectStore;
 
 /**
- An RKManagedObjectMapping defines an object mapping with a Core Data destination
- entity.
+ RKEntityMapping objects model on object mapping with a Core Data destination entity.
  */
-@interface RKManagedObjectMapping : RKObjectMapping {
-    NSMutableArray *_connections;
-}
+@interface RKEntityMapping : RKObjectMapping
 
-/**
- Creates a new object mapping targetting the Core Data entity represented by objectClass
- */
-+ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore;
-
-/**
- Creates a new object mapping targetting the specified Core Data entity
- */
-+ (RKManagedObjectMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore;
-
-/**
- Creates a new object mapping targetting the Core Data entity with the specified name.
- The entity description is fetched from the managed object context associated with objectStore
- */
-+ (RKManagedObjectMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore;
++ (id)mappingForEntityWithName:(NSString *)entityName inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
++ (id)mappingForEntity:(NSEntityDescription *)entity;
+- (id)initWithEntity:(NSEntityDescription *)entity;
 
 /**
  The Core Data entity description used for this object mapping
@@ -72,19 +57,17 @@
 @property (nonatomic, retain) NSString *primaryKeyAttribute;
 
 /**
- Returns a dictionary containing Core Data connections
+ Retrieves an array of RKConnectionMapping objects for connecting the receiver's relationships
+ by primary key.
+ 
+ @see RKConnectionMapping
  */
 @property (nonatomic, readonly) NSArray *connections;
 
 /**
- The RKManagedObjectStore containing the Core Data entity being mapped
- */
-@property (nonatomic, readonly) RKManagedObjectStore *objectStore;
-
-/**
  Returns the RKObjectRelationshipMapping connection for the specified relationship.
  */
-- (RKConnectionMapping*)mappingForConnection:(NSString*)relationshipName;
+- (RKConnectionMapping *)connectionMappingForRelationshipWithName:(NSString *)relationshipName;
 
 /**
  Instructs RestKit to connect a relationship of the object being mapped to the
@@ -157,19 +140,25 @@
 - (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block;
 
 /**
- Initialize a managed object mapping with a Core Data entity description and a RestKit managed object store
- */
-- (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore;
-
-/**
  Returns the default value for the specified attribute as expressed in the Core Data entity definition. This value will
  be assigned if the object mapping is applied and a value for a missing attribute is not present in the payload.
  */
 - (id)defaultValueForMissingAttribute:(NSString *)attributeName;
 
-/* Deprecated */
+@end
+
+@interface RKEntityMapping (CompatibilityAliases)
+
+/* Deprecated Initialization API's */
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
++ (RKEntityMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
++ (RKEntityMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
+- (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
+
+/* Deprecated Connection API's */
 - (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute DEPRECATED_ATTRIBUTE;
 - (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value DEPRECATED_ATTRIBUTE;
 - (void)connectRelationshipsWithObjectsForPrimaryKeyAttributes:(NSString *)firstRelationshipName, ... NS_REQUIRES_NIL_TERMINATION DEPRECATED_ATTRIBUTE;
 - (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute usingEvaluationBlock:(BOOL (^)(id data))block DEPRECATED_ATTRIBUTE;
+
 @end

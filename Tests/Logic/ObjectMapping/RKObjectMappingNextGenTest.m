@@ -2081,7 +2081,7 @@
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     NSArray *array = [RKTestFixture parsedObjectWithContentsOfFixture:@"ArrayOfHumans.json"];
-    RKManagedObjectMapping *humanMapping = [RKManagedObjectMapping mappingForClass:[RKHuman class] inManagedObjectStore:objectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:objectStore.primaryManagedObjectContext];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     humanMapping.primaryKeyAttribute = @"railsID";
     RKObjectMappingProvider *provider = [RKObjectMappingProvider mappingProvider];

@@ -18,13 +18,11 @@
 //  limitations under the License.
 //
 
-#import "RKManagedObjectStore.h"
+#import <CoreData/CoreData.h>
 
-@interface RKManagedObjectThreadSafeInvocation : NSInvocation {
-    NSMutableDictionary *_argumentKeyPaths;
-}
+@interface RKManagedObjectThreadSafeInvocation : NSInvocation
 
-@property (nonatomic, retain) RKManagedObjectStore *objectStore;
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature;
 - (void)setManagedObjectKeyPaths:(NSSet *)keyPaths forArgument:(NSInteger)index;
