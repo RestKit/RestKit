@@ -32,6 +32,16 @@
 
 @implementation RKManagedObjectMappingOperationTest
 
+- (void)setUp
+{
+    [RKTestFactory setUp];
+}
+
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
+}
+
 - (void)testMappingInPrivateQueue
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
@@ -470,13 +480,9 @@
 
 - (void)testShouldConnectRelationshipsByPrimaryKeyRegardlessOfOrder
 {
-//    RKLogConfigureByName("*", RKLogLevelTrace);
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
+    RKLogConfigureByName("*", RKLogLevelTrace);
     
-//    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-//    managedObjectContext.parentContext = store.primaryManagedObjectContext;
-//    [managedObjectContext setUndoManager:nil];
-//    [managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
+    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
     NSManagedObjectContext *managedObjectContext = store.primaryManagedObjectContext;
     
     RKEntityMapping *parentMapping = [RKEntityMapping mappingForEntityWithName:@"RKParent" inManagedObjectContext:managedObjectContext];
@@ -498,53 +504,29 @@
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectContext
                                                                                                                                                       cache:managedObjectCache];
     NSOperationQueue *operationQueue = [NSOperationQueue new];
-    [operationQueue setMaxConcurrentOperationCount:1];
     [operationQueue setSuspended:YES];
     mappingOperationDataSource.operationQueue = operationQueue;
-    __block RKObjectMappingResult *result;
-    __block NSError *error;
-    __block BOOL success;
     [managedObjectContext performBlockAndWait:^{
         RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:JSON mappingProvider:mappingProvider];
         mapper.mappingOperationDataSource = mappingOperationDataSource;
-        result = [mapper performMapping];
-        
-        // Sanity checking...
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
-        [fetchRequest setIncludesSubentities:YES];
-//        [fetchRequest setIncludesPendingChanges:YES];
-        NSArray *objects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
-        if (! objects) {
-            NSLog(@"The following objects are in the store: %@", objects);
-        }                
+        [mapper performMapping];
     }];
-    
-    // Now run the queue to completion...
-//    [managedObjectContext performBlockAndWait:^{
-    NSLog(@"SHOULD NOT HIT THE OPERATIONS BEFORE THIS");
-        NSLog(@"The following operations are in queue: %@", [operationQueue operations]);
-        [operationQueue setSuspended:NO];
-//        [operationQueue waitUntilAllOperationsAreFinished];
-        
-//        success = [managedObjectContext save:&error];
-//        if (! success) {
-//            NSLog(@"Failed to save managed object context: %@", error);
-//        }
-//    }];
-    
+
+    [operationQueue setSuspended:NO];
     [operationQueue waitUntilAllOperationsAreFinished];
     
     [managedObjectContext performBlockAndWait:^{
+        NSError *error;
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKParent"];
         fetchRequest.predicate = [NSPredicate predicateWithFormat:@"parentID = %@", @1];
         fetchRequest.fetchLimit = 1;
         NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
         RKParent *parent = [results lastObject];
         assertThat(parent, is(notNilValue()));
-                            //    NSArray *children = [[result asDictionary] valueForKey:@"children"];
-                            //    assertThat(children, hasCountOf(1));
-                            //    RKChild *child = [children lastObject];
-                            //    assertThat(child.father, is(notNilValue()));
+        NSSet *children = [parent fatheredChildren];
+        assertThat(children, hasCountOf(1));
+        RKChild *child = [children anyObject];
+        assertThat(child.father, is(notNilValue()));
     }];
 }
 

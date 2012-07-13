@@ -44,6 +44,16 @@
     return self;
 }
 
+- (void)dealloc
+{
+    self.managedObjectCache = nil;
+    self.managedObjectContext = nil;
+    self.operationQueue = nil;
+    
+    [super dealloc];
+}
+
+// TODO: Encapsulate this logic into another class...
 - (id)objectForMappableContent:(id)mappableContent mapping:(RKObjectMapping *)mapping
 {
     NSAssert(mappableContent, @"Mappable data cannot be nil");
@@ -56,16 +66,16 @@
     RKEntityMapping *entityMapping = (RKEntityMapping *)mapping;
     id object = nil;
     id primaryKeyValue = nil;
-    NSString* primaryKeyAttribute;
+    NSString *primaryKeyAttribute;
     
-    NSEntityDescription* entity = [entityMapping entity];
-    RKObjectAttributeMapping* primaryKeyAttributeMapping = nil;
+    NSEntityDescription *entity = [entityMapping entity];
+    RKObjectAttributeMapping *primaryKeyAttributeMapping = nil;
     
     primaryKeyAttribute = [entityMapping primaryKeyAttribute];
     if (primaryKeyAttribute) {
         // If a primary key has been set on the object mapping, find the attribute mapping
         // so that we can extract any existing primary key from the mappable data
-        for (RKObjectAttributeMapping* attributeMapping in entityMapping.attributeMappings) {
+        for (RKObjectAttributeMapping *attributeMapping in entityMapping.attributeMappings) {
             if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
                 primaryKeyAttributeMapping = attributeMapping;
                 break;
@@ -113,41 +123,8 @@
     return object;
 }
 
-// TODO: Encapsulate the connection logic into a new object...
-// The findConnected: etc methods from the connection mapping should live on the connector/connectionOperation
-
-//- (void)connectRelationshipForManagedObject:(NSManagedObject *)managedObject connectionMapping:(RKConnectionMapping *)connectionMapping
-//{
-//    RKLogTrace(@"Connecting relationship '%@'", connectionMapping.relationshipName);
-//    
-//    id relatedObject = [connectionMapping findConnected:managedObject usingCache:self.managedObjectCache];    
-//    if (relatedObject) {
-//        [managedObject setValue:relatedObject forKeyPath:connectionMapping.relationshipName];
-//        RKLogDebug(@"Connected relationship '%@' to object '%@'", connectionMapping.relationshipName, relatedObject);
-//    } else {
-//        RKEntityMapping *objectMapping = (RKEntityMapping *)connectionMapping.mapping;
-//        RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@'", [[objectMapping entity] name], connectionMapping.relationshipName);
-//    }
-//}
-
-//- (void)connectRelationshipsForManagedObject:(NSManagedObject *)managedObject entityMapping:(RKEntityMapping *)entityMapping
-//{
-//    RKLogTrace(@"Connecting relationships for managed object %@ using connection mappings: %@", managedObject, entityMapping.connections);
-//    for (RKConnectionMapping *connectionMapping in entityMapping.connections) {
-//        if (self.queue) {
-//            RKLogTrace(@"Enqueueing relationship connection using operation queue");
-//            __block RKManagedObjectMappingOperationDataSource *selfRef = self;
-//            [self.queue addOperationWithBlock:^{
-//                [selfRef connectRelationshipForManagedObject:managedObject connectionMapping:connectionMapping];
-//            }];
-//        } else {
-//            [self connectRelationshipForManagedObject:managedObject connectionMapping:connectionMapping];
-//        }
-//    }
-//}
-
 /* 
- Mapping operations should be executed against managed object contexts
+ Mapping operations should be executed against managed object contexts with NSPrivateQueueConcurrencyType
  */
 - (BOOL)executingConnectionOperationsWouldDeadlock
 {
@@ -169,18 +146,10 @@
     if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
         
-        NSLog(@"The destination object is: %@. isInserted = %d", mappingOperation.destinationObject, [mappingOperation.destinationObject isInserted]);
-//        RKEntityConnectionOperation *operation = [[RKEntityConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
-//                                                                                              entityMapping:(RKEntityMapping *)mappingOperation.objectMapping
-//                                                                                         managedObjectCache:self.managedObjectCache];
-        
         for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.objectMapping connections]) {
-            RKEntityConnectionOperation *operation = [[RKEntityConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
-                                                                                                  entityMapping:(RKEntityMapping *)mappingOperation.objectMapping
-                                                                                             managedObjectCache:self.managedObjectCache];
-//            RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
-//                                                                                                          connectionMapping:connectionMapping
-//                                                                                                         managedObjectCache:self.managedObjectCache];
+            RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
+                                                                                                          connectionMapping:connectionMapping
+                                                                                                         managedObjectCache:self.managedObjectCache];
             if (self.operationQueue) {
                 [self.operationQueue addOperation:operation];
             } else {
@@ -188,8 +157,6 @@
             }
             [operation release];
         }
-        
-//        [self connectRelationshipsForManagedObject:mappingOperation.destinationObject entityMapping:(RKEntityMapping *)mappingOperation.objectMapping];
     }
 }
 

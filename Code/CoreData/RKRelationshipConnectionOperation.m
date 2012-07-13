@@ -47,7 +47,7 @@
     self.managedObject = nil;
     self.connectionMapping = nil;
     self.managedObjectCache = nil;
-    
+
     [super dealloc];
 }
 
@@ -136,8 +136,6 @@
             RKLogDebug(@"Failed to find instance of '%@' to connect relationship '%@'", [[objectMapping entity] name], self.connectionMapping.relationshipName);
         }
     }];
-    
-    NSLog(@"Huh???");
 }
 
 - (void)main
