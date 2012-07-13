@@ -118,6 +118,17 @@ RK_FIX_CATEGORY_BUG(NSString_RKAdditions)
     return [NSDictionary dictionaryWithDictionary:pairs];
 }
 
+- (NSString *)queryParametersString {
+    NSRange chopRange = [self rangeOfString:@"?"];
+    if (chopRange.length > 0) {
+        chopRange.location+=1; // we want inclusive chopping up *through* "?"
+        if (chopRange.location < [self length]) {
+            return [self substringFromIndex:chopRange.location];
+        }
+    }
+    return nil;
+}
+
 // NOTE: See http://en.wikipedia.org/wiki/Percent-encoding#Percent-encoding_reserved_characters
 - (NSString *)stringByAddingURLEncoding {
     CFStringRef legalURLCharactersToBeEscaped = CFSTR(":/?#[]@!$ &'()*+,;=\"<>%{}|\\^~`\n\r");

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		032E102E15B0A38C0057D164 /* NSString+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 032E102D15B0A38C0057D164 /* NSString+RKAdditionsTest.m */; };
+		032E102F15B0A4560057D164 /* NSString+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 032E102D15B0A38C0057D164 /* NSString+RKAdditionsTest.m */; };
 		2501405315366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		2501405415366000004E0466 /* RKObjectiveCppTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2501405215366000004E0466 /* RKObjectiveCppTest.mm */; };
 		25055B8414EEF32A00B9C4DD /* RKMappingTest.h in Headers */ = {isa = PBXBuildFile; fileRef = 25055B8014EEF32A00B9C4DD /* RKMappingTest.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -775,6 +777,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		032E102D15B0A38C0057D164 /* NSString+RKAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+RKAdditionsTest.m"; sourceTree = "<group>"; };
 		2501405215366000004E0466 /* RKObjectiveCppTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RKObjectiveCppTest.mm; sourceTree = "<group>"; };
 		25055B8014EEF32A00B9C4DD /* RKMappingTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKMappingTest.h; path = Testing/RKMappingTest.h; sourceTree = "<group>"; };
 		25055B8114EEF32A00B9C4DD /* RKMappingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKMappingTest.m; path = Testing/RKMappingTest.m; sourceTree = "<group>"; };
@@ -1958,6 +1961,7 @@
 				252A2033153477870078F8AD /* NSArray+RKAdditionsTest.m */,
 				2501405215366000004E0466 /* RKObjectiveCppTest.mm */,
 				25A2476D153E667E003240B6 /* RKCacheTest.m */,
+				032E102D15B0A38C0057D164 /* NSString+RKAdditionsTest.m */,
 			);
 			name = Support;
 			path = Logic/Support;
@@ -2894,6 +2898,7 @@
 				25A2476E153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985A1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,
 				259D986415521B20008C90F5 /* RKEntityCacheTest.m in Sources */,
+				032E102E15B0A38C0057D164 /* NSString+RKAdditionsTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3084,6 +3089,7 @@
 				25A2476F153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985B1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,
 				259D986515521B20008C90F5 /* RKEntityCacheTest.m in Sources */,
+				032E102F15B0A4560057D164 /* NSString+RKAdditionsTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

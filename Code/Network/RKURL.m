@@ -63,17 +63,36 @@
 // call initWithString:relativeToURL: from a subclass.
 - (id)initWithBaseURL:(NSURL *)theBaseURL resourcePath:(NSString *)theResourcePath queryParameters:(NSDictionary *)theQueryParameters {
     // Merge any existing query parameters with the incoming dictionary
-    NSDictionary *resourcePathQueryParameters = [theResourcePath queryParameters];
-    NSMutableDictionary *mergedQueryParameters = [NSMutableDictionary dictionaryWithDictionary:[theBaseURL queryParameters]];
-    [mergedQueryParameters addEntriesFromDictionary:resourcePathQueryParameters];
-    [mergedQueryParameters addEntriesFromDictionary:theQueryParameters];
+    NSString *resourcePathQueryParameters = [theResourcePath queryParametersString];
+    NSMutableString *mergedQueryParameters = [[NSMutableString alloc] init];
+    NSString *baseURLParams = [[theBaseURL queryParameters] URLEncodedString];
+    if (baseURLParams.length > 0) {
+        [mergedQueryParameters appendString:[[theBaseURL queryParameters] URLEncodedString]];
+        [mergedQueryParameters appendString:@"&"];
+    }
+    if (resourcePathQueryParameters.length > 0) {
+        [mergedQueryParameters appendString:resourcePathQueryParameters];
+        [mergedQueryParameters appendString:@"&"];
+    }
+    NSString *queryParamsString = [theQueryParameters URLEncodedString];
+    if (queryParamsString.length > 0) {
+        [mergedQueryParameters appendString:[theQueryParameters URLEncodedString]];
+    }
+    
+    if ([mergedQueryParameters hasSuffix:@"&"]) {
+        [mergedQueryParameters deleteCharactersInRange:NSMakeRange(mergedQueryParameters.length - 1, 1)];
+    }
+    
+    if (mergedQueryParameters.length > 0) {
+        [mergedQueryParameters insertString:@"?" atIndex:0];
+    }
 
     // Build the new URL path
     NSRange queryCharacterRange = [theResourcePath rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"?"]];
     NSString *resourcePathWithoutQueryString = (queryCharacterRange.location == NSNotFound) ? theResourcePath : [theResourcePath substringToIndex:queryCharacterRange.location];
     NSString *baseURLPath = [[theBaseURL path] isEqualToString:@"/"] ? @"" : [[theBaseURL path] stringByStandardizingPath];
     NSString *completePath = resourcePathWithoutQueryString ? [baseURLPath stringByAppendingString:resourcePathWithoutQueryString] : baseURLPath;
-    NSString* completePathWithQuery = [completePath stringByAppendingQueryParameters:mergedQueryParameters];
+    NSString* completePathWithQuery = [completePath stringByAppendingString:mergedQueryParameters];
 
     // NOTE: You can't safely use initWithString:relativeToURL: in a NSURL subclass, see http://www.openradar.me/9729706
     // So we unfortunately convert into an NSURL before going back into an NSString -> RKURL
