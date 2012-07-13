@@ -95,6 +95,16 @@
 - (NSDictionary *)queryParametersUsingArrays:(BOOL)shouldUseArrays encoding:(NSStringEncoding)encoding;
 
 /**
+ Returns a string containing the query parameters given a URL-style query string on the receiving object.
+ For example, when given the string /contacts?foo=bar&amp;color=red, this will return the string "foo=bar&amp;color=red"
+ Returns nil if there are no query parameters in the string.
+ 
+ @param receiver A string in the form of @"/object/?sortBy=name", or @"/object/?sortBy=name&amp;color=red"
+ @return A string of query parameters: everything after the "?" in the receiver.
+ */
+- (NSString *)queryParametersString;
+
+/**
  Returns a URL encoded representation of self.
  */
 - (NSString *)stringByAddingURLEncoding;
