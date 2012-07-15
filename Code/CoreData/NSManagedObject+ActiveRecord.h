@@ -46,6 +46,8 @@
 
 /**
  * Fetches all objects from the persistent store identified by the fetchRequest
+ * uses background thread (approach is from a blog post discussing block based
+ * searches by Jonathan Dalrymple)
  */
 + (void)executeFetchRequestInBackground:(NSFetchRequest*) aRequest 
 							onComplete:(NSManagedObjectContextFetchCompleteBlock) completeBlock 

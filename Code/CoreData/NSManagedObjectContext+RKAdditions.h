@@ -22,6 +22,9 @@ typedef void (^NSManagedObjectContextFetchFailBlock)(NSError *error);
  */
 @property (nonatomic, assign) RKManagedObjectStore *managedObjectStore;
 
+/**
+ Executes supplied fetch request in background thread. Once results are retrieved, the supplied onComplete or onError blocks are executed in the main thread and results are supplied in the correct managed object context of the main thread (approach is from a blog post discussing block based searches by Jonathan Dalrymple).Primarily used for incremental search as you type fetch requests. 
+ */
 -(void)executeFetchRequestInBackground:(NSFetchRequest*) aRequest 
 							onComplete:(NSManagedObjectContextFetchCompleteBlock) completeBlock 
 							   onError:(NSManagedObjectContextFetchFailBlock) failBlock;
