@@ -15,6 +15,7 @@
 #import "RKFixCategoryBug.h"
 #import "NSEntityDescription+RKAdditions.h"
 
+
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
@@ -61,6 +62,21 @@ RK_FIX_CATEGORY_BUG(NSManagedObject_ActiveRecord)
     NSEntityDescription *entity = [self entity];
     [fetchRequest setEntity:entity];
     return fetchRequest;
+}
+
++(void)executeFetchRequestInBackground:(NSFetchRequest*) aRequest 
+							onComplete:(NSManagedObjectContextFetchCompleteBlock) completeBlock 
+							   onError:(NSManagedObjectContextFetchFailBlock) failBlock
+{
+    [[NSManagedObjectContext contextForCurrentThread] executeFetchRequestInBackground:aRequest
+                                                      onComplete:^(NSArray	*results){
+                                                          completeBlock(results);
+                                                      } 
+                                                         onError:^(NSError	*error){
+                                                             failBlock(error);
+                                                         }
+     ];
+
 }
 
 + (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest {

@@ -9,6 +9,8 @@
 #import <CoreData/CoreData.h>
 
 @class RKManagedObjectStore;
+typedef void (^NSManagedObjectContextFetchCompleteBlock)(NSArray* results);
+typedef void (^NSManagedObjectContextFetchFailBlock)(NSError *error);
 
 /**
  Provides extensions to NSManagedObjectContext for various common tasks.
@@ -20,4 +22,12 @@
  */
 @property (nonatomic, assign) RKManagedObjectStore *managedObjectStore;
 
+-(void)executeFetchRequestInBackground:(NSFetchRequest*) aRequest 
+							onComplete:(NSManagedObjectContextFetchCompleteBlock) completeBlock 
+							   onError:(NSManagedObjectContextFetchFailBlock) failBlock;
 @end
+
+
+
+
+

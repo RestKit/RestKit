@@ -9,6 +9,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import "NSManagedObjectContext+RKAdditions.h"
 
 /**
  Extensions to NSManagedObjectContext for RestKit's Active Record pattern implementation
@@ -43,6 +44,12 @@
  */
 + (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
 
+/**
+ * Fetches all objects from the persistent store identified by the fetchRequest
+ */
++ (void)executeFetchRequestInBackground:(NSFetchRequest*) aRequest 
+							onComplete:(NSManagedObjectContextFetchCompleteBlock) completeBlock 
+							   onError:(NSManagedObjectContextFetchFailBlock) failBlock;
 /**
  * Retrieves the number of objects that would be retrieved by the fetchRequest,
  * if executed
