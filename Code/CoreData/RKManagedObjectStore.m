@@ -229,73 +229,68 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     [super dealloc];
 }
 
-/**
- Performs the save action for the application, which is to send the save:
- message to the application's managed object context.
- */
 - (BOOL)save:(NSError **)error
 {
-    NSManagedObjectContext *moc = [self managedObjectContextForCurrentThread];
-    NSError *localError = nil;
-
-    @try {
-        NSLog(@"Saving managed object context %@ (isMainThread = %d)", moc, [NSThread isMainThread]);
-        if (![moc save:&localError]) {
-            NSLog(@"FAILED TO SAVE MOC: %@", localError);
-            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-                [self.delegate managedObjectStore:self didFailToSaveContext:moc error:localError exception:nil];
-            }
-
-            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:localError forKey:@"error"];
-            [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
-
-            if ([[localError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
-                NSDictionary *userInfo = [localError userInfo];
-                NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
-                if (errors) {
-                    for (NSError *detailedError in errors) {
-                        NSDictionary *subUserInfo = [detailedError userInfo];
+    __block NSError *localError = nil;
+    __block BOOL success;
+    
+    [self.primaryManagedObjectContext performBlockAndWait:^{
+        @try {
+            success = [self.primaryManagedObjectContext save:&localError];
+            if (!success) {
+                if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
+                    [self.delegate managedObjectStore:self didFailToSaveContext:self.primaryManagedObjectContext error:localError exception:nil];
+                }
+                
+                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:localError forKey:@"error"];
+                [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
+                
+                if ([[localError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+                    NSDictionary *userInfo = [localError userInfo];
+                    NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
+                    if (errors) {
+                        for (NSError *detailedError in errors) {
+                            NSDictionary *subUserInfo = [detailedError userInfo];
+                            RKLogError(@"Core Data Save Error\n \
+                                       NSLocalizedDescription:\t\t%@\n \
+                                       NSValidationErrorKey:\t\t\t%@\n \
+                                       NSValidationErrorPredicate:\t%@\n \
+                                       NSValidationErrorObject:\n%@\n",
+                                       [subUserInfo valueForKey:@"NSLocalizedDescription"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorKey"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
+                                       [subUserInfo valueForKey:@"NSValidationErrorObject"]);
+                        }
+                    }
+                    else {
                         RKLogError(@"Core Data Save Error\n \
-                              NSLocalizedDescription:\t\t%@\n \
-                              NSValidationErrorKey:\t\t\t%@\n \
-                              NSValidationErrorPredicate:\t%@\n \
-                              NSValidationErrorObject:\n%@\n",
-                              [subUserInfo valueForKey:@"NSLocalizedDescription"],
-                              [subUserInfo valueForKey:@"NSValidationErrorKey"],
-                              [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
-                              [subUserInfo valueForKey:@"NSValidationErrorObject"]);
+                                   NSLocalizedDescription:\t\t%@\n \
+                                   NSValidationErrorKey:\t\t\t%@\n \
+                                   NSValidationErrorPredicate:\t%@\n \
+                                   NSValidationErrorObject:\n%@\n",
+                                   [userInfo valueForKey:@"NSLocalizedDescription"],
+                                   [userInfo valueForKey:@"NSValidationErrorKey"],
+                                   [userInfo valueForKey:@"NSValidationErrorPredicate"],
+                                   [userInfo valueForKey:@"NSValidationErrorObject"]);
                     }
                 }
-                else {
-                    RKLogError(@"Core Data Save Error\n \
-                               NSLocalizedDescription:\t\t%@\n \
-                               NSValidationErrorKey:\t\t\t%@\n \
-                               NSValidationErrorPredicate:\t%@\n \
-                               NSValidationErrorObject:\n%@\n",
-                               [userInfo valueForKey:@"NSLocalizedDescription"],
-                               [userInfo valueForKey:@"NSValidationErrorKey"],
-                               [userInfo valueForKey:@"NSValidationErrorPredicate"],
-                               [userInfo valueForKey:@"NSValidationErrorObject"]);
+                
+                if (error) {
+                    *error = localError;
                 }
             }
-
-            if (error) {
-                *error = localError;
+        }
+        @catch (NSException *e) {
+            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
+                [self.delegate managedObjectStore:self didFailToSaveContext:self.primaryManagedObjectContext error:nil exception:e];
             }
+            else {
+                @throw;
+            }
+        }
+    }];
 
-            return NO;
-        }
-    }
-    @catch (NSException *e) {
-        if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-            [self.delegate managedObjectStore:self didFailToSaveContext:moc error:nil exception:e];
-        }
-        else {
-            @throw;
-        }
-    }
-
-    return YES;
+    return success;
 }
 
 - (NSManagedObjectContext *)managedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType

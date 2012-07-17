@@ -244,4 +244,26 @@
     [mockResponseLoader verify];
 }
 
+- (void)testObtainingPermanentObjectIDForSourceObjectOnSuccess
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKObjectManager *objectManager = [RKTestFactory objectManager];
+    objectManager.managedObjectStore = managedObjectStore;
+    RKObjectMapping *mapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    RKManagedObjectLoader *objectLoader = [objectManager loaderWithResourcePath:@"/humans/1"];
+    objectLoader.objectMapping = mapping;
+    objectLoader.serializationMapping = [RKObjectMapping serializationMapping];
+    [objectLoader.serializationMapping mapAttributes:@"name", nil];
+    
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    assertThatBool([human.objectID isTemporaryID], is(equalToBool(YES)));
+    objectLoader.sourceObject = human;
+    objectLoader.method = RKRequestMethodGET;
+    RKTestResponseLoader *responseLoader = [RKTestResponseLoader responseLoader];
+    objectLoader.delegate = responseLoader;
+    [objectLoader send];
+    [responseLoader waitForResponse];
+    assertThatBool([human.objectID isTemporaryID], is(equalToBool(NO)));
+}
+
 @end

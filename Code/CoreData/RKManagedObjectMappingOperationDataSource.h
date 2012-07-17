@@ -15,7 +15,7 @@
 
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, retain, readonly) id<RKManagedObjectCaching> managedObjectCache;
-@property (nonatomic, assign) NSOperationQueue *operationQueue;
+@property (nonatomic, retain) NSOperationQueue *operationQueue;
 
 @property (nonatomic, assign) BOOL tracksInsertedObjects; // Default: NO
 @property (nonatomic, readonly) NSArray *insertedObjects;

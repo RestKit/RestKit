@@ -36,7 +36,10 @@
  */
 @property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext; // TODO: This may need to be readwrite...
+// TODO: Cache strategy should also be up here...
+// TODO: Encapsulate into an NSOperation and rename RKManagedObjectRequestOperation
 // TODO: BOOL autosavesParentContext ???
+// TODO: BOOL savesToPersistentStore : When YES, the chain of parentContext's is saved until the 
 
 - (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider managedObjectStore:(RKManagedObjectStore *)managedObjectStore;
 

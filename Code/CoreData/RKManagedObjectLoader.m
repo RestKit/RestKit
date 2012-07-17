@@ -55,6 +55,7 @@
         self.managedObjectsByKeyPath = [NSMutableDictionary dictionary];
         [self addObserver:self forKeyPath:@"managedObjectStore" options:0 context:nil];
         [self addObserver:self forKeyPath:@"targetObject" options:0 context:nil];
+        
     }
 
     return self;
@@ -80,7 +81,6 @@
     [self removeObserver:self forKeyPath:@"targetObject"];
     [_targetObjectID release];
     [_managedObjectContext release];
-    [_targetObjectID release];
     [_managedObjectsByKeyPath release];
     [_managedObjectStore release];
 
@@ -102,12 +102,37 @@
         dataSource.tracksInsertedObjects = YES; // We need to be able to obtain permanent object ID's
         self.mappingOperationDataSource = dataSource;        
     } else if ([keyPath isEqualToString:@"targetObject"]) {
-        if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
-            self.targetObjectID = [(NSManagedObject *)self.targetObject objectID];
-        } else {
+        if (! [self.targetObject isKindOfClass:[NSManagedObject class]]) {
             self.targetObjectID = nil;
         }
     }
+}
+
+- (void)obtainPermanentObjectIDs
+{
+    NSMutableArray *objectsToObtainIDs = [NSMutableArray array];
+    if ([self.sourceObject isKindOfClass:[NSManagedObject class]]) [objectsToObtainIDs addObject:self.sourceObject];
+    if ([self.targetObject isKindOfClass:[NSManagedObject class]]) [objectsToObtainIDs addObject:self.targetObject];
+    
+    if ([objectsToObtainIDs count] > 0) {
+        [self.managedObjectContext performBlock:^{
+            NSError *error;
+            BOOL success = [self.managedObjectContext obtainPermanentIDsForObjects:objectsToObtainIDs error:&error];
+            if (! success) {
+                RKLogError(@"Failed to obtain permanent object ID's for %d objects: %@", [objectsToObtainIDs count], error);
+            }
+            
+            if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
+                self.targetObjectID = [(NSManagedObject *)self.targetObject objectID];
+            }            
+        }];
+    }    
+}
+
+- (BOOL)prepareURLRequest
+{
+    [self obtainPermanentObjectIDs];
+    return [super prepareURLRequest];
 }
 
 #pragma mark - RKObjectMapperDelegate methods
@@ -133,7 +158,10 @@
 
 #pragma mark - RKObjectLoader overrides
 
-// Overload the target object reader to return a thread-local copy of the target object
+/**
+ Overload targetObject to ensure that the mapping operation is executed against a managed object
+ fetched from the managed object context of the receiver.
+ */
 - (id)targetObject
 {
     if ([NSThread isMainThread] == NO && _targetObjectID) {
@@ -214,7 +242,7 @@
         RKLogDebug(@"Obtaining permanent object ID's for %d objects", [insertedObjects count]);
         success = [self.managedObjectContext obtainPermanentIDsForObjects:insertedObjects error:&error];
         if (! success) {
-            RKLogError(@"Failed to obtain permanent object ID's for all managed objects. Error: %@", error);
+            RKLogError(@"Failed to obtain permanent object ID's for %d managed objects. Error: %@", [insertedObjects count], error);
         }
         
         [self.managedObjectContext performBlockAndWait:^{
@@ -283,28 +311,6 @@
     [invocation setManagedObjectKeyPaths:[NSSet setWithArray:[self.managedObjectsByKeyPath allKeys]] forArgument:2];
     [invocation invokeOnMainThread];
 }
-
-// Overloaded to handle deleting an object orphaned by a failed postObject:
-// TODO: Should be able to eliminate this...
-//- (void)handleResponseError
-//{
-//    [super handleResponseError];
-//
-//    if (_targetObjectID) {
-//        if (_deleteObjectOnFailure) {
-//            RKLogInfo(@"Error response encountered: Deleting existing managed object with ID: %@", _targetObjectID);
-//            NSManagedObject *objectToDelete = [self.objectStore objectWithID:_targetObjectID];
-//            if (objectToDelete) {
-//                [[self.objectStore managedObjectContextForCurrentThread] deleteObject:objectToDelete];
-//                [self.objectStore save:nil];
-//            } else {
-//                RKLogWarning(@"Unable to delete existing managed object with ID: %@. Object not found in the store.", _targetObjectID);
-//            }
-//        } else {
-//            RKLogDebug(@"Skipping deletion of existing managed object");
-//        }
-//    }
-//}
 
 - (BOOL)isResponseMappable
 {
