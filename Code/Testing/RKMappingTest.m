@@ -19,6 +19,8 @@
 //
 
 #import "RKMappingTest.h"
+#import "RKEntityMapping.h"
+#import "RKObjectMappingOperationDataSource.h"
 
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
@@ -44,8 +46,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @implementation RKMappingTestEvent
 
-@synthesize value;
-@synthesize mapping;
+@synthesize value = _value;
+@synthesize mapping = _mapping;
 
 + (RKMappingTestEvent *)eventWithMapping:(RKAttributeMapping *)mapping value:(id)value
 {
@@ -101,6 +103,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 @synthesize events = _events;
 @synthesize verifiesOnExpect = _verifiesOnExpect;
 @synthesize performedMapping = _performedMapping;
+@synthesize mappingOperationDataSource = _mappingOperationDataSource;
 
 + (RKMappingTest *)testForMapping:(RKObjectMapping *)mapping object:(id)sourceObject
 {
@@ -119,13 +122,14 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
     self = [super init];
     if (self) {
-        _sourceObject = sourceObject;
-        _destinationObject = destinationObject;
-        _mapping = mapping;
-        _expectations = [NSMutableArray new];
-        _events = [NSMutableArray new];
-        _verifiesOnExpect = NO;
-        _performedMapping = NO;
+        self.sourceObject = sourceObject;
+        self.destinationObject = destinationObject;
+        self.mapping = mapping;
+        self.expectations = [NSMutableArray new];
+        self.events = [NSMutableArray new];
+        self.verifiesOnExpect = NO;
+        self.performedMapping = NO;
+        self.mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
 
     return self;
@@ -224,9 +228,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     if (! self.hasPerformedMapping) {
         id sourceObject = self.rootKeyPath ? [self.sourceObject valueForKeyPath:self.rootKeyPath] : self.sourceObject;
         if (nil == self.destinationObject) {
-            self.destinationObject = [self.mapping mappableObjectForData:self.sourceObject];
+            self.destinationObject = [self.mappingOperationDataSource objectForMappableContent:self.sourceObject mapping:self.mapping];
         }
         RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:sourceObject toObject:self.destinationObject withMapping:self.mapping];
+        mappingOperation.dataSource = self.mappingOperationDataSource;
         NSError *error = nil;
         mappingOperation.delegate = self;
         BOOL success = [mappingOperation performMapping:&error];

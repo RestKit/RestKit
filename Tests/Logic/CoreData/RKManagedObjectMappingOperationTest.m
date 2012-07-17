@@ -177,9 +177,9 @@
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:objectStore.primaryManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [[NSOperationQueue new] autorelease];
     RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
     operation.dataSource = mappingOperationDataSource;
-    operation.queue = [[NSOperationQueue new] autorelease];
     NSError *error = nil;
     [operation performMapping:&error];
 
@@ -751,9 +751,9 @@
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:objectStore.primaryManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
+    mappingOperationDataSource.operationQueue = [[NSOperationQueue new] autorelease];
     RKMappingOperation* operation = [[RKMappingOperation alloc] initWithSourceObject:mappableData destinationObject:human mapping:humanMapping];
     operation.dataSource = mappingOperationDataSource;
-    operation.queue = [[NSOperationQueue new] autorelease];
     NSError* error = nil;
     [operation performMapping:&error];
 

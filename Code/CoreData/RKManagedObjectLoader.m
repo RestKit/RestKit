@@ -96,14 +96,11 @@
         
         RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext
                                                                                                                                           cache:self.managedObjectStore.cacheStrategy];
+        dataSource.operationQueue = [[NSOperationQueue new] autorelease];
+        [dataSource.operationQueue setSuspended:YES];
+        [dataSource.operationQueue setMaxConcurrentOperationCount:1];
         dataSource.tracksInsertedObjects = YES; // We need to be able to obtain permanent object ID's
-        self.mappingOperationDataSource = dataSource;
-        
-//        // Merge changes from the primary MOC back into our MOC
-//        [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                 selector:@selector(handlePrimaryManagedObjectContextDidSaveNotification:)
-//                                                     name:NSManagedObjectContextDidSaveNotification
-//                                                   object:self.managedObjectStore.primaryManagedObjectContext];
+        self.mappingOperationDataSource = dataSource;        
     } else if ([keyPath isEqualToString:@"targetObject"]) {
         if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
             self.targetObjectID = [(NSManagedObject *)self.targetObject objectID];
@@ -113,16 +110,20 @@
     }
 }
 
-//- (void)handlePrimaryManagedObjectContextDidSaveNotification:(NSNotification *)notification
-//{
-//    [self.managedObjectContext performBlock:^{
-//        [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-//    }];
-//}
-
 #pragma mark - RKObjectMapperDelegate methods
 
-// TODO: Figure out how to eliminate this...
+// TODO: Figure out how to eliminate the dependence on the delegate
+
+- (void)mapperDidFinishMapping:(RKObjectMapper *)mapper
+{
+    if ([self.mappingOperationDataSource isKindOfClass:[RKManagedObjectMappingOperationDataSource class]]) {
+        // Allow any enqueued connection operations to execute once mapping is complete
+        NSOperationQueue *operationQueue = [(RKManagedObjectMappingOperationDataSource *)self.mappingOperationDataSource operationQueue];
+        [operationQueue setSuspended:NO];
+        [operationQueue waitUntilAllOperationsAreFinished];
+    }
+}
+
 - (void)mapper:(RKObjectMapper *)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMapping *)objectMapping
 {
     if ([destinationObject isKindOfClass:[NSManagedObject class]]) {
@@ -137,7 +138,11 @@
 {
     if ([NSThread isMainThread] == NO && _targetObjectID) {
         NSAssert(self.managedObjectContext, @"Expected managedObjectContext not to be nil.");
-        return [self.managedObjectContext objectWithID:self.targetObjectID];
+        __block NSManagedObject *localTargetObject;
+        [self.managedObjectContext performBlockAndWait:^{
+            localTargetObject = [self.managedObjectContext objectWithID:self.targetObjectID];
+        }];
+        return localTargetObject;
     }
 
     return [super targetObject];
@@ -152,22 +157,6 @@
     
     return mappingResult;
 }
-
-//- (BOOL)prepareURLRequest
-//{
-//    // NOTE: There is an important sequencing issue here. You MUST save the
-//    // managed object context before retaining the objectID or you will run
-//    // into an error where the object context cannot be saved. We do this
-//    // right before send to avoid sequencing issues where the target object is
-//    // set before the managed object store.
-//    if (self.targetObject && [self.targetObject isKindOfClass:[NSManagedObject class]]) {
-//        self.deleteObjectOnFailure = [(NSManagedObject *)self.targetObject isNew];
-//        [self.objectStore save:nil];
-//        self.targetObjectID = [[(NSManagedObject *)self.targetObject objectID] retain];
-//    }
-//
-//    return [super prepareURLRequest];
-//}
 
 - (NSArray *)cachedObjects
 {
@@ -230,7 +219,6 @@
         
         [self.managedObjectContext performBlockAndWait:^{
             success = [self.managedObjectContext save:&error];
-            NSLog(@"Saved MOC success = %d. Error: %@", success, error);
         }];
         if (! success) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
@@ -251,12 +239,9 @@
     NSDictionary *dictionary = [result asDictionary];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
     if (self.managedObjectContext.parentContext) {
-        NSLog(@"Saving parent context...");
         [self.managedObjectContext.parentContext performBlockAndWait:^{
             NSError *error = nil;
             if (! [self.managedObjectContext.parentContext save:&error]) {
-                NSLog(@"Failed to save parent context. Error: %@", error);
-                
                 if ([[error domain] isEqualToString:@"NSCocoaErrorDomain"]) {
                     NSDictionary *userInfo = [error userInfo];
                     NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];

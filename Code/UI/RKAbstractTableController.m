@@ -461,6 +461,31 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
 
 #pragma mark - UITableViewDataSource methods
 
+- (UITableViewCell *)cellFromCellMapping:(RKTableViewCellMapping *)cellMapping
+{
+    RKLogTrace(@"About to dequeue reusable cell using self.reuseIdentifier=%@", cellMapping.reuseIdentifier);
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:cellMapping.reuseIdentifier];
+    if (cell) {
+        RKLogTrace(@"Dequeued existing cell object for reuse identifier '%@': %@", cellMapping.reuseIdentifier, cell);
+    } else {
+        cell = [[[cellMapping.objectClass alloc] initWithStyle:cellMapping.style
+                                               reuseIdentifier:cellMapping.reuseIdentifier] autorelease];
+        RKLogTrace(@"Failed to dequeue existing cell object for reuse identifier '%@', instantiated new cell: %@", cellMapping.reuseIdentifier, cell);
+    }
+    
+    if (cellMapping.managesCellAttributes) {
+        cell.accessoryType = cellMapping.accessoryType;
+        cell.selectionStyle = cellMapping.selectionStyle;
+    }
+    
+    // Fire the prepare callbacks
+    for (void (^block)(UITableViewCell *) in cellMapping.prepareCellBlocks) {
+        block(cell);
+    }
+    
+    return cell;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)theTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSAssert(theTableView == self.tableView, @"tableView:cellForRowAtIndexPath: invoked with inappropriate tableView: %@", theTableView);
@@ -471,7 +496,7 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     RKTableViewCellMapping* cellMapping = [self.cellMappings cellMappingForObject:mappableObject];
     NSAssert(cellMapping, @"Cannot build a tableView cell for object %@: No cell mapping defined for objects of type '%@'", mappableObject, NSStringFromClass([mappableObject class]));
 
-    UITableViewCell *cell = [cellMapping mappableObjectForData:self.tableView];
+    UITableViewCell *cell = [self cellFromCellMapping:cellMapping];
     NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
 
     // Map the object state into the cell
@@ -1390,17 +1415,17 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     return YES;
 }
 
-- (void)loadTableWithObjectLoader:(RKObjectLoader *)theObjectLoader
+- (void)loadTableWithObjectLoader:(RKObjectLoader *)objectLoader
 {
-    NSAssert(theObjectLoader, @"Cannot perform a network load without an object loader");
-    if (! [self.objectLoader isEqual:theObjectLoader]) {
+    NSAssert(objectLoader, @"Cannot perform a network load without an object loader");
+    if (! [self.objectLoader isEqual:objectLoader]) {
         if (self.objectLoader) {
             RKLogDebug(@"Cancelling in progress table load: asked to load with a new object loader.");
             [self.objectLoader.queue cancelRequest:self.objectLoader];
         }
 
-        theObjectLoader.delegate = self;
-        self.objectLoader = theObjectLoader;
+        objectLoader.delegate = self;
+        self.objectLoader = objectLoader;
     }
     if ([self.delegate respondsToSelector:@selector(tableController:willLoadTableWithObjectLoader:)]) {
         [self.delegate tableController:self willLoadTableWithObjectLoader:self.objectLoader];

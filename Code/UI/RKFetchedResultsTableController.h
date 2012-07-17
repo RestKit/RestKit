@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 
+#import <CoreData/CoreData.h>
 #import "RKAbstractTableController.h"
 
 typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteger sectionIndex, NSString *sectionTitle);
@@ -36,27 +37,31 @@ typedef UIView *(^RKFetchedResultsTableViewViewForHeaderInSectionBlock)(NSUInteg
 /**
  Instances of RKFetchedResultsTableController provide an interface for driving a UITableView
  */
-@interface RKFetchedResultsTableController : RKAbstractTableController <NSFetchedResultsControllerDelegate> {
-@private
-    NSArray *_arraySortedFetchedObjects;
-    BOOL _isEmptyBeforeAnimation;
-}
+@interface RKFetchedResultsTableController : RKAbstractTableController <NSFetchedResultsControllerDelegate>
 
+// Delegate
 @property (nonatomic, assign) id<RKFetchedResultsTableControllerDelegate> delegate;
-@property (nonatomic, retain, readonly) NSFetchedResultsController *fetchedResultsController;
+
+// Fetched Results Controller
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, copy) NSString *resourcePath;
 @property (nonatomic, retain) NSFetchRequest *fetchRequest;
-@property (nonatomic, assign) CGFloat heightForHeaderInSection;
-@property (nonatomic, copy) RKFetchedResultsTableViewViewForHeaderInSectionBlock onViewForHeaderInSection;
 @property (nonatomic, retain) NSPredicate *predicate;
 @property (nonatomic, retain) NSArray *sortDescriptors;
 @property (nonatomic, copy) NSString *sectionNameKeyPath;
 @property (nonatomic, copy) NSString *cacheName;
+@property (nonatomic, retain, readonly) NSFetchedResultsController *fetchedResultsController;
+
+// Configuring Headers and Sections
+@property (nonatomic, assign) CGFloat heightForHeaderInSection;
+@property (nonatomic, copy) RKFetchedResultsTableViewViewForHeaderInSectionBlock onViewForHeaderInSection;
 @property (nonatomic, assign) BOOL showsSectionIndexTitles;
+
+// Sorting
 @property (nonatomic, assign) SEL sortSelector;
 @property (nonatomic, copy) NSComparator sortComparator;
 
-- (void)setObjectMappingForClass:(Class)objectClass;
+- (void)setObjectMappingForClass:(Class)objectClass; // TODO: Kill this API... mapping descriptors will cover use case.
 - (void)loadTable;
 - (void)loadTableFromNetwork;
 

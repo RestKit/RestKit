@@ -24,6 +24,7 @@
 #import "RKFormSection.h"
 #import "NSArray+RKAdditions.h"
 #import "RKMappingOperation.h"
+#import "RKMappingOperationDataSource.h"
 
 // Define logging component
 #undef RKLogComponent

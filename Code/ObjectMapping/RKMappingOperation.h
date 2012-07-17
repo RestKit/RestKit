@@ -1,5 +1,5 @@
 //
-//  RKObjectMappingOperation.h
+//  RKMappingOperation.h
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
@@ -21,7 +21,7 @@
 #import "RKObjectMapping.h"
 #import "RKAttributeMapping.h"
 
-@class RKMappingOperation;
+@class RKMappingOperation, RKDynamicMapping;
 @protocol RKMappingOperationDataSource;
 
 /**
@@ -76,16 +76,30 @@
 - (void)mappingOperation:(RKMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping;
 
 /**
- Tells the delegate that the object mapping operation has failed due to an error.
+ Tells the delegate that the mapping operation has failed due to an error.
 
  @param operation The object mapping operation that has failed.
  @param error An error object indicating the reason for the failure.
  */
 - (void)mappingOperation:(RKMappingOperation *)operation didFailWithError:(NSError *)error;
+
+/**
+ Tells the delegate that the mapping operation has selected a concrete object mapping with which to map the source object.
+ 
+ Only sent if the receiver was initialized with an instance of RKDynamicMapping as the mapping.
+ 
+ @param operation The mapping operation.
+ @param objectMapping The concrete object mapping with which to perform the mapping.
+ @param dynamicMapping The dynamic source mapping from which the object mapping was determined.
+ 
+ @since 0.11.0
+ */
+- (void)mappingOperation:(RKMappingOperation *)operation didSelectObjectMapping:(RKObjectMapping *)objectMapping forDynamicMapping:(RKDynamicMapping *)dynamicMapping;
+
 @end
 
 /**
- Instances of RKObjectMappingOperation perform transformation between object
+ Instances of RKMappingOperation perform transformation between object
  representations according to the rules express in RKObjectMapping objects. Mapping
  operations provide the foundation for the RestKit object mapping engine and
  perform the work of inspecting the attributes and relationships of a source object
@@ -97,18 +111,20 @@
 /**
  A dictionary of mappable elements containing simple values or nested object structures.
  */
-@property (nonatomic, readonly) id sourceObject;
+@property (nonatomic, retain, readonly) id sourceObject;
 
 /**
  The target object for this operation. Mappable values in elements will be applied to object
  using key-value coding.
  */
-@property (nonatomic, readonly) id destinationObject;
+@property (nonatomic, retain, readonly) id destinationObject;
 
 /**
- The object mapping defining how values contained in the source object should be transformed to the destination object via key-value coding
+ The mapping defining how values contained in the source object should be transformed to the destination object via key-value coding.
+ 
+ Will either be an instance of RKObjectMapping or RKDynamicMapping.
  */
-@property (nonatomic, readonly) RKObjectMapping *objectMapping;
+@property (nonatomic, retain, readonly) RKMapping *mapping;
 
 /**
  The delegate to inform of interesting events during the mapping operation
@@ -116,22 +132,12 @@
 @property (nonatomic, assign) id<RKMappingOperationDelegate> delegate;
 
 /**
- An operation queue for deferring portions of the mapping process until later
-
- Defaults to nil. If this mapping operation was configured by an instance of RKObjectMapper, then
- an instance of the operation queue will be configured and assigned for use. If the queue is nil,
- the mapping operation will perform all its operations within the body of performMapping. If a queue
- is present, it may elect to defer portions of the mapping operation using the queue.
- */
-@property (nonatomic, retain) NSOperationQueue *queue;
-
-/**
  The data source is responsible for providing the mapping operation with an appropriate target object for
  mapping when the destination is nil.
 
  @see RKMappingOperationDataSource
  */
-@property (nonatomic, retain) id<RKMappingOperationDataSource> dataSource;
+@property (nonatomic, assign) id<RKMappingOperationDataSource> dataSource;
 
 /**
  Creates and returns a new mapping operation configured to transform the object representation
@@ -142,11 +148,11 @@
  @param sourceObject The source object to be mapped. Cannot be nil.
  @param destinationObject The destination object the results are to be mapped onto. May be nil,
  in which case a new object will be constructed during the mapping.
- @param mapping An instance of RKObjectMapping or RKDynamicMapping defining how the
+ @param objectOrDynamicMapping An instance of RKObjectMapping or RKDynamicMapping defining how the
  mapping is to be performed.
  @return An instance of RKObjectMappingOperation or RKManagedObjectMappingOperation for performing the mapping.
  */
-+ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)mapping;
++ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Initializes the receiver with a source and destination objects and an object mapping
@@ -155,11 +161,11 @@
  @param sourceObject The source object to be mapped. Cannot be nil.
  @param destinationObject The destination object the results are to be mapped onto. May be nil,
  in which case a new object will be constructed during the mapping.
- @param mapping An instance of RKObjectMapping or RKDynamicMapping defining how the
+ @param objectOrDynamicMapping An instance of RKObjectMapping or RKDynamicMapping defining how the
  mapping is to be performed.
  @return The receiver, initialized with a source object, a destination object, and a mapping.
  */
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)mapping;
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Process all mappable values from the mappable dictionary and assign them to the target object

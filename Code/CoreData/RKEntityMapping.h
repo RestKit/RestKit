@@ -36,7 +36,7 @@
 /**
  The Core Data entity description used for this object mapping
  */
-@property (nonatomic, readonly) NSEntityDescription *entity;
+@property (nonatomic, retain, readonly) NSEntityDescription *entity;
 
 /**
  The name of the attribute on the destination entity that acts as the primary key for instances

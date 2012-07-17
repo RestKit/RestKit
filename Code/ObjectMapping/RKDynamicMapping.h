@@ -65,16 +65,6 @@ typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
  */
 + (RKDynamicMapping *)dynamicMapping;
 
-#if NS_BLOCKS_AVAILABLE
-
-/**
- Return a new auto-released dynamic object mapping after yielding it to the block for configuration
- */
-+ (RKDynamicMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicMapping *dynamicMapping))block;
-+ (RKDynamicMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicMapping *dynamicMapping))block DEPRECATED_ATTRIBUTE;
-
-#endif
-
 /**
  Defines a dynamic mapping rule stating that when the value of the key property matches the specified
  value, the objectMapping should be used.

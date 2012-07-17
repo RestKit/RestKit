@@ -1,5 +1,5 @@
 //
-//  RKObjectMappingOperation.m
+//  RKMappingOperation.m
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
@@ -64,48 +64,40 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 }
 
 @interface RKMappingOperation ()
+@property (nonatomic, retain, readwrite) RKMapping *mapping;
+@property (nonatomic, retain, readwrite) id sourceObject;
+@property (nonatomic, retain, readwrite) id destinationObject;
 @property (nonatomic, retain) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, retain) NSError *validationError;
+@property (nonatomic, retain) RKObjectMapping *objectMapping; // The concrete mapping
 @end
 
 @implementation RKMappingOperation
 
 @synthesize sourceObject = _sourceObject;
 @synthesize destinationObject = _destinationObject;
-@synthesize objectMapping = _objectMapping;
+@synthesize mapping = _mapping;
 @synthesize delegate = _delegate;
-@synthesize queue = _queue;
 @synthesize nestedAttributeSubstitution = _nestedAttributeSubstitution;
 @synthesize validationError = _validationError;
 
-+ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)objectMapping
++ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)objectOrDynamicMapping
 {
-    // Check for availability of ManagedObjectMappingOperation. Better approach for handling?
-    Class targetClass = NSClassFromString(@"RKManagedObjectMappingOperation");
-    if (targetClass == nil) targetClass = [RKMappingOperation class];
-
-    return [[[targetClass alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectMapping] autorelease];
+    return [[[self alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectOrDynamicMapping] autorelease];
 }
 
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectMapping
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectOrDynamicMapping
 {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
-    NSAssert(objectMapping != nil, @"Cannot perform a mapping operation without a mapping");
+    NSAssert(objectOrDynamicMapping != nil, @"Cannot perform a mapping operation without a mapping");
 
     self = [super init];
     if (self) {
-        _sourceObject = [sourceObject retain];
-        _destinationObject = [destinationObject retain];
+        self.sourceObject = sourceObject;
+        self.destinationObject = destinationObject;
         self.dataSource = [[RKObjectMappingOperationDataSource new] autorelease];
-
-        if ([objectMapping isKindOfClass:[RKDynamicMapping class]]) {
-            _objectMapping = [[(RKDynamicMapping *)objectMapping objectMappingForDictionary:_sourceObject] retain];
-            RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", _objectMapping);
-        } else if ([objectMapping isKindOfClass:[RKObjectMapping class]]) {
-            _objectMapping = (RKObjectMapping *)[objectMapping retain];
-        }
-        NSAssert(_objectMapping, @"Cannot perform a mapping operation with an object mapping");
+        self.mapping = objectOrDynamicMapping;
     }
 
     return self;
@@ -115,10 +107,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 {
     [_sourceObject release];
     [_destinationObject release];
-    [_objectMapping release];
+    [_mapping release];
     [_nestedAttributeSubstitution release];
-    [_queue release];
-    self.dataSource = nil;
 
     [super dealloc];
 }
@@ -454,8 +444,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
     RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
     RKMappingOperation *subOperation = [RKMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
+    subOperation.dataSource = self.dataSource;
     subOperation.delegate = self.delegate;
-    subOperation.queue = self.queue;
     if (NO == [subOperation performMapping:&error]) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     }
@@ -659,6 +649,19 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 {
     RKLogDebug(@"Starting mapping operation...");
     RKLogTrace(@"Performing mapping operation: %@", self);
+    
+    // Determine the concrete mapping if we were initialized with a dynamic mapping
+    if ([self.mapping isKindOfClass:[RKDynamicMapping class]]) {
+        self.objectMapping = [(RKDynamicMapping *)self.mapping objectMappingForDictionary:self.sourceObject];
+        RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", self.objectMapping);
+        
+        if ([self.delegate respondsToSelector:@selector(mappingOperation:didSelectObjectMapping:forDynamicMapping:)]) {
+            [self.delegate mappingOperation:self didSelectObjectMapping:self.objectMapping forDynamicMapping:(RKDynamicMapping *)self.mapping];
+        }
+    } else if ([self.mapping isKindOfClass:[RKObjectMapping class]]) {
+        self.objectMapping = (RKObjectMapping *)self.mapping;
+    }
+    NSAssert(self.objectMapping, @"Cannot perform a mapping operation with an object mapping");
 
     [self applyNestedMappings];
     BOOL mappedAttributes = [self applyAttributeMappings];
