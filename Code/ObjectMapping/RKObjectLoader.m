@@ -278,16 +278,20 @@
 {
     NSAssert(self.mappingQueue, @"mappingQueue cannot be nil");
     [self.mappingQueue addOperationWithBlock:^{
-        RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
-        NSError *error = nil;
-        _result = [[self performMapping:&error] retain];
-        NSAssert(_result || error, @"Expected performMapping to return a mapping result or an error.");
-        if (self.result) {
-            [self processMappingResult:self.result];
-        } else if (error) {
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                [self didFailLoadWithError:error];
-            }];
+        if (self.isCancelled) {
+            RKLogDebug(@"Cancelled object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
+        } else {
+            RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
+            NSError *error = nil;
+            _result = [[self performMapping:&error] retain];
+            NSAssert(_result || error, @"Expected performMapping to return a mapping result or an error.");
+            if (self.result) {
+                [self processMappingResult:self.result];
+            } else if (error) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    [self didFailLoadWithError:error];
+                }];
+            }
         }
     }];
 }
