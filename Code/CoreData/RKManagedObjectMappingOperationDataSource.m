@@ -33,7 +33,6 @@
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
     NSParameterAssert(managedObjectContext);
-    NSParameterAssert(managedObjectCache);
     
     self = [self init];
     if (self) {

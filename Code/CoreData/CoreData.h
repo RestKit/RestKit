@@ -23,6 +23,7 @@
 #import "NSManagedObject+ActiveRecord.h"
 #import "RKManagedObjectStore.h"
 #import "RKManagedObjectSeeder.h"
+#import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKManagedObjectLoader.h"
 #import "RKEntityMapping.h"
 #import "RKManagedObjectCaching.h"
