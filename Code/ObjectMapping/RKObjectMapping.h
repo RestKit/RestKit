@@ -43,10 +43,7 @@ relationship. Relationships are processed using an object mapping as well.
  Instances of RKObjectMapping are used to configure RKObjectMappingOperation instances, which actually
  perform the mapping work. Both object loading and serialization are defined in terms of object mappings.
  */
-@interface RKObjectMapping : RKMapping <NSCopying> {
-    Class _objectClass;
-    NSMutableArray *_mappings;
-}
+@interface RKObjectMapping : RKMapping <NSCopying>
 
 /**
  The target class this object mapping is defining rules for
@@ -483,14 +480,6 @@ relationship. Relationships are processed using an object mapping as well.
 - (id)defaultValueForMissingAttribute:(NSString *)attributeName;
 
 /**
- Returns an auto-released object that can be used to apply this object mapping
- given a set of mappable data. For transient objects, this generally returns an
- instance of the objectClass. For Core Data backed persistent objects, mappableData
- will be inspected to search for primary key data to lookup existing object instances.
- */
-- (id)mappableObjectForData:(id)mappableData;
-
-/**
  Returns the class of the attribute or relationship property of the target objectClass
 
  Given the name of a string property, this will return an NSString, etc.
@@ -498,14 +487,6 @@ relationship. Relationships are processed using an object mapping as well.
  @param propertyName The name of the property we would like to retrieve the type of
  */
 - (Class)classForProperty:(NSString *)propertyName;
-
-/**
- Returns an auto-released object that can be used to apply this object mapping
- given a set of mappable data. For transient objects, this generally returns an
- instance of the objectClass. For Core Data backed persistent objects, mappableData
- will be inspected to search for primary key data to lookup existing object instances.
- */
-- (id)mappableObjectForData:(id)mappableData;
 
 /**
  Returns YES if the receiever and the other mapping target the same object class

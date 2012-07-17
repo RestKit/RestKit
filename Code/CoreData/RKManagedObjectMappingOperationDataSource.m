@@ -28,7 +28,7 @@
 @synthesize managedObjectCache = _managedObjectCache;
 @synthesize operationQueue = _operationQueue;
 @synthesize tracksInsertedObjects = _tracksInsertedObjects;
-@synthesize insertedObjects = _insertedObjects;
+@synthesize mutableInsertedObjects = _mutableInsertedObjects;
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
@@ -150,10 +150,10 @@
 
 - (void)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation
 {
-    if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
+    if ([mappingOperation.mapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
         
-        for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.objectMapping connections]) {
+        for (RKConnectionMapping *connectionMapping in [(RKEntityMapping *)mappingOperation.mapping connections]) {
             RKRelationshipConnectionOperation *operation = [[RKRelationshipConnectionOperation alloc] initWithManagedObject:mappingOperation.destinationObject
                                                                                                           connectionMapping:connectionMapping
                                                                                                          managedObjectCache:self.managedObjectCache];

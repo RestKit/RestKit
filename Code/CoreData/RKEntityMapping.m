@@ -33,6 +33,7 @@
 BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 @interface RKEntityMapping ()
+@property (nonatomic, retain, readwrite) NSEntityDescription *entity;
 @property (nonatomic, retain) NSMutableArray *mutableConnections;
 @end
 
@@ -67,8 +68,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     NSAssert(objectClass, @"The managedObjectClass for an object mapped entity cannot be nil.");
     self = [self init];
     if (self) {
-        _objectClass = [objectClass retain];
-        _entity = [entity retain];
+        self.objectClass = objectClass;
+        self.entity = entity;
 
         [self addObserver:self forKeyPath:@"entity" options:NSKeyValueObservingOptionInitial context:nil];
         [self addObserver:self forKeyPath:@"primaryKeyAttribute" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:nil];
@@ -157,71 +158,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 {
     NSAttributeDescription *desc = [[self.entity attributesByName] valueForKey:attributeName];
     return [desc defaultValue];
-}
-
-// TODO: Gut this method from superclass...
-- (id)mappableObjectForData:(id)mappableData
-{
-    NSAssert(false, @"DISABLED!!!");
-    NSAssert(mappableData, @"Mappable data cannot be nil");
-    return nil;
-//    id object = nil;
-//    id primaryKeyValue = nil;
-//    NSString *primaryKeyAttribute;
-//
-//    NSEntityDescription *entity = [self entity];
-//    RKObjectAttributeMapping *primaryKeyAttributeMapping = nil;
-//
-//    primaryKeyAttribute = [self primaryKeyAttribute];
-//    if (primaryKeyAttribute) {
-//        // If a primary key has been set on the object mapping, find the attribute mapping
-//        // so that we can extract any existing primary key from the mappable data
-//        for (RKObjectAttributeMapping *attributeMapping in self.attributeMappings) {
-//            if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
-//                primaryKeyAttributeMapping = attributeMapping;
-//                break;
-//            }
-//        }
-//
-//        // Get the primary key value out of the mappable data (if any)
-//        if ([primaryKeyAttributeMapping isMappingForKeyOfNestedDictionary]) {
-//            RKLogDebug(@"Detected use of nested dictionary key as primaryKey attribute...");
-//            primaryKeyValue = [[mappableData allKeys] lastObject];
-//        } else {
-//            NSString *keyPathForPrimaryKeyElement = primaryKeyAttributeMapping.sourceKeyPath;
-//            if (keyPathForPrimaryKeyElement) {
-//                primaryKeyValue = [mappableData valueForKeyPath:keyPathForPrimaryKeyElement];
-//            } else {
-//                RKLogWarning(@"Unable to find source attribute for primaryKeyAttribute '%@': unable to find existing object instances by primary key.", primaryKeyAttribute);
-//            }
-//        }
-//    }
-//
-//    // If we have found the primary key attribute & value, try to find an existing instance to update
-//    if (primaryKeyAttribute && primaryKeyValue && NO == [primaryKeyValue isEqual:[NSNull null]]) {
-//        object = [self.objectStore.cacheStrategy findInstanceOfEntity:entity
-//                                              withPrimaryKeyAttribute:primaryKeyAttribute
-//                                                                value:primaryKeyValue
-//                                               inManagedObjectContext:[self.objectStore managedObjectContextForCurrentThread]];
-//
-//        if (object && [self.objectStore.cacheStrategy respondsToSelector:@selector(didFetchObject:)]) {
-//            [self.objectStore.cacheStrategy didFetchObject:object];
-//        }
-//    }
-//
-//    if (object == nil) {
-//        object = [[[NSManagedObject alloc] initWithEntity:entity
-//                           insertIntoManagedObjectContext:[_objectStore managedObjectContextForCurrentThread]] autorelease];
-//        if (primaryKeyAttribute && primaryKeyValue && ![primaryKeyValue isEqual:[NSNull null]]) {
-//            id coercedPrimaryKeyValue = [entity coerceValueForPrimaryKey:primaryKeyValue];
-//            [object setValue:coercedPrimaryKeyValue forKey:primaryKeyAttribute];
-//        }
-//
-//        if ([self.objectStore.cacheStrategy respondsToSelector:@selector(didCreateObject:)]) {
-//            [self.objectStore.cacheStrategy didCreateObject:object];
-//        }
-//    }
-//    return object;
 }
 
 - (Class)classForProperty:(NSString *)propertyName

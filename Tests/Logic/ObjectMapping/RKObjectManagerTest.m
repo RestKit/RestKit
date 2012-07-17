@@ -111,9 +111,9 @@
     assertThat(human.railsID, is(equalToInt(1)));
 }
 
-- (void)testShouldDeleteACoreDataBackedTargetObjectOnError
+- (void)testShouldNotPersistTemporaryEntityToPersistentStoreOnError
 {
-    RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKHuman *temporaryHuman = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[NSMutableDictionary class]];
     [mapping mapAttributes:@"name", nil];
@@ -128,7 +128,7 @@
     [objectLoader send];
     [loader waitForResponse];
 
-    assertThatBool([temporaryHuman hasBeenDeleted], is(equalToBool(YES)));
+    assertThatBool([temporaryHuman isNew], is(equalToBool(YES)));
 }
 
 - (void)testShouldNotDeleteACoreDataBackedTargetObjectOnErrorIfItWasAlreadySaved

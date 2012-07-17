@@ -27,6 +27,11 @@
 // Constants
 NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUTE>";
 
+@interface RKObjectMapping () {
+    NSMutableArray *_mappings;
+}
+@end
+
 @implementation RKObjectMapping
 
 @synthesize objectClass = _objectClass;
@@ -375,11 +380,6 @@ NSString * const RKObjectMappingNestingAttributeKeyName = @"<RK_NESTING_ATTRIBUT
 - (id)defaultValueForMissingAttribute:(NSString *)attributeName
 {
     return nil;
-}
-
-- (id)mappableObjectForData:(id)mappableData
-{
-    return [[self.objectClass new] autorelease];
 }
 
 - (Class)classForProperty:(NSString *)propertyName

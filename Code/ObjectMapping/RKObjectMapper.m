@@ -234,9 +234,8 @@
     NSError *error = nil;
 
     RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:mappableObject
-                                                                                             toObject:destinationObject
-                                                                                          withMapping:mapping];
-    mappingOperation.queue = self.operationQueue;
+                                                                                 toObject:destinationObject
+                                                                              withMapping:mapping];
     mappingOperation.dataSource = self.mappingOperationDataSource;
     if ([self.delegate respondsToSelector:@selector(mapper:willPerformMappingOperation:)]) {
         [self.delegate mapper:self willPerformMappingOperation:mappingOperation];

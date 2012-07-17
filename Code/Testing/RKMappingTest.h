@@ -22,6 +22,8 @@
 #import "RKMappingOperation.h"
 #import "RKMappingTestExpectation.h"
 
+@protocol RKMappingOperationDataSource;
+
 /**
  An RKMappingTest object provides support for unit testing
  a RestKit object mapping operation by evaluation expectations
@@ -154,6 +156,13 @@
 @property (nonatomic, strong, readonly) RKObjectMapping *mapping;
 
 /**
+ A data source for the mapping operation.
+ 
+ Defaults to an instance of RKObjectMappingOperationDataSource.
+ */
+@property (nonatomic, strong) id<RKMappingOperationDataSource> mappingOperationDataSource;
+
+/**
  A key path to apply to the source object to specify the location of the root
  of the data under test. Useful when testing subsets of a larger payload or
  object graph.
@@ -171,10 +180,10 @@
  The destionation object being mapped to.
 
  If nil, the mapping test will instantiate a destination object to perform the mapping
- by invoking `[self.mapping mappableObjectForData:self.sourceObject]` and set the
- new object as the value for the destinationObject property.
+ by invoking `[self.mappingOperationDataSource objectForMappableContent:self.sourceObject mapping:self.mapping]`
+ to obtain a new object from the data source and then assign the object as the value for the destinationObject property.
 
- @see [RKObjectMapping mappableObjectForData:]
+ @see RKMappingOperationDataSource
  */
 @property (nonatomic, strong, readonly) id destinationObject;
 
