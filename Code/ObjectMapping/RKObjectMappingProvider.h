@@ -19,7 +19,7 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKDynamicObjectMapping.h"
+#import "RKDynamicMapping.h"
 #import "RKObjectMappingProviderContextEntry.h"
 
 // Internal framework contexts
@@ -44,7 +44,7 @@ typedef enum {
     when attempting to map a parsed payload into objects. Each keyPath is examined using
     valueForKeyPath: to determine if any mappable data exists within the payload. If data is
     found, the RKObjectMapper will instantiate an RKObjectMappingOperation to perform the mapping
-    using the RKObjectMapping or RKDynamicObjectMapping associated with the keyPath.
+    using the RKObjectMapping or RKDynamicMapping associated with the keyPath.
  1. Providing the appropriate serialization mapping to instances of RKObjectManager when an object
     is to be sent to the remote server using [RKObjectManager postObject:delegate:] or
     [RKObjectManager postObject:delegate]. This mapping is used to serialize the object into a
@@ -71,31 +71,31 @@ typedef enum {
 + (id)mappingProviderUsingBlock:(void (^)(RKObjectMappingProvider *))block;
 
 /**
- Configures the mapping provider to use the RKObjectMapping or RKDynamicObjectMapping provided when
+ Configures the mapping provider to use the RKObjectMapping or RKDynamicMapping provided when
  content is encountered at the specified keyPath.
 
  When an RKObjectMapper is performing its work, each registered keyPath within the mapping provider will
  be searched for content in the parsed payload. If mappable content is found, the object mapping configured
  for the keyPath will be used to perform an RKObjectMappingOperation.
 
- @param objectOrDynamicMapping An RKObjectMapping or RKDynamicObjectMapping to register for keyPath based mapping.
+ @param objectOrDynamicMapping An RKObjectMapping or RKDynamicMapping to register for keyPath based mapping.
  @param keyPath The keyPath to register the mapping as being responsible for mapping.
  @see RKObjectMapper
  @see RKObjectMappingOperation
  */
-- (void)setObjectMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
+- (void)setObjectMapping:(RKMapping *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
 
 /**
  Returns the RKObjectMapping or RKObjectDynamic mapping configured for use
  when mappable content is encountered at keyPath
 
  @param keyPath A registered keyPath to retrieve the object mapping for
- @return The RKObjectMapping or RKDynamicObjectMapping for the specified keyPath or nil if none is registered.
+ @return The RKObjectMapping or RKDynamicMapping for the specified keyPath or nil if none is registered.
  */
-- (RKObjectMappingDefinition *)objectMappingForKeyPath:(NSString *)keyPath;
+- (RKMapping *)objectMappingForKeyPath:(NSString *)keyPath;
 
 /**
- Removes the RKObjectMapping or RKDynamicObjectMapping registered at the specified keyPath
+ Removes the RKObjectMapping or RKDynamicMapping registered at the specified keyPath
  from the provider.
 
  @param keyPath The keyPath to remove the corresponding mapping for
@@ -104,9 +104,9 @@ typedef enum {
 
 /**
  Returns a dictionary where the keys are mappable keyPaths and the values are the RKObjectMapping
- or RKDynamicObjectMapping to use for mappable data that appears at the keyPath.
+ or RKDynamicMapping to use for mappable data that appears at the keyPath.
 
- @warning The returned dictionary can contain RKDynamicObjectMapping instances. Check the type if
+ @warning The returned dictionary can contain RKDynamicMapping instances. Check the type if
     you are using dynamic mapping.
  @return A dictionary of all registered keyPaths and their corresponding object mapping instances
  */
@@ -232,24 +232,24 @@ typedef enum {
  @see RKURL
  @see RKObjectLoader
  */
-- (void)setObjectMapping:(RKObjectMappingDefinition *)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern;
+- (void)setObjectMapping:(RKMapping *)objectMapping forResourcePathPattern:(NSString *)resourcePathPattern;
 
 /**
  Returns the first objectMapping configured in the provider with a resourcePathPattern matching
  the specified resourcePath.
 
- @param resourcePath A resource path to retrieve the first RKObjectMapping or RKDynamicObjectMapping
+ @param resourcePath A resource path to retrieve the first RKObjectMapping or RKDynamicMapping
     configured with a matching pattern.
- @return An RKObjectMapping or RKDynamicObjectMapping for a resource path pattern matching resourcePath
+ @return An RKObjectMapping or RKDynamicMapping for a resource path pattern matching resourcePath
     or nil if no match was found.
  */
-- (RKObjectMappingDefinition *)objectMappingForResourcePath:(NSString *)resourcePath;
+- (RKMapping *)objectMappingForResourcePath:(NSString *)resourcePath;
 
 
 - (void)setEntry:(RKObjectMappingProviderContextEntry *)entry forResourcePathPattern:(NSString *)resourcePath;
 - (RKObjectMappingProviderContextEntry *)entryForResourcePath:(NSString *)resourcePath;
 - (RKObjectMappingProviderContextEntry *)entryForResourcePathPattern:(NSString *)resourcePathPattern;
-- (RKObjectMappingDefinition *)objectMappingForResourcePathPattern:(NSString *)resourcePathPattern;
+- (RKMapping *)objectMappingForResourcePathPattern:(NSString *)resourcePathPattern;
 
 /**
  An object mapping used when the remote system returns an error status code
@@ -281,11 +281,11 @@ typedef enum {
 @end
 
 // Method signatures being phased out
-@interface RKObjectMappingProvider (CompatibilityAliases)
+@interface RKObjectMappingProvider (Deprecations)
 + (RKObjectMappingProvider *)objectMappingProvider;
 - (void)registerMapping:(RKObjectMapping *)objectMapping withRootKeyPath:(NSString *)keyPath;
-- (void)setMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
-- (RKObjectMappingDefinition *)mappingForKeyPath:(NSString *)keyPath;
+- (void)setMapping:(RKMapping *)objectOrDynamicMapping forKeyPath:(NSString *)keyPath;
+- (RKMapping *)mappingForKeyPath:(NSString *)keyPath;
 - (NSDictionary *)mappingsByKeyPath;
 - (void)removeMappingForKeyPath:(NSString *)keyPath;
 @end

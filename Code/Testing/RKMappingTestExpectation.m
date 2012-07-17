@@ -7,14 +7,14 @@
 //
 
 #import "RKMappingTestExpectation.h"
-#import "RKObjectAttributeMapping.h"
+#import "RKAttributeMapping.h"
 
 @interface RKMappingTestExpectation ()
 @property (nonatomic, copy, readwrite) NSString *sourceKeyPath;
 @property (nonatomic, copy, readwrite) NSString *destinationKeyPath;
 @property (nonatomic, strong, readwrite) id value;
-@property (nonatomic, copy, readwrite) BOOL (^evaluationBlock)(RKObjectAttributeMapping *mapping, id value);
-@property (nonatomic, strong, readwrite) RKObjectMappingDefinition *mapping;
+@property (nonatomic, copy, readwrite) BOOL (^evaluationBlock)(RKAttributeMapping *mapping, id value);
+@property (nonatomic, strong, readwrite) RKMapping *mapping;
 @end
 
 
@@ -45,7 +45,7 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))testBlock
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKAttributeMapping *mapping, id value))testBlock
 {
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;
@@ -55,7 +55,7 @@
     return expectation;
 }
 
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)mapping
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping
 {
     RKMappingTestExpectation *expectation = [self new];
     expectation.sourceKeyPath = sourceKeyPath;

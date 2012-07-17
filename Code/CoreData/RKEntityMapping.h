@@ -98,7 +98,7 @@
  In effect, this approach allows foreign key relationships between managed objects
  to be automatically maintained from the server to the underlying Core Data object graph.
  */
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
+- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -116,7 +116,7 @@
 
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
+- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value;
 
 /**
  Conditionally connect a relationship of the object being mapped when the object being mapped has
@@ -137,7 +137,7 @@
 
  @see connectRelationship:withObjectForPrimaryKeyAttribute:
  */
-- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block;
+- (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingEvaluationBlock:(BOOL (^)(id data))block;
 
 /**
  Returns the default value for the specified attribute as expressed in the Core Data entity definition. This value will
@@ -147,7 +147,7 @@
 
 @end
 
-@interface RKEntityMapping (CompatibilityAliases)
+@interface RKEntityMapping (Deprecations)
 
 /* Deprecated Initialization API's */
 + (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;

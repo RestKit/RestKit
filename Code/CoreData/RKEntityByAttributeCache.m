@@ -12,8 +12,8 @@
 
 #import "RKEntityByAttributeCache.h"
 #import "RKLog.h"
-#import "RKObjectPropertyInspector.h"
-#import "RKObjectPropertyInspector+CoreData.h"
+#import "RKPropertyInspector.h"
+#import "RKPropertyInspector+CoreData.h"
 
 // Set Logging Component
 #undef RKLogComponent
@@ -93,7 +93,7 @@
         return NO;
     }
 
-    Class attributeType = [[RKObjectPropertyInspector sharedInspector] typeForProperty:self.attribute ofEntity:self.entity];
+    Class attributeType = [[RKPropertyInspector sharedInspector] typeForProperty:self.attribute ofEntity:self.entity];
     return [attributeType instancesRespondToSelector:@selector(stringValue)];
 }
 
@@ -107,8 +107,11 @@
     __block NSError *error = nil;
     __block NSArray *objectIDs = nil;
     [self.managedObjectContext performBlockAndWait:^{
-        [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-    }];    
+        objectIDs = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        if (! objectIDs) {
+            RKLogError(@"Failed to execute fetch request due to error: %@", error);
+        }
+    }];
     [fetchRequest release];
     if (error) {
         RKLogError(@"Failed to load entity cache: %@", error);

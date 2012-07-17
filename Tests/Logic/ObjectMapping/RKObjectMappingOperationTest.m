@@ -19,7 +19,7 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKObjectMapperError.h"
+#import "RKMappingErrors.h"
 #import "RKMappableObject.h"
 #import "RKMappableAssociation.h"
 
@@ -52,7 +52,7 @@
 - (BOOL)validateBoolString:(id *)ioValue error:(NSError **)outError
 {
     if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"FAIL"]) {
-        *outError = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorUnmappableContent userInfo:nil];
+        *outError = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorUnmappableContent userInfo:nil];
         return NO;
     } else if ([(NSObject *)*ioValue isKindOfClass:[NSString class]] && [(NSString *)*ioValue isEqualToString:@"REJECT"]) {
         return NO;
@@ -85,7 +85,7 @@
     [object setUrl:url1];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:url2, @"url", nil];
 
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThatBool(object.url == url1, is(equalToBool(YES)));
@@ -101,7 +101,7 @@
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"boolString\":true}" error:nil];
 
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"true")));
@@ -117,7 +117,7 @@
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"boolNumber\":true}" error:nil];
 
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThatInt([object.boolNumber intValue], is(equalToInt(1)));
@@ -133,7 +133,7 @@
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"boolNumber\":false}" error:nil];
 
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThatInt([object.boolNumber intValue], is(equalToInt(0)));
@@ -149,7 +149,7 @@
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"number\":123}" error:nil];
 
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     assertThat(object.boolString, is(equalTo(@"123")));
@@ -165,7 +165,7 @@
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:@"application/json"];
     id data = [parser objectFromString:@"{\"numbers\":[1, 2, 3]}" error:nil];
 
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     NSOrderedSet *expectedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
@@ -182,7 +182,7 @@
     TestMappable *data = [[[TestMappable alloc] init] autorelease];
     data.orderedSet = [NSOrderedSet orderedSetWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
 
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data destinationObject:object mapping:mapping];
     BOOL success = [operation performMapping:nil];
     assertThatBool(success, is(equalToBool(YES)));
     NSArray *expectedArray = [NSArray arrayWithObjects:[NSNumber numberWithInt:1], [NSNumber numberWithInt:2], [NSNumber numberWithInt:3], nil];
@@ -196,7 +196,7 @@
     [mapping mapAttributes:@"boolString", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"FAIL" forKey:@"boolString"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(NO)));
@@ -211,7 +211,7 @@
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     object.boolString = @"should not change";
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"REJECT" forKey:@"boolString"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -225,7 +225,7 @@
     [mapping mapAttributes:@"boolString", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"MODIFY" forKey:@"boolString"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -241,7 +241,7 @@
     [mapping mapAttributes:@"date", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"2011-07-07T04:35:28Z" forKey:@"date"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -256,7 +256,7 @@
     [mapping mapAttributes:@"date", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"457574400" forKey:@"date"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -271,7 +271,7 @@
     [mapping mapAttributes:@"date", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"08/09/2011" forKey:@"date"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -286,7 +286,7 @@
     [mapping mapAttributes:@"date", nil];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"2011-08-09T00:00Z" forKey:@"date"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -306,7 +306,7 @@
     mapping.dateFormatters = [NSArray arrayWithObject:dateFormatter];
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObject:@"11-27-1982" forKey:@"date"];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:dictionary destinationObject:object mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -327,7 +327,7 @@
     object.date = [dateFormatter dateFromString:@"11-27-1982"];
     mapping.preferredDateFormatter = dateFormatter;
     TestMappable *newObject = [TestMappable new];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:newObject mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:newObject mapping:mapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -342,7 +342,7 @@
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     object.boolString = @"test";
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
     NSError *error = nil;
     BOOL success;
     NSException *exception = nil;
@@ -366,7 +366,7 @@
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     object.boolString = @"test";
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
     NSError *error = nil;
     BOOL success;
     NSException *exception = nil;
@@ -392,7 +392,7 @@
     TestMappable *object = [[[TestMappable alloc] init] autorelease];
     object.boolString = @"test";
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
+    RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:object destinationObject:dictionary mapping:mapping];
     NSError *error = nil;
     BOOL success;
     NSException *exception = nil;
@@ -421,7 +421,7 @@
     [objectMapping mapKeyPath:@"mediaGroups.contents" toRelationship:@"hasMany" withMapping:relationshipMapping];
     RKMappableObject *targetObject = [[RKMappableObject new] autorelease];
     RKLogToComponentWithLevelWhileExecutingBlock(lcl_cRestKitObjectMapping, RKLogLevelDebug, ^ {
-        RKObjectMappingOperation *operation = [[RKObjectMappingOperation alloc] initWithSourceObject:data
+        RKMappingOperation *operation = [[RKMappingOperation alloc] initWithSourceObject:data
                                                                                    destinationObject:targetObject mapping:objectMapping];
         NSError *error = nil;
         [operation performMapping:&error];

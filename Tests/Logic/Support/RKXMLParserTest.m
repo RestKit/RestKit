@@ -85,7 +85,7 @@
     assertThat([data valueForKeyPath:@"tabdata.item"], is(instanceOf([NSArray class])));
     [provider setMapping:mapping forKeyPath:@"tabdata.item"];
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:data mappingProvider:provider];
-    RKObjectMappingResult *result = [mapper performMapping];
+    RKMappingResult *result = [mapper performMapping];
     assertThatUnsignedInteger([[result asCollection] count], is(equalToInt(2)));
     assertThatUnsignedInteger([[data valueForKeyPath:@"tabdata.title"] count], is(equalToInt(2)));
     assertThatUnsignedInteger([[data valueForKeyPath:@"tabdata.item"] count], is(equalToInt(2)));

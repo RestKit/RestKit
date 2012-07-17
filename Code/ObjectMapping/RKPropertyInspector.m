@@ -1,5 +1,5 @@
 //
-//  RKObjectPropertyInspector.m
+//  RKPropertyInspector.m
 //  RestKit
 //
 //  Created by Blake Watters on 3/4/10.
@@ -19,21 +19,21 @@
 //
 
 #import <objc/message.h>
-#import "RKObjectPropertyInspector.h"
+#import "RKPropertyInspector.h"
 #import "RKLog.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
-static RKObjectPropertyInspector *sharedInspector = nil;
+static RKPropertyInspector *sharedInspector = nil;
 
-@implementation RKObjectPropertyInspector
+@implementation RKPropertyInspector
 
-+ (RKObjectPropertyInspector *)sharedInspector
++ (RKPropertyInspector *)sharedInspector
 {
     if (sharedInspector == nil) {
-        sharedInspector = [RKObjectPropertyInspector new];
+        sharedInspector = [RKPropertyInspector new];
     }
 
     return sharedInspector;
@@ -41,8 +41,9 @@ static RKObjectPropertyInspector *sharedInspector = nil;
 
 - (id)init
 {
-    if ((self = [super init])) {
-        _cachedPropertyNamesAndTypes = [[NSMutableDictionary alloc] init];
+    self = [super init];
+    if (self) {
+        _propertyNamesToTypesCache = [[NSCache alloc] init];
     }
 
     return self;
@@ -50,7 +51,7 @@ static RKObjectPropertyInspector *sharedInspector = nil;
 
 - (void)dealloc
 {
-    [_cachedPropertyNamesAndTypes release];
+    [_propertyNamesToTypesCache release];
     [super dealloc];
 }
 
@@ -72,7 +73,7 @@ static RKObjectPropertyInspector *sharedInspector = nil;
 
 - (NSDictionary *)propertyNamesAndTypesForClass:(Class)theClass
 {
-    NSMutableDictionary *propertyNames = [_cachedPropertyNamesAndTypes objectForKey:theClass];
+    NSMutableDictionary *propertyNames = [_propertyNamesToTypesCache objectForKey:theClass];
     if (propertyNames) {
         return propertyNames;
     }
@@ -96,7 +97,7 @@ static RKObjectPropertyInspector *sharedInspector = nil;
             propName = [NSString stringWithCString:property_getName(*prop) encoding:NSUTF8StringEncoding];
 
             if (![propName isEqualToString:@"_mapkit_hasPanoramaID"]) {
-                const char *className = [[RKObjectPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
+                const char *className = [[RKPropertyInspector propertyTypeFromAttributeString:attributeString] cStringUsingEncoding:NSUTF8StringEncoding];
                 Class aClass = objc_getClass(className);
                 if (aClass) {
                     [propertyNames setObject:aClass forKey:propName];
@@ -108,7 +109,7 @@ static RKObjectPropertyInspector *sharedInspector = nil;
         currentClass = [currentClass superclass];
     }
 
-    [_cachedPropertyNamesAndTypes setObject:propertyNames forKey:theClass];
+    [_propertyNamesToTypesCache setObject:propertyNames forKey:theClass];
     RKLogDebug(@"Cached property names and types for Class '%@': %@", NSStringFromClass(theClass), propertyNames);
     return propertyNames;
 }

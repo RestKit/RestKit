@@ -16,4 +16,10 @@
     return self.managedObjectContext.managedObjectStore;
 }
 
+- (BOOL)hasBeenDeleted
+{
+    NSManagedObject *managedObjectClone = [[self managedObjectContext] existingObjectWithID:[self objectID] error:nil];
+    return (managedObjectClone == nil) ? YES : NO;
+}
+
 @end

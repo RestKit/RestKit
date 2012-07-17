@@ -11,12 +11,15 @@
 
 @protocol RKManagedObjectCaching;
 
-// TODO: Add note about deadlock prevention!!!
 @interface RKManagedObjectMappingOperationDataSource : NSObject <RKMappingOperationDataSource>
 
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, retain, readonly) id<RKManagedObjectCaching> managedObjectCache;
 @property (nonatomic, assign) NSOperationQueue *operationQueue;
+
+@property (nonatomic, assign) BOOL tracksInsertedObjects; // Default: NO
+@property (nonatomic, readonly) NSArray *insertedObjects;
+- (void)clearInsertedObjects;
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache;
 

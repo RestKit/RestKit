@@ -19,10 +19,10 @@
 //
 
 #import <objc/message.h>
-#import "RKObjectMappingOperation.h"
-#import "RKObjectMapperError.h"
-#import "RKObjectPropertyInspector.h"
-#import "RKObjectRelationshipMapping.h"
+#import "RKMappingOperation.h"
+#import "RKMappingErrors.h"
+#import "RKPropertyInspector.h"
+#import "RKRelationshipMapping.h"
 #import "RKObjectMapper.h"
 #import "RKErrors.h"
 #import "RKLog.h"
@@ -63,12 +63,12 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return ComparisonSender(sourceValue, comparisonSelector, destinationValue);
 }
 
-@interface RKObjectMappingOperation ()
+@interface RKMappingOperation ()
 @property (nonatomic, retain) NSDictionary *nestedAttributeSubstitution;
 @property (nonatomic, retain) NSError *validationError;
 @end
 
-@implementation RKObjectMappingOperation
+@implementation RKMappingOperation
 
 @synthesize sourceObject = _sourceObject;
 @synthesize destinationObject = _destinationObject;
@@ -78,16 +78,16 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 @synthesize nestedAttributeSubstitution = _nestedAttributeSubstitution;
 @synthesize validationError = _validationError;
 
-+ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectMappingDefinition *)objectMapping
++ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)objectMapping
 {
     // Check for availability of ManagedObjectMappingOperation. Better approach for handling?
     Class targetClass = NSClassFromString(@"RKManagedObjectMappingOperation");
-    if (targetClass == nil) targetClass = [RKObjectMappingOperation class];
+    if (targetClass == nil) targetClass = [RKMappingOperation class];
 
     return [[[targetClass alloc] initWithSourceObject:sourceObject destinationObject:destinationObject mapping:objectMapping] autorelease];
 }
 
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKObjectMappingDefinition *)objectMapping
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)objectMapping
 {
     NSAssert(sourceObject != nil, @"Cannot perform a mapping operation without a sourceObject object");
     NSAssert(destinationObject != nil, @"Cannot perform a mapping operation without a destinationObject");
@@ -99,8 +99,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         _destinationObject = [destinationObject retain];
         self.dataSource = [[RKObjectMappingOperationDataSource new] autorelease];
 
-        if ([objectMapping isKindOfClass:[RKDynamicObjectMapping class]]) {
-            _objectMapping = [[(RKDynamicObjectMapping *)objectMapping objectMappingForDictionary:_sourceObject] retain];
+        if ([objectMapping isKindOfClass:[RKDynamicMapping class]]) {
+            _objectMapping = [[(RKDynamicMapping *)objectMapping objectMappingForDictionary:_sourceObject] retain];
             RKLogDebug(@"RKObjectMappingOperation was initialized with a dynamic mapping. Determined concrete mapping = %@", _objectMapping);
         } else if ([objectMapping isKindOfClass:[RKObjectMapping class]]) {
             _objectMapping = (RKObjectMapping *)[objectMapping retain];
@@ -314,8 +314,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         NSString *searchString = [NSString stringWithFormat:@"(%@)", [[_nestedAttributeSubstitution allKeys] lastObject]];
         NSString *replacementString = [[_nestedAttributeSubstitution allValues] lastObject];
         NSMutableArray *array = [NSMutableArray arrayWithCapacity:[self.objectMapping.attributeMappings count]];
-        for (RKObjectAttributeMapping *mapping in mappings) {
-            RKObjectAttributeMapping *nestedMapping = [mapping copy];
+        for (RKAttributeMapping *mapping in mappings) {
+            RKAttributeMapping *nestedMapping = [mapping copy];
             nestedMapping.sourceKeyPath = [nestedMapping.sourceKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
             nestedMapping.destinationKeyPath = [nestedMapping.destinationKeyPath stringByReplacingOccurrencesOfString:searchString withString:replacementString];
             [array addObject:nestedMapping];
@@ -338,10 +338,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return [self applyNestingToMappings:self.objectMapping.relationshipMappings];
 }
 
-- (void)applyAttributeMapping:(RKObjectAttributeMapping *)attributeMapping withValue:(id)value
+- (void)applyAttributeMapping:(RKAttributeMapping *)attributeMapping withValue:(id)value
 {
-    if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFindMapping:forKeyPath:)]) {
-        [self.delegate objectMappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
+    if ([self.delegate respondsToSelector:@selector(mappingOperation:didFindMapping:forKeyPath:)]) {
+        [self.delegate mappingOperation:self didFindMapping:attributeMapping forKeyPath:attributeMapping.sourceKeyPath];
     }
     RKLogTrace(@"Mapping attribute value keyPath '%@' to '%@'", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath);
 
@@ -356,13 +356,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         RKLogTrace(@"Mapped attribute value from keyPath '%@' to '%@'. Value: %@", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
 
         [self.destinationObject setValue:value forKeyPath:attributeMapping.destinationKeyPath];
-        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
-            [self.delegate objectMappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+        if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
+            [self.delegate mappingOperation:self didSetValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
     } else {
         RKLogTrace(@"Skipped mapping of attribute value from keyPath '%@ to keyPath '%@' -- value is unchanged (%@)", attributeMapping.sourceKeyPath, attributeMapping.destinationKeyPath, value);
-        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
-            [self.delegate objectMappingOperation:self didNotSetUnchangedValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
+        if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+            [self.delegate mappingOperation:self didNotSetUnchangedValue:value forKeyPath:attributeMapping.destinationKeyPath usingMapping:attributeMapping];
         }
     }
 }
@@ -377,7 +377,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
         RKLogDebug(@"Key-value validation is disabled for mapping, skipping...");
     }
 
-    for (RKObjectAttributeMapping *attributeMapping in [self attributeMappings]) {
+    for (RKAttributeMapping *attributeMapping in [self attributeMappings]) {
         if ([attributeMapping isMappingForKeyOfNestedDictionary]) {
             RKLogTrace(@"Skipping attribute mapping for special keyPath '%@'", attributeMapping.sourceKeyPath);
             continue;
@@ -410,8 +410,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
             appliedMappings = YES;
             [self applyAttributeMapping:attributeMapping withValue:value];
         } else {
-            if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotFindMappingForKeyPath:)]) {
-                [self.delegate objectMappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
+            if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotFindMappingForKeyPath:)]) {
+                [self.delegate mappingOperation:self didNotFindMappingForKeyPath:attributeMapping.sourceKeyPath];
             }
             RKLogTrace(@"Did not find mappable attribute value keyPath '%@'", attributeMapping.sourceKeyPath);
 
@@ -445,7 +445,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     return [self isTypeACollection:[value class]];
 }
 
-- (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withRelationshipMapping:(RKObjectRelationshipMapping *)relationshipMapping
+- (BOOL)mapNestedObject:(id)anObject toObject:(id)anotherObject withRelationshipMapping:(RKRelationshipMapping *)relationshipMapping
 {
     NSAssert(anObject, @"Cannot map nested object without a nested source object");
     NSAssert(anotherObject, @"Cannot map nested object without a destination object");
@@ -453,10 +453,9 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     NSError *error = nil;
 
     RKLogTrace(@"Performing nested object mapping using mapping %@ for data: %@", relationshipMapping, anObject);
-    RKObjectMappingOperation *subOperation = [RKObjectMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
+    RKMappingOperation *subOperation = [RKMappingOperation mappingOperationFromObject:anObject toObject:anotherObject withMapping:relationshipMapping.mapping];
     subOperation.delegate = self.delegate;
     subOperation.queue = self.queue;
-    [self willPerformChildMappingOperation:subOperation];
     if (NO == [subOperation performMapping:&error]) {
         RKLogWarning(@"WARNING: Failed mapping nested object: %@", [error localizedDescription]);
     }
@@ -470,7 +469,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     BOOL appliedMappings = NO;
     id destinationObject = nil;
 
-    for (RKObjectRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
+    for (RKRelationshipMapping *relationshipMapping in [self relationshipMappings]) {
         id value = nil;
         @try {
             value = [self.sourceObject valueForKeyPath:relationshipMapping.sourceKeyPath];
@@ -545,10 +544,10 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 RKLogWarning(@"Key path '%@' yielded collection containing another collection rather than a collection of objects: %@", relationshipMapping.sourceKeyPath, value);
             }
             for (id nestedObject in value) {
-                RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
+                RKMapping *mapping = relationshipMapping.mapping;
                 RKObjectMapping *objectMapping = nil;
-                if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
-                    objectMapping = [(RKDynamicObjectMapping *)mapping objectMappingForDictionary:nestedObject];
+                if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+                    objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:nestedObject];
                     if (! objectMapping) {
                         RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", mapping, nestedObject);
                         continue;
@@ -593,18 +592,18 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                     [self.destinationObject setValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath];
                 }
             } else {
-                if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
-                    [self.delegate objectMappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+                if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+                    [self.delegate mappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
                 }
             }
         } else {
             // One to one relationship
             RKLogDebug(@"Mapping one to one relationship value at keyPath '%@' to '%@'", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath);
 
-            RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
+            RKMapping *mapping = relationshipMapping.mapping;
             RKObjectMapping *objectMapping = nil;
-            if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
-                objectMapping = [(RKDynamicObjectMapping *)mapping objectMappingForDictionary:value];
+            if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+                objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:value];
             } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
                 objectMapping = (RKObjectMapping *)mapping;
             }
@@ -620,15 +619,15 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
                 RKLogTrace(@"Mapped relationship object from keyPath '%@' to '%@'. Value: %@", relationshipMapping.sourceKeyPath, relationshipMapping.destinationKeyPath, destinationObject);
                 [self.destinationObject setValue:destinationObject forKey:relationshipMapping.destinationKeyPath];
             } else {
-                if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
-                    [self.delegate objectMappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+                if ([self.delegate respondsToSelector:@selector(mappingOperation:didNotSetUnchangedValue:forKeyPath:usingMapping:)]) {
+                    [self.delegate mappingOperation:self didNotSetUnchangedValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
                 }
             }
         }
 
         // Notify the delegate
-        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
-            [self.delegate objectMappingOperation:self didSetValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
+        if ([self.delegate respondsToSelector:@selector(mappingOperation:didSetValue:forKeyPath:usingMapping:)]) {
+            [self.delegate mappingOperation:self didSetValue:destinationObject forKeyPath:relationshipMapping.destinationKeyPath usingMapping:relationshipMapping];
         }
 
         // Fail out if a validation error has occurred
@@ -642,7 +641,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
 - (void)applyNestedMappings
 {
-    RKObjectAttributeMapping *attributeMapping = [self.objectMapping attributeMappingForKeyOfNestedDictionary];
+    RKAttributeMapping *attributeMapping = [self.objectMapping attributeMappingForKeyOfNestedDictionary];
     if (attributeMapping) {
         RKLogDebug(@"Found nested mapping definition to attribute '%@'", attributeMapping.destinationKeyPath);
         id attributeValue = [[self.sourceObject allKeys] lastObject];
@@ -676,8 +675,8 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if (_validationError) {
         // We failed out due to validation
         if (error) *error = _validationError;
-        if ([self.delegate respondsToSelector:@selector(objectMappingOperation:didFailWithError:)]) {
-            [self.delegate objectMappingOperation:self didFailWithError:_validationError];
+        if ([self.delegate respondsToSelector:@selector(mappingOperation:didFailWithError:)]) {
+            [self.delegate mappingOperation:self didFailWithError:_validationError];
         }
 
         RKLogError(@"Failed mapping operation: %@", [_validationError localizedDescription]);
@@ -693,12 +692,6 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 {
     return [NSString stringWithFormat:@"RKObjectMappingOperation for '%@' object. Mapping values from object %@ to object %@ with object mapping %@",
             NSStringFromClass([self.destinationObject class]), self.sourceObject, self.destinationObject, self.objectMapping];
-}
-
-// TODO: Eliminate...
-- (void)willPerformChildMappingOperation:(RKObjectMappingOperation *)childMappingOperation
-{
-    
 }
 
 @end

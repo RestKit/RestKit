@@ -1,8 +1,8 @@
 //
-//  RKObjectMapper_Private.h
+//  RKMappingResult.h
 //  RestKit
 //
-//  Created by Blake Watters on 5/9/11.
+//  Created by Blake Watters on 5/7/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +18,19 @@
 //  limitations under the License.
 //
 
-@interface RKObjectMapper (Private)
+#import <Foundation/Foundation.h>
 
-- (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
-- (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
-- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping;
-- (id)objectWithMapping:(RKMapping *)objectMapping andData:(id)mappableData;
+@interface RKMappingResult : NSObject
+
+- (id)initWithDictionary:(id)dictionary;
++ (RKMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects;
+
+/**
+ Return the mapping result as a dictionary
+ */
+- (NSDictionary *)asDictionary;
+- (id)asObject;
+- (NSArray *)asCollection;
+- (NSError *)asError;
 
 @end

@@ -28,22 +28,22 @@
 - (id)valueForContext:(RKObjectMappingProviderContext)context;
 - (void)setValue:(id)value forContext:(RKObjectMappingProviderContext)context;
 
-- (RKObjectMappingDefinition *)mappingForContext:(RKObjectMappingProviderContext)context;
+- (RKMapping *)mappingForContext:(RKObjectMappingProviderContext)context;
 /**
  Stores a single object mapping for a given context. Useful when a component needs to enable
  configuration via one (and only one) object mapping.
  */
-- (void)setMapping:(RKObjectMappingDefinition *)mapping context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKMapping *)mapping context:(RKObjectMappingProviderContext)context;
 - (NSArray *)mappingsForContext:(RKObjectMappingProviderContext)context;
-- (void)addMapping:(RKObjectMappingDefinition *)mapping context:(RKObjectMappingProviderContext)context;
-- (void)removeMapping:(RKObjectMappingDefinition *)mapping context:(RKObjectMappingProviderContext)context;
-- (RKObjectMappingDefinition *)mappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
-- (void)setMapping:(RKObjectMappingDefinition *)mapping forKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
+- (void)addMapping:(RKMapping *)mapping context:(RKObjectMappingProviderContext)context;
+- (void)removeMapping:(RKMapping *)mapping context:(RKObjectMappingProviderContext)context;
+- (RKMapping *)mappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKMapping *)mapping forKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
 - (void)removeMappingForKeyPath:(NSString *)keyPath context:(RKObjectMappingProviderContext)context;
 
-- (void)setMapping:(RKObjectMappingDefinition *)mapping forPattern:(NSString *)pattern atIndex:(NSUInteger)index context:(RKObjectMappingProviderContext)context;
-- (void)setMapping:(RKObjectMappingDefinition *)mapping forPattern:(NSString *)pattern context:(RKObjectMappingProviderContext)context;
-- (RKObjectMappingDefinition *)mappingForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKMapping *)mapping forPattern:(NSString *)pattern atIndex:(NSUInteger)index context:(RKObjectMappingProviderContext)context;
+- (void)setMapping:(RKMapping *)mapping forPattern:(NSString *)pattern context:(RKObjectMappingProviderContext)context;
+- (RKMapping *)mappingForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context;
 - (void)setEntry:(RKObjectMappingProviderContextEntry *)entry forPattern:(NSString *)pattern context:(RKObjectMappingProviderContext)context;
 - (RKObjectMappingProviderContextEntry *)entryForPatternMatchingString:(NSString *)string context:(RKObjectMappingProviderContext)context;
 

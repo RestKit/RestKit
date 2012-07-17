@@ -62,7 +62,7 @@
 - (id)serializedObject:(NSError **)error
 {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    RKObjectMappingOperation *operation = [RKObjectMappingOperation mappingOperationFromObject:_object toObject:dictionary withMapping:_mapping];
+    RKMappingOperation *operation = [RKMappingOperation mappingOperationFromObject:_object toObject:dictionary withMapping:_mapping];
     operation.delegate = self;
     BOOL success = [operation performMapping:error];
     if (!success) {
@@ -113,7 +113,7 @@
 
 #pragma mark - RKObjectMappingOperationDelegate
 
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping
+- (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping
 {
     id transformedValue = nil;
     Class orderedSetClass = NSClassFromString(@"NSOrderedSet");

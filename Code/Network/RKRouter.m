@@ -87,7 +87,7 @@
 
 @end
 
-@implementation RKRouter (CompatibilityAliases)
+@implementation RKRouter (Deprecations)
 
 - (NSString *)resourcePathForObject:(NSObject *)object method:(RKRequestMethod)method DEPRECATED_ATTRIBUTE
 {

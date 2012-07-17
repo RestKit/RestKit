@@ -78,7 +78,7 @@
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    objectManager.objectStore = store;
+    objectManager.managedObjectStore = store;
 
     [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/all\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
         return [RKHuman requestAllSortedBy:@"name" ascending:YES];
@@ -112,7 +112,7 @@
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider addObjectMapping:eventMapping];
-    objectManager.objectStore = store;
+    objectManager.managedObjectStore = store;
 
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
     [[[mockMappingProvider stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
@@ -131,7 +131,7 @@
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
-    objectManager.objectStore = store;
+    objectManager.managedObjectStore = store;
 
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
     [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];

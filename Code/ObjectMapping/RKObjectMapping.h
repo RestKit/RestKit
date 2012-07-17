@@ -19,9 +19,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMappingDefinition.h"
-#import "RKObjectAttributeMapping.h"
-#import "RKObjectRelationshipMapping.h"
+#import "RKMapping.h"
+#import "RKAttributeMapping.h"
+#import "RKRelationshipMapping.h"
 
 /**
  An object mapping defines the rules for transforming a key-value coding
@@ -43,7 +43,7 @@ relationship. Relationships are processed using an object mapping as well.
  Instances of RKObjectMapping are used to configure RKObjectMappingOperation instances, which actually
  perform the mapping work. Both object loading and serialization are defined in terms of object mappings.
  */
-@interface RKObjectMapping : RKObjectMappingDefinition <NSCopying> {
+@interface RKObjectMapping : RKMapping <NSCopying> {
     Class _objectClass;
     NSMutableArray *_mappings;
 }
@@ -207,14 +207,14 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see RKObjectAttributeMapping
  */
-- (void)addAttributeMapping:(RKObjectAttributeMapping *)mapping;
+- (void)addAttributeMapping:(RKAttributeMapping *)mapping;
 
 /**
  Add a configured attribute mapping to this object mapping
 
  @see RKObjectRelationshipMapping
  */
-- (void)addRelationshipMapping:(RKObjectRelationshipMapping *)mapping;
+- (void)addRelationshipMapping:(RKRelationshipMapping *)mapping;
 
 #pragma mark - Retrieving Mappings
 
@@ -246,14 +246,14 @@ relationship. Relationships are processed using an object mapping as well.
 
  @param attributeKey The name of the attribute we want to retrieve the mapping for
  */
-- (RKObjectAttributeMapping *)mappingForAttribute:(NSString *)attributeKey;
+- (RKAttributeMapping *)mappingForAttribute:(NSString *)attributeKey;
 
 /**
  Returns the relationship mapping targeting the specified relationship on the destination object
 
  @param relationshipKey The name of the relationship we want to retrieve the mapping for
  */
-- (RKObjectRelationshipMapping *)mappingForRelationship:(NSString *)relationshipKey;
+- (RKRelationshipMapping *)mappingForRelationship:(NSString *)relationshipKey;
 
 #pragma mark - Attribute & Relationship Mapping
 
@@ -323,7 +323,7 @@ relationship. Relationships are processed using an object mapping as well.
     on the destination class that have the same name.
  @param objectOrDynamicMapping An RKObjectMapping or RKObjectDynamic mapping to apply when mapping the relationship
  */
-- (void)mapRelationship:(NSString *)relationshipKey withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+- (void)mapRelationship:(NSString *)relationshipKey withMapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -331,7 +331,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasMany:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+- (void)hasMany:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Syntactic sugar to improve readability when defining a relationship mapping. Implies that the mapping
@@ -339,7 +339,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see mapRelationship:withObjectMapping:
  */
-- (void)hasOne:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+- (void)hasOne:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Instantiate and add an RKObjectAttributeMapping instance targeting a keyPath within the mappable
@@ -380,7 +380,7 @@ relationship. Relationships are processed using an object mapping as well.
  @param objectMapping An object mapping to use when processing the nested objects
  @see RKObjectRelationshipMapping
  */
-- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString *)destinationRelationship withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
+- (void)mapKeyPath:(NSString *)sourceKeyPath toRelationship:(NSString *)destinationRelationship withMapping:(RKMapping *)objectOrDynamicMapping;
 
 /**
  Instantiate and add an RKObjectRelationshipMapping instance targeting a keyPath within the mappable
@@ -395,7 +395,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @see mapKeyPath:toRelationship:withObjectMapping:
  */
-- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping serialize:(BOOL)serialize;
+- (void)mapKeyPath:(NSString *)relationshipKeyPath toRelationship:(NSString *)keyPath withMapping:(RKMapping *)objectOrDynamicMapping serialize:(BOOL)serialize;
 
 /**
  Quickly define a group of attribute mappings using alternating keyPath and attribute names. You must provide
@@ -441,7 +441,7 @@ relationship. Relationships are processed using an object mapping as well.
  @see mapKeyOfNestedDictionaryToAttribute:
  @returns An attribute mapping for the key of a nested dictionary being mapped or nil
  */
-- (RKObjectAttributeMapping *)attributeMappingForKeyOfNestedDictionary;
+- (RKAttributeMapping *)attributeMappingForKeyOfNestedDictionary;
 
 /**
  Removes all currently configured attribute and relationship mappings from the object mapping
@@ -453,7 +453,7 @@ relationship. Relationships are processed using an object mapping as well.
 
  @param attributeOrRelationshipMapping The attribute or relationship mapping to remove
  */
-- (void)removeMapping:(RKObjectAttributeMapping *)attributeOrRelationshipMapping;
+- (void)removeMapping:(RKAttributeMapping *)attributeOrRelationshipMapping;
 
 /**
  Remove the attribute or relationship mapping for the specified source keyPath

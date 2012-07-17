@@ -19,11 +19,10 @@
 //
 
 #import "RKManagedObjectStore.h"
-#import "NSManagedObject+ActiveRecord.h"
 #import "RKLog.h"
 #import "RKSearchWordObserver.h"
-#import "RKObjectPropertyInspector.h"
-#import "RKObjectPropertyInspector+CoreData.h"
+#import "RKPropertyInspector.h"
+#import "RKPropertyInspector+CoreData.h"
 #import "RKAlert.h"
 #import "RKDirectory.h"
 #import "RKInMemoryManagedObjectCache.h"
@@ -408,7 +407,7 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     }
     
     [self createPersistentStoreCoordinator];
-    [self createPrimaryManagedObjectContext];
+    [self createManagedObjectContexts];
 }
 
 - (void)deletePersistentStore
@@ -447,17 +446,11 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 
 - (void)handlePrimaryManagedObjectContextDidSaveNotification:(NSNotification *)notification
 {
+    RKLogDebug(@"primaryManagedObjectContext was saved: merging changes to mainQueueManagedObjectContext");
+    RKLogTrace(@"Merging changes detailed in userInfo dictionary: %@", [notification userInfo]);
     [self.mainQueueManagedObjectContext performBlock:^{
         [self.mainQueueManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
     }];
-//    NSLog(@"Merging managed objects notification: %@", notification);
-//    if ([NSThread isMainThread]) {
-//        [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-//    } else {
-//        dispatch_sync(dispatch_get_main_queue(), ^{
-//            [self.primaryManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-//        });
-//    }
 }
 
 #pragma mark -
@@ -479,6 +472,11 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     [objects release];
 
     return objectArray;
+}
+
+- (id)insertNewObjectForEntityForName:(NSString *)entityName
+{
+    return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:self.primaryManagedObjectContext];
 }
 
 @end

@@ -20,7 +20,7 @@
 
 #import "RKObjectPaginator.h"
 #import "RKManagedObjectLoader.h"
-#import "RKObjectMappingOperation.h"
+#import "RKMappingOperation.h"
 #import "SOCKit.h"
 #import "RKLog.h"
 
@@ -29,23 +29,27 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 // Private interface
 @interface RKObjectPaginator () <RKObjectLoaderDelegate>
 @property (nonatomic, retain) RKObjectLoader *objectLoader;
+@property (nonatomic, assign, readwrite) NSUInteger currentPage;
+@property (nonatomic, assign, readwrite) NSUInteger pageCount;
+@property (nonatomic, assign, readwrite) NSUInteger objectCount;
+@property (nonatomic, assign, readwrite) BOOL loaded;
 @end
 
 @implementation RKObjectPaginator
 
-@synthesize patternURL;
-@synthesize currentPage;
-@synthesize perPage;
-@synthesize loaded;
-@synthesize pageCount;
-@synthesize objectCount;
-@synthesize mappingProvider;
-@synthesize delegate;
-@synthesize objectStore;
-@synthesize objectLoader;
-@synthesize configurationDelegate;
-@synthesize onDidLoadObjectsForPage;
-@synthesize onDidFailWithError;
+@synthesize patternURL = _patternURL;
+@synthesize currentPage = _currentPage;
+@synthesize perPage = _perPage;
+@synthesize loaded = _loaded;
+@synthesize pageCount = _pageCount;
+@synthesize objectCount = _objectCount;
+@synthesize mappingProvider = _mappingProvider;
+@synthesize delegate = _delegate;
+@synthesize managedObjectStore = _managedObjectStore;
+@synthesize objectLoader = _objectLoader;
+@synthesize configurationDelegate = _configurationDelegate;
+@synthesize onDidLoadObjectsForPage = _onDidLoadObjectsForPage;
+@synthesize onDidFailWithError = _onDidFailWithError;
 
 + (id)paginatorWithPatternURL:(RKURL *)aPatternURL mappingProvider:(RKObjectMappingProvider *)aMappingProvider
 {
@@ -56,13 +60,13 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 {
     self = [super init];
     if (self) {
-        patternURL = [aPatternURL copy];
-        mappingProvider = [aMappingProvider retain];
-        currentPage = NSUIntegerMax;
-        pageCount = NSUIntegerMax;
-        objectCount = NSUIntegerMax;
-        perPage = RKObjectPaginatorDefaultPerPage;
-        loaded = NO;
+        self.patternURL = [aPatternURL copy];
+        self.mappingProvider = [aMappingProvider retain];
+        self.currentPage = NSUIntegerMax;
+        self.pageCount = NSUIntegerMax;
+        self.objectCount = NSUIntegerMax;
+        self.perPage = RKObjectPaginatorDefaultPerPage;
+        self.loaded = NO;
     }
 
     return self;
@@ -70,64 +74,64 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 
 - (void)dealloc
 {
-    delegate = nil;
-    configurationDelegate = nil;
-    objectLoader.delegate = nil;
-    [patternURL release];
-    patternURL = nil;
-    [mappingProvider release];
-    mappingProvider = nil;
-    [objectStore release];
-    objectStore = nil;
-    [objectLoader cancel];
-    objectLoader.delegate = nil;
-    [objectLoader release];
-    objectLoader = nil;
-    [onDidLoadObjectsForPage release];
-    onDidLoadObjectsForPage = nil;
-    [onDidFailWithError release];
-    onDidFailWithError = nil;
+    _delegate = nil;
+    _configurationDelegate = nil;
+    _objectLoader.delegate = nil;
+    [_patternURL release];
+    _patternURL = nil;
+    [_mappingProvider release];
+    _mappingProvider = nil;
+    [_managedObjectStore release];
+    _managedObjectStore = nil;
+    [_objectLoader cancel];
+    _objectLoader.delegate = nil;
+    [_objectLoader release];
+    _objectLoader = nil;
+    [_onDidLoadObjectsForPage release];
+    _onDidLoadObjectsForPage = nil;
+    [_onDidFailWithError release];
+    _onDidFailWithError = nil;
 
     [super dealloc];
 }
 
 - (RKObjectMapping *)paginationMapping
 {
-    return [mappingProvider paginationMapping];
+    return [self.mappingProvider paginationMapping];
 }
 
 - (RKURL *)URL
 {
-    return [patternURL URLByInterpolatingResourcePathWithObject:self];
+    return [self.patternURL URLByInterpolatingResourcePathWithObject:self];
 }
 
 // Private. Public consumers can rely on isLoaded
 - (BOOL)hasCurrentPage
 {
-    return currentPage != NSUIntegerMax;
+    return _currentPage != NSUIntegerMax;
 }
 
 - (BOOL)hasPageCount
 {
-    return pageCount != NSUIntegerMax;
+    return _pageCount != NSUIntegerMax;
 }
 
 - (BOOL)hasObjectCount
 {
-    return objectCount != NSUIntegerMax;
+    return _objectCount != NSUIntegerMax;
 }
 
 - (NSUInteger)currentPage
 {
     // Referenced during initial load, so we don't rely on isLoaded.
     NSAssert([self hasCurrentPage], @"Current page has not been initialized.");
-    return currentPage;
+    return _currentPage;
 }
 
 - (NSUInteger)pageCount
 {
     NSAssert([self hasPageCount], @"Page count not available.");
-    return pageCount;
+    return _pageCount;
 }
 
 - (BOOL)hasNextPage
@@ -149,7 +153,7 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 - (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects
 {
     self.objectLoader = nil;
-    loaded = YES;
+    self.loaded = YES;
     RKLogInfo(@"Loaded objects: %@", objects);
     [self.delegate paginator:self didLoadObjects:objects forPage:self.currentPage];
 
@@ -183,18 +187,19 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 - (void)objectLoader:(RKObjectLoader *)loader willMapData:(inout id *)mappableData
 {
     NSError *error = nil;
-    RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:*mappableData toObject:self withMapping:[self paginationMapping]];
+    RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:*mappableData toObject:self withMapping:[self paginationMapping]];
     BOOL success = [mappingOperation performMapping:&error];
     if (!success) {
-      pageCount = currentPage = 0;
-      RKLogError(@"Paginator didn't map info to compute page count. Assuming no pages.");
+        self.pageCount = 0;
+        self.currentPage = 0;
+        RKLogError(@"Paginator didn't map info to compute page count. Assuming no pages.");
     } else if (self.perPage && [self hasObjectCount]) {
-      float objectCountFloat = self.objectCount;
-      pageCount = ceilf(objectCountFloat / self.perPage);
-      RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long)self.objectCount, (long)self.pageCount);
+        float objectCountFloat = self.objectCount;
+        self.pageCount = ceilf(objectCountFloat / self.perPage);
+        RKLogInfo(@"Paginator objectCount: %ld pageCount: %ld", (long)self.objectCount, (long)self.pageCount);
     } else {
-      NSAssert(NO, @"Paginator perPage set is 0.");
-      RKLogError(@"Paginator perPage set is 0.");
+        NSAssert(NO, @"Paginator perPage set is 0.");
+        RKLogError(@"Paginator perPage set is 0.");
     }
 }
 
@@ -202,28 +207,28 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
 
 - (void)loadNextPage
 {
-    [self loadPage:currentPage + 1];
+    [self loadPage:self.currentPage + 1];
 }
 
 - (void)loadPreviousPage
 {
-    [self loadPage:currentPage - 1];
+    [self loadPage:self.currentPage - 1];
 }
 
 - (void)loadPage:(NSUInteger)pageNumber
 {
     NSAssert(self.mappingProvider, @"Cannot perform a load with a nil mappingProvider.");
-    NSAssert(! objectLoader, @"Cannot perform a load while one is already in progress.");
-    currentPage = pageNumber;
+    NSAssert(! self.objectLoader, @"Cannot perform a load while one is already in progress.");
+    self.currentPage = pageNumber;
 
-    if (self.objectStore) {
-        self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider objectStore:self.objectStore] autorelease];
+    if (self.managedObjectStore) {
+        self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider managedObjectStore:self.managedObjectStore] autorelease];
     } else {
         self.objectLoader = [[[RKObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider] autorelease];
     }
 
     if ([self.configurationDelegate respondsToSelector:@selector(configureObjectLoader:)]) {
-        [self.configurationDelegate configureObjectLoader:objectLoader];
+        [self.configurationDelegate configureObjectLoader:self.objectLoader];
     }
     self.objectLoader.method = RKRequestMethodGET;
     self.objectLoader.delegate = self;

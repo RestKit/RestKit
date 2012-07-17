@@ -22,7 +22,7 @@
 #import "RKFormSection.h"
 #import "RKTableViewCellMapping.h"
 #import "RKTableController.h"
-#import "RKObjectMappingOperation.h"
+#import "RKMappingOperation.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -213,7 +213,7 @@
     RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[self.object class]];
     NSMutableDictionary *controlValues = [NSMutableDictionary dictionaryWithCapacity:[self.tableItems count]];
     for (RKTableItem *tableItem in self.tableItems) {
-        RKObjectAttributeMapping *controlMapping = [tableItem.userData objectForKey:@"__RestKit__attributeToControlMapping"];
+        RKAttributeMapping *controlMapping = [tableItem.userData objectForKey:@"__RestKit__attributeToControlMapping"];
         if (controlMapping) {
             id controlValue = nil;
             NSString *attributeKeyPath = attributeKeyPath = [controlMapping.sourceKeyPath stringByReplacingOccurrencesOfString:@"userData.__RestKit__object." withString:@""];
@@ -248,7 +248,7 @@
 
     RKLogTrace(@"Object mapping form state into target object '%@' with values: %@", self.object, controlValues);
     objectMapping.performKeyValueValidation = NO; // TODO: Temporary...
-    RKObjectMappingOperation *operation = [RKObjectMappingOperation mappingOperationFromObject:controlValues toObject:self.object withMapping:objectMapping];
+    RKMappingOperation *operation = [RKMappingOperation mappingOperationFromObject:controlValues toObject:self.object withMapping:objectMapping];
     NSError *error = nil;
     BOOL success = [operation performMapping:&error];
     if (!success) {

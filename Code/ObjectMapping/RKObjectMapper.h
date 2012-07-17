@@ -21,40 +21,16 @@
 #import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
 #import "RKObjectMapping.h"
-#import "RKObjectMappingOperation.h"
-#import "RKObjectMappingResult.h"
+#import "RKMappingOperation.h"
+#import "RKMappingResult.h"
 #import "RKObjectMappingProvider.h"
-#import "RKMappingOperationQueue.h"
 #import "RKMappingOperationDataSource.h"
+#import "RKErrors.h"
 #import "Support.h"
 
-@class RKObjectMapper;
+@protocol RKObjectMapperDelegate;
 
-@protocol RKObjectMapperDelegate <NSObject>
-
-@optional
-
-- (void)objectMapperWillBeginMapping:(RKObjectMapper *)objectMapper;
-- (void)objectMapperDidFinishMapping:(RKObjectMapper *)objectMapper;
-- (void)objectMapper:(RKObjectMapper *)objectMapper didAddError:(NSError *)error;
-- (void)objectMapper:(RKObjectMapper *)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)mapping;
-- (void)objectMapper:(RKObjectMapper *)objectMapper didNotFindMappableObjectAtKeyPath:(NSString *)keyPath;
-
-- (void)objectMapper:(RKObjectMapper *)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
-- (void)objectMapper:(RKObjectMapper *)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
-- (void)objectMapper:(RKObjectMapper *)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError *)error atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
-
-- (void)objectMapper:(RKObjectMapper *)objectMapper willPerformMappingOperation:(RKObjectMappingOperation *)mappingOperation; // Added in 0.11.0
-@end
-
-/**
-
- */
-@interface RKObjectMapper : NSObject {
-  @protected
-    RKMappingOperationQueue *operationQueue;
-    NSMutableArray *errors;
-}
+@interface RKObjectMapper : NSObject
 
 @property (nonatomic, readonly) id sourceObject;
 @property (nonatomic, assign) id targetObject;
@@ -68,7 +44,25 @@
 - (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 // Primary entry point for the mapper. Examines the type of object and processes it appropriately...
-- (RKObjectMappingResult *)performMapping;
-- (NSUInteger)errorCount;
+- (RKMappingResult *)performMapping;
 
 @end
+
+// Delegate
+@protocol RKObjectMapperDelegate <NSObject>
+
+@optional
+
+- (void)mapperWillBeginMapping:(RKObjectMapper *)mapper;
+- (void)mapperDidFinishMapping:(RKObjectMapper *)mapper;
+- (void)mapper:(RKObjectMapper *)mapper didAddError:(NSError *)error;
+- (void)mapper:(RKObjectMapper *)mapper didFindMappableObject:(id)object atKeyPath:(NSString *)keyPath withMapping:(RKMapping *)mapping;
+- (void)mapper:(RKObjectMapper *)mapper didNotFindMappableObjectAtKeyPath:(NSString *)keyPath;
+
+- (void)mapper:(RKObjectMapper *)mapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)objectMapping;
+- (void)mapper:(RKObjectMapper *)mapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)objectMapping;
+- (void)mapper:(RKObjectMapper *)mapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError *)error atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)objectMapping;
+
+- (void)mapper:(RKObjectMapper *)mapper willPerformMappingOperation:(RKMappingOperation *)mappingOperation; // Added in 0.11.0
+@end
+

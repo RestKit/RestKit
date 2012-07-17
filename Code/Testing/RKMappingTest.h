@@ -19,7 +19,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectMappingOperation.h"
+#import "RKMappingOperation.h"
 #import "RKMappingTestExpectation.h"
 
 /**
@@ -97,7 +97,7 @@
  @param evaluationBlock A block with which to evaluate the success of the mapping.
  @see RKObjectMappingTestExpectation
  */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock;
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath passingTest:(BOOL (^)(RKAttributeMapping *mapping, id value))evaluationBlock;
 
 /**
  Creates and adds an expectation that a key path on the source object will be mapped to a new
@@ -108,7 +108,7 @@
  @param mapping An object mapping that should be used for mapping the source key path.
  @see RKObjectMappingTestExpectation
  */
-- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKObjectMappingDefinition *)mapping;
+- (void)expectMappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath usingMapping:(RKMapping *)mapping;
 
 /**
  Adds an expectation to the receiver to be evaluated during verification.

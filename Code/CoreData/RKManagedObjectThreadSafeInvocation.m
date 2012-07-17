@@ -26,7 +26,8 @@
 
 @implementation RKManagedObjectThreadSafeInvocation
 
-@synthesize managedObjectContext = _managedObjectContext;
+@synthesize privateQueueManagedObjectContext = _privateQueueManagedObjectContext;
+@synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
 @synthesize argumentKeyPaths = _argumentKeyPaths;
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature
@@ -87,18 +88,16 @@
 
 - (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths
 {
-    NSAssert(self.managedObjectContext, @"Managed object context cannot be nil");
+    NSAssert(self.mainQueueManagedObjectContext, @"Managed object context cannot be nil");
     NSLog(@"Deserializing argument %@ with keyPaths %@", argument, keyPaths);
-    for (NSString* keyPath in keyPaths) {
+    for (NSString *keyPath in keyPaths) {
         id value = [argument valueForKeyPath:keyPath];
         NSLog(@"*** Found value %@ to deserialize", value);
         if ([value isKindOfClass:[NSManagedObjectID class]]) {
             __block NSManagedObject *managedObject = nil;
-            [self.managedObjectContext performBlockAndWait:^{
-                managedObject = [self.managedObjectContext objectWithID:(NSManagedObjectID*)value];
+            [self.mainQueueManagedObjectContext performBlockAndWait:^{
+                managedObject = [self.mainQueueManagedObjectContext objectWithID:(NSManagedObjectID *)value];
             }];
-//            NSManagedObject* managedObject = [self.managedObjectContext objectWithID:(NSManagedObjectID*)value];
-            NSLog(@"!!! Found managed object %@ for ID %@", managedObject, value);
             NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
             [self setValue:managedObject forKeyPathOrKey:keyPath object:argument];
         } else if ([value respondsToSelector:@selector(allObjects)]) {
@@ -107,10 +106,9 @@
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
                     __block NSManagedObject *managedObject = nil;
-                    [self.managedObjectContext performBlockAndWait:^{
-                        managedObject = [self.managedObjectContext objectWithID:(NSManagedObjectID*)subObject];
+                    [self.mainQueueManagedObjectContext performBlockAndWait:^{
+                        managedObject = [self.mainQueueManagedObjectContext objectWithID:(NSManagedObjectID *)subObject];
                     }];
-                    [managedObject performSelector:@selector(amenityID)];
                     NSLog(@"--> Found managed object %@ for ID %@", managedObject, subObject);
                     [collection addObject:managedObject];
                 } else {
@@ -127,8 +125,8 @@
 
 - (void)serializeManagedObjects
 {
-    for (NSNumber* argumentIndex in _argumentKeyPaths) {
-        NSSet* managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
+    for (NSNumber *argumentIndex in _argumentKeyPaths) {
+        NSSet *managedKeyPaths = [_argumentKeyPaths objectForKey:argumentIndex];
         id argument = nil;
         [self getArgument:&argument atIndex:[argumentIndex intValue]];
         if (argument) {
@@ -169,8 +167,10 @@
 
 - (void)dealloc
 {
-    [_argumentKeyPaths release];
-    [_managedObjectContext release];
+    self.mainQueueManagedObjectContext = nil;
+    self.privateQueueManagedObjectContext = nil;
+    self.argumentKeyPaths = nil;
+    
     [super dealloc];
 }
 

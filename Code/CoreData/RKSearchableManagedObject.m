@@ -48,7 +48,6 @@
 
 - (void)refreshSearchWords
 {
-    return;
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
     RKLogDebug(@"Refreshing search words for %@ %@", NSStringFromClass([self class]), [self objectID]);

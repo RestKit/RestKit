@@ -11,7 +11,7 @@
 #import "RKEntityMapping.h"
 #import "RKLog.h"
 #import "RKManagedObjectCaching.h"
-#import "RKDynamicObjectMappingMatcher.h"
+#import "RKDynamicMappingMatcher.h"
 
 @interface RKRelationshipConnectionOperation ()
 @property (nonatomic, retain, readwrite) NSManagedObject *managedObject;
@@ -145,7 +145,7 @@
         [self connectRelationship];
     }
     @catch (NSException *exception) {
-        NSLog(@"Caught an exception!!!!");
+        RKLogCritical(@"Caught exception: %@", exception);
     }
 }
 

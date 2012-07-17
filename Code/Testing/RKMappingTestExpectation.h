@@ -6,7 +6,7 @@
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-@class RKObjectMappingDefinition, RKObjectAttributeMapping;
+@class RKMapping, RKAttributeMapping;
 
 /**
  An RKMappingTestExpectation defines an expected mapping event that should
@@ -51,7 +51,7 @@
  @param evaluationBlock A block with which to evaluate the success of the mapping.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath with value.
  */
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKObjectAttributeMapping *mapping, id value))evaluationBlock;
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath evaluationBlock:(BOOL (^)(RKAttributeMapping *mapping, id value))evaluationBlock;
 
 /**
  Creates and returns a new expectation specifying that a key path in a source object should be
@@ -62,7 +62,7 @@
  @param mapping An object mapping that is expected to be used for mapping the nested relationship.
  @return An expectation specifying that sourceKeyPath should be mapped to destinationKeyPath using a specific object mapping.
  */
-+ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)mapping;
++ (RKMappingTestExpectation *)expectationWithSourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)mapping;
 
 ///-----------------------------------------------------------------------------
 /// @name Expectation Values
@@ -86,12 +86,12 @@
 /**
  A block used to evaluate if the expectation has been satisfied.
  */
-@property (nonatomic, copy, readonly) BOOL (^evaluationBlock)(RKObjectAttributeMapping *mapping, id value);
+@property (nonatomic, copy, readonly) BOOL (^evaluationBlock)(RKAttributeMapping *mapping, id value);
 
 /**
  Returns the expected object mapping to be used for mapping a nested relationship.
  */
-@property (nonatomic, strong, readonly) RKObjectMappingDefinition *mapping;
+@property (nonatomic, strong, readonly) RKMapping *mapping;
 
 /**
  Returns a string summary of the expected keyPath mapping within the expectation

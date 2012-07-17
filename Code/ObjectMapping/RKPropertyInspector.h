@@ -22,11 +22,12 @@
 
 @class NSEntityDescription;
 
-@interface RKObjectPropertyInspector : NSObject {
-    NSMutableDictionary *_cachedPropertyNamesAndTypes;
+@interface RKPropertyInspector : NSObject {
+  @protected
+    NSCache *_propertyNamesToTypesCache;
 }
 
-+ (RKObjectPropertyInspector *)sharedInspector;
++ (RKPropertyInspector *)sharedInspector;
 
 /**
  * Returns a dictionary of names and types for the properties of a given class

@@ -1,5 +1,5 @@
 //
-//  RKObjectMappingDefinition.h
+//  RKMapping.h
 //  RestKit
 //
 //  Created by Blake Watters on 7/31/11.
@@ -19,11 +19,11 @@
 //
 
 /**
- RKObjectMappingDefinition is an abstract class for objects defining RestKit object mappings.
+ RKMapping is an abstract class for objects defining RestKit object mappings.
  Its interface is common to all object mapping classes, including its concrete subclasses
- RKObjectMapping and RKDynamicObjectMapping.
+ RKObjectMapping and RKDynamicMapping.
  */
-@interface RKObjectMappingDefinition : NSObject
+@interface RKMapping : NSObject
 
 /**
  The root key path for the receiver.
@@ -67,6 +67,6 @@
 
  **NOTE**: Must be implemented in subclass.
  */
-- (BOOL)isEqualToMapping:(RKObjectMappingDefinition *)otherMapping;
+- (BOOL)isEqualToMapping:(RKMapping *)otherMapping;
 
 @end

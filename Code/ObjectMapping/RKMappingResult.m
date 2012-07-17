@@ -1,5 +1,5 @@
 //
-//  RKObjectMappingResult.m
+//  RKMappingResult.m
 //  RestKit
 //
 //  Created by Blake Watters on 5/7/11.
@@ -18,17 +18,23 @@
 //  limitations under the License.
 //
 
-#import "RKObjectMappingResult.h"
-#import "RKObjectMapperError.h"
+#import "RKMappingResult.h"
+#import "RKMappingErrors.h"
 #import "RKLog.h"
 
-@implementation RKObjectMappingResult
+@interface RKMappingResult ()
+@property (nonatomic, retain) NSDictionary *keyPathToMappedObjects;
+@end
+
+@implementation RKMappingResult
+
+@synthesize keyPathToMappedObjects = _keyPathToMappedObjects;
 
 - (id)initWithDictionary:(id)dictionary
 {
     self = [self init];
     if (self) {
-        _keyPathToMappedObjects = [dictionary retain];
+        self.keyPathToMappedObjects = dictionary;
     }
 
     return self;
@@ -36,11 +42,11 @@
 
 - (void)dealloc
 {
-    [_keyPathToMappedObjects release];
+    self.keyPathToMappedObjects = nil;
     [super dealloc];
 }
 
-+ (RKObjectMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects
++ (RKMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects
 {
     return [[[self alloc] initWithDictionary:keyPathToMappedObjects] autorelease];
 }
@@ -91,7 +97,7 @@
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
                               description, NSLocalizedDescriptionKey, nil];
 
-    NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
+    NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKMappingErrorFromMappingResult userInfo:userInfo];
     return error;
 }
 

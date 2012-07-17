@@ -1,5 +1,5 @@
 //
-//  RKObjectPropertyInspector+CoreData.h
+//  RKPropertyInspector+CoreData.h
 //  RestKit
 //
 //  Created by Blake Watters on 8/14/11.
@@ -18,9 +18,9 @@
 //  limitations under the License.
 //
 
-#import "RKObjectPropertyInspector.h"
+#import "RKPropertyInspector.h"
 
-@interface RKObjectPropertyInspector (CoreData)
+@interface RKPropertyInspector (CoreData)
 
 - (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription *)entity;
 

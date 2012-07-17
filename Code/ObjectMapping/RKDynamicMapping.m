@@ -1,5 +1,5 @@
 //
-//  RKDynamicObjectMapping.m
+//  RKDynamicMapping.m
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
@@ -18,8 +18,8 @@
 //  limitations under the License.
 //
 
-#import "RKDynamicObjectMapping.h"
-#import "RKDynamicObjectMappingMatcher.h"
+#import "RKDynamicMapping.h"
+#import "RKDynamicMappingMatcher.h"
 #import "RKLog.h"
 
 // Set Logging Component
@@ -27,26 +27,26 @@
 #define RKLogComponent lcl_cRestKitObjectMapping
 
 
-@implementation RKDynamicObjectMapping
+@implementation RKDynamicMapping
 
 @synthesize delegate = _delegate;
 @synthesize objectMappingForDataBlock = _objectMappingForDataBlock;
 
-+ (RKDynamicObjectMapping *)dynamicMapping
++ (RKDynamicMapping *)dynamicMapping
 {
     return [[self new] autorelease];
 }
 
 #if NS_BLOCKS_AVAILABLE
 
-+ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *))block
++ (RKDynamicMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicMapping *))block
 {
-    RKDynamicObjectMapping *mapping = [self dynamicMapping];
+    RKDynamicMapping *mapping = [self dynamicMapping];
     block(mapping);
     return mapping;
 }
 
-+ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *))block
++ (RKDynamicMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicMapping *))block
 {
     return [self dynamicMappingUsingBlock:block];
 }
@@ -72,7 +72,7 @@
 - (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
 {
     RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, value, NSStringFromClass(objectMapping.objectClass));
-    RKDynamicObjectMappingMatcher *matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
+    RKDynamicMappingMatcher *matcher = [[RKDynamicMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
     [_matchers addObject:matcher];
     [matcher release];
 }
@@ -85,7 +85,7 @@
     RKLogTrace(@"Performing dynamic object mapping for mappable data: %@", data);
 
     // Consult the declarative matchers first
-    for (RKDynamicObjectMappingMatcher *matcher in _matchers) {
+    for (RKDynamicMappingMatcher *matcher in _matchers) {
         if ([matcher isMatchForData:data]) {
             RKLogTrace(@"Found declarative match for data: %@.", [matcher matchDescription]);
             return matcher.objectMapping;
@@ -111,7 +111,7 @@
     return mapping;
 }
 
-- (BOOL)isEqualToMapping:(RKObjectMappingDefinition *)otherMapping
+- (BOOL)isEqualToMapping:(RKMapping *)otherMapping
 {
     // Comparison of dynamic mappings is not currently supported
     return NO;

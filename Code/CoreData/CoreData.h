@@ -31,7 +31,7 @@
 #import "RKSearchableManagedObject.h"
 #import "RKSearchWord.h"
 
-#import "RKObjectPropertyInspector+CoreData.h"
+#import "RKPropertyInspector+CoreData.h"
 #import "RKObjectMappingProvider+CoreData.h"
 #import "NSManagedObjectContext+RKAdditions.h"
 #import "NSManagedObject+RKAdditions.h"

@@ -74,12 +74,12 @@ NSString * const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
         _manager = [manager retain];
 
         // If the user hasn't configured an object store, set one up for them
-        if (nil == _manager.objectStore) {
-            _manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:RKDefaultSeedDatabaseFileName];
+        if (nil == _manager.managedObjectStore) {
+            _manager.managedObjectStore = [RKManagedObjectStore objectStoreWithStoreFilename:RKDefaultSeedDatabaseFileName];
         }
 
         // Delete any existing persistent store
-        [_manager.objectStore deletePersistentStore];
+        [_manager.managedObjectStore deletePersistentStore];
     }
 
     return self;
@@ -93,7 +93,7 @@ NSString * const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 
 - (NSString *)pathToSeedDatabase
 {
-    return _manager.objectStore.pathToStoreFile;
+    return _manager.managedObjectStore.pathToStoreFile;
 }
 
 - (void)seedObjectsFromFiles:(NSString *)firstFileName, ...
@@ -147,7 +147,7 @@ NSString * const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
         }
 
         RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
-        RKObjectMappingResult *result = [mapper performMapping];
+        RKMappingResult *result = [mapper performMapping];
         if (result == nil) {
             RKLogError(@"Database seeding from file '%@' failed due to object mapping errors: %@", fileName, mapper.errors);
             return;
@@ -172,14 +172,14 @@ NSString * const RKDefaultSeedDatabaseFileName = @"RKSeedDatabase.sqlite";
 - (void)finalizeSeedingAndExit
 {
     NSError *error = nil;
-    BOOL success = [[_manager objectStore] save:&error];
+    BOOL success = [[_manager managedObjectStore] save:&error];
     if (! success) {
         RKLogError(@"[RestKit] RKManagedObjectSeeder: Error saving object context: %@", [error localizedDescription]);
     }
 
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    NSString *storeFileName = [[_manager objectStore] storeFilename];
+    NSString *storeFileName = [[_manager managedObjectStore] storeFilename];
     NSString *destinationPath = [basePath stringByAppendingPathComponent:storeFileName];
     RKLogInfo(@"A seeded database has been generated at '%@'. "
           @"Please execute `open \"%@\"` in your Terminal and copy %@ to your app. Be sure to add the seed database to your \"Copy Resources\" build phase.",

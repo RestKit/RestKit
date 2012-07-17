@@ -1,5 +1,5 @@
 //
-//  RKObjectElementMapping.m
+//  RKAttributeMapping.m
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
@@ -18,11 +18,11 @@
 //  limitations under the License.
 //
 
-#import "RKObjectAttributeMapping.h"
+#import "RKAttributeMapping.h"
 
 extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
-@implementation RKObjectAttributeMapping
+@implementation RKAttributeMapping
 
 @synthesize sourceKeyPath = _sourceKeyPath;
 @synthesize destinationKeyPath = _destinationKeyPath;
@@ -45,13 +45,13 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RKObjectAttributeMapping *copy = [[[self class] allocWithZone:zone] initWithSourceKeyPath:self.sourceKeyPath andDestinationKeyPath:self.destinationKeyPath];
+    RKAttributeMapping *copy = [[[self class] allocWithZone:zone] initWithSourceKeyPath:self.sourceKeyPath andDestinationKeyPath:self.destinationKeyPath];
     return copy;
 }
 
-- (BOOL)isEqualToMapping:(RKObjectAttributeMapping *)mapping
+- (BOOL)isEqualToMapping:(RKAttributeMapping *)mapping
 {
-    return [mapping isKindOfClass:[RKObjectAttributeMapping class]] &&
+    return [mapping isKindOfClass:[RKAttributeMapping class]] &&
     [_sourceKeyPath isEqual:mapping.sourceKeyPath] &&
     [_destinationKeyPath isEqual:mapping.destinationKeyPath];
 }
@@ -69,9 +69,9 @@ extern NSString * const RKObjectMappingNestingAttributeKeyName;
     return [NSString stringWithFormat:@"RKObjectKeyPathMapping: %@ => %@", self.sourceKeyPath, self.destinationKeyPath];
 }
 
-+ (RKObjectAttributeMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
++ (RKAttributeMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath
 {
-    RKObjectAttributeMapping *mapping = [[self alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
+    RKAttributeMapping *mapping = [[self alloc] initWithSourceKeyPath:sourceKeyPath andDestinationKeyPath:destinationKeyPath];
     return [mapping autorelease];
 }
 

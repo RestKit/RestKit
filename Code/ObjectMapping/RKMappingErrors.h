@@ -1,8 +1,8 @@
 //
-//  RKObjectMappingResult.h
+//  RKMappingErrors.h
 //  RestKit
 //
-//  Created by Blake Watters on 5/7/11.
+//  Created by Blake Watters on 5/31/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,22 +18,13 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "RKErrors.h"
 
-
-@interface RKObjectMappingResult : NSObject {
-    id _keyPathToMappedObjects;
-}
-
-- (id)initWithDictionary:(id)dictionary;
-+ (RKObjectMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects;
-
-/**
- Return the mapping result as a dictionary
- */
-- (NSDictionary *)asDictionary;
-- (id)asObject;
-- (NSArray *)asCollection;
-- (NSError *)asError;
-
-@end
+typedef UInt32 RKMappingErrorCode;
+enum {
+    RKMappingErrorNotFound              = 1001,     // No mapping found
+    RKMappingErrorTypeMismatch          = 1002,     // Target class and object mapping are in disagreement
+    RKMappingErrorUnmappableContent     = 1003,     // No mappable attributes or relationships were found
+    RKMappingErrorFromMappingResult     = 1004,     // The error was returned from the mapping result
+    RKMappingErrorValidationFailure     = 1005      // Generic error code for use when constructing validation errors
+};

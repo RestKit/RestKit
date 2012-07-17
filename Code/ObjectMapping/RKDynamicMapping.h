@@ -1,5 +1,5 @@
 //
-//  RKDynamicObjectMapping.h
+//  RKDynamicMapping.h
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/11.
@@ -18,13 +18,13 @@
 //  limitations under the License.
 //
 
-#import "RKObjectMappingDefinition.h"
+#import "RKMapping.h"
 #import "RKObjectMapping.h"
 
 /**
  Return the appropriate object mapping given a mappable data
  */
-@protocol RKDynamicObjectMappingDelegate <NSObject>
+@protocol RKDynamicMappingDelegate <NSObject>
 
 @required
 - (RKObjectMapping *)objectMappingForData:(id)data;
@@ -32,7 +32,7 @@
 @end
 
 #ifdef NS_BLOCKS_AVAILABLE
-typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
+typedef RKObjectMapping *(^RKDynamicMappingDelegateBlock)(id);
 #endif
 
 /**
@@ -40,7 +40,7 @@ typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
  object mapping to apply at mapping time. This allows you to map very similar payloads
  differently depending on the type of data contained therein.
  */
-@interface RKDynamicObjectMapping : RKObjectMappingDefinition {
+@interface RKDynamicMapping : RKMapping {
     NSMutableArray *_matchers;
 }
 
@@ -48,30 +48,30 @@ typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
  A delegate to call back to determine the appropriate concrete object mapping
  to apply to the mappable data.
 
- @see RKDynamicObjectMappingDelegate
+ @see RKDynamicMappingDelegate
  */
-@property (nonatomic, assign) id<RKDynamicObjectMappingDelegate> delegate;
+@property (nonatomic, assign) id<RKDynamicMappingDelegate> delegate;
 
 #ifdef NS_BLOCKS_AVAILABLE
 /**
  A block to invoke to determine the appropriate concrete object mapping
  to apply to the mappable data.
  */
-@property (nonatomic, copy) RKDynamicObjectMappingDelegateBlock objectMappingForDataBlock;
+@property (nonatomic, copy) RKDynamicMappingDelegateBlock objectMappingForDataBlock;
 #endif
 
 /**
  Return a new auto-released dynamic object mapping
  */
-+ (RKDynamicObjectMapping *)dynamicMapping;
++ (RKDynamicMapping *)dynamicMapping;
 
 #if NS_BLOCKS_AVAILABLE
 
 /**
  Return a new auto-released dynamic object mapping after yielding it to the block for configuration
  */
-+ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *dynamicMapping))block;
-+ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *dynamicMapping))block DEPRECATED_ATTRIBUTE;
++ (RKDynamicMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicMapping *dynamicMapping))block;
++ (RKDynamicMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicMapping *dynamicMapping))block DEPRECATED_ATTRIBUTE;
 
 #endif
 
@@ -83,7 +83,7 @@ typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
  the gender of the person. When the gender is 'male', we want to use the Boy class and when then the gender
  is 'female' we want to use the Girl class. We might define our dynamic mapping like so:
 
-    RKDynamicObjectMapping *mapping = [RKDynamicObjectMapping dynamicMapping];
+    RKDynamicMapping *mapping = [RKDynamicMapping dynamicMapping];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"male"];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
  */
@@ -102,5 +102,5 @@ typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
 
  @deprecated
  */
-@interface RKObjectDynamicMapping : RKDynamicObjectMapping
+@interface RKObjectDynamicMapping : RKDynamicMapping
 @end
