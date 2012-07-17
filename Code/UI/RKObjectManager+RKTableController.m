@@ -33,12 +33,15 @@
 {
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerForTableViewController:tableViewController];
     tableController.objectManager = self;
+    tableController.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
     return tableController;
 }
 
 - (RKFetchedResultsTableController *)fetchedResultsTableControllerWithTableView:(UITableView *)tableView forViewController:(UIViewController *)viewController
 {
     RKFetchedResultsTableController *tableController = [RKFetchedResultsTableController tableControllerWithTableView:tableView forViewController:viewController];
+    tableController.objectManager = self;
+    tableController.managedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
     return tableController;
 }
 
