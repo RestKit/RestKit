@@ -278,7 +278,7 @@
 {
     NSAssert(self.mappingQueue, @"mappingQueue cannot be nil");
     [self.mappingQueue addOperationWithBlock:^{
-        if (self.cancelled) {
+        if (self.isCancelled) {
             RKLogDebug(@"Cancelled object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
         } else {
             RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
