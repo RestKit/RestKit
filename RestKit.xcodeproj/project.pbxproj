@@ -525,8 +525,8 @@
 		258EA4AB15A38BC0007E07A6 /* RKObjectMappingOperationDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA4A715A38BBF007E07A6 /* RKObjectMappingOperationDataSource.m */; };
 		258EA4AE15A38E7E007E07A6 /* RKMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4AD15A38E7D007E07A6 /* RKMappingOperationDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA4AF15A38E7E007E07A6 /* RKMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4AD15A38E7D007E07A6 /* RKMappingOperationDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		258EA4B215A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */; };
-		258EA4B315A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */; };
+		258EA4B215A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		258EA4B315A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA57815A63D07007E07A6 /* RKKeyboardScroller.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA57915A63D07007E07A6 /* RKKeyboardScroller.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA57A15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */; };
