@@ -22,14 +22,11 @@
 
 @interface RKManagedObjectThreadSafeInvocation : NSInvocation
 
-@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, retain) NSManagedObjectContext *privateQueueManagedObjectContext;
+@property (nonatomic, retain) NSManagedObjectContext *mainQueueManagedObjectContext;
 
 + (RKManagedObjectThreadSafeInvocation *)invocationWithMethodSignature:(NSMethodSignature *)methodSignature;
 - (void)setManagedObjectKeyPaths:(NSSet *)keyPaths forArgument:(NSInteger)index;
 - (void)invokeOnMainThread;
-
-// Private
-- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths;
-- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths;
 
 @end

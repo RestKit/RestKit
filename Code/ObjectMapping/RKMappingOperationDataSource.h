@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class RKObjectMapping, RKObjectMappingOperation;
+@class RKObjectMapping, RKMappingOperation;
 
 // Data source for mapping operations
 @protocol RKMappingOperationDataSource <NSObject>
@@ -17,6 +17,6 @@
 - (id)objectForMappableContent:(id)mappableContent mapping:(RKObjectMapping *)mapping;
 
 @optional
-- (void)commitChangesForMappingOperation:(RKObjectMappingOperation *)mappingOperation;
+- (void)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation;
 
 @end

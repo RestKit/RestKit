@@ -1,8 +1,8 @@
 //
-//  RKObjectPropertyInspector.h
+//  RKPropertyInspector+CoreData.h
 //  RestKit
 //
-//  Created by Blake Watters on 3/4/10.
+//  Created by Blake Watters on 8/14/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,30 +18,15 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import "RKPropertyInspector.h"
 
-@class NSEntityDescription;
+@interface RKPropertyInspector (CoreData)
 
-@interface RKObjectPropertyInspector : NSObject {
-    NSCache *_propertyNamesToTypesCache;
-}
-
-+ (RKObjectPropertyInspector *)sharedInspector;
-
-/**
- * Returns a dictionary of names and types for the properties of a given class
- */
-- (NSDictionary *)propertyNamesAndTypesForClass:(Class)objectClass;
+- (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription *)entity;
 
 /**
  Returns the Class type of the specified property on the object class
  */
-- (Class)typeForProperty:(NSString *)propertyName ofClass:(Class)objectClass;
-
-/**
- Returns the name of a property when provided the name of a property obtained
- via the property_getAttributes reflection API
- */
-+ (NSString *)propertyTypeFromAttributeString:(NSString *)attributeString;
+- (Class)typeForProperty:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity;
 
 @end

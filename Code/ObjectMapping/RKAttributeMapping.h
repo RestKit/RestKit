@@ -1,5 +1,5 @@
 //
-//  RKObjectElementMapping.h
+//  RKAttributeMapping.h
 //  RestKit
 //
 //  Created by Blake Watters on 4/30/11.
@@ -21,7 +21,7 @@
 #import <Foundation/Foundation.h>
 
 // Defines the rules for mapping a particular element
-@interface RKObjectAttributeMapping : NSObject <NSCopying>
+@interface RKAttributeMapping : NSObject <NSCopying>
 
 @property (nonatomic, retain) NSString *sourceKeyPath;
 @property (nonatomic, retain) NSString *destinationKeyPath;
@@ -29,7 +29,7 @@
 /**
  Defines a mapping from one keyPath to another within an object mapping
  */
-+ (RKObjectAttributeMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
++ (RKAttributeMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
 
 /**
  Returns YES if this attribute mapping targets the key of a nested dictionary.
@@ -43,6 +43,6 @@
  */
 - (BOOL)isMappingForKeyOfNestedDictionary;
 
-- (BOOL)isEqualToMapping:(RKObjectAttributeMapping *)mapping;
+- (BOOL)isEqualToMapping:(RKAttributeMapping *)mapping;
 
 @end

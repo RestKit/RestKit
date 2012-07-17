@@ -20,7 +20,7 @@
 
 #import "RKAbstractTableController.h"
 #import "RKAbstractTableController_Internals.h"
-#import "RKObjectMappingOperation.h"
+#import "RKMappingOperation.h"
 #import "RKLog.h"
 #import "RKErrors.h"
 #import "RKReachabilityObserver.h"
@@ -475,7 +475,7 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     NSAssert(cell, @"Cell mapping failed to dequeue or allocate a tableViewCell for object: %@", mappableObject);
 
     // Map the object state into the cell
-    RKObjectMappingOperation* mappingOperation = [[RKObjectMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
+    RKMappingOperation* mappingOperation = [[RKMappingOperation alloc] initWithSourceObject:mappableObject destinationObject:cell mapping:cellMapping];
     NSError* error = nil;
     BOOL success = [mappingOperation performMapping:&error];
     [mappingOperation release];

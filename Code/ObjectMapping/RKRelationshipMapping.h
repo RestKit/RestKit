@@ -1,5 +1,5 @@
 //
-//  RKObjectRelationshipMapping.h
+//  RKRelationshipMapping.h
 //  RestKit
 //
 //  Created by Blake Watters on 5/4/11.
@@ -19,19 +19,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RKObjectAttributeMapping.h"
-#import "RKObjectMappingDefinition.h"
+#import "RKAttributeMapping.h"
+#import "RKMapping.h"
 
+@interface RKRelationshipMapping : RKAttributeMapping
 
-@interface RKObjectRelationshipMapping : RKObjectAttributeMapping
-
-@property (nonatomic, retain) RKObjectMappingDefinition *mapping;
+@property (nonatomic, retain) RKMapping *mapping;
 @property (nonatomic, assign) BOOL reversible;
 
-+ (RKObjectRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping;
++ (RKRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping;
 
-+ (RKObjectRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping reversible:(BOOL)reversible;
++ (RKRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping reversible:(BOOL)reversible;
 
-- (BOOL)isEqualToMapping:(RKObjectRelationshipMapping *)mapping;
+- (BOOL)isEqualToMapping:(RKRelationshipMapping *)mapping;
 
 @end

@@ -1,8 +1,8 @@
 //
-//  RKObjectPropertyInspector+CoreData.h
+//  RKMappingResult.h
 //  RestKit
 //
-//  Created by Blake Watters on 8/14/11.
+//  Created by Blake Watters on 5/7/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,19 @@
 //  limitations under the License.
 //
 
-#import "RKObjectPropertyInspector.h"
+#import <Foundation/Foundation.h>
 
-@interface RKObjectPropertyInspector (CoreData)
+@interface RKMappingResult : NSObject
 
-- (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription *)entity;
+- (id)initWithDictionary:(id)dictionary;
++ (RKMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects;
 
 /**
- Returns the Class type of the specified property on the object class
+ Return the mapping result as a dictionary
  */
-- (Class)typeForProperty:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity;
+- (NSDictionary *)asDictionary;
+- (id)asObject;
+- (NSArray *)asCollection;
+- (NSError *)asError;
 
 @end

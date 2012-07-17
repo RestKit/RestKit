@@ -1,12 +1,12 @@
 //
-//  RKDynamicObjectMappingMatcher.m
+//  RKDynamicMappingMatcher.m
 //  RestKit
 //
 //  Created by Jeff Arena on 8/2/11.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
-#import "RKDynamicObjectMappingMatcher.h"
+#import "RKDynamicMappingMatcher.h"
 
 
 // Implemented in RKObjectMappingOperation
@@ -14,7 +14,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation RKDynamicObjectMappingMatcher
+@implementation RKDynamicMappingMatcher
 
 @synthesize objectMapping = _objectMapping;
 @synthesize primaryKeyAttribute = _primaryKeyAttribute;

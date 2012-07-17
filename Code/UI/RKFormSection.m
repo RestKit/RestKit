@@ -109,7 +109,7 @@
     return nil;
 }
 
-- (void)addAttributeMapping:(RKObjectAttributeMapping *)attributeMapping forKeyPath:(NSString *)attributeKeyPath toTableItem:(RKTableItem *)tableItem
+- (void)addAttributeMapping:(RKAttributeMapping *)attributeMapping forKeyPath:(NSString *)attributeKeyPath toTableItem:(RKTableItem *)tableItem
 {
     [tableItem.cellMapping addAttributeMapping:attributeMapping];
 
@@ -125,7 +125,7 @@
 
 - (void)addMappingFromAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)keyPath forTableItem:(RKTableItem *)tableItem
 {
-    RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
+    RKAttributeMapping *attributeMapping = [[RKAttributeMapping new] autorelease];
     attributeMapping.sourceKeyPath = [NSString stringWithFormat:@"userData.__RestKit__object.%@", attributeKeyPath];
     attributeMapping.destinationKeyPath = keyPath;
 
@@ -142,7 +142,7 @@
 
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block {
     RKControlTableItem *tableItem = [RKControlTableItem tableItemWithControl:control];
-    RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
+    RKAttributeMapping *attributeMapping = [[RKAttributeMapping new] autorelease];
     attributeMapping.sourceKeyPath = [NSString stringWithFormat:@"userData.__RestKit__object.%@", attributeKeyPath];
     attributeMapping.destinationKeyPath = [NSString stringWithFormat:@"control.%@", controlKeyPath];
 
@@ -171,7 +171,7 @@
 {
     RKTableItem *tableItem = [RKTableItem tableItem];
     tableItem.cellMapping.cellClass = cellClass;
-    RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
+    RKAttributeMapping *attributeMapping = [[RKAttributeMapping new] autorelease];
     attributeMapping.sourceKeyPath = [NSString stringWithFormat:@"userData.__RestKit__object.%@", attributeKeyPath];
     attributeMapping.destinationKeyPath = cellKeyPath;
 

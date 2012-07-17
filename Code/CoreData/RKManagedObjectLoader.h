@@ -34,10 +34,16 @@
 
  @see RKManagedObjectStore
  */
-@property (nonatomic, retain) RKManagedObjectStore *objectStore;
-@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
+@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext; // TODO: This may need to be readwrite...
+// TODO: BOOL autosavesParentContext ???
 
-+ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
-- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore;
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider managedObjectStore:(RKManagedObjectStore *)managedObjectStore;
 
+// TODO: Should add a delegate for managed object loader... ask about saving the context, performing pruning, etc.
+@end
+
+@interface RKManagedObjectLoader (Deprecations)
++ (id)loaderWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
+- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
 @end

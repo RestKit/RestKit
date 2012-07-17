@@ -30,12 +30,12 @@
 /** Notifications */
 
 /**
- Posted when the object managed has transitioned to the offline state
+ Posted when the object manager has transitioned to the offline state
  */
 extern NSString * const RKObjectManagerDidBecomeOfflineNotification;
 
 /**
- Posted when the object managed has transitioned to the online state
+ Posted when the object manager has transitioned to the online state
  */
 extern NSString * const RKObjectManagerDidBecomeOnlineNotification;
 
@@ -231,7 +231,7 @@ typedef enum {
 /**
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
-@property (nonatomic, retain) RKManagedObjectStore *objectStore;
+@property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
 
 /**
  The operation queue to use when performing expensive object mapping operations
@@ -302,9 +302,6 @@ typedef enum {
  @see RKRouter
  */
 - (id)loaderForObject:(id<NSObject>)object method:(RKRequestMethod)method;
-
-// TODO: loaderForRoute || loaderWithRoute: ???
-//- (id)objectLoaderForRouteWithName: interpolatedWithObject:;
 
 /**
  Creates and returns an RKObjectPaginator instance targeting the specified resource path pattern.
@@ -438,8 +435,9 @@ typedef enum {
 
 #endif
 
-//////
+@end
 
+@interface RKObjectManager (Deprecations)
 
 // Deprecations
 
@@ -459,5 +457,7 @@ typedef enum {
 - (void)postObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (void)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (void)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
+
+@property (nonatomic, retain) RKManagedObjectStore *objectStore DEPRECATED_ATTRIBUTE;
 
 @end

@@ -19,40 +19,48 @@
 //
 
 #import "RKObjectMapper.h"
-#import "RKObjectMapperError.h"
 #import "RKObjectMapper_Private.h"
 #import "RKObjectMappingProvider+Contexts.h"
 #import "RKObjectMappingOperationDataSource.h"
+#import "RKMappingErrors.h"
 
 // Set Logging Component
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitObjectMapping
 
+@interface RKObjectMapper ()
+
+@property (nonatomic, retain) NSOperationQueue *operationQueue;
+@property (nonatomic, retain) NSMutableArray *mappingErrors;
+
+@end
+
 @implementation RKObjectMapper
 
-@synthesize sourceObject;
-@synthesize targetObject;
-@synthesize delegate;
-@synthesize mappingProvider;
+@synthesize sourceObject = _sourceObject;
+@synthesize targetObject = _targetObject;
+@synthesize delegate = _delegate;
+@synthesize mappingProvider = _mappingProvider;
 @synthesize mappingOperationDataSource = _mappingOperationDataSource;
-@synthesize errors;
-@synthesize context;
+@synthesize mappingErrors = _mappingErrors;
+@synthesize operationQueue = _operationQueue;
+@synthesize context = _context;
 
-+ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)theMappingProvider
++ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider
 {
-    return [[[self alloc] initWithObject:object mappingProvider:theMappingProvider] autorelease];
+    return [[[self alloc] initWithObject:object mappingProvider:mappingProvider] autorelease];
 }
 
-- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)theMappingProvider
+- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider
 {
     self = [super init];
     if (self) {
-        sourceObject = [object retain];
-        mappingProvider = theMappingProvider;
-        errors = [NSMutableArray new];
-        operationQueue = [RKMappingOperationQueue new];
-        context = RKObjectMappingProviderContextObjectsByKeyPath;
-        self.mappingOperationDataSource = [[RKObjectMappingOperationDataSource new] autorelease];
+        _sourceObject = [object retain];
+        _mappingProvider = mappingProvider;
+        _mappingErrors = [NSMutableArray new];
+        _operationQueue = [NSOperationQueue new];
+        _context = RKObjectMappingProviderContextObjectsByKeyPath;
+        _mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
 
     return self;
@@ -60,9 +68,10 @@
 
 - (void)dealloc
 {
-    [sourceObject release];
-    [errors release];
-    [operationQueue release];
+    [_sourceObject release];
+    [_mappingErrors release];
+    [_operationQueue release];
+    [_mappingOperationDataSource release];
     [super dealloc];
 }
 
@@ -70,27 +79,22 @@
 
 - (NSArray *)errors
 {
-    return [NSArray arrayWithArray:errors];
-}
-
-- (NSUInteger)errorCount
-{
-    return [self.errors count];
+    return [NSArray arrayWithArray:self.mappingErrors];
 }
 
 - (void)addError:(NSError *)error
 {
     NSAssert(error, @"Cannot add a nil error");
-    [errors addObject:error];
+    [self.mappingErrors addObject:error];
 
-    if ([self.delegate respondsToSelector:@selector(objectMapper:didAddError:)]) {
-        [self.delegate objectMapper:self didAddError:error];
+    if ([self.delegate respondsToSelector:@selector(mapper:didAddError:)]) {
+        [self.delegate mapper:self didAddError:error];
     }
 
     RKLogWarning(@"Adding mapping error: %@", [error localizedDescription]);
 }
 
-- (void)addErrorWithCode:(RKObjectMapperErrorCode)errorCode message:(NSString *)errorMessage keyPath:(NSString *)keyPath userInfo:(NSDictionary *)otherInfo
+- (void)addErrorWithCode:(RKMappingErrorCode)errorCode message:(NSString *)errorMessage keyPath:(NSString *)keyPath userInfo:(NSDictionary *)otherInfo
 {
     NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                      errorMessage, NSLocalizedDescriptionKey,
@@ -104,7 +108,7 @@
 - (void)addErrorForUnmappableKeyPath:(NSString *)keyPath
 {
     NSString *errorMessage = [NSString stringWithFormat:@"Could not find an object mapping for keyPath: '%@'", keyPath];
-    [self addErrorWithCode:RKObjectMapperErrorObjectMappingNotFound message:errorMessage keyPath:keyPath userInfo:nil];
+    [self addErrorWithCode:RKMappingErrorNotFound message:errorMessage keyPath:keyPath userInfo:nil];
 }
 
 - (BOOL)isNullCollection:(id)object
@@ -130,7 +134,7 @@
 
 #pragma mark - Mapping Primitives
 
-- (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping
+- (id)mapObject:(id)mappableObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping
 {
     NSAssert([mappableObject respondsToSelector:@selector(setValue:forKeyPath:)], @"Expected self.object to be KVC compliant");
     id destinationObject = nil;
@@ -138,8 +142,8 @@
     if (self.targetObject) {
         destinationObject = self.targetObject;
         RKObjectMapping *objectMapping = nil;
-        if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
-            objectMapping = [(RKDynamicObjectMapping *)mapping objectMappingForDictionary:mappableObject];
+        if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+            objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:mappableObject];
         } else if ([mapping isKindOfClass:[RKObjectMapping class]]) {
             objectMapping = (RKObjectMapping *)mapping;
         } else {
@@ -149,7 +153,7 @@
             NSString *errorMessage = [NSString stringWithFormat:
                                       @"Expected an object mapping for class of type '%@', provider returned one for '%@'",
                                       NSStringFromClass([self.targetObject class]), NSStringFromClass(objectMapping.objectClass)];
-            [self addErrorWithCode:RKObjectMapperErrorObjectMappingTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
+            [self addErrorWithCode:RKMappingErrorTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
             return nil;
         }
     } else {
@@ -170,7 +174,7 @@
     return nil;
 }
 
-- (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping
+- (NSArray *)mapCollection:(NSArray *)mappableObjects atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping
 {
     NSAssert(mappableObjects != nil, @"Cannot map without an collection of mappable objects");
     NSAssert(mapping != nil, @"Cannot map without a mapping to consult");
@@ -196,7 +200,7 @@
         NSString *errorMessage = [NSString stringWithFormat:
                                   @"Cannot map a collection of objects onto a non-mutable collection. Unexpected destination object type '%@'",
                                   NSStringFromClass([mappedObjects class])];
-        [self addErrorWithCode:RKObjectMapperErrorObjectMappingTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
+        [self addErrorWithCode:RKMappingErrorTypeMismatch message:errorMessage keyPath:keyPath userInfo:nil];
         return nil;
     }
 
@@ -216,35 +220,35 @@
 }
 
 // The workhorse of this entire process. Emits object loading operations
-- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping
+- (BOOL)mapFromObject:(id)mappableObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping
 {
     NSAssert(destinationObject != nil, @"Cannot map without a target object to assign the results to");
     NSAssert(mappableObject != nil, @"Cannot map without a collection of attributes");
     NSAssert(mapping != nil, @"Cannot map without an mapping");
 
     RKLogDebug(@"Asked to map source object %@ with mapping %@", mappableObject, mapping);
-    if ([self.delegate respondsToSelector:@selector(objectMapper:willMapFromObject:toObject:atKeyPath:usingMapping:)]) {
-        [self.delegate objectMapper:self willMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
+    if ([self.delegate respondsToSelector:@selector(mapper:willMapFromObject:toObject:atKeyPath:usingMapping:)]) {
+        [self.delegate mapper:self willMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
     }
 
     NSError *error = nil;
 
-    RKObjectMappingOperation *mappingOperation = [RKObjectMappingOperation mappingOperationFromObject:mappableObject
+    RKMappingOperation *mappingOperation = [RKMappingOperation mappingOperationFromObject:mappableObject
                                                                                              toObject:destinationObject
                                                                                           withMapping:mapping];
-    mappingOperation.queue = operationQueue;
+    mappingOperation.queue = self.operationQueue;
     mappingOperation.dataSource = self.mappingOperationDataSource;
-    if ([self.delegate respondsToSelector:@selector(objectMapper:willPerformMappingOperation:)]) {
-        [self.delegate objectMapper:self willPerformMappingOperation:mappingOperation];
+    if ([self.delegate respondsToSelector:@selector(mapper:willPerformMappingOperation:)]) {
+        [self.delegate mapper:self willPerformMappingOperation:mappingOperation];
     }
     BOOL success = [mappingOperation performMapping:&error];
     if (success) {
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didMapFromObject:toObject:atKeyPath:usingMapping:)]) {
-            [self.delegate objectMapper:self didMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
+        if ([self.delegate respondsToSelector:@selector(mapper:didMapFromObject:toObject:atKeyPath:usingMapping:)]) {
+            [self.delegate mapper:self didMapFromObject:mappableObject toObject:destinationObject atKeyPath:keyPath usingMapping:mapping];
         }
     } else if (error) {
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didFailMappingFromObject:toObject:withError:atKeyPath:usingMapping:)]) {
-            [self.delegate objectMapper:self didFailMappingFromObject:mappableObject toObject:destinationObject withError:error atKeyPath:keyPath usingMapping:mapping];
+        if ([self.delegate respondsToSelector:@selector(mapper:didFailMappingFromObject:toObject:withError:atKeyPath:usingMapping:)]) {
+            [self.delegate mapper:self didFailMappingFromObject:mappableObject toObject:destinationObject withError:error atKeyPath:keyPath usingMapping:mapping];
         }
         [self addError:error];
     }
@@ -253,12 +257,12 @@
     return success;
 }
 
-- (id)objectWithMapping:(RKObjectMappingDefinition *)mapping andData:(id)mappableData
+- (id)objectWithMapping:(RKMapping *)mapping andData:(id)mappableData
 {
-    NSAssert([mapping isKindOfClass:[RKObjectMappingDefinition class]], @"Expected an RKObjectMappingDefinition object");
+    NSAssert([mapping isKindOfClass:[RKMapping class]], @"Expected an RKMapping object");
     RKObjectMapping *objectMapping = nil;
-    if ([mapping isKindOfClass:[RKDynamicObjectMapping class]]) {
-        objectMapping = [(RKDynamicObjectMapping *)mapping objectMappingForDictionary:mappableData];
+    if ([mapping isKindOfClass:[RKDynamicMapping class]]) {
+        objectMapping = [(RKDynamicMapping *)mapping objectMappingForDictionary:mappableData];
         if (! objectMapping) {
             RKLogDebug(@"Mapping %@ declined mapping for data %@: returned nil objectMapping", mapping, mappableData);
         }
@@ -275,7 +279,7 @@
     return nil;
 }
 
-- (id)performMappingForObject:(id)mappableValue atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)mapping
+- (id)performMappingForObject:(id)mappableValue atKeyPath:(NSString *)keyPath usingMapping:(RKMapping *)mapping
 {
     id mappingResult;
     if (mapping.forceCollectionMapping || [mappableValue isKindOfClass:[NSArray class]] || [mappableValue isKindOfClass:[NSSet class]]) {
@@ -309,8 +313,8 @@
         if (mappableValue == nil || mappableValue == [NSNull null] || [self isNullCollection:mappableValue]) {
             RKLogDebug(@"Found unmappable value at keyPath: %@", keyPath);
 
-            if ([self.delegate respondsToSelector:@selector(objectMapper:didNotFindMappableObjectAtKeyPath:)]) {
-                [self.delegate objectMapper:self didNotFindMappableObjectAtKeyPath:keyPath];
+            if ([self.delegate respondsToSelector:@selector(mapper:didNotFindMappableObjectAtKeyPath:)]) {
+                [self.delegate mapper:self didNotFindMappableObjectAtKeyPath:keyPath];
             }
 
             continue;
@@ -318,9 +322,9 @@
 
         // Found something to map
         foundMappable = YES;
-        RKObjectMappingDefinition *mapping = [mappingsByKeyPath objectForKey:keyPath];
-        if ([self.delegate respondsToSelector:@selector(objectMapper:didFindMappableObject:atKeyPath:withMapping:)]) {
-            [self.delegate objectMapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:mapping];
+        RKMapping *mapping = [mappingsByKeyPath objectForKey:keyPath];
+        if ([self.delegate respondsToSelector:@selector(mapper:didFindMappableObject:atKeyPath:withMapping:)]) {
+            [self.delegate mapper:self didFindMappableObject:mappableValue atKeyPath:keyPath withMapping:mapping];
         }
 
         mappingResult = [self performMappingForObject:mappableValue atKeyPath:keyPath usingMapping:mapping];
@@ -335,15 +339,15 @@
 }
 
 // Primary entry point for the mapper.
-- (RKObjectMappingResult *)performMapping
+- (RKMappingResult *)performMapping
 {
     NSAssert(self.sourceObject != nil, @"Cannot perform object mapping without a source object to map from");
     NSAssert(self.mappingProvider != nil, @"Cannot perform object mapping without an object mapping provider");
 
     RKLogDebug(@"Performing object mapping sourceObject: %@\n and targetObject: %@", self.sourceObject, self.targetObject);
 
-    if ([self.delegate respondsToSelector:@selector(objectMapperWillBeginMapping:)]) {
-        [self.delegate objectMapperWillBeginMapping:self];
+    if ([self.delegate respondsToSelector:@selector(mapperWillBeginMapping:)]) {
+        [self.delegate mapperWillBeginMapping:self];
     }
 
     // Perform the mapping
@@ -351,11 +355,11 @@
     NSMutableDictionary *results = nil;
 
     // Handle mapping selection for context
-    id mappingsForContext = [self.mappingProvider valueForContext:context];
+    id mappingsForContext = [self.mappingProvider valueForContext:self.context];
     if ([mappingsForContext isKindOfClass:[NSDictionary class]]) {
         results = [self performKeyPathMappingUsingMappingDictionary:mappingsForContext];
         foundMappable = (results != nil);
-    } else if ([mappingsForContext isKindOfClass:[RKObjectMappingDefinition class]]) {
+    } else if ([mappingsForContext isKindOfClass:[RKMapping class]]) {
         id mappableData = self.sourceObject;
         if ([mappingsForContext rootKeyPath] != nil) {
             NSString *rootKeyPath = [mappingsForContext rootKeyPath];
@@ -371,11 +375,11 @@
     }
 
     // Allow any queued operations to complete
-    RKLogDebug(@"The following operations are in the queue: %@", operationQueue.operations);
-    [operationQueue waitUntilAllOperationsAreFinished];
+    RKLogDebug(@"The following operations are in the queue: %@", self.operationQueue.operations);
+    [self.operationQueue waitUntilAllOperationsAreFinished];
 
-    if ([self.delegate respondsToSelector:@selector(objectMapperDidFinishMapping:)]) {
-        [self.delegate objectMapperDidFinishMapping:self];
+    if ([self.delegate respondsToSelector:@selector(mapperDidFinishMapping:)]) {
+        [self.delegate mapperDidFinishMapping:self];
     }
 
     // If we found nothing eligible for mapping in the content, add an unmappable key path error and fail mapping
@@ -388,7 +392,7 @@
 
     RKLogDebug(@"Finished performing object mapping. Results: %@", results);
 
-    return [RKObjectMappingResult mappingResultWithDictionary:results];
+    return [RKMappingResult mappingResultWithDictionary:results];
 }
 
 @end

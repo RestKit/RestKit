@@ -1,5 +1,5 @@
 //
-//  RKDynamicObjectMappingMatcher.h
+//  RKDynamicMappingMatcher.h
 //  RestKit
 //
 //  Created by Jeff Arena on 8/2/11.
@@ -10,7 +10,7 @@
 #import "RKObjectMapping.h"
 
 
-@interface RKDynamicObjectMappingMatcher : NSObject {
+@interface RKDynamicMappingMatcher : NSObject {
     NSString *_keyPath;
     id _value;
     BOOL (^_isMatchForDataBlock)(id data);

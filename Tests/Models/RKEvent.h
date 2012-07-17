@@ -19,11 +19,9 @@
 //
 
 
-#import "NSManagedObject+ActiveRecord.h"
+#import <CoreData/CoreData.h>
 
-@interface RKEvent : NSManagedObject {
-
-}
+@interface RKEvent : NSManagedObject
 
 @property (nonatomic, retain) NSString *eventID;
 @property (nonatomic, retain) NSString *eventType;

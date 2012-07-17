@@ -19,18 +19,18 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKObjectAttributeMapping.h"
+#import "RKAttributeMapping.h"
 
-@class RKObjectMappingOperation, RKMappingOperationQueue;
+@class RKMappingOperation;
 @protocol RKMappingOperationDataSource;
 
 /**
- Objects acting as the delegate for RKObjectMappingOperation objects must adopt the
- RKObjectMappingOperationDelegate protocol. These methods enable the delegate to be
+ Objects acting as the delegate for RKMappingOperation objects must adopt the
+ RKMappingOperationDelegate protocol. These methods enable the delegate to be
  notified of events such as the application of attribute and relationship mappings
  during a mapping operation.
  */
-@protocol RKObjectMappingOperationDelegate  <NSObject>
+@protocol RKMappingOperationDelegate  <NSObject>
 
 @optional
 
@@ -42,7 +42,7 @@
  @param mapping The RKObjectAttributeMapping or RKObjectRelationshipMapping found for the key path.
  @param keyPath The key path in the source object for which the mapping is to be applied.
  */
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFindMapping:(RKObjectAttributeMapping *)mapping forKeyPath:(NSString *)keyPath;
+- (void)mappingOperation:(RKMappingOperation *)operation didFindMapping:(RKAttributeMapping *)mapping forKeyPath:(NSString *)keyPath;
 
 /**
  Tells the delegate that no attribute or relationships mapping was found for a given key
@@ -51,7 +51,7 @@
  @param operation The object mapping operation being performed.
  @param keyPath The key path in the source object for which no mapping was found.
  */
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
+- (void)mappingOperation:(RKMappingOperation *)operation didNotFindMappingForKeyPath:(NSString *)keyPath;
 
 /**
  Tells the delegate that the mapping operation has set a value for a given key path with
@@ -62,7 +62,7 @@
  @param keyPath The key path in the destination object for which a new value has been set.
  @param mapping The RKObjectAttributeMapping or RKObjectRelationshipMapping found for the key path.
  */
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping;
+- (void)mappingOperation:(RKMappingOperation *)operation didSetValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping;
 
 /**
  Tells the delegate that the mapping operation has declined to set a value for a given
@@ -73,7 +73,7 @@
  @param keyPath The key path in the destination object for which a unchanged value was not set.
  @param mapping The RKObjectAttributeMapping or RKObjectRelationshipMapping found for the key path.
  */
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKObjectAttributeMapping *)mapping;
+- (void)mappingOperation:(RKMappingOperation *)operation didNotSetUnchangedValue:(id)value forKeyPath:(NSString *)keyPath usingMapping:(RKAttributeMapping *)mapping;
 
 /**
  Tells the delegate that the object mapping operation has failed due to an error.
@@ -81,7 +81,7 @@
  @param operation The object mapping operation that has failed.
  @param error An error object indicating the reason for the failure.
  */
-- (void)objectMappingOperation:(RKObjectMappingOperation *)operation didFailWithError:(NSError *)error;
+- (void)mappingOperation:(RKMappingOperation *)operation didFailWithError:(NSError *)error;
 @end
 
 /**
@@ -92,7 +92,7 @@
  and determining how to map them into new representations on a destination object.
 
  */
-@interface RKObjectMappingOperation : NSObject
+@interface RKMappingOperation : NSObject
 
 /**
  A dictionary of mappable elements containing simple values or nested object structures.
@@ -113,7 +113,7 @@
 /**
  The delegate to inform of interesting events during the mapping operation
  */
-@property (nonatomic, assign) id<RKObjectMappingOperationDelegate> delegate;
+@property (nonatomic, assign) id<RKMappingOperationDelegate> delegate;
 
 /**
  An operation queue for deferring portions of the mapping process until later
@@ -123,7 +123,7 @@
  the mapping operation will perform all its operations within the body of performMapping. If a queue
  is present, it may elect to defer portions of the mapping operation using the queue.
  */
-@property (nonatomic, retain) RKMappingOperationQueue *queue;
+@property (nonatomic, retain) NSOperationQueue *queue;
 
 /**
  The data source is responsible for providing the mapping operation with an appropriate target object for
@@ -142,11 +142,11 @@
  @param sourceObject The source object to be mapped. Cannot be nil.
  @param destinationObject The destination object the results are to be mapped onto. May be nil,
  in which case a new object will be constructed during the mapping.
- @param mapping An instance of RKObjectMapping or RKDynamicObjectMapping defining how the
+ @param mapping An instance of RKObjectMapping or RKDynamicMapping defining how the
  mapping is to be performed.
  @return An instance of RKObjectMappingOperation or RKManagedObjectMappingOperation for performing the mapping.
  */
-+ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKObjectMappingDefinition *)mapping;
++ (id)mappingOperationFromObject:(id)sourceObject toObject:(id)destinationObject withMapping:(RKMapping *)mapping;
 
 /**
  Initializes the receiver with a source and destination objects and an object mapping
@@ -155,11 +155,11 @@
  @param sourceObject The source object to be mapped. Cannot be nil.
  @param destinationObject The destination object the results are to be mapped onto. May be nil,
  in which case a new object will be constructed during the mapping.
- @param mapping An instance of RKObjectMapping or RKDynamicObjectMapping defining how the
+ @param mapping An instance of RKObjectMapping or RKDynamicMapping defining how the
  mapping is to be performed.
  @return The receiver, initialized with a source object, a destination object, and a mapping.
  */
-- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKObjectMappingDefinition *)mapping;
+- (id)initWithSourceObject:(id)sourceObject destinationObject:(id)destinationObject mapping:(RKMapping *)mapping;
 
 /**
  Process all mappable values from the mappable dictionary and assign them to the target object
@@ -169,16 +169,5 @@
  @return A Boolean value indicating if the mapping operation was successful.
  */
 - (BOOL)performMapping:(NSError **)error;
-
-/// @name Subclass Hooks ///
-
-/**
- Invoked just before the receiver performs a child mapping operation to map nested content. The default implementation
- does nothing.
- 
- @param childMappingOperation The child mapping operation that is about to be performed.
- */
-// TODO: Eliminate...
-- (void)willPerformChildMappingOperation:(RKObjectMappingOperation *)childMappingOperation;
 
 @end

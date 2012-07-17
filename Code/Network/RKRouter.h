@@ -121,7 +121,7 @@
 
 @end
 
-@interface RKRouter (CompatibilityAliases)
+@interface RKRouter (Deprecations)
 
 /**
  Use `[[router URLForObject:object method:method] resourcePath]` instead.

@@ -49,14 +49,14 @@
     return result;
 }
 
-+ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKObjectMappingDefinition *)mapping
++ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKMapping *)mapping
 {
     RKObjectMappingProviderContextEntry *contextEntry = [[[RKObjectMappingProviderContextEntry alloc] init] autorelease];
     contextEntry.mapping = mapping;
     return contextEntry;
 }
 
-+ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKObjectMappingDefinition *)mapping userData:(id)userData
++ (RKObjectMappingProviderContextEntry *)contextEntryWithMapping:(RKMapping *)mapping userData:(id)userData
 {
     RKObjectMappingProviderContextEntry *contextEntry = [RKObjectMappingProviderContextEntry contextEntryWithMapping:mapping];
     contextEntry.userData = userData;

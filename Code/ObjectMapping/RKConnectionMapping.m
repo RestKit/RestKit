@@ -19,17 +19,16 @@
 //
 
 #import "RKConnectionMapping.h"
-#import "NSManagedObject+ActiveRecord.h"
 #import "RKEntityMapping.h"
 #import "RKObjectManager.h"
 #import "RKManagedObjectCaching.h"
-#import "RKDynamicObjectMappingMatcher.h"
+#import "RKDynamicMappingMatcher.h"
 
 @interface RKConnectionMapping()
 @property (nonatomic, retain) NSString *relationshipName;
 @property (nonatomic, retain) NSString *destinationKeyPath;
-@property (nonatomic, retain) RKObjectMappingDefinition *mapping;
-@property (nonatomic, retain) RKDynamicObjectMappingMatcher *matcher;
+@property (nonatomic, retain) RKMapping *mapping;
+@property (nonatomic, retain) RKDynamicMappingMatcher *matcher;
 @property (nonatomic, retain) NSString *sourceKeyPath;
 @end
 
@@ -41,19 +40,19 @@
 @synthesize matcher = _matcher;
 @synthesize sourceKeyPath = _sourceKeyPath;
 
-+ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
++ (RKConnectionMapping *)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping
 {
     RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:nil];
     return [mapping autorelease];
 }
 
-+ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher
++ (RKConnectionMapping*)connectionMappingForRelationship:(NSString *)relationshipName fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
 {
     RKConnectionMapping *mapping = [[self alloc] initWithRelationshipName:relationshipName sourceKeyPath:sourceKeyPath destinationKeyPath:destinationKeyPath mapping:objectOrDynamicMapping matcher:matcher];
     return [mapping autorelease];
 }
 
-- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKObjectMappingDefinition *)objectOrDynamicMapping matcher:(RKDynamicObjectMappingMatcher *)matcher
+- (id)initWithRelationshipName:(NSString *)relationshipName sourceKeyPath:(NSString *)sourceKeyPath destinationKeyPath:(NSString *)destinationKeyPath mapping:(RKMapping *)objectOrDynamicMapping matcher:(RKDynamicMappingMatcher *)matcher
 {
     self = [super init];
     if (self) {

@@ -18,7 +18,6 @@
 //  limitations under the License.
 //
 
-#import "NSManagedObject+ActiveRecord.h"
 #import "RKSearchableManagedObject.h"
 
 extern NSString * const RKSearchWordPrimaryKeyAttribute;

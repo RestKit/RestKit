@@ -11,17 +11,15 @@
 #import "RKEntityMapping.h"
 #import "RKLog.h"
 #import "RKManagedObjectStore.h"
-#import "RKObjectMappingOperation.h"
-#import "RKDynamicObjectMappingMatcher.h"
+#import "RKMappingOperation.h"
+#import "RKDynamicMappingMatcher.h"
 #import "RKManagedObjectCaching.h"
-#import "RKMappingOperationQueue.h"
-#import "RKEntityConnectionOperation.h"
 #import "RKRelationshipConnectionOperation.h"
 
 @interface RKManagedObjectMappingOperationDataSource ()
 @property (nonatomic, retain, readwrite) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, retain, readwrite) id<RKManagedObjectCaching> managedObjectCache;
-
+@property (nonatomic, retain) NSMutableArray *mutableInsertedObjects;
 @end
 
 @implementation RKManagedObjectMappingOperationDataSource
@@ -29,6 +27,8 @@
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectCache = _managedObjectCache;
 @synthesize operationQueue = _operationQueue;
+@synthesize tracksInsertedObjects = _tracksInsertedObjects;
+@synthesize insertedObjects = _insertedObjects;
 
 - (id)initWithManagedObjectContext:(NSManagedObjectContext *)managedObjectContext cache:(id<RKManagedObjectCaching>)managedObjectCache
 {
@@ -39,6 +39,8 @@
     if (self) {
         self.managedObjectContext = managedObjectContext;
         self.managedObjectCache = managedObjectCache;
+        self.mutableInsertedObjects = [NSMutableArray array];
+        self.tracksInsertedObjects = NO;
     }
     
     return self;
@@ -46,9 +48,10 @@
 
 - (void)dealloc
 {
-    self.managedObjectCache = nil;
-    self.managedObjectContext = nil;
-    self.operationQueue = nil;
+    [_managedObjectCache release];
+    [_managedObjectContext release];
+    [_operationQueue release];
+    [_mutableInsertedObjects release];
     
     [super dealloc];
 }
@@ -69,13 +72,13 @@
     NSString *primaryKeyAttribute;
     
     NSEntityDescription *entity = [entityMapping entity];
-    RKObjectAttributeMapping *primaryKeyAttributeMapping = nil;
+    RKAttributeMapping *primaryKeyAttributeMapping = nil;
     
     primaryKeyAttribute = [entityMapping primaryKeyAttribute];
     if (primaryKeyAttribute) {
         // If a primary key has been set on the object mapping, find the attribute mapping
         // so that we can extract any existing primary key from the mappable data
-        for (RKObjectAttributeMapping *attributeMapping in entityMapping.attributeMappings) {
+        for (RKAttributeMapping *attributeMapping in entityMapping.attributeMappings) {
             if ([attributeMapping.destinationKeyPath isEqualToString:primaryKeyAttribute]) {
                 primaryKeyAttributeMapping = attributeMapping;
                 break;
@@ -118,6 +121,10 @@
         if ([self.managedObjectCache respondsToSelector:@selector(didCreateObject:)]) {
             [self.managedObjectCache didCreateObject:object];
         }
+        
+        if (self.tracksInsertedObjects) {
+            [self.mutableInsertedObjects addObject:object];
+        }
     }
     
     return object;
@@ -141,7 +148,7 @@
     }
 }
 
-- (void)commitChangesForMappingOperation:(RKObjectMappingOperation *)mappingOperation
+- (void)commitChangesForMappingOperation:(RKMappingOperation *)mappingOperation
 {
     if ([mappingOperation.objectMapping isKindOfClass:[RKEntityMapping class]]) {
         [self emitDeadlockWarningIfNecessary];
@@ -158,6 +165,16 @@
             [operation release];
         }
     }
+}
+
+- (NSArray *)insertedObjects
+{
+    return [NSArray arrayWithArray:self.mutableInsertedObjects];
+}
+
+- (void)clearInsertedObjects
+{
+    self.mutableInsertedObjects = [NSMutableArray array];
 }
 
 @end

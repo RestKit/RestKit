@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "NSManagedObject+ActiveRecord.h"
+#import <CoreData/CoreData.h>
 #import "RKManagedObjectSearchEngine.h"
 
 @class RKSearchWord;

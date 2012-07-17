@@ -7,7 +7,7 @@
 //
 
 #import "RKTestEnvironment.h"
-#import "RKObjectAttributeMapping.h"
+#import "RKAttributeMapping.h"
 
 @interface RKObjectAttributeMappingTest : RKTestCase
 
@@ -17,16 +17,16 @@
 
 - (void)testThatAttributeMappingsWithTheSameSourceAndDestinationKeyPathAreConsideredEqual
 {
-    RKObjectAttributeMapping *mapping1 = [RKObjectAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"that"];
-    RKObjectAttributeMapping *mapping2 = [RKObjectAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"that"];
+    RKAttributeMapping *mapping1 = [RKAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"that"];
+    RKAttributeMapping *mapping2 = [RKAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"that"];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(YES)));
 }
 
 - (void)testThatAttributeMappingsWithDifferingKeyPathsAreNotConsideredEqual
 {
-    RKObjectAttributeMapping *mapping1 = [RKObjectAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"that"];
-    RKObjectAttributeMapping *mapping2 = [RKObjectAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"the other"];
+    RKAttributeMapping *mapping1 = [RKAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"that"];
+    RKAttributeMapping *mapping2 = [RKAttributeMapping mappingFromKeyPath:@"this" toKeyPath:@"the other"];
 
     assertThatBool([mapping1 isEqualToMapping:mapping2], is(equalToBool(NO)));
 }

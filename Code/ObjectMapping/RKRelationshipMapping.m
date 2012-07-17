@@ -1,5 +1,5 @@
 //
-//  RKObjectRelationshipMapping.m
+//  RKRelationshipMapping.m
 //  RestKit
 //
 //  Created by Blake Watters on 5/4/11.
@@ -18,29 +18,29 @@
 //  limitations under the License.
 //
 
-#import "RKObjectRelationshipMapping.h"
+#import "RKRelationshipMapping.h"
 
-@implementation RKObjectRelationshipMapping
+@implementation RKRelationshipMapping
 
 @synthesize mapping = _mapping;
 @synthesize reversible = _reversible;
 
-+ (RKObjectRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping reversible:(BOOL)reversible
++ (RKRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(id)objectOrDynamicMapping reversible:(BOOL)reversible
 {
-    RKObjectRelationshipMapping *relationshipMapping = (RKObjectRelationshipMapping *)[self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
+    RKRelationshipMapping *relationshipMapping = (RKRelationshipMapping *)[self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath];
     relationshipMapping.reversible = reversible;
     relationshipMapping.mapping = objectOrDynamicMapping;
     return relationshipMapping;
 }
 
-+ (RKObjectRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(RKObjectMappingDefinition *)objectOrDynamicMapping
++ (RKRelationshipMapping *)mappingFromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath withMapping:(id)objectOrDynamicMapping
 {
     return [self mappingFromKeyPath:sourceKeyPath toKeyPath:destinationKeyPath withMapping:objectOrDynamicMapping reversible:YES];
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RKObjectRelationshipMapping *copy = [super copyWithZone:zone];
+    RKRelationshipMapping *copy = [super copyWithZone:zone];
     copy.mapping = self.mapping;
     copy.reversible = self.reversible;
     return copy;
@@ -52,9 +52,9 @@
     [super dealloc];
 }
 
-- (BOOL)isEqualToMapping:(RKObjectRelationshipMapping *)otherMapping
+- (BOOL)isEqualToMapping:(RKRelationshipMapping *)otherMapping
 {
-    if (! [otherMapping isMemberOfClass:[RKObjectRelationshipMapping class]]) return NO;
+    if (! [otherMapping isMemberOfClass:[RKRelationshipMapping class]]) return NO;
     if (! [super isEqualToMapping:otherMapping]) return NO;
     if (self.mapping == nil && otherMapping.mapping == nil) return YES;
 

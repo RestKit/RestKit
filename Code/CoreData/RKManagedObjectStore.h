@@ -147,6 +147,8 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
  */
 - (NSArray *)objectsWithIDs:(NSArray *)objectIDs;
 
+- (id)insertNewObjectForEntityForName:(NSString *)entityName;
+
 ///-----------------------------------------------------------------------------
 /// @name Retrieving Managed Object Contexts
 ///-----------------------------------------------------------------------------

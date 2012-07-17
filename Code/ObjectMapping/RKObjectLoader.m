@@ -21,7 +21,7 @@
 #import "RKObjectLoader.h"
 #import "RKObjectMapper.h"
 #import "RKObjectManager.h"
-#import "RKObjectMapperError.h"
+#import "RKMappingErrors.h"
 #import "RKObjectLoader_Internals.h"
 #import "RKParserRegistry.h"
 #import "RKRequest_Internals.h"
@@ -39,6 +39,7 @@
 @end
 
 @interface RKObjectLoader ()
+@property (nonatomic, retain, readwrite) RKMappingResult *result;
 @property (nonatomic, assign, readwrite, getter = isLoaded) BOOL loaded;
 @property (nonatomic, assign, readwrite, getter = isLoading) BOOL loading;
 @property (nonatomic, retain, readwrite) RKResponse *response;
@@ -105,7 +106,8 @@
     _onDidLoadObjects = nil;
     [_onDidLoadObjectsDictionary release];
     _onDidLoadObjectsDictionary = nil;
-    self.mappingOperationDataSource = nil;
+    [_mappingOperationDataSource release];
+    _mappingOperationDataSource = nil;
 
     [super dealloc];
 }
@@ -132,16 +134,16 @@
 // RKRequestQueue to remove requests from the queue. All requests need to be finalized.
 - (void)finalizeLoad:(BOOL)successful
 {
+    NSAssert([NSThread isMainThread], @"finalization must occur on the main queue");
+    
     self.loading = NO;
     self.loaded = successful;
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
-            [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
-        }
+    if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
+        [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
+    }
 
-        [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
-    });
+    [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
 }
 
 // Invoked on the main thread. Inform the delegate.
@@ -149,7 +151,7 @@
 {
     NSAssert([NSThread isMainThread], @"RKObjectLoaderDelegate callbacks must occur on the main thread");
 
-    RKObjectMappingResult *result = [RKObjectMappingResult mappingResultWithDictionary:resultDictionary];
+    RKMappingResult *result = [RKMappingResult mappingResultWithDictionary:resultDictionary];
 
     // Dictionary callback
     if ([self.delegate respondsToSelector:@selector(objectLoader:didLoadObjectDictionary:)]) {
@@ -188,7 +190,7 @@
  at thread boundaries.
  @protected
  */
-- (void)processMappingResult:(RKObjectMappingResult *)result
+- (void)processMappingResult:(RKMappingResult *)result
 {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -198,7 +200,7 @@
 
 #pragma mark - Response Object Mapping
 
-- (RKObjectMappingResult *)mapResponseWithMappingProvider:(RKObjectMappingProvider *)mappingProvider toObject:(id)targetObject inContext:(RKObjectMappingProviderContext)context error:(NSError **)error
+- (RKMappingResult *)mapResponseWithMappingProvider:(RKObjectMappingProvider *)mappingProvider toObject:(id)targetObject inContext:(RKObjectMappingProviderContext)context error:(NSError **)error
 {
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:self.response.MIMEType];
     NSAssert1(parser, @"Cannot perform object load without a parser for MIME Type '%@'", self.response.MIMEType);
@@ -211,10 +213,10 @@
     if (bodyAsString == nil || [[bodyAsString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0) {
         RKLogDebug(@"Mapping attempted on empty response body...");
         if (self.targetObject) {
-            return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
+            return [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionaryWithObject:self.targetObject forKey:@""]];
         }
 
-        return [RKObjectMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
+        return [RKMappingResult mappingResultWithDictionary:[NSDictionary dictionary]];
     }
 
     id parsedData = [parser objectFromString:bodyAsString error:error];
@@ -227,16 +229,16 @@
         parsedData = [[parsedData mutableCopy] autorelease];
         [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoader:self willMapData:&parsedData];
     }
-
+    
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:parsedData mappingProvider:mappingProvider];
     mapper.targetObject = targetObject;
     mapper.delegate = self;
     mapper.context = context;
     mapper.mappingOperationDataSource = self.mappingOperationDataSource;
-    RKObjectMappingResult *result = [mapper performMapping];
+    RKMappingResult *result = [self performMappingWithMapper:mapper];    
 
     // Log any mapping errors
-    if (mapper.errorCount > 0) {
+    if ([mapper.errors count] > 0) {
         RKLogError(@"Encountered errors during mapping: %@", [[mapper.errors valueForKey:@"localizedDescription"] componentsJoinedByString:@", "]);
     }
 
@@ -250,7 +252,13 @@
     return result;
 }
 
-- (RKObjectMappingDefinition *)configuredObjectMapping
+// Factored into a method to support RKManagedObjectLoader
+- (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper 
+{
+    return [mapper performMapping];
+}
+
+- (RKMapping *)configuredObjectMapping
 {
     if (self.objectMapping) {
         return self.objectMapping;
@@ -259,12 +267,12 @@
     return [self.mappingProvider objectMappingForResourcePath:self.resourcePath];
 }
 
-- (RKObjectMappingResult *)performMapping:(NSError **)error
+- (RKMappingResult *)performMapping:(NSError **)error
 {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping should occur on a background thread");
 
     RKObjectMappingProvider *mappingProvider;
-    RKObjectMappingDefinition *configuredObjectMapping = [self configuredObjectMapping];
+    RKMapping *configuredObjectMapping = [self configuredObjectMapping];
     if (configuredObjectMapping) {
         mappingProvider = [RKObjectMappingProvider mappingProvider];
         NSString *rootKeyPath = configuredObjectMapping.rootKeyPath ? configuredObjectMapping.rootKeyPath : @"";
@@ -286,8 +294,8 @@
     [self.mappingQueue addOperationWithBlock:^{
         RKLogDebug(@"Beginning object mapping activities within GCD queue labeled: %@", self.mappingQueue.name);
         NSError *error = nil;
-        _result = [[self performMapping:&error] retain];
-        NSAssert(_result || error, @"Expected performMapping to return a mapping result or an error.");
+        self.result = [self performMapping:&error];
+        NSAssert(self.result || error, @"Expected performMapping to return a mapping result or an error.");
         if (self.result) {
             [self processMappingResult:self.result];
         } else if (error) {
@@ -360,7 +368,7 @@
     // Since we are mapping what we know to be an error response, we don't want to map the result back onto our
     // target object
     NSError *error = nil;
-    RKObjectMappingResult *result = [self mapResponseWithMappingProvider:self.mappingProvider toObject:nil inContext:RKObjectMappingProviderContextErrors error:&error];
+    RKMappingResult *result = [self mapResponseWithMappingProvider:self.mappingProvider toObject:nil inContext:RKObjectMappingProviderContextErrors error:&error];
     if (result) {
         error = [result asError];
     } else {
@@ -435,8 +443,14 @@
         if (! self.isCancelled) {
             [self informDelegateOfError:error];
         }
-
-        [self finalizeLoad:NO];
+        
+        if ([NSThread isMainThread]) {
+            [self finalizeLoad:NO];
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self finalizeLoad:NO];
+            });
+        }
     }
 
     [pool release];

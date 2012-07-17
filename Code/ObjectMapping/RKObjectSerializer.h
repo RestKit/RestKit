@@ -19,7 +19,7 @@
 //
 
 #import "RKObjectMapping.h"
-#import "RKObjectMappingOperation.h"
+#import "RKMappingOperation.h"
 #import "RKRequestSerializable.h"
 
 /**
@@ -28,7 +28,7 @@
  transformed object is then enclosed in an RKRequestSerializable representation
  that is suitable for inclusion in an RKRequest.
  */
-@interface RKObjectSerializer : NSObject <RKObjectMappingOperationDelegate>
+@interface RKObjectSerializer : NSObject <RKMappingOperationDelegate>
 
 @property (nonatomic, readonly) id object;
 @property (nonatomic, readonly) RKObjectMapping *mapping;

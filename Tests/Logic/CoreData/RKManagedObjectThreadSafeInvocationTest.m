@@ -22,6 +22,11 @@
 #import "RKHuman.h"
 #import "RKManagedObjectThreadSafeInvocation.h"
 
+@interface RKManagedObjectThreadSafeInvocation (Private)
+- (void)serializeManagedObjectsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths;
+- (void)deserializeManagedObjectIDsForArgument:(id)argument withKeyPaths:(NSSet *)keyPaths;
+@end
+
 @interface RKManagedObjectThreadSafeInvocationTest : RKTestCase {
     NSMutableDictionary *_dictionary;
     RKManagedObjectStore *_objectStore;
@@ -37,7 +42,7 @@
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.objectStore = objectStore;
+    objectManager.managedObjectStore = objectStore;
     RKHuman *human = [RKHuman object];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:human forKey:@"human"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
@@ -51,7 +56,7 @@
     NSString *testKey = @"data.human";
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.objectStore = objectStore;
+    objectManager.managedObjectStore = objectStore;
     RKHuman *human = [RKHuman object];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:human forKey:testKey];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
@@ -65,7 +70,7 @@
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.objectStore = objectStore;
+    objectManager.managedObjectStore = objectStore;
     RKHuman *human1 = [RKHuman object];
     RKHuman *human2 = [RKHuman object];
     NSArray *humans = [NSArray arrayWithObjects:human1, human2, nil];
@@ -81,7 +86,7 @@
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.objectStore = objectStore;
+    objectManager.managedObjectStore = objectStore;
     RKHuman* human = [RKHuman object];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:[human objectID] forKey:@"human"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
@@ -90,28 +95,30 @@
         managedObjectContext.parentContext = objectStore.primaryManagedObjectContext;
     }];
     RKManagedObjectThreadSafeInvocation* invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.managedObjectContext = managedObjectContext;
+    invocation.privateQueueManagedObjectContext = managedObjectContext;
+    invocation.mainQueueManagedObjectContext = objectStore.mainQueueManagedObjectContext;
     [invocation deserializeManagedObjectIDsForArgument:dictionary withKeyPaths:[NSSet setWithObject:@"human"]];
     assertThat([dictionary valueForKeyPath:@"human"], is(instanceOf([NSManagedObject class])));
-    assertThat([dictionary valueForKeyPath:@"human"], is(equalTo(human)));
+    assertThat([[dictionary valueForKeyPath:@"human"] objectID], is(equalTo([human objectID])));
 }
 
 - (void)testShouldDeserializeCollectionOfManagedObjectIDToManagedObjects
 {
     RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.objectStore = objectStore;
+    objectManager.managedObjectStore = objectStore;
     RKHuman *human1 = [RKHuman object];
     RKHuman *human2 = [RKHuman object];
     NSArray *humanIDs = [NSArray arrayWithObjects:[human1 objectID], [human2 objectID], nil];
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithObject:humanIDs forKey:@"humans"];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.managedObjectContext = objectStore.primaryManagedObjectContext;
+    invocation.privateQueueManagedObjectContext = objectStore.primaryManagedObjectContext;
+    invocation.mainQueueManagedObjectContext = objectStore.mainQueueManagedObjectContext;
     [invocation deserializeManagedObjectIDsForArgument:dictionary withKeyPaths:[NSSet setWithObject:@"humans"]];
     assertThat([dictionary valueForKeyPath:@"humans"], is(instanceOf([NSArray class])));
     NSArray *humans = [NSArray arrayWithObjects:human1, human2, nil];
-    assertThat([dictionary valueForKeyPath:@"humans"], is(equalTo(humans)));
+    assertThat([dictionary valueForKeyPath:@"humans.objectID"], is(equalTo([humans valueForKey:@"objectID"])));
 }
 
 - (void)informDelegateWithDictionary:(NSDictionary *)results
@@ -131,12 +138,13 @@
     // Assert this is not the main thread
     // Create a new array of objects in the background
     RKObjectManager *objectManager = [RKTestFactory objectManager];
-    objectManager.objectStore = [RKTestFactory managedObjectStore];
+    objectManager.managedObjectStore = [RKTestFactory managedObjectStore];
     NSArray *humans = [NSArray arrayWithObject:[RKHuman object]];
     _dictionary = [[NSMutableDictionary dictionaryWithObject:humans forKey:@"humans"] retain];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateWithDictionary:)];
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.managedObjectContext = _objectStore.primaryManagedObjectContext;
+    invocation.privateQueueManagedObjectContext = _objectStore.primaryManagedObjectContext;
+    invocation.mainQueueManagedObjectContext = _objectStore.mainQueueManagedObjectContext;
     [invocation retain];
     [invocation setTarget:self];
     [invocation setSelector:@selector(informDelegateWithDictionary:)];
@@ -145,17 +153,6 @@
     [invocation invokeOnMainThread];
 
     [pool drain];
-}
-
-- (void)testShouldSerializeAndDeserializeManagedObjectsAcrossAThreadInvocation
-{
-    _objectStore = [[RKTestFactory managedObjectStore] retain];
-    _waiting = YES;
-    [self performSelectorInBackground:@selector(createBackgroundObjects) withObject:nil];
-
-    while (_waiting) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-    }
 }
 
 @end
