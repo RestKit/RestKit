@@ -24,6 +24,7 @@
 #import "RKObjectMappingProvider.h"
 #import "RKConfigurationDelegate.h"
 #import "RKObjectPaginator.h"
+#import "RKMacros.h"
 
 @protocol RKParser;
 
@@ -458,6 +459,6 @@ typedef enum {
 - (void)putObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 - (void)deleteObject:(id<NSObject>)object mapResponseWith:(RKObjectMapping *)objectMapping delegate:(id<RKObjectLoaderDelegate>)delegate DEPRECATED_ATTRIBUTE;
 
-@property (nonatomic, retain) RKManagedObjectStore *objectStore DEPRECATED_ATTRIBUTE;
+@property (nonatomic, retain) RKManagedObjectStore *objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use managedObjectStore instead");
 
 @end
