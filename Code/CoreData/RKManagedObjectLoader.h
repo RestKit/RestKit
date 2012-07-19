@@ -20,6 +20,7 @@
 
 #import "RKObjectLoader.h"
 #import "RKManagedObjectStore.h"
+#import "RKManagedObjectCaching.h"
 
 /**
  A subclass of the object loader that is dispatched when you
@@ -29,19 +30,15 @@
  */
 @interface RKManagedObjectLoader : RKObjectLoader
 
-/**
- A reference to a RestKit managed object store for interacting with Core Data
+@property (nonatomic, retain) id<RKManagedObjectCaching> managedObjectCache;
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext; // The parent context which the loader will construct a new private MOC against
+@property (nonatomic, retain) NSManagedObjectContext *mainQueueManagedObjectContext; // MOC to retrieve the results from
 
- @see RKManagedObjectStore
- */
-@property (nonatomic, retain) RKManagedObjectStore *managedObjectStore;
-@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext; // TODO: This may need to be readwrite...
-// TODO: Cache strategy should also be up here...
+//@property (nonatomic, assign) BOOL savesParentContext;
+//@property (nonatomic, assign) BOOL savesToPersistentStore;
 // TODO: Encapsulate into an NSOperation and rename RKManagedObjectRequestOperation
 // TODO: BOOL autosavesParentContext ???
 // TODO: BOOL savesToPersistentStore : When YES, the chain of parentContext's is saved until the 
-
-- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider managedObjectStore:(RKManagedObjectStore *)managedObjectStore;
 
 // TODO: Should add a delegate for managed object loader... ask about saving the context, performing pruning, etc.
 @end

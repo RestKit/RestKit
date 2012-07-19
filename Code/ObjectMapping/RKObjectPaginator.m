@@ -222,7 +222,10 @@ static NSUInteger RKObjectPaginatorDefaultPerPage = 25;
     self.currentPage = pageNumber;
 
     if (self.managedObjectStore) {
-        self.objectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider managedObjectStore:self.managedObjectStore] autorelease];
+        RKManagedObjectLoader *managedObjectLoader = [[[RKManagedObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider] autorelease];
+        managedObjectLoader.managedObjectContext = self.managedObjectStore.primaryManagedObjectContext;
+        managedObjectLoader.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
+        self.objectLoader = managedObjectLoader;
     } else {
         self.objectLoader = [[[RKObjectLoader alloc] initWithURL:self.URL mappingProvider:self.mappingProvider] autorelease];
     }

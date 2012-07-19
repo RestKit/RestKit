@@ -37,70 +37,50 @@
 
 @property (nonatomic, retain) NSManagedObjectID *targetObjectID;
 @property (nonatomic, retain) NSMutableDictionary *managedObjectsByKeyPath;
-@property (nonatomic, retain, readwrite) NSManagedObjectContext *managedObjectContext;
-
+@property (nonatomic, retain) NSManagedObjectContext *privateContext;
 @end
 
 @implementation RKManagedObjectLoader
 
-@synthesize managedObjectStore = _managedObjectStore;
+@synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
+@synthesize managedObjectContext = _parentManagedObjectContext;
+@synthesize managedObjectCache = _managedObjectCache;
+@synthesize privateContext = _privateContext;
 @synthesize targetObjectID = _targetObjectID;
 @synthesize managedObjectsByKeyPath = _managedObjectsByKeyPath;
-@synthesize managedObjectContext = _managedObjectContext;
 
 - (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider
 {
     self = [super initWithURL:URL mappingProvider:mappingProvider];
     if (self) {
         self.managedObjectsByKeyPath = [NSMutableDictionary dictionary];
-        [self addObserver:self forKeyPath:@"managedObjectStore" options:0 context:nil];
+        [self addObserver:self forKeyPath:@"managedObjectContext" options:0 context:nil];
         [self addObserver:self forKeyPath:@"targetObject" options:0 context:nil];
-        
     }
 
-    return self;
-}
-
-- (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider managedObjectStore:(RKManagedObjectStore *)managedObjectStore
-{
-    NSParameterAssert(URL);
-    NSParameterAssert(mappingProvider);
-    NSParameterAssert(managedObjectStore);
-    
-    self = [self initWithURL:URL mappingProvider:mappingProvider];
-    if (self) {
-        self.managedObjectStore = managedObjectStore;
-    }
-    
     return self;
 }
 
 - (void)dealloc
 {
-    [self removeObserver:self forKeyPath:@"managedObjectStore"];
+    [self removeObserver:self forKeyPath:@"managedObjectContext"];
     [self removeObserver:self forKeyPath:@"targetObject"];
     [_targetObjectID release];
-    [_managedObjectContext release];
+    [_parentManagedObjectContext release];
+    [_mainQueueManagedObjectContext release];
+    [_managedObjectCache release];
+    [_privateContext release];
     [_managedObjectsByKeyPath release];
-    [_managedObjectStore release];
 
     [super dealloc];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([keyPath isEqualToString:@"managedObjectStore"]) {
-        self.managedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
-        self.managedObjectContext.parentContext = self.managedObjectStore.primaryManagedObjectContext;
-        self.managedObjectContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
-        
-        RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.managedObjectContext
-                                                                                                                                          cache:self.managedObjectStore.cacheStrategy];
-        dataSource.operationQueue = [[NSOperationQueue new] autorelease];
-        [dataSource.operationQueue setSuspended:YES];
-        [dataSource.operationQueue setMaxConcurrentOperationCount:1];
-        dataSource.tracksInsertedObjects = YES; // We need to be able to obtain permanent object ID's
-        self.mappingOperationDataSource = dataSource;        
+    if ([keyPath isEqualToString:@"managedObjectContext"]) {
+        self.privateContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+        self.privateContext.parentContext = self.managedObjectContext;
+        self.privateContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
     } else if ([keyPath isEqualToString:@"targetObject"]) {
         if (! [self.targetObject isKindOfClass:[NSManagedObject class]]) {
             self.targetObjectID = nil;
@@ -115,9 +95,9 @@
     if ([self.targetObject isKindOfClass:[NSManagedObject class]]) [objectsToObtainIDs addObject:self.targetObject];
     
     if ([objectsToObtainIDs count] > 0) {
-        [self.managedObjectContext performBlock:^{
+        [self.privateContext performBlock:^{
             NSError *error;
-            BOOL success = [self.managedObjectContext obtainPermanentIDsForObjects:objectsToObtainIDs error:&error];
+            BOOL success = [self.privateContext obtainPermanentIDsForObjects:objectsToObtainIDs error:&error];
             if (! success) {
                 RKLogError(@"Failed to obtain permanent object ID's for %d objects: %@", [objectsToObtainIDs count], error);
             }
@@ -136,8 +116,6 @@
 }
 
 #pragma mark - RKObjectMapperDelegate methods
-
-// TODO: Figure out how to eliminate the dependence on the delegate
 
 - (void)mapperDidFinishMapping:(RKObjectMapper *)mapper
 {
@@ -165,10 +143,10 @@
 - (id)targetObject
 {
     if ([NSThread isMainThread] == NO && _targetObjectID) {
-        NSAssert(self.managedObjectContext, @"Expected managedObjectContext not to be nil.");
+        NSAssert(self.privateContext, @"Expected managedObjectContext not to be nil.");
         __block NSManagedObject *localTargetObject;
-        [self.managedObjectContext performBlockAndWait:^{
-            localTargetObject = [self.managedObjectContext objectWithID:self.targetObjectID];
+        [self.privateContext performBlockAndWait:^{
+            localTargetObject = [self.privateContext objectWithID:self.targetObjectID];
         }];
         return localTargetObject;
     }
@@ -179,7 +157,18 @@
 - (RKMappingResult *)performMappingWithMapper:(RKObjectMapper *)mapper
 {
     __block RKMappingResult *mappingResult = nil;
-    [self.managedObjectContext performBlockAndWait:^{
+
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.privateContext
+                                                                                                                                      cache:self.managedObjectCache];
+    dataSource.operationQueue = [[NSOperationQueue new] autorelease];
+    [dataSource.operationQueue setSuspended:YES];
+    [dataSource.operationQueue setMaxConcurrentOperationCount:1];
+    dataSource.tracksInsertedObjects = YES; // We need to be able to obtain permanent object ID's
+    self.mappingOperationDataSource = dataSource; // TODO: Eliminate...
+    mapper.mappingOperationDataSource = dataSource;
+
+    // Map it
+    [self.privateContext performBlockAndWait:^{
         mappingResult = [mapper performMapping];
     }];
     
@@ -191,7 +180,7 @@
     NSFetchRequest *fetchRequest = [self.mappingProvider fetchRequestForResourcePath:self.resourcePath];
     if (fetchRequest) {
         NSError *error = nil;
-        NSArray *cachedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        NSArray *cachedObjects = [self.privateContext executeFetchRequest:fetchRequest error:&error];
         if (! cachedObjects) {
             RKLogError(@"Failed to retrieve cached objects with error: %@", error);
         }
@@ -214,7 +203,7 @@
         for (id object in cachedObjects) {
             if (NO == [results containsObject:object]) {
                 RKLogTrace(@"Deleting orphaned object %@: not found in result set and expected at this resource path", object);
-                [self.managedObjectContext deleteObject:object];
+                [self.privateContext deleteObject:object];
             }
         }
     } else {
@@ -227,9 +216,9 @@
 {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
     if (self.targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
-        NSManagedObject *backgroundThreadObject = [self.managedObjectContext objectWithID:self.targetObjectID];
+        NSManagedObject *backgroundThreadObject = [self.privateContext objectWithID:self.targetObjectID];
         RKLogInfo(@"Deleting local object %@ due to DELETE request", backgroundThreadObject);
-        [self.managedObjectContext deleteObject:backgroundThreadObject];
+        [self.privateContext deleteObject:backgroundThreadObject];
     }
 
     // If the response was successful, save the store...
@@ -240,24 +229,18 @@
             
         NSArray *insertedObjects = [(RKManagedObjectMappingOperationDataSource *)self.mappingOperationDataSource insertedObjects];
         RKLogDebug(@"Obtaining permanent object ID's for %d objects", [insertedObjects count]);
-        success = [self.managedObjectContext obtainPermanentIDsForObjects:insertedObjects error:&error];
+        success = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&error];
         if (! success) {
             RKLogError(@"Failed to obtain permanent object ID's for %d managed objects. Error: %@", [insertedObjects count], error);
         }
         
-        [self.managedObjectContext performBlockAndWait:^{
-            success = [self.managedObjectContext save:&error];
+        [self.privateContext performBlockAndWait:^{
+            success = [self.privateContext save:&error];
         }];
         if (! success) {
             RKLogError(@"Failed to save managed object context after mapping completed: %@", [error localizedDescription]);
-            NSMethodSignature *signature = [(NSObject *)self methodSignatureForSelector:@selector(informDelegateOfError:)];
-            RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-            [invocation setTarget:self];
-            [invocation setSelector:@selector(informDelegateOfError:)];
-            [invocation setArgument:&error atIndex:2];
-            [invocation invokeOnMainThread];
-
             dispatch_async(dispatch_get_main_queue(), ^{
+                [self performSelector:@selector(informDelegateOfError:) withObject:error];
                 [self finalizeLoad:success];
             });
             return;
@@ -266,45 +249,18 @@
 
     NSDictionary *dictionary = [result asDictionary];
     NSMethodSignature *signature = [self methodSignatureForSelector:@selector(informDelegateOfObjectLoadWithResultDictionary:)];
-    if (self.managedObjectContext.parentContext) {
-        [self.managedObjectContext.parentContext performBlockAndWait:^{
+    if (self.privateContext.parentContext) {
+        [self.privateContext.parentContext performBlockAndWait:^{
             NSError *error = nil;
-            if (! [self.managedObjectContext.parentContext save:&error]) {
-                if ([[error domain] isEqualToString:@"NSCocoaErrorDomain"]) {
-                    NSDictionary *userInfo = [error userInfo];
-                    NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
-                    if (errors) {
-                        for (NSError *detailedError in errors) {
-                            NSDictionary *subUserInfo = [detailedError userInfo];
-                            RKLogError(@"Core Data Save Error\n \
-                                       NSLocalizedDescription:\t\t%@\n \
-                                       NSValidationErrorKey:\t\t\t%@\n \
-                                       NSValidationErrorPredicate:\t%@\n \
-                                       NSValidationErrorObject:\n%@\n",
-                                       [subUserInfo valueForKey:@"NSLocalizedDescription"],
-                                       [subUserInfo valueForKey:@"NSValidationErrorKey"],
-                                       [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
-                                       [subUserInfo valueForKey:@"NSValidationErrorObject"]);
-                        }
-                    }
-                    else {
-                        RKLogError(@"Core Data Save Error\n \
-                                   NSLocalizedDescription:\t\t%@\n \
-                                   NSValidationErrorKey:\t\t\t%@\n \
-                                   NSValidationErrorPredicate:\t%@\n \
-                                   NSValidationErrorObject:\n%@\n",
-                                   [userInfo valueForKey:@"NSLocalizedDescription"],
-                                   [userInfo valueForKey:@"NSValidationErrorKey"],
-                                   [userInfo valueForKey:@"NSValidationErrorPredicate"],
-                                   [userInfo valueForKey:@"NSValidationErrorObject"]);
-                    }
-                }
+            if (! [self.privateContext.parentContext save:&error]) {
+                RKLogCoreDataError(error);
             }
         }];
     }
+
     RKManagedObjectThreadSafeInvocation *invocation = [RKManagedObjectThreadSafeInvocation invocationWithMethodSignature:signature];
-    invocation.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
-    invocation.privateQueueManagedObjectContext = self.managedObjectContext;
+    invocation.mainQueueManagedObjectContext = self.mainQueueManagedObjectContext;
+    invocation.privateQueueManagedObjectContext = self.privateContext;
     invocation.target = self;
     invocation.selector = @selector(informDelegateOfObjectLoadWithResultDictionary:);
     [invocation setArgument:&dictionary atIndex:2];
@@ -338,7 +294,13 @@
 
 - (id)initWithURL:(RKURL *)URL mappingProvider:(RKObjectMappingProvider *)mappingProvider objectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
 {
-    return [self initWithURL:URL mappingProvider:mappingProvider managedObjectStore:objectStore];
+    self = [self initWithURL:URL mappingProvider:mappingProvider];
+    if (self) {
+        self.managedObjectContext = objectStore.primaryManagedObjectContext;
+        self.mainQueueManagedObjectContext = objectStore.mainQueueManagedObjectContext;
+    }
+
+    return self;
 }
 
 @end

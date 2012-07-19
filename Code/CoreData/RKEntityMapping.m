@@ -50,7 +50,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
                                  userInfo:nil];
 }
 
-+ (id)mappingForEntityWithName:(NSString *)entityName inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
++ (id)mappingForEntityForName:(NSString *)entityName inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
     NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:managedObjectContext];
     return [self mappingForEntity:entity];
@@ -197,7 +197,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
 
 + (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
 {
-    return [self mappingForEntityWithName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
+    return [self mappingForEntityForName:NSStringFromClass(objectClass) inManagedObjectStore:objectStore];
 }
 
 + (RKEntityMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
@@ -205,7 +205,7 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue);
     return [[[self alloc] initWithEntity:entity inManagedObjectStore:objectStore] autorelease];
 }
 
-+ (RKEntityMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
++ (RKEntityMapping *)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
 {
     return [self mappingForEntity:[NSEntityDescription entityForName:entityName inManagedObjectContext:objectStore.primaryManagedObjectContext]
              inManagedObjectStore:objectStore];

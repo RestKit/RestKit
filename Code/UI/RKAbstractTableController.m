@@ -275,6 +275,7 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
         _autoResizesForKeyboard = autoResizesForKeyboard;
         if (_autoResizesForKeyboard) {
             self.keyboardScroller = [[RKKeyboardScroller alloc] initWithViewController:self.viewController scrollView:self.tableView];
+            [self.keyboardScroller release];
         } else {
             self.keyboardScroller = nil;
         }

@@ -59,34 +59,37 @@
 - (void)bootstrapStoreAndCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
 
-    [RKHuman truncateAll];
-    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
-    RKHuman *blake = [RKHuman createEntity];
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKHuman"  predicate:nil error:nil], is(equalToInt(0)));
+    RKHuman *blake = [managedObjectStore.primaryManagedObjectContext insertNewObjectForEntityForName:@"RKHuman"];
     blake.railsID = [NSNumber numberWithInt:1234];
     blake.name = @"blake";
-    RKHuman *other = [RKHuman createEntity];
+    RKHuman *other = [managedObjectStore.primaryManagedObjectContext insertNewObjectForEntityForName:@"RKHuman"];
     other.railsID = [NSNumber numberWithInt:5678];
     other.name = @"other";
     NSError *error = nil;
     [managedObjectStore save:&error];
     assertThat(error, is(nilValue()));
-    assertThatInt([RKHuman count:nil], is(equalToInt(2)));
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKHuman"  predicate:nil error:nil], is(equalToInt(2)));
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.managedObjectStore = managedObjectStore;
 
     [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/all\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
-        return [RKHuman requestAllSortedBy:@"name" ascending:YES];
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+        fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+        return fetchRequest;
     }];
 
     [objectManager.mappingProvider setObjectMapping:humanMapping forResourcePathPattern:@"/JSON/humans/empty\\.json" withFetchRequestBlock:^NSFetchRequest *(NSString *resourcePath) {
-        return [RKHuman requestAllSortedBy:@"name" ascending:YES];
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+        fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+        return fetchRequest;
     }];
 }
 
@@ -98,15 +101,14 @@
 - (void)bootstrapNakedObjectStoreAndCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *eventMapping = [RKEntityMapping mappingForEntityWithName:@"RKEvent" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKEntityMapping *eventMapping = [RKEntityMapping mappingForEntityForName:@"RKEvent" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     [eventMapping mapKeyPath:@"event_id" toAttribute:@"eventID"];
     [eventMapping mapKeyPath:@"type" toAttribute:@"eventType"];
     [eventMapping mapAttributes:@"location", @"summary", nil];
     eventMapping.primaryKeyAttribute = @"eventID";
-    [RKEvent truncateAll];
 
-    assertThatInt([RKEvent count:nil], is(equalToInt(0)));
-    RKEvent *nakedEvent = [RKEvent createEntity];
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKEvent"  predicate:nil error:nil], is(equalToInt(0)));
+    RKEvent *nakedEvent = [managedObjectStore.primaryManagedObjectContext insertNewObjectForEntityForName:@"RKEvent"];
     nakedEvent.eventID = @"RK4424";
     nakedEvent.eventType = @"Concert";
     nakedEvent.location = @"Performance Hall";
@@ -114,34 +116,39 @@
     NSError *error = nil;
     [managedObjectStore save:&error];
     assertThat(error, is(nilValue()));
-    assertThatInt([RKEvent count:nil], is(equalToInt(1)));
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKEvent"  predicate:nil error:nil], is(equalToInt(1)));
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider addObjectMapping:eventMapping];
     objectManager.managedObjectStore = managedObjectStore;
 
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
-    [[[mockMappingProvider stub] andReturn:[RKEvent requestAllSortedBy:@"eventType" ascending:YES]] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
+
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKEvent"];
+    fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"eventType" ascending:YES]];
+    [[[mockMappingProvider stub] andReturn:fetchRequest] fetchRequestForResourcePath:@"/JSON/NakedEvents.json"];
 }
 
 - (void)bootstrapEmptyStoreAndCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
 
-    [RKHuman truncateAll];
-    assertThatInt([RKHuman count:nil], is(equalToInt(0)));
+    assertThatInt([managedObjectStore.primaryManagedObjectContext countForEntityForName:@"RKHuman"  predicate:nil error:nil], is(equalToInt(0)));
 
     RKObjectManager *objectManager = [RKTestFactory objectManager];
     [objectManager.mappingProvider setMapping:humanMapping forKeyPath:@"human"];
     objectManager.managedObjectStore = managedObjectStore;
 
     id mockMappingProvider = [OCMockObject partialMockForObject:objectManager.mappingProvider];
-    [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
-    [[[mockMappingProvider stub] andReturn:[RKHuman requestAllSortedBy:@"name" ascending:YES]] fetchRequestForResourcePath:@"/empty/array"];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+
+    [[[mockMappingProvider stub] andReturn:fetchRequest] fetchRequestForResourcePath:@"/JSON/humans/all.json"];
+    [[[mockMappingProvider stub] andReturn:fetchRequest] fetchRequestForResourcePath:@"/empty/array"];
 }
 
 - (void)stubObjectManagerToOnline
@@ -533,12 +540,27 @@
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
     assertThatBool(blake == [tableController objectForRowAtIndexPath:indexPath], is(equalToBool(YES)));
     [tableController release];
 }
 
 #pragma mark - Editing
+
+- (id)fetchObjectWithEntityForName:(NSString *)entityName withAttribute:(NSString *)attribute equalTo:(id)value
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:entityName];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"%K = %@", attribute, value];
+    fetchRequest.fetchLimit = 1;
+
+    NSError *error;
+    NSArray *results = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if ([results count] == 1) {
+        return [results objectAtIndex:0];
+    }
+
+    return nil;
+}
 
 - (void)testFireADeleteRequestWhenTheCanEditRowsPropertyIsSet
 {
@@ -559,8 +581,9 @@
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
     NSIndexPath *deleteIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     assertThat([tableController objectForRowAtIndexPath:indexPath], is(equalTo(other)));
@@ -596,8 +619,8 @@
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     NSIndexPath *deleteIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
     blake.railsID = nil;
     other.railsID = nil;
 
@@ -632,8 +655,8 @@
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanEdit = [tableController tableView:tableController.tableView
@@ -664,8 +687,8 @@
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanEdit = [tableController tableView:tableController.tableView
@@ -693,8 +716,8 @@
     [tableController loadTable];
 
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(2)));
     BOOL delegateCanMove = [tableController tableView:tableController.tableView
@@ -1196,8 +1219,8 @@
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
 
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(3)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(headerRow)));
@@ -1227,8 +1250,8 @@
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
 
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(3)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(blake)));
@@ -1362,8 +1385,8 @@
     tableController.showsFooterRowsWhenEmpty = NO;
     [tableController loadTable];
 
-    RKHuman *blake = [RKHuman findFirstByAttribute:@"name" withValue:@"blake"];
-    RKHuman *other = [RKHuman findFirstByAttribute:@"name" withValue:@"other"];
+    RKHuman *blake = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"blake"];
+    RKHuman *other = [self fetchObjectWithEntityForName:@"RKHuman" withAttribute:@"name" equalTo:@"other"];
 
     assertThatInt([tableController rowCount], is(equalToInt(4)));
     assertThat([tableController objectForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]], is(equalTo(headerRow)));
@@ -1617,7 +1640,11 @@
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
 
     assertThatInt([tableController rowCount], is(equalToInteger(4)));
-    RKHuman *human = [[RKHuman findAllSortedBy:@"name" ascending:YES] objectAtIndex:0];
+
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    fetchRequest.sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES]];
+    NSArray *objects = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
+    RKHuman *human = [objects objectAtIndex:0];
     NSIndexPath *indexPath = [tableController indexPathForObject:human];
     assertThatInteger(indexPath.section, is(equalToInteger(0)));
     assertThatInteger(indexPath.row, is(equalToInteger(1)));
@@ -1744,7 +1771,6 @@
 - (void)testRetrievalOfEmptyItemReturnsIndexPathWhenEmpty
 {
     [self bootstrapStoreAndCache];
-    [RKHuman truncateAll];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Storyboard" bundle:nil];
     UITableViewController *tableViewController = [storyboard instantiateInitialViewController];
     RKFetchedResultsTableController *tableController;

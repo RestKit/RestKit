@@ -59,14 +59,24 @@
             NSArray *attributeValueWords = [RKManagedObjectSearchEngine tokenizedNormalizedString:attributeValue];
             for (NSString *word in attributeValueWords) {
                 if (word && [word length] > 0) {
-                    RKSearchWord *searchWord = [RKSearchWord findFirstByAttribute:RKSearchWordPrimaryKeyAttribute
-                                                                        withValue:word
-                                                                        inContext:self.managedObjectContext];
-                    if (! searchWord) {
-                        searchWord = [RKSearchWord createInContext:self.managedObjectContext];
+                    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKSearchWord"];
+                    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"%K = %@", RKSearchWordPrimaryKeyAttribute, word];
+                    fetchRequest.fetchLimit = 1;
+                    NSError *error = nil;
+                    NSArray *results = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                    if (results) {
+                        RKSearchWord *searchWord;
+                        if ([results count] == 0) {
+                            searchWord = [NSEntityDescription insertNewObjectForEntityForName:@"RKSearchWord" inManagedObjectContext:self.managedObjectContext];
+                            searchWord.word = word;
+                        } else {
+                            searchWord = [results objectAtIndex:0];
+                        }
+
+                        [searchWords addObject:searchWord];
+                    } else {
+                        RKLogError(@"Failed to retrieve search word: %@", error);
                     }
-                    searchWord.word = word;
-                    [searchWords addObject:searchWord];
                 }
             }
         }

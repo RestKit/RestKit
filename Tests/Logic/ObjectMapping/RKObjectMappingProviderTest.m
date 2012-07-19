@@ -48,8 +48,8 @@
 
 - (void)testShouldFindAnExistingObjectMappingForAClass
 {
-    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:objectStore.primaryManagedObjectContext];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     assertThat(humanMapping, isNot(equalTo(nil)));
     [humanMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider addObjectMapping:humanMapping];
@@ -60,8 +60,8 @@
 
 - (void)testShouldFindAnExistingObjectMappingForAKeyPath
 {
-    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:objectStore.primaryManagedObjectContext];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [_objectManager.mappingProvider setMapping:catMapping forKeyPath:@"cat"];
@@ -72,9 +72,9 @@
 
 - (void)testShouldAllowYouToRemoveAMappingByKeyPath
 {
-    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectMappingProvider *mappingProvider = [RKObjectMappingProvider mappingProvider];
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:objectStore.primaryManagedObjectContext];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     assertThat(catMapping, isNot(equalTo(nil)));
     [catMapping mapAttributes:@"name", nil];
     [mappingProvider setMapping:catMapping forKeyPath:@"cat"];

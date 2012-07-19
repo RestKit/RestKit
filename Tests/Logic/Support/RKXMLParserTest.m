@@ -53,7 +53,7 @@
     NSError *error = [[NSError alloc] init];
     RKXMLParserXMLReader *parser = [[RKXMLParserXMLReader new] autorelease];
     id result = [parser objectFromString:data error:&error];
-    assertThat(NSStringFromClass([result class]), is(equalTo(@"__NSCFDictionary")));
+    assertThat(result, is(instanceOf([NSDictionary class])));
     assertThatFloat([[[result valueForKeyPath:@"hash.float"] valueForKey:@"text"] floatValue], is(equalToFloat(2.4f)));
     assertThatInt([[[result valueForKeyPath:@"hash.number"] valueForKey:@"text"] intValue], is(equalToInt(1)));
     assertThat([result valueForKeyPath:@"hash.string"], is(equalTo(@"string")));
@@ -68,7 +68,7 @@
     NSArray *records = (NSArray *)[result valueForKeyPath:@"records.record"];
     assertThatUnsignedInteger([records count], is(equalToInt(2)));
     id result1 = [records objectAtIndex:0];
-    assertThat(NSStringFromClass([result1 class]), is(equalTo(@"__NSCFDictionary")));
+    assertThat(result, is(instanceOf([NSDictionary class])));
     assertThatFloat([[[result1 valueForKeyPath:@"float"] valueForKey:@"text"] floatValue], is(equalToFloat(2.4f)));
     assertThatInt([[[result1 valueForKeyPath:@"number"] valueForKey:@"text"] intValue], is(equalToInt(1)));
     assertThat([result1 valueForKeyPath:@"string"], is(equalTo(@"string")));

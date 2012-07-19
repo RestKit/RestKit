@@ -30,9 +30,9 @@
 
 - (void)testInstantiationOfNewManagedObjectContextAssociatesWithObjectStore
 {
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    NSManagedObjectContext *context = [store newManagedObjectContext];
-    assertThat([context managedObjectStore], is(equalTo(store)));
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObjectContext *context = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType];
+    assertThat([context managedObjectStore], is(equalTo(managedObjectStore)));
 }
 
 - (void)testCreationOfStoreInSpecificDirectoryRaisesIfDoesNotExist

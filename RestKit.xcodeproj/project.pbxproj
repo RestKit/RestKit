@@ -253,8 +253,6 @@
 		25160F66145655C60060A5C5 /* RKParserRegistry.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D9E145650490060A5C5 /* RKParserRegistry.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F67145655C60060A5C5 /* RKParserRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D9F145650490060A5C5 /* RKParserRegistry.m */; };
 		25160F69145655D10060A5C5 /* CoreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D46145650490060A5C5 /* CoreData.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160F6A145655D10060A5C5 /* NSManagedObject+ActiveRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D47145650490060A5C5 /* NSManagedObject+ActiveRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25160F6B145655D10060A5C5 /* NSManagedObject+ActiveRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D48145650490060A5C5 /* NSManagedObject+ActiveRecord.m */; };
 		25160F6D145655D10060A5C5 /* RKManagedObjectLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D4A145650490060A5C5 /* RKManagedObjectLoader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25160F6E145655D10060A5C5 /* RKManagedObjectLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D4B145650490060A5C5 /* RKManagedObjectLoader.m */; };
 		25160F6F145655D10060A5C5 /* RKEntityMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D4C145650490060A5C5 /* RKEntityMapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -531,8 +529,6 @@
 		258EA57915A63D07007E07A6 /* RKKeyboardScroller.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA57A15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */; };
 		258EA57B15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */; };
-		2597F99815AF551D00E547D7 /* NSManagedObject+ActiveRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = 25160D47145650490060A5C5 /* NSManagedObject+ActiveRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2597F99915AF552500E547D7 /* NSManagedObject+ActiveRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 25160D48145650490060A5C5 /* NSManagedObject+ActiveRecord.m */; };
 		2597F99C15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */; };
 		2597F99D15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */; };
 		2597F99E15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2597F99B15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m */; };
@@ -700,8 +696,8 @@
 		25CA7A9114EC5C2D00888FF8 /* RKTestFixture.m in Sources */ = {isa = PBXBuildFile; fileRef = 252EFB2114D9B35D004863C8 /* RKTestFixture.m */; };
 		25CAAA9415254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
 		25CAAA9515254E7800CAE5D7 /* ArrayOfHumans.json in Resources */ = {isa = PBXBuildFile; fileRef = 25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */; };
-		25DB7508151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m */; };
-		25DB7509151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m */; };
+		25DB7508151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */; };
+		25DB7509151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */; };
 		25E36E0215195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */; };
 		25E36E0315195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */; };
 		25E4DAB4156DA97F00A5C84B /* RKTableControllerTestDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 25E4DAB2156DA97F00A5C84B /* RKTableControllerTestDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -832,8 +828,6 @@
 		25160D2714564E820060A5C5 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		25160D2914564E820060A5C5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		25160D46145650490060A5C5 /* CoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreData.h; sourceTree = "<group>"; };
-		25160D47145650490060A5C5 /* NSManagedObject+ActiveRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+ActiveRecord.h"; sourceTree = "<group>"; };
-		25160D48145650490060A5C5 /* NSManagedObject+ActiveRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+ActiveRecord.m"; sourceTree = "<group>"; };
 		25160D4A145650490060A5C5 /* RKManagedObjectLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKManagedObjectLoader.h; sourceTree = "<group>"; };
 		25160D4B145650490060A5C5 /* RKManagedObjectLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKManagedObjectLoader.m; sourceTree = "<group>"; };
 		25160D4C145650490060A5C5 /* RKEntityMapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RKEntityMapping.h; sourceTree = "<group>"; };
@@ -1232,7 +1226,7 @@
 		25C954A415542A47005C9E08 /* RKTestConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTestConstants.m; path = Testing/RKTestConstants.m; sourceTree = "<group>"; };
 		25CA7A8E14EC570100888FF8 /* RKMapping.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKMapping.m; sourceTree = "<group>"; };
 		25CAAA9315254E7800CAE5D7 /* ArrayOfHumans.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ArrayOfHumans.json; sourceTree = "<group>"; };
-		25DB7507151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+ActiveRecordTest.m"; sourceTree = "<group>"; };
+		25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+RKAdditionsTest.m"; sourceTree = "<group>"; };
 		25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RKFetchRequestMappingCacheTest.m; sourceTree = "<group>"; };
 		25E4DAB2156DA97F00A5C84B /* RKTableControllerTestDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RKTableControllerTestDelegate.h; path = Testing/RKTableControllerTestDelegate.h; sourceTree = "<group>"; };
 		25E4DAB3156DA97F00A5C84B /* RKTableControllerTestDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RKTableControllerTestDelegate.m; path = Testing/RKTableControllerTestDelegate.m; sourceTree = "<group>"; };
@@ -1438,8 +1432,6 @@
 				25B6E9E714CF940700B1E881 /* RKSearchWordObserver.h */,
 				25B6E9E814CF940700B1E881 /* RKSearchWordObserver.m */,
 				25160D46145650490060A5C5 /* CoreData.h */,
-				25160D47145650490060A5C5 /* NSManagedObject+ActiveRecord.h */,
-				25160D48145650490060A5C5 /* NSManagedObject+ActiveRecord.m */,
 				7394DF3814CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.h */,
 				7394DF3914CF168C00CE7BCE /* RKFetchRequestManagedObjectCache.m */,
 				7394DF3C14CF19F200CE7BCE /* RKInMemoryManagedObjectCache.h */,
@@ -1785,7 +1777,7 @@
 				25160FCC1456F2330060A5C5 /* RKManagedObjectThreadSafeInvocationTest.m */,
 				25E36E0115195CED00F9E448 /* RKFetchRequestMappingCacheTest.m */,
 				25079C75151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m */,
-				25DB7507151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m */,
+				25DB7507151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m */,
 				259D98591550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m */,
 				259D986315521B1F008C90F5 /* RKEntityCacheTest.m */,
 				25AA23D315AF4F25006EF62D /* RKManagedObjectMappingOperationDataSourceTest.m */,
@@ -2362,7 +2354,6 @@
 				258EA4A815A38BC0007E07A6 /* RKObjectMappingOperationDataSource.h in Headers */,
 				258EA4AE15A38E7E007E07A6 /* RKMappingOperationDataSource.h in Headers */,
 				258EA4B215A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */,
-				2597F99815AF551D00E547D7 /* NSManagedObject+ActiveRecord.h in Headers */,
 				2597F99C15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */,
 				25AFF8F115B4CF1F0051877F /* RKMappingErrors.h in Headers */,
 				5CCC295615B7124A0045F0F5 /* RKMacros.h in Headers */,
@@ -2419,7 +2410,6 @@
 				25160F64145655C60060A5C5 /* RKObjectSerializer.h in Headers */,
 				25160F66145655C60060A5C5 /* RKParserRegistry.h in Headers */,
 				25160F69145655D10060A5C5 /* CoreData.h in Headers */,
-				25160F6A145655D10060A5C5 /* NSManagedObject+ActiveRecord.h in Headers */,
 				25160F6D145655D10060A5C5 /* RKManagedObjectLoader.h in Headers */,
 				25160F6F145655D10060A5C5 /* RKEntityMapping.h in Headers */,
 				25160F73145655D10060A5C5 /* RKManagedObjectSeeder.h in Headers */,
@@ -2910,7 +2900,6 @@
 				258EA57A15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */,
 				258EA4AA15A38BC0007E07A6 /* RKObjectMappingOperationDataSource.m in Sources */,
 				25AA23D015AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */,
-				2597F99915AF552500E547D7 /* NSManagedObject+ActiveRecord.m in Sources */,
 				2597F99E15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2992,7 +2981,7 @@
 				252EFB0D14D98F76004863C8 /* RKMutableBlockDictionaryTest.m in Sources */,
 				25E36E0215195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */,
 				25079C76151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */,
-				25DB7508151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m in Sources */,
+				25DB7508151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */,
 				252A2034153477870078F8AD /* NSArray+RKAdditionsTest.m in Sources */,
 				25A2476E153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985A1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,
@@ -3046,7 +3035,6 @@
 				25160F61145655C60060A5C5 /* RKRelationshipMapping.m in Sources */,
 				25160F65145655C60060A5C5 /* RKObjectSerializer.m in Sources */,
 				25160F67145655C60060A5C5 /* RKParserRegistry.m in Sources */,
-				25160F6B145655D10060A5C5 /* NSManagedObject+ActiveRecord.m in Sources */,
 				25160F6E145655D10060A5C5 /* RKManagedObjectLoader.m in Sources */,
 				25160F70145655D10060A5C5 /* RKEntityMapping.m in Sources */,
 				25160F74145655D10060A5C5 /* RKManagedObjectSeeder.m in Sources */,
@@ -3192,7 +3180,7 @@
 				252EFB0E14D98F76004863C8 /* RKMutableBlockDictionaryTest.m in Sources */,
 				25E36E0315195CED00F9E448 /* RKFetchRequestMappingCacheTest.m in Sources */,
 				25079C77151B952200266AE7 /* NSEntityDescription+RKAdditionsTest.m in Sources */,
-				25DB7509151BD551009F01AF /* NSManagedObject+ActiveRecordTest.m in Sources */,
+				25DB7509151BD551009F01AF /* NSManagedObjectContext+RKAdditionsTest.m in Sources */,
 				252A2035153477870078F8AD /* NSArray+RKAdditionsTest.m in Sources */,
 				25A2476F153E667E003240B6 /* RKCacheTest.m in Sources */,
 				259D985B1550C6BE008C90F5 /* RKEntityByAttributeCacheTest.m in Sources */,

@@ -30,7 +30,7 @@
  */
 @interface RKEntityMapping : RKObjectMapping
 
-+ (id)mappingForEntityWithName:(NSString *)entityName inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
++ (id)mappingForEntityForName:(NSString *)entityName inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 + (id)mappingForEntity:(NSEntityDescription *)entity;
 - (id)initWithEntity:(NSEntityDescription *)entity;
 
@@ -152,9 +152,9 @@
 
 /* Deprecated Initialization API's */
 + (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityWithName:inManagedObjectContext:");
-+ (RKEntityMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityWithName:inManagedObjectContext:");
-+ (RKEntityMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityWithName:inManagedObjectContext:");
-- (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityWithName:inManagedObjectContext:");
++ (RKEntityMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityForName:inManagedObjectContext:");
++ (RKEntityMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityForName:inManagedObjectContext:");
+- (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntity:");
 
 /* Deprecated Connection API's */
 - (void)connectRelationship:(NSString *)relationshipName withObjectForPrimaryKeyAttribute:(NSString *)primaryKeyAttribute DEPRECATED_ATTRIBUTE_MESSAGE("Use connectRelationship:withMapping:fromKeyPath:toKeyPath:");

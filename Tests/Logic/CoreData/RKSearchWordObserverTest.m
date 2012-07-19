@@ -24,11 +24,11 @@
 
 - (void)testTriggerSearchWordRegenerationForChagedSearchableValuesAtObjectContextSaveTime
 {
-    RKManagedObjectStore *store = [RKTestFactory managedObjectStore];
-    RKSearchable *searchable = [RKSearchable createEntity];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKSearchable *searchable = [NSEntityDescription insertNewObjectForEntityForName:@"RKSearchable" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     searchable.title = @"This is the title of my new object";
     assertThat(searchable.searchWords, is(empty()));
-    [store save:nil];
+    [managedObjectStore save:nil];
     assertThat(searchable.searchWords, isNot(empty()));
     assertThat(searchable.searchWords, hasCountOf(8));
 }
