@@ -285,6 +285,14 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  */
 @property (nonatomic, assign) NSStringEncoding defaultHTTPEncoding;
 
+/**
+ Determines whether the request will display network activity on application 
+     status bar when a request is made
+ 
+ *Default*: No network activity indicator will be displayed
+ */
+@property (nonatomic, assign) BOOL showNetworkActivity;
+
 ///-----------------------------------------------------------------------------
 /// @name Working with the HTTP Body
 ///-----------------------------------------------------------------------------

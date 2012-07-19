@@ -118,6 +118,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 @synthesize timeoutInterval = _timeoutInterval;
 @synthesize reachabilityObserver = _reachabilityObserver;
 @synthesize defaultHTTPEncoding = _defaultHTTPEncoding;
+@synthesize showNetworkActivity = _showNetworkActivity;
 @synthesize configurationDelegate = _configurationDelegate;
 @synthesize onDidLoadResponse;
 @synthesize onDidFailLoadWithError;
@@ -425,6 +426,11 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 // NOTE: We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.
 - (void)send {
     NSAssert(NO == self.isLoading || NO == self.isLoaded, @"Cannot send a request that is loading or loaded without resetting it first.");
+  
+    if (self.showNetworkActivity) {
+      [[UIApplication sharedApplication] pushNetworkActivity];
+    }
+    
     if (self.queue) {
         [self.queue addRequest:self];
     } else {
@@ -677,6 +683,10 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
     RKLogDebug(@"Body: %@", [response bodyAsString]);
 
     self.response = response;
+  
+    if (_showNetworkActivity) {
+      [[UIApplication sharedApplication] popNetworkActivity];
+    }
 
     if ((_cachePolicy & RKRequestCachePolicyEtag) && [response isNotModified]) {
         self.response = [self loadResponseFromCache];
