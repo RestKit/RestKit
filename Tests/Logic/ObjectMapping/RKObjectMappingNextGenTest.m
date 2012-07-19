@@ -2063,18 +2063,18 @@
 
 - (void)testShouldSerializeManagedHasManyRelationshipsToJSON
 {
-    [RKTestFactory managedObjectStore];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     RKObjectMapping *humanMapping = [RKObjectMapping mappingForClass:[RKHuman class]];
     [humanMapping mapAttributes:@"name", nil];
     RKObjectMapping *catMapping = [RKObjectMapping mappingForClass:[RKCat class]];
     [catMapping mapAttributes:@"name", nil];
     [humanMapping hasMany:@"cats" withMapping:catMapping];
 
-    RKHuman *blake = [RKHuman object];
+    RKHuman *blake = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     blake.name = @"Blake Watters";
-    RKCat *asia = [RKCat object];
+    RKCat *asia = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     asia.name = @"Asia";
-    RKCat *roy = [RKCat object];
+    RKCat *roy = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     roy.name = @"Roy";
     blake.cats = [NSSet setWithObjects:asia, roy, nil];
 
@@ -2091,24 +2091,24 @@
 
 - (void)testUpdatingArrayOfExistingCats
 {
-    RKManagedObjectStore *objectStore = [RKTestFactory managedObjectStore];
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
     NSArray *array = [RKTestFixture parsedObjectWithContentsOfFixture:@"ArrayOfHumans.json"];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:objectStore.primaryManagedObjectContext];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     humanMapping.primaryKeyAttribute = @"railsID";
     RKObjectMappingProvider *provider = [RKObjectMappingProvider mappingProvider];
     [provider setObjectMapping:humanMapping forKeyPath:@"human"];
 
     // Create instances that should match the fixture
-    RKHuman *human1 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
+    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human1.railsID = [NSNumber numberWithInt:201];
-    RKHuman *human2 = [RKHuman createInContext:objectStore.primaryManagedObjectContext];
+    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInt:202];
-    [objectStore save:nil];
+    [managedObjectStore save:nil];
 
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:array mappingProvider:provider];
     RKFetchRequestManagedObjectCache *managedObjectCache = [[RKFetchRequestManagedObjectCache alloc] init];
-    mapper.mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:objectStore.primaryManagedObjectContext
+    mapper.mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
                                                                                                                   cache:managedObjectCache];
     RKMappingResult *result = [mapper performMapping];
     assertThat(result, is(notNilValue()));

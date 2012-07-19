@@ -196,18 +196,17 @@ static RKTestFactory *sharedFactory = nil;
 
 + (id)managedObjectStore
 {
-    RKManagedObjectStore *objectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
-    [RKManagedObjectStore setDefaultObjectStore:objectStore];
+    RKManagedObjectStore *managedObjectStore = [self objectFromFactory:RKTestFactoryDefaultNamesManagedObjectStore];
+    [RKManagedObjectStore setDefaultStore:managedObjectStore];
 
-    return objectStore;
+    return managedObjectStore;
 }
 
 + (void)setUp
 {
     [RKObjectManager setSharedManager:nil];
     [RKClient setSharedClient:nil];
-    [RKManagedObjectStore setDefaultObjectStore:nil];
-    [NSManagedObjectContext setDefaultContext:nil];
+    [RKManagedObjectStore setDefaultStore:nil];
     [RKObjectManager setDefaultMappingQueue:nil];
     [RKObjectMapping setDefaultDateFormatters:nil];
 
@@ -226,8 +225,7 @@ static RKTestFactory *sharedFactory = nil;
 {
     [RKObjectManager setSharedManager:nil];
     [RKClient setSharedClient:nil];
-    [RKManagedObjectStore setDefaultObjectStore:nil];
-    [NSManagedObjectContext setDefaultContext:nil];
+    [RKManagedObjectStore setDefaultStore:nil];
 
     if ([self respondsToSelector:@selector(didTearDown)]) {
         [self didTearDown];

@@ -128,9 +128,10 @@ int RKLogLevelForString(NSString *logLevel, NSString *envVarName)
     }
 }
 
-void RKLogValidationError(NSError *validationError) {
-    if ([[validationError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
-        NSDictionary *userInfo = [validationError userInfo];
+void RKLogValidationError(NSError *error)
+{
+    if ([[error domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+        NSDictionary *userInfo = [error userInfo];
         NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
         if (errors) {
             for (NSError *detailedError in errors) {
@@ -160,7 +161,8 @@ void RKLogValidationError(NSError *validationError) {
     }
 }
 
-void RKLogIntegerAsBinary(NSUInteger bitMask) {
+void RKLogIntegerAsBinary(NSUInteger bitMask)
+{
     NSUInteger bit = ~(NSUIntegerMax >> 1);
     NSMutableString *string = [NSMutableString string];
     do {
@@ -168,4 +170,11 @@ void RKLogIntegerAsBinary(NSUInteger bitMask) {
     } while (bit >>= 1);
 
     NSLog(@"Value of %ld in binary: %@", (long)bitMask, string);
+}
+
+void RKLogCoreDataError(NSError *error)
+{
+    RKLogToComponentWithLevelWhileExecutingBlock(lcl_cRestKitCoreData, RKLogLevelError, ^{
+        RKLogValidationError(error);
+    });
 }

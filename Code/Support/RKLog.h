@@ -183,7 +183,6 @@ lcl_configure_by_name("App", level);
  */
 void RKLogInitialize(void);
 
-
 /**
  Configure RestKit logging from environment variables.
  (Use Option + Command + R to set Environment Variables prior to run.)
@@ -210,7 +209,18 @@ void RKLogConfigureFromEnvironment(void);
  Logs extensive information about an NSError generated as the results
  of a failed key-value validation error.
  */
-void RKLogValidationError(NSError *);
+void RKLogValidationError(NSError *error);
+
+/**
+ Logs extensive information an NSError generated as the result of a
+ failed Core Data interaction, such as the execution of a fetch request
+ or the saving of a managed object context.
+
+ The error will be logged to the RestKit/CoreData component with an
+ error level of RKLogLevelError regardless of the current logging context
+ at invocation time.
+ */
+void RKLogCoreDataError(NSError *error);
 
 /**
  Logs the value of an NSUInteger as a binary string. Useful when

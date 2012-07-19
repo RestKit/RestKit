@@ -235,7 +235,9 @@ static NSOperationQueue *defaultMappingQueue = nil;
     RKObjectLoader *loader = [[self objectLoaderClass] loaderWithURL:URL mappingProvider:self.mappingProvider];
     loader.configurationDelegate = self;
     if ([loader isKindOfClass:[RKManagedObjectLoader class]]) {
-        [(RKManagedObjectLoader *)loader setManagedObjectStore:self.managedObjectStore];
+        RKManagedObjectLoader *managedObjectLoader = (RKManagedObjectLoader *)loader;
+        managedObjectLoader.managedObjectContext = self.managedObjectStore.primaryManagedObjectContext;
+        managedObjectLoader.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
     }
     [self configureObjectLoader:loader];
 

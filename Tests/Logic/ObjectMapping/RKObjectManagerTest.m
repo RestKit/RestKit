@@ -47,7 +47,7 @@
 
     RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
 
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityWithName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     humanMapping.rootKeyPath = @"human";
     [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
@@ -58,7 +58,7 @@
     [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"updated-at" toKeyPath:@"updatedAt"]];
     [humanMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
 
-    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityWithName:@"RKCat" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
+    RKEntityMapping *catMapping = [RKEntityMapping mappingForEntityForName:@"RKCat" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"name" toKeyPath:@"name"]];
     [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"nick-name" toKeyPath:@"nickName"]];
     [catMapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"birthday" toKeyPath:@"birthday"]];

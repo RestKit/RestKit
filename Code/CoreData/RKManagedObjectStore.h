@@ -31,7 +31,7 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
 
 ///////////////////////////////////////////////////////////////////
 
-@protocol RKManagedObjectStoreDelegate
+@protocol RKManagedObjectStoreDelegate <NSObject>
 @optional
 
 - (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCreatePersistentStoreCoordinatorWithError:(NSError *)error;
@@ -48,25 +48,12 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
 
 @interface RKManagedObjectStore : NSObject
 
-// The delegate for this object store
-@property (nonatomic, assign) NSObject<RKManagedObjectStoreDelegate> *delegate;
-
-// The filename of the database backing this object store
-@property (nonatomic, readonly) NSString *storeFilename;
-
-// The full path to the database backing this object store
-@property (nonatomic, readonly) NSString *pathToStoreFile;
-
-// Core Data
-@property (nonatomic, readonly) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-
 ///-----------------------------------------------------------------------------
 /// @name Accessing the Default Object Store
 ///-----------------------------------------------------------------------------
 
-+ (RKManagedObjectStore *)defaultObjectStore;
-+ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore;
++ (RKManagedObjectStore *)defaultStore;
++ (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore;
 
 ///-----------------------------------------------------------------------------
 /// @name Deleting Store Files
@@ -92,11 +79,6 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
 ///-----------------------------------------------------------------------------
 
 /**
-
- */
-@property (nonatomic, retain) NSObject<RKManagedObjectCaching> *cacheStrategy;
-
-/**
  * Initialize a new managed object store with a SQLite database with the filename specified
  */
 + (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename;
@@ -118,16 +100,48 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
  */
 + (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
 
+///-----------------------------------------------------------------------------
+/// @name Retrieving Details about the Object Store
+///-----------------------------------------------------------------------------
+
+// The filename of the database backing this object store
+@property (nonatomic, readonly) NSString *storeFilename;
+
+// The full path to the database backing this object store
+@property (nonatomic, readonly) NSString *pathToStoreFile;
+
+// Core Data
+@property (nonatomic, readonly) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+
+///-----------------------------------------------------------------------------
+/// @name Configuring Delegate and Default Cache Strategy
+///-----------------------------------------------------------------------------
+
+// The delegate for this object store
+@property (nonatomic, assign) id<RKManagedObjectStoreDelegate> delegate;
+
 /**
- * Initialize a new managed object store with a SQLite database with the filename specified
- * @deprecated
+
  */
-- (id)initWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE;
+@property (nonatomic, retain) id<RKManagedObjectCaching> cacheStrategy;
+
+///-----------------------------------------------------------------------------
+/// @name Retrieving Managed Object Contexts
+///-----------------------------------------------------------------------------
+
+@property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
+@property (nonatomic, retain, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType;
+
+///-----------------------------------------------------------------------------
+/// @name Working with the Primary Managed Object Context
+///-----------------------------------------------------------------------------
 
 /**
  * Save the current contents of the managed object store
  */
-- (BOOL)save:(NSError **)error;
+- (BOOL)save:(NSError **)error; // TODO: Do we want this?
 
 /**
  * This deletes and recreates the managed object context and
@@ -136,42 +150,14 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
 - (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile;
 - (void)deletePersistentStore;
 
-/**
- * Retrieves a model object from the appropriate context using the objectId
- */
-- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID;
+@end
 
-/**
- * Retrieves a array of model objects from the appropriate context using
- * an array of NSManagedObjectIDs
- */
-- (NSArray *)objectsWithIDs:(NSArray *)objectIDs;
-
-- (id)insertNewObjectForEntityForName:(NSString *)entityName;
-
-///-----------------------------------------------------------------------------
-/// @name Retrieving Managed Object Contexts
-///-----------------------------------------------------------------------------
-
-/**
- Retrieves the Managed Object Context for the main thread that was initialized when
- the object store was created.
- */
-@property (nonatomic, retain, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
-@property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
-
-/**
- Instantiates a new managed object context
- 
- @bug Deprecated in v0.11.0
- */
+@interface RKManagedObjectStore (Deprecations)
++ (RKManagedObjectStore *)defaultObjectStore DEPRECATED_ATTRIBUTE;
++ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE;
+- (id)initWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE;
 - (NSManagedObjectContext *)newManagedObjectContext DEPRECATED_ATTRIBUTE;
-
-/*
- * This returns an appropriate managed object context for this object store.
- * Because of the intrecacies of how Core Data works across threads it returns
- * a different NSManagedObjectContext for each thread.
- */
-- (NSManagedObjectContext *)managedObjectContextForCurrentThread;
-
+- (NSManagedObjectContext *)managedObjectContextForCurrentThread DEPRECATED_ATTRIBUTE;
+- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID DEPRECATED_ATTRIBUTE;
+- (NSArray *)objectsWithIDs:(NSArray *)objectIDs DEPRECATED_ATTRIBUTE;
 @end

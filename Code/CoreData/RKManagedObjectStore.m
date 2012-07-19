@@ -35,10 +35,8 @@
 #define RKLogComponent lcl_cRestKitCoreData
 
 NSString * const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
-static NSString * const RKManagedObjectStoreThreadDictionaryContextKey = @"RKManagedObjectStoreThreadDictionaryContextKey";
-static NSString * const RKManagedObjectStoreThreadDictionaryEntityCacheKey = @"RKManagedObjectStoreThreadDictionaryEntityCacheKey";
 
-static RKManagedObjectStore *defaultObjectStore = nil;
+static RKManagedObjectStore *defaultStore = nil;
 
 @interface RKManagedObjectStore ()
 @property (nonatomic, retain, readwrite) NSManagedObjectContext *primaryManagedObjectContext;
@@ -47,7 +45,6 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 - (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
 - (void)createPersistentStoreCoordinator;
 - (void)createStoreIfNecessaryUsingSeedDatabase:(NSString *)seedDatabase;
-- (NSManagedObjectContext *)newManagedObjectContext;
 @end
 
 @implementation RKManagedObjectStore
@@ -61,18 +58,16 @@ static RKManagedObjectStore *defaultObjectStore = nil;
 @synthesize primaryManagedObjectContext = _primaryManagedObjectContext;
 @synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
 
-+ (RKManagedObjectStore *)defaultObjectStore
++ (RKManagedObjectStore *)defaultStore
 {
-    return defaultObjectStore;
+    return defaultStore;
 }
 
-+ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore
++ (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore
 {
-    [objectStore retain];
-    [defaultObjectStore release];
-    defaultObjectStore = objectStore;
-
-    [NSManagedObjectContext setDefaultContext:objectStore.primaryManagedObjectContext];
+    [managedObjectStore retain];
+    [defaultStore release];
+    defaultStore = managedObjectStore;
 }
 
 + (void)deleteStoreAtPath:(NSString *)path
@@ -154,63 +149,17 @@ static RKManagedObjectStore *defaultObjectStore = nil;
         [RKSearchWordObserver sharedObserver];
 
         // Hydrate the defaultObjectStore
-        if (! defaultObjectStore) {
-            [RKManagedObjectStore setDefaultObjectStore:self];
+        if (! defaultStore) {
+            [RKManagedObjectStore setDefaultStore:self];
         }
     }
 
     return self;
 }
 
-- (void)setThreadLocalObject:(id)value forKey:(id)key
-{
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSString *objectStoreKey = [NSString stringWithFormat:@"RKManagedObjectStore_%p", self];
-    if (! [threadDictionary valueForKey:objectStoreKey]) {
-        [threadDictionary setValue:[NSMutableDictionary dictionary] forKey:objectStoreKey];
-    }
-
-    [[threadDictionary objectForKey:objectStoreKey] setObject:value forKey:key];
-}
-
-- (id)threadLocalObjectForKey:(id)key
-{
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSString *objectStoreKey = [NSString stringWithFormat:@"RKManagedObjectStore_%p", self];
-    if (! [threadDictionary valueForKey:objectStoreKey]) {
-        [threadDictionary setObject:[NSMutableDictionary dictionary] forKey:objectStoreKey];
-    }
-
-    return [[threadDictionary objectForKey:objectStoreKey] objectForKey:key];
-}
-
-- (void)removeThreadLocalObjectForKey:(id)key
-{
-    NSMutableDictionary *threadDictionary = [[NSThread currentThread] threadDictionary];
-    NSString *objectStoreKey = [NSString stringWithFormat:@"RKManagedObjectStore_%p", self];
-    if (! [threadDictionary valueForKey:objectStoreKey]) {
-        [threadDictionary setObject:[NSMutableDictionary dictionary] forKey:objectStoreKey];
-    }
-
-    [[threadDictionary objectForKey:objectStoreKey] removeObjectForKey:key];
-}
-
-- (void)clearThreadLocalStorage
-{
-    // Clear out our Thread local information
-    NSManagedObjectContext *managedObjectContext = [self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
-    if (managedObjectContext) {
-        [self removeThreadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
-    }
-    if ([self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey]) {
-        [self removeThreadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryEntityCacheKey];
-    }
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self clearThreadLocalStorage];
 
     [_storeFilename release];
     _storeFilename = nil;
@@ -293,26 +242,15 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     return success;
 }
 
-- (NSManagedObjectContext *)managedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType
+- (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType
 {
-    NSManagedObjectContext *managedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType] autorelease];
-    [managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
-    [managedObjectContext setUndoManager:nil];
-    [managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-    managedObjectContext.managedObjectStore = self;
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:concurrencyType];
+    [managedObjectContext performBlockAndWait:^{
+        managedObjectContext.parentContext = self.primaryManagedObjectContext;
+        managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+        managedObjectContext.managedObjectStore = self;
+    }];
     
-    return managedObjectContext;
-}
-
-// threadConfinedManagedObjectContext | mainThreadManagedObjectContext | privateManagedObjectContext
-- (NSManagedObjectContext *)newManagedObjectContext
-{
-    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
-    [managedObjectContext setPersistentStoreCoordinator:self.persistentStoreCoordinator];
-    [managedObjectContext setUndoManager:nil];
-    [managedObjectContext setMergePolicy:NSMergeByPropertyStoreTrumpMergePolicy];
-    managedObjectContext.managedObjectStore = self;
-
     return managedObjectContext;
 }
 
@@ -412,35 +350,6 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     [self deletePersistentStoreUsingSeedDatabaseName:nil];
 }
 
-- (NSManagedObjectContext *)managedObjectContextForCurrentThread
-{
-    if ([NSThread isMainThread]) {
-        return self.primaryManagedObjectContext;
-    }
-
-    // Background threads leverage thread-local storage
-    NSManagedObjectContext *managedObjectContext = [self threadLocalObjectForKey:RKManagedObjectStoreThreadDictionaryContextKey];
-    if (!managedObjectContext) {
-//        managedObjectContext = [self newManagedObjectContext];
-        // TODO: Encapsulate this...
-        managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        managedObjectContext.parentContext = self.primaryManagedObjectContext;
-        managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
-        managedObjectContext.managedObjectStore = self;
-        // Store into thread local storage dictionary
-        [self setThreadLocalObject:managedObjectContext forKey:RKManagedObjectStoreThreadDictionaryContextKey];
-        [managedObjectContext release];
-
-        // If we are a background Thread MOC, we need to inform the main thread on save
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(managedObjectContextDidSaveNotification:)
-                                                     name:NSManagedObjectContextDidSaveNotification
-                                                   object:managedObjectContext];
-    }
-
-    return managedObjectContext;
-}
-
 - (void)handlePrimaryManagedObjectContextDidSaveNotification:(NSNotification *)notification
 {
     RKLogDebug(@"primaryManagedObjectContext was saved: merging changes to mainQueueManagedObjectContext");
@@ -471,9 +380,18 @@ static RKManagedObjectStore *defaultObjectStore = nil;
     return objectArray;
 }
 
-- (id)insertNewObjectForEntityForName:(NSString *)entityName
+@end
+
+@implementation RKManagedObjectStore (Deprecations)
+
++ (RKManagedObjectStore *)defaultObjectStore DEPRECATED_ATTRIBUTE
 {
-    return [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:self.primaryManagedObjectContext];
+    return [RKManagedObjectStore defaultStore];
+}
+
++ (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
+{
+    [RKManagedObjectStore setDefaultStore:objectStore];
 }
 
 @end
