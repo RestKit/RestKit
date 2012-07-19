@@ -447,6 +447,14 @@
 @property (nonatomic, assign) BOOL serviceUnavailableAlertEnabled;
 
 
+/**
+ Flag that determines whether requests made by this client will show the
+ the networking activity indicator in the status bar.
+ 
+ *Default*: _NO_
+ */
+@property (nonatomic, assign) BOOL showNetworkActivity;
+
 ///-----------------------------------------------------------------------------
 /// @name Reachability helpers
 ///-----------------------------------------------------------------------------

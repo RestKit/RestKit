@@ -89,6 +89,7 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize serviceUnavailableAlertTitle = _serviceUnavailableAlertTitle;
 @synthesize serviceUnavailableAlertMessage = _serviceUnavailableAlertMessage;
 @synthesize serviceUnavailableAlertEnabled = _serviceUnavailableAlertEnabled;
+@synthesize showNetworkActivity = _showNetworkActivity;
 @synthesize requestCache = _requestCache;
 @synthesize cachePolicy = _cachePolicy;
 @synthesize requestQueue = _requestQueue;
@@ -222,7 +223,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;
     request.defaultHTTPEncoding = self.defaultHTTPEncoding;
-
+    request.showNetworkActivity = self.showNetworkActivity;
+  
     request.additionalRootCertificates = self.additionalRootCertificates;
     request.disableCertificateValidation = self.disableCertificateValidation;
     request.runLoopMode = self.runLoopMode;
