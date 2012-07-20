@@ -179,33 +179,23 @@
 - (NSArray *)objectsWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context
 {
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
-    NSMutableArray *objectIDs = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
+    NSMutableArray *objectIDs = [[self.attributeValuesToObjectIDs objectForKey:attributeValue] copy];
     if (objectIDs) {
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-        fetchRequest.entity = self.entity;
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"self in %@", objectIDs];
-        
-        __block NSArray *objects;
-        __block NSError *error;
-        [context performBlockAndWait:^{
-            objects = [context executeFetchRequest:fetchRequest error:&error];
-        }];
-        if (! objects) {
-            RKLogWarning(@"Failed to retrieve cached objects. Execution failed for fetch request: %@", fetchRequest);
-            RKLogCoreDataError(error);
+        /**
+         NOTE:
+         In my benchmarking, retrieving the objects one at a time using existingObjectWithID: is significantly faster
+         than issuing a single fetch request against all object ID's.
+         */
+        NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[objectIDs count]];
+        for (NSManagedObjectID *objectID in objectIDs) {
+            NSManagedObject *object = [self objectForObjectID:objectID inContext:context];
+            if (object) {
+                [objects addObject:object];
+            } else {
+                RKLogDebug(@"Evicting objectID association for attribute '%@'=>'%@' of Entity '%@': %@", self.attribute, attributeValue, self.entity.name, objectID);
+                [self removeObjectID:objectID forAttributeValue:attributeValue];
+            }
         }
-        
-        
-//        NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[objectIDs count]];
-//        for (NSManagedObjectID *objectID in objectIDs) {
-//            NSManagedObject *object = [self objectForObjectID:objectID inContext:context];
-//            if (object) {
-//                [objects addObject:object];
-//            } else {
-//                RKLogDebug(@"Evicting objectID association for attribute '%@'=>'%@' of Entity '%@': %@", self.attribute, attributeValue, self.entity.name, objectID);
-//                [self removeObjectID:objectID forAttributeValue:attributeValue];
-//            }
-//        }
 
         return objects;
     }
@@ -262,7 +252,7 @@
         objectID = [object objectID];
         attributeValue = [object valueForKey:self.attribute];
     }];
-    NSAssert([entity isEqual:self.entity], @"Cannot remove object with entity '%@' from cache with entity of '%@'", [entity name], [self.entity name]);
+    NSAssert([entity isEqual:self.entity], @"Cannot add object with entity '%@' to cache for entity of '%@'", [entity name], [self.entity name]);
     // Coerce to a string if possible
     [self setObjectID:objectID forAttributeValue:attributeValue];
 }
@@ -277,7 +267,7 @@
         objectID = [object objectID];
         attributeValue = [object valueForKey:self.attribute];
     }];
-    NSAssert([entity isEqual:self.entity], @"Cannot remove object with entity '%@' from cache with entity of '%@'", [entity name], [self.entity name]);
+    NSAssert([entity isEqual:self.entity], @"Cannot remove object with entity '%@' from cache for entity of '%@'", [entity name], [self.entity name]);
     [self removeObjectID:objectID forAttributeValue:attributeValue];
 }
 

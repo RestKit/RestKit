@@ -141,7 +141,14 @@
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     human2.name = @"Sarah";
-
+    
+    __block NSError *error;
+    __block BOOL success;
+    [self.managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
+        success = [self.managedObjectStore.primaryManagedObjectContext save:&error];
+    }];
+    assertThatBool(success, is(equalToBool(YES)));
+    
     [_cache addObject:human1];
     [_cache addObject:human2];
     
@@ -168,7 +175,14 @@
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     human2.name = @"Sarah";
-
+    
+    __block NSError *error;
+    __block BOOL success;
+    [self.managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
+        success = [self.managedObjectStore.primaryManagedObjectContext save:&error];
+    }];
+    assertThatBool(success, is(equalToBool(YES)));
+    
     [_cache addObject:human1];
     [_cache addObject:human2];
     
