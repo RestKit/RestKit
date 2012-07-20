@@ -56,7 +56,7 @@
 - (void)testShouldMapACollectionOfObjectsWithDynamicKeys
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    managedObjectStore.cacheStrategy = [RKInMemoryManagedObjectCache new];
+    managedObjectStore.cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";

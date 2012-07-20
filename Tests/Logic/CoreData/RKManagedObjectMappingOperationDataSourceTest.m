@@ -142,7 +142,7 @@
 - (void)testShouldFindExistingManagedObjectsByPrimaryKeyWithInMemoryCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    managedObjectStore.cacheStrategy = [RKInMemoryManagedObjectCache new];
+    managedObjectStore.cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"id" toKeyPath:@"railsID"]];
@@ -169,7 +169,7 @@
 - (void)testShouldFindExistingManagedObjectsByPrimaryKeyPathWithInMemoryCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    managedObjectStore.cacheStrategy = [RKInMemoryManagedObjectCache new];
+    managedObjectStore.cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     mapping.primaryKeyAttribute = @"railsID";
     [mapping addAttributeMapping:[RKAttributeMapping mappingFromKeyPath:@"monkey.id" toKeyPath:@"railsID"]];
@@ -229,7 +229,7 @@
 - (void)testMappingWithInMemoryCacheWherePrimaryKeyAttributeOfMappingDisagreesWithEntity
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    managedObjectStore.cacheStrategy = [RKInMemoryManagedObjectCache new];
+    managedObjectStore.cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntity:entity];
     mapping.primaryKeyAttribute = @"name";
@@ -261,7 +261,7 @@
 - (void)testThatCreationOfNewObjectWithIncorrectTypeValueForPrimaryKeyAddsToCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    managedObjectStore.cacheStrategy = [RKInMemoryManagedObjectCache new];
+    managedObjectStore.cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntity:entity];
     mapping.primaryKeyAttribute = @"railsID";

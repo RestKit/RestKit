@@ -123,8 +123,10 @@
     [self.managedObjectStore save:nil];
     [self.cache load];
 
-    NSManagedObject *object = [self.cache objectWithAttributeValue:[NSNumber numberWithInteger:12345]];
-    assertThat(object, is(equalTo(human)));
+    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    childContext.parentContext = self.managedObjectContext;
+    NSManagedObject *object = [self.cache objectWithAttributeValue:[NSNumber numberWithInteger:12345] inContext:childContext];
+    assertThat(object.objectID, is(equalTo(human.objectID)));
 }
 
 - (void)testRetrievalOfNumericPropertyByStringValue
@@ -134,9 +136,11 @@
     [self.managedObjectStore save:nil];
     [self.cache load];
 
-    NSManagedObject *object = [self.cache objectWithAttributeValue:@"12345"];
+    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    childContext.parentContext = self.managedObjectContext;
+    NSManagedObject *object = [self.cache objectWithAttributeValue:@"12345" inContext:childContext];
     assertThat(object, is(notNilValue()));
-    assertThat(object, is(equalTo(human)));
+    assertThat(object.objectID, is(equalTo(human.objectID)));
 }
 
 - (void)testRetrievalOfObjectsWithAttributeValue
@@ -150,7 +154,9 @@
     [self.cache addObject:human1];
     [self.cache addObject:human2];
 
-    NSArray *objects = [self.cache objectsWithAttributeValue:[NSNumber numberWithInt:12345]];
+    NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
+    childContext.parentContext = self.managedObjectContext;
+    NSArray *objects = [self.cache objectsWithAttributeValue:[NSNumber numberWithInt:12345] inContext:childContext];
     assertThat(objects, hasCountOf(2));
     assertThat([objects objectAtIndex:0], is(instanceOf([NSManagedObject class])));
 }
