@@ -324,7 +324,7 @@
     NSAssert(contextValue, @"Attempted to retrieve mapping from undefined context: %d", context);
     for (NSString *pattern in contextValue) {
         RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPattern:pattern];
-        if ([pathMatcher matchesPath:string tokenizeQueryStrings:NO parsedArguments:nil]) {
+        if ([pathMatcher matchesPath:string tokenizeQueryStrings:YES parsedArguments:nil]) {
             RKObjectMappingProviderContextEntry *entry = [contextValue objectForKey:pattern];
             return entry.mapping;
         }
