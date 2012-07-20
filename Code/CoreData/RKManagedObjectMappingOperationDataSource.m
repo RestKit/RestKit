@@ -98,6 +98,11 @@
         }
     }
     
+    if (! self.managedObjectCache) {
+        RKLogWarning(@"Performing managed object mapping with a nil managed object cache:\n"
+                      "Unable to update existing object instances by primary key. Duplicate objects may be created.");
+    }
+
     // If we have found the primary key attribute & value, try to find an existing instance to update
     if (primaryKeyAttribute && primaryKeyValue && NO == [primaryKeyValue isEqual:[NSNull null]]) {
         object = [self.managedObjectCache findInstanceOfEntity:entity

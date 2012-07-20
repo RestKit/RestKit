@@ -293,6 +293,7 @@
         loader.delegate = responseLoader;
         loader.resourcePath = @"/humans/1";
     }];
+    responseLoader.timeout = 50;
     [responseLoader waitForResponse];
     assertThat(responseLoader.response.request.resourcePath, is(equalTo(@"/humans/1")));
 }

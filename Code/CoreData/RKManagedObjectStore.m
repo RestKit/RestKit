@@ -303,8 +303,8 @@ static RKManagedObjectStore *defaultStore = nil;
     self.primaryManagedObjectContext.managedObjectStore = self;
     
     // Create an MOC for use on the main queue
-    self.mainQueueManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
-    self.mainQueueManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
+    self.mainQueueManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType] autorelease];
+    self.mainQueueManagedObjectContext.parentContext = self.primaryManagedObjectContext;
     self.mainQueueManagedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
     self.mainQueueManagedObjectContext.managedObjectStore = self;
     
@@ -357,27 +357,6 @@ static RKManagedObjectStore *defaultStore = nil;
     }];
 }
 
-#pragma mark -
-#pragma mark Helpers
-
-- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID
-{
-    NSAssert(objectID, @"Cannot fetch a managedObject with a nil objectID");
-    return [[self managedObjectContextForCurrentThread] objectWithID:objectID];
-}
-
-- (NSArray *)objectsWithIDs:(NSArray *)objectIDs
-{
-    NSMutableArray *objects = [[NSMutableArray alloc] init];
-    for (NSManagedObjectID *objectID in objectIDs) {
-        [objects addObject:[self objectWithID:objectID]];
-    }
-    NSArray *objectArray = [NSArray arrayWithArray:objects];
-    [objects release];
-
-    return objectArray;
-}
-
 @end
 
 @implementation RKManagedObjectStore (Deprecations)
@@ -390,6 +369,27 @@ static RKManagedObjectStore *defaultStore = nil;
 + (void)setDefaultObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE
 {
     [RKManagedObjectStore setDefaultStore:objectStore];
+}
+
+#pragma mark -
+#pragma mark Helpers
+
+- (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID DEPRECATED_ATTRIBUTE
+{
+    NSAssert(objectID, @"Cannot fetch a managedObject with a nil objectID");
+    return [[self managedObjectContextForCurrentThread] objectWithID:objectID];
+}
+
+- (NSArray *)objectsWithIDs:(NSArray *)objectIDs DEPRECATED_ATTRIBUTE
+{
+    NSMutableArray *objects = [[NSMutableArray alloc] init];
+    for (NSManagedObjectID *objectID in objectIDs) {
+        [objects addObject:[self objectWithID:objectID]];
+    }
+    NSArray *objectArray = [NSArray arrayWithArray:objects];
+    [objects release];
+
+    return objectArray;
 }
 
 @end

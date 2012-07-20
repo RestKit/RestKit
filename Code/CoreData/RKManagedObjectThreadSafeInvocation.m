@@ -88,8 +88,9 @@
         id value = [argument valueForKeyPath:keyPath];
         if ([value isKindOfClass:[NSManagedObjectID class]]) {
             __block NSManagedObject *managedObject = nil;
+            __block NSError *error;
             [self.mainQueueManagedObjectContext performBlockAndWait:^{
-                managedObject = [self.mainQueueManagedObjectContext objectWithID:(NSManagedObjectID *)value];
+                managedObject = [self.mainQueueManagedObjectContext existingObjectWithID:(NSManagedObjectID *)value error:&error];
             }];
             NSAssert(managedObject, @"Expected managed object for ID %@, got nil", value);
             [self setValue:managedObject forKeyPathOrKey:keyPath object:argument];
@@ -98,8 +99,9 @@
             for (id subObject in value) {
                 if ([subObject isKindOfClass:[NSManagedObjectID class]]) {
                     __block NSManagedObject *managedObject = nil;
+                    __block NSError *error;
                     [self.mainQueueManagedObjectContext performBlockAndWait:^{
-                        managedObject = [self.mainQueueManagedObjectContext objectWithID:(NSManagedObjectID *)subObject];
+                        managedObject = [self.mainQueueManagedObjectContext existingObjectWithID:(NSManagedObjectID *)subObject error:&error];
                     }];
                     [collection addObject:managedObject];
                 } else {

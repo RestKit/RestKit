@@ -30,7 +30,6 @@
 
 @interface RKObjectMapper ()
 
-@property (nonatomic, retain) NSOperationQueue *operationQueue;
 @property (nonatomic, retain) NSMutableArray *mappingErrors;
 
 @end
@@ -43,7 +42,6 @@
 @synthesize mappingProvider = _mappingProvider;
 @synthesize mappingOperationDataSource = _mappingOperationDataSource;
 @synthesize mappingErrors = _mappingErrors;
-@synthesize operationQueue = _operationQueue;
 @synthesize context = _context;
 
 + (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider
@@ -58,7 +56,6 @@
         _sourceObject = [object retain];
         _mappingProvider = mappingProvider;
         _mappingErrors = [NSMutableArray new];
-        _operationQueue = [NSOperationQueue new];
         _context = RKObjectMappingProviderContextObjectsByKeyPath;
         _mappingOperationDataSource = [RKObjectMappingOperationDataSource new];
     }
@@ -70,7 +67,6 @@
 {
     [_sourceObject release];
     [_mappingErrors release];
-    [_operationQueue release];
     [_mappingOperationDataSource release];
     [super dealloc];
 }
@@ -369,13 +365,9 @@
         if (mappableData) {
             id mappingResult = [self performMappingForObject:mappableData atKeyPath:@"" usingMapping:mappingsForContext];
             foundMappable = YES;
-            results = [NSDictionary dictionaryWithObject:mappingResult forKey:@""];
+            results = mappingResult ? [NSDictionary dictionaryWithObject:mappingResult forKey:@""] : nil;
         }
     }
-
-    // Allow any queued operations to complete
-    RKLogDebug(@"The following operations are in the queue: %@", self.operationQueue.operations);
-    [self.operationQueue waitUntilAllOperationsAreFinished];
 
     if ([self.delegate respondsToSelector:@selector(mapperDidFinishMapping:)]) {
         [self.delegate mapperDidFinishMapping:self];

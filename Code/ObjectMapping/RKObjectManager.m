@@ -238,6 +238,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
         RKManagedObjectLoader *managedObjectLoader = (RKManagedObjectLoader *)loader;
         managedObjectLoader.managedObjectContext = self.managedObjectStore.primaryManagedObjectContext;
         managedObjectLoader.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
+        managedObjectLoader.managedObjectCache = self.managedObjectStore.cacheStrategy;
     }
     [self configureObjectLoader:loader];
 
