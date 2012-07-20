@@ -139,21 +139,23 @@
 - (BOOL)containsObjectWithAttributeValue:(id)attributeValue;
 
 /**
- Returns the first object with a matching value for the cache key attribute.
+ Returns the first object with a matching value for the cache key attribute
+ in a given managed object context.
 
  @param attributeValue A value for the cache key attribute.
  @return An object with the value of attribute matching attributeValue or nil.
  */
-- (NSManagedObject *)objectWithAttributeValue:(id)attributeValue;
+- (NSManagedObject *)objectWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context;
 
 /**
- Returns the collection of objects with a matching value for the cache key attribute.
-
+ Returns the collection of objects with a matching value for the cache key attribute
+ in a given managed object context.
+ 
  @param attributeValue A value for the cache key attribute.
  @return An array of objects with the value of attribute matching attributeValue or
     an empty array.
  */
-- (NSArray *)objectsWithAttributeValue:(id)attributeValue;
+- (NSArray *)objectsWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context;
 
 ///-----------------------------------------------------------------------------
 /// @name Managing Cached Objects

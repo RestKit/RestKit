@@ -45,11 +45,7 @@
                                                  selector:@selector(managedObjectContextDidChange:)
                                                      name:NSManagedObjectContextObjectsDidChangeNotification
                                                    object:context];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(managedObjectContextDidSave:)
-                                                     name:NSManagedObjectContextDidSaveNotification
-                                                   object:context];
+        
 #if TARGET_OS_IPHONE
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(didReceiveMemoryWarning:)
@@ -85,7 +81,7 @@
 
 - (NSUInteger)countWithAttributeValue:(id)attributeValue
 {
-    return [[self objectsWithAttributeValue:attributeValue] count];
+    return [[self objectsWithAttributeValue:attributeValue inContext:self.managedObjectContext] count];
 }
 
 - (BOOL)shouldCoerceAttributeToString:(NSString *)attributeValue
@@ -150,13 +146,7 @@
     return (self.attributeValuesToObjectIDs != nil);
 }
 
-- (NSManagedObject *)objectWithAttributeValue:(id)attributeValue
-{
-    NSArray *objects = [self objectsWithAttributeValue:attributeValue];
-    return ([objects count] > 0) ? [objects objectAtIndex:0] : nil;
-}
-
-- (NSManagedObject *)objectForObjectID:(NSManagedObjectID *)objectID
+- (NSManagedObject *)objectForObjectID:(NSManagedObjectID *)objectID inContext:(NSManagedObjectContext *)context
 {
     /*
      NOTE:
@@ -164,34 +154,58 @@
      that will raise an exception when fired. existingObjectWithID:error: will return nil if the ID has been
      deleted. objectRegisteredForID: is also an acceptable approach.
      */
-    NSError *error = nil;
-    NSManagedObject *object = [self.managedObjectContext existingObjectWithID:objectID error:&error];
+    __block NSError *error = nil;
+    __block NSManagedObject *object;
+    [context performBlockAndWait:^{
+        object = [context existingObjectWithID:objectID error:&error];
+    }];
     if (! object) {
         if (error) {
             RKLogError(@"Failed to retrieve managed object with ID %@. Error %@\n%@", objectID, [error localizedDescription], [error userInfo]);
         }
-
+        
         return nil;
     }
-
+    
     return object;
 }
 
-- (NSArray *)objectsWithAttributeValue:(id)attributeValue
+- (NSManagedObject *)objectWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context
+{
+    NSArray *objects = [self objectsWithAttributeValue:attributeValue inContext:context];
+    return ([objects count] > 0) ? [objects objectAtIndex:0] : nil;
+}
+
+- (NSArray *)objectsWithAttributeValue:(id)attributeValue inContext:(NSManagedObjectContext *)context
 {
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
     NSMutableArray *objectIDs = [self.attributeValuesToObjectIDs objectForKey:attributeValue];
     if (objectIDs) {
-        NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[objectIDs count]];
-        for (NSManagedObjectID *objectID in objectIDs) {
-            NSManagedObject *object = [self objectForObjectID:objectID];
-            if (object) {
-                [objects addObject:object];
-            } else {
-                RKLogDebug(@"Evicting objectID association for attribute '%@'=>'%@' of Entity '%@': %@", self.attribute, attributeValue, self.entity.name, objectID);
-                [self removeObjectID:objectID forAttributeValue:attributeValue];
-            }
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        fetchRequest.entity = self.entity;
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"self in %@", objectIDs];
+        
+        __block NSArray *objects;
+        __block NSError *error;
+        [context performBlockAndWait:^{
+            objects = [context executeFetchRequest:fetchRequest error:&error];
+        }];
+        if (! objects) {
+            RKLogWarning(@"Failed to retrieve cached objects. Execution failed for fetch request: %@", fetchRequest);
+            RKLogCoreDataError(error);
         }
+        
+        
+//        NSMutableArray *objects = [NSMutableArray arrayWithCapacity:[objectIDs count]];
+//        for (NSManagedObjectID *objectID in objectIDs) {
+//            NSManagedObject *object = [self objectForObjectID:objectID inContext:context];
+//            if (object) {
+//                [objects addObject:object];
+//            } else {
+//                RKLogDebug(@"Evicting objectID association for attribute '%@'=>'%@' of Entity '%@': %@", self.attribute, attributeValue, self.entity.name, objectID);
+//                [self removeObjectID:objectID forAttributeValue:attributeValue];
+//            }
+//        }
 
         return objects;
     }
@@ -271,7 +285,7 @@
 {
     // Coerce to a string if possible
     attributeValue = [self shouldCoerceAttributeToString:attributeValue] ? [attributeValue stringValue] : attributeValue;
-    return [[self objectsWithAttributeValue:attributeValue] count] > 0;
+    return [[self objectsWithAttributeValue:attributeValue inContext:self.managedObjectContext] count] > 0;
 }
 
 - (BOOL)containsObject:(NSManagedObject *)object
@@ -304,15 +318,6 @@
             [self removeObject:object];
         }
     }
-}
-
-- (void)managedObjectContextDidSave:(NSNotification *)notification
-{
-    // After the MOC has been saved, we flush to ensure any temporary
-    // objectID references are converted into permanent ID's on the next load.
-//    [self flush];
-
-    // TODO: We should not do this... better strategy?
 }
 
 - (void)didReceiveMemoryWarning:(NSNotification *)notification

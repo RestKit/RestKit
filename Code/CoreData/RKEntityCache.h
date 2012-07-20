@@ -65,10 +65,11 @@
  @param entity The entity to search the cache for instances of.
  @param attributeName The attribute to search the cache for matches with.
  @param attributeValue The value of the attribute to return a match for.
+ @param context The managed object from which to retrieve the cached results.
  @return A matching managed object instance or nil.
  @raise NSInvalidArgumentException Raised if instances of the entity and attribute have not been cached.
  */
-- (NSManagedObject *)objectForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue;
+- (NSManagedObject *)objectForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue inContext:(NSManagedObjectContext *)context;
 
 /**
  Retrieves all cached instances of a given entity where the specified attribute matches the given value.
@@ -76,10 +77,11 @@
  @param entity The entity to search the cache for instances of.
  @param attributeName The attribute to search the cache for matches with.
  @param attributeValue The value of the attribute to return a match for.
+ @param context The managed object from which to retrieve the cached results.
  @return All matching managed object instances or nil.
  @raise NSInvalidArgumentException Raised if instances of the entity and attribute have not been cached.
  */
-- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue;
+- (NSArray *)objectsForEntity:(NSEntityDescription *)entity withAttribute:(NSString *)attributeName value:(id)attributeValue inContext:(NSManagedObjectContext *)context;
 
 ///-----------------------------------------------------------------------------
 // @name Accessing Underlying Caches
