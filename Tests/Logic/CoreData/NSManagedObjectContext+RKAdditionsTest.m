@@ -71,4 +71,25 @@
     assertThat(foundHuman, is(equalTo(human)));
 }
 
+- (void)testSaveToPersistentStore
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    human.name = @"Test";
+    assertThatBool([human.objectID isTemporaryID], is(equalToBool(YES)));
+
+    NSError *error;
+    BOOL success = [human.managedObjectContext saveToPersistentStore:&error];
+    assertThatBool(success, is(equalToBool(YES)));
+    [managedObjectStore.mainQueueManagedObjectContext refreshObject:human mergeChanges:YES];
+    assertThatBool([human isNew], is(equalToBool(NO)));
+
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Test"];
+    NSArray *objects = [managedObjectStore.primaryManagedObjectContext executeFetchRequest:fetchRequest error:&error];
+    assertThat(objects, hasCountOf(1));
+    RKHuman *fetchedHuman = [objects objectAtIndex:0];
+    assertThatBool([fetchedHuman.objectID isTemporaryID], is(equalToBool(NO)));
+}
+
 @end

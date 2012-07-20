@@ -72,4 +72,24 @@ static char NSManagedObject_RKManagedObjectStoreAssociatedKey;
     return [self fetchObjectForEntity:entity withValueForPrimaryKeyAttribute:primaryKeyValue];
 }
 
+- (BOOL)saveToPersistentStore:(NSError **)error
+{
+    NSManagedObjectContext *contextToSave = self;
+    while (contextToSave) {
+        __block BOOL success;
+        [contextToSave performBlockAndWait:^{
+            success = [contextToSave save:error];
+        }];
+
+        if (! success) return NO;
+        if (! contextToSave.parentContext && contextToSave.persistentStoreCoordinator == nil) {
+            RKLogWarning(@"Reached the end of the chain of nested managed object contexts without encountering a persistent store coordinator. Objects are not fully persisted.");
+            return NO;
+        }
+        contextToSave = contextToSave.parentContext;
+    }
+
+    return YES;
+}
+
 @end

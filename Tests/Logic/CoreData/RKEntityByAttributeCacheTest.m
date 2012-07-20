@@ -362,23 +362,25 @@
 {
     self.cache.monitorsContextForChanges = YES;
 
-    RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
-    human1.railsID = [NSNumber numberWithInteger:12345];
-    RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
-    human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore.primaryManagedObjectContext processPendingChanges];
+    [self.managedObjectStore.primaryManagedObjectContext performBlockAndWait:^{
+        RKHuman *human1 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+        human1.railsID = [NSNumber numberWithInteger:12345];
+        RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
+        human2.railsID = [NSNumber numberWithInteger:12345];
+        [self.managedObjectStore.primaryManagedObjectContext processPendingChanges];
 
-    assertThatBool([self.cache containsObject:human1], is(equalToBool(YES)));
-    assertThatBool([self.cache containsObject:human2], is(equalToBool(YES)));
-    [self.managedObjectStore.primaryManagedObjectContext deleteObject:human2];
+        assertThatBool([self.cache containsObject:human1], is(equalToBool(YES)));
+        assertThatBool([self.cache containsObject:human2], is(equalToBool(YES)));
+        [self.managedObjectStore.primaryManagedObjectContext deleteObject:human2];
 
-    // Save and reload the cache. This will result in the cached temporary
-    // object ID's being released during the cache flush.
-    [self.managedObjectStore.primaryManagedObjectContext save:nil];
-    [self.cache load];
+        // Save and reload the cache. This will result in the cached temporary
+        // object ID's being released during the cache flush.
+        [self.managedObjectStore.primaryManagedObjectContext save:nil];
+        [self.cache load];
 
-    assertThatBool([self.cache containsObject:human1], is(equalToBool(YES)));
-    assertThatBool([self.cache containsObject:human2], is(equalToBool(NO)));
+        assertThatBool([self.cache containsObject:human1], is(equalToBool(YES)));
+        assertThatBool([self.cache containsObject:human2], is(equalToBool(NO)));
+    }];
 }
 
 @end

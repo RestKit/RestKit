@@ -71,4 +71,15 @@
  */
 - (id)fetchObjectForEntityForName:(NSString *)entityName withValueForPrimaryKeyAttribute:(id)primaryKeyValue;
 
+/**
+ Saves the receiver and then traverses up the parent context chain until a parent managed object context
+ with a nil parent is found. If the final ancestor context does not have a reference to the persistent store
+ coordinator, then a warning is generated and the method returns NO.
+
+ @param If there is a problem saving the receiver or any of its ancestor contexts, upon return contains an instnace of NSError
+    that describes the problem.
+ @return YES if the save to the persistent store was successful, else NO.
+ */
+- (BOOL)saveToPersistentStore:(NSError **)error;
+
 @end
