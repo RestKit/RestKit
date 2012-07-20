@@ -340,6 +340,11 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     if (!type || NO == [[value class] isSubclassOfClass:type]) {
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
     }
+    
+    // To support scalar types, when we don't have a type (when the destination is not an object) we coerce nil/null/NSNull into an NSNumber with value 0
+    if (!type && (!value || value == [NSNull null] || [value isEqual:[NSNull null]])) {
+        value = [NSNumber numberWithInt:0];
+    }
 
     // Ensure that the value is different
     if ([self shouldSetValue:&value atKeyPath:attributeMapping.destinationKeyPath]) {
