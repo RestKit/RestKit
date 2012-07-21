@@ -127,15 +127,20 @@
 // RKRequestQueue to remove requests from the queue. All requests need to be finalized.
 - (void)finalizeLoad:(BOOL)successful
 {
-    self.loading = NO;
-    self.loaded = successful;
-
     dispatch_async(dispatch_get_main_queue(), ^{
+        // First remove the request from the queue
+        [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
+
+        /* Now update the request state.  We have to do this after removing the request from the
+        queue because if successful is false then RKRequestQueue#next will rerun the request! */
+        self.loading = NO;
+        self.loaded = successful;
+        
+        // Now call the delegate
         if ([self.delegate respondsToSelector:@selector(objectLoaderDidFinishLoading:)]) {
             [(NSObject<RKObjectLoaderDelegate>*)self.delegate objectLoaderDidFinishLoading:self];
         }
 
-        [[NSNotificationCenter defaultCenter] postNotificationName:RKRequestDidFinishLoadingNotification object:self];
     });
 }
 
