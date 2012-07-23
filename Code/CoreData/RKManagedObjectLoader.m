@@ -109,7 +109,7 @@
                 self.targetObjectID = [(NSManagedObject *)self.targetObject objectID];
             }            
         }];
-    }    
+    }
 }
 
 - (BOOL)prepareURLRequest
