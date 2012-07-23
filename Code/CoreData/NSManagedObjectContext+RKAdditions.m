@@ -60,7 +60,7 @@ static char NSManagedObject_RKManagedObjectStoreAssociatedKey;
     }
 
     if ([objects count] == 1) {
-        return objects[0];
+        return [objects objectAtIndex:0];
     }
 
     return nil;
