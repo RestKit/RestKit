@@ -229,7 +229,6 @@ dispatch_queue_t rk_get_network_processing_queue(void);
  */
 @property (nonatomic, copy) NSString *runLoopMode;
 
-
 /**
  The default value used to decode HTTP body content when HTTP headers received do not provide information on the content.
  This encoding will be used by the RKResponse when creating the body content

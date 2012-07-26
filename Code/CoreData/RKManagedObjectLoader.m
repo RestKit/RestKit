@@ -57,6 +57,7 @@
         self.managedObjectsByKeyPath = [NSMutableDictionary dictionary];
         [self addObserver:self forKeyPath:@"managedObjectContext" options:0 context:nil];
         [self addObserver:self forKeyPath:@"targetObject" options:0 context:nil];
+        [self addObserver:self forKeyPath:@"managedObjectCache" options:0 context:nil];
     }
 
     return self;
@@ -66,6 +67,7 @@
 {
     [self removeObserver:self forKeyPath:@"managedObjectContext"];
     [self removeObserver:self forKeyPath:@"targetObject"];
+    [self removeObserver:self forKeyPath:@"managedObjectCache"];
     [_targetObjectID release];
     [_parentManagedObjectContext release];
     [_mainQueueManagedObjectContext release];
@@ -84,11 +86,27 @@
             self.privateContext.parentContext = self.managedObjectContext;
             self.privateContext.mergePolicy  = NSMergeByPropertyStoreTrumpMergePolicy;
         }];
+        [self createMappingOperationDataSource];
     } else if ([keyPath isEqualToString:@"targetObject"]) {
         if (! [self.targetObject isKindOfClass:[NSManagedObject class]]) {
             self.targetObjectID = nil;
         }
+    } else if ([keyPath isEqualToString:@"managedObjectCache"]) {
+        [self createMappingOperationDataSource];
     }
+}
+
+- (void)createMappingOperationDataSource
+{
+    if (! self.privateContext) return;
+
+    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.privateContext
+                                                                                                                                      cache:self.managedObjectCache];
+    dataSource.operationQueue = [[NSOperationQueue new] autorelease];
+    [dataSource.operationQueue setSuspended:YES];
+    [dataSource.operationQueue setMaxConcurrentOperationCount:1];
+    dataSource.tracksInsertedObjects = YES; // We need to be able to obtain permanent object ID's
+    self.mappingOperationDataSource = dataSource;
 }
 
 - (void)obtainPermanentObjectIDs
@@ -133,15 +151,6 @@
 {
     __block RKMappingResult *mappingResult = nil;
 
-    RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:self.privateContext
-                                                                                                                                      cache:self.managedObjectCache];
-    dataSource.operationQueue = [[NSOperationQueue new] autorelease];
-    [dataSource.operationQueue setSuspended:YES];
-    [dataSource.operationQueue setMaxConcurrentOperationCount:1];
-    dataSource.tracksInsertedObjects = YES; // We need to be able to obtain permanent object ID's
-    self.mappingOperationDataSource = dataSource; // TODO: Eliminate...
-    mapper.mappingOperationDataSource = dataSource;
-
     // Map it
     [self.privateContext performBlockAndWait:^{
         NSError *error;
@@ -158,6 +167,7 @@
     }];
 
     // Allow any enqueued operations to execute
+    RKManagedObjectMappingOperationDataSource *dataSource = self.mappingOperationDataSource;
     // TODO: This should be eliminated. The operations should be dependent on the mapper operation itself
     RKLogDebug(@"Unsuspending data source operation queue to process the following operations: %@", dataSource.operationQueue.operations);
     [dataSource.operationQueue setSuspended:NO];
@@ -211,6 +221,7 @@
 - (void)processMappingResult:(RKMappingResult *)result
 {
     NSAssert(_sentSynchronously || ![NSThread isMainThread], @"Mapping result processing should occur on a background thread");
+    NSAssert([self.mappingOperationDataSource isKindOfClass:[RKManagedObjectMappingOperationDataSource class]], @"Expected a managed object mapping operation data source but got a %@", [self.mappingOperationDataSource class]);
     if (self.targetObjectID && self.targetObject && self.method == RKRequestMethodDELETE) {
         [self.privateContext performBlockAndWait:^{
             NSError *error;

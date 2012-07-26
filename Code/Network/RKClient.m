@@ -127,8 +127,7 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
 + (RKClient *)clientWithBaseURL:(NSURL *)baseURL
 {
-    RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
-    return client;
+    return [[[self alloc] initWithBaseURL:baseURL] autorelease];
 }
 
 + (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password
@@ -241,7 +240,9 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
 - (void)configureRequest:(RKRequest *)request
 {
-    request.additionalHTTPHeaders = _HTTPHeaders;
+    NSAssert(self.HTTPHeaders, @"Headers should not be nil");
+
+    request.additionalHTTPHeaders = self.HTTPHeaders;
     request.authenticationType = self.authenticationType;
     request.username = self.username;
     request.password = self.password;

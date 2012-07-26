@@ -32,8 +32,8 @@
 
 @implementation RKURL
 
-@synthesize baseURL;
-@synthesize resourcePath;
+@synthesize baseURL = _rkBaseURL;
+@synthesize resourcePath = _resourcePath;
 
 + (id)URLWithBaseURL:(NSURL *)baseURL
 {
@@ -102,12 +102,19 @@
 
 - (void)dealloc
 {
-    [baseURL release];
-    baseURL = nil;
-    [resourcePath release];
-    resourcePath = nil;
+    [_rkBaseURL release];
+    _rkBaseURL = nil;
+    [_resourcePath release];
+    _resourcePath = nil;
 
     [super dealloc];
+}
+
+- (NSString *)resourcePath
+{
+    // Return the entire path as the resource path if we don't have an explicit path
+    if (_resourcePath == nil) return [self path];
+    return _resourcePath;
 }
 
 - (NSDictionary *)queryParameters

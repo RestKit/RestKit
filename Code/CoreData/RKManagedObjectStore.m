@@ -23,7 +23,6 @@
 #import "RKSearchWordObserver.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
-#import "RKAlert.h"
 #import "RKDirectory.h"
 #import "RKInMemoryManagedObjectCache.h"
 #import "RKFetchRequestManagedObjectCache.h"
@@ -34,27 +33,23 @@
 #undef RKLogComponent
 #define RKLogComponent lcl_cRestKitCoreData
 
+NSString * const RKSQLitePersistentStoreSeedDatabasePathOption = @"RKSQLitePersistentStoreSeedDatabasePathOption";
 NSString * const RKManagedObjectStoreDidFailSaveNotification = @"RKManagedObjectStoreDidFailSaveNotification";
 
 static RKManagedObjectStore *defaultStore = nil;
 
 @interface RKManagedObjectStore ()
+@property (nonatomic, retain, readwrite) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, retain, readwrite) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, retain, readwrite) NSManagedObjectContext *primaryManagedObjectContext;
 @property (nonatomic, retain, readwrite) NSManagedObjectContext *mainQueueManagedObjectContext;
-
-- (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
-- (void)createPersistentStoreCoordinator;
-- (void)createStoreIfNecessaryUsingSeedDatabase:(NSString *)seedDatabase;
 @end
 
 @implementation RKManagedObjectStore
 
-@synthesize delegate = _delegate;
-@synthesize storeFilename = _storeFilename;
-@synthesize pathToStoreFile = _pathToStoreFile;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize cacheStrategy = _cacheStrategy;
+@synthesize managedObjectCache = _managedObjectCache;
 @synthesize primaryManagedObjectContext = _primaryManagedObjectContext;
 @synthesize mainQueueManagedObjectContext = _mainQueueManagedObjectContext;
 
@@ -70,83 +65,17 @@ static RKManagedObjectStore *defaultStore = nil;
     defaultStore = managedObjectStore;
 }
 
-+ (void)deleteStoreAtPath:(NSString *)path
+- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
 {
-    NSURL *storeURL = [NSURL fileURLWithPath:path];
-    NSError *error = nil;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
-        if (! [[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
-            NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
-        }
-    } else {
-        RKLogWarning(@"Asked to delete persistent store but no store file exists at path: %@", storeURL.path);
-    }
-}
-
-+ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename
-{
-    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:filename];
-    [self deleteStoreAtPath:path];
-}
-
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename
-{
-    return [self objectStoreWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
-}
-
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate
-{
-    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate] autorelease];
-}
-
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate
-{
-    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:directory usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate] autorelease];
-}
-
-- (id)initWithStoreFilename:(NSString *)storeFilename
-{
-    return [self initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
-}
-
-- (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate
-{
-    self = [self init];
+    self = [super init];
     if (self) {
-        _storeFilename = [storeFilename retain];
-
-        if (nilOrDirectoryPath == nil) {
-            // If initializing into Application Data directory, ensure the directory exists
-            nilOrDirectoryPath = [RKDirectory applicationDataDirectory];
-            [RKDirectory ensureDirectoryExistsAtPath:nilOrDirectoryPath error:nil];
-        } else {
-            // If path given, caller is responsible for directory's existence
-            BOOL isDir;
-            NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:nilOrDirectoryPath isDirectory:&isDir] && isDir == YES, @"Specified storage directory exists", nilOrDirectoryPath);
-        }
-        _pathToStoreFile = [[nilOrDirectoryPath stringByAppendingPathComponent:_storeFilename] retain];
-
-        if (nilOrManagedObjectModel == nil) {
-            // NOTE: allBundles permits Core Data setup in unit tests
-            nilOrManagedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
-        }
-        NSMutableArray *allManagedObjectModels = [NSMutableArray arrayWithObject:nilOrManagedObjectModel];
-        _managedObjectModel = [[NSManagedObjectModel modelByMergingModels:allManagedObjectModels] retain];
-        _delegate = delegate;
-
-        if (nilOrNameOfSeedDatabaseInMainBundle) {
-            [self createStoreIfNecessaryUsingSeedDatabase:nilOrNameOfSeedDatabaseInMainBundle];
-        }
-
-        [self createPersistentStoreCoordinator];
-        [self createManagedObjectContexts];
-
-        _cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.primaryManagedObjectContext];
+        self.managedObjectModel = managedObjectModel;
+        self.persistentStoreCoordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel] autorelease];
 
         // Ensure there is a search word observer
         [RKSearchWordObserver sharedObserver];
 
-        // Hydrate the defaultObjectStore
+        // Hydrate the defaultStore
         if (! defaultStore) {
             [RKManagedObjectStore setDefaultStore:self];
         }
@@ -155,89 +84,76 @@ static RKManagedObjectStore *defaultStore = nil;
     return self;
 }
 
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator
+{
+    self = [self initWithManagedObjectModel:persistentStoreCoordinator.managedObjectModel];
+    if (self) {
+        self.persistentStoreCoordinator = persistentStoreCoordinator;
+    }
+
+    return self;
+}
+
+- (id)init
+{
+    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    return [self initWithManagedObjectModel:managedObjectModel];
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-    [_storeFilename release];
-    _storeFilename = nil;
-    [_pathToStoreFile release];
-    _pathToStoreFile = nil;
 
     [_managedObjectModel release];
     _managedObjectModel = nil;
     [_persistentStoreCoordinator release];
     _persistentStoreCoordinator = nil;
-    [_cacheStrategy release];
-    _cacheStrategy = nil;
+    [_managedObjectCache release];
+    _managedObjectCache = nil;
     [_primaryManagedObjectContext release];
     _primaryManagedObjectContext = nil;
+    [_mainQueueManagedObjectContext release];
+    _mainQueueManagedObjectContext = nil;
 
     [super dealloc];
 }
 
-- (BOOL)save:(NSError **)error
+- (NSPersistentStore *)addInMemoryPersistentStore:(NSError **)error
 {
-    __block NSError *localError = nil;
-    __block BOOL success;
-    
-    [self.primaryManagedObjectContext performBlockAndWait:^{
-        @try {
-            success = [self.primaryManagedObjectContext save:&localError];
-            if (!success) {
-                if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-                    [self.delegate managedObjectStore:self didFailToSaveContext:self.primaryManagedObjectContext error:localError exception:nil];
-                }
-                
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:localError forKey:@"error"];
-                [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
-                
-                if ([[localError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
-                    NSDictionary *userInfo = [localError userInfo];
-                    NSArray *errors = [userInfo valueForKey:@"NSDetailedErrors"];
-                    if (errors) {
-                        for (NSError *detailedError in errors) {
-                            NSDictionary *subUserInfo = [detailedError userInfo];
-                            RKLogError(@"Core Data Save Error\n \
-                                       NSLocalizedDescription:\t\t%@\n \
-                                       NSValidationErrorKey:\t\t\t%@\n \
-                                       NSValidationErrorPredicate:\t%@\n \
-                                       NSValidationErrorObject:\n%@\n",
-                                       [subUserInfo valueForKey:@"NSLocalizedDescription"],
-                                       [subUserInfo valueForKey:@"NSValidationErrorKey"],
-                                       [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
-                                       [subUserInfo valueForKey:@"NSValidationErrorObject"]);
-                        }
-                    }
-                    else {
-                        RKLogError(@"Core Data Save Error\n \
-                                   NSLocalizedDescription:\t\t%@\n \
-                                   NSValidationErrorKey:\t\t\t%@\n \
-                                   NSValidationErrorPredicate:\t%@\n \
-                                   NSValidationErrorObject:\n%@\n",
-                                   [userInfo valueForKey:@"NSLocalizedDescription"],
-                                   [userInfo valueForKey:@"NSValidationErrorKey"],
-                                   [userInfo valueForKey:@"NSValidationErrorPredicate"],
-                                   [userInfo valueForKey:@"NSValidationErrorObject"]);
-                    }
-                }
-                
-                if (error) {
-                    *error = localError;
-                }
-            }
-        }
-        @catch (NSException *e) {
-            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToSaveContext:error:exception:)]) {
-                [self.delegate managedObjectStore:self didFailToSaveContext:self.primaryManagedObjectContext error:nil exception:e];
-            }
-            else {
-                @throw;
-            }
-        }
-    }];
+    return [self.persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:error];
+}
 
-    return success;
+- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error
+{
+    NSURL *storeURL = [NSURL fileURLWithPath:storePath];
+    if (seedPath) {
+        BOOL success = [self copySeedDatabaseIfNecessaryFromPath:seedPath toPath:storePath error:error];
+        if (! success) return nil;
+    }
+    
+    // Allow inferred migration from the original version of the application.
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             (seedPath ? seedPath : [NSNull null]), RKSQLitePersistentStoreSeedDatabasePathOption,
+                             [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
+                             [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption,
+                             nil];
+
+    return [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:error];
+}
+
+- (BOOL)copySeedDatabaseIfNecessaryFromPath:(NSString *)seedPath toPath:(NSString *)storePath error:(NSError **)error
+{
+    if (NO == [[NSFileManager defaultManager] fileExistsAtPath:storePath]) {
+        NSError *localError;
+        if (![[NSFileManager defaultManager] copyItemAtPath:seedPath toPath:storePath error:&localError]) {
+            RKLogError(@"Failed to copy seed database from path '%@' to path '%@': %@", seedPath, storePath, [localError localizedDescription]);
+            if (error) *error = localError;
+
+            return NO;
+        }
+    }
+
+    return YES;
 }
 
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType
@@ -252,50 +168,11 @@ static RKManagedObjectStore *defaultStore = nil;
     return managedObjectContext;
 }
 
-- (void)createStoreIfNecessaryUsingSeedDatabase:(NSString *)seedDatabase
-{
-    if (NO == [[NSFileManager defaultManager] fileExistsAtPath:self.pathToStoreFile]) {
-        NSString *seedDatabasePath = [[NSBundle mainBundle] pathForResource:seedDatabase ofType:nil];
-        NSAssert1(seedDatabasePath, @"Unable to find seed database file '%@' in the Main Bundle, aborting...", seedDatabase);
-        RKLogInfo(@"No existing database found, copying from seed path '%@'", seedDatabasePath);
-
-        NSError *error;
-        if (![[NSFileManager defaultManager] copyItemAtPath:seedDatabasePath toPath:self.pathToStoreFile error:&error]) {
-            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToCopySeedDatabase:error:)]) {
-                [self.delegate managedObjectStore:self didFailToCopySeedDatabase:seedDatabase error:error];
-            } else {
-                RKLogError(@"Encountered an error during seed database copy: %@", [error localizedDescription]);
-            }
-        }
-        NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:seedDatabasePath], @"Seed database not found at path '%@'!", seedDatabasePath);
-    }
-}
-
-- (void)createPersistentStoreCoordinator
-{
-    NSAssert(_managedObjectModel, @"Cannot create persistent store coordinator without a managed object model");
-    NSAssert(!_persistentStoreCoordinator, @"Cannot create persistent store coordinator: one already exists.");
-    NSURL *storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
-
-    NSError *error;
-    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_managedObjectModel];
-
-    // Allow inferred migration from the original version of the application.
-    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
-                             [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
-                             [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
-
-    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:options error:&error]) {
-        if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToCreatePersistentStoreCoordinatorWithError:)]) {
-            [self.delegate managedObjectStore:self didFailToCreatePersistentStoreCoordinatorWithError:error];
-        } else {
-            NSAssert(NO, @"Managed object store failed to create persistent store coordinator: %@", error);
-        }
-    }
-}
-
 - (void)createManagedObjectContexts
 {
+    NSAssert(!self.primaryManagedObjectContext, @"Unable to create managed object contexts: A primary managed object context already exists.");
+    NSAssert(!self.mainQueueManagedObjectContext, @"Unable to create managed object contexts: A main queue managed object context already exists.");
+
     // Our primary MOC is a private queue concurrency type
     self.primaryManagedObjectContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
     self.primaryManagedObjectContext.persistentStoreCoordinator = self.persistentStoreCoordinator;
@@ -315,37 +192,63 @@ static RKManagedObjectStore *defaultStore = nil;
                                                object:self.primaryManagedObjectContext];
 }
 
-- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile
+- (void)recreateManagedObjectContexts
 {
-    NSURL* storeURL = [NSURL fileURLWithPath:self.pathToStoreFile];
-    NSError* error = nil;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
-        if (![[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
-            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(managedObjectStore:didFailToDeletePersistentStore:error:)]) {
-                [self.delegate managedObjectStore:self didFailToDeletePersistentStore:self.pathToStoreFile error:error];
-            }
-            else {
-                NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
-            }
-        }
-    } else {
-        RKLogWarning(@"Asked to delete persistent store but no store file exists at path: %@", storeURL.path);
-    }
-
-    [_persistentStoreCoordinator release];
-    _persistentStoreCoordinator = nil;
-
-    if (seedFile) {
-        [self createStoreIfNecessaryUsingSeedDatabase:seedFile];
-    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:self.primaryManagedObjectContext];
     
-    [self createPersistentStoreCoordinator];
+    self.primaryManagedObjectContext = nil;
+    self.mainQueueManagedObjectContext = nil;
     [self createManagedObjectContexts];
 }
 
-- (void)deletePersistentStore
+- (BOOL)resetPersistentStores:(NSError **)error
 {
-    [self deletePersistentStoreUsingSeedDatabaseName:nil];
+    NSError *localError;
+    for (NSPersistentStore *persistentStore in self.persistentStoreCoordinator.persistentStores) {
+        NSURL *URL = [self.persistentStoreCoordinator URLForPersistentStore:persistentStore];
+        BOOL success = [self.persistentStoreCoordinator removePersistentStore:persistentStore error:&localError];
+        if (success) {
+            if ([URL isFileURL]) {
+                if (! [[NSFileManager defaultManager] removeItemAtURL:URL error:&localError]) {
+                    RKLogError(@"Failed to remove persistent store at URL %@: %@", URL, localError);
+                    if (error) *error = localError;
+                    return NO;
+                }
+            } else {
+                RKLogDebug(@"Skipped removal of persistent store file: URL for persistent store is not a file URL. (%@)", URL);
+            }
+
+            // Reclone the persistent store from the seed path if necessary
+            if ([persistentStore.type isEqualToString:NSSQLiteStoreType]) {
+                NSString *seedPath = [persistentStore.options valueForKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+                if (seedPath && ![seedPath isEqual:[NSNull null]]) {
+                    success = [self copySeedDatabaseIfNecessaryFromPath:seedPath toPath:[persistentStore.URL path] error:&localError];
+                    if (! success) {
+                        RKLogError(@"Failed reset of SQLite persistent store: Failed to copy seed database.");
+                        if (error) *error = localError;
+                        return NO;
+                    }
+                }
+            }
+
+            // Add a new store with the same options
+            NSPersistentStore *newStore = [self.persistentStoreCoordinator addPersistentStoreWithType:persistentStore.type
+                                                                                        configuration:persistentStore.configurationName
+                                                                                                  URL:persistentStore.URL
+                                                                                              options:persistentStore.options error:&localError];
+            if (! newStore) {
+                if (error) *error = localError;
+                return NO;
+            }
+        } else {
+            RKLogError(@"Failed reset of persistent store %@: Failed to remove persistent store with error: %@", persistentStore, localError);
+            if (error) *error = localError;
+            return NO;
+        }
+    }
+
+    [self recreateManagedObjectContexts];
+    return YES;
 }
 
 - (void)handlePrimaryManagedObjectContextDidSaveNotification:(NSNotification *)notification
@@ -390,6 +293,153 @@ static RKManagedObjectStore *defaultStore = nil;
     [objects release];
 
     return objectArray;
+}
+
+- (id<RKManagedObjectCaching>)cacheStrategy DEPRECATED_ATTRIBUTE
+{
+    return self.managedObjectCache;
+}
+
+- (void)setCacheStrategy:(id<RKManagedObjectCaching>)cacheStrategy DEPRECATED_ATTRIBUTE
+{
+    self.managedObjectCache = cacheStrategy;
+}
+
+- (NSString *)storeFilename DEPRECATED_ATTRIBUTE
+{
+    return [[self pathToStoreFile] lastPathComponent];
+}
+
+- (NSString *)pathToStoreFile DEPRECATED_ATTRIBUTE
+{
+    for (NSPersistentStore *persistentStore in self.persistentStoreCoordinator.persistentStores) {
+        if ([persistentStore.type isEqualToString:NSSQLiteStoreType]) {
+            NSURL *URL = [self.persistentStoreCoordinator URLForPersistentStore:persistentStore];
+            if ([URL isFileURL]) {
+                return URL.path;
+            }
+        }
+    }
+
+    return nil;
+}
+
+- (BOOL)save:(NSError **)error DEPRECATED_ATTRIBUTE
+{
+    __block NSError *localError = nil;
+    __block BOOL success;
+
+    [self.primaryManagedObjectContext performBlockAndWait:^{
+        success = [self.primaryManagedObjectContext save:&localError];
+        if (!success) {
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObject:localError forKey:@"error"];
+            [[NSNotificationCenter defaultCenter] postNotificationName:RKManagedObjectStoreDidFailSaveNotification object:self userInfo:userInfo];
+            RKLogCoreDataError(localError);
+            if (error) *error = localError;
+        }
+    }];
+
+    return success;
+}
+
++ (void)deleteStoreAtPath:(NSString *)path DEPRECATED_ATTRIBUTE
+{
+    NSURL *storeURL = [NSURL fileURLWithPath:path];
+    NSError *error = nil;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
+        if (! [[NSFileManager defaultManager] removeItemAtPath:storeURL.path error:&error]) {
+            NSAssert(NO, @"Managed object store failed to delete persistent store : %@", error);
+        }
+    } else {
+        RKLogWarning(@"Asked to delete persistent store but no store file exists at path: %@", storeURL.path);
+    }
+}
+
++ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename DEPRECATED_ATTRIBUTE
+{
+    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:filename];
+    [self deleteStoreAtPath:path];
+}
+
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE
+{
+    return [self objectStoreWithStoreFilename:storeFilename usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
+}
+
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE
+{
+    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate] autorelease];
+}
+
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE
+{
+    return [[[self alloc] initWithStoreFilename:storeFilename inDirectory:directory usingSeedDatabaseName:nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:nilOrManagedObjectModel delegate:delegate] autorelease];
+}
+
+- (id)initWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE
+{
+    return [self initWithStoreFilename:storeFilename inDirectory:nil usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil];
+}
+
+- (id)initWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)nilOrDirectoryPath usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE
+{
+    NSManagedObjectModel *managedObjectModel = nilOrManagedObjectModel;
+    if (! managedObjectModel) {
+        managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:[NSBundle allBundles]];
+    }
+
+    self = [self initWithManagedObjectModel:managedObjectModel];
+    if (self) {
+        NSString *storeDirectory = nilOrDirectoryPath;
+        if (storeDirectory == nil) {
+            // If initializing into Application Data directory, ensure the directory exists
+            storeDirectory = [RKDirectory applicationDataDirectory];
+            [RKDirectory ensureDirectoryExistsAtPath:storeDirectory error:nil];
+        } else {
+            // If path given, caller is responsible for directory's existence
+            BOOL isDir;
+            NSAssert1([[NSFileManager defaultManager] fileExistsAtPath:storeDirectory isDirectory:&isDir] && isDir == YES, @"Specified storage directory exists", storeDirectory);
+        }
+
+        NSString *SQLiteStorePath = [storeDirectory stringByAppendingPathComponent:storeFilename];
+
+        NSString *seedPath = nilOrDirectoryPath ? [[NSBundle mainBundle] pathForResource:nilOrNameOfSeedDatabaseInMainBundle ofType:nil] : nil;
+        NSError *error;
+        NSPersistentStore *persistentStore = [self addSQLitePersistentStoreAtPath:SQLiteStorePath fromSeedDatabaseAtPath:seedPath error:&error];
+        if (! persistentStore) {
+            RKLogError(@"Initialization of SQLite store failed with error: %@", error);
+        }
+
+        [self createManagedObjectContexts];
+
+        self.managedObjectCache = [[[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.primaryManagedObjectContext] autorelease];
+    }
+
+    return self;
+}
+
+- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile DEPRECATED_ATTRIBUTE
+{
+    [self resetPersistentStores:nil];
+}
+
+- (void)deletePersistentStore DEPRECATED_ATTRIBUTE
+{
+    [self resetPersistentStores:nil];
+}
+
+- (NSManagedObjectContext *)newManagedObjectContext DEPRECATED_ATTRIBUTE
+{
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+    managedObjectContext.mergePolicy = NSMergeByPropertyStoreTrumpMergePolicy;
+    managedObjectContext.managedObjectStore = self;
+
+    return managedObjectContext;
+}
+
+- (NSManagedObjectContext *)managedObjectContextForCurrentThread DEPRECATED_ATTRIBUTE
+{
+    return [[self newManagedObjectContext] autorelease];
 }
 
 @end

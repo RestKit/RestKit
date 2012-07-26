@@ -262,6 +262,8 @@
 {
     if (self.objectMapping) {
         return self.objectMapping;
+    } else if (self.resourcePath == nil) {
+        return nil;
     }
 
     return [self.mappingProvider objectMappingForResourcePath:self.resourcePath];

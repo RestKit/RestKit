@@ -1,6 +1,6 @@
 //
 //  RKTestFactory.m
-//  RKGithub
+//  RestKit
 //
 //  Created by Blake Watters on 2/16/12.
 //  Copyright (c) 2009-2012 RestKit. All rights reserved.
@@ -114,12 +114,17 @@ static RKTestFactory *sharedFactory = nil;
 
     [self defineFactory:RKTestFactoryDefaultNamesManagedObjectStore withBlock:^id {
         NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:storePath]) {
-            [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+        RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] init];
+        NSError *error;
+        NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
+        if (persistentStore) {
+            BOOL success = [managedObjectStore resetPersistentStores:&error];
+            if (! success) {
+                RKLogError(@"Failed to reset persistent store: %@", error);
+            }
         }
-        RKManagedObjectStore *store = [RKManagedObjectStore objectStoreWithStoreFilename:RKTestFactoryDefaultStoreFilename];
 
-        return store;
+        return managedObjectStore;
     }];
 }
 
@@ -213,7 +218,7 @@ static RKTestFactory *sharedFactory = nil;
     // Delete the store if it exists
     NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:RKTestFactoryDefaultStoreFilename];
     if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        [RKManagedObjectStore deleteStoreInApplicationDataDirectoryWithFilename:RKTestFactoryDefaultStoreFilename];
+        [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     }
 
     if ([self respondsToSelector:@selector(didSetUp)]) {
