@@ -25,6 +25,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "RKRequestSerializable.h"
+#import "RKMacros.h"
 
 @class RKRequestCache;
 
@@ -199,7 +200,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  @param delegate The delegate that will handle the response callbacks.
  @return An autoreleased RKRequest object initialized with URL.
  */
-+ (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE;
++ (RKRequest *)requestWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE_MESSAGE("Use requestWithUrl:");
 
 /**
  Initializes a RKRequest object to load from a provided URL
@@ -209,7 +210,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
  @param delegate The delegate that will handle the response callbacks.
  @return An RKRequest object initialized with URL.
  */
-- (id)initWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE;
+- (id)initWithURL:(NSURL *)URL delegate:(id)delegate DEPRECATED_ATTRIBUTE_MESSAGE("Use initWithURL:");
 
 
 ///-----------------------------------------------------------------------------
