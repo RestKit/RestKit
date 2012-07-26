@@ -545,7 +545,7 @@
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
-    managedObjectStore.cacheStrategy = managedObjectCache;
+    managedObjectStore.managedObjectCache = managedObjectCache;
 
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     childMapping.primaryKeyAttribute = @"childID";
@@ -578,7 +578,7 @@
     RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
-    managedObjectStore.cacheStrategy = managedObjectCache;
+    managedObjectStore.managedObjectCache = managedObjectCache;
 
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     childMapping.primaryKeyAttribute = @"childID";
@@ -618,7 +618,7 @@
     RKFetchRequestManagedObjectCache *managedObjectCache = [RKFetchRequestManagedObjectCache new];
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
-    managedObjectStore.cacheStrategy = managedObjectCache;
+    managedObjectStore.managedObjectCache = managedObjectCache;
 
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     childMapping.primaryKeyAttribute = @"childID";
@@ -658,7 +658,7 @@
     RKInMemoryManagedObjectCache *managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKManagedObjectMappingOperationDataSource *mappingOperationDataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
                                                                                                                                                       cache:managedObjectCache];
-    managedObjectStore.cacheStrategy = managedObjectCache;
+    managedObjectStore.managedObjectCache = managedObjectCache;
 
     RKEntityMapping *childMapping = [RKEntityMapping mappingForEntityForName:@"RKChild" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     childMapping.primaryKeyAttribute = @"childID";

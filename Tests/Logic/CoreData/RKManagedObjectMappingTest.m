@@ -56,7 +56,7 @@
 - (void)testShouldMapACollectionOfObjectsWithDynamicKeys
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    managedObjectStore.cacheStrategy = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
+    managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     RKEntityMapping *mapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     mapping.forceCollectionMapping = YES;
     mapping.primaryKeyAttribute = @"name";
@@ -66,7 +66,7 @@
     RKObjectMappingProvider *provider = [[RKObjectMappingProvider new] autorelease];
     [provider setMapping:mapping forKeyPath:@"users"];
 
-    id mockCacheStrategy = [OCMockObject partialMockForObject:managedObjectStore.cacheStrategy];
+    id mockCacheStrategy = [OCMockObject partialMockForObject:managedObjectStore.managedObjectCache];
     [[[mockCacheStrategy expect] andForwardToRealObject] findInstanceOfEntity:OCMOCK_ANY
                                                       withPrimaryKeyAttribute:mapping.primaryKeyAttribute
                                                                         value:@"blake"
@@ -78,7 +78,7 @@
     id userInfo = [RKTestFixture parsedObjectWithContentsOfFixture:@"DynamicKeys.json"];
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:userInfo mappingProvider:provider];
     RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:managedObjectStore.primaryManagedObjectContext
-                                                                                                                                      cache:managedObjectStore.cacheStrategy];
+                                                                                                                                      cache:managedObjectStore.managedObjectCache];
     mapper.mappingOperationDataSource = dataSource;
     [mapper performMapping];
     [mockCacheStrategy verify];

@@ -24,27 +24,8 @@
 
 @class RKManagedObjectStore;
 
-/**
- * Notifications
- */
-extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
-
-///////////////////////////////////////////////////////////////////
-
-@protocol RKManagedObjectStoreDelegate <NSObject>
-@optional
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCreatePersistentStoreCoordinatorWithError:(NSError *)error;
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToDeletePersistentStore:(NSString *)pathToStoreFile error:(NSError *)error;
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToCopySeedDatabase:(NSString *)seedDatabase error:(NSError *)error;
-
-- (void)managedObjectStore:(RKManagedObjectStore *)objectStore didFailToSaveContext:(NSManagedObjectContext *)context error:(NSError *)error exception:(NSException *)exception;
-
-@end
-
-///////////////////////////////////////////////////////////////////
+// Option containing the path to the seed database a SQLite store was initialized with
+extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
 
 @interface RKManagedObjectStore : NSObject
 
@@ -56,99 +37,40 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
 + (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore;
 
 ///-----------------------------------------------------------------------------
-/// @name Deleting Store Files
-///-----------------------------------------------------------------------------
-
-/**
- Deletes the SQLite file backing an RKManagedObjectStore instance at a given path.
-
- @param path The complete path to the store file to delete.
- */
-+ (void)deleteStoreAtPath:(NSString *)path;
-
-/**
- Deletes the SQLite file backing an RKManagedObjectStore instance with a given
- filename within the application data directory.
-
- @param filename The name of the file within the application data directory backing a managed object store.
- */
-+ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename;
-
-///-----------------------------------------------------------------------------
 /// @name Initializing an Object Store
 ///-----------------------------------------------------------------------------
 
-/**
- * Initialize a new managed object store with a SQLite database with the filename specified
- */
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename;
-
-/**
- * Initialize a new managed object store backed by a SQLite database with the specified filename.
- * If a seed database name is provided and no existing database is found, initialize the store by
- * copying the seed database from the main bundle. If the managed object model provided is nil,
- * all models will be merged from the main bundle for you.
- */
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
-
-/**
- * Initialize a new managed object store backed by a SQLite database with the specified filename,
- * in the specified directory. If no directory is specified, will use the app's Documents
- * directory. If a seed database name is provided and no existing database is found, initialize
- * the store by copying the seed database from the main bundle. If the managed object model
- * provided is nil, all models will be merged from the main bundle for you.
- */
-+ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate;
+- (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel; // Designated initializer
+- (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
+- (id)init; // calls initWithManagedObjectModel: by obtaining the merged model...
 
 ///-----------------------------------------------------------------------------
-/// @name Retrieving Details about the Object Store
+/// @name Configuring Persistent Stores
 ///-----------------------------------------------------------------------------
 
-// The filename of the database backing this object store
-@property (nonatomic, readonly) NSString *storeFilename;
+- (NSPersistentStore *)addInMemoryPersistentStore:(NSError **)error;
+- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error;
 
-// The full path to the database backing this object store
-@property (nonatomic, readonly) NSString *pathToStoreFile;
+- (BOOL)resetPersistentStores:(NSError **)error; // has the side-effect of recreating the managed object contexts. Respects seed database
+
+///-----------------------------------------------------------------------------
+/// @name Retrieving Details about the Store
+///-----------------------------------------------------------------------------
 
 // Core Data
-@property (nonatomic, readonly) NSManagedObjectModel *managedObjectModel;
-@property (nonatomic, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
+@property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+@property (nonatomic, retain) id<RKManagedObjectCaching> managedObjectCache;
 
 ///-----------------------------------------------------------------------------
-/// @name Configuring Delegate and Default Cache Strategy
+/// @name Working with Managed Object Contexts
 ///-----------------------------------------------------------------------------
 
-// The delegate for this object store
-@property (nonatomic, assign) id<RKManagedObjectStoreDelegate> delegate;
-
-/**
-
- */
-@property (nonatomic, retain) id<RKManagedObjectCaching> cacheStrategy;
-
-///-----------------------------------------------------------------------------
-/// @name Retrieving Managed Object Contexts
-///-----------------------------------------------------------------------------
+- (void)createManagedObjectContexts; // will raise exception if they are already created...
 
 @property (nonatomic, retain, readonly) NSManagedObjectContext *primaryManagedObjectContext;
 @property (nonatomic, retain, readonly) NSManagedObjectContext *mainQueueManagedObjectContext;
 - (NSManagedObjectContext *)newChildManagedObjectContextWithConcurrencyType:(NSManagedObjectContextConcurrencyType)concurrencyType;
-
-///-----------------------------------------------------------------------------
-/// @name Working with the Primary Managed Object Context
-///-----------------------------------------------------------------------------
-
-/**
- * Save the current contents of the managed object store
- */
-- (BOOL)save:(NSError **)error; // TODO: Do we want this?
-
-/**
- * This deletes and recreates the managed object context and
- * persistent store, effectively clearing all data
- */
-- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile;
-- (void)deletePersistentStore;
 
 @end
 
@@ -160,4 +82,23 @@ extern NSString * const RKManagedObjectStoreDidFailSaveNotification;
 - (NSManagedObjectContext *)managedObjectContextForCurrentThread DEPRECATED_ATTRIBUTE;
 - (NSManagedObject *)objectWithID:(NSManagedObjectID *)objectID DEPRECATED_ATTRIBUTE;
 - (NSArray *)objectsWithIDs:(NSArray *)objectIDs DEPRECATED_ATTRIBUTE;
+
+- (id<RKManagedObjectCaching>)cacheStrategy DEPRECATED_ATTRIBUTE;
+- (void)setCacheStrategy:(id<RKManagedObjectCaching>)cacheStrategy DEPRECATED_ATTRIBUTE;
+
+- (NSString *)storeFilename DEPRECATED_ATTRIBUTE;
+- (NSString *)pathToStoreFile DEPRECATED_ATTRIBUTE;
+
+- (BOOL)save:(NSError **)error DEPRECATED_ATTRIBUTE;
+
+// TODO: Deprecate all of these...
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename DEPRECATED_ATTRIBUTE;
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE;
++ (RKManagedObjectStore *)objectStoreWithStoreFilename:(NSString *)storeFilename inDirectory:(NSString *)directory usingSeedDatabaseName:(NSString *)nilOrNameOfSeedDatabaseInMainBundle managedObjectModel:(NSManagedObjectModel *)nilOrManagedObjectModel delegate:(id)delegate DEPRECATED_ATTRIBUTE;
+
++ (void)deleteStoreAtPath:(NSString *)path DEPRECATED_ATTRIBUTE;
++ (void)deleteStoreInApplicationDataDirectoryWithFilename:(NSString *)filename DEPRECATED_ATTRIBUTE;
+- (void)deletePersistentStoreUsingSeedDatabaseName:(NSString *)seedFile DEPRECATED_ATTRIBUTE;
+- (void)deletePersistentStore DEPRECATED_ATTRIBUTE;
+
 @end

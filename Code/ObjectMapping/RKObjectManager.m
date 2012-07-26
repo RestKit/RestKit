@@ -126,7 +126,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 + (RKObjectManager *)managerWithBaseURL:(NSURL *)baseURL
 {
-    RKObjectManager *manager = [[[self alloc] initWithBaseURL:baseURL] autorelease];
+    RKObjectManager *manager = [[[self alloc] initWithBaseURL:[RKURL URLWithBaseURL:baseURL]] autorelease];
     return manager;
 }
 
@@ -238,7 +238,7 @@ static NSOperationQueue *defaultMappingQueue = nil;
         RKManagedObjectLoader *managedObjectLoader = (RKManagedObjectLoader *)loader;
         managedObjectLoader.managedObjectContext = self.managedObjectStore.primaryManagedObjectContext;
         managedObjectLoader.mainQueueManagedObjectContext = self.managedObjectStore.mainQueueManagedObjectContext;
-        managedObjectLoader.managedObjectCache = self.managedObjectStore.cacheStrategy;
+        managedObjectLoader.managedObjectCache = self.managedObjectStore.managedObjectCache;
     }
     [self configureObjectLoader:loader];
 
@@ -345,14 +345,6 @@ static NSOperationQueue *defaultMappingQueue = nil;
 
 - (void)sendObject:(id<NSObject>)object method:(RKRequestMethod)method usingBlock:(void(^)(RKObjectLoader *))block
 {
-//    RKRoute *route = [self.router routeForObject:object method:method];
-//    NSString *resourcePath = [route resourcePathForObject:object];
-//    RKURL *URL = [self.router URLForObject:object method:method];
-//    [self sendObject:object toResourcePath:resourcePath usingBlock:^(RKObjectLoader *loader) {
-//        loader.method = method;
-//        block(loader);
-//    }];
-
     RKObjectLoader *loader = [self loaderForObject:object method:method];
     // Yield to the block for setup
     block(loader);

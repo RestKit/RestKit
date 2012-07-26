@@ -21,7 +21,7 @@
 #import <CoreData/CoreData.h>
 #import "ObjectMapping.h"
 #import "RKManagedObjectStore.h"
-#import "RKManagedObjectSeeder.h"
+#import "RKManagedObjectImporter.h"
 #import "RKManagedObjectMappingOperationDataSource.h"
 #import "RKManagedObjectLoader.h"
 #import "RKEntityMapping.h"
