@@ -390,6 +390,8 @@
             [_delegate request:self didFailLoadWithError:error];
         }
         
+        [(NSObject<RKObjectLoaderDelegate>*)_delegate objectLoader:self didFailWithError:error];
+
         if (self.onDidFailLoadWithError) {
             self.onDidFailLoadWithError(error);
         }
