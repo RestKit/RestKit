@@ -20,7 +20,6 @@
 
 #import "RKManagedObjectStore.h"
 #import "RKLog.h"
-#import "RKSearchWordObserver.h"
 #import "RKPropertyInspector.h"
 #import "RKPropertyInspector+CoreData.h"
 #import "RKDirectory.h"
@@ -60,9 +59,11 @@ static RKManagedObjectStore *defaultStore = nil;
 
 + (void)setDefaultStore:(RKManagedObjectStore *)managedObjectStore
 {
-    [managedObjectStore retain];
-    [defaultStore release];
-    defaultStore = managedObjectStore;
+    @synchronized(defaultStore) {
+        [managedObjectStore retain];
+        [defaultStore release];
+        defaultStore = managedObjectStore;
+    }
 }
 
 - (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel
@@ -70,10 +71,6 @@ static RKManagedObjectStore *defaultStore = nil;
     self = [super init];
     if (self) {
         self.managedObjectModel = managedObjectModel;
-        self.persistentStoreCoordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel] autorelease];
-
-        // Ensure there is a search word observer
-        [RKSearchWordObserver sharedObserver];
 
         // Hydrate the defaultStore
         if (! defaultStore) {
@@ -118,13 +115,22 @@ static RKManagedObjectStore *defaultStore = nil;
     [super dealloc];
 }
 
+- (void)createPersistentStoreCoordinator
+{
+    self.persistentStoreCoordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel] autorelease];
+}
+
 - (NSPersistentStore *)addInMemoryPersistentStore:(NSError **)error
 {
+    if (! self.persistentStoreCoordinator) [self createPersistentStoreCoordinator];
+    
     return [self.persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:error];
 }
 
 - (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error
 {
+    if (! self.persistentStoreCoordinator) [self createPersistentStoreCoordinator];
+    
     NSURL *storeURL = [NSURL fileURLWithPath:storePath];
     if (seedPath) {
         BOOL success = [self copySeedDatabaseIfNecessaryFromPath:seedPath toPath:storePath error:error];

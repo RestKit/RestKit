@@ -59,7 +59,7 @@
 - (void)bootstrapStoreAndCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman"inManagedObjectStore:managedObjectStore];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";
@@ -101,7 +101,7 @@
 - (void)bootstrapNakedObjectStoreAndCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *eventMapping = [RKEntityMapping mappingForEntityForName:@"RKEvent" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKEntityMapping *eventMapping = [RKEntityMapping mappingForEntityForName:@"RKEvent"inManagedObjectStore:managedObjectStore];
     [eventMapping mapKeyPath:@"event_id" toAttribute:@"eventID"];
     [eventMapping mapKeyPath:@"type" toAttribute:@"eventType"];
     [eventMapping mapAttributes:@"location", @"summary", nil];
@@ -132,7 +132,7 @@
 - (void)bootstrapEmptyStoreAndCache
 {
     RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.mainQueueManagedObjectContext];
+    RKEntityMapping *humanMapping = [RKEntityMapping mappingForEntityForName:@"RKHuman"inManagedObjectStore:managedObjectStore];
     [humanMapping mapKeyPath:@"id" toAttribute:@"railsID"];
     [humanMapping mapAttributes:@"name", nil];
     humanMapping.primaryKeyAttribute = @"railsID";

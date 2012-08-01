@@ -95,6 +95,12 @@
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
 
 /**
+ A managed object context with the NSPrivateQueueConcurrencyType concurrency type
+ used to perform the import.
+ */
+@property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
+
+/**
  A convenience accessor for retrieving the complete filesystem path to the persistent
  store in which the receiver will persist imported managed objects.
 

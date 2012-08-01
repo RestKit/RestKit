@@ -63,4 +63,5 @@ _lcl_component(RestKitSupportParsers,       "restkit.support.parsers",          
 _lcl_component(RestKitThree20,              "restkit.three20",                  "RestKit/Three20")
 _lcl_component(RestKitUI,                   "restkit.ui",                       "RestKit/UI")
 _lcl_component(RestKitTesting,              "restkit.testing",                  "RestKit/Testing")
+_lcl_component(RestKitSearch,               "restkit.search",                   "RestKit/Search")
 _lcl_component(App,                         "app",                              "App")

@@ -30,9 +30,40 @@
  */
 @interface RKEntityMapping : RKObjectMapping
 
-+ (id)mappingForEntityForName:(NSString *)entityName inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+///-----------------------------------------------------------------------------
+/// @name Initializing an Entity Mapping
+///-----------------------------------------------------------------------------
+
+/**
+ Creates and returns an entity mapping with a given Core Data entity description.
+ 
+ @param entity The entity the new mapping is for.
+ @returns A new entity mapping for the given entity.
+ */
 + (id)mappingForEntity:(NSEntityDescription *)entity;
+
+/**
+ Initializes the receiver with a given entity.
+ 
+ @param entity An entity with which to initialize the receiver.
+ @returns The receiver, initialized with the given entity.
+ */
 - (id)initWithEntity:(NSEntityDescription *)entity;
+
+/**
+ A convenience initializer that creates and returns an entity mapping for the entity with the given name in
+ the managed object model of the given managed object store.
+ 
+ This method is functionally equivalent to the following example code:
+ 
+     NSEntityDescription *entity = [[managedObjectStore.managedObjectModel entitiesByName] objectForKey:entityName];
+     return [RKEntityMapping mappingForEntity:entity];
+ 
+ @param entityName The name of the entity in the managed object model for which an entity mapping is to be created.
+ @param managedObjectStore A managed object store containing the managed object model in which an entity with the given name is defined.
+ @return A new entity mapping for the entity with the given name in the managed object model of the given managed object store.
+ */
++ (id)mappingForEntityForName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)managedObjectStore;
 
 /**
  The Core Data entity description used for this object mapping
@@ -151,9 +182,9 @@
 @interface RKEntityMapping (Deprecations)
 
 /* Deprecated Initialization API's */
-+ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityWithName:inManagedObjectContext:");
-+ (RKEntityMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityForName:inManagedObjectContext:");
-+ (RKEntityMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityForName:inManagedObjectContext:");
++ (id)mappingForClass:(Class)objectClass inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityForName:inManagedObjectStore:");
++ (RKEntityMapping *)mappingForEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityForName:inManagedObjectStore:");
++ (RKEntityMapping *)mappingForEntityWithName:(NSString *)entityName inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntityForName:inManagedObjectStore:");
 - (id)initWithEntity:(NSEntityDescription *)entity inManagedObjectStore:(RKManagedObjectStore *)objectStore DEPRECATED_ATTRIBUTE_MESSAGE("Use mappingForEntity:");
 
 /* Deprecated Connection API's */

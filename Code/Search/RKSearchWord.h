@@ -18,22 +18,20 @@
 //  limitations under the License.
 //
 
-#import "RKSearchableManagedObject.h"
+#import <CoreData/CoreData.h>
 
-extern NSString * const RKSearchWordPrimaryKeyAttribute;
-
+/*
+ RKSearchWord implements a managed object subclass for representing
+ search words contained in designated string attributes of entities indexed
+ by an instance of RKSearchIndexer.
+ 
+ @see RKSearchIndexer
+ */
 @interface RKSearchWord : NSManagedObject
 
+/**
+ A single search word extracted from an indexed entity.
+ */
 @property (nonatomic, retain) NSString *word;
-@property (nonatomic, retain) NSSet *searchableManagedObjects;
-
-@end
-
-@interface RKSearchWord (SearchableManagedObjectsAccessors)
-
-- (void)addSearchableManagedObjectsObject:(RKSearchableManagedObject *)searchableManagedObject;
-- (void)removeSearchableManagedObjectsObject:(RKSearchableManagedObject *)searchableManagedObject;
-- (void)addSearchableManagedObjects:(NSSet *)searchableManagedObjects;
-- (void)removeSearchableManagedObjects:(NSSet *)searchableManagedObjects;
 
 @end

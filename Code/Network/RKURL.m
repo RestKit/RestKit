@@ -112,8 +112,6 @@
 
 - (NSString *)resourcePath
 {
-    // Return the entire path as the resource path if we don't have an explicit path
-    if (_resourcePath == nil) return [self path];
     return _resourcePath;
 }
 
