@@ -20,9 +20,8 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import <RestKit/RKSearchableManagedObject.h>
 
-@interface RKSearchable : RKSearchableManagedObject
+@interface RKSearchable : NSManagedObject
 
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) NSString *body;

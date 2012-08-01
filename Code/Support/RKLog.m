@@ -38,32 +38,12 @@ void RKLogInitialize(void)
 
 void RKLogConfigureFromEnvironment(void)
 {
-    NSArray *validEnvVariables = [NSArray arrayWithObjects:
-                                       @"RKLogLevel.App",
-                                       @"RKLogLevel.RestKit",
-                                       @"RKLogLevel.RestKit.CoreData",
-                                       @"RKLogLevel.RestKit.CoreData.SearchEngine",
-                                       @"RKLogLevel.RestKit.Network",
-                                       @"RKLogLevel.RestKit.Network.Cache",
-                                       @"RKLogLevel.RestKit.Network.Queue",
-                                       @"RKLogLevel.RestKit.Network.Reachability",
-                                       @"RKLogLevel.RestKit.ObjectMapping",
-                                       @"RKLogLevel.RestKit.Support",
-                                       @"RKLogLevel.RestKit.Support.Parsers",
-                                       @"RKLogLevel.RestKit.Testing",
-                                       @"RKLogLevel.RestKit.Three20",
-                                       @"RKLogLevel.RestKit.UI",
-                                       nil];
-
     static NSString *logComponentPrefix = @"RKLogLevel.";
 
     NSDictionary *envVars = [[NSProcessInfo processInfo] environment];
 
     for (NSString *envVarName in [envVars allKeys]) {
         if ([envVarName hasPrefix:logComponentPrefix]) {
-            if (![validEnvVariables containsObject:envVarName]) {
-                 @throw [NSException exceptionWithName:NSInvalidArgumentException reason:[NSString stringWithFormat:@"The RKLogLevel Environment Variable name must be one of the following: %@", validEnvVariables] userInfo:nil];
-            }
             NSString *logLevel = [envVars valueForKey:envVarName];
             NSString *logComponent = [envVarName stringByReplacingOccurrencesOfString:logComponentPrefix withString:@""];
             logComponent = [logComponent stringByReplacingOccurrencesOfString:@"." withString:@"/"];
@@ -136,7 +116,7 @@ void RKLogValidationError(NSError *error)
         if (errors) {
             for (NSError *detailedError in errors) {
                 NSDictionary *subUserInfo = [detailedError userInfo];
-                RKLogError(@"Core Data Save Error\n \
+                RKLogError(@"Detailed Error\n \
                            NSLocalizedDescription:\t\t%@\n \
                            NSValidationErrorKey:\t\t\t%@\n \
                            NSValidationErrorPredicate:\t%@\n \
@@ -146,9 +126,8 @@ void RKLogValidationError(NSError *error)
                            [subUserInfo valueForKey:@"NSValidationErrorPredicate"],
                            [subUserInfo valueForKey:@"NSValidationErrorObject"]);
             }
-        }
-        else {
-            RKLogError(@"Core Data Save Error\n \
+        } else {
+            RKLogError(@"Validation Error\n \
                        NSLocalizedDescription:\t\t%@\n \
                        NSValidationErrorKey:\t\t\t%@\n \
                        NSValidationErrorPredicate:\t%@\n \

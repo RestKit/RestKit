@@ -274,6 +274,7 @@
         [fetchRequest setSortDescriptors:self.sortDescriptors];
     }
     
+    RKLogTrace(@"Loading fetched results table view from managed object context %@ with fetch request: %@", self.managedObjectContext, fetchRequest);
     NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                                                managedObjectContext:self.managedObjectContext
                                                                                                  sectionNameKeyPath:self.sectionNameKeyPath

@@ -247,8 +247,9 @@
         [self.privateContext performBlockAndWait:^{
             success = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&error];
         }];
+        
         if (! success) {
-            RKLogError(@"Failed to obtain permanent object ID's for %d managed objects. Error: %@", [insertedObjects count], error);
+            RKLogError(@"Failed to obtain permanent object ID's for %d managed objects. Error: %@", [insertedObjects count], [error localizedDescription]);
         }
         
         [self.privateContext performBlockAndWait:^{

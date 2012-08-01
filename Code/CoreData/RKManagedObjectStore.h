@@ -40,6 +40,13 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
 /// @name Initializing an Object Store
 ///-----------------------------------------------------------------------------
 
+/**
+ ADD NOTE ABOUT THE MANAGED OBJECT MODEL COMING BACK IMMUTABLE IN IOS 5+
+ 
+ NSURL *modelURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"GateGuru" ofType:@"momd"]];
+ // NOTE: Due to an iOS 5 bug, the managed object model returned is immutable.
+ NSManagedObjectModel *managedObjectModel = [[[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL] mutableCopy];
+ */
 - (id)initWithManagedObjectModel:(NSManagedObjectModel *)managedObjectModel; // Designated initializer
 - (id)initWithPersistentStoreCoordinator:(NSPersistentStoreCoordinator *)persistentStoreCoordinator;
 - (id)init; // calls initWithManagedObjectModel: by obtaining the merged model...

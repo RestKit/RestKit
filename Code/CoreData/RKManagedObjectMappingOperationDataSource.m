@@ -55,7 +55,6 @@
     [super dealloc];
 }
 
-// TODO: Encapsulate this logic into another class...
 - (id)objectForMappableContent:(id)mappableContent mapping:(RKObjectMapping *)mapping
 {
     NSAssert(mappableContent, @"Mappable data cannot be nil");
@@ -108,7 +107,7 @@
         object = [self.managedObjectCache findInstanceOfEntity:entity
                                        withPrimaryKeyAttribute:primaryKeyAttribute
                                                          value:primaryKeyValue
-                                        inManagedObjectContext:self.managedObjectContext];
+                                        inManagedObjectContext:self.managedObjectContext];                
         
         if (object && [self.managedObjectCache respondsToSelector:@selector(didFetchObject:)]) {
             [self.managedObjectCache didFetchObject:object];
