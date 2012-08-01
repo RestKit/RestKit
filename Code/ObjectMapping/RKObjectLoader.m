@@ -408,7 +408,7 @@
                                                               userInfo:userInfo];
         }
         
-        if (! self.isCancelled) {
+        if (! self.isCancelled || error.code == RKRequestConnectionTimeoutError) {
             [self informDelegateOfError:error];
         }
 
