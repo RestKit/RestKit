@@ -160,7 +160,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
     Class sourceType = [value class];
     Class orderedSetClass = NSClassFromString(@"NSOrderedSet");
 
-    if ([sourceType isSubclassOfClass:[NSString class]]) {
+    if (!destinationType) {
+        if (value == [NSNull null] || value == nil) {
+            return [NSNumber numberWithInt:0];
+        } else {
+            return value;
+        }
+    } else if ([sourceType isSubclassOfClass:[NSString class]]) {
         if ([destinationType isSubclassOfClass:[NSDate class]]) {
             // String -> Date
             return [self parseDateFromString:(NSString*)value];
@@ -331,8 +337,13 @@ BOOL RKObjectIsValueEqualToValue(id sourceValue, id destinationValue) {
 
     // Inspect the property type to handle any value transformations
     Class type = [self.objectMapping classForProperty:attributeMapping.destinationKeyPath];
-    if (type && NO == [[value class] isSubclassOfClass:type]) {
+    if (!type || NO == [[value class] isSubclassOfClass:type]) {
         value = [self transformValue:value atKeyPath:attributeMapping.sourceKeyPath toType:type];
+    }
+    
+    // To support scalar types, when we don't have a type (when the destination is not an object) we coerce nil/null/NSNull into an NSNumber with value 0
+    if (!type && (!value || value == [NSNull null] || [value isEqual:[NSNull null]])) {
+        value = [NSNumber numberWithInt:0];
     }
 
     // Ensure that the value is different

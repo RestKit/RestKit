@@ -19,6 +19,7 @@
 //
 
 #import <CoreData/CoreData.h>
+#import <CoreData/NSEntityDescription.h>
 #import "RKObjectMapping.h"
 //#import "RKManagedObjectStore.h"
 
