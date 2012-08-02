@@ -19,7 +19,7 @@
 //
 
 #import "RKSearchableManagedObject.h"
-#import "CoreData.h"
+#import "RKCoreData.h"
 #import "RKLog.h"
 
 // Set Logging Component
