@@ -64,12 +64,12 @@
 
         NSError *error = nil;
         NSPersistentStoreCoordinator *persistentStoreCoordinator = [self createPersistentStoreCoordinator:&error];
-        NSAssert(persistentStoreCoordinator, @"Seeder initialization failed: Unable to create persistent store coordinator: %@", error);
+        NSAssert(persistentStoreCoordinator, @"Importer initialization failed: Unable to create persistent store coordinator: %@", error);
         self.persistentStoreCoordinator = persistentStoreCoordinator;
         [persistentStoreCoordinator release];
 
         NSManagedObjectContext *managedObjectContext = [self createManagedObjectContext];
-        NSAssert(managedObjectContext, @"Seeder initialization failed: Unable to create managed object context");
+        NSAssert(managedObjectContext, @"Importer initialization failed: Unable to create managed object context");
         self.managedObjectContext = managedObjectContext;
         [managedObjectContext release];
 
@@ -97,7 +97,7 @@
         self.storePath = [storeURL path];
 
         NSManagedObjectContext *managedObjectContext = [self createManagedObjectContext];
-        NSAssert(managedObjectContext, @"Seeder initialization failed: Unable to create managed object store");
+        NSAssert(managedObjectContext, @"Importer initialization failed: Unable to create managed object store");
         self.managedObjectContext = managedObjectContext;
         [managedObjectContext release];
 
@@ -124,7 +124,7 @@
 {
     BOOL isDirectory = NO;
     [[NSFileManager defaultManager] fileExistsAtPath:self.storePath isDirectory:&isDirectory];
-    NSAssert(!isDirectory, @"Cannot create seed database: Given store path specifies a directory.");
+    NSAssert(!isDirectory, @"Cannot create SQLite persistent store: The given store path specifies a directory.");
 
     NSURL *storeURL = [NSURL fileURLWithPath:self.storePath];
     NSPersistentStoreCoordinator *persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedObjectModel];
@@ -228,12 +228,12 @@
     }];
     if (mappingResult == nil) {
         // TODO: Return error
-        RKLogError(@"Seeding for file at path '%@' failed with mapping errors: %@", path, mapper.errors);
+        RKLogError(@"Importing file at path '%@' failed with mapping errors: %@", path, mapper.errors);
         return NSNotFound;
     }
 
     NSUInteger objectCount = [[mappingResult asCollection] count];
-    RKLogInfo(@"Seeded %lu objects from file at path '%@'", (unsigned long)objectCount, path);
+    RKLogInfo(@"Imported %lu objects from file at path '%@'", (unsigned long)objectCount, path);
     return objectCount;
 }
 
@@ -242,7 +242,7 @@
     NSError *localError = nil;
     NSArray *entries = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&localError];
     if (! entries) {
-        RKLogError(@"Seeding failed for directory at path '%@': Unable to read directory contents with error: %@", path, localError);
+        RKLogError(@"Import failed for directory at path '%@': Unable to read directory contents with error: %@", path, localError);
         if (error) *error = localError;
         return NSNotFound;
     }
