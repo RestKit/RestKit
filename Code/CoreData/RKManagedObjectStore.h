@@ -178,7 +178,7 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
  @warning If the seed database at the given path was created with an incompatible managed object model an application error
     may be raised.
  */
-- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error; // Will implictly create PSC
+- (NSPersistentStore *)addSQLitePersistentStoreAtPath:(NSString *)storePath fromSeedDatabaseAtPath:(NSString *)seedPath error:(NSError **)error;
 
 /**
  Resets the persistent stores in the receiver's persistent store coordinator and recreates them. If a store being reset
@@ -193,7 +193,7 @@ extern NSString * const RKSQLitePersistentStoreSeedDatabasePathOption;
  and recreated. Any managed objects or additional child contexts associated with the store will need to be discarded or else 
  exceptions may be raised (i.e. NSObjectInaccessibleException).
  */
-- (BOOL)resetPersistentStores:(NSError **)error; // has the side-effect of recreating the managed object contexts. Respects seed database
+- (BOOL)resetPersistentStores:(NSError **)error;
 
 ///-----------------------------------------------------------------------------
 /// @name Retrieving Details about the Store
