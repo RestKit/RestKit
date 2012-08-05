@@ -240,7 +240,7 @@ static NSNumber *defaultBatchSize = nil;
 			}
 			else
 			{
-				RKLogError(@"Property '%@' not found in %@ properties for %@", propertyName, [propDict count], NSStringFromClass(self));
+				RKLogError(@"Property '%@' not found in %d properties for %@", propertyName, [propDict count], NSStringFromClass(self));
 			}
 		}
 	}
