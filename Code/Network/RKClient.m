@@ -127,7 +127,8 @@ dispatch_queue_t rk_get_network_processing_queue(void)
 
 + (RKClient *)clientWithBaseURL:(NSURL *)baseURL
 {
-    return [[[self alloc] initWithBaseURL:baseURL] autorelease];
+    RKClient *client = [self alloc];
+    return [[client initWithBaseURL:baseURL] autorelease];
 }
 
 + (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password
