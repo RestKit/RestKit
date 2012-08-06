@@ -342,7 +342,6 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
         // Use CFURLCopyPath so that the path is preserved with trailing slash, then escape the percents ourselves
         NSString *pathWithPrevervedTrailingSlash = [CFBridgingRelease(CFURLCopyPath((CFURLRef)_URL)) stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        NSLog(@"-[RKRequest addHeadersToRequest:] path => %@", pathWithPrevervedTrailingSlash);
 
         if (self.method == RKRequestMethodPUT)
             echo = [GCOAuth URLRequestForPath:pathWithPrevervedTrailingSlash
