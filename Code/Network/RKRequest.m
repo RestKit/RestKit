@@ -340,8 +340,12 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         else
             parameters = [_URL queryParameters];
 
+        // Use CFURLCopyPath so that the path is preserved with trailing slash, then escape the percents ourselves
+        NSString *pathWithPrevervedTrailingSlash = [CFBridgingRelease(CFURLCopyPath((CFURLRef)_URL)) stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        NSLog(@"-[RKRequest addHeadersToRequest:] path => %@", pathWithPrevervedTrailingSlash);
+
         if (self.method == RKRequestMethodPUT)
-            echo = [GCOAuth URLRequestForPath:[_URL path]
+            echo = [GCOAuth URLRequestForPath:pathWithPrevervedTrailingSlash
                                 PUTParameters:parameters
                                        scheme:[_URL scheme]
                                          host:[_URL hostAndPort]
@@ -350,7 +354,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
                                   accessToken:self.OAuth1AccessToken
                                   tokenSecret:self.OAuth1AccessTokenSecret];
         else if (self.method == RKRequestMethodPOST)
-            echo = [GCOAuth URLRequestForPath:[_URL path]
+            echo = [GCOAuth URLRequestForPath:pathWithPrevervedTrailingSlash
                                POSTParameters:parameters
                                        scheme:[_URL scheme]
                                          host:[_URL hostAndPort]
@@ -359,7 +363,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
                                   accessToken:self.OAuth1AccessToken
                                   tokenSecret:self.OAuth1AccessTokenSecret];
         else
-            echo = [GCOAuth URLRequestForPath:[_URL path]
+            echo = [GCOAuth URLRequestForPath:pathWithPrevervedTrailingSlash
                                 GETParameters:[_URL queryParameters]
                                        scheme:[_URL scheme]
                                          host:[_URL hostAndPort]
