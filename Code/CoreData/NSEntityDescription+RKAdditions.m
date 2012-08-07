@@ -12,7 +12,7 @@
 NSString * const RKEntityDescriptionPrimaryKeyAttributeUserInfoKey = @"primaryKeyAttribute";
 NSString * const RKEntityDescriptionPrimaryKeyAttributeValuePredicateSubstitutionVariable = @"PRIMARY_KEY_VALUE";
 
-static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
+static char primaryKeyPredicateKey;
 
 @implementation NSEntityDescription (RKAdditions)
 
@@ -44,17 +44,11 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
 
 - (NSString *)primaryKeyAttributeName
 {
-    // Check for an associative object reference
-    NSString *primaryKeyAttribute = (NSString *)objc_getAssociatedObject(self, &primaryKeyAttributeNameKey);
+    NSString *primaryKeyAttribute = [self.userInfo valueForKey:RKEntityDescriptionPrimaryKeyAttributeUserInfoKey];
 
-    // Fall back to the userInfo dictionary
-    if (! primaryKeyAttribute) {
-        primaryKeyAttribute = [self.userInfo valueForKey:RKEntityDescriptionPrimaryKeyAttributeUserInfoKey];
-
-        // If we have loaded from the user info, ensure we have a predicate
-        if (! [self predicateForPrimaryKeyAttribute]) {
-            [self setPredicateForPrimaryKeyAttribute:primaryKeyAttribute];
-        }
+    // If we have loaded from the user info, ensure we have a predicate
+    if (! [self predicateForPrimaryKeyAttribute]) {
+        [self setPredicateForPrimaryKeyAttribute:primaryKeyAttribute];
     }
 
     return primaryKeyAttribute;
@@ -62,11 +56,9 @@ static char primaryKeyAttributeNameKey, primaryKeyPredicateKey;
 
 - (void)setPrimaryKeyAttributeName:(NSString *)primaryKeyAttributeName
 {
-    objc_setAssociatedObject(self,
-                             &primaryKeyAttributeNameKey,
-                             primaryKeyAttributeName,
-                             OBJC_ASSOCIATION_RETAIN);
-    [self setPredicateForPrimaryKeyAttribute:primaryKeyAttributeName];
+    NSMutableDictionary *userInfo = [self.userInfo mutableCopy];
+    [userInfo setValue:primaryKeyAttributeName forKey:RKEntityDescriptionPrimaryKeyAttributeUserInfoKey];
+    [self setUserInfo:userInfo];
 }
 
 - (NSPredicate *)predicateForPrimaryKeyAttribute
