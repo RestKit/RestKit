@@ -30,6 +30,8 @@
 
 - (void)setUp
 {
+    [RKTestFactory setUp];
+    
     // Delete any sqlite files in the app data directory
     NSError *error;
     NSArray *paths = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[RKDirectory applicationDataDirectory] error:&error];
@@ -42,32 +44,17 @@
     }
 }
 
-//- (void)testInstantiationOfNewManagedObjectContextAssociatesWithObjectStore
-//{
-//    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
-//    NSManagedObjectContext *context = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType];
-//    assertThat([context managedObjectStore], is(equalTo(managedObjectStore)));
-//}
-//
-//- (void)testCreationOfStoreInSpecificDirectoryRaisesIfDoesNotExist
-//{
-//    NSString *path = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:@"/NonexistantSubdirectory"];
-//    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path];
-//    assertThatBool(exists, is(equalToBool(NO)));
-//    STAssertThrows([RKManagedObjectStore objectStoreWithStoreFilename:@"Whatever.sqlite" inDirectory:path usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil], nil);
-//}
-//
-//- (void)testCreationOfStoryInApplicationDirectoryCreatesIfNonExistant
-//{
-//    // On OS X, the application directory is not created for you
-//    NSString *path = [RKDirectory applicationDataDirectory];
-//    NSError *error = nil;
-//    [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
-//    assertThat(error, is(nilValue()));
-//    STAssertNoThrow([RKManagedObjectStore objectStoreWithStoreFilename:@"Whatever.sqlite" inDirectory:nil usingSeedDatabaseName:nil managedObjectModel:nil delegate:nil], nil);
-//    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path];
-//    assertThatBool(exists, is(equalToBool(YES)));
-//}
+- (void)tearDown
+{
+    [RKTestFactory tearDown];
+}
+
+- (void)testInstantiationOfNewManagedObjectContextAssociatesWithObjectStore
+{
+    RKManagedObjectStore *managedObjectStore = [RKTestFactory managedObjectStore];
+    NSManagedObjectContext *context = [managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType];
+    assertThat([context managedObjectStore], is(equalTo(managedObjectStore)));
+}
 
 - (void)testAdditionOfSQLiteStoreRetainsPathOfSeedDatabase
 {
@@ -126,6 +113,7 @@
     assertThat(array, isNot(empty()));
     RKHuman *seededHuman = [array objectAtIndex:0];
     assertThat([[seededHuman.objectID URIRepresentation] URLByDeletingLastPathComponent], is(equalTo([[seedObjectID URIRepresentation] URLByDeletingLastPathComponent])));
+    [seededStore release];
 }
 
 - (void)testResetPersistentStoresRecreatesInMemoryStoreThusDeletingAllManagedObjects
@@ -139,6 +127,9 @@
     human.name = @"Blake";
     BOOL success = [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:&error];
     assertThatBool(success, is(equalToBool(YES)));
+    
+    // Spin the run loop to allow the did save notifications to propogate
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
 
     success = [managedObjectStore resetPersistentStores:&error];
     assertThatBool(success, is(equalToBool(YES)));
@@ -152,6 +143,7 @@
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     assertThat(array, is(empty()));
+    [managedObjectStore release];
 }
 
 - (void)testResetPersistentStoresRecreatesSQLiteStoreThusDeletingAllManagedObjects
@@ -167,6 +159,9 @@
     BOOL success = [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:&error];
     assertThatBool(success, is(equalToBool(YES)));
 
+    // Spin the run loop to allow the did save notifications to propogate
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
+    
     success = [managedObjectStore resetPersistentStores:&error];
     assertThatBool(success, is(equalToBool(YES)));
 
@@ -175,6 +170,7 @@
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Blake"];
     NSArray *array = [managedObjectStore.mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     assertThat(array, is(empty()));
+    [managedObjectStore release];
 }
 
 
@@ -204,6 +200,7 @@
 
     NSDate *laterDate = [modificationDate laterDate:newModificationDate];
     assertThat(laterDate, is(equalTo(newModificationDate)));
+    [managedObjectStore release];
 }
 
 - (void)testResetPersistentStoreForSQLiteStoreSeededWithDatabaseReclonesTheSeedDatabaseToTheStoreLocation
@@ -252,6 +249,7 @@
     fetchRequest.predicate = [NSPredicate predicateWithFormat:@"name = %@", @"Sarah"];
     array = [seededStore.primaryManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     assertThat(array, is(empty()));
+    [seededStore release];
 }
 
 @end
