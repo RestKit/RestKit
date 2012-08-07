@@ -95,7 +95,7 @@
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:123];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
@@ -120,7 +120,7 @@
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:123];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSError *error = nil;
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKHuman"];
@@ -149,7 +149,7 @@
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:123];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     // Check the count
     NSError *error = nil;
@@ -176,7 +176,7 @@
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:123];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     // Check the count
     NSError *error = nil;
@@ -206,7 +206,7 @@
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.name = @"Testing";
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     // Check the count
     NSError *error = nil;
@@ -238,7 +238,7 @@
     
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.name = @"Testing";
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     // Check the count
     NSError *error = nil;
@@ -272,7 +272,7 @@
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.name = @"Testing";
     human.railsID = [NSNumber numberWithInteger:12345];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     // Check the count
     NSError *error = nil;

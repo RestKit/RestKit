@@ -88,7 +88,7 @@
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -127,7 +127,7 @@
     jeremy.name = @"Jeremy";
     jeremy.favoriteCatID = [NSNumber numberWithInt:31340];
 
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Asia", @"railsID", [NSNumber numberWithInt:31340], nil];
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -170,7 +170,7 @@
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -203,7 +203,7 @@
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -241,7 +241,7 @@
     roy.name = @"Reginald Royford Williams III";
     roy.railsID = [NSNumber numberWithInt:31338];
 
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSArray *catIDs = [NSArray arrayWithObjects:[NSNumber numberWithInt:31337], [NSNumber numberWithInt:31338], nil];
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"catIDs", catIDs, nil];
@@ -277,7 +277,7 @@
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.name = @"Blake";
     human.railsID = [NSNumber numberWithInt:31337];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Asia", @"humanId", [NSNumber numberWithInt:31337], nil];
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -408,7 +408,7 @@
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
@@ -441,7 +441,7 @@
     RKCat *cat = [NSEntityDescription insertNewObjectForEntityForName:@"RKCat" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     cat.name = @"Asia";
     cat.railsID = [NSNumber numberWithInt:31337];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     NSDictionary *mappableData = [NSDictionary dictionaryWithKeysAndObjects:@"name", @"Blake", @"favoriteCatID", [NSNumber numberWithInt:31337], nil];
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];

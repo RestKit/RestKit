@@ -2104,7 +2104,7 @@
     human1.railsID = [NSNumber numberWithInt:201];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInt:202];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     RKObjectMapper *mapper = [RKObjectMapper mapperWithObject:array mappingProvider:provider];
     RKFetchRequestManagedObjectCache *managedObjectCache = [[RKFetchRequestManagedObjectCache alloc] init];

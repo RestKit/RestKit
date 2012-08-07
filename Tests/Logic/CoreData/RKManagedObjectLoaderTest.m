@@ -40,7 +40,7 @@
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.name = @"Blake Watters";
     human.railsID = [NSNumber numberWithInt:1];
-    [objectManager.managedObjectStore save:nil];
+    [objectManager.managedObjectStore.primaryManagedObjectContext save:nil];
 
     assertThat(objectManager.managedObjectStore.primaryManagedObjectContext, is(equalTo(managedObjectStore.primaryManagedObjectContext)));
 
@@ -111,7 +111,7 @@
     other.railsID = [NSNumber numberWithInt:456];
     RKHuman *deleteMe = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     deleteMe.railsID = [NSNumber numberWithInt:9999];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     count = [managedObjectStore.primaryManagedObjectContext countForFetchRequest:fetchRequest error:&error];
     assertThatUnsignedInteger(count, is(equalToInt(3)));
@@ -178,7 +178,7 @@
     blake.railsID = [NSNumber numberWithInt:123];
     RKHuman *other = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     other.railsID = [NSNumber numberWithInt:456];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
     count = [managedObjectStore.primaryManagedObjectContext countForFetchRequest:fetchRequest error:&error];
     assertThatInteger(count, is(equalToInteger(2)));
 

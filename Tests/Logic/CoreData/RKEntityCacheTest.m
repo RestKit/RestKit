@@ -73,7 +73,7 @@
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInteger:12345];
     NSError *error = nil;
-    [self.managedObjectStore save:&error];
+    [self.managedObjectStore.primaryManagedObjectContext save:&error];
 
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
@@ -89,7 +89,7 @@
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
     NSError *error = nil;
-    [self.managedObjectStore save:&error];
+    [self.managedObjectStore.primaryManagedObjectContext save:&error];
 
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
@@ -108,7 +108,7 @@
     human2.railsID = [NSNumber numberWithInteger:12345];
     human2.name = @"Sarah";
 
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"railsID"];
     [_cache cacheObjectsForEntity:self.entity byAttribute:@"name"];
     
