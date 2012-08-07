@@ -30,17 +30,28 @@
  */
 @interface RKManagedObjectLoader : RKObjectLoader
 
+/**
+ The managed object cache to consult for retrieving existing object instances. Passed
+ to the underlying object mapping operation.
+ */
 @property (nonatomic, retain) id<RKManagedObjectCaching> managedObjectCache;
-@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext; // The parent context which the loader will construct a new private MOC against
-@property (nonatomic, retain) NSManagedObjectContext *mainQueueManagedObjectContext; // MOC to retrieve the results from
 
-//@property (nonatomic, assign) BOOL savesParentContext;
-//@property (nonatomic, assign) BOOL savesToPersistentStore;
-// TODO: Encapsulate into an NSOperation and rename RKManagedObjectRequestOperation
-// TODO: BOOL autosavesParentContext ???
-// TODO: BOOL savesToPersistentStore : When YES, the chain of parentContext's is saved until the 
+/**
+ The managed object context in which a successful object load will be persisted. The managed
+ object loader constructs a private child context in which the object mapping operation is
+ performed. If successful, this context is saved, 'pushing' the object loader results into the
+ parent context.
+ */
+@property (nonatomic, retain) NSManagedObjectContext *managedObjectContext;
 
-// TODO: Should add a delegate for managed object loader... ask about saving the context, performing pruning, etc.
+/**
+ A main queue managed object context used to retrieve object mapping results for the main thread. After a mapping
+ operation has completed, the receiver will serialize the managed objects from the mapping result to NSManagedObjectID's,
+ then jump to the main thread and fetch the managed objects from the mainQueueManagedObjectContext and call back the delegate
+ with the results of the object loader.
+ */
+@property (nonatomic, retain) NSManagedObjectContext *mainQueueManagedObjectContext;
+
 @end
 
 @interface RKManagedObjectLoader (Deprecations)
