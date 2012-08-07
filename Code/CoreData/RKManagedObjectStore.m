@@ -354,6 +354,7 @@ static RKManagedObjectStore *defaultStore = nil;
 {
     RKLogDebug(@"primaryManagedObjectContext was saved: merging changes to mainQueueManagedObjectContext");
     RKLogTrace(@"Merging changes detailed in userInfo dictionary: %@", [notification userInfo]);
+    NSAssert([notification object] == self.primaryManagedObjectContext, @"Received Managed Object Context Did Save Notification for Unexpected Context: %@", [notification object]);
     [self.mainQueueManagedObjectContext performBlock:^{
         [self.mainQueueManagedObjectContext mergeChangesFromContextDidSaveNotification:notification];
     }];
