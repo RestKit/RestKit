@@ -120,7 +120,7 @@
             NSError *error;
             BOOL success = [self.privateContext obtainPermanentIDsForObjects:objectsToObtainIDs error:&error];
             if (! success) {
-                RKLogError(@"Failed to obtain permanent object ID's for %d objects: %@", [objectsToObtainIDs count], error);
+                RKLogError(@"Failed to obtain permanent object ID's for %ld objects: %@", (unsigned long) [objectsToObtainIDs count], error);
             }
             
             if ([self.targetObject isKindOfClass:[NSManagedObject class]]) {
@@ -243,13 +243,13 @@
         __block NSError *error = nil;
             
         NSArray *insertedObjects = [(RKManagedObjectMappingOperationDataSource *)self.mappingOperationDataSource insertedObjects];
-        RKLogDebug(@"Obtaining permanent object ID's for %d objects", [insertedObjects count]);
+        RKLogDebug(@"Obtaining permanent object ID's for %ld objects", (unsigned long) [insertedObjects count]);
         [self.privateContext performBlockAndWait:^{
             success = [self.privateContext obtainPermanentIDsForObjects:insertedObjects error:&error];
         }];
         
         if (! success) {
-            RKLogError(@"Failed to obtain permanent object ID's for %d managed objects. Error: %@", [insertedObjects count], [error localizedDescription]);
+            RKLogError(@"Failed to obtain permanent object ID's for %ld managed objects. Error: %@", (unsigned long) [insertedObjects count], [error localizedDescription]);
         }
         
         [self.privateContext performBlockAndWait:^{

@@ -96,8 +96,8 @@
 
 - (void)load
 {
-    RKLogDebug(@"Loading entity cache for Entity '%@' by attribute '%@' in managed object context %@ (concurrencyType = %d)",
-               self.entity.name, self.attribute, self.managedObjectContext, self.managedObjectContext.concurrencyType);
+    RKLogDebug(@"Loading entity cache for Entity '%@' by attribute '%@' in managed object context %@ (concurrencyType = %ld)",
+               self.entity.name, self.attribute, self.managedObjectContext, (unsigned long) self.managedObjectContext.concurrencyType);
     @synchronized(self.attributeValuesToObjectIDs) {
         self.attributeValuesToObjectIDs = [NSMutableDictionary dictionary];
 
