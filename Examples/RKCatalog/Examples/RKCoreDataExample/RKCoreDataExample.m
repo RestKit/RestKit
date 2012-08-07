@@ -26,38 +26,63 @@
 
 @end
 
+@interface RKCoreDataExample ()
+@property (nonatomic, readwrite, retain) NSArray *articles;
+@property (nonatomic, readwrite, retain) UISegmentedControl *segmentedControl;
+@end
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 
 @implementation RKCoreDataExample
 
+@synthesize articles = _articles;
+@synthesize segmentedControl = _segmentedControl;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        RKObjectManager *manager = [RKObjectManager managerWithBaseURLString:@"http://restkit.org"];
-        manager.objectStore = [RKManagedObjectStore objectStoreWithStoreFilename:@"RKCoreDataExample.sqlite"];
+        NSURL *baseURL = [NSURL URLWithString:@"http://restkit.org"];
+        RKObjectManager *manager = [RKObjectManager managerWithBaseURL:baseURL];
+        
+        // Create the managed object store and add a SQLite persistent store
+        NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+        RKManagedObjectStore *managedObjectStore = [[RKManagedObjectStore alloc] initWithManagedObjectModel:managedObjectModel];
+        NSString *storePath = [[RKDirectory applicationDataDirectory] stringByAppendingPathComponent:@"RKCoreDataExample.sqlite"];
+        NSError *error;
+        NSPersistentStore *persistentStore = [managedObjectStore addSQLitePersistentStoreAtPath:storePath fromSeedDatabaseAtPath:nil error:&error];
+        NSAssert(persistentStore, @"Failed to create SQLite store at path %@ due to error: %@", storePath, error);
+        manager.managedObjectStore = managedObjectStore;
+        [managedObjectStore release];
+        
+        // Once we are done with configuration, ask the store to create the primary and main queue contexts
+        [managedObjectStore createManagedObjectContexts];
+        
+        [RKManagedObjectStore setDefaultStore:managedObjectStore];
         [RKObjectManager setSharedManager:manager];
 
         // Create some starter objects if the database is empty
-        if ([Article count:nil] == 0) {
+        NSUInteger count = [managedObjectStore.mainQueueManagedObjectContext countForEntityForName:@"Article" predicate:nil error:&error];
+        if (count == 0) {
             for (int i = 1; i <= 5; i++) {
-                Article *article = [Article object];
+                Article *article = [managedObjectStore.mainQueueManagedObjectContext insertNewObjectForEntityForName:@"Article"];
                 article.articleID = [NSNumber numberWithInt:i];
                 article.title = [NSString stringWithFormat:@"Article %d", i];
                 article.body = @"This is the body";
-
-                // Persist the object store
-                [manager.objectStore save:nil];
             }
+            
+            // Persist the new objects
+            BOOL success = [managedObjectStore.mainQueueManagedObjectContext saveToPersistentStore:&error];
+            NSAssert(success, @"Failed to persist manged object context due to error: %@", error);
         }
 
         NSArray *items = [NSArray arrayWithObjects:@"All", @"Sorted", @"By Predicate", @"By ID", nil];
-        _segmentedControl = [[UISegmentedControl alloc] initWithItems:items];
-        _segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
-        _segmentedControl.momentary = NO;
-        [_segmentedControl addTarget:self action:@selector(updateTableView) forControlEvents:UIControlEventValueChanged];
-        _segmentedControl.selectedSegmentIndex = 0;
+        self.segmentedControl = [[[UISegmentedControl alloc] initWithItems:items] autorelease];
+        self.segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+        self.segmentedControl.momentary = NO;
+        [self.segmentedControl addTarget:self action:@selector(updateTableView) forControlEvents:UIControlEventValueChanged];
+        self.segmentedControl.selectedSegmentIndex = 0;
     }
 
     return self;
@@ -82,14 +107,13 @@
 
 - (NSFetchRequest *)fetchRequestForSelectedSegment
 {
-    NSFetchRequest *fetchRequest = [Article fetchRequest];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Article"];
     NSPredicate *predicate = nil;
 
     switch (_segmentedControl.selectedSegmentIndex) {
         // All objects
         case 0:
             // An empty fetch request will return all objects
-            // Duplicates the functionality of [Article allObjects]
             break;
 
         // Sorted
@@ -100,14 +124,12 @@
 
         // By Predicate
         case 2:
-            // Duplicates functionality of calling [Article objectsWithPredicate:predicate];
             predicate = [NSPredicate predicateWithFormat:@"title CONTAINS[c] %@", @"2"];
             [fetchRequest setPredicate:predicate];
             break;
 
         // By ID
         case 3:
-            // Duplicates functionality of [Article findByAttribute:@"articleID" withValue:[NSNumber numberWithInt:3]];
             predicate = [NSPredicate predicateWithFormat:@"%K = %d", @"articleID", 3];
             [fetchRequest setPredicate:predicate];
             break;
@@ -121,9 +143,9 @@
 
 - (void)updateTableView
 {
-    [_articles release];
+    NSError *error;
     NSFetchRequest *fetchRequest = [self fetchRequestForSelectedSegment];
-    _articles = [[Article objectsWithFetchRequest:fetchRequest] retain];
+    self.articles = [[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
     [self.tableView reloadData];
 }
 

@@ -9,7 +9,15 @@
 #import "RKTwitterViewController.h"
 #import "RKTStatus.h"
 
+@interface RKTwitterViewController () <UITableViewDelegate, UITableViewDataSource, RKObjectLoaderDelegate>
+@property (nonatomic, retain) UITableView *tableView;
+@property (nonatomic, retain) NSArray *statuses;
+@end
+
 @implementation RKTwitterViewController
+
+@synthesize tableView = _tableView;
+@synthesize statuses = _statuses;
 
 - (void)loadView
 {
@@ -26,12 +34,12 @@
 
     [self.view insertSubview:imageView atIndex:0];
 
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStylePlain];
-    _tableView.dataSource = self;
-    _tableView.delegate = self;
-    _tableView.backgroundColor = [UIColor clearColor];
-    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    [self.view addSubview:_tableView];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 320, 480-64) style:UITableViewStylePlain];
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    self.tableView.backgroundColor = [UIColor clearColor];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.view addSubview:self.tableView];
 
     // Load statuses from core data
     [self loadObjectsFromDataStore];
@@ -46,11 +54,11 @@
 
 - (void)loadObjectsFromDataStore
 {
-    [_statuses release];
-    NSFetchRequest *request = [RKTStatus fetchRequest];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"RKTStatus"];
     NSSortDescriptor *descriptor = [NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO];
-    [request setSortDescriptors:[NSArray arrayWithObject:descriptor]];
-    _statuses = [[RKTStatus objectsWithFetchRequest:request] retain];
+    fetchRequest.sortDescriptors = @[descriptor];
+    NSError *error;
+    self.statuses = [[RKManagedObjectStore defaultStore].mainQueueManagedObjectContext executeFetchRequest:fetchRequest error:&error];
 }
 
 - (void)loadData
