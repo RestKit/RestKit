@@ -2031,7 +2031,7 @@
     RKObjectMapping *serializationMapping = [userMapping inverseMapping];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:user mapping:serializationMapping];
     NSError *error = nil;
-    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    NSString *JSON = [serializer serializeObjectToMIMEType:RKMIMETypeJSON error:&error];
     assertThat(error, is(nilValue()));
     assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"address\":{\"state\":\"North Carolina\"}}")));
 }
@@ -2056,7 +2056,7 @@
     RKObjectMapping *serializationMapping = [userMapping inverseMapping];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:user mapping:serializationMapping];
     NSError *error = nil;
-    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    NSString *JSON = [serializer serializeObjectToMIMEType:RKMIMETypeJSON error:&error];
     assertThat(error, is(nilValue()));
     assertThat(JSON, is(equalTo(@"{\"name\":\"Blake Watters\",\"friends\":[{\"city\":\"Carrboro\"},{\"city\":\"New York City\"}]}")));
 }
@@ -2081,7 +2081,7 @@
     RKObjectMapping *serializationMapping = [humanMapping inverseMapping];
     RKObjectSerializer *serializer = [RKObjectSerializer serializerWithObject:blake mapping:serializationMapping];
     NSError *error = nil;
-    NSString *JSON = [serializer serializedObjectForMIMEType:RKMIMETypeJSON error:&error];
+    NSString *JSON = [serializer serializeObjectToMIMEType:RKMIMETypeJSON error:&error];
     NSDictionary *parsedJSON = [JSON performSelector:@selector(objectFromJSONString)];
     assertThat(error, is(nilValue()));
     assertThat([parsedJSON valueForKey:@"name"], is(equalTo(@"Blake Watters")));
