@@ -182,7 +182,7 @@
                 [self.managedObjectContext performBlockAndWait:^{
                     NSError *error;
                     NSArray *managedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-                    RKLogInfo(@"Deleting %d managed object instances for the '%@' entity", [managedObjects count], entity.name);
+                    RKLogInfo(@"Deleting %ld managed object instances for the '%@' entity", (unsigned long) [managedObjects count], entity.name);
                     for (NSManagedObject *managedObject in managedObjects) {
                         [self.managedObjectContext deleteObject:managedObject];
                     }

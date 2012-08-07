@@ -26,7 +26,7 @@
 @class RKManagedObjectStore;
 
 /**
- RKEntityMapping objects model on object mapping with a Core Data destination entity.
+ RKEntityMapping objects model an object mapping with a Core Data destination entity.
  */
 @interface RKEntityMapping : RKObjectMapping
 
@@ -126,9 +126,6 @@
  'project' relationship:
 
  [mapping connectRelationship:@"project" withMapping:projectMapping fromKeyPath:@"id" toKeyPath:@"userId"];
-
- In effect, this approach allows foreign key relationships between managed objects
- to be automatically maintained from the server to the underlying Core Data object graph.
  */
 - (void)connectRelationship:(NSString *)relationshipName withMapping:(RKMapping *)objectOrDynamicMapping fromKeyPath:(NSString *)sourceKeyPath toKeyPath:(NSString *)destinationKeyPath;
 
