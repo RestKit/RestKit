@@ -538,9 +538,7 @@
 		258EA4B215A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA4B315A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA4B015A3908F007E07A6 /* RKManagedObjectMappingOperationDataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA57815A63D07007E07A6 /* RKKeyboardScroller.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		258EA57915A63D07007E07A6 /* RKKeyboardScroller.h in Headers */ = {isa = PBXBuildFile; fileRef = 258EA57615A63D07007E07A6 /* RKKeyboardScroller.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		258EA57A15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */; };
-		258EA57B15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EA57715A63D07007E07A6 /* RKKeyboardScroller.m */; };
 		258EFF7A15C0CE1400EE4E0D /* RKManagedObjectSeederTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EFF7915C0CE1400EE4E0D /* RKManagedObjectSeederTest.m */; };
 		258EFF7B15C0CE1400EE4E0D /* RKManagedObjectSeederTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 258EFF7915C0CE1400EE4E0D /* RKManagedObjectSeederTest.m */; };
 		2597F99C15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 2597F99A15AF6DC400E547D7 /* RKRelationshipConnectionOperation.h */; };
@@ -698,7 +696,6 @@
 		25C246A415C83B090032212E /* RKSearchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C246A315C83B090032212E /* RKSearchTest.m */; };
 		25C246A515C83B090032212E /* RKSearchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C246A315C83B090032212E /* RKSearchTest.m */; };
 		25C93DF2157FB6370089259B /* RKTableCellBlockTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25C93DF1157FB6370089259B /* RKTableCellBlockTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25C93DF3157FB6370089259B /* RKTableCellBlockTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 25C93DF1157FB6370089259B /* RKTableCellBlockTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25C954A715542A47005C9E08 /* RKTestConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C954A415542A47005C9E08 /* RKTestConstants.m */; };
 		25C954A815542A47005C9E08 /* RKTestConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 25C954A415542A47005C9E08 /* RKTestConstants.m */; };
 		25CA7A8F14EC570200888FF8 /* RKMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 25CA7A8E14EC570100888FF8 /* RKMapping.m */; };
@@ -733,13 +730,9 @@
 		25EC1A6314F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */ = {isa = PBXBuildFile; fileRef = 7394DF3514CF157A00CE7BCE /* RKManagedObjectCaching.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1ABC14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1AB814F8019F00C3CF3F /* RKRefreshGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25EC1ABD14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1AB814F8019F00C3CF3F /* RKRefreshGestureRecognizer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1ABE14F8019F00C3CF3F /* RKRefreshGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1AB914F8019F00C3CF3F /* RKRefreshGestureRecognizer.m */; };
-		25EC1ABF14F8019F00C3CF3F /* RKRefreshGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1AB914F8019F00C3CF3F /* RKRefreshGestureRecognizer.m */; };
 		25EC1AC014F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1ABA14F8019F00C3CF3F /* RKRefreshTriggerView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		25EC1AC114F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1ABA14F8019F00C3CF3F /* RKRefreshTriggerView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1AC214F8019F00C3CF3F /* RKRefreshTriggerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1ABB14F8019F00C3CF3F /* RKRefreshTriggerView.m */; };
-		25EC1AC314F8019F00C3CF3F /* RKRefreshTriggerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1ABB14F8019F00C3CF3F /* RKRefreshTriggerView.m */; };
 		25EC1B3914F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1B3A14F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 25EC1B3714F84B5C00C3CF3F /* UIImage+RKAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		25EC1B3B14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 25EC1B3814F84B5C00C3CF3F /* UIImage+RKAdditions.m */; };
@@ -2495,8 +2488,6 @@
 				25EC1A3E14F72B2900C3CF3F /* RKInMemoryManagedObjectCache.h in Headers */,
 				25EC1A4814F7394200C3CF3F /* RKObjectMappingProviderContextEntry.h in Headers */,
 				25EC1A6514F7402A00C3CF3F /* RKManagedObjectCaching.h in Headers */,
-				25EC1ABD14F8019F00C3CF3F /* RKRefreshGestureRecognizer.h in Headers */,
-				25EC1AC114F8019F00C3CF3F /* RKRefreshTriggerView.h in Headers */,
 				25EC1B3A14F84B5D00C3CF3F /* UIImage+RKAdditions.h in Headers */,
 				257ABAB115112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.h in Headers */,
 				257ABAB71511371E00CCAA76 /* NSManagedObject+RKAdditions.h in Headers */,
@@ -2511,9 +2502,7 @@
 				252028FD1577AE0B00076FB4 /* RKRouteSet.h in Headers */,
 				252029041577AE1800076FB4 /* RKRoute.h in Headers */,
 				258113C915781848009835EB /* RKObjectMappingProvider+CoreData.h in Headers */,
-				25C93DF3157FB6370089259B /* RKTableCellBlockTypes.h in Headers */,
 				25FBB853159272DD00955D27 /* RKRouter.h in Headers */,
-				258EA57915A63D07007E07A6 /* RKKeyboardScroller.h in Headers */,
 				258EA4A915A38BC0007E07A6 /* RKObjectMappingOperationDataSource.h in Headers */,
 				258EA4AF15A38E7E007E07A6 /* RKMappingOperationDataSource.h in Headers */,
 				258EA4B315A39090007E07A6 /* RKManagedObjectMappingOperationDataSource.h in Headers */,
@@ -3116,8 +3105,6 @@
 				25EC1A3C14F72B1400C3CF3F /* RKFetchRequestManagedObjectCache.m in Sources */,
 				25EC1A4014F72B3300C3CF3F /* RKInMemoryManagedObjectCache.m in Sources */,
 				25EC1A4614F7393E00C3CF3F /* RKObjectMappingProviderContextEntry.m in Sources */,
-				25EC1ABF14F8019F00C3CF3F /* RKRefreshGestureRecognizer.m in Sources */,
-				25EC1AC314F8019F00C3CF3F /* RKRefreshTriggerView.m in Sources */,
 				25EC1B3C14F84B5D00C3CF3F /* UIImage+RKAdditions.m in Sources */,
 				257ABAB315112DD500CCAA76 /* NSManagedObjectContext+RKAdditions.m in Sources */,
 				257ABAB91511371E00CCAA76 /* NSManagedObject+RKAdditions.m in Sources */,
@@ -3133,7 +3120,6 @@
 				252029061577AE1800076FB4 /* RKRoute.m in Sources */,
 				258113CE15781871009835EB /* RKObjectMappingProvider+CoreData.m in Sources */,
 				25FBB855159272DD00955D27 /* RKRouter.m in Sources */,
-				258EA57B15A63D07007E07A6 /* RKKeyboardScroller.m in Sources */,
 				258EA4AB15A38BC0007E07A6 /* RKObjectMappingOperationDataSource.m in Sources */,
 				25AA23D115AF2920006EF62D /* RKManagedObjectMappingOperationDataSource.m in Sources */,
 				2597F99F15AF6DC400E547D7 /* RKRelationshipConnectionOperation.m in Sources */,
