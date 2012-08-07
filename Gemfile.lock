@@ -45,13 +45,19 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    archive-tar-minitar (0.5.2)
     bson (1.6.2)
     bson_ext (1.6.2)
       bson (~> 1.6.2)
     builder (3.0.0)
     columnize (0.3.6)
     daemons (1.1.8)
+    debugger (1.2.0)
+      columnize (>= 0.3.1)
+      debugger-linecache (~> 1.1.1)
+      debugger-ruby_core_source (~> 1.1.3)
+    debugger-linecache (1.1.2)
+      debugger-ruby_core_source (>= 1.1.1)
+    debugger-ruby_core_source (1.1.3)
     diff-lcs (1.1.3)
     eventmachine (0.12.10)
     faker (1.0.1)
@@ -60,8 +66,6 @@ GEM
     json (1.7.3)
     jwt (0.1.4)
       json (>= 1.2.4)
-    linecache19 (0.5.12)
-      ruby_core_source (>= 0.1.4)
     mime-types (1.18)
     mongo (1.6.2)
       bson (~> 1.6.2)
@@ -83,16 +87,6 @@ GEM
     rspec-expectations (2.10.0)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.10.1)
-    ruby-debug-base19 (0.11.25)
-      columnize (>= 0.3.1)
-      linecache19 (>= 0.5.11)
-      ruby_core_source (>= 0.1.4)
-    ruby-debug19 (0.11.6)
-      columnize (>= 0.3.1)
-      linecache19 (>= 0.5.11)
-      ruby-debug-base19 (>= 0.11.19)
-    ruby_core_source (0.1.5)
-      archive-tar-minitar (>= 0.5.2)
     thin (1.3.1)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -104,6 +98,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.1.0)
+  debugger (= 1.2.0)
   faker (= 1.0.1)
   mongo
   rack-oauth2-server!
@@ -111,7 +106,6 @@ DEPENDENCIES
   rake (~> 0.9.0)
   restkit!
   rspec
-  ruby-debug19
   simple_oauth!
   sinatra!
   thin (~> 1.3.1)
