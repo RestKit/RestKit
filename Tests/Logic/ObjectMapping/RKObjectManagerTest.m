@@ -96,12 +96,7 @@
 {
     RKHuman *temporaryHuman = [[RKHuman alloc] initWithEntity:[NSEntityDescription entityForName:@"RKHuman" inManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext] insertIntoManagedObjectContext:_objectManager.managedObjectStore.primaryManagedObjectContext];
     temporaryHuman.name = @"My Name";
-
-    // TODO: We should NOT have to save the object store here to make this
-    // spec pass. Without it we are crashing inside the mapper internals. Believe
-    // that we just need a way to save the context before we begin mapping or something
-    // on success. Always saving means that we can abandon objects on failure...
-    [_objectManager.managedObjectStore save:nil];
+    
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     [_objectManager postObject:temporaryHuman delegate:loader];
     [loader waitForResponse];
@@ -140,7 +135,7 @@
     [mapping mapAttributes:@"name", nil];
 
     // Save it to suppress deletion
-    [_objectManager.managedObjectStore save:nil];
+    [_objectManager.managedObjectStore.primaryManagedObjectContext save:nil];
 
     RKTestResponseLoader *loader = [RKTestResponseLoader responseLoader];
     NSString *resourcePath = @"/humans/fail";

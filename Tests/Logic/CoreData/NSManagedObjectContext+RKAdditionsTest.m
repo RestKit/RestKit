@@ -25,7 +25,7 @@
 
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:12345];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     RKHuman *foundHuman = [managedObjectStore.primaryManagedObjectContext fetchObjectForEntity:entity withValueForPrimaryKeyAttribute:[NSNumber numberWithInt:12345]];
     assertThat(foundHuman, is(equalTo(human)));
@@ -65,7 +65,7 @@
 
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInt:12345];
-    [managedObjectStore save:nil];
+    [managedObjectStore.primaryManagedObjectContext save:nil];
 
     RKHuman *foundHuman = [managedObjectStore.primaryManagedObjectContext fetchObjectForEntity:entity withValueForPrimaryKeyAttribute:@"12345"];
     assertThat(foundHuman, is(equalTo(human)));

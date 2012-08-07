@@ -91,7 +91,7 @@
     human1.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -106,7 +106,7 @@
     human1.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -120,7 +120,7 @@
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
     [self.cache load];
 
     NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
@@ -133,7 +133,7 @@
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
     [self.cache load];
 
     NSManagedObjectContext *childContext = [[[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType] autorelease];
@@ -149,7 +149,7 @@
     human1.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -165,7 +165,7 @@
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human];
     assertThatBool([self.cache containsObject:human], is(equalToBool(YES)));
@@ -177,7 +177,7 @@
     human1.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -189,7 +189,7 @@
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human];
     assertThatBool([self.cache containsObject:human], is(equalToBool(YES)));
@@ -203,7 +203,7 @@
     human1.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -239,7 +239,7 @@
 {
     RKHuman *human = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human];
     assertThatBool([self.cache containsObjectWithAttributeValue:[NSNumber numberWithInteger:12345]], is(equalToBool(YES)));
@@ -253,7 +253,7 @@
     human2.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human3 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human3.railsID = [NSNumber numberWithInteger:123456];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -269,7 +269,7 @@
     human2.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human3 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human3.railsID = [NSNumber numberWithInteger:123456];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -283,7 +283,7 @@
     human1.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
@@ -354,7 +354,7 @@
     human1.railsID = [NSNumber numberWithInteger:12345];
     RKHuman *human2 = [NSEntityDescription insertNewObjectForEntityForName:@"RKHuman" inManagedObjectContext:self.managedObjectStore.primaryManagedObjectContext];
     human2.railsID = [NSNumber numberWithInteger:12345];
-    [self.managedObjectStore save:nil];
+    [self.managedObjectStore.primaryManagedObjectContext save:nil];
 
     [self.cache addObject:human1];
     [self.cache addObject:human2];
