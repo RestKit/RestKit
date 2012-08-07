@@ -138,7 +138,7 @@
     assertThatUnsignedInteger(count, is(equalToInt(2)));
     assertThatBool([blake isDeleted], is(equalToBool(NO)));
     assertThatBool([other isDeleted], is(equalToBool(NO)));
-    assertThatBool([deleteMe isDeleted], is(equalToBool(YES)));
+    assertThatBool([deleteMe hasBeenDeleted], is(equalToBool(YES)));
 }
 
 - (void)testShouldNotAssertDuringObjectMappingOnSynchronousRequest
