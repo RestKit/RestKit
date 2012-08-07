@@ -53,8 +53,8 @@
 	}
 	if([recorders count] > 0)
 	{
-		[NSException raise:NSInternalInconsistencyException format:@"%@ : %d expected notifications were not observed.", 
-		 [self description], [recorders count]];
+		[NSException raise:NSInternalInconsistencyException format:@"%@ : %ld expected notifications were not observed.", 
+		 [self description], (long)[recorders count]];
 	}
 }
 
