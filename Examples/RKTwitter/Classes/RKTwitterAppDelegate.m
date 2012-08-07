@@ -23,7 +23,8 @@
     RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelTrace);
 
     // Initialize RestKit
-    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURLString:@"http://twitter.com"];
+    NSURL *baseURL = [NSURL URLWithString:@"http://twitter.com"];
+    RKObjectManager *objectManager = [RKObjectManager managerWithBaseURL:baseURL];
 
     // Enable automatic network activity indicator management
     objectManager.client.requestQueue.showsNetworkActivityIndicatorWhenBusy = YES;
