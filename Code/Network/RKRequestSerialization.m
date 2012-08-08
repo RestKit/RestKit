@@ -25,7 +25,8 @@
 @synthesize data = _data;
 @synthesize MIMEType = _MIMEType;
 
-- (id)initWithData:(NSData *)data MIMEType:(NSString *)MIMEType {
+- (id)initWithData:(NSData *)data MIMEType:(NSString *)MIMEType
+{
     NSAssert(data, @"Cannot create a request serialization without Data");
     NSAssert(MIMEType, @"Cannot create a request serialization without a MIME Type");
 
@@ -38,26 +39,31 @@
     return self;
 }
 
-+ (id)serializationWithData:(NSData *)data MIMEType:(NSString *)MIMEType {
++ (id)serializationWithData:(NSData *)data MIMEType:(NSString *)MIMEType
+{
     return [[[RKRequestSerialization alloc] initWithData:data MIMEType:MIMEType] autorelease];
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_data release];
     [_MIMEType release];
 
     [super dealloc];
 }
 
-- (NSString *)HTTPHeaderValueForContentType {
+- (NSString *)HTTPHeaderValueForContentType
+{
     return self.MIMEType;
 }
 
-- (NSData *)HTTPBody {
+- (NSData *)HTTPBody
+{
     return self.data;
 }
 
-- (NSUInteger)HTTPHeaderValueForContentLength {
+- (NSUInteger)HTTPHeaderValueForContentLength
+{
     return [self.data length];
 }
 

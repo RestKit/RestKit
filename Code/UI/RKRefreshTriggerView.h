@@ -21,20 +21,20 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RKRefreshTriggerView : UIView <UIAppearanceContainer,UIAppearance>
+@interface RKRefreshTriggerView : UIView <UIAppearanceContainer, UIAppearance>
 @property (nonatomic, retain) UILabel *titleLabel;
 @property (nonatomic, retain) UILabel *lastUpdatedLabel;
 @property (nonatomic, retain) UIImageView *arrowView;
 @property (nonatomic, retain) UIActivityIndicatorView *activityView;
 
 #ifdef UI_APPEARANCE_SELECTOR
-@property (nonatomic,assign) UIImage *arrowImage UI_APPEARANCE_SELECTOR;
-@property (nonatomic,assign) UIActivityIndicatorViewStyle activityIndicatorStyle UI_APPEARANCE_SELECTOR;
-@property (nonatomic,assign) UIFont *titleFont UI_APPEARANCE_SELECTOR;
-@property (nonatomic,assign) UIColor *titleColor UI_APPEARANCE_SELECTOR;
-@property (nonatomic,assign) UIFont *lastUpdatedFont UI_APPEARANCE_SELECTOR;
-@property (nonatomic,assign) UIColor *lastUpdatedColor UI_APPEARANCE_SELECTOR;
-@property (nonatomic,retain) UIColor *refreshBackgroundColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) UIImage *arrowImage UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) UIActivityIndicatorViewStyle activityIndicatorStyle UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) UIFont *titleFont UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) UIColor *titleColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) UIFont *lastUpdatedFont UI_APPEARANCE_SELECTOR;
+@property (nonatomic, assign) UIColor *lastUpdatedColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic, retain) UIColor *refreshBackgroundColor UI_APPEARANCE_SELECTOR;
 #endif
 
 @end

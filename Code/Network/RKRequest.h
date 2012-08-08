@@ -167,11 +167,6 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 
     RKRequestDidLoadResponseBlock _onDidLoadResponse;
     RKRequestDidFailLoadWithErrorBlock _onDidFailLoadWithError;
-
-#if TARGET_OS_IPHONE
-    RKRequestBackgroundPolicy _backgroundPolicy;
-    UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
-#endif
 }
 
 ///-----------------------------------------------------------------------------
@@ -621,7 +616,7 @@ typedef void(^RKRequestDidFailLoadWithErrorBlock)(NSError *error);
 
  @return YES if the request was sent a cancel message, otherwise NO.
  */
-@property(nonatomic, assign, readonly, getter=isCancelled) BOOL cancelled;
+@property (nonatomic, assign, readonly, getter=isCancelled) BOOL cancelled;
 
 /**
  Cancels the underlying URL connection.

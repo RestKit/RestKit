@@ -22,11 +22,11 @@
 
 @interface RKObjectPropertyInspector (CoreData)
 
-- (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription*)entity;
+- (NSDictionary *)propertyNamesAndTypesForEntity:(NSEntityDescription *)entity;
 
 /**
  Returns the Class type of the specified property on the object class
  */
-- (Class)typeForProperty:(NSString*)propertyName ofEntity:(NSEntityDescription*)entity;
+- (Class)typeForProperty:(NSString *)propertyName ofEntity:(NSEntityDescription *)entity;
 
 @end

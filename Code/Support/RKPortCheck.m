@@ -34,7 +34,7 @@
         _port = port;
 
         struct sockaddr_in sa;
-        char *hostNameOrIPAddressCString = (char *) [hostNameOrIPAddress UTF8String];
+        char *hostNameOrIPAddressCString = (char *)[hostNameOrIPAddress UTF8String];
         int result = inet_pton(AF_INET, hostNameOrIPAddressCString, &(sa.sin_addr));
         if (result != 0) {
             // IP Address
@@ -78,7 +78,7 @@
     }
 
     // Try to connect to the port
-    _open = (connect(sd,(struct sockaddr *) &_remote_saddr, sizeof(_remote_saddr)) == 0);
+    _open = (connect(sd, (struct sockaddr *)&_remote_saddr, sizeof(_remote_saddr)) == 0);
 
     if (_open) {
         close(sd);

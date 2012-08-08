@@ -20,6 +20,6 @@
 
 @interface RKRequest (Internals)
 - (BOOL)prepareURLRequest;
-- (void)didFailLoadWithError:(NSError*)error;
+- (void)didFailLoadWithError:(NSError *)error;
 - (void)finalizeLoad:(BOOL)successful;
 @end

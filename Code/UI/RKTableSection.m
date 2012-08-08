@@ -39,24 +39,28 @@
 @synthesize headerView = _headerView;
 @synthesize footerView = _footerView;
 
-+ (id)section {
++ (id)section
+{
     return [[self new] autorelease];
 }
 
-+ (id)sectionUsingBlock:(void (^)(RKTableSection *))block {
-    RKTableSection* section = [self section];
++ (id)sectionUsingBlock:(void (^)(RKTableSection *))block
+{
+    RKTableSection *section = [self section];
     block(section);
     return section;
 }
 
-+ (id)sectionForObjects:(NSArray *)objects withMappings:(RKTableViewCellMappings *)cellMappings {
++ (id)sectionForObjects:(NSArray *)objects withMappings:(RKTableViewCellMappings *)cellMappings
+{
     return [self sectionUsingBlock:^(RKTableSection *section) {
         section.objects = objects;
         section.cellMappings = cellMappings;
     }];
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _objects = [NSMutableArray new];
@@ -67,7 +71,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_objects release];
     [_cellMappings release];
     [_headerTitle release];
@@ -77,34 +82,39 @@
     [super dealloc];
 }
 
-- (void)setObjects:(NSArray *)objects {
+- (void)setObjects:(NSArray *)objects
+{
     if (! [objects isMemberOfClass:[NSMutableArray class]]) {
-        NSMutableArray* mutableObjects = [objects mutableCopy];
+        NSMutableArray *mutableObjects = [objects mutableCopy];
         [_objects release];
         _objects = mutableObjects;
     } else {
         [objects retain];
         [_objects release];
-        _objects = (NSMutableArray *) objects;
+        _objects = (NSMutableArray *)objects;
     }
 }
 
-- (NSUInteger)rowCount {
+- (NSUInteger)rowCount
+{
     return [_objects count];
 }
 
-- (id)objectAtIndex:(NSUInteger)rowIndex {
+- (id)objectAtIndex:(NSUInteger)rowIndex
+{
     return [_objects objectAtIndex:rowIndex];
 }
 
-- (UITableView*)tableView {
+- (UITableView *)tableView
+{
     return _tableController.tableView;
 }
 
-- (void)insertObject:(id)object atIndex:(NSUInteger)index {
-    [(NSMutableArray*)_objects insertObject:object atIndex:index];
+- (void)insertObject:(id)object atIndex:(NSUInteger)index
+{
+    [(NSMutableArray *)_objects insertObject:object atIndex:index];
 
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:index
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index
                                                 inSection:[_tableController indexForSection:self]];
     [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:_tableController.defaultRowAnimation];
@@ -114,11 +124,12 @@
     }
 }
 
-- (void)removeObjectAtIndex:(NSUInteger)index {
+- (void)removeObjectAtIndex:(NSUInteger)index
+{
     id object = [self objectAtIndex:index];
-    [(NSMutableArray*)_objects removeObjectAtIndex:index];
+    [(NSMutableArray *)_objects removeObjectAtIndex:index];
 
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:index
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index
                                                 inSection:[_tableController indexForSection:self]];
     [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:_tableController.defaultRowAnimation];
@@ -128,10 +139,11 @@
     }
 }
 
-- (void)replaceObjectAtIndex:(NSUInteger)index withObject:(id)object {
-    [(NSMutableArray*)_objects replaceObjectAtIndex:index withObject:object];
+- (void)replaceObjectAtIndex:(NSUInteger)index withObject:(id)object
+{
+    [(NSMutableArray *)_objects replaceObjectAtIndex:index withObject:object];
 
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:index
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index
                                                 inSection:[_tableController indexForSection:self]];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:_tableController.defaultRowAnimation];
@@ -141,7 +153,8 @@
     }
 }
 
-- (void)moveObjectAtIndex:(NSUInteger)sourceIndex toIndex:(NSUInteger)destinationIndex {
+- (void)moveObjectAtIndex:(NSUInteger)sourceIndex toIndex:(NSUInteger)destinationIndex
+{
     [self.tableView beginUpdates];
     id object = [[self objectAtIndex:sourceIndex] retain];
     [self removeObjectAtIndex:sourceIndex];

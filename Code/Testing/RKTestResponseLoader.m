@@ -47,11 +47,13 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
 @synthesize unexpectedResponse;
 @synthesize awaitingResponse;
 
-+ (RKTestResponseLoader *)responseLoader {
++ (RKTestResponseLoader *)responseLoader
+{
     return [[[self alloc] init] autorelease];
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         timeout = 4;
@@ -61,7 +63,8 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [response release];
     response = nil;
     [error release];
@@ -72,7 +75,8 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     [super dealloc];
 }
 
-- (void)waitForResponse {
+- (void)waitForResponse
+{
     awaitingResponse = YES;
     NSDate *startDate = [NSDate date];
 
@@ -86,13 +90,15 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     }
 }
 
-- (void)loadError:(NSError *)theError {
+- (void)loadError:(NSError *)theError
+{
     awaitingResponse = NO;
     successful = NO;
     self.error = theError;
 }
 
-- (NSString *)errorMessage {
+- (NSString *)errorMessage
+{
     if (self.error) {
         return [[self.error userInfo] valueForKey:NSLocalizedDescriptionKey];
     }
@@ -100,11 +106,13 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     return nil;
 }
 
-- (void)request:(RKRequest *)request didReceiveResponse:(RKResponse *)response {
+- (void)request:(RKRequest *)request didReceiveResponse:(RKResponse *)response
+{
     // Implemented for expectations
 }
 
-- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)aResponse {
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)aResponse
+{
     self.response = aResponse;
 
     // If request is an Object Loader, then objectLoader:didLoadObjects:
@@ -115,7 +123,8 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     }
 }
 
-- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)anError {
+- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)anError
+{
     // If request is an Object Loader, then objectLoader:didFailWithError:
     // will be sent after didFailLoadWithError:
     if (NO == [request isKindOfClass:[RKObjectLoader class]]) {
@@ -126,13 +135,15 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     [request cancel];
 }
 
-- (void)requestDidCancelLoad:(RKRequest *)request {
+- (void)requestDidCancelLoad:(RKRequest *)request
+{
     awaitingResponse = NO;
     successful = NO;
     cancelled = YES;
 }
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)theObjects {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)theObjects
+{
     RKLogTrace(@"%@ Loaded response for %@ with body: %@", self, objectLoader, [objectLoader.response bodyAsString]);
     RKLogDebug(@"%@ Loaded objects for %@: %@", self, objectLoader, objects);
     self.objects = theObjects;
@@ -140,30 +151,35 @@ NSString * const RKTestResponseLoaderTimeoutException = @"RKTestResponseLoaderTi
     successful = YES;
 }
 
-- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)theError {
+- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)theError
+{
     [self loadError:theError];
 }
 
-- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader *)objectLoader {
+- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader *)objectLoader
+{
     RKLogDebug(@"%@ Loaded unexpected response for: %@", self, objectLoader);
     successful = NO;
     awaitingResponse = NO;
     unexpectedResponse = YES;
 }
 
-- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader {
+- (void)objectLoaderDidFinishLoading:(RKObjectLoader *)objectLoader
+{
     // Implemented for expectations
 }
 
 #pragma mark - OAuth delegates
 
-- (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token {
+- (void)OAuthClient:(RKOAuthClient *)client didAcquireAccessToken:(NSString *)token
+{
     awaitingResponse = NO;
     successful = YES;
 }
 
 
-- (void)OAuthClient:(RKOAuthClient *)client didFailWithInvalidGrantError:(NSError *)error {
+- (void)OAuthClient:(RKOAuthClient *)client didFailWithInvalidGrantError:(NSError *)error
+{
     awaitingResponse = NO;
     successful = NO;
 }

@@ -72,7 +72,8 @@
 }
 
 
-- (void)dealloc {
+- (void)dealloc
+{
     self.titleLabel = nil;
     self.arrowView  = nil;
     self.activityView = nil;
@@ -81,96 +82,111 @@
 }
 
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
     CGPoint imageCenter = CGPointMake(30, CGRectGetMidY(self.bounds));
     self.arrowView.center = imageCenter;
     self.arrowView.frame = CGRectIntegral(self.arrowView.frame);
     self.activityView.center = imageCenter;
-    self.titleLabel.frame = CGRectIntegral(CGRectMake(0.0f, ( CGRectGetHeight(self.bounds) * .25f ), CGRectGetWidth(self.bounds), 20.0f));
-    self.lastUpdatedLabel.frame = CGRectOffset(self.titleLabel.frame, 0.f, 18.f );
+    self.titleLabel.frame = CGRectIntegral(CGRectMake(0.0f, (CGRectGetHeight(self.bounds) * .25f), CGRectGetWidth(self.bounds), 20.0f));
+    self.lastUpdatedLabel.frame = CGRectOffset(self.titleLabel.frame, 0.f, 18.f);
 }
 
 #ifdef UI_APPEARANCE_SELECTOR
 
 #pragma mark - Proxy Accessors for UIAppearance
 
-- (UIImage *)arrowImage {
+- (UIImage *)arrowImage
+{
     if (!self.arrowView)
         return DEFAULT_REFRESH_ARROW_IMAGE;
     return _arrowView.image;
 }
 
-- (void)setArrowImage:(UIImage *)image {
+- (void)setArrowImage:(UIImage *)image
+{
     if (!self.arrowView)
         return;
     self.arrowView.image = image;
 }
 
-- (UIActivityIndicatorViewStyle)activityIndicatorStyle {
+- (UIActivityIndicatorViewStyle)activityIndicatorStyle
+{
     if (!self.activityView)
         return DEFAULT_REFRESH_ACTIVITY_STYLE;
     return self.activityView.activityIndicatorViewStyle;
 }
 
-- (void)setActivityIndicatorStyle:(UIActivityIndicatorViewStyle)style {
+- (void)setActivityIndicatorStyle:(UIActivityIndicatorViewStyle)style
+{
     if (!self.activityView)
         return;
     self.activityView.activityIndicatorViewStyle = style;
 }
 
-- (UIFont *)titleFont {
+- (UIFont *)titleFont
+{
     if (!self.titleLabel)
         return DEFAULT_REFRESH_TITLE_FONT;
     return self.titleLabel.font;
 }
 
-- (void)setTitleFont:(UIFont *)font {
+- (void)setTitleFont:(UIFont *)font
+{
     if (!self.titleLabel)
         return;
     self.titleLabel.font = font;
 }
 
-- (UIColor *)titleColor {
+- (UIColor *)titleColor
+{
     if (!self.titleLabel)
         return DEFAULT_REFRESH_TITLE_COLOR;
     return self.titleLabel.textColor;
 }
 
-- (void)setTitleColor:(UIColor *)color {
+- (void)setTitleColor:(UIColor *)color
+{
     if (!self.titleLabel)
         return;
     self.titleLabel.textColor = color;
 }
 
-- (UIFont *)lastUpdatedFont {
+- (UIFont *)lastUpdatedFont
+{
     if (!self.lastUpdatedLabel)
         return DEFAULT_REFRESH_UPDATED_FONT;
     return self.lastUpdatedLabel.font;
 }
 
-- (void)setLastUpdatedFont:(UIFont *)font {
+- (void)setLastUpdatedFont:(UIFont *)font
+{
     if (!self.lastUpdatedLabel)
         return;
     self.lastUpdatedLabel.font = font;
 }
 
-- (UIColor *)lastUpdatedColor {
+- (UIColor *)lastUpdatedColor
+{
     if (!self.lastUpdatedLabel)
         return DEFAULT_REFRESH_UPDATED_COLOR;
     return self.lastUpdatedLabel.textColor;
 }
 
-- (void)setLastUpdatedColor:(UIColor *)color {
+- (void)setLastUpdatedColor:(UIColor *)color
+{
     if (!self.lastUpdatedLabel)
         return;
     self.lastUpdatedLabel.textColor = color;
 }
 
-- (UIColor *)refreshBackgroundColor {
+- (UIColor *)refreshBackgroundColor
+{
     return self.backgroundColor;
 }
 
-- (void)setRefreshBackgroundColor:(UIColor *)backgroundColor {
+- (void)setRefreshBackgroundColor:(UIColor *)backgroundColor
+{
     [self setBackgroundColor:backgroundColor];
 }
 #endif

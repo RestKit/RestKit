@@ -353,7 +353,8 @@
 }
 #endif
 
-- (void)testCreatingProcessingAndDeletingObjectsWorksAsExpected {
+- (void)testCreatingProcessingAndDeletingObjectsWorksAsExpected
+{
     self.cache.monitorsContextForChanges = YES;
 
     RKHuman *human1 = [RKHuman createInContext:self.objectStore.primaryManagedObjectContext];

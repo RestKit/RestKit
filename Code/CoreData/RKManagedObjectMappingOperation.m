@@ -32,13 +32,14 @@
 
 @implementation RKManagedObjectMappingOperation
 
-- (void)connectRelationship:(NSString *)relationshipName {
-    NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping*)self.objectMapping relationshipsAndPrimaryKeyAttributes];
+- (void)connectRelationship:(NSString *)relationshipName
+{
+    NSDictionary *relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping *)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     id primaryKeyObject = [relationshipsAndPrimaryKeyAttributes objectForKey:relationshipName];
-    NSString* primaryKeyAttribute = nil;
+    NSString *primaryKeyAttribute = nil;
     if ([primaryKeyObject isKindOfClass:[RKDynamicObjectMappingMatcher class]]) {
         RKLogTrace(@"Found a dynamic matcher attempting to connect relationshipName: %@", relationshipName);
-        RKDynamicObjectMappingMatcher* matcher = (RKDynamicObjectMappingMatcher*)primaryKeyObject;
+        RKDynamicObjectMappingMatcher *matcher = (RKDynamicObjectMappingMatcher *)primaryKeyObject;
         if ([matcher isMatchForData:self.destinationObject]) {
             primaryKeyAttribute = matcher.primaryKeyAttribute;
             RKLogTrace(@"Dynamic matched succeeded. Proceeding to connect relationshipName '%@' using primaryKeyAttribute '%@'", relationshipName, primaryKeyAttribute);
@@ -47,22 +48,22 @@
             return;
         }
     } else if ([primaryKeyObject isKindOfClass:[NSString class]]) {
-        primaryKeyAttribute = (NSString*)primaryKeyObject;
+        primaryKeyAttribute = (NSString *)primaryKeyObject;
     }
     NSAssert(primaryKeyAttribute, @"Cannot connect relationship without primaryKeyAttribute");
 
-    RKObjectRelationshipMapping* relationshipMapping = [self.objectMapping mappingForRelationship:relationshipName];
+    RKObjectRelationshipMapping *relationshipMapping = [self.objectMapping mappingForRelationship:relationshipName];
     RKObjectMappingDefinition *mapping = relationshipMapping.mapping;
-    NSAssert(mapping, @"Attempted to connect relationship for keyPath '%@' without a relationship mapping defined.");
+    NSAssert(mapping, @"Attempted to connect relationship for keyPath '%@' without a relationship mapping defined.", relationshipName);
     if (! [mapping isKindOfClass:[RKObjectMapping class]]) {
         RKLogWarning(@"Can only connect relationships for RKObjectMapping relationships. Found %@: Skipping...", NSStringFromClass([mapping class]));
         return;
     }
-    RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *) mapping;
+    RKManagedObjectMapping *objectMapping = (RKManagedObjectMapping *)mapping;
     NSAssert(relationshipMapping, @"Unable to find relationship mapping '%@' to connect by primaryKey", relationshipName);
     NSAssert([relationshipMapping isKindOfClass:[RKObjectRelationshipMapping class]], @"Expected mapping for %@ to be a relationship mapping", relationshipName);
     NSAssert([relationshipMapping.mapping isKindOfClass:[RKManagedObjectMapping class]], @"Can only connect RKManagedObjectMapping relationships");
-    NSString* primaryKeyAttributeOfRelatedObject = [(RKManagedObjectMapping*)objectMapping primaryKeyAttribute];
+    NSString *primaryKeyAttributeOfRelatedObject = [(RKManagedObjectMapping *)objectMapping primaryKeyAttribute];
     NSAssert(primaryKeyAttributeOfRelatedObject, @"Cannot connect relationship: mapping for %@ has no primary key attribute specified", NSStringFromClass(objectMapping.objectClass));
     id valueOfLocalPrimaryKeyAttribute = [self.destinationObject valueForKey:primaryKeyAttribute];
     if (valueOfLocalPrimaryKeyAttribute) {
@@ -72,9 +73,9 @@
 
             // Implemented for issue 284 - https://github.com/RestKit/RestKit/issues/284
             relatedObject = [NSMutableSet set];
-            NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
+            NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping *)[self objectMapping] objectStore] cacheStrategy];
             for (id foreignKey in valueOfLocalPrimaryKeyAttribute) {
-                id searchResult = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:foreignKey inManagedObjectContext:[[(RKManagedObjectMapping*)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
+                id searchResult = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:foreignKey inManagedObjectContext:[[(RKManagedObjectMapping *)[self objectMapping] objectStore] managedObjectContextForCurrentThread]];
                 if (searchResult) {
                     [relatedObject addObject:searchResult];
                 }
@@ -83,7 +84,7 @@
             RKLogTrace(@"Connecting has-one relationship at keyPath '%@' to object with primaryKey attribute '%@'", relationshipName, primaryKeyAttributeOfRelatedObject);
 
             // Normal foreign key
-            NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping*)[self objectMapping] objectStore] cacheStrategy];
+            NSObject<RKManagedObjectCaching> *cache = [[(RKManagedObjectMapping *)[self objectMapping] objectStore] cacheStrategy];
             relatedObject = [cache findInstanceOfEntity:objectMapping.entity withPrimaryKeyAttribute:primaryKeyAttributeOfRelatedObject value:valueOfLocalPrimaryKeyAttribute inManagedObjectContext:[self.destinationObject managedObjectContext]];
         }
         if (relatedObject) {
@@ -102,10 +103,11 @@
     }
 }
 
-- (void)connectRelationships {
-    NSDictionary* relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping *)self.objectMapping relationshipsAndPrimaryKeyAttributes];
+- (void)connectRelationships
+{
+    NSDictionary *relationshipsAndPrimaryKeyAttributes = [(RKManagedObjectMapping *)self.objectMapping relationshipsAndPrimaryKeyAttributes];
     RKLogTrace(@"relationshipsAndPrimaryKeyAttributes: %@", relationshipsAndPrimaryKeyAttributes);
-    for (NSString* relationshipName in relationshipsAndPrimaryKeyAttributes) {
+    for (NSString *relationshipName in relationshipsAndPrimaryKeyAttributes) {
         if (self.queue) {
             RKLogTrace(@"Enqueueing relationship connection using operation queue");
             __block RKManagedObjectMappingOperation *selfRef = self;
@@ -118,7 +120,8 @@
     }
 }
 
-- (BOOL)performMapping:(NSError **)error {
+- (BOOL)performMapping:(NSError **)error
+{
     BOOL success = [super performMapping:error];
     if ([self.objectMapping isKindOfClass:[RKManagedObjectMapping class]]) {
         /**

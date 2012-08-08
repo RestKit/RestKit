@@ -15,7 +15,8 @@
 @synthesize statusLabel = _statusLabel;
 @synthesize flagsLabel = _flagsLabel;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
        self.observer = [[RKReachabilityObserver alloc] initWithHost:@"restkit.org"];
@@ -32,21 +33,24 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_observer release];
     [super dealloc];
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     if (! [_observer isReachabilityDetermined]) {
         _statusLabel.text = @"Reachability is indeterminate...";
         _statusLabel.textColor = [UIColor blueColor];
     }
 }
 
-- (void)reachabilityChanged:(NSNotification *)notification {
-    RKReachabilityObserver* observer = (RKReachabilityObserver *) [notification object];
+- (void)reachabilityChanged:(NSNotification *)notification
+{
+    RKReachabilityObserver *observer = (RKReachabilityObserver *)[notification object];
 
     RKLogCritical(@"Received reachability update: %@", observer);
     _flagsLabel.text = [NSString stringWithFormat:@"Host: %@ -> %@", observer.host, [observer reachabilityFlagsDescription]];

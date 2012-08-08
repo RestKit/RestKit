@@ -40,7 +40,8 @@ return __VA_ARGS__;                                                             
 @synthesize request = _request;
 @synthesize failureError = _failureError;
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _body = [[NSMutableData alloc] init];
@@ -52,7 +53,8 @@ return __VA_ARGS__;                                                             
     return self;
 }
 
-- (id)initWithRequest:(RKRequest *)request {
+- (id)initWithRequest:(RKRequest *)request
+{
     self = [self init];
     if (self) {
         // We don't retain here as we're letting RKRequestQueue manage
@@ -63,7 +65,8 @@ return __VA_ARGS__;                                                             
     return self;
 }
 
-- (id)initWithRequest:(RKRequest*)request body:(NSData*)body headers:(NSDictionary*)headers {
+- (id)initWithRequest:(RKRequest *)request body:(NSData *)body headers:(NSDictionary *)headers
+{
     self = [self initWithRequest:request];
     if (self) {
         [_body release];
@@ -74,7 +77,8 @@ return __VA_ARGS__;                                                             
     return self;
 }
 
-- (id)initWithSynchronousRequest:(RKRequest*)request URLResponse:(NSHTTPURLResponse*)URLResponse body:(NSData*)body error:(NSError*)error {
+- (id)initWithSynchronousRequest:(RKRequest *)request URLResponse:(NSHTTPURLResponse *)URLResponse body:(NSData *)body error:(NSError *)error
+{
     self = [super init];
     if (self) {
         _request = request;
@@ -87,7 +91,8 @@ return __VA_ARGS__;                                                             
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     _request = nil;
     [_httpURLResponse release];
     _httpURLResponse = nil;
@@ -100,16 +105,18 @@ return __VA_ARGS__;                                                             
     [super dealloc];
 }
 
-- (BOOL)hasCredentials {
+- (BOOL)hasCredentials
+{
     return _request.username && _request.password;
 }
 
-- (BOOL)isServerTrusted:(SecTrustRef)trust {
+- (BOOL)isServerTrusted:(SecTrustRef)trust
+{
     BOOL proceed = NO;
 
     if (_request.disableCertificateValidation) {
         proceed = YES;
-    } else if ([_request.additionalRootCertificates count] > 0 ) {
+    } else if ([_request.additionalRootCertificates count] > 0) {
         CFArrayRef rootCerts = (CFArrayRef)[_request.additionalRootCertificates allObjects];
         SecTrustResultType result;
         OSStatus returnCode;
@@ -134,7 +141,8 @@ return __VA_ARGS__;                                                             
 }
 
 // Handle basic auth & SSL certificate validation
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
+- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
     RKResponseIgnoreDelegateIfCancelled();
     RKLogDebug(@"Received authentication challenge");
 
@@ -150,18 +158,19 @@ return __VA_ARGS__;                                                             
 
     if ([challenge previousFailureCount] == 0) {
         NSURLCredential *newCredential;
-        newCredential=[NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
-                                                 password:[NSString stringWithFormat:@"%@", _request.password]
-                                              persistence:NSURLCredentialPersistenceNone];
+        newCredential = [NSURLCredential credentialWithUser:[NSString stringWithFormat:@"%@", _request.username]
+                                                   password:[NSString stringWithFormat:@"%@", _request.password]
+                                                persistence:NSURLCredentialPersistenceNone];
         [[challenge sender] useCredential:newCredential
                forAuthenticationChallenge:challenge];
     } else {
-        RKLogWarning(@"Failed authentication challenge after %ld failures", (long) [challenge previousFailureCount]);
+        RKLogWarning(@"Failed authentication challenge after %ld failures", (long)[challenge previousFailureCount]);
         [[challenge sender] cancelAuthenticationChallenge:challenge];
     }
 }
 
-- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)space {
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)space
+{
     RKResponseIgnoreDelegateIfCancelled(NO);
     RKLogDebug(@"Asked if canAuthenticateAgainstProtectionSpace: with authenticationMethod = %@", [space authenticationMethod]);
     if ([[space authenticationMethod] isEqualToString:NSURLAuthenticationMethodServerTrust]) {
@@ -183,7 +192,8 @@ return __VA_ARGS__;                                                             
     return hasCredentials;
 }
 
-- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response {
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
+{
   if (nil == response || _request.followRedirect) {
     RKLogDebug(@"Proceeding with request to %@", request);
     return request;
@@ -193,7 +203,8 @@ return __VA_ARGS__;                                                             
   }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
     RKResponseIgnoreDelegateIfCancelled();
     [_body appendData:data];
     [_request invalidateTimeoutTimer];
@@ -202,9 +213,10 @@ return __VA_ARGS__;                                                             
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response {
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSHTTPURLResponse *)response
+{
     RKResponseIgnoreDelegateIfCancelled();
-    RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long) [response statusCode]);
+    RKLogDebug(@"NSHTTPURLResponse Status Code: %ld", (long)[response statusCode]);
     RKLogDebug(@"Headers: %@", [response allHeaderFields]);
     _httpURLResponse = [response retain];
     [_request invalidateTimeoutTimer];
@@ -213,20 +225,23 @@ return __VA_ARGS__;                                                             
     }
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
     RKResponseIgnoreDelegateIfCancelled();
     RKLogTrace(@"Read response body: %@", [self bodyAsString]);
     [_request didFinishLoad:self];
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
     RKResponseIgnoreDelegateIfCancelled();
     _failureError = [error retain];
     [_request invalidateTimeoutTimer];
     [_request didFailLoadWithError:_failureError];
 }
 
-- (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request {
+- (NSInputStream *)connection:(NSURLConnection *)connection needNewBodyStream:(NSURLRequest *)request
+{
     RKResponseIgnoreDelegateIfCancelled(nil);
     RKLogWarning(@"RestKit was asked to retransmit a new body stream for a request. Possible connection error or authentication challenge?");
     return nil;
@@ -238,7 +253,8 @@ return __VA_ARGS__;                                                             
 // Therefore, we ensure the delegate recieves the did start loading here and
 // in connection:didReceiveResponse: to ensure that the RKRequestDelegate
 // callbacks get called in the correct order.
-- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
+- (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
+{
     RKResponseIgnoreDelegateIfCancelled();
     [_request invalidateTimeoutTimer];
 
@@ -247,37 +263,44 @@ return __VA_ARGS__;                                                             
     }
 }
 
-- (NSString*)localizedStatusCodeString {
+- (NSString *)localizedStatusCodeString
+{
     return [NSHTTPURLResponse localizedStringForStatusCode:[self statusCode]];
 }
 
-- (NSData *)body {
+- (NSData *)body
+{
     return _body;
 }
 
-- (NSString *)bodyEncodingName {
+- (NSString *)bodyEncodingName
+{
     return [_httpURLResponse textEncodingName];
 }
 
-- (NSStringEncoding)bodyEncoding {
+- (NSStringEncoding)bodyEncoding
+{
     CFStringEncoding cfEncoding = kCFStringEncodingInvalidId;
     NSString *textEncodingName = [self bodyEncodingName];
     if (textEncodingName) {
-        cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef) textEncodingName);
+        cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)textEncodingName);
     }
     return (cfEncoding ==  kCFStringEncodingInvalidId) ? self.request.defaultHTTPEncoding : CFStringConvertEncodingToNSStringEncoding(cfEncoding);
 }
 
-- (NSString *)bodyAsString {
+- (NSString *)bodyAsString
+{
     return [[[NSString alloc] initWithData:self.body encoding:[self bodyEncoding]] autorelease];
 }
 
-- (id)bodyAsJSON {
+- (id)bodyAsJSON
+{
     [NSException raise:nil format:@"Reimplemented as parsedBody"];
     return nil;
 }
 
-- (id)parsedBody:(NSError**)error {
+- (id)parsedBody:(NSError **)error
+{
     id<RKParser> parser = [[RKParserRegistry sharedRegistry] parserForMIMEType:[self MIMEType]];
     if (! parser) {
         RKLogWarning(@"Unable to parse response body: no parser registered for MIME Type '%@'", [self MIMEType]);
@@ -293,7 +316,8 @@ return __VA_ARGS__;                                                             
     return object;
 }
 
-- (NSString*)failureErrorDescription {
+- (NSString *)failureErrorDescription
+{
     if ([self isFailure]) {
         return [_failureError localizedDescription];
     } else {
@@ -301,161 +325,195 @@ return __VA_ARGS__;                                                             
     }
 }
 
-- (BOOL)wasLoadedFromCache {
+- (BOOL)wasLoadedFromCache
+{
     return (_responseHeaders != nil);
 }
 
-- (NSURL*)URL {
+- (NSURL *)URL
+{
     if ([self wasLoadedFromCache]) {
         return [NSURL URLWithString:[_responseHeaders valueForKey:RKRequestCacheURLHeadersKey]];
     }
     return [_httpURLResponse URL];
 }
 
-- (NSString*)MIMEType {
+- (NSString *)MIMEType
+{
     if ([self wasLoadedFromCache]) {
         return [_responseHeaders valueForKey:RKRequestCacheMIMETypeHeadersKey];
     }
     return [_httpURLResponse MIMEType];
 }
 
-- (NSInteger)statusCode {
+- (NSInteger)statusCode
+{
     if ([self wasLoadedFromCache]) {
         return [[_responseHeaders valueForKey:RKRequestCacheStatusCodeHeadersKey] intValue];
     }
     return ([_httpURLResponse respondsToSelector:@selector(statusCode)] ? [_httpURLResponse statusCode] : 200);
 }
 
-- (NSDictionary*)allHeaderFields {
+- (NSDictionary *)allHeaderFields
+{
     if ([self wasLoadedFromCache]) {
         return _responseHeaders;
     }
     return ([_httpURLResponse respondsToSelector:@selector(allHeaderFields)] ? [_httpURLResponse allHeaderFields] : nil);
 }
 
-- (NSArray*)cookies {
+- (NSArray *)cookies
+{
     return [NSHTTPCookie cookiesWithResponseHeaderFields:self.allHeaderFields forURL:self.URL];
 }
 
-- (BOOL)isFailure {
+- (BOOL)isFailure
+{
     return (nil != _failureError);
 }
 
-- (BOOL)isInvalid {
+- (BOOL)isInvalid
+{
     return ([self statusCode] < 100 || [self statusCode] > 600);
 }
 
-- (BOOL)isInformational {
+- (BOOL)isInformational
+{
     return ([self statusCode] >= 100 && [self statusCode] < 200);
 }
 
-- (BOOL)isSuccessful {
+- (BOOL)isSuccessful
+{
     return (([self statusCode] >= 200 && [self statusCode] < 300) || ([self wasLoadedFromCache]));
 }
 
-- (BOOL)isRedirection {
+- (BOOL)isRedirection
+{
     return ([self statusCode] >= 300 && [self statusCode] < 400);
 }
 
-- (BOOL)isClientError {
+- (BOOL)isClientError
+{
     return ([self statusCode] >= 400 && [self statusCode] < 500);
 }
 
-- (BOOL)isServerError {
+- (BOOL)isServerError
+{
     return ([self statusCode] >= 500 && [self statusCode] < 600);
 }
 
-- (BOOL)isError {
+- (BOOL)isError
+{
     return ([self isClientError] || [self isServerError]);
 }
 
-- (BOOL)isOK {
+- (BOOL)isOK
+{
     return ([self statusCode] == 200);
 }
 
-- (BOOL)isCreated {
+- (BOOL)isCreated
+{
     return ([self statusCode] == 201);
 }
 
-- (BOOL)isNoContent {
+- (BOOL)isNoContent
+{
     return ([self statusCode] == 204);
 }
 
-- (BOOL)isNotModified {
+- (BOOL)isNotModified
+{
     return ([self statusCode] == 304);
 }
 
-- (BOOL)isUnauthorized {
+- (BOOL)isUnauthorized
+{
     return ([self statusCode] == 401);
 }
 
-- (BOOL)isForbidden {
+- (BOOL)isForbidden
+{
     return ([self statusCode] == 403);
 }
 
-- (BOOL)isNotFound {
+- (BOOL)isNotFound
+{
     return ([self statusCode] == 404);
 }
 
-- (BOOL)isConflict {
+- (BOOL)isConflict
+{
     return ([self statusCode] == 409);
 }
 
-- (BOOL)isGone {
+- (BOOL)isGone
+{
     return ([self statusCode] == 410);
 }
 
-- (BOOL)isUnprocessableEntity {
+- (BOOL)isUnprocessableEntity
+{
     return ([self statusCode] == 422);
 }
 
-- (BOOL)isRedirect {
+- (BOOL)isRedirect
+{
     return ([self statusCode] == 301 || [self statusCode] == 302 || [self statusCode] == 303 || [self statusCode] == 307);
 }
 
-- (BOOL)isEmpty {
+- (BOOL)isEmpty
+{
     return ([self statusCode] == 201 || [self statusCode] == 204 || [self statusCode] == 304);
 }
 
-- (BOOL)isServiceUnavailable {
+- (BOOL)isServiceUnavailable
+{
     return ([self statusCode] == 503);
 }
 
-- (NSString*)contentType {
+- (NSString *)contentType
+{
     return ([[self allHeaderFields] objectForKey:@"Content-Type"]);
 }
 
-- (NSString*)contentLength {
+- (NSString *)contentLength
+{
     return ([[self allHeaderFields] objectForKey:@"Content-Length"]);
 }
 
-- (NSString*)location {
+- (NSString *)location
+{
     return ([[self allHeaderFields] objectForKey:@"Location"]);
 }
 
-- (BOOL)isHTML {
-    NSString* contentType = [self contentType];
+- (BOOL)isHTML
+{
+    NSString *contentType = [self contentType];
     return (contentType && ([contentType rangeOfString:@"text/html"
                                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0 ||
                            [self isXHTML]));
 }
 
-- (BOOL)isXHTML {
-    NSString* contentType = [self contentType];
+- (BOOL)isXHTML
+{
+    NSString *contentType = [self contentType];
     return (contentType &&
             [contentType rangeOfString:@"application/xhtml+xml"
                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
-- (BOOL)isXML {
-    NSString* contentType = [self contentType];
+- (BOOL)isXML
+{
+    NSString *contentType = [self contentType];
     return (contentType &&
             [contentType rangeOfString:@"application/xml"
                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);
 }
 
-- (BOOL)isJSON {
-    NSString* contentType = [self contentType];
+- (BOOL)isJSON
+{
+    NSString *contentType = [self contentType];
     return (contentType &&
             [contentType rangeOfString:@"application/json"
                                options:NSCaseInsensitiveSearch|NSAnchoredSearch].length > 0);

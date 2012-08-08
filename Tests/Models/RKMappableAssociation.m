@@ -25,7 +25,8 @@
 @synthesize testString = _testString;
 @synthesize date = _date;
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_testString release];
     [_date release];
     [super dealloc];

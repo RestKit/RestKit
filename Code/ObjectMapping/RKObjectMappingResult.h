@@ -26,14 +26,14 @@
 }
 
 - (id)initWithDictionary:(id)dictionary;
-+ (RKObjectMappingResult*)mappingResultWithDictionary:(NSDictionary*)keyPathToMappedObjects;
++ (RKObjectMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects;
 
 /**
  Return the mapping result as a dictionary
  */
-- (NSDictionary*)asDictionary;
+- (NSDictionary *)asDictionary;
 - (id)asObject;
-- (NSArray*)asCollection;
-- (NSError*)asError;
+- (NSArray *)asCollection;
+- (NSError *)asError;
 
 @end

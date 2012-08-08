@@ -66,7 +66,7 @@
     return [NSArray arrayWithObject:string];
 }
 
-- (NSArray *)searchWithTerms:(NSArray*)searchTerms onProperties:(NSArray *)properties inCollection:(NSArray *)collection compoundSelector:(SEL)selector
+- (NSArray *)searchWithTerms:(NSArray *)searchTerms onProperties:(NSArray *)properties inCollection:(NSArray *)collection compoundSelector:(SEL)selector
 {
     NSPredicate *searchPredicate = nil;
 

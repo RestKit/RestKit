@@ -27,9 +27,10 @@
 
 @implementation RKJSONParserJSONKitTest
 
-- (void)testShouldParseEmptyResults {
-    NSError* error = nil;
-    RKJSONParserJSONKit* parser = [[RKJSONParserJSONKit new] autorelease];
+- (void)testShouldParseEmptyResults
+{
+    NSError *error = nil;
+    RKJSONParserJSONKit *parser = [[RKJSONParserJSONKit new] autorelease];
     id parsingResult = [parser objectFromString:nil error:&error];
     assertThat(parsingResult, is(equalTo(nil)));
     assertThat(error, is(equalTo(nil)));

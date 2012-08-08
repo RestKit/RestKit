@@ -21,13 +21,13 @@
 #import "ObjectMapping.h"
 
 // The default seed database filename. Used when the object store has not been initialized
-extern NSString* const RKDefaultSeedDatabaseFileName;
+extern NSString * const RKDefaultSeedDatabaseFileName;
 
 @protocol RKManagedObjectSeederDelegate
 @required
 
 // Invoked when the seeder creates a new object
-- (void)didSeedObject:(NSManagedObject*)object fromFile:(NSString*)fileName;
+- (void)didSeedObject:(NSManagedObject *)object fromFile:(NSString *)fileName;
 @end
 
 /**
@@ -39,36 +39,35 @@ extern NSString* const RKDefaultSeedDatabaseFileName;
  * data immediately available for use within Core Data.
  */
 @interface RKManagedObjectSeeder : NSObject {
-    RKObjectManager* _manager;
-    NSObject<RKManagedObjectSeederDelegate>* _delegate;
+    RKObjectManager *_manager;
 }
 
 // Delegate for seeding operations
-@property (nonatomic, assign) NSObject<RKManagedObjectSeederDelegate>* delegate;
+@property (nonatomic, assign) NSObject<RKManagedObjectSeederDelegate> *delegate;
 
 // Path to the generated seed database on disk
-@property (nonatomic, readonly) NSString* pathToSeedDatabase;
+@property (nonatomic, readonly) NSString *pathToSeedDatabase;
 
 /**
  * Generates a seed database using an object manager and a null terminated list of files. Exits
  * the seeding process and outputs an informational message
  */
-+ (void)generateSeedDatabaseWithObjectManager:(RKObjectManager*)objectManager fromFiles:(NSString*)fileName, ...;
++ (void)generateSeedDatabaseWithObjectManager:(RKObjectManager *)objectManager fromFiles:(NSString *)fileName, ...;
 
 /**
  * Returns an object seeder ready to begin seeding. Requires a fully configured instance of an object manager.
  */
-+ (RKManagedObjectSeeder*)objectSeederWithObjectManager:(RKObjectManager*)objectManager;
++ (RKManagedObjectSeeder *)objectSeederWithObjectManager:(RKObjectManager *)objectManager;
 
 /**
  * Seed the database with objects from the specified file(s). The list must be terminated by nil
  */
-- (void)seedObjectsFromFiles:(NSString*)fileName, ...;
+- (void)seedObjectsFromFiles:(NSString *)fileName, ...;
 
 /**
  * Seed the database with objects from the specified file using the supplied object mapping.
  */
-- (void)seedObjectsFromFile:(NSString*)fileName withObjectMapping:(RKObjectMapping*)nilOrObjectMapping;
+- (void)seedObjectsFromFile:(NSString *)fileName withObjectMapping:(RKObjectMapping *)nilOrObjectMapping;
 
 /**
  * Seed the database with objects from the specified file, from the specified bundle, using the supplied object mapping.

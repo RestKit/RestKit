@@ -27,10 +27,7 @@
 
  @see RKRequestSerializable
  */
-@interface RKRequestSerialization : NSObject <RKRequestSerializable> {
-    NSData *_data;
-    NSString *_MIMEType;
-}
+@interface RKRequestSerialization : NSObject <RKRequestSerializable>
 
 
 ///-----------------------------------------------------------------------------

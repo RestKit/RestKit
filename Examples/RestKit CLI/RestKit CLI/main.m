@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <RestKit/RestKit.h>
 
-int main (int argc, const char * argv[])
+int main (int argc, const char *argv[])
 {
 
     @autoreleasepool {

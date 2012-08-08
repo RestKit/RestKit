@@ -39,17 +39,20 @@
 @synthesize object = _object;
 @synthesize onSubmit = _onSubmit;
 
-+ (id)formForObject:(id)object {
++ (id)formForObject:(id)object
+{
     return [[[self alloc] initWithObject:object] autorelease];
 }
 
-+ (id)formForObject:(id)object usingBlock:(void (^)(RKForm *))block {
++ (id)formForObject:(id)object usingBlock:(void (^)(RKForm *))block
+{
     id form = [self formForObject:object];
     if (block) block(form);
     return form;
 }
 
-- (id)initWithObject:(id)object {
+- (id)initWithObject:(id)object
+{
     if (! object) {
         [NSException raise:NSInvalidArgumentException format:@"%@ - cannot initialize a form with a nil object",
          NSStringFromSelector(_cmd)];
@@ -70,7 +73,8 @@
     return self;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _sections = [NSMutableArray new];
@@ -80,7 +84,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeObserverForAttributes];
     _tableController = nil;
@@ -92,11 +97,13 @@
     [super dealloc];
 }
 
-- (void)addSection:(RKFormSection *)section {
+- (void)addSection:(RKFormSection *)section
+{
     [_sections addObject:section];
 }
 
-- (void)addSectionUsingBlock:(void (^)(RKFormSection *section))block {
+- (void)addSectionUsingBlock:(void (^)(RKFormSection *section))block
+{
     RKFormSection *section = [RKFormSection sectionInForm:self];
     block(section);
     [self addSection:section];
@@ -104,11 +111,13 @@
 
 #pragma mark - Table Item Management
 
-- (NSArray *)sections {
+- (NSArray *)sections
+{
     return [NSArray arrayWithArray:_sections];
 }
 
-- (RKFormSection *)returnOrInstantiateFirstSection {
+- (RKFormSection *)returnOrInstantiateFirstSection
+{
     if ([_sections count] > 0) {
         return [_sections objectAtIndex:0];
     }
@@ -119,7 +128,8 @@
     return section;
 }
 
-- (NSArray *)tableItems {
+- (NSArray *)tableItems
+{
     NSMutableArray *tableItems = [NSMutableArray array];
     for (RKFormSection *section in _sections) {
         [tableItems addObjectsFromArray:section.objects];
@@ -130,35 +140,43 @@
 
 #pragma mark - Proxies for Section 0
 
-- (void)addTableItem:(RKTableItem *)tableItem {
+- (void)addTableItem:(RKTableItem *)tableItem
+{
     [[self returnOrInstantiateFirstSection] addTableItem:tableItem];
 }
 
-- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType usingBlock:(void (^)(RKControlTableItem *tableItem))block {
+- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType usingBlock:(void (^)(RKControlTableItem *tableItem))block
+{
     [[self returnOrInstantiateFirstSection] addRowForAttribute:attributeKeyPath withControlType:controlType usingBlock:block];
 }
 
-- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType {
+- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType
+{
     [self addRowForAttribute:attributeKeyPath withControlType:controlType usingBlock:nil];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block
+{
     [[self returnOrInstantiateFirstSection] addRowMappingAttribute:attributeKeyPath toKeyPath:controlKeyPath onControl:control usingBlock:block];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control
+{
     [self addRowMappingAttribute:attributeKeyPath toKeyPath:controlKeyPath onControl:control usingBlock:nil];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block
+{
     [[self returnOrInstantiateFirstSection] addRowMappingAttribute:attributeKeyPath toKeyPath:cellKeyPath onCellWithClass:cellClass usingBlock:block];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass
+{
     [self addRowMappingAttribute:attributeKeyPath toKeyPath:cellKeyPath onCellWithClass:cellClass usingBlock:nil];
 }
 
-- (RKTableItem *)tableItemForAttribute:(NSString *)attributeKeyPath {
+- (RKTableItem *)tableItemForAttribute:(NSString *)attributeKeyPath
+{
     for (RKTableItem *tableItem in self.tableItems) {
         if ([[tableItem.userData valueForKey:@"__RestKit__attributeKeyPath"] isEqualToString:attributeKeyPath]) {
             return tableItem;
@@ -168,12 +186,14 @@
     return nil;
 }
 
-- (RKControlTableItem *)controlTableItemForAttribute:(NSString *)attributeKeyPath {
+- (RKControlTableItem *)controlTableItemForAttribute:(NSString *)attributeKeyPath
+{
     RKTableItem *tableItem = [self tableItemForAttribute:attributeKeyPath];
-    return [tableItem isKindOfClass:[RKControlTableItem class]] ? (RKControlTableItem *) tableItem : nil;
+    return [tableItem isKindOfClass:[RKControlTableItem class]] ? (RKControlTableItem *)tableItem : nil;
 }
 
-- (UIControl *)controlForAttribute:(NSString *)attributeKeyPath {
+- (UIControl *)controlForAttribute:(NSString *)attributeKeyPath
+{
     RKControlTableItem *tableItem = [self controlTableItemForAttribute:attributeKeyPath];
     return tableItem.control;
 }
@@ -187,7 +207,8 @@
  dictionary of the attribute names -> values currently set on the controls. We would then just fire up the mapping operation
  instead of doing this. It may be cleaner...
  */
-- (BOOL)commitValuesToObject {
+- (BOOL)commitValuesToObject
+{
     // Serialize the data out of the form
     RKObjectMapping *objectMapping = [RKObjectMapping mappingForClass:[self.object class]];
     NSMutableDictionary *controlValues = [NSMutableDictionary dictionaryWithCapacity:[self.tableItems count]];
@@ -237,7 +258,8 @@
     return success;
 }
 
-- (void)submit {
+- (void)submit
+{
     if ([self commitValuesToObject]) {
         // TODO: Add validations?
         if (self.onSubmit) self.onSubmit();
@@ -246,45 +268,53 @@
     }
 }
 
-- (void)validate {
+- (void)validate
+{
     // TODO: Implement me at some point...
 }
 
 #pragma mark - Subclass Hooks
 
-- (void)willLoadInTableController:(RKTableController *)tableController {
+- (void)willLoadInTableController:(RKTableController *)tableController
+{
 }
 
-- (void)didLoadInTableController:(RKTableController *)tableController {
+- (void)didLoadInTableController:(RKTableController *)tableController
+{
     _tableController = tableController;
 }
 
 #pragma mark - Key Value Observing
 
-- (void)addObserverForAttribute:(NSString *)attributeKeyPath {
+- (void)addObserverForAttribute:(NSString *)attributeKeyPath
+{
     if (! [_observedAttributes containsObject:attributeKeyPath]) {
         [self.object addObserver:self forKeyPath:attributeKeyPath options:NSKeyValueObservingOptionNew context:nil];
         [_observedAttributes addObject:attributeKeyPath];
     }
 }
 
-- (void)removeObserverForAttribute:(NSString *)attributeKeyPath {
+- (void)removeObserverForAttribute:(NSString *)attributeKeyPath
+{
     if ([_observedAttributes containsObject:attributeKeyPath]) {
         [self.object removeObserver:self forKeyPath:attributeKeyPath];
         [_observedAttributes removeObject:attributeKeyPath];
     }
 }
 
-- (void)removeObserverForAttributes {
+- (void)removeObserverForAttributes
+{
     for (NSString *keyPath in _observedAttributes) { [self.object removeObserver:self forKeyPath:keyPath]; };
     [_observedAttributes removeAllObjects];
 }
 
-- (void)formSection:(RKFormSection *)formSection didAddTableItem:(RKTableItem *)tableItem forAttributeAtKeyPath:(NSString *)attributeKeyPath {
+- (void)formSection:(RKFormSection *)formSection didAddTableItem:(RKTableItem *)tableItem forAttributeAtKeyPath:(NSString *)attributeKeyPath
+{
     [self addObserverForAttribute:attributeKeyPath];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
     NSAssert(object == self.object, @"Received unexpected KVO message for object that form is not bound to: %@", object);
     RKLogTrace(@"Received KVO message for keyPath (%@) for object (%@)", keyPath, object);
 
@@ -295,8 +325,9 @@
     [self.tableController reloadRowForObject:tableItem withRowAnimation:UITableViewRowAnimationFade];
 }
 
-- (void)reloadObjectOnContextDidSaveNotification:(NSNotification *)notification {
-    NSManagedObjectContext *context = (NSManagedObjectContext *) notification.object;
+- (void)reloadObjectOnContextDidSaveNotification:(NSNotification *)notification
+{
+    NSManagedObjectContext *context = (NSManagedObjectContext *)notification.object;
     NSSet *deletedObjects = [notification.userInfo objectForKey:NSDeletedObjectsKey];
     NSSet *updatedObjects = [notification.userInfo objectForKey:NSUpdatedObjectsKey];
 

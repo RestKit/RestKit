@@ -136,7 +136,7 @@ lcl_configure_by_name("App", level);
         @finally {                                                                      \
             lcl_configure_by_component(_component, _currentLevel);                      \
         }                                                                               \
-    } while(false);
+    } while (false);
 
 /**
  Temporarily turns off logging for the given logging component during execution of the block.

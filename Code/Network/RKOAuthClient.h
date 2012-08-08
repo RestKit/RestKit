@@ -97,16 +97,7 @@ typedef enum RKOAuthClientErrors {
 
  @see RKOAuthClientDelegate
  */
-@interface RKOAuthClient : NSObject {
-    NSString *_clientID;
-    NSString *_clientSecret;
-    NSString *_authorizationCode;
-    NSString *_authorizationURL;
-    NSString *_callbackURL;
-    NSString *_accessToken;
-    id<RKOAuthClientDelegate> _delegate;
-}
-
+@interface RKOAuthClient : NSObject
 
 ///-----------------------------------------------------------------------------
 /// @name Creating an RKOAuthClient

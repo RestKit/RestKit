@@ -32,15 +32,15 @@
 
 @optional
 
-- (void)objectMapperWillBeginMapping:(RKObjectMapper*)objectMapper;
-- (void)objectMapperDidFinishMapping:(RKObjectMapper*)objectMapper;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didAddError:(NSError*)error;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString*)keyPath withMapping:(RKObjectMappingDefinition *)mapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didNotFindMappableObjectAtKeyPath:(NSString*)keyPath;
+- (void)objectMapperWillBeginMapping:(RKObjectMapper *)objectMapper;
+- (void)objectMapperDidFinishMapping:(RKObjectMapper *)objectMapper;
+- (void)objectMapper:(RKObjectMapper *)objectMapper didAddError:(NSError *)error;
+- (void)objectMapper:(RKObjectMapper *)objectMapper didFindMappableObject:(id)object atKeyPath:(NSString *)keyPath withMapping:(RKObjectMappingDefinition *)mapping;
+- (void)objectMapper:(RKObjectMapper *)objectMapper didNotFindMappableObjectAtKeyPath:(NSString *)keyPath;
 
-- (void)objectMapper:(RKObjectMapper*)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
-- (void)objectMapper:(RKObjectMapper*)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError*)error atKeyPath:(NSString*)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
+- (void)objectMapper:(RKObjectMapper *)objectMapper willMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
+- (void)objectMapper:(RKObjectMapper *)objectMapper didMapFromObject:(id)sourceObject toObject:(id)destinationObject atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
+- (void)objectMapper:(RKObjectMapper *)objectMapper didFailMappingFromObject:(id)sourceObject toObject:(id)destinationObject withError:(NSError *)error atKeyPath:(NSString *)keyPath usingMapping:(RKObjectMappingDefinition *)objectMapping;
 @end
 
 /**
@@ -49,21 +49,21 @@
 @interface RKObjectMapper : NSObject {
   @protected
     RKMappingOperationQueue *operationQueue;
-    NSMutableArray* errors;
+    NSMutableArray *errors;
 }
 
 @property (nonatomic, readonly) id sourceObject;
 @property (nonatomic, assign) id targetObject;
-@property (nonatomic, readonly) RKObjectMappingProvider* mappingProvider;
+@property (nonatomic, readonly) RKObjectMappingProvider *mappingProvider;
 @property (nonatomic, assign) RKObjectMappingProviderContext context;
 @property (nonatomic, assign) id<RKObjectMapperDelegate> delegate;
-@property (nonatomic, readonly) NSArray* errors;
+@property (nonatomic, readonly) NSArray *errors;
 
-+ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider;
-- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider*)mappingProvider;
++ (id)mapperWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
+- (id)initWithObject:(id)object mappingProvider:(RKObjectMappingProvider *)mappingProvider;
 
 // Primary entry point for the mapper. Examines the type of object and processes it appropriately...
-- (RKObjectMappingResult*)performMapping;
+- (RKObjectMappingResult *)performMapping;
 - (NSUInteger)errorCount;
 
 @end

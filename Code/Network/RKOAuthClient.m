@@ -34,12 +34,14 @@
 @synthesize delegate = _delegate;
 @synthesize accessToken = _accessToken;
 
-+ (RKOAuthClient *)clientWithClientID:(NSString *)clientID secret:(NSString *)secret {
++ (RKOAuthClient *)clientWithClientID:(NSString *)clientID secret:(NSString *)secret
+{
     RKOAuthClient *client = [[[self alloc] initWithClientID:clientID secret:secret] autorelease];
     return client;
 }
 
-- (id)initWithClientID:(NSString *)clientID secret:(NSString *)secret {
+- (id)initWithClientID:(NSString *)clientID secret:(NSString *)secret
+{
     self = [super init];
     if (self) {
         _clientID = [clientID copy];
@@ -49,7 +51,8 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_clientID release];
     [_clientSecret release];
     [_accessToken release];
@@ -57,7 +60,8 @@
     [super dealloc];
 }
 
-- (void)validateAuthorizationCode {
+- (void)validateAuthorizationCode
+{
     NSString *httpBody = [NSString stringWithFormat:@"client_id=%@&client_secret=%@&code=%@&redirect_uri=%@&grant_type=authorization_code",
                           _clientID, _clientSecret, _authorizationCode, _callbackURL];
     NSURL *URL = [NSURL URLWithString:_authorizationURL];
@@ -68,13 +72,14 @@
     [theRequest send];
 }
 
-- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response {
+- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response
+{
     NSError *error = nil;
     NSString *errorResponse = nil;
 
     //Use the parsedBody answer in NSDictionary
 
-    NSDictionary* oauthResponse = (NSDictionary *) [response parsedBody:&error];
+    NSDictionary *oauthResponse = (NSDictionary *)[response parsedBody:&error];
     if ([oauthResponse isKindOfClass:[NSDictionary class]]) {
 
         //Check the if an access token comes in the response
@@ -96,23 +101,23 @@
             if ([errorResponse isEqualToString:@"invalid_grant"]) {
                 errorCode = RKOAuthClientErrorInvalidGrant;
             }
-            else if([errorResponse isEqualToString:@"unauthorized_client"]){
+            else if ([errorResponse isEqualToString:@"unauthorized_client"]) {
                 errorCode = RKOAuthClientErrorUnauthorizedClient;
             }
-            else if([errorResponse isEqualToString:@"invalid_client"]){
+            else if ([errorResponse isEqualToString:@"invalid_client"]) {
                 errorCode = RKOAuthClientErrorInvalidClient;
             }
-            else if([errorResponse isEqualToString:@"invalid_request"]){
+            else if ([errorResponse isEqualToString:@"invalid_request"]) {
                 errorCode = RKOAuthClientErrorInvalidRequest;
             }
-            else if([errorResponse isEqualToString:@"unsupported_grant_type"]){
+            else if ([errorResponse isEqualToString:@"unsupported_grant_type"]) {
                 errorCode = RKOAuthClientErrorUnsupportedGrantType;
             }
-            else if([errorResponse isEqualToString:@"invalid_scope"]){
+            else if ([errorResponse isEqualToString:@"invalid_scope"]) {
                 errorCode = RKOAuthClientErrorInvalidScope;
             }
 
-            NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+            NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                                       errorDescription, NSLocalizedDescriptionKey, nil];
             NSError *error = [NSError errorWithDomain:RKErrorDomain code:errorCode userInfo:userInfo];
 
@@ -162,8 +167,9 @@
 }
 
 
-- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error {
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error
+{
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                               error, NSUnderlyingErrorKey, nil];
     NSError *clientError = [NSError errorWithDomain:RKErrorDomain code:RKOAuthClientErrorRequestFailure userInfo:userInfo];
     if ([self.delegate respondsToSelector:@selector(OAuthClient:didFailLoadingRequest:withError:)]) {

@@ -26,7 +26,7 @@
 /**
  A subclass of NSDateFormatter that serves as translator between ASP.NET date serializations in JSON
  strings and NSDate objects. This is useful for properly mapping these dates from an ASP.NET driven backend.
- *NOTE* - DO NOT attempt to use setDateFormat: on this class.  It will return invalid results.
+ *NOTE *- DO NOT attempt to use setDateFormat: on this class.  It will return invalid results.
  */
 @interface RKDotNetDateFormatter : NSDateFormatter {
     NSRegularExpression *dotNetExpression;
@@ -61,7 +61,7 @@
  Where 1112715000000 is the number of milliseconds since January 1, 1970 00:00 GMT/UTC, and -0500 represents the
  timezone offset from GMT in 24-hour time. Negatives milliseconds are treated as dates before January 1, 1970.
 
- *NOTE* NSDate objects do not have timezones, and you should never change an actual date value based on a
+ *NOTE *NSDate objects do not have timezones, and you should never change an actual date value based on a
  timezone offset.  However, timezones are important when presenting dates to the user.  Therefore,
  If an offset is present in the ASP.NET string (it should be), we actually ignore the offset portion because
  we want to store the actual date value in its raw form, without any pollution of timezone information.
@@ -81,7 +81,7 @@
  Where 1112715000000 is the number of milliseconds since January 1, 1970 00:00 GMT/UTC, and +0000 is the
  timezone offset from GMT in 24-hour time.
 
- *NOTE* GMT (+0000) is assumed otherwise specified via setTimeZone:
+ *NOTE *GMT (+0000) is assumed otherwise specified via setTimeZone:
 
  @param date An NSDate
  @return The ASP.NET style string, /Date(1112715000000-0500)/
