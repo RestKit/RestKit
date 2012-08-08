@@ -131,7 +131,7 @@
 {
     NSFetchRequest *fetchRequest = [self.mappingProvider fetchRequestForResourcePath:self.resourcePath];
     if (fetchRequest) {
-        return [NSManagedObject objectsWithFetchRequest:fetchRequest];
+        return [[self.objectStore managedObjectContextForCurrentThread] executeFetchRequest:fetchRequest error:NULL];
     }
 
     return nil;
