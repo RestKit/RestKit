@@ -18,77 +18,86 @@
 
 @implementation RKTableViewSectionTest
 
-- (void)testInitializeASection {
-    RKTableSection* section = [RKTableSection section];
+- (void)testInitializeASection
+{
+    RKTableSection *section = [RKTableSection section];
     assertThat(section.objects, is(notNilValue()));
     assertThat(section.objects, is(empty()));
     assertThat(section.cellMappings, is(nilValue()));
 }
 
-- (void)testInitializeASectionWithObjectsAndMappings {
-    NSArray* objects = [NSArray array];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testInitializeASectionWithObjectsAndMappings
+{
+    NSArray *objects = [NSArray array];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThat(section.objects, is(notNilValue()));
     assertThat(section.cellMappings, isNot(nilValue()));
     assertThat(section.objects, is(equalTo(objects)));
     assertThat(section.cellMappings, is(equalTo(mappings)));
 }
 
-- (void)testMakeAMutableCopyOfTheObjectsItIsInitializedWith {
-    NSArray* objects = [NSArray array];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testMakeAMutableCopyOfTheObjectsItIsInitializedWith
+{
+    NSArray *objects = [NSArray array];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThat(section.objects, is(instanceOf([NSMutableArray class])));
 }
 
-- (void)testReturnTheNumberOfRowsInTheSection {
-    NSArray* objects = [NSArray arrayWithObject:@"first object"];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testReturnTheNumberOfRowsInTheSection
+{
+    NSArray *objects = [NSArray arrayWithObject:@"first object"];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThatInt(section.rowCount, is(equalToInt(1)));
 }
 
-- (void)testReturnTheObjectAtAGivenIndex {
-    NSArray* objects = [NSArray arrayWithObject:@"first object"];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testReturnTheObjectAtAGivenIndex
+{
+    NSArray *objects = [NSArray arrayWithObject:@"first object"];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThat([section objectAtIndex:0], is(equalTo(@"first object")));
 }
 
-- (void)testInsertTheObjectAtAGivenIndex {
-    NSArray* objects = [NSArray arrayWithObject:@"first object"];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testInsertTheObjectAtAGivenIndex
+{
+    NSArray *objects = [NSArray arrayWithObject:@"first object"];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThat([section objectAtIndex:0], is(equalTo(@"first object")));
     [section insertObject:@"inserted object" atIndex:0];
     assertThat([section objectAtIndex:0], is(equalTo(@"inserted object")));
 }
 
-- (void)testRemoveTheObjectAtAGivenIndex {
-    NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testRemoveTheObjectAtAGivenIndex
+{
+    NSArray *objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThat([section objectAtIndex:0], is(equalTo(@"first object")));
     assertThat([section objectAtIndex:1], is(equalTo(@"second object")));
     [section removeObjectAtIndex:0];
     assertThat([section objectAtIndex:0], is(equalTo(@"second object")));
 }
 
-- (void)testReplaceTheObjectAtAGivenIndex {
-    NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testReplaceTheObjectAtAGivenIndex
+{
+    NSArray *objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThat([section objectAtIndex:0], is(equalTo(@"first object")));
     assertThat([section objectAtIndex:1], is(equalTo(@"second object")));
     [section replaceObjectAtIndex:0 withObject:@"new first object"];
     assertThat([section objectAtIndex:0], is(equalTo(@"new first object")));
 }
 
-- (void)testMoveTheObjectAtAGivenIndex {
-    NSArray* objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
-    RKTableViewCellMappings* mappings = [RKTableViewCellMappings new];
-    RKTableSection* section = [RKTableSection sectionForObjects:objects withMappings:mappings];
+- (void)testMoveTheObjectAtAGivenIndex
+{
+    NSArray *objects = [NSArray arrayWithObjects:@"first object", @"second object", nil];
+    RKTableViewCellMappings *mappings = [RKTableViewCellMappings new];
+    RKTableSection *section = [RKTableSection sectionForObjects:objects withMappings:mappings];
     assertThat([section objectAtIndex:0], is(equalTo(@"first object")));
     assertThat([section objectAtIndex:1], is(equalTo(@"second object")));
     [section moveObjectAtIndex:1 toIndex:0];

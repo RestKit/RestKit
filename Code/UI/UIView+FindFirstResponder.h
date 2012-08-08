@@ -22,6 +22,6 @@
 
 @interface UIView (FindFirstResponder)
 
-- (UIView*)findFirstResponder;
+- (UIView *)findFirstResponder;
 
 @end

@@ -15,15 +15,17 @@
 @synthesize state = _state;
 @synthesize country = _country;
 
-+ (RKTestAddress*)address {
++ (RKTestAddress *)address
+{
     return [[self new] autorelease];
 }
 
 // isEqual: is consulted by the mapping operation
 // to determine if assocation values should be set
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
     if ([object isKindOfClass:[RKTestAddress class]]) {
-        return [[(RKTestAddress*)object addressID] isEqualToNumber:self.addressID];
+        return [[(RKTestAddress *)object addressID] isEqualToNumber:self.addressID];
     } else {
         return NO;
     }

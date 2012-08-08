@@ -32,25 +32,29 @@
 @synthesize delegate = _delegate;
 @synthesize objectMappingForDataBlock = _objectMappingForDataBlock;
 
-+ (RKDynamicObjectMapping*)dynamicMapping {
++ (RKDynamicObjectMapping *)dynamicMapping
+{
     return [[self new] autorelease];
 }
 
 #if NS_BLOCKS_AVAILABLE
 
-+ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *))block {
-    RKDynamicObjectMapping* mapping = [self dynamicMapping];
++ (RKDynamicObjectMapping *)dynamicMappingUsingBlock:(void(^)(RKDynamicObjectMapping *))block
+{
+    RKDynamicObjectMapping *mapping = [self dynamicMapping];
     block(mapping);
     return mapping;
 }
 
-+ (RKDynamicObjectMapping*)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping*))block {
++ (RKDynamicObjectMapping *)dynamicMappingWithBlock:(void(^)(RKDynamicObjectMapping *))block
+{
     return [self dynamicMappingUsingBlock:block];
 }
 
 #endif
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _matchers = [NSMutableArray new];
@@ -59,26 +63,29 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_matchers release];
     [super dealloc];
 }
 
-- (void)setObjectMapping:(RKObjectMapping*)objectMapping whenValueOfKeyPath:(NSString*)keyPath isEqualTo:(id)value {
+- (void)setObjectMapping:(RKObjectMapping *)objectMapping whenValueOfKeyPath:(NSString *)keyPath isEqualTo:(id)value
+{
     RKLogDebug(@"Adding dynamic object mapping for key '%@' with value '%@' to destination class: %@", keyPath, value, NSStringFromClass(objectMapping.objectClass));
-    RKDynamicObjectMappingMatcher* matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
+    RKDynamicObjectMappingMatcher *matcher = [[RKDynamicObjectMappingMatcher alloc] initWithKey:keyPath value:value objectMapping:objectMapping];
     [_matchers addObject:matcher];
     [matcher release];
 }
 
-- (RKObjectMapping*)objectMappingForDictionary:(NSDictionary*)data {
+- (RKObjectMapping *)objectMappingForDictionary:(NSDictionary *)data
+{
     NSAssert([data isKindOfClass:[NSDictionary class]], @"Dynamic object mapping can only be performed on NSDictionary mappables, got %@", NSStringFromClass([data class]));
-    RKObjectMapping* mapping = nil;
+    RKObjectMapping *mapping = nil;
 
     RKLogTrace(@"Performing dynamic object mapping for mappable data: %@", data);
 
     // Consult the declarative matchers first
-    for (RKDynamicObjectMappingMatcher* matcher in _matchers) {
+    for (RKDynamicObjectMappingMatcher *matcher in _matchers) {
         if ([matcher isMatchForData:data]) {
             RKLogTrace(@"Found declarative match for data: %@.", [matcher matchDescription]);
             return matcher.objectMapping;

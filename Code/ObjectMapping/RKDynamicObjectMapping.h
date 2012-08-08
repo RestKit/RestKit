@@ -42,10 +42,6 @@ typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
  */
 @interface RKDynamicObjectMapping : RKObjectMappingDefinition {
     NSMutableArray *_matchers;
-    id<RKDynamicObjectMappingDelegate> _delegate;
-    #ifdef NS_BLOCKS_AVAILABLE
-    RKDynamicObjectMappingDelegateBlock _objectMappingForDataBlock;
-    #endif
 }
 
 /**
@@ -87,7 +83,7 @@ typedef RKObjectMapping *(^RKDynamicObjectMappingDelegateBlock)(id);
  the gender of the person. When the gender is 'male', we want to use the Boy class and when then the gender
  is 'female' we want to use the Girl class. We might define our dynamic mapping like so:
 
-    RKDynamicObjectMapping* mapping = [RKDynamicObjectMapping dynamicMapping];
+    RKDynamicObjectMapping *mapping = [RKDynamicObjectMapping dynamicMapping];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"male"];
     [mapping setObjectMapping:boyMapping whenValueOfKeyPath:@"gender" isEqualTo:@"female"];
  */

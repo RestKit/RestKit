@@ -29,28 +29,32 @@
 
 @implementation RKParamsAttachmentTest
 
-- (void)testShouldRaiseAnExceptionWhenTheAttachedFileDoesNotExist {
-    NSException* exception = nil;
+- (void)testShouldRaiseAnExceptionWhenTheAttachedFileDoesNotExist
+{
+    NSException *exception = nil;
     @try {
         [[RKParamsAttachment alloc] initWithName:@"woot" file:@"/this/is/an/invalid/path"];
     }
-    @catch (NSException* e) {
+    @catch (NSException *e) {
         exception = e;
     }
     assertThat(exception, isNot(nilValue()));
 }
 
-- (void)testShouldReturnAnMD5ForSimpleValues {
+- (void)testShouldReturnAnMD5ForSimpleValues
+{
     RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" value:@"bar"] autorelease];
     assertThat([attachment MD5], is(equalTo(@"37b51d194a7513e45b56f6524f2d51f2")));
 }
 
-- (void)testShouldReturnAnMD5ForNSData {
+- (void)testShouldReturnAnMD5ForNSData
+{
     RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" data:[@"bar" dataUsingEncoding:NSUTF8StringEncoding]] autorelease];
     assertThat([attachment MD5], is(equalTo(@"37b51d194a7513e45b56f6524f2d51f2")));
 }
 
-- (void)testShouldReturnAnMD5ForFiles {
+- (void)testShouldReturnAnMD5ForFiles
+{
     NSString *filePath = [RKTestFixture pathForFixture:@"blake.png"];
     RKParamsAttachment *attachment = [[[RKParamsAttachment alloc] initWithName:@"foo" file:filePath] autorelease];
     assertThat([attachment MD5], is(equalTo(@"db6cb9d879b58e7e15a595632af345cd")));

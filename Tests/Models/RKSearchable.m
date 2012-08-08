@@ -26,7 +26,8 @@
 @dynamic title;
 @dynamic body;
 
-+ (NSArray*)searchableAttributes {
++ (NSArray *)searchableAttributes
+{
     return [NSArray arrayWithObjects:@"title", @"body", nil];
 }
 

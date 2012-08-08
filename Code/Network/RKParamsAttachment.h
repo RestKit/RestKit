@@ -30,12 +30,7 @@
  class.
  */
 @interface RKParamsAttachment : NSObject {
-    NSString *_name;
-    NSString *_fileName;
-    NSString *_MIMEType;
-
     @private
-    NSString *_filePath;
     NSData *_body;
     NSInputStream *_bodyStream;
     NSData *_MIMEHeader;
@@ -43,7 +38,6 @@
     NSUInteger _bodyLength;
     NSUInteger _length;
     NSUInteger _delivered;
-    id<NSObject> _value;
 }
 
 

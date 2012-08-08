@@ -24,11 +24,13 @@
 
 @synthesize form = _form;
 
-+ (id)sectionInForm:(RKForm *)form {
++ (id)sectionInForm:(RKForm *)form
+{
     return [[[self alloc] initWithForm:form] autorelease];
 }
 
-- (id)initWithForm:(RKForm *)form {
+- (id)initWithForm:(RKForm *)form
+{
     self = [super init];
     if (self) {
         self.form = form;
@@ -37,40 +39,43 @@
     return self;
 }
 
-- (id)object {
+- (id)object
+{
     return self.form.object;
 }
 
-- (void)addTableItem:(RKTableItem *)tableItem {
+- (void)addTableItem:(RKTableItem *)tableItem
+{
     // We assume if you haven't configured any mappings by
     // the time the item is added to the section, you probably want the defaults
     if ([tableItem.cellMapping.attributeMappings count] == 0) {
         [tableItem.cellMapping addDefaultMappings];
     }
     // TODO: WTF? _objects is declared @protected but using _objects here fails to build...
-    [(NSMutableArray*)self.objects addObject:tableItem];
+    [(NSMutableArray *)self.objects addObject:tableItem];
 }
 
-- (UIControl *)controlWithType:(RKFormControlType)controlType {
+- (UIControl *)controlWithType:(RKFormControlType)controlType
+{
     UIControl *control = nil;
     switch (controlType) {
         case RKFormControlTypeTextField:
         case RKFormControlTypeTextFieldSecure:;
             UITextField *textField = [[[UITextField alloc] init] autorelease];
             textField.secureTextEntry = (controlType == RKFormControlTypeTextFieldSecure);
-            control = (UIControl *) textField;
+            control = (UIControl *)textField;
             break;
 
         case RKFormControlTypeSwitch:;
-            control = [(UIControl *) [UISwitch new] autorelease];
+            control = [(UIControl *)[UISwitch new] autorelease];
             break;
 
         case RKFormControlTypeSlider:;
-            control = [(UIControl *) [UISlider new] autorelease];
+            control = [(UIControl *)[UISlider new] autorelease];
             break;
 
         case RKFormControlTypeLabel:;
-            control = [(UIControl *) [UILabel new] autorelease];
+            control = [(UIControl *)[UILabel new] autorelease];
             break;
 
         case RKFormControlTypeUnknown:
@@ -82,14 +87,15 @@
     return control;
 }
 
-- (NSString *)keyPathForControl:(UIControl *)control {
+- (NSString *)keyPathForControl:(UIControl *)control
+{
     if ([control isKindOfClass:[UITextField class]] ||
         [control isKindOfClass:[UILabel class]]) {
         return @"text";
     } else if ([control isKindOfClass:[UISwitch class]]) {
-        return  @"on";
+        return @"on";
     } else if ([control isKindOfClass:[UISlider class]]) {
-        return  @"value";
+        return @"value";
     } else {
         [NSException raise:NSInvalidArgumentException format:@"*** -[%@ %@]: unable to define mapping for control type %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd), NSStringFromClass([control class])];
     }
@@ -97,7 +103,8 @@
     return nil;
 }
 
-- (void)addAttributeMapping:(RKObjectAttributeMapping *)attributeMapping forKeyPath:(NSString *)attributeKeyPath toTableItem:(RKTableItem *)tableItem {
+- (void)addAttributeMapping:(RKObjectAttributeMapping *)attributeMapping forKeyPath:(NSString *)attributeKeyPath toTableItem:(RKTableItem *)tableItem
+{
     [tableItem.cellMapping addAttributeMapping:attributeMapping];
 
     // Use KVC storage to associate the table item with object being mapped
@@ -110,7 +117,8 @@
     [self addTableItem:tableItem];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block
+{
     RKControlTableItem *tableItem = [RKControlTableItem tableItemWithControl:control];
     RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
     attributeMapping.sourceKeyPath = [NSString stringWithFormat:@"userData.__RestKit__object.%@", attributeKeyPath];
@@ -120,21 +128,25 @@
     if (block) block(tableItem);
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control
+{
     [self addRowMappingAttribute:attributeKeyPath toKeyPath:controlKeyPath onControl:control usingBlock:nil];
 }
 
-- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType usingBlock:(void (^)(RKControlTableItem *tableItem))block {
+- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType usingBlock:(void (^)(RKControlTableItem *tableItem))block
+{
     id control = [self controlWithType:controlType];
     NSString *controlKeyPath = [self keyPathForControl:control];
     [self addRowMappingAttribute:attributeKeyPath toKeyPath:controlKeyPath onControl:control usingBlock:block];
 }
 
-- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType {
+- (void)addRowForAttribute:(NSString *)attributeKeyPath withControlType:(RKFormControlType)controlType
+{
     [self addRowForAttribute:attributeKeyPath withControlType:controlType usingBlock:nil];
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block
+{
     RKTableItem *tableItem = [RKTableItem tableItem];
     tableItem.cellMapping.cellClass = cellClass;
     RKObjectAttributeMapping *attributeMapping = [[RKObjectAttributeMapping new] autorelease];
@@ -145,7 +157,8 @@
     if (block) block(tableItem);
 }
 
-- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass {
+- (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass
+{
     [self addRowMappingAttribute:attributeKeyPath toKeyPath:cellKeyPath onCellWithClass:cellClass usingBlock:nil];
 }
 

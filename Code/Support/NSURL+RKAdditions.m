@@ -27,11 +27,13 @@ RK_FIX_CATEGORY_BUG(NSURL_RKAdditions)
 
 @implementation NSURL (RKAdditions)
 
-- (NSDictionary *)queryParameters {
+- (NSDictionary *)queryParameters
+{
     return [NSDictionary dictionaryWithURLEncodedString:self.query];
 }
 
-- (NSString *)MIMETypeForPathExtension {
+- (NSString *)MIMETypeForPathExtension
+{
     return [[self path] MIMETypeForPathExtension];
 }
 

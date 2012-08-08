@@ -27,8 +27,9 @@
 
 @implementation RKURLTest
 
-- (void)testShouldNotExplodeBecauseOfUnicodeCharacters {
-    NSException* failed = nil;
+- (void)testShouldNotExplodeBecauseOfUnicodeCharacters
+{
+    NSException *failed = nil;
     @try {
         [RKURL URLWithBaseURLString:@"http://test.com" resourcePath:@"/places.json?category=Automóviles"];
     }
@@ -40,79 +41,94 @@
     }
 }
 
-- (void)testShouldEscapeQueryParameters {
-    NSDictionary* queryParams = [NSDictionary dictionaryWithObjectsAndKeys:@"What is your #1 e-mail?", @"question", @"john+restkit@gmail.com", @"answer", nil];
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParameters:queryParams];
+- (void)testShouldEscapeQueryParameters
+{
+    NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:@"What is your #1 e-mail?", @"question", @"john+restkit@gmail.com", @"answer", nil];
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParameters:queryParams];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test?answer=john%2Brestkit%40gmail.com&question=What%20is%20your%20%231%20e-mail%3F")));
 }
 
-- (void)testShouldHandleNilQueryParameters {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParameters:nil];
+- (void)testShouldHandleNilQueryParameters
+{
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParameters:nil];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test")));
 }
 
-- (void)testShouldHandleEmptyQueryParameters {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParameters:[NSDictionary dictionary]];
+- (void)testShouldHandleEmptyQueryParameters
+{
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test" queryParameters:[NSDictionary dictionary]];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test")));
 }
 
-- (void)testShouldHandleResourcePathWithoutLeadingSlash {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"test" queryParameters:nil];
+- (void)testShouldHandleResourcePathWithoutLeadingSlash
+{
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"test" queryParameters:nil];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test")));
 }
 
-- (void)testShouldHandleEmptyResourcePath {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"" queryParameters:nil];
+- (void)testShouldHandleEmptyResourcePath
+{
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"" queryParameters:nil];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org")));
 }
 
-- (void)testShouldHandleBaseURLsWithAPath {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org/this" resourcePath:@"/test" queryParameters:nil];
+- (void)testShouldHandleBaseURLsWithAPath
+{
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org/this" resourcePath:@"/test" queryParameters:nil];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/this/test")));
 }
 
-- (void)testShouldSimplifyURLsWithSeveralSlashes {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org//this//" resourcePath:@"/test" queryParameters:nil];
+- (void)testShouldSimplifyURLsWithSeveralSlashes
+{
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org//this//" resourcePath:@"/test" queryParameters:nil];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/this/test")));
 }
 
-- (void)testShouldPreserveTrailingSlash {
-    RKURL* URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test/" queryParameters:nil];
+- (void)testShouldPreserveTrailingSlash
+{
+    RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/test/" queryParameters:nil];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org/test/")));
 }
 
-- (void)testShouldReturnTheMIMETypeForURL {
+- (void)testShouldReturnTheMIMETypeForURL
+{
     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/path/to/resource.xml"];
     assertThat([URL MIMETypeForPathExtension], is(equalTo(@"application/xml")));
 }
 
-- (void)testInitializationFromStringIsEqualToAbsoluteString {
+- (void)testInitializationFromStringIsEqualToAbsoluteString
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org"];
     assertThat([URL absoluteString], is(equalTo(@"http://restkit.org")));
 }
 
-- (void)testInitializationFromStringHasSelfAsBaseURL {
+- (void)testInitializationFromStringHasSelfAsBaseURL
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org"];
     assertThat([[URL baseURL] absoluteString], is(equalTo(@"http://restkit.org")));
 }
 
-- (void)testInitializationFromStringHasNilResourcePath {
+- (void)testInitializationFromStringHasNilResourcePath
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org"];
     assertThat([URL resourcePath], is(nilValue()));
 }
 
-- (void)testInitializationFromStringHasNilQueryParameters {
+- (void)testInitializationFromStringHasNilQueryParameters
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org"];
     assertThat([URL query], is(nilValue()));
     assertThat([URL queryParameters], is(nilValue()));
 }
 
-- (void)testInitializationFromStringIncludingQueryParameters {
+- (void)testInitializationFromStringIncludingQueryParameters
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org/foo?bar=1&this=that"];
     assertThat([URL queryParameters], hasEntries(@"bar", equalTo(@"1"), @"this", equalTo(@"that"), nil));
 }
 
-- (void)testInitializationFromURLandResourcePathIncludingQueryParameters {
+- (void)testInitializationFromURLandResourcePathIncludingQueryParameters
+{
     NSString *resourcePath = @"/bar?another=option";
     RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org/foo?bar=1&this=that" resourcePath:resourcePath];
 #if TARGET_OS_IPHONE
@@ -125,39 +141,45 @@
                                                  @"another", equalTo(@"option"), nil));
 }
 
-- (void)testInitializationFromNSURL {
+- (void)testInitializationFromNSURL
+{
     NSURL *URL = [NSURL URLWithString:@"http://restkit.org"];
     RKURL *rkURL = [RKURL URLWithBaseURL:URL];
     assertThat(URL, is(equalTo(rkURL)));
 }
 
-- (void)testInitializationFromRKURL {
+- (void)testInitializationFromRKURL
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org"];
     RKURL *rkURL = [RKURL URLWithBaseURL:URL];
     assertThat(URL, is(equalTo(rkURL)));
 }
 
-- (void)testInitializationFromNSURLandAppendingOfResourcePath {
+- (void)testInitializationFromNSURLandAppendingOfResourcePath
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org/"];
     RKURL *rkURL = [RKURL URLWithBaseURL:URL resourcePath:@"/entries"];
     assertThat([rkURL absoluteString], equalTo(@"http://restkit.org/entries"));
 }
 
-- (void)testMergingOfAdditionalQueryParameters {
+- (void)testMergingOfAdditionalQueryParameters
+{
     NSURL *URL = [NSURL URLWithString:@"http://restkit.org/search?title=Hacking"];
     NSDictionary *params = [NSDictionary dictionaryWithObject:@"Computers" forKey:@"genre"];
     RKURL *newURL = [RKURL URLWithBaseURL:URL resourcePath:nil queryParameters:params];
     assertThat([newURL queryParameters], hasEntries(@"title", equalTo(@"Hacking"), @"genre", equalTo(@"Computers"), nil));
 }
 
-- (void)testReplacementOfExistingResourcePath {
+- (void)testReplacementOfExistingResourcePath
+{
     RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org/" resourcePath:@"/articles"];
     RKURL *newURL = [URL URLByReplacingResourcePath:@"/files"];
     assertThat([newURL absoluteString], equalTo(@"http://restkit.org/files"));
     assertThat([newURL resourcePath], equalTo(@"/files"));
 }
 
-- (void)testReplacementOfNilResourcePath {
+- (void)testReplacementOfNilResourcePath
+{
     RKURL *URL = [RKURL URLWithString:@"http://restkit.org/whatever"];
     assertThat([URL resourcePath], is(nilValue()));
     RKURL *newURL = [URL URLByReplacingResourcePath:@"/works"];
@@ -165,7 +187,8 @@
     assertThat([newURL absoluteString], is(equalTo(@"http://restkit.org/whatever/works")));
 }
 
-- (void)testInterpolationOfResourcePath {
+- (void)testInterpolationOfResourcePath
+{
     RKURL *URL = [RKURL URLWithBaseURLString:@"http://restkit.org" resourcePath:@"/paginate?page=:page&perPage=:per_page"];
     NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:@"1", @"page", @"25", @"per_page", nil];
     RKURL *interpolatedURL = [URL URLByInterpolatingResourcePathWithObject:dictionary];
@@ -179,7 +202,8 @@
     assertThat([interpolatedURL queryParameters], is(equalTo(queryParams)));
 }
 
-- (void)testShouldProperlyHandleLongURLParameterValues {
+- (void)testShouldProperlyHandleLongURLParameterValues
+{
     NSString *longResourcePath = @"";
     for (NSUInteger index = 0; index < 1050; index++) {
         longResourcePath = [longResourcePath stringByAppendingString:@"X"];

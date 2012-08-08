@@ -15,27 +15,27 @@
 /**
  * The unique ID of this Status
  */
-@property (nonatomic, retain) NSNumber* statusID;
+@property (nonatomic, retain) NSNumber *statusID;
 
 /**
  * Timestamp the Status was sent
  */
-@property (nonatomic, retain) NSDate* createdAt;
+@property (nonatomic, retain) NSDate *createdAt;
 
 /**
  * Text of the Status
  */
-@property (nonatomic, retain) NSString* text;
+@property (nonatomic, retain) NSString *text;
 
 /**
  * String version of the URL associated with the Status
  */
-@property (nonatomic, retain) NSString* urlString;
+@property (nonatomic, retain) NSString *urlString;
 
 /**
  * The screen name of the User this Status was in response to
  */
-@property (nonatomic, retain) NSString* inReplyToScreenName;
+@property (nonatomic, retain) NSString *inReplyToScreenName;
 
 /**
  * Is this status a favorite?
@@ -45,6 +45,6 @@
 /**
  * The User who posted this status
  */
-@property (nonatomic, retain) NSManagedObject* user;
+@property (nonatomic, retain) NSManagedObject *user;
 
 @end

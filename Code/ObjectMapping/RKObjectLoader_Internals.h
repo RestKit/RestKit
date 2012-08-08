@@ -22,12 +22,12 @@
 
 @interface RKObjectLoader (Internals) <RKObjectMapperDelegate>
 
-@property (nonatomic, readonly) RKClient* client;
+@property (nonatomic, readonly) RKClient *client;
 
 - (void)handleTargetObject;
-- (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary*)dictionary;
+- (void)informDelegateOfObjectLoadWithResultDictionary:(NSDictionary *)dictionary;
 - (void)performMappingOnBackgroundThread;
 - (BOOL)isResponseMappable;
-- (void)finalizeLoad:(BOOL)successful error:(NSError*)error;
+- (void)finalizeLoad:(BOOL)successful error:(NSError *)error;
 
 @end

@@ -26,13 +26,15 @@
 
 @synthesize control = _control;
 
-+ (id)tableItemWithControl:(UIControl *)control {
++ (id)tableItemWithControl:(UIControl *)control
+{
     RKControlTableItem *tableItem = [self tableItem];
     tableItem.control = control;
     return tableItem;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         self.cellMapping.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -50,12 +52,14 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_control release];
     [super dealloc];
 }
 
-- (void)setControl:(UIControl *)control {
+- (void)setControl:(UIControl *)control
+{
     NSAssert(control, @"Cannot add a nil control to a RKControlTableItem");
     [control retain];
     [_control release];
@@ -64,29 +68,35 @@
 
 #pragma mark - Convenience Accessors
 
-- (UIButton *)button {
-    return ([self.control isKindOfClass:[UIButton class]]) ? (UIButton *) self.control : nil;
+- (UIButton *)button
+{
+    return ([self.control isKindOfClass:[UIButton class]]) ? (UIButton *)self.control : nil;
 }
 
-- (UITextField *)textField {
-    return ([self.control isKindOfClass:[UITextField class]]) ? (UITextField *) self.control : nil;
+- (UITextField *)textField
+{
+    return ([self.control isKindOfClass:[UITextField class]]) ? (UITextField *)self.control : nil;
 }
 
-- (UISwitch *)switchControl {
-    return ([self.control isKindOfClass:[UISwitch class]]) ? (UISwitch *) self.control : nil;
+- (UISwitch *)switchControl
+{
+    return ([self.control isKindOfClass:[UISwitch class]]) ? (UISwitch *)self.control : nil;
 }
 
-- (UISlider *)slider {
-    return ([self.control isKindOfClass:[UISlider class]]) ? (UISlider *) self.control : nil;
+- (UISlider *)slider
+{
+    return ([self.control isKindOfClass:[UISlider class]]) ? (UISlider *)self.control : nil;
 }
 
-- (UILabel *)label {
-    return ([self.control isKindOfClass:[UILabel class]]) ? (UILabel *) self.control : nil;
+- (UILabel *)label
+{
+    return ([self.control isKindOfClass:[UILabel class]]) ? (UILabel *)self.control : nil;
 }
 
 // TODO: What if we replace this with a protocol that enables KVC
 // via the 'controlValue' property for the common types to allow pluggability?
-- (id)controlValue {
+- (id)controlValue
+{
     if ([self.control isKindOfClass:[UIButton class]]) {
         return nil;
     } else if ([self.control isKindOfClass:[UITextField class]]) {

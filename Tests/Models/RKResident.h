@@ -26,10 +26,10 @@
 @interface RKResident : NSManagedObject {
 }
 
-@property (nonatomic, retain) NSString* residableType;
-@property (nonatomic, retain) NSNumber* railsID;
-@property (nonatomic, retain) NSNumber* residableId;
-@property (nonatomic, retain) NSNumber* houseId;
-@property (nonatomic, retain) RKHouse* house;
+@property (nonatomic, retain) NSString *residableType;
+@property (nonatomic, retain) NSNumber *railsID;
+@property (nonatomic, retain) NSNumber *residableId;
+@property (nonatomic, retain) NSNumber *houseId;
+@property (nonatomic, retain) RKHouse *house;
 
 @end

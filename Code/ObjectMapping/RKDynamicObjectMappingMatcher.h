@@ -11,20 +11,18 @@
 
 
 @interface RKDynamicObjectMappingMatcher : NSObject {
-    NSString* _keyPath;
+    NSString *_keyPath;
     id _value;
-    RKObjectMapping* _objectMapping;
-    NSString* _primaryKeyAttribute;
     BOOL (^_isMatchForDataBlock)(id data);
 }
 
-@property (nonatomic, readonly) RKObjectMapping* objectMapping;
-@property (nonatomic, readonly) NSString* primaryKeyAttribute;
+@property (nonatomic, readonly) RKObjectMapping *objectMapping;
+@property (nonatomic, readonly) NSString *primaryKeyAttribute;
 
-- (id)initWithKey:(NSString*)key value:(id)value objectMapping:(RKObjectMapping*)objectMapping;
-- (id)initWithKey:(NSString*)key value:(id)value primaryKeyAttribute:(NSString*)primaryKeyAttribute;
-- (id)initWithPrimaryKeyAttribute:(NSString*)primaryKeyAttribute evaluationBlock:(BOOL (^)(id data))block;
+- (id)initWithKey:(NSString *)key value:(id)value objectMapping:(RKObjectMapping *)objectMapping;
+- (id)initWithKey:(NSString *)key value:(id)value primaryKeyAttribute:(NSString *)primaryKeyAttribute;
+- (id)initWithPrimaryKeyAttribute:(NSString *)primaryKeyAttribute evaluationBlock:(BOOL (^)(id data))block;
 - (BOOL)isMatchForData:(id)data;
-- (NSString*)matchDescription;
+- (NSString *)matchDescription;
 
 @end

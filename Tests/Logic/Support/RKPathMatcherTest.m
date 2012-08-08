@@ -27,7 +27,8 @@
 
 @implementation RKPathMatcherTest
 
-- (void)testShouldMatchPathsWithQueryArguments {
+- (void)testShouldMatchPathsWithQueryArguments
+{
     NSDictionary *arguments = nil;
     RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/this/is/my/backend?foo=bar&this=that"];
     BOOL isMatchingPattern = [pathMatcher matchesPattern:@"/this/is/:controllerName/:entityName" tokenizeQueryStrings:YES parsedArguments:&arguments];
@@ -37,7 +38,8 @@
 
 }
 
-- (void)testShouldMatchPathsWithEscapedArguments {
+- (void)testShouldMatchPathsWithEscapedArguments
+{
     NSDictionary *arguments = nil;
     RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/bills/tx/82/SB%2014?apikey=GC12d0c6af"];
     BOOL isMatchingPattern = [pathMatcher matchesPattern:@"/bills/:stateID/:session/:billID" tokenizeQueryStrings:YES parsedArguments:&arguments];
@@ -47,24 +49,27 @@
 
 }
 
-- (void)testShouldMatchPathsWithoutQueryArguments {
+- (void)testShouldMatchPathsWithoutQueryArguments
+{
     NSDictionary *arguments = nil;
-    RKPathMatcher* patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/:username"];
+    RKPathMatcher *patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/:username"];
     BOOL isMatchingPattern = [patternMatcher matchesPath:@"github.com/jverkoey" tokenizeQueryStrings:NO parsedArguments:&arguments];
     assertThatBool(isMatchingPattern, is(equalToBool(YES)));
     assertThat(arguments, isNot(empty()));
     assertThat(arguments, hasEntry(@"username", @"jverkoey"));
 }
 
-- (void)testShouldMatchPathsWithoutAnyArguments {
+- (void)testShouldMatchPathsWithoutAnyArguments
+{
     NSDictionary *arguments = nil;
-    RKPathMatcher* patternMatcher = [RKPathMatcher matcherWithPattern:@"/metadata"];
+    RKPathMatcher *patternMatcher = [RKPathMatcher matcherWithPattern:@"/metadata"];
     BOOL isMatchingPattern = [patternMatcher matchesPath:@"/metadata" tokenizeQueryStrings:NO parsedArguments:&arguments];
     assertThatBool(isMatchingPattern, is(equalToBool(YES)));
     assertThat(arguments, is(empty()));
 }
 
-- (void)testShouldPerformTwoMatchesInARow {
+- (void)testShouldPerformTwoMatchesInARow
+{
     NSDictionary *arguments = nil;
     RKPathMatcher *pathMatcher = [RKPathMatcher matcherWithPath:@"/metadata?apikey=GC12d0c6af"];
     BOOL isMatchingPattern1 = [pathMatcher matchesPattern:@"/metadata/:stateID" tokenizeQueryStrings:YES parsedArguments:&arguments];
@@ -75,14 +80,16 @@
     assertThat(arguments, hasEntry(@"apikey", @"GC12d0c6af"));
 }
 
-- (void)testShouldMatchPathsWithDeprecatedParentheses {
+- (void)testShouldMatchPathsWithDeprecatedParentheses
+{
     NSDictionary *arguments = nil;
-    RKPathMatcher* patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/(username)"];
+    RKPathMatcher *patternMatcher = [RKPathMatcher matcherWithPattern:@"github.com/(username)"];
     BOOL isMatchingPattern = [patternMatcher matchesPath:@"github.com/jverkoey" tokenizeQueryStrings:NO parsedArguments:&arguments];
     assertThatBool(isMatchingPattern, is(equalToBool(YES)));
 }
 
-- (void)testShouldCreatePathsFromInterpolatedObjects {
+- (void)testShouldCreatePathsFromInterpolatedObjects
+{
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:name/:age"];
@@ -92,7 +99,8 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldCreatePathsFromInterpolatedObjectsWithDeprecatedParentheses {
+- (void)testShouldCreatePathsFromInterpolatedObjectsWithDeprecatedParentheses
+{
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"CuddleGuts", @"name", [NSNumber numberWithInt:6], @"age", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/(name)/(age)"];
@@ -102,7 +110,8 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldCreatePathsFromInterpolatedObjectsWithAddedEscapes {
+- (void)testShouldCreatePathsFromInterpolatedObjectsWithAddedEscapes
+{
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:group/:name?password=:password"];
@@ -112,7 +121,8 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldCreatePathsFromInterpolatedObjectsWithoutAddedEscapes {
+- (void)testShouldCreatePathsFromInterpolatedObjectsWithoutAddedEscapes
+{
     NSDictionary *person = [NSDictionary dictionaryWithObjectsAndKeys:
                             @"JUICE|BOX&121", @"password", @"Joe Bob Briggs", @"name", [NSNumber numberWithInt:15], @"group", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/people/:group/:name?password=:password"];
@@ -122,7 +132,8 @@
     assertThat(interpolatedPath, is(equalTo(expectedPath)));
 }
 
-- (void)testShouldCreatePathsThatIncludePatternArgumentsFollowedByEscapedNonPatternDots {
+- (void)testShouldCreatePathsThatIncludePatternArgumentsFollowedByEscapedNonPatternDots
+{
     NSDictionary *arguments = [NSDictionary dictionaryWithObjectsAndKeys:@"Resources", @"filename", nil];
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:@"/directory/:filename\\.json"];
     NSString *interpolatedPath = [matcher pathFromObject:arguments];

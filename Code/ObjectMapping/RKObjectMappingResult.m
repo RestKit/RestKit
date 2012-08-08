@@ -24,7 +24,8 @@
 
 @implementation RKObjectMappingResult
 
-- (id)initWithDictionary:(id)dictionary {
+- (id)initWithDictionary:(id)dictionary
+{
     self = [self init];
     if (self) {
         _keyPathToMappedObjects = [dictionary retain];
@@ -33,22 +34,26 @@
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_keyPathToMappedObjects release];
     [super dealloc];
 }
 
-+ (RKObjectMappingResult*)mappingResultWithDictionary:(NSDictionary*)keyPathToMappedObjects {
++ (RKObjectMappingResult *)mappingResultWithDictionary:(NSDictionary *)keyPathToMappedObjects
+{
     return [[[self alloc] initWithDictionary:keyPathToMappedObjects] autorelease];
 }
 
-- (NSDictionary*)asDictionary {
+- (NSDictionary *)asDictionary
+{
     return _keyPathToMappedObjects;
 }
 
-- (NSArray*)asCollection {
+- (NSArray *)asCollection
+{
     // Flatten results down into a single array
-    NSMutableArray* collection = [NSMutableArray array];
+    NSMutableArray *collection = [NSMutableArray array];
     for (id object in [_keyPathToMappedObjects allValues]) {
         // We don't want to strip the keys off of a mapped dictionary result
 
@@ -62,29 +67,31 @@
     return collection;
 }
 
-- (id)asObject {
-    NSArray* collection = [self asCollection];
+- (id)asObject
+{
+    NSArray *collection = [self asCollection];
     NSUInteger count = [collection count];
     if (count == 0) {
         return nil;
     }
 
-    if (count > 1) RKLogWarning(@"Coerced object mapping result containing %lu objects into singular result.", (unsigned long) count);
+    if (count > 1) RKLogWarning(@"Coerced object mapping result containing %lu objects into singular result.", (unsigned long)count);
     return [collection objectAtIndex:0];
 }
 
-- (NSError*)asError {
-    NSArray* collection = [self asCollection];
-    NSString* description = nil;
+- (NSError *)asError
+{
+    NSArray *collection = [self asCollection];
+    NSString *description = nil;
     if ([collection count] > 0) {
         description = [[collection valueForKeyPath:@"description"] componentsJoinedByString:@", "];
     } else {
         RKLogWarning(@"Expected mapping result to contain at least one object to construct an error");
     }
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:collection, RKObjectMapperErrorObjectsKey,
                               description, NSLocalizedDescriptionKey, nil];
 
-    NSError* error = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
+    NSError *error = [NSError errorWithDomain:RKErrorDomain code:RKObjectMapperErrorFromMappingResult userInfo:userInfo];
     return error;
 }
 

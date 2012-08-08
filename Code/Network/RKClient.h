@@ -95,28 +95,7 @@
  @see RKRequestSerializable
  */
 @interface RKClient : NSObject <RKConfigurationDelegate> {
-    RKURL *_baseURL;
-    RKRequestAuthenticationType _authenticationType;
-    NSString *_username;
-    NSString *_password;
-    NSString *_OAuth1ConsumerKey;
-    NSString *_OAuth1ConsumerSecret;
-    NSString *_OAuth1AccessToken;
-    NSString *_OAuth1AccessTokenSecret;
-    NSString *_OAuth2AccessToken;
-    NSString *_OAuth2RefreshToken;
-    NSMutableDictionary *_HTTPHeaders;
-    RKReachabilityObserver *_reachabilityObserver;
-    NSString *_serviceUnavailableAlertTitle;
-    NSString *_serviceUnavailableAlertMessage;
-    BOOL _serviceUnavailableAlertEnabled;
-    RKRequestQueue *_requestQueue;
-    RKRequestCache *_requestCache;
-    RKRequestCachePolicy _cachePolicy;
     NSMutableSet *_additionalRootCertificates;
-    BOOL _disableCertificateValidation;
-    NSStringEncoding _defaultHTTPEncoding;
-    NSString *_runLoopMode;
 
     // Queue suspension flags
     BOOL _awaitingReachabilityDetermination;

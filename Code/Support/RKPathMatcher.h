@@ -33,13 +33,8 @@
  @see RKMakePathWithObject
  @see RKRouter
  */
-@interface RKPathMatcher : NSObject <NSCopying> {
-@private
-    SOCPattern *socPattern_;
-    NSString *sourcePath_;
-    NSString *rootPath_;
-    NSDictionary *queryParameters_;
-}
+@interface RKPathMatcher : NSObject <NSCopying>
+
 @property (copy, readonly) NSDictionary *queryParameters;
 
 /**
@@ -49,7 +44,7 @@
  @param pathString The string to evaluate and parse, such as /districts/tx/upper/?apikey=GC5512354
  @return An instantiated RKPathMatcher without an established pattern.
  */
-+(RKPathMatcher *)matcherWithPath:(NSString *)pathString;
++ (RKPathMatcher *)matcherWithPath:(NSString *)pathString;
 
 /**
  Determines if the path string matches the provided pattern, and yields a dictionary with the resulting
@@ -57,11 +52,11 @@
  Pattern strings should include encoded parameter keys, delimited by a single colon at the
  beginning of the key name.
 
- *NOTE 1* - Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be
+ *NOTE 1 *- Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be
  separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, whereas
  /:key1/:key2/:key3/ is acceptable.
 
- *NOTE 2* - The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
+ *NOTE 2 *- The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
  situation, ... otherKey is a sub-key on a the object represented by key1.  This presents problems in circumstances where
  you might want to build a pattern like /:filename.json, where the dot isn't intended as a sub-key on the filename, but rather
  part of the json static string.  In these instances, you need to escape the dot with two backslashes, like so:
@@ -79,11 +74,11 @@
  matchesPath:tokenizeQueryStrings:parsedArguments:  Patterns should include encoded parameter keys,
  delimited by a single colon at the beginning of the key name.
 
- *NOTE 1* - Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be
+ *NOTE 1 *- Numerous colon-encoded parameter keys can be joined in a long pattern, but each key must be
  separated by at least one unmapped character.  For instance, /:key1:key2:key3/ is invalid, whereas
  /:key1/:key2/:key3/ is acceptable.
 
- *NOTE 2* - The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
+ *NOTE 2 *- The pattern matcher supports KVM, so :key1.otherKey normally resolves as it would in any other KVM
  situation, ... otherKey is a sub-key on a the object represented by key1.  This presents problems in circumstances where
  you might want to build a pattern like /:filename.json, where the dot isn't intended as a sub-key on the filename, but rather
  part of the json static string.  In these instances, you need to escape the dot with two backslashes, like so:
@@ -92,7 +87,7 @@
  @param patternString The pattern to use for evaluating, such as /:entityName/:stateID/:chamber/
  @return An instantiated RKPathMatcher with an established pattern.
  */
-+(RKPathMatcher *)matcherWithPattern:(NSString *)patternString;
++ (RKPathMatcher *)matcherWithPattern:(NSString *)patternString;
 
 /**
  Determines if the provided resource path string matches a pattern, and yields a dictionary with the resulting

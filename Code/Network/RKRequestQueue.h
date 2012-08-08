@@ -28,14 +28,9 @@
  RKRequest objects.
  */
 @interface RKRequestQueue : NSObject {
-    NSString *_name;
     NSMutableArray *_requests;
     NSMutableSet *_loadingRequests;
-    NSObject<RKRequestQueueDelegate> *_delegate;
-    NSUInteger _concurrentRequestsLimit;
-    NSUInteger _requestTimeout;
     NSTimer *_queueTimer;
-    BOOL _suspended;
     BOOL _showsNetworkActivityIndicatorWhenBusy;
 }
 

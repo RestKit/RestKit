@@ -46,7 +46,7 @@ typedef void(^RKFormBlock)();
  */
 @property (nonatomic, readonly) id object;
 // The table view we are bound to. not retained.
-@property (nonatomic, readonly) RKTableController* tableController;
+@property (nonatomic, readonly) RKTableController *tableController;
 //@property (nonatomic, assign) id delegate;
 @property (nonatomic, copy) RKFormBlock onSubmit;
 
@@ -82,7 +82,7 @@ typedef void(^RKFormBlock)();
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control;
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)controlKeyPath onControl:(UIControl *)control usingBlock:(void (^)(RKControlTableItem *tableItem))block;
 
-// TODO: Should there be a flavor that accepts UIView* and yields an RKTableItem? This would avoid needing to cast to (UIControl *)
+// TODO: Should there be a flavor that accepts UIView *and yields an RKTableItem? This would avoid needing to cast to (UIControl *)
 
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass;
 - (void)addRowMappingAttribute:(NSString *)attributeKeyPath toKeyPath:(NSString *)cellKeyPath onCellWithClass:(Class)cellClass usingBlock:(void (^)(RKTableItem *tableItem))block;
