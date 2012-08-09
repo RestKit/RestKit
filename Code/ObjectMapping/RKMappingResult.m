@@ -101,4 +101,9 @@
     return error;
 }
 
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p, results=%@>", NSStringFromClass([self class]), self, self.keyPathToMappedObjects];
+}
+
 @end
