@@ -154,11 +154,9 @@
      that will raise an exception when fired. existingObjectWithID:error: will return nil if the ID has been
      deleted. objectRegisteredForID: is also an acceptable approach.
      */
-    __block NSError *error = nil;
-    __block NSManagedObject *object;
-    [context performBlockAndWait:^{
-        object = [context existingObjectWithID:objectID error:&error];
-    }];
+    NSError *error = nil;
+    NSManagedObject *object;
+    object = [context existingObjectWithID:objectID error:&error];
     if (! object) {
         if (error) {
             RKLogError(@"Failed to retrieve managed object with ID %@. Error %@\n%@", objectID, [error localizedDescription], [error userInfo]);
