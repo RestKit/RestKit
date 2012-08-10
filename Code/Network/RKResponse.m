@@ -417,6 +417,11 @@ return __VA_ARGS__;                                                             
     return ([self statusCode] == 201);
 }
 
+- (BOOL)isAccepted
+{
+    return ([self statusCode] == 202);
+}
+
 - (BOOL)isNoContent
 {
     return ([self statusCode] == 204);
