@@ -1,0 +1,24 @@
+#!/bin/bash -e
+
+# Configure RVM
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+source .rvmrc
+
+# Git submodules
+git submodule update --init
+
+# Bundler
+bundle
+
+# Run the build
+rake server:stop || true
+rake server:start
+rake test
+rake server:stop
+
+# Build & Publish Docs
+if [ -n $DOCS_DESTINATION ]; then
+  VERSION=`echo $GIT_BRANCH|sed -e 's/origin\///'`
+  echo "Building documentation for branch $VERSION and publishing to '$DOCS_DESTINATION'"
+  rake docs:publish[$VERSION,$DOCS_DESTINATION]
+fi

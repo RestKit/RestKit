@@ -3,14 +3,14 @@
 //  RestKit
 //
 //  Created by Blake Watters on 7/28/09.
-//  Copyright 2009 RestKit
-//  
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,7 @@
 #import "RKAlert.h"
 #import "RKLog.h"
 #import "RKPathMatcher.h"
-#import "NSString+RestKit.h"
+#import "NSString+RKAdditions.h"
 #import "RKDirectory.h"
 
 // Set Logging Component
@@ -34,20 +34,20 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Global
 
-static RKClient* sharedClient = nil;
+static RKClient *sharedClient = nil;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // URL Conveniences functions
 
 NSURL *RKMakeURL(NSString *resourcePath) {
-    return [[RKClient sharedClient] URLForResourcePath:resourcePath];
+    return [[RKClient sharedClient].baseURL URLByAppendingResourcePath:resourcePath];
 }
 
 NSString *RKMakeURLPath(NSString *resourcePath) {
-    return [[RKClient sharedClient] URLPathForResourcePath:resourcePath];
+    return [[[RKClient sharedClient].baseURL URLByAppendingResourcePath:resourcePath] absoluteString];
 }
 
-NSString *RKMakePathWithObjectAddingEscapes(NSString* pattern, id object, BOOL addEscapes) {
+NSString *RKMakePathWithObjectAddingEscapes(NSString *pattern, id object, BOOL addEscapes) {
     NSCAssert(pattern != NULL, @"Pattern string must not be empty in order to create a path from an interpolated object.");
     NSCAssert(object != NULL, @"Object provided is invalid; cannot create a path from a NULL object");
     RKPathMatcher *matcher = [RKPathMatcher matcherWithPattern:pattern];
@@ -60,13 +60,15 @@ NSString *RKMakePathWithObject(NSString *pattern, id object) {
 }
 
 NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryParams) {
-    if ([queryParams count] > 0) {
-        return [NSString stringWithFormat:@"%@?%@", resourcePath, [queryParams stringWithURLEncodedEntries]];
-    }
-    return resourcePath;
+    return [resourcePath stringByAppendingQueryParameters:queryParams];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface RKClient ()
+@property (nonatomic, retain, readwrite) NSMutableDictionary *HTTPHeaders;
+@property (nonatomic, retain, readwrite) NSSet *additionalRootCertificates;
+@end
 
 @implementation RKClient
 
@@ -89,60 +91,76 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
 @synthesize serviceUnavailableAlertEnabled = _serviceUnavailableAlertEnabled;
 @synthesize requestCache = _requestCache;
 @synthesize cachePolicy = _cachePolicy;
-@synthesize cacheTimeout = _cacheTimeout;
 @synthesize requestQueue = _requestQueue;
+@synthesize timeoutInterval = _timeoutInterval;
+@synthesize defaultHTTPEncoding = _defaultHTTPEncoding;
+@synthesize cacheTimeoutInterval = _cacheTimeoutInterval;
+@synthesize runLoopMode = _runLoopMode;
 
-+ (RKClient *)sharedClient {
-	return sharedClient;
++ (RKClient *)sharedClient
+{
+    return sharedClient;
 }
 
-+ (void)setSharedClient:(RKClient *)client {
-	[sharedClient release];
-	sharedClient = [client retain];
++ (void)setSharedClient:(RKClient *)client
+{
+    [sharedClient release];
+    sharedClient = [client retain];
 }
 
-+ (RKClient *)clientWithBaseURL:(NSString *)baseURL {
-	RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
-	return client;
++ (RKClient *)clientWithBaseURLString:(NSString *)baseURLString
+{
+    return [self clientWithBaseURL:[RKURL URLWithString:baseURLString]];
 }
 
-+ (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password {
-	RKClient *client = [RKClient clientWithBaseURL:baseURL];
++ (RKClient *)clientWithBaseURL:(NSURL *)baseURL
+{
+    RKClient *client = [[[self alloc] initWithBaseURL:baseURL] autorelease];
+    return client;
+}
+
++ (RKClient *)clientWithBaseURL:(NSString *)baseURL username:(NSString *)username password:(NSString *)password
+{
+    RKClient *client = [RKClient clientWithBaseURLString:baseURL];
     client.authenticationType = RKRequestAuthenticationTypeHTTPBasic;
-	client.username = username;
-	client.password = password;
-	return client;
+    client.username = username;
+    client.password = password;
+    return client;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
-	if (self) {
-		_HTTPHeaders = [[NSMutableDictionary alloc] init];
-        _additionalRootCertificates = [[NSMutableSet alloc] init];
-		self.serviceUnavailableAlertEnabled = NO;
-		self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
-		self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
-        [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(serviceDidBecomeUnavailableNotification:) 
-                                                     name:RKServiceDidBecomeUnavailableNotification 
+    if (self) {
+        self.HTTPHeaders = [NSMutableDictionary dictionary];
+        self.additionalRootCertificates = [NSMutableSet set];
+        self.defaultHTTPEncoding = NSUTF8StringEncoding;
+        self.cacheTimeoutInterval = 0;
+        self.runLoopMode = NSRunLoopCommonModes;
+        self.requestQueue = [RKRequestQueue requestQueue];
+        self.serviceUnavailableAlertEnabled = NO;
+        self.serviceUnavailableAlertTitle = NSLocalizedString(@"Service Unavailable", nil);
+        self.serviceUnavailableAlertMessage = NSLocalizedString(@"The remote resource is unavailable. Please try again later.", nil);
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(serviceDidBecomeUnavailableNotification:)
+                                                     name:RKServiceDidBecomeUnavailableNotification
                                                    object:nil];
         
-        // Configure reachability and queue
+        // Configure observers
         [self addObserver:self forKeyPath:@"reachabilityObserver" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-        self.requestQueue = [RKRequestQueue requestQueue];
-        
         [self addObserver:self forKeyPath:@"baseURL" options:NSKeyValueObservingOptionNew context:nil];
-        [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
-	}
-
-	return self;
+        [self addObserver:self forKeyPath:@"requestQueue" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld | NSKeyValueObservingOptionInitial context:nil];
+    }
+    
+    return self;
 }
 
-- (id)initWithBaseURL:(NSString *)baseURL {
+- (id)initWithBaseURL:(NSURL *)baseURL
+{
     self = [self init];
-    if (self) {        
+    if (self) {
         self.cachePolicy = RKRequestCachePolicyDefault;
-        self.baseURL = baseURL;
+        self.baseURL = [RKURL URLWithBaseURL:baseURL];
         
         if (sharedClient == nil) {
             [RKClient setSharedClient:self];
@@ -155,7 +173,13 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     return self;
 }
 
-- (void)dealloc {    
+- (id)initWithBaseURLString:(NSString *)baseURLString
+{
+    return [self initWithBaseURL:[RKURL URLWithString:baseURLString]];
+}
+
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     // Allow KVO to fire
@@ -172,78 +196,82 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     self.serviceUnavailableAlertTitle = nil;
     self.serviceUnavailableAlertMessage = nil;
     self.requestCache = nil;
+    self.runLoopMode = nil;
     [_HTTPHeaders release];
     [_additionalRootCertificates release];
-
+    
     if (sharedClient == self) sharedClient = nil;
     
     [super dealloc];
 }
 
-- (NSString *)cachePath {
-    NSString *cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@",
-                                   [[NSURL URLWithString:self.baseURL] host]];
+- (NSString *)cachePath
+{
+    NSString *cacheDirForClient = [NSString stringWithFormat:@"RKClientRequestCache-%@", [self.baseURL host]];
     NSString *cachePath = [[RKDirectory cachesDirectory]
                            stringByAppendingPathComponent:cacheDirForClient];
     return cachePath;
 }
 
-- (BOOL)isNetworkReachable {
-	BOOL isNetworkReachable = YES;
-	if (self.reachabilityObserver) {
-		isNetworkReachable = [self.reachabilityObserver isNetworkReachable];
-	}
+- (BOOL)isNetworkReachable
+{
+    BOOL isNetworkReachable = YES;
+    if (self.reachabilityObserver) {
+        isNetworkReachable = [self.reachabilityObserver isNetworkReachable];
+    }
     
-	return isNetworkReachable;
+    return isNetworkReachable;
 }
 
-- (NSString *)resourcePath:(NSString *)resourcePath withQueryParams:(NSDictionary *)queryParams {
-	return RKPathAppendQueryParams(resourcePath, queryParams);
-}
-
-- (NSURL *)URLForResourcePath:(NSString *)resourcePath {
-	return [RKURL URLWithBaseURLString:self.baseURL resourcePath:resourcePath];
-}
-
-- (NSString *)URLPathForResourcePath:(NSString *)resourcePath {
-	return [[self URLForResourcePath:resourcePath] absoluteString];
-}
-
-- (NSURL *)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams {
-	return [RKURL URLWithBaseURLString:self.baseURL resourcePath:resourcePath queryParams:queryParams];
-}
-
-- (void)setupRequest:(RKRequest *)request {
-	request.additionalHTTPHeaders = _HTTPHeaders;
+- (void)configureRequest:(RKRequest *)request
+{
+    request.additionalHTTPHeaders = _HTTPHeaders;
     request.authenticationType = self.authenticationType;
-	request.username = self.username;
-	request.password = self.password;
-	request.cachePolicy = self.cachePolicy;
-    request.cacheTimeoutInterval = self.cacheTimeout;
+    request.username = self.username;
+    request.password = self.password;
+    request.cachePolicy = self.cachePolicy;
     request.cache = self.requestCache;
     request.queue = self.requestQueue;
     request.reachabilityObserver = self.reachabilityObserver;
+    request.defaultHTTPEncoding = self.defaultHTTPEncoding;
+    
+    request.additionalRootCertificates = self.additionalRootCertificates;
+    request.disableCertificateValidation = self.disableCertificateValidation;
+    request.runLoopMode = self.runLoopMode;
+    
+    // If a timeoutInterval was set on the client, we'll pass it on to the request.
+    // Otherwise, we'll let the request default to its own timeout interval.
+    if (self.timeoutInterval) {
+        request.timeoutInterval = self.timeoutInterval;
+    }
+    
+    if (self.cacheTimeoutInterval) {
+        request.cacheTimeoutInterval = self.cacheTimeoutInterval;
+    }
     
     // OAuth 1 Parameters
     request.OAuth1AccessToken = self.OAuth1AccessToken;
     request.OAuth1AccessTokenSecret = self.OAuth1AccessTokenSecret;
     request.OAuth1ConsumerKey = self.OAuth1ConsumerKey;
     request.OAuth1ConsumerSecret = self.OAuth1ConsumerSecret;
-
+    
     // OAuth2 Parameters
     request.OAuth2AccessToken = self.OAuth2AccessToken;
     request.OAuth2RefreshToken = self.OAuth2RefreshToken;
 }
 
-- (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header {
-	[_HTTPHeaders setValue:value forKey:header];
+- (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)header
+{
+    [_HTTPHeaders setValue:value forKey:header];
 }
 
-- (void)addRootCertificate:(SecCertificateRef)cert {
+- (void)addRootCertificate:(SecCertificateRef)cert
+{
     [_additionalRootCertificates addObject:(id)cert];
 }
 
-- (void)reachabilityObserverDidChange:(NSDictionary *)change {
+- (void)reachabilityObserverDidChange:(NSDictionary *)change
+{
     RKReachabilityObserver *oldReachabilityObserver = [change objectForKey:NSKeyValueChangeOldKey];
     RKReachabilityObserver *newReachabilityObserver = [change objectForKey:NSKeyValueChangeNewKey];
     
@@ -257,41 +285,41 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
         // Suspend the queue until reachability to our new hostname is established
         if (! [newReachabilityObserver isReachabilityDetermined]) {
             self.requestQueue.suspended = YES;
-            [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                     selector:@selector(reachabilityWasDetermined:) 
-                                                         name:RKReachabilityWasDeterminedNotification 
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(reachabilityWasDetermined:)
+                                                         name:RKReachabilityWasDeterminedNotification
                                                        object:newReachabilityObserver];
             
-            RKLogDebug(@"Reachability observer changed for client %@, suspending queue %@ until reachability to host '%@' can be determined", 
+            RKLogDebug(@"Reachability observer changed for client %@, suspending queue %@ until reachability to host '%@' can be determined",
                        self, self.requestQueue, newReachabilityObserver.host);
-        
+            
             // Maintain a flag for Reachability determination status. This ensures that we can do the right thing in the
             // event that the requestQueue is changed while we are in an inderminate suspension state
             _awaitingReachabilityDetermination = YES;
         } else {
             self.requestQueue.suspended = NO;
-            RKLogDebug(@"Reachability observer changed for client %@, unsuspending queue %@ as new observer already has determined reachability to %@", 
+            RKLogDebug(@"Reachability observer changed for client %@, unsuspending queue %@ as new observer already has determined reachability to %@",
                        self, self.requestQueue, newReachabilityObserver.host);
             _awaitingReachabilityDetermination = NO;
         }
     }
 }
 
-- (void)baseURLDidChange:(NSDictionary *)change {
-    NSString *newBaseURLString = [change objectForKey:NSKeyValueChangeNewKey];
+- (void)baseURLDidChange:(NSDictionary *)change
+{
+    RKURL *newBaseURL = [change objectForKey:NSKeyValueChangeNewKey];
     
     // Don't crash if baseURL is nil'd out (i.e. dealloc)
-    if (! [newBaseURLString isEqual:[NSNull null]]) {
+    if (! [newBaseURL isEqual:[NSNull null]]) {
         // Configure a cache for the new base URL
         [_requestCache release];
-        _requestCache = [[RKRequestCache alloc] initWithCachePath:[self cachePath]
-                                                    storagePolicy:RKRequestCacheStoragePolicyPermanently];
-    
+        _requestCache = [[RKRequestCache alloc] initWithPath:[self cachePath]
+                                               storagePolicy:RKRequestCacheStoragePolicyPermanently];
+        
         // Determine reachability strategy (if user has not already done so)
         if (self.reachabilityObserver == nil) {
-            NSURL *newBaseURL = [NSURL URLWithString:newBaseURLString];
             NSString *hostName = [newBaseURL host];
-            if ([newBaseURLString isEqualToString:@"localhost"] || [hostName isIPAddress]) {
+            if ([hostName isEqualToString:@"localhost"] || [hostName isIPAddress]) {
                 self.reachabilityObserver = [RKReachabilityObserver reachabilityObserverForHost:hostName];
             } else {
                 self.reachabilityObserver = [RKReachabilityObserver reachabilityObserverForInternet];
@@ -300,7 +328,8 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     }
 }
 
-- (void)requestQueueDidChange:(NSDictionary *)change {
+- (void)requestQueueDidChange:(NSDictionary *)change
+{
     if (! _awaitingReachabilityDetermination) {
         return;
     }
@@ -309,13 +338,14 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     RKRequestQueue *newQueue = [change objectForKey:NSKeyValueChangeNewKey];
     
     if (! [newQueue isEqual:[NSNull null]]) {
-        // The request queue has changed while we were awaiting reachability. 
+        // The request queue has changed while we were awaiting reachability.
         // Suspend the queue until reachability is determined
         newQueue.suspended = !self.reachabilityObserver.reachabilityDetermined;
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
     if ([keyPath isEqualToString:@"baseURL"]) {
         [self baseURLDidChange:change];
     } else if ([keyPath isEqualToString:@"requestQueue"]) {
@@ -325,66 +355,83 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     }
 }
 
-- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate {
-	RKRequest *request = [[RKRequest alloc] initWithURL:[self URLForResourcePath:resourcePath] delegate:delegate];
-	[self setupRequest:request];
-	[request autorelease];
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath
+{
+    RKRequest *request = [[RKRequest alloc] initWithURL:[self.baseURL URLByAppendingResourcePath:resourcePath]];
+    [self configureRequest:request];
+    [request autorelease];
+    
+    return request;
+}
 
-	return request;
+- (RKRequest *)requestWithResourcePath:(NSString *)resourcePath delegate:(NSObject<RKRequestDelegate> *)delegate
+{
+    RKRequest *request = [self requestWithResourcePath:resourcePath];
+    request.delegate = delegate;
+    
+    return request;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Asynchronous Requests
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- (RKRequest *)load:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate {
-	NSURL* resourcePathURL = nil;
-	if (method == RKRequestMethodGET) {
-		resourcePathURL = [self URLForResourcePath:resourcePath queryParams:(NSDictionary*)params];
-	} else {
-		resourcePathURL = [self URLForResourcePath:resourcePath];
-	}
-	RKRequest *request = [[RKRequest alloc] initWithURL:resourcePathURL delegate:delegate];
-	[self setupRequest:request];
-	[request autorelease];
-	request.method = method;
-	if (method != RKRequestMethodGET) {
-		request.params = params;
-	}
+- (RKRequest *)load:(NSString *)resourcePath method:(RKRequestMethod)method params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate
+{
+    RKURL *resourcePathURL = nil;
+    if (method == RKRequestMethodGET) {
+        resourcePathURL = [self.baseURL URLByAppendingResourcePath:resourcePath queryParameters:(NSDictionary *)params];
+    } else {
+        resourcePathURL = [self.baseURL URLByAppendingResourcePath:resourcePath];
+    }
+    RKRequest *request = [RKRequest requestWithURL:resourcePathURL];
+    request.delegate = delegate;
+    [self configureRequest:request];
+    request.method = method;
+    if (method != RKRequestMethodGET) {
+        request.params = params;
+    }
     
     [request send];
-
-	return request;
+    
+    return request;
 }
 
-- (RKRequest *)get:(NSString *)resourcePath delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
+- (RKRequest *)get:(NSString *)resourcePath delegate:(id)delegate
+{
+    return [self load:resourcePath method:RKRequestMethodGET params:nil delegate:delegate];
 }
 
-- (RKRequest *)get:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodGET params:queryParams delegate:delegate];
+- (RKRequest *)get:(NSString *)resourcePath queryParameters:(NSDictionary *)queryParameters delegate:(id)delegate
+{
+    return [self load:resourcePath method:RKRequestMethodGET params:queryParameters delegate:delegate];
 }
 
-- (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
+- (RKRequest *)post:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate
+{
+    return [self load:resourcePath method:RKRequestMethodPOST params:params delegate:delegate];
 }
 
-- (RKRequest *)put:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
+- (RKRequest *)put:(NSString *)resourcePath params:(NSObject<RKRequestSerializable> *)params delegate:(id)delegate
+{
+    return [self load:resourcePath method:RKRequestMethodPUT params:params delegate:delegate];
 }
 
-- (RKRequest *)delete:(NSString *)resourcePath delegate:(id)delegate {
-	return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate];
+- (RKRequest *)delete:(NSString *)resourcePath delegate:(id)delegate
+{
+    return [self load:resourcePath method:RKRequestMethodDELETE params:nil delegate:delegate];
 }
 
-- (void)serviceDidBecomeUnavailableNotification:(NSNotification *)notification {
+- (void)serviceDidBecomeUnavailableNotification:(NSNotification *)notification
+{
     if (self.serviceUnavailableAlertEnabled) {
         RKAlertWithTitle(self.serviceUnavailableAlertMessage, self.serviceUnavailableAlertTitle);
     }
 }
 
-- (void)reachabilityWasDetermined:(NSNotification *)notification {
-    RKReachabilityObserver *observer = (RKReachabilityObserver *) [notification object];
+- (void)reachabilityWasDetermined:(NSNotification *)notification
+{
+    RKReachabilityObserver *observer = (RKReachabilityObserver *)[notification object];
     NSAssert(observer == self.reachabilityObserver, @"Received unexpected reachability notification from inappropriate reachability observer");
     
     RKLogDebug(@"Reachability to host '%@' determined for client %@, unsuspending queue %@", observer.host, self, self.requestQueue);
@@ -393,19 +440,86 @@ NSString *RKPathAppendQueryParams(NSString *resourcePath, NSDictionary *queryPar
     [[NSNotificationCenter defaultCenter] removeObserver:self name:RKReachabilityWasDeterminedNotification object:observer];
 }
 
+#pragma mark - Deprecations
+
 // deprecated
-- (RKRequestCache *)cache {
+- (RKRequestCache *)cache
+{
     return _requestCache;
 }
 
 // deprecated
-- (void)setCache:(RKRequestCache *)requestCache {
+- (void)setCache:(RKRequestCache *)requestCache
+{
     self.requestCache = requestCache;
 }
 
+#pragma mark - Block Request Dispatching
+
+- (RKRequest *)sendRequestToResourcePath:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block
+{
+    RKRequest *request = [self requestWithResourcePath:resourcePath];
+    if (block) block(request);
+    [request send];
+    return request;
+}
+
+- (void)get:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block
+{
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodGET;
+        block(request);
+    }];
+}
+
+- (void)post:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block
+{
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodPOST;
+        block(request);
+    }];
+}
+
+- (void)put:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block
+{
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodPUT;
+        block(request);
+    }];
+}
+
+- (void)delete:(NSString *)resourcePath usingBlock:(void (^)(RKRequest *request))block
+{
+    [self sendRequestToResourcePath:resourcePath usingBlock:^(RKRequest *request) {
+        request.method = RKRequestMethodDELETE;
+        block(request);
+    }];
+}
+
 // deprecated
-- (BOOL)isNetworkAvailable {
+- (BOOL)isNetworkAvailable
+{
     return [self isNetworkReachable];
+}
+
+- (NSString *)resourcePath:(NSString *)resourcePath withQueryParams:(NSDictionary *)queryParams
+{
+    return RKPathAppendQueryParams(resourcePath, queryParams);
+}
+
+- (NSURL *)URLForResourcePath:(NSString *)resourcePath
+{
+    return [self.baseURL URLByAppendingResourcePath:resourcePath];
+}
+
+- (NSString *)URLPathForResourcePath:(NSString *)resourcePath
+{
+    return [[self URLForResourcePath:resourcePath] absoluteString];
+}
+
+- (NSURL *)URLForResourcePath:(NSString *)resourcePath queryParams:(NSDictionary *)queryParams
+{
+    return [self.baseURL URLByAppendingResourcePath:resourcePath queryParameters:queryParams];
 }
 
 @end

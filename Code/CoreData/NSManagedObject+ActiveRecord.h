@@ -1,5 +1,5 @@
 //
-//  RKManagedObject+ActiveRecord.h
+//  NSManagedObject+ActiveRecord.h
 //
 //  Adapted from https://github.com/magicalpanda/MagicalRecord
 //  Created by Saul Mora on 11/15/09.
@@ -10,65 +10,80 @@
 
 #import <CoreData/CoreData.h>
 
+/**
+ Extensions to NSManagedObjectContext for RestKit's Active Record pattern implementation
+ */
+@interface NSManagedObjectContext (ActiveRecord)
+
++ (NSManagedObjectContext *)defaultContext;
++ (void)setDefaultContext:(NSManagedObjectContext *)context;
++ (NSManagedObjectContext *)contextForCurrentThread;
+
+@end
+
+/**
+ Provides extensions to NSManagedObject implementing a low-ceremony querying
+ interface.
+ */
 @interface NSManagedObject (ActiveRecord)
 
 /**
- * The Core Data managed object context from the RKObjectManager's objectStore
- * that is managing this model
+ * The NSEntityDescription for the Subclass
+ * defaults to the subclass className, may be overridden
  */
-+ (NSManagedObjectContext*)managedObjectContext;
++ (NSEntityDescription *)entity;
 
 /**
- *	The NSEntityDescription for the Subclass 
- *	defaults to the subclass className, may be overridden
+ * Returns an initialized NSFetchRequest for the entity, with no predicate
  */
-+ (NSEntityDescription*)entity;
-
-/**
- *	Returns an initialized NSFetchRequest for the entity, with no predicate
- */
-+ (NSFetchRequest*)fetchRequest;
++ (NSFetchRequest *)fetchRequest;
 
 /**
  * Fetches all objects from the persistent store identified by the fetchRequest
  */
-+ (NSArray*)objectsWithFetchRequest:(NSFetchRequest*)fetchRequest;
++ (NSArray *)objectsWithFetchRequest:(NSFetchRequest *)fetchRequest;
+
+/**
+ * Retrieves the number of objects that would be retrieved by the fetchRequest,
+ * if executed
+ */
++ (NSUInteger)countOfObjectsWithFetchRequest:(NSFetchRequest *)fetchRequest;
 
 /**
  * Fetches all objects from the persistent store via a set of fetch requests and
  * returns all results in a single array.
  */
-+ (NSArray*)objectsWithFetchRequests:(NSArray*)fetchRequests;
++ (NSArray *)objectsWithFetchRequests:(NSArray *)fetchRequests;
 
 /**
  * Fetches the first object identified by the fetch request. A limit of one will be
  * applied to the fetch request before dispatching.
  */
-+ (id)objectWithFetchRequest:(NSFetchRequest*)fetchRequest;
++ (id)objectWithFetchRequest:(NSFetchRequest *)fetchRequest;
 
 /**
  * Fetches all objects from the persistent store by constructing a fetch request and
  * applying the predicate supplied. A short-cut for doing filtered searches on the objects
  * of this class under management.
  */
-+ (NSArray*)objectsWithPredicate:(NSPredicate*)predicate;
++ (NSArray *)objectsWithPredicate:(NSPredicate *)predicate;
 
 /**
  * Fetches the first object matching a predicate from the persistent store. A fetch request
  * will be constructed for you and a fetch limit of 1 will be applied.
  */
-+ (id)objectWithPredicate:(NSPredicate*)predicate;
++ (id)objectWithPredicate:(NSPredicate *)predicate;
 
 /**
  * Fetches all managed objects of this class from the persistent store as an array
  */
-+ (NSArray*)allObjects;
++ (NSArray *)allObjects;
 
 /**
  * Returns a count of all managed objects of this class in the persistent store. On
  * error, will populate the error argument
  */
-+ (NSUInteger)count:(NSError**)error;
++ (NSUInteger)count:(NSError **)error;
 
 /**
  * Returns a count of all managed objects of this class in the persistent store. Deprecated
@@ -79,7 +94,7 @@
 + (NSUInteger)count DEPRECATED_ATTRIBUTE;
 
 /**
- *	Creates a new managed object and inserts it into the managedObjectContext.
+ * Creates a new managed object and inserts it into the managedObjectContext.
  */
 + (id)object;
 
@@ -88,9 +103,28 @@
  */
 - (BOOL)isNew;
 
+/**
+ Finds the instance of the receiver's entity with the given value for the primary key attribute
+ in the managed object context for the current thread.
+
+ @param primaryKeyValue The value for the receiving entity's primary key attribute.
+ @return The object with the primary key attribute equal to the given value or nil.
+ */
++ (id)findByPrimaryKey:(id)primaryKeyValue;
+
+/**
+ Finds the instance of the receiver's entity with the given value for the primary key attribute in
+ the given managed object context.
+
+ @param primaryKeyValue The value for the receiving entity's primary key attribute.
+ @param context The managed object context to find the instance in.
+ @return The object with the primary key attribute equal to the given value or nil.
+ */
++ (id)findByPrimaryKey:(id)primaryKeyValue inContext:(NSManagedObjectContext *)context;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-+ (NSManagedObjectContext*)currentContext;
++ (NSManagedObjectContext *)currentContext;
 
 + (void)handleErrors:(NSError *)error;
 
@@ -118,8 +152,8 @@
 + (NSNumber *)numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm;
 + (NSNumber *)numberOfEntitiesWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
 
-+ (BOOL) hasAtLeastOneEntity;
-+ (BOOL) hasAtLeastOneEntityInContext:(NSManagedObjectContext *)context;
++ (BOOL)hasAtLeastOneEntity;
++ (BOOL)hasAtLeastOneEntityInContext:(NSManagedObjectContext *)context;
 
 + (NSFetchRequest *)requestAll;
 + (NSFetchRequest *)requestAllInContext:(NSManagedObjectContext *)context;
@@ -146,8 +180,8 @@
 + (NSArray *)findAllWithPredicate:(NSPredicate *)searchTerm inContext:(NSManagedObjectContext *)context;
 
 + (NSNumber *)maxValueFor:(NSString *)property;
-+ (id) objectWithMinValueFor:(NSString *)property;
-+ (id) objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context;
++ (id)objectWithMinValueFor:(NSString *)property;
++ (id)objectWithMinValueFor:(NSString *)property inContext:(NSManagedObjectContext *)context;
 
 + (id)findFirst;
 + (id)findFirstInContext:(NSManagedObjectContext *)context;

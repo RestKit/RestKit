@@ -1,0 +1,13 @@
+---
+environment: development
+address: 0.0.0.0
+port: 4567
+timeout: 30
+log: Tests/Server/server.log
+pid: Tests/Server/server.pid
+max_conns: 1024
+max_persistent_conns: 512
+require: []
+wait: 30
+rackup: Tests/Server/server.ru
+daemonize: true

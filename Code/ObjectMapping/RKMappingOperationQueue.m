@@ -3,45 +3,52 @@
 //  RestKit
 //
 //  Created by Blake Watters on 9/20/11.
-//  Copyright (c) 2011 RestKit. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKMappingOperationQueue.h"
 
 @implementation RKMappingOperationQueue
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
         _operations = [NSMutableArray new];
     }
-    
+
     return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_operations release];
     [super dealloc];
 }
 
-- (void)addOperation:(NSOperation *)op {
+- (void)addOperation:(NSOperation *)op
+{
     [_operations addObject:op];
 }
 
-- (void)addOperationWithBlock:(void (^)(void))block {
+- (void)addOperationWithBlock:(void (^)(void))block
+{
     NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:block];
     [_operations addObject:blockOperation];
 }
 
-- (NSArray *)operations {
+- (NSArray *)operations
+{
     return [NSArray arrayWithArray:_operations];
 }
 
-- (NSUInteger)operationCount {
+- (NSUInteger)operationCount
+{
     return [_operations count];
 }
 
-- (void)waitUntilAllOperationsAreFinished {
+- (void)waitUntilAllOperationsAreFinished
+{
     for (NSOperation *operation in _operations) {
         [operation start];
     }

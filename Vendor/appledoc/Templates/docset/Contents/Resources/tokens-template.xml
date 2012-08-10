@@ -48,7 +48,7 @@ Section RelatedTokens
 EndSection
 
 Section Abstract
-<Abstract>{{#abstract}}{{>GBCommentComponentsList}}{{/abstract}}</Abstract>
+<Abstract type="html">{{#abstract}}{{>GBCommentComponentsList}}{{/abstract}}</Abstract>
 EndSection
 
 Section MethodDeclaration
@@ -56,6 +56,6 @@ Section MethodDeclaration
 EndSection
 
 Section GBCommentComponentsList
-{{#components}}{{&textValue}}{{/components}}
+{{#components}}{{textValue}}{{/components}}
 EndSection
 

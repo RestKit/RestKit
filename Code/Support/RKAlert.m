@@ -3,14 +3,14 @@
 //  RestKit
 //
 //  Created by Blake Watters on 4/10/11.
-//  Copyright 2011 Two Toasters
-//  
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
+//
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
 //  You may obtain a copy of the License at
-//  
+//
 //  http://www.apache.org/licenses/LICENSE-2.0
-//  
+//
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,13 +27,13 @@
 #import "RKAlert.h"
 #import "RKLog.h"
 
-void RKAlert(NSString* message) {
+void RKAlert(NSString *message) {
     RKAlertWithTitle(message, @"Alert");
 }
 
-void RKAlertWithTitle(NSString* message, NSString* title) {
+void RKAlertWithTitle(NSString *message, NSString *title) {
 #if TARGET_OS_IPHONE
-    UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:title
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                         message:message
                                                        delegate:nil
                                               cancelButtonTitle:NSLocalizedString(@"OK", nil)
@@ -46,7 +46,7 @@ void RKAlertWithTitle(NSString* message, NSString* title) {
         NSAlert *alert = [[alertClass alloc] init];
         [alert setMessageText:message];
          [alert setInformativeText:message];
-        [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];	
+        [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
         [alert runModal];
         [alert release];
     } else {
@@ -54,5 +54,5 @@ void RKAlertWithTitle(NSString* message, NSString* title) {
     }
 #elif TARGET_OS_UNIX
     RKLogCritical(@"%@: %@", title, message);
-#endif    
+#endif
 }

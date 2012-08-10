@@ -3,7 +3,7 @@
 //  RKTwitter
 //
 //  Created by Blake Watters on 9/5/10.
-//  Copyright 2010 Two Toasters. All rights reserved.
+//  Copyright (c) 2009-2012 RestKit. All rights reserved.
 //
 
 #import "RKTUser.h"
@@ -14,11 +14,12 @@
 @synthesize name = _name;
 @synthesize screenName = _screenName;
 
-- (void)dealloc {
+- (void)dealloc
+{
     [_userID release];
-	[_name release];
-	[_screenName release];
-    
+    [_name release];
+    [_screenName release];
+
     [super dealloc];
 }
 

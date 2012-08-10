@@ -57,6 +57,22 @@
  */
 + (void)setHTTPShouldHandleCookies:(BOOL)handle;
 
+/**
+ Creates and returns a URL request that will perform an HTTP operation for the given method. All
+ of the appropriate fields will be parameter encoded as necessary so do not
+ encode them yourself. The contents of the parameters dictionary must be string
+ key/value pairs. You are contracted to consume the NSURLRequest *immediately*.
+ */
++ (NSURLRequest *)URLRequestForPath:(NSString *)path
+                         HTTPMethod:(NSString *)HTTPMethod
+                         parameters:(NSDictionary *)parameters
+                             scheme:(NSString *)scheme
+                               host:(NSString *)host
+                        consumerKey:(NSString *)consumerKey
+                     consumerSecret:(NSString *)consumerSecret
+                        accessToken:(NSString *)accessToken
+                        tokenSecret:(NSString *)tokenSecret;
+
 /*
  Creates and returns a URL request that will perform a GET HTTP operation. All
  of the appropriate fields will be parameter encoded as necessary so do not
@@ -85,7 +101,7 @@
                         tokenSecret:(NSString *)tokenSecret;
 
 /*
- Creates and returns a URL request that will perform a POST HTTPS operation. All
+ Creates and returns a URL request that will perform a POST HTTP operation. All
  data will be sent as form URL encoded. Restrictions on the arguments to this
  method are the same as the GET request methods.
  */
@@ -109,36 +125,21 @@
                      consumerSecret:(NSString *)consumerSecret
                         accessToken:(NSString *)accessToken
                         tokenSecret:(NSString *)tokenSecret;
-
-/*
- Creates and returns a URL request that will perform a PUT HTTPS operation. All
- data will be sent as form URL encoded. Restrictions on the arguments to this
- method are the same as the GET request methods.
- */
-+ (NSURLRequest *)URLRequestForPath:(NSString *)path
-                      PUTParameters:(NSDictionary *)parameters
-                               host:(NSString *)host
-                        consumerKey:(NSString *)consumerKey
-                     consumerSecret:(NSString *)consumerSecret
-                        accessToken:(NSString *)accessToken
-                        tokenSecret:(NSString *)tokenSecret;
-
-/*
- Performs the same operation as the above method but allows a customizable URL
- scheme, e.g. HTTPS.
- */
-+ (NSURLRequest *)URLRequestForPath:(NSString *)path
-                      PUTParameters:(NSDictionary *)parameters
-                             scheme:(NSString *)scheme
-                               host:(NSString *)host
-                        consumerKey:(NSString *)consumerKey
-                     consumerSecret:(NSString *)consumerSecret
-                        accessToken:(NSString *)accessToken
-                        tokenSecret:(NSString *)tokenSecret;
-
-
 @end
 
+@interface NSString (GCOAuthAdditions)
+
+// better percent escape
+- (NSString *)pcen;
+@end
+
+@interface NSURL (GCOAuthURL)
+
+/*
+ Get host:port from URL unless port is 80 or 443 (http://tools.ietf.org/html/rfc5849#section-3.4.1.2). Otherwis reurn only host.
+ */
+- (NSString *)hostAndPort;
+@end
 /*
  
  XAuth example (because you may otherwise be scratching your head):

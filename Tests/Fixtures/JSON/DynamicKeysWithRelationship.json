@@ -1,0 +1,16 @@
+{
+    "users": {
+        "blake": {
+            "id": 31337,
+            "website": "http://restkit.org/"
+        },
+        "rachit": {
+            "id": 7,
+            "website": "http://www.twotoasters.com/",
+            "address": {
+                "city": "New York",
+                "state": "New York"
+            }
+        }
+    }
+}
