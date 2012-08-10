@@ -38,7 +38,7 @@
 
 extern dispatch_queue_t rk_get_network_processing_queue(void);
 
-NSString *RKRequestMethodNameFromType(RKRequestMethod method) {
+NSString *RKStringFromRequestMethod(RKRequestMethod method) {
     switch (method) {
         case RKRequestMethodGET:
             return @"GET";
@@ -71,7 +71,7 @@ NSString *RKRequestMethodNameFromType(RKRequestMethod method) {
     return nil;
 }
 
-RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
+RKRequestMethod RKRequestMethodFromString(NSString *methodName) {
     if ([methodName isEqualToString:@"GET"]) {
         return RKRequestMethodGET;
     } else if ([methodName isEqualToString:@"POST"]) {
@@ -361,7 +361,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         else
             parameters = [_URL queryParameters];
         
-        NSString *methodString = RKRequestMethodNameFromType(self.method);        
+        NSString *methodString = RKStringFromRequestMethod(self.method);        
         echo = [GCOAuth URLRequestForPath:[_URL path] 
                                HTTPMethod:methodString 
                                parameters:(self.method == RKRequestMethodGET) ? [_URL queryParameters] : parameters 
@@ -426,7 +426,7 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 
 - (NSString *)HTTPMethod
 {
-    return RKRequestMethodNameFromType(self.method);
+    return RKStringFromRequestMethod(self.method);
 }
 
 // NOTE: We could factor the knowledge about the queue out of RKRequest entirely, but it will break behavior.

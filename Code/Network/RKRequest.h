@@ -42,8 +42,8 @@ typedef enum RKRequestMethod {
     RKRequestMethodPATCH
 } RKRequestMethod;
 
-NSString *RKRequestMethodNameFromType(RKRequestMethod);
-RKRequestMethod RKRequestMethodTypeFromName(NSString *);
+NSString *RKStringFromRequestMethod(RKRequestMethod);
+RKRequestMethod RKRequestMethodFromString(NSString *);
 
 /**
  Cache policy for determining how to use RKCache
