@@ -136,7 +136,7 @@
 {
     return [NSString stringWithFormat:@"<%@: %p objectClass=%@ method=%@ resourcePathPattern=%@>",
             NSStringFromClass([self class]), self, NSStringFromClass(self.objectClass),
-            RKRequestMethodNameFromType(self.method), self.resourcePathPattern];
+            RKStringFromRequestMethod(self.method), self.resourcePathPattern];
 }
 
 @end
@@ -152,7 +152,7 @@
 {
     return [NSString stringWithFormat:@"<%@: %p relationshipName=%@ objectClass=%@ method=%@ resourcePathPattern=%@>",
             NSStringFromClass([self class]), self, self.name, NSStringFromClass(self.objectClass),
-            RKRequestMethodNameFromType(self.method), self.resourcePathPattern];
+            RKStringFromRequestMethod(self.method), self.resourcePathPattern];
 }
 
 @end
