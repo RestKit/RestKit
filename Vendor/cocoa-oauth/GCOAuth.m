@@ -387,7 +387,16 @@ static BOOL GCOAuthUseHTTPSCookieStorage = YES;
                                               tokenSecret:tokenSecret];
     oauth.HTTPMethod = urlMethod;
     oauth.requestParameters = parameters;
-    NSURL *URL = [[NSURL alloc] initWithScheme:scheme host:host path:path];
+    // http://openradar.appspot.com/6870881
+//    NSURL *URL = [[NSURL alloc] initWithScheme:scheme host:host path:path];
+    NSMutableString *urlString = [NSMutableString stringWithFormat:@"%@://%@", scheme, host];
+    if (![path hasPrefix:@"/"]) {
+        [urlString appendString:@"/"];
+    }
+    if (path) {
+        [urlString appendString:[path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    }
+    NSURL *URL = [[NSURL alloc] initWithString:urlString];
     oauth.URL = URL;
     [URL release];
     
