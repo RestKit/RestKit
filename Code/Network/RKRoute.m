@@ -119,8 +119,8 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p name=%@ resourcePathPattern=%@>",
-            NSStringFromClass([self class]), self, self.name, self.resourcePathPattern];
+    return [NSString stringWithFormat:@"<%@: %p name=%@ method=%@ resourcePathPattern=%@>",
+            NSStringFromClass([self class]), self, self.name, RKStringFromRequestMethod(self.method), self.resourcePathPattern];
 }
 
 @end
