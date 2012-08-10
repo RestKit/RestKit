@@ -350,9 +350,10 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         NSDictionary *parameters = nil;
         if ([self.params isKindOfClass:[RKParams class]])
             parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
+        else if ([self.params isKindOfClass:[NSDictionary class]])
+            parameters = (NSDictionary*)self.params;
         else
             parameters = [_URL queryParameters];
-        
         NSString *methodString = RKRequestMethodNameFromType(self.method);        
         echo = [GCOAuth URLRequestForPath:[_URL path] 
                                HTTPMethod:methodString 
