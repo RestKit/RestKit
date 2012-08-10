@@ -461,6 +461,41 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
 {
     // if RKRequestCachePolicyEnabled or if RKRequestCachePolicyTimeout and we are in the timeout
     if ([self.cache hasResponseForRequest:self]) {
+        if (self.cachePolicy & RKRequestCachePolicyControlMaxAge) {
+            NSDictionary *headers = [self.cache headersForRequest:self];
+            
+            //Retrieve the Cache-Control header
+            NSString *cacheControl = [headers objectForKey:RKRequestCacheControlHeaderKey];
+            if (!cacheControl) {
+                //Check for lower case headers that could also match
+                for (NSString* responseHeader in headers) {
+                    if ([[responseHeader uppercaseString] isEqualToString:[RKRequestCacheControlHeaderKey uppercaseString]]) {
+                        cacheControl = [headers objectForKey:responseHeader];
+                        break;
+                    }                    
+                }
+            }
+            
+            //Check the cache control max age
+            if (cacheControl) {
+                NSError *error = NULL;
+                NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\bmax-age=(\\d)+"
+                                                                                       options:NSRegularExpressionCaseInsensitive
+                                                                                         error:&error];
+                
+                NSRange rangeOfFirstMatch = [regex rangeOfFirstMatchInString:cacheControl options:0 range:NSMakeRange(0, [cacheControl length])];
+                if (rangeOfFirstMatch.location != NSNotFound) {
+                    NSInteger maxAge = [[cacheControl substringWithRange:NSMakeRange(rangeOfFirstMatch.location + 8, rangeOfFirstMatch.length - 8)] integerValue];
+                    NSDate* date = [self.cache cacheDateForRequest:self];
+                    NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:date];                                        
+                    if (interval < maxAge) {
+                        RKLogDebug(@"Reusing cached content with maxAge %d and current age %d", maxAge, (NSInteger)interval);
+                        return YES;
+                    }
+                }                
+            }
+        }
+        
         if (self.cachePolicy & RKRequestCachePolicyEnabled) {
             return YES;
         } else if (self.cachePolicy & RKRequestCachePolicyTimeout) {

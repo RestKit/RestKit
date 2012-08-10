@@ -32,6 +32,7 @@ NSString * const RKRequestCacheDateHeaderKey = @"X-RESTKIT-CACHEDATE";
 NSString * const RKRequestCacheStatusCodeHeadersKey = @"X-RESTKIT-CACHED-RESPONSE-CODE";
 NSString * const RKRequestCacheMIMETypeHeadersKey = @"X-RESTKIT-CACHED-MIME-TYPE";
 NSString * const RKRequestCacheURLHeadersKey = @"X-RESTKIT-CACHED-URL";
+NSString * const RKRequestCacheControlHeaderKey = @"Cache-Control";
 
 static NSDateFormatter *__rfc1123DateFormatter;
 
