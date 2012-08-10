@@ -97,42 +97,45 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
     RKSearchTokenizer *searchTokenizer = [RKSearchTokenizer new];
     searchTokenizer.stopWords = self.stopWords;
     
+    __block NSUInteger searchWordCount;
     NSManagedObjectContext *managedObjectContext = managedObject.managedObjectContext;
-    NSMutableSet *searchWords = [NSMutableSet set];
-    for (NSString *searchableAttribute in searchableAttributes) {
-        NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
-        if (attributeValue) {
-            RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
-            NSSet *tokens = [searchTokenizer tokenize:attributeValue];
-            for (NSString *word in tokens) {
-                if (word && [word length] > 0) {
-                    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
-                    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"%K = %@", RKSearchWordAttributeName, word];
-                    fetchRequest.fetchLimit = 1;
-                    NSError *error = nil;
-                    NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-                    if (results) {
-                        RKSearchWord *searchWord;
-                        if ([results count] == 0) {
-                            searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
-                            searchWord.word = word;
+    [managedObjectContext performBlockAndWait:^{
+        NSMutableSet *searchWords = [NSMutableSet set];
+        for (NSString *searchableAttribute in searchableAttributes) {
+            NSString *attributeValue = [managedObject valueForKey:searchableAttribute];
+            if (attributeValue) {
+                RKLogTrace(@"Generating search words for searchable attribute: %@", searchableAttribute);
+                NSSet *tokens = [searchTokenizer tokenize:attributeValue];
+                for (NSString *word in tokens) {
+                    if (word && [word length] > 0) {
+                        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:RKSearchWordEntityName];
+                        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"%K = %@", RKSearchWordAttributeName, word];
+                        fetchRequest.fetchLimit = 1;
+                        NSError *error = nil;
+                        NSArray *results = [managedObject.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+                        if (results) {
+                            RKSearchWord *searchWord;
+                            if ([results count] == 0) {
+                                searchWord = [NSEntityDescription insertNewObjectForEntityForName:RKSearchWordEntityName inManagedObjectContext:managedObjectContext];
+                                searchWord.word = word;
+                            } else {
+                                searchWord = [results objectAtIndex:0];
+                            }
+                            
+                            [searchWords addObject:searchWord];
                         } else {
-                            searchWord = [results objectAtIndex:0];
+                            RKLogError(@"Failed to retrieve search word: %@", error);
                         }
-                        
-                        [searchWords addObject:searchWord];
-                    } else {
-                        RKLogError(@"Failed to retrieve search word: %@", error);
                     }
                 }
             }
         }
-    }
+        
+        [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
+        RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
+        searchWordCount = [searchWords count];
+    }];
     
-    [managedObject setValue:searchWords forKey:RKSearchWordsRelationshipName];
-    RKLogTrace(@"Indexed search words: %@", [searchWords valueForKey:RKSearchWordAttributeName]);
-    
-    NSUInteger searchWordCount = [searchWords count];
     [pool drain];
     
     return searchWordCount;
@@ -140,11 +143,14 @@ NSString * const RKSearchableAttributeNamesUserInfoKey = @"RestKitSearchableAttr
 
 - (void)indexChangedObjectsInManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    RKLogDebug(@"Indexing changed objects in managed object context: %@", managedObjectContext);
-    
-    NSSet *candidateObjects = [[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects];
+    NSArray *candidateObjects = [[[NSSet setWithSet:managedObjectContext.insertedObjects] setByAddingObjectsFromSet:managedObjectContext.updatedObjects] allObjects];
+    NSUInteger totalObjects = [candidateObjects count];
+    RKLogInfo(@"Indexing %d changed objects in managed object context: %@", totalObjects, managedObjectContext);
     
     for (NSManagedObject *managedObject in candidateObjects) {
+        NSUInteger index = [candidateObjects indexOfObject:managedObject];
+        double percentage = (((float)index + 1) / (float)totalObjects) * 100;
+        if ((index + 1) % 250 == 0) RKLogInfo(@"Indexed %d of %d (%.2f%% complete)", index + 1, totalObjects, percentage);
         NSArray *searchableAttributes = [managedObject.entity.userInfo objectForKey:RKSearchableAttributeNamesUserInfoKey];
         if (! searchableAttributes) {
             RKLogTrace(@"Skipping indexing for managed object for entity '%@': no searchable attributes found.", managedObject.entity.name);
