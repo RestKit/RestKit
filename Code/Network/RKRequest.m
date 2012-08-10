@@ -337,7 +337,15 @@ RKRequestMethod RKRequestMethodTypeFromName(NSString *methodName) {
         NSDictionary *parameters = nil;
         if ([self.params isKindOfClass:[RKParams class]])
             parameters = [(RKParams *)self.params dictionaryOfPlainTextParams];
-        else
+        else if ([self.params isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *params = (NSDictionary *)self.params;
+            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:[params count]];
+            for (NSObject *key in params) {
+                [dict setObject:[[params objectForKey:key] description] forKey:[key description]];
+            }
+            [dict addEntriesFromDictionary:[_URL queryParameters]];
+            parameters = dict;
+        } else
             parameters = [_URL queryParameters];
 
         // Use CFURLCopyPath so that the path is preserved with trailing slash, then escape the percents ourselves
