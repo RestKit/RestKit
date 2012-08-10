@@ -514,8 +514,7 @@ static NSString *lastUpdatedDateDictionaryKey = @"lastUpdatedDateDictionaryKey";
     }
     
     if (self.onPrepareCellForObjectAtIndexPath) {
-        id object = [self objectForRowAtIndexPath:indexPath];
-        self.onPrepareCellForObjectAtIndexPath(cell, object, indexPath);
+        self.onPrepareCellForObjectAtIndexPath(cell, mappableObject, indexPath);
     }
 
     RKLogTrace(@"%@ cellForRowAtIndexPath:%@ = %@", self, indexPath, cell);
