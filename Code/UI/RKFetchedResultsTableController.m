@@ -661,11 +661,8 @@
             break;
 
         case NSFetchedResultsChangeUpdate:
-            /**
-             TODO: Missing a call to a replacement for configureCell:atIndexPath: which updates
-             the contents of a given cell with the information from a managed object
-             at a given index path in the fetched results controller
-             */
+            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:adjIndexPath]
+                                  withRowAnimation:UITableViewRowAnimationFade];
             break;
 
         case NSFetchedResultsChangeMove:
